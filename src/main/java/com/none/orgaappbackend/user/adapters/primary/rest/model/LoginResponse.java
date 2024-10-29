@@ -1,14 +1,12 @@
 package com.none.orgaappbackend.user.adapters.primary.rest.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 public class LoginResponse {
     private String token;
     private String username;

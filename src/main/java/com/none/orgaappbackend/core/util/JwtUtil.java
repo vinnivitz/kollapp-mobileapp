@@ -1,13 +1,13 @@
 package com.none.orgaappbackend.core.util;
 
+import com.none.orgaappbackend.user.application.model.User;
+import com.none.orgaappbackend.user.application.service.UserDetailsImpl;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.enviro.co2fzsbackend.user.application.model.User;
-import org.enviro.co2fzsbackend.user.application.model.UserDetailsImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
