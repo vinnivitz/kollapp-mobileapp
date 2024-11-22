@@ -19,7 +19,45 @@
 		<node.version>v18.18.2</node.version>
 		<npm.version>10.2.0</npm.version>
 		<frontend-maven-plugin.version>1.12.1</frontend-maven-plugin.version>
+		<jsonwebtoken.version>0.11.5</jsonwebtoken.version>
+		<lombok.version>1.18.30</lombok.version>
+		<springdoc.version>2.6.0</springdoc.version>
+		<mysql-connector.version>8.2.0</mysql-connector.version>
 	</properties>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>io.jsonwebtoken</groupId>
+				<artifactId>jjwt-api</artifactId>
+				<version>${jsonwebtoken.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.jsonwebtoken</groupId>
+				<artifactId>jjwt-impl</artifactId>
+				<version>${jsonwebtoken.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.jsonwebtoken</groupId>
+				<artifactId>jjwt-jackson</artifactId>
+				<version>${jsonwebtoken.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.projectlombok</groupId>
+				<artifactId>lombok</artifactId>
+				<version>${lombok.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springdoc</groupId>
+				<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+				<version>${springdoc.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.mysql</groupId>
+				<artifactId>mysql-connector-j</artifactId>
+				<version>${mysql-connector.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 	<build>
 	</build>
 	<modules>

@@ -1,4 +1,4 @@
-package com.none.orgaappbackend.organization.adapters.primary.rest.config;
+package com.none.orgaappbackend.core.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;

@@ -1,4 +1,4 @@
-package com.none.orgaappbackend.organization.adapters.primary.rest.config;
+package com.none.orgaappbackend.core.config;
 
 import com.none.orgaappbackend.organization.util.JwtUtil;
 import com.none.orgaappbackend.organization.application.service.impl.UserDetailsServiceImpl;
