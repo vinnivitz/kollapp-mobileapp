@@ -12,7 +12,7 @@ import java.util.Collection;
 @Builder
 @Getter
 @Setter
-public class UserDetailsImpl implements UserDetails {
+public class OrganizationDetails implements UserDetails {
 
     private Long id;
     private String username;

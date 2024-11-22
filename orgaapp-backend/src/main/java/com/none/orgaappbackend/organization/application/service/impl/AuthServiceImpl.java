@@ -2,8 +2,8 @@ package com.none.orgaappbackend.organization.application.service.impl;
 
 import com.none.orgaappbackend.core.exception.EmailIsNotConfirmedException;
 import com.none.orgaappbackend.organization.adapters.primary.rest.model.LoginResponse;
+import com.none.orgaappbackend.organization.application.model.OrganizationDetails;
 import com.none.orgaappbackend.organization.application.service.AuthService;
-import com.none.orgaappbackend.organization.application.model.UserDetailsImpl;
 import com.none.orgaappbackend.organization.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,7 +27,7 @@ public class AuthServiceImpl implements AuthService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         Date expirationDate = JwtUtil.generateExpirationDate();
         String jwt = JwtUtil.generateJwtToken(authentication, expirationDate);
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        OrganizationDetails userDetails = (OrganizationDetails) authentication.getPrincipal();
         if(!userDetails.isActivated()){
             throw new EmailIsNotConfirmedException();
         }
@@ -35,6 +35,7 @@ public class AuthServiceImpl implements AuthService {
                 .token(jwt)
                 .username(userDetails.getUsername())
                 .email(userDetails.getEmail())
+                .name(userDetails.getName())
                 .loggedInUntil(expirationDate.getTime())
                 .build();
     }

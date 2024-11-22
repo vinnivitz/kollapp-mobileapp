@@ -4,11 +4,11 @@ import com.none.orgaappbackend.core.exception.EmailIsAlreadyConfirmedException;
 import com.none.orgaappbackend.core.exception.IncorrectPasswordException;
 import com.none.orgaappbackend.core.exception.InvalidConfirmationLinkException;
 import com.none.orgaappbackend.core.exception.UsernameIsAlreadyInUseException;
+import com.none.orgaappbackend.organization.application.model.OrganizationDetails;
 import com.none.orgaappbackend.organization.application.repository.OrganizationRepository;
 import com.none.orgaappbackend.organization.application.service.OrganizationService;
 import com.none.orgaappbackend.organization.application.model.Organization;
 import com.none.orgaappbackend.organization.application.service.EmailService;
-import com.none.orgaappbackend.organization.application.model.UserDetailsImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     public Organization getLoggedInOrganization(){
-        String username = ((UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        String username = ((OrganizationDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         return orgaRepo.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Der Nutzername existiert nicht!"));
     }
 
@@ -83,9 +83,14 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     public void register(String username, String name, String email, String password) {
+        String confirmationBaseUrl = "https://orgaapp.com/api/public/auth/confirmation";
         assert isUsernameFree(username);
-        Organization organization = Organization.builder().username(username).name(name).email(email).password(password).build();
+        String encodedPassword = encoder.encode(password);
+        Organization organization = Organization.builder().username(username).name(name).email(email).password(encodedPassword).build();
         orgaRepo.save(organization);
+        String confirmationToken = JwtUtil.generateJwtTokenForConfirmation(organization);
+        String confirmationUrl = confirmationBaseUrl + "?confirmationToken=" + confirmationToken;
+        emailService.sendConfirmationMail(organization.getEmail(), confirmationUrl);
     }
 
     public boolean isUsernameFree(String username){
