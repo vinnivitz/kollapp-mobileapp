@@ -13,4 +13,5 @@ public interface OrganizationService {
     void activateOrganization(String confirmationToken);
     void changePassword(String oldPassword, String newPassword);
     void resetPassword(String email);
+    void register(String username, String name, String email, String password);
 }

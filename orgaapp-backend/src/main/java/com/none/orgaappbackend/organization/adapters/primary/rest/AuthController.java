@@ -59,4 +59,14 @@ public class AuthController {
         organizationService.resetPassword(forgotPasswordTo.getEmail());
         return ResponseEntity.status(HttpStatus.OK).body(new MessageTO("Wenn deine E-Mail-Adresse dem System bekannt ist, erhältst du in Kürze eine Mail mit einem temporären Passwort. Bitte ändere es, nachdem du dich das erste Mal damit eingeloggt hast. Vergiss nicht, ggf. auch im Spam-Ordner nachzuschauen."));
     }
+
+    @PostMapping("/signup")
+    public ResponseEntity<MessageTO> registerOrganization(@Valid @RequestBody OrganizationSignupRequest signUpRequest) {
+        organizationService.register(
+                signUpRequest.getUsername(),
+                signUpRequest.getName(),
+                signUpRequest.getEmail(),
+                signUpRequest.getPassword());
+        return ResponseEntity.ok(new MessageTO("Du hast dich erfolgreich als Teilnehmender registriert. Bitte bestätige nun noch deine E-Mail-Adresse."));
+    }
 }

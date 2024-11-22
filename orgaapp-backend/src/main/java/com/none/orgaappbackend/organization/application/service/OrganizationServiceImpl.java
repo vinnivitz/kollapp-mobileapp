@@ -9,6 +9,7 @@ import com.none.orgaappbackend.organization.application.OrganizationService;
 import com.none.orgaappbackend.organization.application.model.Organization;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,7 +23,7 @@ import java.util.Optional;
 @Service
 public class OrganizationServiceImpl implements OrganizationService {
     @Autowired
-    private OrganizationRepository userRepo;
+    private OrganizationRepository orgaRepo;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -34,16 +35,16 @@ public class OrganizationServiceImpl implements OrganizationService {
     PasswordEncoder encoder;
 
     public Organization getOrganizationByUsername(String username){
-        return userRepo.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Der Nutzername wurde nicht gefunden!"));
+        return orgaRepo.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Der Nutzername wurde nicht gefunden!"));
     }
 
     public Organization getLoggedInOrganization(){
         String username = ((UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
-        return userRepo.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Der Nutzername existiert nicht!"));
+        return orgaRepo.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Der Nutzername existiert nicht!"));
     }
 
     public Optional<Organization> getOrganizationOptionalByEmail(String email){
-        return this.userRepo.findByEmail(email);
+        return this.orgaRepo.findByEmail(email);
     }
 
     @Override
@@ -52,7 +53,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             throw new InvalidConfirmationLinkException();
         }
         long userId = Long.parseLong(jwtUtil.getSubjectFromJwtToken(confirmationToken));
-        Organization organization = userRepo.findById(userId).orElseThrow(() -> new IllegalArgumentException("Der Nutzer existiert nicht!"));
+        Organization organization = orgaRepo.findById(userId).orElseThrow(() -> new IllegalArgumentException("Der Nutzer existiert nicht!"));
         if(organization.isActivated()){
             throw new EmailIsAlreadyConfirmedException();
         }
@@ -82,8 +83,15 @@ public class OrganizationServiceImpl implements OrganizationService {
         }
     }
 
+    @Override
+    public void register(String username, String name, String email, String password) {
+        assert isUsernameFree(username);
+        Organization organization = Organization.builder().username(username).name(name).email(email).password(password).build();
+        orgaRepo.save(organization);
+    }
+
     public boolean isUsernameFree(String username){
-        if (userRepo.existsByUsername(username)) {
+        if (orgaRepo.existsByUsername(username)) {
             throw new UsernameIsAlreadyInUseException();
         }
         return true;
