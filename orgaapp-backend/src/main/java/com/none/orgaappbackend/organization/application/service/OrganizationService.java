@@ -1,4 +1,4 @@
-package com.none.orgaappbackend.organization.application;
+package com.none.orgaappbackend.organization.application.service;
 
 
 import com.none.orgaappbackend.organization.application.model.Organization;

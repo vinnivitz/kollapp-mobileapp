@@ -1,4 +1,4 @@
-package com.none.orgaappbackend.organization.application.service;
+package com.none.orgaappbackend.organization.application.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;

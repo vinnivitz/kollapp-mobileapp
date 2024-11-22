@@ -1,15 +1,16 @@
-package com.none.orgaappbackend.organization.application.service;
+package com.none.orgaappbackend.organization.application.service.impl;
 
 import com.none.orgaappbackend.core.exception.EmailIsAlreadyConfirmedException;
 import com.none.orgaappbackend.core.exception.IncorrectPasswordException;
 import com.none.orgaappbackend.core.exception.InvalidConfirmationLinkException;
 import com.none.orgaappbackend.core.exception.UsernameIsAlreadyInUseException;
-import com.none.orgaappbackend.organization.application.OrganizationRepository;
-import com.none.orgaappbackend.organization.application.OrganizationService;
+import com.none.orgaappbackend.organization.application.repository.OrganizationRepository;
+import com.none.orgaappbackend.organization.application.service.OrganizationService;
 import com.none.orgaappbackend.organization.application.model.Organization;
+import com.none.orgaappbackend.organization.application.service.EmailService;
+import com.none.orgaappbackend.organization.application.model.UserDetailsImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,9 +25,6 @@ import java.util.Optional;
 public class OrganizationServiceImpl implements OrganizationService {
     @Autowired
     private OrganizationRepository orgaRepo;
-
-    @Autowired
-    private JwtUtil jwtUtil;
 
     @Autowired
     private EmailService emailService;
@@ -49,10 +47,10 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     public void activateOrganization(String confirmationToken) {
-        if(!jwtUtil.validateJwtToken(confirmationToken)){
+        if(!JwtUtil.validateJwtToken(confirmationToken)){
             throw new InvalidConfirmationLinkException();
         }
-        long userId = Long.parseLong(jwtUtil.getSubjectFromJwtToken(confirmationToken));
+        long userId = Long.parseLong(JwtUtil.getSubjectFromJwtToken(confirmationToken));
         Organization organization = orgaRepo.findById(userId).orElseThrow(() -> new IllegalArgumentException("Der Nutzer existiert nicht!"));
         if(organization.isActivated()){
             throw new EmailIsAlreadyConfirmedException();

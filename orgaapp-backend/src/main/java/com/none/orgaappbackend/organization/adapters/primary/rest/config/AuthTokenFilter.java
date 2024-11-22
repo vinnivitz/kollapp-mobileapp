@@ -1,7 +1,7 @@
 package com.none.orgaappbackend.organization.adapters.primary.rest.config;
 
 import com.none.orgaappbackend.organization.util.JwtUtil;
-import com.none.orgaappbackend.organization.application.service.UserDetailsServiceImpl;
+import com.none.orgaappbackend.organization.application.service.impl.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,8 +21,6 @@ import java.io.IOException;
 
 @Component
 public class AuthTokenFilter extends OncePerRequestFilter {
-    @Autowired
-    private JwtUtil jwtUtil;
 
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
@@ -34,8 +32,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             String jwt = parseJwt(request);
-            if (jwt != null && jwtUtil.validateJwtToken(jwt)) {
-                String username = jwtUtil.getSubjectFromJwtToken(jwt);
+            if (jwt != null && JwtUtil.validateJwtToken(jwt)) {
+                String username = JwtUtil.getSubjectFromJwtToken(jwt);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(

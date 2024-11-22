@@ -1,4 +1,4 @@
-package com.none.orgaappbackend.organization.application;
+package com.none.orgaappbackend.organization.application.repository;
 
 import com.none.orgaappbackend.organization.application.model.Organization;
 
@@ -9,5 +9,5 @@ public interface OrganizationRepository {
     Optional<Organization> findByUsername(String username);
     Optional<Organization> findByEmail(String email);
     boolean existsByUsername(String username);
-    Organization save(Organization organization);
+    void save(Organization organization);
 }

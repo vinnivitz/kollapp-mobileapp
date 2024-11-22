@@ -1,28 +1,18 @@
 package com.none.orgaappbackend.organization.adapters.primary.rest;
 
-import com.none.orgaappbackend.organization.util.JwtUtil;
 import com.none.orgaappbackend.organization.adapters.primary.rest.model.*;
-import com.none.orgaappbackend.organization.application.AuthService;
-import com.none.orgaappbackend.organization.application.OrganizationRepository;
-import com.none.orgaappbackend.organization.adapters.primary.rest.model.LoginResponse;
-import com.none.orgaappbackend.organization.application.OrganizationService;
-import com.none.orgaappbackend.organization.application.model.Organization;
-import com.none.orgaappbackend.organization.application.service.EmailService;
+import com.none.orgaappbackend.organization.application.service.AuthService;
+import com.none.orgaappbackend.organization.application.service.OrganizationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
-@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
 @Transactional
