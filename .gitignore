@@ -2,19 +2,20 @@
 .idea
 target
 
-test-results
-node_modules
+/orgaapp-frontend/test-results
+/orgaapp-frontend/node_modules
+/orgaapp-frontend/node
 
 # Output
-.output
-.vercel
-/.svelte-kit
-/build
-/dist
+/orgaapp-frontend/.output
+/orgaapp-frontend/.vercel
+/orgaapp-frontend/.svelte-kit
+/orgaapp-frontend/build
+/orgaapp-frontend/dist
 
 # OS
-.DS_Store
-Thumbs.db
+/orgaapp-frontend/.DS_Store
+/orgaapp-frontend/Thumbs.db
 
 # Env
 .env
@@ -23,11 +24,11 @@ Thumbs.db
 !.env.test
 
 # Vite
-vite.config.js.timestamp-*
-vite.config.ts.timestamp-*
+/orgaapp-frontend/vite.config.js.timestamp-*
+/orgaapp-frontend/vite.config.ts.timestamp-*
 
-*storybook.log
+/orgaapp-frontend/*storybook.log
 
 # android and ios
-/android
-/ios
+/orgaapp-frontend//android
+/orgaapp-frontend//ios
