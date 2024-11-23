@@ -2,3 +2,32 @@
 .idea
 target
 
+test-results
+node_modules
+
+# Output
+.output
+.vercel
+/.svelte-kit
+/build
+/dist
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.*
+!.env.example
+!.env.test
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+*storybook.log
+
+# android and ios
+/android
+/ios
