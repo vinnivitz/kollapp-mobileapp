@@ -1,4 +1,4 @@
-package com.none.orgaappbackend.core.exception;
+package com.none.orgaappbackend.organization.application.exception;
 
 public class UsernameIsAlreadyInUseException extends RuntimeException {
     public UsernameIsAlreadyInUseException() {

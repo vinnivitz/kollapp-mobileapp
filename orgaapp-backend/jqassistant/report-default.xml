@@ -1,0 +1,22 @@
+<jqassistant-rules xmlns="http://schema.jqassistant.org/rule/v1.10">
+    <group id="orgaapp-report:Default">
+        <includeConcept refId="orgaapp-report:BoundedContextDependencies"/>
+    </group>
+
+    <concept id="orgaapp-report:BoundedContextDependencies">
+        <requiresConcept refId="jmolecules-ddd:BoundedContextDependency"/>
+        <description>Express Bounded Context dependencies as graph</description>
+        <cypher><![CDATA[
+            MATCH
+              (boundedContext1:JMolecules:DDD:BoundedContext),
+              (boundedContext2:JMolecules:DDD:BoundedContext),
+              (boundedContext1)-[d:DEPENDS_ON]->(boundedContext2)
+            WITH
+              boundedContext1, boundedContext2, d as Weight
+            RETURN
+              boundedContext1 AS Source, Weight, boundedContext2 AS Target
+        ]]></cypher>
+        <report type="plantuml-component-diagram"/>
+    </concept>
+
+</jqassistant-rules>

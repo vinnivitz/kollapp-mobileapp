@@ -2,9 +2,11 @@ package com.none.orgaappbackend.organization.application.service;
 
 
 import com.none.orgaappbackend.organization.application.model.Organization;
+import org.jmolecules.architecture.hexagonal.PrimaryPort;
 
 import java.util.Optional;
 
+@PrimaryPort
 public interface OrganizationService {
     boolean isUsernameFree(String username);
     Organization getLoggedInOrganization();

@@ -1,6 +1,6 @@
 package com.none.orgaappbackend.organization.application.service.impl;
 
-import com.none.orgaappbackend.core.exception.EmailIsNotConfirmedException;
+import com.none.orgaappbackend.organization.application.exception.EmailIsNotConfirmedException;
 import com.none.orgaappbackend.organization.adapters.primary.rest.model.LoginResponse;
 import com.none.orgaappbackend.organization.application.model.OrganizationDetails;
 import com.none.orgaappbackend.organization.application.service.AuthService;
