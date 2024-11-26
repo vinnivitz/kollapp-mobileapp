@@ -6,6 +6,7 @@ import com.none.orgaappbackend.organization.application.service.AuthService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/public/auth")
 @Transactional
 @Slf4j
+@PrimaryAdapter
 public class AuthController {
     @Autowired
     private AuthService authService;

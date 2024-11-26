@@ -3,12 +3,14 @@ package com.none.orgaappbackend.organization.adapters.secondary.db;
 import com.none.orgaappbackend.organization.adapters.secondary.db.jpa.OrganizationJpaRepository;
 import com.none.orgaappbackend.organization.application.model.Organization;
 import com.none.orgaappbackend.organization.application.repository.OrganizationRepository;
+import org.jmolecules.architecture.hexagonal.SecondaryAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
+@SecondaryAdapter
 public class OrganizationRepositoryImpl implements OrganizationRepository {
     @Autowired
     private OrganizationJpaRepository jpaRepository;

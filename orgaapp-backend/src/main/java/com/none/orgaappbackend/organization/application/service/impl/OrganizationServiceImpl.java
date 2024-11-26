@@ -1,9 +1,9 @@
 package com.none.orgaappbackend.organization.application.service.impl;
 
-import com.none.orgaappbackend.core.exception.EmailIsAlreadyConfirmedException;
-import com.none.orgaappbackend.core.exception.IncorrectPasswordException;
-import com.none.orgaappbackend.core.exception.InvalidConfirmationLinkException;
-import com.none.orgaappbackend.core.exception.UsernameIsAlreadyInUseException;
+import com.none.orgaappbackend.organization.application.exception.EmailIsAlreadyConfirmedException;
+import com.none.orgaappbackend.organization.application.exception.IncorrectPasswordException;
+import com.none.orgaappbackend.organization.application.exception.InvalidConfirmationLinkException;
+import com.none.orgaappbackend.organization.application.exception.UsernameIsAlreadyInUseException;
 import com.none.orgaappbackend.organization.application.model.OrganizationDetails;
 import com.none.orgaappbackend.organization.application.repository.OrganizationRepository;
 import com.none.orgaappbackend.organization.application.service.OrganizationService;
