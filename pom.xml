@@ -16,8 +16,8 @@
 	<packaging>pom</packaging>
 	<properties>
 		<java.version>21</java.version>
-		<node.version>v18.18.2</node.version>
-		<npm.version>10.2.0</npm.version>
+		<node.version>v22.9.0</node.version>
+		<npm.version>10.8.3</npm.version>
 		<frontend-maven-plugin.version>1.12.1</frontend-maven-plugin.version>
 		<jsonwebtoken.version>0.11.5</jsonwebtoken.version>
 		<lombok.version>1.18.30</lombok.version>

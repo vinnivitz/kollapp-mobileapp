@@ -1,5 +1,5 @@
 <script lang="ts">
-	import './header.css';
+	import './header.pcss';
 	import Button from './Button.svelte';
 
 	interface Properties {

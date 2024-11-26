@@ -5,8 +5,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.none</groupId>
-	    <artifactId>orgaapp</artifactId>
-	    <version>0.0.1-SNAPSHOT</version>
+		<artifactId>orgaapp</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>orgaapp-frontend</artifactId>
 	<name>orgaapp-frontend</name>
@@ -44,21 +44,21 @@
 						</goals>
 					</execution>
 					<execution>
-						<id>npm install</id>
+						<id>install frontend dependencies</id>
 						<goals>
-							<goal>npm</goal>
+							<goal>npx</goal>
 						</goals>
 						<configuration>
-							<arguments>install --loglevel=error</arguments>
+							<arguments>pnpm install</arguments>
 						</configuration>
 					</execution>
 					<execution>
-						<id>npm run build</id>
+						<id>build frontend</id>
 						<goals>
-							<goal>npm</goal>
+							<goal>npx</goal>
 						</goals>
 						<configuration>
-							<arguments>run build -- --configuration=production</arguments>
+							<arguments>pnpm build</arguments>
 						</configuration>
 					</execution>
 				</executions>
