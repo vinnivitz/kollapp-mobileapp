@@ -124,7 +124,7 @@
 							<overwrite>true</overwrite>
 							<resources>
 								<resource>
-									<directory>../co2fzs-frontend/dist</directory>
+									<directory>../orgaapp-frontend/dist</directory>
 								</resource>
 							</resources>
 						</configuration>
