@@ -1,18 +1,17 @@
 import { get } from 'svelte/store';
 
+import type { LoginDto, RegisterDto, TokenDto } from '$lib/api/dto';
 import { RequestMethod } from '$lib/api/models';
-
 import {
 	customFetch,
 	getUrl,
-	handleResponseError,
-	handleValidationError,
-	handleValidationResponse,
+	getResponseError,
+	getValidationError,
+	getValidationResponse,
 	storeTokens
 } from '$lib/api/utils';
 import { t } from '$lib/locales';
 import type { ValidationResult } from '$lib/models';
-import type { LoginDto, RegisterDto, TokenDto } from '$lib/api/dto';
 import { userStore } from '$lib/store';
 
 const $t = get(t);
@@ -30,10 +29,10 @@ export async function register(model: RegisterDto): Promise<ValidationResult> {
 			method: RequestMethod.POST,
 			body: JSON.stringify(model)
 		});
-		return handleValidationResponse(response, $t('api.auth.register.message'));
+		return getValidationResponse(response, $t('api.auth.register.message'));
 	} catch (error) {
 		console.log('error', error);
-		handleResponseError(error);
+		getResponseError(error);
 		return { valid: false };
 	}
 }
@@ -55,11 +54,11 @@ export async function login(model: LoginDto): Promise<ValidationResult> {
 			await userStore.init();
 			return { valid: true };
 		} else {
-			return handleValidationError(response);
+			return getValidationError(response);
 		}
 	} catch (error) {
 		console.log('error', error);
-		handleResponseError(error);
+		getResponseError(error);
 		return { valid: false };
-	}	
+	}
 }

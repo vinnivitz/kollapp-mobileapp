@@ -1,22 +1,17 @@
-import { get as i18nGet } from 'svelte/store';
-
-import { type ResponseModel, type UserModel } from '$lib/api/models';
-import { customFetch, getUrl, handleDefaultResponse, handleResponseError } from '$lib/api/utils';
-import { t } from '$lib/locales';
-
-const $t = i18nGet(t);
+import { type ApiResponse, type UserModel } from '$lib/api/models';
+import { customFetch, getUrl, getApiResponse, getResponseError } from '$lib/api/utils';
 
 const ENDPOINT = 'user';
 
 /**
- * Get user data
- * @returns {Promise<ServerResponse<UserModel>>} user data
+ * Get user data when authorized
+ * @returns {Promise<ApiResponse<UserModel>>}
  */
-export async function get(silent?: boolean): Promise<ResponseModel<UserModel>> {
+export async function get(silent?: boolean): Promise<ApiResponse<UserModel>> {
 	try {
 		const response = await customFetch(getUrl(ENDPOINT));
-		return handleDefaultResponse<UserModel>(response, $t('api.user.get-user.message'), silent);
+		return getApiResponse<UserModel>(response, silent);
 	} catch (error) {
-		return handleResponseError<UserModel>(error, silent);
+		return getResponseError<UserModel>(error, silent);
 	}
 }

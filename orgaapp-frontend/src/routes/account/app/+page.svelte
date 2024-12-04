@@ -1,11 +1,12 @@
 <script lang="ts">
+	import { actionSheetController } from '@ionic/core';
+	import { arrowForward } from 'ionicons/icons';
+
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import { locale, t } from '$lib/locales';
 	import { Locale, PreferencesKey, Theme } from '$lib/models';
 	import { themeStore } from '$lib/store';
 	import { clickableElement, storeValue } from '$lib/utils';
-	import { actionSheetController, type ActionSheetOptions } from '@ionic/core';
-	import { arrowForward } from 'ionicons/icons';
 
 	async function toggleTheme(theme: Theme): Promise<void> {
 		theme = theme === Theme.DARK ? Theme.LIGHT : Theme.DARK;
@@ -18,7 +19,8 @@
 	}
 
 	async function changeLanguage(): Promise<void> {
-		const options: ActionSheetOptions = {
+		const actionsheet = await actionSheetController.create({
+			translucent: true,
 			header: $t('routes.account.app.language.action-sheet.title'),
 			buttons: [
 				{
@@ -30,8 +32,7 @@
 					handler: () => updateLocale(Locale.EN)
 				}
 			]
-		};
-		const actionsheet = await actionSheetController.create(options);
+		});
 
 		await actionsheet.present();
 	}

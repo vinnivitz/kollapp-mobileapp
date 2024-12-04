@@ -5,8 +5,8 @@ import type { LayoutLoad } from './$types';
 
 import { loadTranslations, locale, t } from '$lib/locales';
 import { AlertType } from '$lib/models';
-import { alertStore, userStore } from '$lib/store';
-import { determineLocale, navigateBack } from '$lib/utils';
+import { userStore } from '$lib/store';
+import { determineLocale, navigateBack, showAlert } from '$lib/utils';
 
 const $t = get(t);
 
@@ -23,7 +23,7 @@ export const load: LayoutLoad = async () => {
 		if (error instanceof Error) {
 			message = error.message;
 		}
-		alertStore.set({ type: AlertType.ERROR, message });
+		showAlert({ type: AlertType.ERROR, message });
 	}
 };
 

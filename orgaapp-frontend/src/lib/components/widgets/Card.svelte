@@ -9,9 +9,7 @@
 	}: { title?: string; subtitle?: string; children?: Snippet; color?: string } = $props();
 </script>
 
-<div>
-	
-</div>
+<div></div>
 <ion-card {color}>
 	{#if title || subtitle}
 		<ion-card-header>

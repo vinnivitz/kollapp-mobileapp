@@ -10,13 +10,14 @@ import ts from 'typescript-eslint';
 
 export default ts.config(
 	js.configs.recommended,
-	...ts.configs.recommended,
-	...sveltePlugin.configs['flat/recommended'],
+	ts.configs.recommended,
+	sveltePlugin.configs['flat/recommended'],
 	prettier,
-	...sveltePlugin.configs['flat/prettier'],
+	sveltePlugin.configs['flat/prettier'],
 	securityPlugin.configs.recommended,
-	...tailwindcssPlugin.configs['flat/recommended'],
+	tailwindcssPlugin.configs['flat/recommended'],
 	unicornPlugin.configs['flat/recommended'],
+	// { HTMLIonTabsElement: 'readonly' },
 	{
 		plugins: {
 			import: importPlugin
@@ -56,7 +57,8 @@ export default ts.config(
 		languageOptions: {
 			globals: {
 				...globals.browser,
-				...globals.node
+				...globals.node,
+				HTMLIonTabsElement: 'readonly'
 			}
 		}
 	},
@@ -70,6 +72,6 @@ export default ts.config(
 		}
 	},
 	{
-		ignores: ['build/', '.svelte-kit/', 'dist/', 'target', 'src/lib/paraglide']
+		ignores: ['build/', '.svelte-kit/', 'docs/', 'vite.config.ts.*']
 	}
 );

@@ -58,14 +58,19 @@
 					label={$t('routes.auth.login.form.input.password')}
 				></ion-input>
 			</ion-item>
-			<ion-button class="mt-3" expand="block" type="submit"
-				>{$t('routes.auth.login.form.submit')}</ion-button
-			>
+			<ion-button class="mt-3" expand="block" type="submit">
+				{$t('routes.auth.login.form.submit')}
+			</ion-button>
 		</form>
 		<Card>
-			<div use:clickableElement={() => goto(PageRoute.AUTH_REGISTER)}>
-				{$t('routes.auth.login.register.text')}
-				<span class="text-blue-600">{$t('routes.auth.login.register.link')}</span>
+			<div
+				class="flex justify-center gap-1"
+				use:clickableElement={() => goto(PageRoute.AUTH_REGISTER)}
+			>
+				<div>
+					{$t('routes.auth.login.register.text')}
+				</div>
+				<div class="text-blue-600">{$t('routes.auth.login.register.link')}</div>
 			</div>
 		</Card>
 	</Card>

@@ -1,4 +1,4 @@
-export type ResponseModel<T = unknown> = {
+export type ApiResponse<T = unknown> = {
 	status: number;
 	message?: string;
 	data?: T;
@@ -16,3 +16,9 @@ export enum RequestMethod {
 	PUT = 'PUT',
 	DELETE = 'DELETE'
 }
+
+export type ServerResponseBody<T> = {
+	message?: string;
+	data?: T;
+	validationField?: string;
+};

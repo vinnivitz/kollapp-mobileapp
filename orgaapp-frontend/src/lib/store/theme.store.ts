@@ -5,7 +5,7 @@ import { getStoredValue, storeValue } from '$lib/utils';
 
 async function initStore(): Promise<Theme> {
 	const value = await getStoredValue<Theme>(PreferencesKey.THEME);
-	const prefersDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+	const prefersDarkTheme = globalThis.matchMedia('(prefers-color-scheme: dark)').matches;
 	return value === Theme.DARK || (value !== Theme.LIGHT && prefersDarkTheme)
 		? Theme.DARK
 		: Theme.LIGHT;
@@ -22,7 +22,7 @@ function createStore(): Readable<Theme> & {
 	init: () => Promise<void>;
 	update: (theme: Theme) => Promise<void>;
 } {
-	const { subscribe, set } = writable<Theme>(undefined);
+	const { subscribe, set } = writable<Theme>();
 	async function init(): Promise<void> {
 		const initialTheme = await initStore();
 		await updateTheme(initialTheme);

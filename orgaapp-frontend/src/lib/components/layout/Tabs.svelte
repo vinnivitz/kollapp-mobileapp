@@ -8,7 +8,6 @@
 
 	let { tabs, children }: { tabs: TabConfig[]; children?: Snippet } = $props();
 
-	let ionTabBarElement: HTMLIonTabsElement;
 	let controller: HTMLIonTabsElement;
 	let currentTabName = $state($page.route.id ?? PageRoute.HOME);
 
@@ -20,7 +19,6 @@
 	});
 
 	onMount(async () => {
-		controller = ionTabBarElement;
 		await controller.select(currentTabName);
 	});
 
@@ -41,7 +39,7 @@
 	}
 </script>
 
-<ion-tabs bind:this={ionTabBarElement}>
+<ion-tabs bind:this={controller}>
 	{@render children?.()}
 
 	<ion-tab-bar slot="bottom">

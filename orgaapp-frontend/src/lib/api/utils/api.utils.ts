@@ -1,35 +1,32 @@
+import { Network } from '@capacitor/network';
 import { get } from 'svelte/store';
 
 import { PUBLIC_API_URL } from '$env/static/public';
 import type { TokenDto } from '$lib/api/dto';
-import type { UserModel } from '$lib/api/models';
-import { ContentType, type ResponseModel as ApiResponse } from '$lib/api/models';
+import {
+	ContentType,
+	RequestMethod,
+	type ApiResponse,
+	type ServerResponseBody,
+	type UserModel
+} from '$lib/api/models';
 import { t } from '$lib/locales';
 import {
 	AlertType,
 	PreferencesKey,
 	type ValidationResult as ValidationResponse
 } from '$lib/models';
-import { alertStore, userStore } from '$lib/store';
-import { determineLocale, getStoredValue, storeValue } from '$lib/utils';
+import { userStore } from '$lib/store';
+import { determineLocale, getStoredValue, showAlert, storeValue } from '$lib/utils';
 
 const $t = get(t);
 
 /**
- * Get api url based on `endpoint` and environment
- * @param endpoint relative endpoint
- * @returns {string} server url
- */
-export function getUrl(endpoint: string): string {
-	return `${PUBLIC_API_URL}/${endpoint}`;
-}
-
-/**
- * Custom fetch function with authentication and error handling
- * @param url url
- * @param auth authentication required
- * @param options fetch options
- * @returns {Promise<Response>} fetch response
+ * Custom fetch function with authentication and error handling.
+ * @param url Endpoint URL.
+ * @param auth Whether authentication is required.
+ * @param options Fetch options.
+ * @returns Fetch Response.
  */
 export async function customFetch(
 	url: string,
@@ -37,286 +34,247 @@ export async function customFetch(
 	options: RequestInit = {}
 ): Promise<Response> {
 	try {
+		const headers = new Headers(options.headers);
+
 		if (hasRequestBody(options)) {
-			options.headers = {
-				...options.headers,
-				'Content-Type': ContentType.JSON
-			};
+			headers.set('Content-Type', ContentType.JSON);
 		}
+
 		if (auth) {
 			const token = await getToken();
 			if (token) {
-				options.headers = {
-					...options.headers,
-					Authorization: `Bearer ${token}`
-				};
+				headers.set('Authorization', `Bearer ${token}`);
 			} else {
-				return unauthorizedResponse();
+				return createUnauthorizedResponse();
 			}
 		}
 
-		url = await getEnhancedUrl(url);
-		const response = await fetch(url, options);
+		const enhancedUrl = await getEnhancedUrl(url);
+		const response = await fetch(enhancedUrl, { ...options, headers });
 
-		if (isInternalServerErrorStatus(response.status)) {
-			return handleError(response);
+		if (StatusChecks.isInternalServerError(response.status)) {
+			return createErrorResponse(response);
 		}
 
-		if (navigator && !navigator.onLine) {
-			alertStore.set({ message: $t('api.offline'), type: AlertType.INFO });
+		const networkStatus = await Network.getStatus();
+		const isOnline = networkStatus?.connected;
+		const wasOnline = await getStoredValue<boolean>(PreferencesKey.ONLINE);
+
+		if (!isOnline && wasOnline) {
+			showAlert({ message: $t('api.offline'), type: AlertType.INFO });
 			await storeValue(PreferencesKey.ONLINE, false);
-			return handleError(new Error('Device is offline.'));
+			return createErrorResponse(new Error('Device is offline.'));
 		}
 
-		if ((await getStoredValue<boolean>(PreferencesKey.ONLINE)) === false) {
-			alertStore.set({ message: $t('api.online'), type: AlertType.INFO });
+		if (isOnline && !wasOnline) {
+			showAlert({ message: $t('api.online'), type: AlertType.INFO });
 			await storeValue(PreferencesKey.ONLINE, true);
 		}
+
 		return response;
 	} catch (error) {
-		return handleError(error);
+		return createErrorResponse(error);
 	}
 }
 
 /**
- * Returns `true` if user is authenticated based on stored tokens otherwise `false`
- * @returns {Promise<void>}
+ * Constructs the full API URL based on the endpoint.
+ * @param endpoint Relative endpoint path.
+ * @returns Full API URL as a string.
+ */
+export function getUrl(endpoint: string): string {
+	return `${PUBLIC_API_URL}/${endpoint}`;
+}
+
+/**
+ * Checks if the user is authenticated based on stored tokens.
+ * @returns True if authenticated; otherwise, false.
  */
 export async function isAuthenticated(): Promise<boolean> {
-	return !!(get(userStore) || (await getStoredValue<UserModel>(PreferencesKey.USER)));
+	const user = get(userStore) || (await getStoredValue<UserModel>(PreferencesKey.USER));
+	return Boolean(user);
 }
 
 /**
- * Store `accessToken` and `refreshToken` to preferences store
- * @param model token model
+ * Stores access and refresh tokens in the preferences store.
+ * @param model Token data transfer object.
  */
 export async function storeTokens(model: TokenDto): Promise<void> {
-	await storeValue(PreferencesKey.ACCESS_TOKEN, model.accessToken);
-	await storeValue(PreferencesKey.REFRESH_TOKEN, model.refreshToken);
+	await Promise.all([
+		storeValue(PreferencesKey.ACCESS_TOKEN, model.accessToken),
+		storeValue(PreferencesKey.REFRESH_TOKEN, model.refreshToken)
+	]);
 }
 
 /**
- * Handle fetch error
- * @param error error object
- * @returns {Promise<Response>} fetch response
+ * Processes the API response, showing alerts as necessary.
+ * @param response Fetch response.
+ * @param message Default message for alerts.
+ * @param silent If true, no alert is shown.
+ * @returns ApiResponse containing status, message, and optional data.
  */
-async function handleError(error: unknown): Promise<Response> {
+export async function getApiResponse<T>(
+	response: Response,
+	silent = false
+): Promise<ApiResponse<T>> {
+	let message = '';
+	let type = AlertType.INFO;
+	if (!response.ok) {
+		message = $t('api.error');
+		type = AlertType.ERROR;
+	}
+	const contentType = determineResponseContentType(response);
+	switch (contentType) {
+		case ContentType.TEXT: {
+			message = (await response.text()) ?? message;
+			if (!silent && message) {
+				showAlert({ message, type });
+			}
+			return { status: response.status, message };
+		}
+		case ContentType.JSON: {
+			const body = (await response.json()) as ServerResponseBody<T>;
+			const message = body.message ?? '';
+			if (!silent) {
+				showAlert({ message, type });
+			}
+			return {
+				status: response.status,
+				message: body.message,
+				data: body.data,
+				validationField: body.validationField
+			};
+		}
+		default: {
+			if (!silent) {
+				showAlert({ message, type });
+			}
+			return { status: response.status, message };
+		}
+	}
+}
+
+/**
+ * Processes the validation response, showing alerts as necessary.
+ * @param response Fetch response.
+ * @param message Default message for alerts.
+ * @param silent If true, no alert is shown.
+ * @returns ValidationResult indicating validity and any errors.
+ */
+export async function getValidationResponse(
+	response: Response,
+	message: string = $t('api.error'),
+	silent = false
+): Promise<ValidationResponse> {
+	if (response.ok) {
+		if (message && !silent) {
+			showAlert({ message, type: AlertType.INFO });
+		}
+		return { valid: true };
+	}
+	return getValidationError(response);
+}
+
+/**
+ * Processes validation errors by showing alerts as necessary and returning validation response.
+ * @param response Fetch response.
+ * @returns {Promise<ValidationResult>}
+ */
+export async function getValidationError(response: Response): Promise<ValidationResponse> {
+	try {
+		const result = (await response.json()) as ApiResponse;
+		const message = result.message || $t('api.error');
+
+		if (result.validationField) {
+			return {
+				valid: false,
+				errors: [{ message, field: result.validationField }]
+			};
+		}
+
+		showAlert({ message, type: AlertType.ERROR });
+		return { valid: false };
+	} catch {
+		showAlert({ message: $t('api.error'), type: AlertType.ERROR });
+		return { valid: false };
+	}
+}
+
+/**
+ * Processes response errors, showing alerts as necessary.
+ * @param error error object
+ * @param silent if true, no alert is shown
+ * @returns {ApiResponse<T>}
+ */
+export function getResponseError<T>(error: unknown, silent = false): ApiResponse<T> {
 	let message = $t('api.error');
 
 	if (error instanceof Error) {
 		message = error.message;
-	} else if (error instanceof Response) {
-		const data = await error.json();
-		message = data?.message || error.statusText;
 	}
-	return new Response(JSON.stringify({ message }), {
-		status: 503,
-		statusText: 'Service Unavailable',
-		headers: { 'Content-Type': ContentType.JSON }
-	});
+
+	if (!silent) {
+		showAlert({ message, type: AlertType.ERROR });
+	}
+
+	return { status: 501, message };
 }
 
 /**
- * Get language enhanced URL
- * @param url url
- * @returns {Promise<string>} language enhanced URL
+ * Checks if http status code is in the given range.
  */
+export const StatusChecks = {
+	isOK: (status: number): boolean => status >= 200 && status < 300,
+	isBadRequest: (status: number): boolean => status === 400,
+	isUnauthorized: (status: number): boolean => status === 401,
+	isInternalServerError: (status: number): boolean => status >= 500 && status < 600
+};
+
+function hasRequestBody(options: RequestInit): boolean {
+	const method = options.method?.toUpperCase();
+	return (
+		(method === RequestMethod.POST || method === RequestMethod.PUT) &&
+		typeof options.body === 'string'
+	);
+}
+
 async function getEnhancedUrl(url: string): Promise<string> {
 	const locale = await determineLocale();
 	const separator = url.includes('?') ? '&' : '?';
 	return `${url}${separator}locale=${locale}`;
 }
 
-/**
- * Get access token from storage or new token if not available
- * @returns {Promise<string | null>} access token
- */
 async function getToken(): Promise<string | undefined> {
-	return await getStoredValue<string>(PreferencesKey.ACCESS_TOKEN);
+	return getStoredValue<string>(PreferencesKey.ACCESS_TOKEN);
 }
 
-/**
- * Check if request has a request body
- * @param options fetch options
- * @returns {boolean} is standard POST or PUT request
- */
-function hasRequestBody(options: RequestInit): boolean {
-	return (
-		(options.method === 'POST' || options.method === 'PUT') && typeof options.body === 'string'
-	);
-}
-
-/**
- * Creates an unauthorized response and returns it
- * @returns {Response} unauthorized response
- */
-function unauthorizedResponse(): Response {
-	return new Response(JSON.stringify({ statusCode: 401, message: 'Unauthorized' }), {
+function createUnauthorizedResponse(): Response {
+	return new Response(JSON.stringify({ message: 'Unauthorized' }), {
 		status: 401,
 		statusText: 'Unauthorized',
 		headers: { 'Content-Type': ContentType.JSON }
 	});
 }
 
-/**
- * Handle fetch response by showing alert and returning server response
- * @param response fetch response
- * @param message alert message
- * @param silent if true, do not show alert
- * @returns {Promise<ApiResponse>} server response
- */
-export async function handleDefaultResponse<T>(
-	response: Response,
-	message?: string,
-	silent?: boolean
-): Promise<ApiResponse<T>> {
-	if (response.ok) {
-		if (message && !silent) {
-			alertStore.set({ message, type: AlertType.INFO });
-		}
-		return getApiResponse<T>(response);
-	} else {
-		return handleNotOkResponse<T>(response, silent);
-	}
-}
-
-/**
- * Handle validation response by showing alert and returning validation result
- * @param response fetch response
- * @param message alert message
- * @param silent if true, do not show alert
- * @returns {Promise<ValidationResponse>} validation result
- */
-export async function handleValidationResponse(
-	response: Response,
-	message: string,
-	silent?: boolean
-): Promise<ValidationResponse> {
-	if (response.ok) {
-		if (message && !silent) {
-			alertStore.set({ message, type: AlertType.INFO });
-		}
-		return { valid: true };
-	} else {
-		return handleValidationError(response);
-	}
-}
-
-/**
- * Handle not OK response by showing alert and returning server response
- * @param response fetch response
- * @param silent if true, do not show alert
- * @returns {Promise<ApiResponse>} server response
- */
-export async function handleNotOkResponse<T>(
-	response: Response,
-	silent?: boolean
-): Promise<ApiResponse<T>> {
-	const result = (await response.json()) as ApiResponse<T>;
-	if (!silent) {
-		alertStore.set({ message: result.message ?? $t('api.error'), type: AlertType.ERROR });
-	}
-	return result;
-}
-
-/**
- * Handle validation error by showing alert and returning validation result
- * @param response fetch response
- * @returns {Promise<ValidationResponse>} validation result
- */
-export async function handleValidationError(response: Response): Promise<ValidationResponse> {
-	const result = (await response.json()) as ApiResponse;
-	const message = result.message ?? $t('api.error');
-	if (result.validationField) {
-		return {
-			valid: false,
-			errors: [{ message, field: result.validationField }]
-		};
-	} else {
-		alertStore.set({ message, type: AlertType.ERROR });
-		return { valid: false };
-	}
-}
-
-/**
- * Handle response error by showing alert and returning server response
- * @param error error object
- * @param silent if true, do not show alert
- * @returns {ApiResponse} server response
- */
-export function handleResponseError<T>(error: unknown, silent = false): ApiResponse<T> {
+async function createErrorResponse(error: unknown): Promise<Response> {
 	let message = $t('api.error');
+
 	if (error instanceof Error) {
 		message = error.message;
-	}
-	if (!silent) {
-		alertStore.set({ message, type: AlertType.ERROR });
-	}
-	return { status: 501, message };
-}
-
-/**
- * Get api response based on content type
- * @param response fetch response
- * @param defaultMessage default message
- * @returns {Promise<ApiResponse>} server response
- */
-export async function getApiResponse<T>(
-	response: Response,
-	defaultMessage?: string
-): Promise<ApiResponse<T>> {
-	let message;
-	switch (determineResponseContentType(response)) {
-		case ContentType.JSON: {
-			message = await response.json();
-			break;
-		}
-		case ContentType.TEXT: {
-			message = await response.text();
-			break;
-		}
-		default: {
-			message = defaultMessage ?? '';
-			break;
+	} else if (error instanceof Response) {
+		try {
+			const data = await error.json();
+			message = data?.message || error.statusText;
+		} catch {
+			message = error.statusText || 'Unknown error';
 		}
 	}
-	return { status: response.status, message };
-}
 
-/**
- * Check if status code is OK
- * @param status status code
- * @returns {boolean} is OK status
- */
-export function isOKStatus(status: number): boolean {
-	return status >= 200 && status < 300;
-}
-
-/**
- * Check if status code is bad request
- * @param status status code
- * @returns {boolean} is bad request status
- */
-export function isBadRequestStatus(status: number): boolean {
-	return status === 400;
-}
-
-/**
- * Check if status code is unauthorized
- * @param status status code
- * @returns {boolean} is unauthorized status
- */
-export function isUnauthorizedStatus(status: number): boolean {
-	return status === 401;
-}
-
-/**
- * Check if status code is internal server error
- * @param status status code
- * @returns {boolean} is internal server error status
- */
-export function isInternalServerErrorStatus(status: number): boolean {
-	return status === 500;
+	return new Response(JSON.stringify({ message }), {
+		status: 501,
+		statusText: 'Internal Server Error',
+		headers: { 'Content-Type': ContentType.JSON }
+	});
 }
 
 function determineResponseContentType(response: Response): ContentType | undefined {
