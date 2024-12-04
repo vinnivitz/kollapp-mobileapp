@@ -1,5 +1,8 @@
 export enum PageRoute {
 	HOME = '/',
-	FINANCES = 'finances',
-	ACCOUNT = 'account'
+	FINANCES = '/finances',
+	ACCOUNT = '/account',
+	ACCOUNT_APP = '/account/app',
+	AUTH_LOGIN = '/auth/login',
+	AUTH_REGISTER = '/auth/register',
 }

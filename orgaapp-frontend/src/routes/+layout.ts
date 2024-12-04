@@ -1,1 +1,44 @@
+import { App } from '@capacitor/app';
+import { get } from 'svelte/store';
+
+import type { LayoutLoad } from './$types';
+
+import { loadTranslations, locale, t } from '$lib/locales';
+import { AlertType } from '$lib/models';
+import { alertStore, userStore } from '$lib/store';
+import { determineLocale, navigateBack } from '$lib/utils';
+
+const $t = get(t);
+
 export const ssr = false;
+
+export const load: LayoutLoad = async () => {
+	try {
+		await loadTranslations(await determineLocale());
+		locale.set(await determineLocale());
+		await handleAppEvents();
+		await userStore.init();
+	} catch (error) {
+		let message = $t('api.error');
+		if (error instanceof Error) {
+			message = error.message;
+		}
+		alertStore.set({ type: AlertType.ERROR, message });
+	}
+};
+
+async function handleAppEvents(): Promise<void> {
+	App.addListener('backButton', async () => await navigateBack());
+}
+
+// Workaround to suppress false positive error message from ion-tab
+(function () {
+	const originalConsoleError = console.error;
+	console.error = function (...arguments_) {
+		if (arguments_.length === 1 && arguments_[0] === 'tab with id: "undefined" does not exist') {
+			return;
+		}
+
+		originalConsoleError.apply(console, arguments_);
+	};
+})();

@@ -3,3 +3,18 @@
 @import 'tailwindcss/utilities';
 
 @import 'theme.pcss';
+
+:root {
+	ion-list {
+		padding-top: 0;
+		padding-bottom: 0;
+
+		ion-item {
+			--padding-start: 0;
+
+			:first-child {
+				padding-left: 16px;
+			}
+		}
+	}
+}

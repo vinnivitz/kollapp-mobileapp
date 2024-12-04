@@ -1,30 +1,34 @@
 <script lang="ts">
 	import '../app.pcss';
 	import 'ionic-svelte/components/all';
-	import { ParaglideJS } from '@inlang/paraglide-sveltekit';
 	import { setupIonicBase } from 'ionic-svelte';
-	// @ts-ignore
-	import IonTabs from 'ionic-svelte/components/IonTabs.svelte';
+	import { home, cash, person } from 'ionicons/icons';
 
-	import { i18n } from '$lib/i18n';
-	import { tabs } from '$lib/utils';
-
+	import Tabs from '$lib/components/layout/Tabs.svelte';
+	import { t } from '$lib/locales';
+	import { PageRoute, type TabConfig } from '$lib/models';
 
 	let { children } = $props();
 
-	setupIonicBase({
-		animated: false
-	});
+	setupIonicBase();
+
+	export const tabs: TabConfig[] = [
+		{ label: $t('common.page-routes.home'), icon: home, tab: PageRoute.HOME },
+		{
+			label: $t('common.page-routes.finances'),
+			icon: cash,
+			tab: PageRoute.FINANCES
+		},
+		{ label: $t('common.page-routes.account'), icon: person, tab: PageRoute.ACCOUNT }
+	];
 </script>
 
 <svelte:head>
-	<title>Orgaapp</title>
+	<title>Kollapp - Die Kollektiv App</title>
 </svelte:head>
 
-<ParaglideJS {i18n}>
-	<ion-app>
-		<IonTabs {tabs}>
-			{@render children()}
-		</IonTabs>
-	</ion-app>
-</ParaglideJS>
+<ion-app>
+	<Tabs {tabs}>
+		{@render children()}
+	</Tabs>
+</ion-app>

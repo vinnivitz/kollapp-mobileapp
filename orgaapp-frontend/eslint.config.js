@@ -2,7 +2,6 @@ import js from '@eslint/js';
 import prettier from 'eslint-config-prettier';
 import importPlugin from 'eslint-plugin-import';
 import securityPlugin from 'eslint-plugin-security';
-import sonarjsPlugin from 'eslint-plugin-sonarjs';
 import sveltePlugin from 'eslint-plugin-svelte';
 import tailwindcssPlugin from 'eslint-plugin-tailwindcss';
 import unicornPlugin from 'eslint-plugin-unicorn';
@@ -16,13 +15,11 @@ export default ts.config(
 	prettier,
 	...sveltePlugin.configs['flat/prettier'],
 	securityPlugin.configs.recommended,
-	// sonarjsPlugin.configs.recommended,
 	...tailwindcssPlugin.configs['flat/recommended'],
 	unicornPlugin.configs['flat/recommended'],
 	{
 		plugins: {
-			import: importPlugin,
-			sonarjsPlugin
+			import: importPlugin
 		},
 		settings: {
 			'import/parsers': {

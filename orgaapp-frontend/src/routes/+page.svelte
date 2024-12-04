@@ -1,10 +1,9 @@
-<script>
-	import IonCard from '$lib/components/ion/IonCard.svelte';
-	import IonLayout from '$lib/components/ion/IonLayout.svelte';
-	import { PageRoute } from '$lib/models';
-	import * as m from '$lib/paraglide/messages';
+<script lang="ts">
+	import IonLayout from '$lib/components/layout/Layout.svelte';
+	import IonCard from '$lib/components/widgets/Card.svelte';
+	import { t } from '$lib/locales';
 </script>
 
-<IonLayout tab={PageRoute.HOME} title="Oragaapp">
-	<IonCard title={m.fuzzy_spry_firefox_sail()}>This is an overview page.</IonCard>
+<IonLayout title="Oragaapp">
+	<IonCard title={$t('routes.home.title')}>This is an overview page.</IonCard>
 </IonLayout>

@@ -12,6 +12,7 @@ target
 /orgaapp-frontend/.svelte-kit
 /orgaapp-frontend/build
 /orgaapp-frontend/dist
+/orgaapp-frontend/docs
 
 # OS
 /orgaapp-frontend/.DS_Store

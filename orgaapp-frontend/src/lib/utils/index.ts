@@ -1,2 +1,4 @@
-export * from './routes.utils';
+export * from './routes.util';
 export * from './ui.util';
+export * from './preferences.util';
+export * from './locale.util';
