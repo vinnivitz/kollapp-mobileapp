@@ -10,17 +10,10 @@
 		"lint": "prettier --check . && eslint .",
 		"test:unit": "vitest",
 		"test:e2e": "playwright test",
-		"test": "pnpm test:unit -- --run && pnpm test:e2e",
-		"typedoc": "typedoc --options typedoc.config.js",
-		"prepare": "husky"
+		"test": "npm run test:unit -- --run && npm run test:e2e",
+		"typedoc": "typedoc & live-server ./docs --watch --silent --no-browser --port=1234 & chokidar 'src/lib/utils' -c 'typedoc && touch ./docs/.reload' --silent"
 	},
 	"type": "module",
-	"exports": {
-		".": {
-			"types": "./dist/index.d.ts",
-			"svelte": "./dist/index.js"
-		}
-	},
 	"devDependencies": {
 		"@playwright/test": "^1.45.3",
 		"@sveltejs/adapter-static": "^3.0.6",
@@ -28,6 +21,7 @@
 		"@sveltejs/package": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^4.0.0",
 		"autoprefixer": "^10.4.20",
+		"chokidar-cli": "^3.0.0",
 		"eslint": "^9.14.0",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-import": "^2.31.0",
@@ -37,6 +31,7 @@
 		"eslint-plugin-unicorn": "^56.0.1",
 		"globals": "^15.0.0",
 		"husky": "^9.1.7",
+		"live-server": "^1.2.2",
 		"prettier": "^3.3.2",
 		"prettier-plugin-svelte": "^3.2.6",
 		"prettier-plugin-tailwindcss": "^0.6.5",

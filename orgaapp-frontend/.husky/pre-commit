@@ -1,1 +1,1 @@
-pnpm check && pnpm lint
+npm run check && npm run lint

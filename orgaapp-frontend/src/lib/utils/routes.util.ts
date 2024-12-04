@@ -3,6 +3,7 @@ import { get } from 'svelte/store';
 import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
 import { page } from '$app/stores';
+import { PageRoute } from '$lib/models';
 
 /**
  * Navigates back in the browser history if history is present otherwise one hirarchy up.
@@ -30,5 +31,5 @@ export async function navigateBack(): Promise<void> {
  * @returns {string} the current path
  */
 function getPath(): string {
-	return browser ? get(page).url.pathname : '/';
+	return browser ? get(page).url.pathname : PageRoute.HOME;
 }

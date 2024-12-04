@@ -8,6 +8,12 @@ import { type ValidationResult } from '$lib/models';
 
 const $t = get(t);
 
+/**
+ * Creates a clickable element with a ripple effect
+ * @param node node to attach the click event to
+ * @param callback callback to execute on click
+ * @returns {destroy} function to remove the event listener
+ */
 export function clickableElement<T>(
 	node: HTMLElement,
 	callback: (value?: Event) => T | Promise<T>
@@ -29,9 +35,14 @@ export function clickableElement<T>(
 	};
 }
 
-export const ionFormActions = writable<FormActions>();
-
+/**
+ * Creates a custom form with validation and feedback
+ * @param node form element
+ * @param data form data
+ * @returns {destroy} function to remove the event listeners
+ */
 export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy(): void } {
+	const ionFormActions = writable<FormActions>();
 	let dirty = false;
 	const inputs = [...node.querySelectorAll('ion-input')];
 	const customInputs = [...node.querySelectorAll('[data-name]')] as HTMLElement[];

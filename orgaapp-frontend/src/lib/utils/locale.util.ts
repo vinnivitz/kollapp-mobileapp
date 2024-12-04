@@ -3,7 +3,7 @@ import { getStoredValue } from '$lib/utils';
 
 /**
  * Determines the current locale and returns it
- * @returns {Promise<Locale>} locale
+ * @returns {Promise<Locale>}
  */
 export async function determineLocale(): Promise<Locale> {
 	return (
