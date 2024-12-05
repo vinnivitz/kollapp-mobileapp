@@ -1,6 +1,7 @@
-import { t } from '$lib/locales';
 import { get } from 'svelte/store';
 import { ObjectSchema, type AnyObject, object, string } from 'yup';
+
+import { t } from '$lib/locales';
 
 export type EmailDto = {
 	email: string;

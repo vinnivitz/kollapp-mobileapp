@@ -2,12 +2,12 @@
 	import { loadingController } from 'ionic-svelte';
 
 	import * as api from '$lib/api';
+	import { emailSchema, type EmailDto } from '$lib/api/dto/email.dto';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
 	import { t } from '$lib/locales';
 	import { type ValidationResult, type FormActions, type FormConfig, Form } from '$lib/models';
 	import { customForm } from '$lib/utils';
-	import { emailSchema, type EmailDto } from '$lib/api/dto/email.dto';
 
 	const model = emailSchema().cast({}) as EmailDto;
 	let validationResult: ValidationResult;

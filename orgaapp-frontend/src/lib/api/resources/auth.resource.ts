@@ -1,5 +1,7 @@
 import { get } from 'svelte/store';
 
+import type { EmailDto } from '../dto/email.dto';
+
 import type { LoginDto, RegisterDto, TokenDto } from '$lib/api/dto';
 import { RequestMethod } from '$lib/api/models';
 import {
@@ -13,7 +15,6 @@ import {
 import { t } from '$lib/locales';
 import type { ValidationResult } from '$lib/models';
 import { userStore } from '$lib/store';
-import type { EmailDto } from '../dto/email.dto';
 
 const $t = get(t);
 

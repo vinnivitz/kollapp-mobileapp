@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { t } from '$lib/locales';
 
+	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models';
 	import { clickableElement, navigateBack } from '$lib/utils';
 

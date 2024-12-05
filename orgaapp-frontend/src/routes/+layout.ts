@@ -1,13 +1,14 @@
 import { App, type URLOpenListenerEvent } from '@capacitor/app';
 import { get } from 'svelte/store';
 
+import { goto } from '$app/navigation';
+
 import type { LayoutLoad } from './$types';
 
 import { loadTranslations, locale, t } from '$lib/locales';
 import { AlertType } from '$lib/models';
 import { userStore } from '$lib/store';
 import { determineLocale, navigateBack, showAlert } from '$lib/utils';
-import { goto } from '$app/navigation';
 
 const $t = get(t);
 
