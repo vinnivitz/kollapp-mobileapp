@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { loadingController } from 'ionic-svelte';
 
-	import * as api from '$lib/api';
+	import { apiResources } from '$lib/api';
 	import { emailSchema, type EmailDto } from '$lib/api/dto/email.dto';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
@@ -26,7 +26,7 @@
 		if (validationResult.valid) {
 			const loading = await loadingController.create({});
 			await loading.present();
-			const validationResult = await api.auth.requestPasswordReset(model);
+			const validationResult = await apiResources.auth.requestPasswordReset(model);
 			await loading.dismiss();
 			if (validationResult.valid) {
 				actions.resetModel();

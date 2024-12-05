@@ -47,8 +47,7 @@
 			"reset-password": {
 				"title": "Reset password",
 				"card": {
-					"title": "Enter your email",
-					"subtitle": "Enter your email to get a reset link"
+					"title": "Enter your email"
 				},
 				"form": {
 					"email": "Email",
@@ -193,9 +192,7 @@
 		"offline": "You are offline",
 		"online": "You are online",
 		"auth": {
-			"register": {
-				"message": "Check your emails to confirm your registration!"
-			},
+			"register": {},
 			"login": {}
 		}
 	},

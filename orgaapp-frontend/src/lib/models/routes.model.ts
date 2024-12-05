@@ -1,3 +1,6 @@
+/**
+ * Enum for all the routes in the application
+ */
 export enum PageRoute {
 	HOME = '/',
 	FINANCES = '/finances',

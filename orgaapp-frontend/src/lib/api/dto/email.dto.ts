@@ -3,10 +3,17 @@ import { ObjectSchema, type AnyObject, object, string } from 'yup';
 
 import { t } from '$lib/locales';
 
+/**
+ * Email DTO for email verification.
+ */
 export type EmailDto = {
 	email: string;
 };
 
+/**
+ * Email schema for email verification.
+ * @returns {ObjectSchema<AnyObject, EmailDto>}
+ */
 export const emailSchema = (): ObjectSchema<AnyObject, EmailDto> => {
 	const $t = get(t);
 	return object<EmailDto>({

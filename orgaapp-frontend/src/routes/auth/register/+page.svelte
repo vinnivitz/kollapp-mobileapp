@@ -3,7 +3,7 @@
 
 	import { goto } from '$app/navigation';
 
-	import * as api from '$lib/api';
+	import { apiResources } from '$lib/api';
 	import { registerSchema, type RegisterDto } from '$lib/api/dto';
 	import IonLayout from '$lib/components/layout/Layout.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
@@ -40,7 +40,7 @@
 		if (validationResult.valid) {
 			const loading = await loadingController.create({});
 			await loading.present();
-			const validationResult = await api.auth.register(model);
+			const validationResult = await apiResources.auth.register(model);
 			await loading.dismiss();
 			if (validationResult.valid) {
 				actions.resetModel();

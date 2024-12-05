@@ -1,5 +1,3 @@
-import { get } from 'svelte/store';
-
 import type { EmailDto } from '../dto/email.dto';
 
 import type { LoginDto, RegisterDto, TokenDto } from '$lib/api/dto';
@@ -12,11 +10,8 @@ import {
 	getValidationResponse,
 	storeTokens
 } from '$lib/api/utils';
-import { t } from '$lib/locales';
 import type { ValidationResult } from '$lib/models';
 import { userStore } from '$lib/store';
-
-const $t = get(t);
 
 const ENDPOINT = 'auth';
 
@@ -31,7 +26,7 @@ export async function register(model: RegisterDto): Promise<ValidationResult> {
 			method: RequestMethod.POST,
 			body: JSON.stringify(model)
 		});
-		return getValidationResponse(response, $t('api.auth.register.message'));
+		return getValidationResponse(response);
 	} catch (error) {
 		console.log('error', error);
 		getResponseError(error);

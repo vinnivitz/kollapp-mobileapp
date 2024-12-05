@@ -3,7 +3,7 @@
 
 	import { goto } from '$app/navigation';
 
-	import * as api from '$lib/api';
+	import { apiResources } from '$lib/api';
 	import { loginSchema, type LoginDto } from '$lib/api/dto';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
@@ -34,7 +34,7 @@
 		if (validationResult.valid) {
 			const loading = await loadingController.create({});
 			await loading.present();
-			const validationResult = await api.auth.login(model);
+			const validationResult = await apiResources.auth.login(model);
 			await loading.dismiss();
 			if (validationResult.valid) {
 				actions.resetModel();

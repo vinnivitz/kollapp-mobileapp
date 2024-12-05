@@ -1,2 +1,1 @@
-export * as auth from './resources/auth.resource';
-export * as user from './resources/user.resource';
+export * as apiResources from './resources';

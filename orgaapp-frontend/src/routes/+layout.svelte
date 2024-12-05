@@ -24,7 +24,9 @@
 
 	setupIonicBase();
 
-	onMount(async () => await defineCustomElements(globalThis as unknown as Window));
+	onMount(async () => {
+		await defineCustomElements(globalThis as unknown as Window);
+	});
 </script>
 
 <svelte:head>

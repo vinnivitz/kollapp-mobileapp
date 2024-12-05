@@ -11,7 +11,7 @@
 		"test:unit": "vitest",
 		"test:e2e": "playwright test",
 		"test": "npm run test:unit -- --run && npm run test:e2e",
-		"typedoc": "typedoc & live-server ./docs --watch --silent --no-browser --port=1234 & chokidar 'src/lib/utils' -c 'typedoc && touch ./docs/.reload' --silent",
+		"typedoc": "typedoc & live-server ./docs --watch --silent --no-browser --port=1234 & chokidar 'src/lib' -c 'typedoc' --silent",
 		"build-android": "export CAPACITOR_ANDROID_STUDIO_PATH=/usr/bin/android-studio && npm run build && cap sync && cap open android"
 	},
 	"type": "module",

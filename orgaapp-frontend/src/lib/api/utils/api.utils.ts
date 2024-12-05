@@ -157,16 +157,16 @@ export async function getApiResponse<T>(
 /**
  * Processes the validation response, showing alerts as necessary.
  * @param response Fetch response.
- * @param message Default message for alerts.
  * @param silent If true, no alert is shown.
  * @returns ValidationResult indicating validity and any errors.
  */
 export async function getValidationResponse(
 	response: Response,
-	message: string = $t('api.error'),
 	silent = false
 ): Promise<ValidationResponse> {
 	if (response.ok) {
+		const body = (await response.json()) as ServerResponseBody;
+		const message = body?.message;
 		if (message && !silent) {
 			showAlert({ message, type: AlertType.INFO });
 		}

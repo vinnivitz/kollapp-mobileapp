@@ -38,4 +38,7 @@ function createStore(): Readable<Theme> & {
 	};
 }
 
+/**
+ * Theme store for handling the current color scheme of the application.
+ */
 export const themeStore = createStore();

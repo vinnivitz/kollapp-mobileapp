@@ -57,9 +57,7 @@
 		"online": "Du bist online",
 		"auth": {
 			"login": {},
-			"register": {
-				"message": "Überprüfe deine E-Mails, um deine Registrierung zu bestätigen!"
-			}
+			"register": {}
 		}
 	},
 	"common": {
@@ -172,7 +170,6 @@
 			},
 			"reset-password": {
 				"card": {
-					"subtitle": "Geben Sie Ihre E-Mail-Adresse ein, um einen Link zum Zurücksetzen zu erhalten",
 					"title": "Gib deine E-Mail ein"
 				},
 				"form": {

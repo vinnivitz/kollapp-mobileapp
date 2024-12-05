@@ -3,11 +3,18 @@ import { ObjectSchema, type AnyObject, object, string } from 'yup';
 
 import { t } from '$lib/locales';
 
+/**
+ * Login DTO for user login.
+ */
 export type LoginDto = {
 	username: string;
 	password: string;
 };
 
+/**
+ * Login schema for user login.
+ * @returns {ObjectSchema<AnyObject, LoginDto>}
+ */
 export const loginSchema = (): ObjectSchema<AnyObject, LoginDto> => {
 	const $t = get(t);
 	return object<LoginDto>({
