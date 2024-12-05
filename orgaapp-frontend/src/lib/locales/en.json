@@ -1,7 +1,11 @@
 {
 	"routes": {
 		"home": {
-			"title": "Welcome to Kollapp!"
+			"title": "Kollapp",
+			"card": {
+				"title": "Welcome to Kollapp",
+				"content": "The app for all the collectives out there"
+			}
 		},
 		"auth": {
 			"login": {
@@ -9,7 +13,6 @@
 				"form": {
 					"title": "Log in to Kollapp",
 					"input": {
-						"email": "Email",
 						"password": "Password",
 						"username": "Username"
 					},
@@ -56,7 +59,6 @@
 				"language": {
 					"action-sheet": {
 						"title": "Change language",
-						"german": "German",
 						"buttons": {
 							"german": "German",
 							"english": "English"
@@ -87,11 +89,7 @@
 			"account": "Account",
 			"home": "Home"
 		},
-		"tabs": {
-			"home": "Home",
-			"finances": "Finances",
-			"account": "Account"
-		}
+		"tabs": {}
 	},
 	"components": {
 		"widgets": {
@@ -125,12 +123,10 @@
 							"required": "Password is required"
 						},
 						"confirm-password": {
-							"on-of": "Must match password",
 							"no-match": "Must match the password"
 						}
 					}
-				},
-				"message": "Check your emails to confirm your registration!"
+				}
 			},
 			"login": {
 				"schema": {
@@ -151,9 +147,7 @@
 			}
 		},
 		"user": {
-			"get-user": {
-				"message": "User received"
-			}
+			"get-user": {}
 		},
 		"error": "An error occurred.",
 		"offline": "You are offline",
@@ -162,9 +156,7 @@
 			"register": {
 				"message": "Check your emails to confirm your registration!"
 			},
-			"login": {
-				"message": "Logged in successfully"
-			}
+			"login": {}
 		}
 	},
 	"utils": {

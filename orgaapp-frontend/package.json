@@ -11,10 +11,23 @@
 		"test:unit": "vitest",
 		"test:e2e": "playwright test",
 		"test": "npm run test:unit -- --run && npm run test:e2e",
-		"typedoc": "typedoc & live-server ./docs --watch --silent --no-browser --port=1234 & chokidar 'src/lib/utils' -c 'typedoc && touch ./docs/.reload' --silent"
+		"typedoc": "typedoc & live-server ./docs --watch --silent --no-browser --port=1234 & chokidar 'src/lib/utils' -c 'typedoc && touch ./docs/.reload' --silent",
+		"build-android": "export CAPACITOR_ANDROID_STUDIO_PATH=/usr/bin/android-studio && npm run build && cap sync && cap open android"
 	},
 	"type": "module",
+	"overrides": {
+		"@ionic/core/components": {
+			"type": "module"
+		},
+		"@ionic/core": {
+			"type": "module"
+		}
+	},
 	"devDependencies": {
+		"@capacitor/android": "^6.2.0",
+		"@capacitor/assets": "^3.0.5",
+		"@capacitor/cli": "^6.2.0",
+		"@capacitor/core": "^6.2.0",
 		"@playwright/test": "^1.45.3",
 		"@sveltejs/adapter-static": "^3.0.6",
 		"@sveltejs/kit": "^2.0.0",
@@ -37,7 +50,6 @@
 		"prettier-plugin-tailwindcss": "^0.6.5",
 		"svelte": "^5.0.0",
 		"svelte-check": "^4.0.0",
-		"tailwindcss": "^3.4.9",
 		"typedoc": "^0.27.2",
 		"typescript": "^5.6.3",
 		"typescript-eslint": "^8.0.0",
@@ -51,6 +63,7 @@
 		"@capacitor/preferences": "^6.0.3",
 		"@ionic/core": "^8.4.1",
 		"@ionic/pwa-elements": "^3.3.0",
+		"tailwindcss": "^3.4.15",
 		"@tailwindcss/typography": "^0.5.15",
 		"@types/node": "^22.10.1",
 		"ionic-svelte": "^0.5.85",

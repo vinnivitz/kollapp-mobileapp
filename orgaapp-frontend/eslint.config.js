@@ -72,6 +72,18 @@ export default ts.config(
 		}
 	},
 	{
-		ignores: ['build/', '.svelte-kit/', 'docs/', 'vite.config.ts.*']
+		ignores: [
+			'build/',
+			'.svelte-kit/',
+			'docs/',
+			'assets/',
+			'android/',
+			'icons/',
+			'node/',
+			'node_modules/',
+			'test-results/',
+			'.env',
+			'vite.config.ts.*'
+		]
 	}
 );

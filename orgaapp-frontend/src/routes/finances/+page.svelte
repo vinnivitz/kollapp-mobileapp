@@ -4,6 +4,6 @@
 	import { t } from '$lib/locales';
 </script>
 
-<IonLayout title="Oragaapp">
-	<Card title={$t('routes.finances.title')} subtitle={$t('routes.finances.subtitle')}></Card>
+<IonLayout title={$t('routes.finances.title')}>
+	<Card title={$t('routes.finances.title')}>{$t('routes.finances.subtitle')}</Card>
 </IonLayout>

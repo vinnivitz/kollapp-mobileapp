@@ -3,11 +3,9 @@
 		"error": "Es ist ein Fehler aufgetreten.",
 		"dto": {
 			"register": {
-				"message": "Überprüfen Sie Ihre E-Mails, um Ihre Registrierung zu bestätigen!",
 				"schema": {
 					"validation": {
 						"confirm-password": {
-							"on-of": "Muss mit dem Passwort übereinstimmen",
 							"no-match": "Muss mit dem Passwort übereinstimmen"
 						},
 						"email": {
@@ -48,16 +46,12 @@
 			}
 		},
 		"user": {
-			"get-user": {
-				"message": "Benutzer erhalten"
-			}
+			"get-user": {}
 		},
 		"offline": "Du bist offline",
 		"online": "Sie sind online",
 		"auth": {
-			"login": {
-				"message": "Erfolgreich angemeldet"
-			},
+			"login": {},
 			"register": {
 				"message": "Überprüfen Sie Ihre E-Mails, um Ihre Registrierung zu bestätigen!"
 			}
@@ -69,11 +63,7 @@
 			"finances": "Finanzen",
 			"home": "Heim"
 		},
-		"tabs": {
-			"account": "Konto",
-			"finances": "Finanzen",
-			"home": "Heim"
-		}
+		"tabs": {}
 	},
 	"components": {
 		"widgets": {
@@ -95,7 +85,6 @@
 							"english": "Englisch",
 							"german": "Deutsch"
 						},
-						"german": "Deutsch",
 						"title": "Sprache ändern"
 					}
 				},
@@ -129,7 +118,6 @@
 				"title": "Einloggen",
 				"form": {
 					"input": {
-						"email": "E-Mail",
 						"password": "Passwort",
 						"username": "Benutzername"
 					},
@@ -160,7 +148,11 @@
 			}
 		},
 		"home": {
-			"title": "Willkommen bei Kollapp!"
+			"title": "Kollapp",
+			"card": {
+				"content": "Die App für alle Kollektive da draußen",
+				"title": "Willkommen bei Kollapp"
+			}
 		},
 		"finances": {
 			"subtitle": "Hier geht es um einen Überblick über die Finanzen.",
