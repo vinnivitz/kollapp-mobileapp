@@ -7,26 +7,40 @@
 	import { onMount } from 'svelte';
 
 	import Tabs from '$lib/components/layout/Tabs.svelte';
-	import { t } from '$lib/locales';
+	import { loadTranslations, locale, t } from '$lib/locales';
 	import { PageRoute, type TabConfig } from '$lib/models';
+	import { userStore } from '$lib/store';
+	import { determineLocale } from '$lib/utils';
 
 	let { children } = $props();
 
-	const tabs: TabConfig[] = [
-		{ label: $t('common.page-routes.home'), icon: home, tab: PageRoute.HOME },
-		{
-			label: $t('common.page-routes.finances'),
-			icon: cash,
-			tab: PageRoute.FINANCES
-		},
-		{ label: $t('common.page-routes.account'), icon: person, tab: PageRoute.ACCOUNT }
-	];
+	let tabs = $state<TabConfig[] | undefined>();
 
 	setupIonicBase();
 
 	onMount(async () => {
-		await defineCustomElements(globalThis as unknown as Window);
+		await Promise.all([
+			initTranslations().then(() => {
+				tabs = [
+					{ label: $t('common.page-routes.home'), icon: home, tab: PageRoute.HOME },
+					{
+						label: $t('common.page-routes.finances'),
+						icon: cash,
+						tab: PageRoute.FINANCES
+					},
+					{ label: $t('common.page-routes.account'), icon: person, tab: PageRoute.ACCOUNT }
+				];
+				userStore.init();
+			}),
+			defineCustomElements(globalThis as unknown as Window)
+		]);
 	});
+
+	async function initTranslations() {
+		const currentLocale = await determineLocale();
+		await loadTranslations(currentLocale);
+		locale.set(currentLocale);
+	}
 </script>
 
 <svelte:head>
@@ -34,7 +48,9 @@
 </svelte:head>
 
 <ion-app>
-	<Tabs {tabs}>
-		{@render children?.()}
-	</Tabs>
+	{#if tabs}
+		<Tabs {tabs}>
+			{@render children?.()}
+		</Tabs>
+	{/if}
 </ion-app>
