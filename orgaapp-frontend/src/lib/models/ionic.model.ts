@@ -1,4 +1,4 @@
-import type { PageRoute } from './index.js';
+import type { PageRoute } from '$lib/models';
 
 /**
  * Configuration for a page route tab.

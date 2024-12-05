@@ -12,7 +12,8 @@
 		"test:e2e": "playwright test",
 		"test": "npm run test:unit -- --run && npm run test:e2e",
 		"typedoc": "typedoc & live-server ./docs --watch --silent --no-browser --port=1234 & chokidar 'src/lib' -c 'typedoc' --silent",
-		"build-android": "export CAPACITOR_ANDROID_STUDIO_PATH=/usr/bin/android-studio && npm run build && cap sync && cap open android"
+		"build-android": "export CAPACITOR_ANDROID_STUDIO_PATH=/usr/bin/android-studio && npm run build && cap sync && cap open android",
+		"visualize": "madge --extensions ts,svelte --image visualize/dependency-graph.png src"
 	},
 	"type": "module",
 	"overrides": {
@@ -47,6 +48,7 @@
 		"husky": "^9.1.7",
 		"jsdom": "^25.0.1",
 		"live-server": "^1.2.2",
+		"madge": "^8.0.0",
 		"playwright": "^1.49.0",
 		"prettier": "^3.3.2",
 		"prettier-plugin-svelte": "^3.2.6",
