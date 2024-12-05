@@ -1,4 +1,4 @@
-import { writable, type Writable } from 'svelte/store';
+import { get, writable, type Writable } from 'svelte/store';
 
 import * as api from '$lib/api';
 import type { UserModel } from '$lib/api/models';
@@ -20,6 +20,9 @@ function createUserStore(): Writable<UserModel | undefined> & { init: () => Prom
 	}
 
 	async function init(): Promise<void> {
+		if (get(userStore)) {
+			return;
+		}
 		const response = await api.user.get(true);
 		if (StatusChecks.isOK(response.status)) {
 			await setUser(response.data);

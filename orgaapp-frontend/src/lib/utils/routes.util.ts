@@ -21,7 +21,7 @@ export async function navigateBack(): Promise<void> {
 			if (segments.length > 0) {
 				segments.pop();
 				const newPath = `/${segments.join('/')}`;
-				await goto(newPath);
+				await goto(newPath === '/' ? PageRoute.HOME : newPath);
 			}
 		}
 	}
@@ -32,5 +32,5 @@ export async function navigateBack(): Promise<void> {
  * @returns {string} the current path
  */
 function getPath(): string {
-	return browser ? get(page)?.url?.pathname : PageRoute.HOME;
+	return (browser && get(page)?.route?.id) || PageRoute.HOME;
 }

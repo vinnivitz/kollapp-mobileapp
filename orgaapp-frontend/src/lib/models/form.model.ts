@@ -18,7 +18,10 @@ export type FormConfig<T> = {
 	onTouched?: () => void;
 	onBlur?: (key: string) => void;
 	exposedActions?: (actions: FormActions<T>) => void;
-	customValidators?: ((model: T) => ValidationResult | Promise<ValidationResult>)[];
+	customValidators?: (
+		| ((model: T) => ValidationResult | Promise<ValidationResult>)
+		| (() => ValidationResult | Promise<ValidationResult>)
+	)[];
 	formatters?: { [K in keyof T]?: (value: T[K]) => string | number };
 	parser?: { [K in keyof T]?: (value: string | number) => Promise<T[K]> };
 };

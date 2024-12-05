@@ -7,7 +7,7 @@ import type { LayoutLoad } from './$types';
 
 import { loadTranslations, locale, t } from '$lib/locales';
 import { AlertType } from '$lib/models';
-import { userStore } from '$lib/store';
+import { themeStore, userStore } from '$lib/store';
 import { determineLocale, navigateBack, showAlert } from '$lib/utils';
 
 const $t = get(t);
@@ -16,10 +16,12 @@ export const ssr = false;
 
 export const load: LayoutLoad = async () => {
 	try {
-		await loadTranslations(await determineLocale());
-		locale.set(await determineLocale());
-		await handleAppEvents();
+		const currentLocale = await determineLocale();
+		await loadTranslations(currentLocale);
+		locale.set(currentLocale);
+		await themeStore.init();
 		await userStore.init();
+		handleAppEvents();
 	} catch (error) {
 		let message = $t('api.error');
 		if (error instanceof Error) {

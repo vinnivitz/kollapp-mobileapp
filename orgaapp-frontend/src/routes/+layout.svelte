@@ -9,7 +9,6 @@
 	import Tabs from '$lib/components/layout/Tabs.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute, type TabConfig } from '$lib/models';
-	import { themeStore } from '$lib/store';
 
 	let { children } = $props();
 
@@ -25,10 +24,7 @@
 
 	setupIonicBase();
 
-	onMount(async () => {
-		await themeStore.init();
-		await defineCustomElements(globalThis as unknown as Window);
-	});
+	onMount(async () => await defineCustomElements(globalThis as unknown as Window));
 </script>
 
 <svelte:head>

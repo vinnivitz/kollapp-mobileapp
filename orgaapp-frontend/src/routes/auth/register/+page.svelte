@@ -54,20 +54,22 @@
 	function onChange(key: string, value: string | number): void {
 		if (key === 'password') {
 			password = value as string;
+			if (touched) {
+				const result = confirmPasswordValidator();
+				actions.applyValidationFeedbackByKey('confirmPassword', result);
+			}
 		}
 	}
 
 	function updateConfirmPassword(value: string): void {
 		confirmPassword = value;
 		if (touched) {
-			const result = confirmPasswordValidator({ ...model, password });
+			const result = confirmPasswordValidator();
 			actions.applyValidationFeedbackByKey('confirmPassword', result);
 		}
 	}
 
-	function confirmPasswordValidator(model: RegisterDto): ValidationResult {
-		password = model.password;
-
+	function confirmPasswordValidator(): ValidationResult {
 		return password === confirmPassword
 			? { valid: true }
 			: {

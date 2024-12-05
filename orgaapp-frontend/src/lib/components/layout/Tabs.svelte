@@ -14,29 +14,16 @@
 	$effect(() => {
 		const pathname = $navigating?.to?.route.id;
 		if (pathname && pathname !== currentTabName) {
-			processRouting(pathname);
+			currentTabName = pathname;
 		}
 	});
 
-	onMount(async () => {
-		await controller.select(currentTabName);
-	});
+	onMount(async () => await controller.select(currentTabName));
 
 	const onTabSelect = async (selectedTab: string): Promise<void> => {
 		await goto(selectedTab);
 		await controller.select(selectedTab);
 	};
-
-	async function processRouting(pathname: string) {
-		const tab = tabs.find((t) => t.tab === pathname);
-		if (tab) {
-			currentTabName = tab.tab;
-			await goto(tab.tab);
-			await controller.select(tab.tab);
-		} else {
-			currentTabName = '';
-		}
-	}
 </script>
 
 <ion-tabs bind:this={controller}>

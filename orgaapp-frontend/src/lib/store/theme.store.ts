@@ -12,15 +12,13 @@ async function initStore(): Promise<Theme> {
 }
 
 async function updateTheme(theme: Theme): Promise<void> {
-	if (theme) {
-		document.body.classList.toggle('dark', theme === Theme.DARK);
-		await storeValue(PreferencesKey.THEME, theme);
-	}
+	document.body.classList.toggle('dark', theme === Theme.DARK);
+	await storeValue(PreferencesKey.THEME, theme);
 }
 
 function createStore(): Readable<Theme> & {
+	setTheme: (theme: Theme) => Promise<void>;
 	init: () => Promise<void>;
-	update: (theme: Theme) => Promise<void>;
 } {
 	const { subscribe, set } = writable<Theme>();
 	async function init(): Promise<void> {
@@ -28,14 +26,14 @@ function createStore(): Readable<Theme> & {
 		await updateTheme(initialTheme);
 		set(initialTheme);
 	}
-	async function update(theme: Theme): Promise<void> {
+	async function setTheme(theme: Theme): Promise<void> {
 		await updateTheme(theme);
 		set(theme);
 	}
 
 	return {
 		subscribe,
-		update,
+		setTheme,
 		init
 	};
 }

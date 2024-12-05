@@ -10,7 +10,7 @@
 
 	async function toggleTheme(theme: Theme): Promise<void> {
 		theme = theme === Theme.DARK ? Theme.LIGHT : Theme.DARK;
-		themeStore.update(theme);
+		themeStore.setTheme(theme);
 	}
 
 	async function updateLocale(value: Locale): Promise<void> {
@@ -38,7 +38,7 @@
 	}
 </script>
 
-<Layout title={$t('routes.account.app.title')}>
+<Layout title={$t('routes.account.app.title')} showBackButton>
 	<ion-list-header>{$t('routes.account.app.list.appearence.title')}</ion-list-header>
 	<ion-list inset>
 		<ion-item color="light">
