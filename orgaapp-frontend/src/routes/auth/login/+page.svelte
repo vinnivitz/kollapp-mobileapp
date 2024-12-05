@@ -45,7 +45,7 @@
 	}
 </script>
 
-<Layout title={$t('routes.auth.login.title')} showLoginButton={false}>
+<Layout title={$t('routes.auth.login.title')} showLoginButton={false} showBackButton>
 	<Card title={$t('routes.auth.login.form.title')}>
 		<form use:customForm={form}>
 			<ion-item>
@@ -64,13 +64,20 @@
 		</form>
 		<Card>
 			<div
-				class="flex justify-center gap-1"
+				class="text-center"
 				use:clickableElement={() => goto(PageRoute.AUTH_REGISTER)}
 			>
-				<div>
 					{$t('routes.auth.login.register.text')}
-				</div>
-				<div class="text-blue-600">{$t('routes.auth.login.register.link')}</div>
+				<span class="text-blue-600">{$t('routes.auth.login.register.link')}</span>
+			</div>
+		</Card>
+		<Card>
+			<div
+				class="text-center"
+				use:clickableElement={() => goto(PageRoute.AUTH_RESET_PASSWORD)}
+			>
+					{$t('routes.auth.login.forgot-password.text')}
+				<span class="text-blue-600">{$t('routes.auth.login.forgot-password.link')}</span>
 			</div>
 		</Card>
 	</Card>

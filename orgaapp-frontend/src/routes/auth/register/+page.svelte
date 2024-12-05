@@ -82,7 +82,7 @@
 	}
 </script>
 
-<IonLayout title={$t('routes.auth.register.title')} showLoginButton={false}>
+<IonLayout title={$t('routes.auth.register.title')} showBackButton>
 	<Card title={$t('routes.auth.register.form.title')}>
 		<form use:customForm={form}>
 			<ion-item>
@@ -90,8 +90,8 @@
 				></ion-input>
 			</ion-item>
 			<ion-item>
-				<ion-input name="email" type="email" label={$t('routes.auth.register.form.input.email')}
-				></ion-input>
+				<ion-input name="email" type="email" label={$t('routes.auth.register.form.input.email')}>
+				</ion-input>
 			</ion-item>
 			<ion-item>
 				<ion-input
@@ -116,14 +116,9 @@
 			</ion-button>
 		</form>
 		<Card>
-			<div
-				class="flex justify-center gap-1"
-				use:clickableElement={() => goto(PageRoute.AUTH_LOGIN)}
-			>
-				<div>
-					{$t('routes.auth.register.login.text')}
-				</div>
-				<div class="text-blue-600">{$t('routes.auth.register.login.link')}</div>
+			<div class="text-center" use:clickableElement={() => goto(PageRoute.AUTH_LOGIN)}>
+				{$t('routes.auth.register.login.text')}
+				<span class="text-blue-600">{$t('routes.auth.register.login.link')}</span>
 			</div>
 		</Card>
 	</Card>

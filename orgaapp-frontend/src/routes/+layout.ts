@@ -1,4 +1,4 @@
-import { App } from '@capacitor/app';
+import { App, type URLOpenListenerEvent } from '@capacitor/app';
 import { get } from 'svelte/store';
 
 import type { LayoutLoad } from './$types';
@@ -7,6 +7,7 @@ import { loadTranslations, locale, t } from '$lib/locales';
 import { AlertType } from '$lib/models';
 import { userStore } from '$lib/store';
 import { determineLocale, navigateBack, showAlert } from '$lib/utils';
+import { goto } from '$app/navigation';
 
 const $t = get(t);
 
@@ -28,6 +29,13 @@ export const load: LayoutLoad = async () => {
 };
 
 async function handleAppEvents(): Promise<void> {
+	App.addListener('appUrlOpen', async (event: URLOpenListenerEvent) => {
+		const url = event.url;
+		if (url.startsWith('kollapp://')) {
+			const path = url.replace('kollapp:/', '');
+			await goto(path);
+		}
+	});
 	App.addListener('backButton', async () => await navigateBack());
 }
 

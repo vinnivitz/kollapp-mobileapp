@@ -37,8 +37,6 @@
 
 <ion-app>
 	<Tabs {tabs}>
-		{@render children()}
+		{@render children?.()}
 	</Tabs>
 </ion-app>
-
-<!-- <ion-toast duration={2000} message="This toast will close in 5 seconds" color={}></ion-toast> -->

@@ -8,8 +8,14 @@
 	let {
 		title,
 		children,
-		showLoginButton = true
-	}: { title: string; children?: Snippet; showLoginButton?: boolean } = $props();
+		showLoginButton = true,
+		showBackButton = false
+	}: {
+		title: string;
+		children?: Snippet;
+		showLoginButton?: boolean;
+		showBackButton?: boolean;
+	} = $props();
 
 	let navigationDebounced = $state(false);
 	let navigationTimeout: ReturnType<typeof setTimeout>;
@@ -26,7 +32,7 @@
 	});
 </script>
 
-<Header {title} {showLoginButton}></Header>
+<Header {title} {showLoginButton} {showBackButton}></Header>
 {#if $navigating && navigationDebounced}
 	<ion-progress-bar type="indeterminate"></ion-progress-bar>
 {/if}

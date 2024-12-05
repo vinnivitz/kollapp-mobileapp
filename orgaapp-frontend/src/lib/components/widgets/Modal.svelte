@@ -8,27 +8,29 @@
 	let {
 		title,
 		children,
-		open = false
-	}: { title?: string; children: Snippet; open?: boolean } = $props();
-
-	function cancel() {
-		console.log('Cancel');
-	}
-
-	function confirm() {
-		console.log('Confirm');
-	}
+		open = false,
+		cancel,
+		confirm
+	}: {
+		title?: string;
+		children: Snippet;
+		open?: boolean;
+		cancel?: () => void;
+		confirm?: () => void;
+	} = $props();
 </script>
 
 <ion-modal is-open={open}>
 	<ion-header>
 		<ion-toolbar>
 			<ion-buttons slot="start">
-				<IonButton onClick={cancel}>{$t('components.widgets.modal.button.cancel')}</IonButton>
+				<IonButton onClick={() => cancel?.()}
+					>{$t('components.widgets.modal.button.cancel')}</IonButton
+				>
 			</ion-buttons>
 			<ion-title class="text-center">{title}</ion-title>
 			<ion-buttons slot="end">
-				<IonButton onClick={confirm}>
+				<IonButton onClick={() => confirm?.()}>
 					{$t('components.widgets.modal.button.confirm')}
 				</IonButton>
 			</ion-buttons>

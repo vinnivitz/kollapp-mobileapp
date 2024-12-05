@@ -13,7 +13,7 @@
 <ion-card {color}>
 	{#if title || subtitle}
 		<ion-card-header>
-			<ion-card-title>{title}</ion-card-title>
+			<ion-card-title class="text-center">{title}</ion-card-title>
 			{#if subtitle}
 				<ion-card-subtitle>{subtitle}</ion-card-subtitle>
 			{/if}
@@ -21,7 +21,7 @@
 	{/if}
 	{#if children}
 		<ion-card-content>
-			{@render children()}
+			{@render children?.()}
 		</ion-card-content>
 	{/if}
 </ion-card>

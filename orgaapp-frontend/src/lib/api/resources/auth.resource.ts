@@ -13,6 +13,7 @@ import {
 import { t } from '$lib/locales';
 import type { ValidationResult } from '$lib/models';
 import { userStore } from '$lib/store';
+import type { EmailDto } from '../dto/email.dto';
 
 const $t = get(t);
 
@@ -56,6 +57,25 @@ export async function login(model: LoginDto): Promise<ValidationResult> {
 		} else {
 			return getValidationError(response);
 		}
+	} catch (error) {
+		console.log('error', error);
+		getResponseError(error);
+		return { valid: false };
+	}
+}
+
+/**
+ * Requests an email to reset the password
+ * @param model email model
+ * @returns {Promise<ValidationResult>}
+ */
+export async function requestPasswordReset(model: EmailDto): Promise<ValidationResult> {
+	try {
+		const response = await customFetch(getUrl(`${ENDPOINT}/reset-password`), false, {
+			method: RequestMethod.POST,
+			body: JSON.stringify(model)
+		});
+		return getValidationResponse(response);
 	} catch (error) {
 		console.log('error', error);
 		getResponseError(error);

@@ -74,7 +74,7 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 
 	node.addEventListener('ionInput', async (event) => {
 		const input = event.target as HTMLInputElement;
-		if (input && keys.includes(input.name) && data.config.onChange) {
+		if (input && keys.includes(input.name)) {
 			await onChange(event);
 		}
 	});

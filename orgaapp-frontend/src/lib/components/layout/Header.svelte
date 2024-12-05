@@ -1,10 +1,15 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { t } from '$lib/locales';
 
 	import { PageRoute } from '$lib/models';
-	import { clickableElement } from '$lib/utils/index';
+	import { clickableElement, navigateBack } from '$lib/utils';
 
-	let { title, showLoginButton }: { title: string; showLoginButton?: boolean } = $props();
+	let {
+		title,
+		showLoginButton,
+		showBackButton
+	}: { title: string; showLoginButton?: boolean; showBackButton?: boolean } = $props();
 </script>
 
 <ion-header>
@@ -13,12 +18,17 @@
 
 		<ion-buttons slot="start">
 			<ion-button>
-				<img
-					use:clickableElement={() => goto(PageRoute.HOME)}
-					src="/favicon.png"
-					alt="User"
-					class="h-8 w-8"
-				/>
+				{#if showBackButton}
+					<ion-back-button default-href="/" use:clickableElement={async () => await navigateBack()}>
+					</ion-back-button>
+				{:else}
+					<img
+						use:clickableElement={() => goto(PageRoute.HOME)}
+						src="/favicon.png"
+						alt="User"
+						class="h-8 w-8"
+					/>
+				{/if}
 			</ion-button>
 		</ion-buttons>
 		<ion-buttons slot="end" class="me-3">
@@ -28,7 +38,7 @@
 					fill="outline"
 					use:clickableElement={() => goto(PageRoute.AUTH_LOGIN)}
 				>
-					Log in
+					{$t('components.layout.header.button.login')}
 				</ion-button>
 			{/if}
 		</ion-buttons>

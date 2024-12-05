@@ -260,7 +260,7 @@ async function createErrorResponse(error: unknown): Promise<Response> {
 	let message = $t('api.error');
 
 	if (error instanceof Error) {
-		message = error.message;
+		message = error.message === 'Failed to fetch' ? message : error.message;
 	} else if (error instanceof Response) {
 		try {
 			const data = await error.json();
@@ -269,7 +269,6 @@ async function createErrorResponse(error: unknown): Promise<Response> {
 			message = error.statusText || 'Unknown error';
 		}
 	}
-
 	return new Response(JSON.stringify({ message }), {
 		status: 501,
 		statusText: 'Internal Server Error',

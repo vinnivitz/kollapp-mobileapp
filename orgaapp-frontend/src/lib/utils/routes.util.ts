@@ -11,7 +11,7 @@ import { PageRoute } from '$lib/models';
  */
 export async function navigateBack(): Promise<void> {
 	const path = getPath();
-	if (path !== '/') {
+	if (path !== PageRoute.HOME) {
 		const currentPath = path;
 		if (browser) {
 			globalThis.history.back();
@@ -32,5 +32,5 @@ export async function navigateBack(): Promise<void> {
  * @returns {string} the current path
  */
 function getPath(): string {
-	return browser ? get(page).url.pathname : PageRoute.HOME;
+	return browser ? get(page)?.url?.pathname : PageRoute.HOME;
 }
