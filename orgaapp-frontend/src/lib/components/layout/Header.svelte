@@ -24,7 +24,7 @@
 				{:else}
 					<img
 						use:clickableElement={() => goto(PageRoute.HOME)}
-						src="/favicon.png"
+						src="/logo.png"
 						alt="User"
 						class="h-8 w-8"
 					/>
