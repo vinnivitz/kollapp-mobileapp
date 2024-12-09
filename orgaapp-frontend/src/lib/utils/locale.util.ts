@@ -17,7 +17,7 @@ export async function determineLocale(): Promise<Locale> {
 }
 
 async function getLocaleFromDevice(): Promise<Locale | undefined> {
-	const languageTag = await Device.getLanguageTag();
-	const locale = languageTag?.value?.split('-')?.[0] as Locale | undefined;
+	const code = await Device.getLanguageCode();
+	const locale = code?.value as Locale | undefined;
 	return locale && Object.values(Locale).includes(locale) ? locale : undefined;
 }
