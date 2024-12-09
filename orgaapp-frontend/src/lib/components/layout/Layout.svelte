@@ -4,21 +4,23 @@
 	import { navigating } from '$app/stores';
 
 	import Header from './Header.svelte';
+	import Menu from './Menu.svelte';
 
 	let {
 		title,
 		children,
-		showLoginButton = true,
-		showBackButton = false
+		showBackButton = false,
+		onRefresh
 	}: {
 		title: string;
 		children?: Snippet;
-		showLoginButton?: boolean;
 		showBackButton?: boolean;
+		onRefresh?: (refresher: HTMLIonRefresherElement) => void;
 	} = $props();
 
 	let navigationDebounced = $state(false);
 	let navigationTimeout: ReturnType<typeof setTimeout>;
+	let refresher = $state<HTMLIonRefresherElement | undefined>();
 
 	$effect(() => {
 		if ($navigating) {
@@ -32,10 +34,24 @@
 	});
 </script>
 
-<Header {title} {showLoginButton} {showBackButton}></Header>
-{#if $navigating && navigationDebounced}
-	<ion-progress-bar type="indeterminate"></ion-progress-bar>
-{/if}
-<ion-content class="ion-padding">
-	{@render children?.()}
-</ion-content>
+<Menu></Menu>
+
+<div class="ion-page" id="menu">
+	<Header {title} {showBackButton}></Header>
+	{#if $navigating && navigationDebounced}
+		<ion-progress-bar type="indeterminate"></ion-progress-bar>
+	{/if}
+	<ion-content class="ion-padding">
+		{#if onRefresh}
+			<!-- svelte-ignore event_directive_deprecated -->
+			<ion-refresher
+				bind:this={refresher}
+				slot="fixed"
+				on:ionRefresh={() => refresher && onRefresh?.(refresher)}
+			>
+				<ion-refresher-content></ion-refresher-content>
+			</ion-refresher>
+		{/if}
+		{@render children?.()}
+	</ion-content>
+</div>

@@ -67,7 +67,8 @@
 				"account": {
 					"title": "Account settings",
 					"button": {
-						"register": "Register"
+						"register": "Register",
+						"login": "Log in"
 					}
 				}
 			},
@@ -127,7 +128,13 @@
 		"layout": {
 			"header": {
 				"button": {
-					"login": "Log in"
+					"login": "Log in",
+					"register": "Register"
+				}
+			},
+			"menu": {
+				"searchbar": {
+					"placeholder": "Search the app..."
 				}
 			}
 		}

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { PredefinedColors } from '@ionic/core';
 	import type { Snippet } from 'svelte';
 
 	let {
@@ -6,7 +7,7 @@
 		subtitle,
 		children,
 		color
-	}: { title?: string; subtitle?: string; children?: Snippet; color?: string } = $props();
+	}: { title?: string; subtitle?: string; children?: Snippet; color?: PredefinedColors } = $props();
 </script>
 
 <div></div>

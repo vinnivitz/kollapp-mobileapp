@@ -45,7 +45,7 @@
 	}
 </script>
 
-<Layout title={$t('routes.auth.login.title')} showLoginButton={false} showBackButton>
+<Layout title={$t('routes.auth.login.title')} showBackButton>
 	<Card title={$t('routes.auth.login.form.title')}>
 		<form use:customForm={form}>
 			<ion-item>
@@ -58,7 +58,7 @@
 					label={$t('routes.auth.login.form.input.password')}
 				></ion-input>
 			</ion-item>
-			<ion-button class="mt-3" expand="block" type="submit">
+			<ion-button color="tertiary" class="mt-3" expand="block" type="submit">
 				{$t('routes.auth.login.form.submit')}
 			</ion-button>
 		</form>
@@ -71,7 +71,9 @@
 		<Card>
 			<div class="text-center" use:clickableElement={() => goto(PageRoute.AUTH_RESET_PASSWORD)}>
 				{$t('routes.auth.login.forgot-password.text')}
-				<span class="text-[--ion-color-secondary]">{$t('routes.auth.login.forgot-password.link')}</span>
+				<span class="text-[--ion-color-secondary]">
+					{$t('routes.auth.login.forgot-password.link')}
+				</span>
 			</div>
 		</Card>
 	</Card>

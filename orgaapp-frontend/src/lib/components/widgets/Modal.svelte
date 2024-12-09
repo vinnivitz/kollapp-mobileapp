@@ -1,9 +1,8 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 
-	import IonButton from './Button.svelte';
-
 	import { t } from '$lib/locales';
+	import { clickableElement } from '$lib/utils';
 
 	let {
 		title,
@@ -24,15 +23,15 @@
 	<ion-header>
 		<ion-toolbar>
 			<ion-buttons slot="start">
-				<IonButton onClick={() => cancel?.()}
-					>{$t('components.widgets.modal.button.cancel')}</IonButton
-				>
+				<ion-button use:clickableElement={() => cancel?.()}>
+					{$t('components.widgets.modal.button.cancel')}
+				</ion-button>
 			</ion-buttons>
 			<ion-title class="text-center">{title}</ion-title>
 			<ion-buttons slot="end">
-				<IonButton onClick={() => confirm?.()}>
+				<ion-button use:clickableElement={() => confirm?.()}>
 					{$t('components.widgets.modal.button.confirm')}
-				</IonButton>
+				</ion-button>
 			</ion-buttons>
 		</ion-toolbar>
 	</ion-header>
