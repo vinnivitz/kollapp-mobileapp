@@ -5,5 +5,9 @@
 </script>
 
 <IonLayout title={$t('routes.home.title')}>
-	<IonCard title={$t('routes.home.card.title')}>{$t('routes.home.card.content')}</IonCard>
+	<IonCard color="primary" title={$t('routes.home.card.title')}>
+		<div class="text-center">
+			{$t('routes.home.card.content')}
+		</div>
+	</IonCard>
 </IonLayout>

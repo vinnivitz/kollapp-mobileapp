@@ -120,7 +120,7 @@
 		<Card>
 			<div class="text-center" use:clickableElement={() => goto(PageRoute.AUTH_LOGIN)}>
 				{$t('routes.auth.register.login.text')}
-				<span class="text-blue-600">{$t('routes.auth.register.login.link')}</span>
+				<span class="text-[--ion-color-secondary]">{$t('routes.auth.register.login.link')}</span>
 			</div>
 		</Card>
 	</Card>

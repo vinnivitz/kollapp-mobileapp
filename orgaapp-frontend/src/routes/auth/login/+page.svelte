@@ -65,13 +65,13 @@
 		<Card>
 			<div class="text-center" use:clickableElement={() => goto(PageRoute.AUTH_REGISTER)}>
 				{$t('routes.auth.login.register.text')}
-				<span class="text-blue-600">{$t('routes.auth.login.register.link')}</span>
+				<span class="text-[--ion-color-secondary]">{$t('routes.auth.login.register.link')}</span>
 			</div>
 		</Card>
 		<Card>
 			<div class="text-center" use:clickableElement={() => goto(PageRoute.AUTH_RESET_PASSWORD)}>
 				{$t('routes.auth.login.forgot-password.text')}
-				<span class="text-blue-600">{$t('routes.auth.login.forgot-password.link')}</span>
+				<span class="text-[--ion-color-secondary]">{$t('routes.auth.login.forgot-password.link')}</span>
 			</div>
 		</Card>
 	</Card>
