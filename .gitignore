@@ -31,5 +31,5 @@ target
 /orgaapp-frontend/*storybook.log
 
 # android and ios
-/orgaapp-frontend//android
-/orgaapp-frontend//ios
+/orgaapp-frontend/android
+/orgaapp-frontend/ios
