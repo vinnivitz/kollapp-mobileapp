@@ -17,7 +17,6 @@ export default ts.config(
 	securityPlugin.configs.recommended,
 	tailwindcssPlugin.configs['flat/recommended'],
 	unicornPlugin.configs['flat/recommended'],
-	// { HTMLIonTabsElement: 'readonly' },
 	{
 		plugins: {
 			import: importPlugin
@@ -58,7 +57,8 @@ export default ts.config(
 			globals: {
 				...globals.browser,
 				...globals.node,
-				HTMLIonTabsElement: 'readonly'
+				HTMLIonTabsElement: 'readonly',
+				HTMLIonRefresherElement: 'readonly'
 			}
 		}
 	},

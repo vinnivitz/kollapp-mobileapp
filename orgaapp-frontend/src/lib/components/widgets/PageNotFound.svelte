@@ -14,7 +14,6 @@
 	<div class="text-center">
 		<ion-icon icon={bugOutline} class="text-7xl"></ion-icon>
 	</div>
-
 	<Card title={$t('common.error-page.card.title')}>
 		<div class="text-center">
 			<ion-button use:clickableElement={async () => await goto(PageRoute.HOME)}>

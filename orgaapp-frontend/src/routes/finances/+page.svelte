@@ -1,5 +1,4 @@
 <script lang="ts">
-	// @ts-ignore
 	import '@ionic/core/components/ion-refresher';
 	import '@ionic/core/components/ion-refresher-content';
 	import IonLayout from '$lib/components/layout/Layout.svelte';

@@ -58,7 +58,7 @@
 					label={$t('routes.auth.login.form.input.password')}
 				></ion-input>
 			</ion-item>
-			<ion-button color="tertiary" class="mt-3" expand="block" type="submit">
+			<ion-button class="mt-3" expand="block" type="submit">
 				{$t('routes.auth.login.form.submit')}
 			</ion-button>
 		</form>
