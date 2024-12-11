@@ -1,6 +1,7 @@
 package com.none.orgaappbackend.organization.adapters.primary.rest;
 
-import com.none.orgaappbackend.organization.adapters.primary.rest.model.MessageTO;
+import com.none.orgaappbackend.core.adapters.primary.model.MessageResponseTO;
+import com.none.orgaappbackend.core.adapters.primary.model.ResponseTO;
 import com.none.orgaappbackend.organization.adapters.primary.rest.model.PasswordChangeRequestTO;
 import com.none.orgaappbackend.organization.application.service.OrganizationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,8 +28,8 @@ public class AuthorizedOrganizationController {
 
     @PostMapping("/change-password")
     @Operation(summary = "Das Passwort ändern", security = { @SecurityRequirement(name = "bearer-key") })
-    public ResponseEntity<MessageTO> changePassword(@RequestBody PasswordChangeRequestTO changeRequestTo){
+    public ResponseEntity<ResponseTO> changePassword(@RequestBody PasswordChangeRequestTO changeRequestTo){
         organizationService.changePassword(changeRequestTo.getOldPassword(), changeRequestTo.getNewPassword());
-        return ResponseEntity.status(HttpStatus.OK).body(new MessageTO("Das Passwort wurde erfolgreich geändert."));
+        return ResponseEntity.status(HttpStatus.OK).body(new MessageResponseTO("Das Passwort wurde erfolgreich geändert."));
     }
 }

@@ -1,4 +1,4 @@
-package com.none.orgaappbackend.organization.adapters.primary.rest.model;
+package com.none.orgaappbackend.organization.application.model;
 
 import lombok.*;
 
@@ -7,7 +7,7 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-public class LoginResponse {
+public class AuthenticatedOrganization {
     private String token;
     private String username;
     private String email;

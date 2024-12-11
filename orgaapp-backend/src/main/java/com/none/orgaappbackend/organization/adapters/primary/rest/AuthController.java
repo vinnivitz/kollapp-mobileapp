@@ -1,7 +1,9 @@
 package com.none.orgaappbackend.organization.adapters.primary.rest;
 
-import com.none.orgaappbackend.organization.adapters.primary.rest.model.LoginRequest;
-import com.none.orgaappbackend.organization.adapters.primary.rest.model.LoginResponse;
+import com.none.orgaappbackend.core.adapters.primary.model.DataResponseTO;
+import com.none.orgaappbackend.core.adapters.primary.model.ResponseTO;
+import com.none.orgaappbackend.organization.adapters.primary.rest.model.LoginRequestTO;
+import com.none.orgaappbackend.organization.application.model.AuthenticatedOrganization;
 import com.none.orgaappbackend.organization.application.service.AuthService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -24,8 +26,9 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/signin")
-    public ResponseEntity<?> authenticateOrganization(@Valid @RequestBody LoginRequest loginRequest) {
-        LoginResponse response = authService.authenticate(loginRequest.getUsername(), loginRequest.getPassword());
+    public ResponseEntity<ResponseTO> authenticateOrganization(@Valid @RequestBody LoginRequestTO loginRequestTO) {
+        AuthenticatedOrganization authenticatedOrganization = authService.authenticate(loginRequestTO.getUsername(), loginRequestTO.getPassword());
+        ResponseTO response = new DataResponseTO(authenticatedOrganization);
         return ResponseEntity.ok(response);
     }
 }
