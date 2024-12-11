@@ -28,7 +28,7 @@ public class AuthorizedOrganizationController {
 
     @PostMapping("/change-password")
     @Operation(summary = "Das Passwort ändern", security = { @SecurityRequirement(name = "bearer-key") })
-    public ResponseEntity<ResponseTO> changePassword(@RequestBody PasswordChangeRequestTO changeRequestTo){
+    public ResponseEntity<MessageResponseTO> changePassword(@RequestBody PasswordChangeRequestTO changeRequestTo){
         organizationService.changePassword(changeRequestTo.getOldPassword(), changeRequestTo.getNewPassword());
         return ResponseEntity.status(HttpStatus.OK).body(new MessageResponseTO("Das Passwort wurde erfolgreich geändert."));
     }

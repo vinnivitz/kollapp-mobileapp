@@ -1,6 +1,7 @@
 package com.none.orgaappbackend.organization.adapters.primary.rest;
 
 import com.none.orgaappbackend.core.adapters.primary.model.DataResponseTO;
+import com.none.orgaappbackend.core.adapters.primary.model.MessageResponseTO;
 import com.none.orgaappbackend.core.adapters.primary.model.ResponseTO;
 import com.none.orgaappbackend.organization.adapters.primary.rest.model.LoginRequestTO;
 import com.none.orgaappbackend.organization.application.model.AuthenticatedOrganization;
@@ -26,9 +27,9 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/signin")
-    public ResponseEntity<ResponseTO> authenticateOrganization(@Valid @RequestBody LoginRequestTO loginRequestTO) {
+    public ResponseEntity<DataResponseTO> authenticateOrganization(@Valid @RequestBody LoginRequestTO loginRequestTO) {
         AuthenticatedOrganization authenticatedOrganization = authService.authenticate(loginRequestTO.getUsername(), loginRequestTO.getPassword());
-        ResponseTO response = new DataResponseTO(authenticatedOrganization);
+        DataResponseTO response = new DataResponseTO(authenticatedOrganization);
         return ResponseEntity.ok(response);
     }
 }

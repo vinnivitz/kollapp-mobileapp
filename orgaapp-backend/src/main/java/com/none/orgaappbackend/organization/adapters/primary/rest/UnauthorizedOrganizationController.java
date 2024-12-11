@@ -30,13 +30,13 @@ public class UnauthorizedOrganizationController {
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<ResponseTO> forgotPassword(@RequestBody ForgotPasswordRequestTO forgotPasswordTo){
+    public ResponseEntity<MessageResponseTO> forgotPassword(@RequestBody ForgotPasswordRequestTO forgotPasswordTo){
         organizationService.resetPassword(forgotPasswordTo.getEmail());
         return ResponseEntity.status(HttpStatus.OK).body(new MessageResponseTO("Wenn deine E-Mail-Adresse dem System bekannt ist, erhältst du in Kürze eine Mail mit einem temporären Passwort. Bitte ändere es, nachdem du dich das erste Mal damit eingeloggt hast. Vergiss nicht, ggf. auch im Spam-Ordner nachzuschauen."));
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<ResponseTO> registerOrganization(@Valid @RequestBody OrganizationSignupRequest signUpRequest) {
+    public ResponseEntity<MessageResponseTO> registerOrganization(@Valid @RequestBody OrganizationSignupRequest signUpRequest) {
         organizationService.register(
                 signUpRequest.getUsername(),
                 signUpRequest.getName(),
