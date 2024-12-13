@@ -1,7 +1,7 @@
 package com.none.orgaappbackend.organization.application.service.impl;
 
 import com.none.orgaappbackend.organization.application.exception.EmailIsNotConfirmedException;
-import com.none.orgaappbackend.organization.adapters.primary.rest.model.LoginResponse;
+import com.none.orgaappbackend.organization.application.model.AuthenticatedOrganization;
 import com.none.orgaappbackend.organization.application.model.OrganizationDetails;
 import com.none.orgaappbackend.organization.application.service.AuthService;
 import com.none.orgaappbackend.organization.util.JwtUtil;
@@ -21,7 +21,7 @@ public class AuthServiceImpl implements AuthService {
     private AuthenticationManager authenticationManager;
 
     @Override
-    public LoginResponse authenticate(String username, String password) {
+    public AuthenticatedOrganization authenticate(String username, String password) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, password));
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -31,7 +31,7 @@ public class AuthServiceImpl implements AuthService {
         if(!userDetails.isActivated()){
             throw new EmailIsNotConfirmedException();
         }
-        return LoginResponse.builder()
+        return AuthenticatedOrganization.builder()
                 .token(jwt)
                 .username(userDetails.getUsername())
                 .email(userDetails.getEmail())
