@@ -1,9 +1,9 @@
 package com.none.orgaappbackend.organization.application.service;
 
-import com.none.orgaappbackend.organization.adapters.primary.rest.model.LoginResponse;
+import com.none.orgaappbackend.organization.application.model.AuthenticatedOrganization;
 import org.jmolecules.architecture.hexagonal.PrimaryPort;
 
 @PrimaryPort
 public interface AuthService {
-    LoginResponse authenticate(String username, String password);
+    AuthenticatedOrganization authenticate(String username, String password);
 }
