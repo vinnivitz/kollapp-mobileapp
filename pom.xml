@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>	
     <groupId>org.none</groupId>
-	<artifactId>orgaapp</artifactId>
+	<artifactId>kollapp</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>orgaapp-parent</name>
-	<description>Parent module of orgaapp project</description>
+	<name>kollapp-parent</name>
+	<description>Parent module of kollapp project</description>
 	<packaging>pom</packaging>
 	<properties>
 		<java.version>21</java.version>
@@ -70,7 +70,7 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	<build>
+	<!-- <build>
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -80,9 +80,9 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
-	</build>
+	</build> -->
 	<modules>
-        <module>orgaapp-frontend</module>
-		<module>orgaapp-backend</module>
+        <module>kollapp-frontend</module>
+		<module>kollapp-backend</module>
 	</modules>
 </project>

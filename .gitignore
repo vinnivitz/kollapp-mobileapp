@@ -1,4 +1,39 @@
 # Default ignored files
 .idea
 target
+.vscode
 
+/kollapp-frontend/test-results
+/kollapp-frontend/node_modules
+/kollapp-frontend/node
+
+# Output
+/kollapp-frontend/.output
+/kollapp-frontend/.vercel
+/kollapp-frontend/.svelte-kit
+/kollapp-frontend/build
+/kollapp-frontend/dist
+/kollapp-frontend/docs
+
+# OS
+/kollapp-frontend/.DS_Store
+/kollapp-frontend/Thumbs.db
+
+# Env
+.env
+.env.*
+!.env.example
+!.env.test
+
+# Vite
+/kollapp-frontend/vite.config.js.timestamp-*
+/kollapp-frontend/vite.config.ts.timestamp-*
+
+/kollapp-frontend/*storybook.log
+
+# android and ios
+/kollapp-frontend/android
+/kollapp-frontend/ios
+
+# database
+/db
