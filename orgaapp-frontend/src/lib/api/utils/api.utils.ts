@@ -4,9 +4,12 @@ import { get } from 'svelte/store';
 import { PUBLIC_API_URL } from '$env/static/public';
 import type { TokenDto } from '$lib/api/dto';
 import {
+	AuthorizationType,
 	ContentType,
 	RequestMethod,
-	type ApiResponse,
+	StatusCode,
+	type CustomFetchConfig,
+	type ResponseBody,
 	type ServerResponseBody,
 	type UserModel
 } from '$lib/api/models';
@@ -17,22 +20,33 @@ import {
 	type ValidationResult as ValidationResponse
 } from '$lib/models';
 import { userStore } from '$lib/store';
-import { determineLocale, getStoredValue, showAlert, storeValue } from '$lib/utils';
+import {
+	determineLocale,
+	getStoredValue,
+	removeStoredValue,
+	showAlert,
+	storeValue
+} from '$lib/utils';
+import { apiResources } from '$lib/api';
 
 const $t = get(t);
 
 /**
  * Custom fetch function with authentication and error handling.
  * @param url Endpoint URL.
- * @param auth Whether authentication is required.
  * @param options Fetch options.
- * @returns Fetch Response.
+ * @param authorizationType Authorization type.
+ * @param silent If true, no alert is shown.
+ * @returns {Promise<ResponseBody<T>>}
  */
-export async function customFetch(
-	url: string,
-	auth = true,
-	options: RequestInit = {}
-): Promise<Response> {
+export async function customFetch<T = never>(config: CustomFetchConfig): Promise<ResponseBody<T>> {
+	let {
+		url,
+		options = { method: RequestMethod.GET },
+		authorizationType = AuthorizationType.BEARER,
+		silent = false
+	} = config;
+	
 	try {
 		const headers = new Headers(options.headers);
 
@@ -40,40 +54,37 @@ export async function customFetch(
 			headers.set('Content-Type', ContentType.JSON);
 		}
 
-		if (auth) {
+		if (authorizationType === AuthorizationType.BEARER) {
 			const token = await getToken();
 			if (token) {
 				headers.set('Authorization', `Bearer ${token}`);
 			} else {
-				return createUnauthorizedResponse();
+				return createErrorResponse(StatusCode.UNAUTHORIZED, $t('api.error'), silent);
 			}
 		}
 
 		const enhancedUrl = await getEnhancedUrl(url);
 		const response = await fetch(enhancedUrl, { ...options, headers });
 
-		if (StatusChecks.isInternalServerError(response.status)) {
-			return createErrorResponse(response);
-		}
-
 		const networkStatus = await Network.getStatus();
 		const isOnline = networkStatus?.connected;
 		const wasOnline = await getStoredValue<boolean>(PreferencesKey.ONLINE);
 
 		if (!isOnline && wasOnline) {
-			showAlert({ message: $t('api.offline'), type: AlertType.INFO });
 			await storeValue(PreferencesKey.ONLINE, false);
-			return createErrorResponse(new Error('Device is offline.'));
-		}
-
-		if (isOnline && !wasOnline) {
-			showAlert({ message: $t('api.online'), type: AlertType.INFO });
+			showAlert({ message: $t('api.offline'), type: AlertType.ERROR });
+		} else if (isOnline && !wasOnline) {
 			await storeValue(PreferencesKey.ONLINE, true);
+			showAlert({ message: $t('api.online'), type: AlertType.INFO });
 		}
 
-		return response;
+		return getResponseBody(response, silent);
 	} catch (error) {
-		return createErrorResponse(error);
+		let message = $t('api.error');
+		if (error instanceof Error) {
+			message = error.message === 'Failed to fetch' ? message : error.message;
+		}
+		return createErrorResponse(StatusCode.SERVICE_UNAVAILABLE, message, silent);
 	}
 }
 
@@ -107,106 +118,25 @@ export async function storeTokens(model: TokenDto): Promise<void> {
 }
 
 /**
- * Processes the API response, showing alerts as necessary.
- * @param response Fetch response.
- * @param message Default message for alerts.
- * @param silent If true, no alert is shown.
- * @returns ApiResponse containing status, message, and optional data.
- */
-export async function getApiResponse<T>(
-	response: Response,
-	silent = false
-): Promise<ApiResponse<T>> {
-	let message = '';
-	let type = AlertType.INFO;
-	if (!response.ok) {
-		message = $t('api.error');
-		type = AlertType.ERROR;
-	}
-	const contentType = determineResponseContentType(response);
-	switch (contentType) {
-		case ContentType.TEXT: {
-			message = (await response.text()) ?? message;
-			if (!silent && message) {
-				showAlert({ message, type });
-			}
-			return { status: response.status, message };
-		}
-		case ContentType.JSON: {
-			const body = (await response.json()) as ServerResponseBody<T>;
-			const message = body.message ?? '';
-			if (!silent) {
-				showAlert({ message, type });
-			}
-			return {
-				status: response.status,
-				message: body.message,
-				data: body.data,
-				validationField: body.validationField
-			};
-		}
-		default: {
-			if (!silent) {
-				showAlert({ message, type });
-			}
-			return { status: response.status, message };
-		}
-	}
-}
-
-/**
  * Processes the validation response, showing alerts as necessary.
- * @param response Fetch response.
+ * @param body Fetch response.
  * @param silent If true, no alert is shown.
  * @returns ValidationResult indicating validity and any errors.
  */
-export async function getValidationResponse(
-	response: Response,
-	silent = false
-): Promise<ValidationResponse> {
-	if (response.ok) {
-		const body = (await response.json()) as ServerResponseBody;
-		const message = body?.message;
-		if (message && !silent) {
-			showAlert({ message, type: AlertType.INFO });
-		}
-		return { valid: true };
-	}
-	return getValidationError(response);
+export function getValidationResult<T>(body: ResponseBody<T>): ValidationResponse {
+	return {
+		valid: StatusChecks.isOK(body.status),
+		errors: [{ message: body.message ?? $t('api.error'), field: body.validationField }]
+	};
 }
 
 /**
- * Processes validation errors by showing alerts as necessary and returning validation response.
- * @param response Fetch response.
- * @returns {Promise<ValidationResult>}
- */
-export async function getValidationError(response: Response): Promise<ValidationResponse> {
-	try {
-		const result = (await response.json()) as ApiResponse;
-		const message = result.message || $t('api.error');
-
-		if (result.validationField) {
-			return {
-				valid: false,
-				errors: [{ message, field: result.validationField }]
-			};
-		}
-
-		showAlert({ message, type: AlertType.ERROR });
-		return { valid: false };
-	} catch {
-		showAlert({ message: $t('api.error'), type: AlertType.ERROR });
-		return { valid: false };
-	}
-}
-
-/**
- * Processes response errors, showing alerts as necessary.
+ * Processes response failures (where no response with satus code is returned), showing alerts as necessary.
  * @param error error object
  * @param silent if true, no alert is shown
  * @returns {ApiResponse<T>}
  */
-export function getResponseError<T>(error: unknown, silent = false): ApiResponse<T> {
+export function handleResponseFailure<T>(error: unknown, silent = false): ResponseBody<T> {
 	let message = $t('api.error');
 
 	if (error instanceof Error) {
@@ -217,7 +147,7 @@ export function getResponseError<T>(error: unknown, silent = false): ApiResponse
 		showAlert({ message, type: AlertType.ERROR });
 	}
 
-	return { status: 501, message };
+	return { status: 501, message } as ResponseBody<T>;
 }
 
 /**
@@ -225,10 +155,25 @@ export function getResponseError<T>(error: unknown, silent = false): ApiResponse
  */
 export const StatusChecks = {
 	isOK: (status: number): boolean => status >= 200 && status < 300,
-	isBadRequest: (status: number): boolean => status === 400,
-	isUnauthorized: (status: number): boolean => status === 401,
-	isInternalServerError: (status: number): boolean => status >= 500 && status < 600
+	isUnauthorized: (status: number): boolean => status === StatusCode.UNAUTHORIZED
 };
+
+async function getResponseBody<T>(response: Response, silent: boolean): Promise<ResponseBody<T>> {
+	const message = $t('api.error');
+	if (response.headers.get('Content-Type') !== ContentType.JSON) {
+		return { status: response.status, message, data: {} as T };
+	}
+	const body = (await response.json()) as ServerResponseBody<T>;
+	if (!response.status && !silent) {
+		showAlert({ message: body.message ?? message, type: AlertType.ERROR });
+	}
+	return {
+		status: response.status,
+		message: body.message,
+		data: body.data ?? ({} as T),
+		validationField: body.validationField
+	};
+}
 
 function hasRequestBody(options: RequestInit): boolean {
 	const method = options.method?.toUpperCase();
@@ -245,38 +190,31 @@ async function getEnhancedUrl(url: string): Promise<string> {
 }
 
 async function getToken(): Promise<string | undefined> {
-	return getStoredValue<string>(PreferencesKey.ACCESS_TOKEN);
+	const token = getStoredValue<string>(PreferencesKey.ACCESS_TOKEN);
+	return token || getNewToken();
 }
 
-function createUnauthorizedResponse(): Response {
-	return new Response(JSON.stringify({ message: 'Unauthorized' }), {
-		status: 401,
-		statusText: 'Unauthorized',
-		headers: { 'Content-Type': ContentType.JSON }
-	});
-}
-
-async function createErrorResponse(error: unknown): Promise<Response> {
-	let message = $t('api.error');
-
-	if (error instanceof Error) {
-		message = error.message === 'Failed to fetch' ? message : error.message;
-	} else if (error instanceof Response) {
-		try {
-			const data = await error.json();
-			message = data?.message || error.statusText;
-		} catch {
-			message = error.statusText || 'Unknown error';
-		}
+async function getNewToken(): Promise<string | undefined> {
+	let token = await getStoredValue(PreferencesKey.REFRESH_TOKEN);
+	if (!token) {
+		return undefined;
 	}
-	return new Response(JSON.stringify({ message }), {
-		status: 501,
-		statusText: 'Internal Server Error',
-		headers: { 'Content-Type': ContentType.JSON }
-	});
+	const body = await apiResources.auth.refresh(token);
+	if (StatusChecks.isOK(body.status)) {
+		token = body.data.refreshToken;
+		await storeValue(PreferencesKey.ACCESS_TOKEN, token);
+		return token;
+	}
+	return undefined;
 }
 
-function determineResponseContentType(response: Response): ContentType | undefined {
-	const type = response.headers.get('Content-Type') as ContentType;
-	return Object.values(ContentType).includes(type) ? type : undefined;
+async function createErrorResponse(
+	status: number,
+	message: string = $t('api.error'),
+	silent: boolean
+): Promise<ResponseBody> {
+	if (!silent) {
+		showAlert({ message, type: AlertType.ERROR });
+	}
+	return { status, message, data: {} as never };
 }

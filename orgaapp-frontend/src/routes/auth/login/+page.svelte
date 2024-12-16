@@ -5,6 +5,7 @@
 
 	import { apiResources } from '$lib/api';
 	import { loginSchema, type LoginDto } from '$lib/api/dto';
+	import { getValidationResult, storeTokens } from '$lib/api/utils';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
 	import { t } from '$lib/locales';
@@ -15,6 +16,7 @@
 		Form,
 		PageRoute
 	} from '$lib/models';
+	import { userStore } from '$lib/store';
 	import { clickableElement, customForm } from '$lib/utils';
 
 	const model = loginSchema().cast({}) as LoginDto;
@@ -34,13 +36,16 @@
 		if (validationResult.valid) {
 			const loading = await loadingController.create({});
 			await loading.present();
-			const validationResult = await apiResources.auth.login(model);
-			await loading.dismiss();
+			const body = await apiResources.auth.login(model);
+			validationResult = getValidationResult(body);
 			if (validationResult.valid) {
-				actions.resetModel();
-			} else {
-				actions.applyValidationFeedback(validationResult);
+				await storeTokens(body.data);
+				await userStore.init();
+				await loading.dismiss();
+				return goto(PageRoute.HOME);
 			}
+			await loading.dismiss();
+			actions.applyValidationFeedback(validationResult);
 		}
 	}
 </script>

@@ -1,14 +1,4 @@
 /**
- * Api response model for the application
- */
-export type ApiResponse<T = unknown> = {
-	status: number;
-	message?: string;
-	data?: T;
-	validationField?: string;
-};
-
-/**
  * Content type for the request and response
  */
 export enum ContentType {
@@ -29,8 +19,42 @@ export enum RequestMethod {
 /**
  * Server response body
  */
-export type ServerResponseBody<T = string> = {
+export type ResponseBody<T = never> = {
+	status: number;
+	message?: string;
+	data: T;
+	validationField?: string;
+};
+
+export type ServerResponseBody<T = undefined> = {
 	message?: string;
 	data?: T;
 	validationField?: string;
 };
+
+/**
+ * Authorization type for the request
+ */
+export enum AuthorizationType {
+	BEARER,
+	NONE
+}
+
+/**
+ * Http status codes
+ */
+export enum StatusCode {
+	OK = 200,
+	BAD_REQUEST = 400,
+	UNAUTHORIZED = 401,
+	INTERNAL_SERVER_ERROR = 500,
+	SERVICE_UNAVAILABLE = 503
+}
+
+
+export type CustomFetchConfig = {
+	url: string;
+	options?: RequestInit;
+	authorizationType?: AuthorizationType;
+	silent?: boolean;
+} 

@@ -3,6 +3,7 @@
 
 	import { apiResources } from '$lib/api';
 	import { emailSchema, type EmailDto } from '$lib/api/dto/email.dto';
+	import { getValidationResult } from '$lib/api/utils';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
 	import { t } from '$lib/locales';
@@ -26,7 +27,9 @@
 		if (validationResult.valid) {
 			const loading = await loadingController.create({});
 			await loading.present();
-			const validationResult = await apiResources.auth.requestPasswordReset(model);
+			const validationResult = getValidationResult(
+				await apiResources.organization.requestPasswordReset(model)
+			);
 			await loading.dismiss();
 			if (validationResult.valid) {
 				actions.resetModel();

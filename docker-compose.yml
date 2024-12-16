@@ -5,6 +5,8 @@ services:
     restart: unless-stopped
     ports:
       - "3306:3306"
+    volumes:
+      - ./db:/var/lib/mysql
     environment:
       MYSQL_DATABASE: orgaapp
       MYSQL_ROOT_PASSWORD: root

@@ -33,3 +33,6 @@ target
 # android and ios
 /orgaapp-frontend/android
 /orgaapp-frontend/ios
+
+# database 
+/db

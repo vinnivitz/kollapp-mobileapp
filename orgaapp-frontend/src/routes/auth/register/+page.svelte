@@ -5,6 +5,7 @@
 
 	import { apiResources } from '$lib/api';
 	import { registerSchema, type RegisterDto } from '$lib/api/dto';
+	import { getValidationResult } from '$lib/api/utils';
 	import IonLayout from '$lib/components/layout/Layout.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
 	import { t } from '$lib/locales';
@@ -40,7 +41,7 @@
 		if (validationResult.valid) {
 			const loading = await loadingController.create({});
 			await loading.present();
-			const validationResult = await apiResources.auth.register(model);
+			validationResult = getValidationResult(await apiResources.organization.register(model));
 			await loading.dismiss();
 			if (validationResult.valid) {
 				actions.resetModel();

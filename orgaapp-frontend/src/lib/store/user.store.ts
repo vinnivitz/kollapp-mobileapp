@@ -19,21 +19,17 @@ function createUserStore(): Writable<UserModel | undefined> & { init: () => Prom
 		}
 	}
 
-	async function init(): Promise<void> {
-		if (get(userStore)) {
+	async function init(refresh = false): Promise<void> {
+		if (!refresh && Boolean(get(userStore))) {
 			return;
 		}
-		const response = await apiResources.user.get(true);
-		if (StatusChecks.isOK(response.status)) {
-			await setUser(response.data);
-		} else if (StatusChecks.isUnauthorized(response.status)) {
-			await setUser();
-		} else {
-			const user = await getStoredValue<UserModel>(PreferencesKey.USER);
-			if (user) {
-				await setUser(user);
-			}
+		const body = await apiResources.user.get(true);
+		if (StatusChecks.isOK(body.status)) {
+			return setUser({ id: 'user-id', username: body.data.username, email: body.data.email });
 		}
+		return StatusChecks.isUnauthorized(body.status)
+			? setUser()
+			: setUser(await getStoredValue<UserModel>(PreferencesKey.USER));
 	}
 
 	return {
