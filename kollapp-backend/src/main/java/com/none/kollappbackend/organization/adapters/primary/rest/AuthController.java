@@ -1,11 +1,13 @@
 package com.none.kollappbackend.organization.adapters.primary.rest;
 
 import com.none.kollappbackend.core.adapters.primary.model.DataResponseTO;
-import com.none.kollappbackend.core.adapters.primary.model.MessageResponseTO;
+import com.none.kollappbackend.core.adapters.primary.model.ErrorResponseTO;
 import com.none.kollappbackend.core.adapters.primary.model.ResponseTO;
 import com.none.kollappbackend.organization.adapters.primary.rest.model.LoginRequestTO;
 import com.none.kollappbackend.organization.application.model.AuthenticatedOrganization;
 import com.none.kollappbackend.organization.application.service.AuthService;
+
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -27,9 +29,15 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/signin")
-    public ResponseEntity<DataResponseTO> authenticateOrganization(@Valid @RequestBody LoginRequestTO loginRequestTO) {
-        AuthenticatedOrganization authenticatedOrganization = authService.authenticate(loginRequestTO.getUsername(), loginRequestTO.getPassword());
-        DataResponseTO response = new DataResponseTO(authenticatedOrganization);
-        return ResponseEntity.ok(response);
+    @Operation(summary = "Sign in an organization")
+    public ResponseEntity<ResponseTO> authenticateOrganization(@Valid @RequestBody LoginRequestTO loginRequestTO) {
+        try {
+            AuthenticatedOrganization authenticatedOrganization = authService.authenticate(loginRequestTO.getUsername(), loginRequestTO.getPassword());
+            DataResponseTO response = new DataResponseTO(authenticatedOrganization, "success.user.signin");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error while signing user in:", e.getLocalizedMessage());
+            return ResponseEntity.badRequest().body(new ErrorResponseTO(e.getMessage()));
+        }
     }
 }

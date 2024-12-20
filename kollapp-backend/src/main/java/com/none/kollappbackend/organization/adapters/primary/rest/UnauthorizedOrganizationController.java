@@ -1,5 +1,6 @@
 package com.none.kollappbackend.organization.adapters.primary.rest;
 
+import com.none.kollappbackend.core.adapters.primary.model.ErrorResponseTO;
 import com.none.kollappbackend.core.adapters.primary.model.MessageResponseTO;
 import com.none.kollappbackend.core.adapters.primary.model.ResponseTO;
 import com.none.kollappbackend.organization.adapters.primary.rest.model.*;
@@ -24,24 +25,35 @@ public class UnauthorizedOrganizationController {
     private OrganizationService organizationService;
 
     @GetMapping("/confirmation")
-    public ResponseEntity<String> confirmOrganization(@RequestParam ("confirmationToken") String confirmationToken){
-        organizationService.activateOrganization(confirmationToken);
-        return ResponseEntity.ok("<p>Die E-Mail-Adresse wurde erfolgreich bestätigt.</p>");
+    public ResponseEntity<ResponseTO> confirmOrganization(@RequestParam("confirmationToken") String confirmationToken) {
+        try {
+            organizationService.activateOrganization(confirmationToken);
+            return ResponseEntity.ok(new MessageResponseTO("success.confirmation"));
+        } catch (Exception e) {
+            log.error("Error while confirming organization:", e.getLocalizedMessage());
+            return ResponseEntity.badRequest().body(new ErrorResponseTO(e.getMessage()));
+        }
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<MessageResponseTO> forgotPassword(@RequestBody ForgotPasswordRequestTO forgotPasswordTo){
-        organizationService.resetPassword(forgotPasswordTo.getEmail());
-        return ResponseEntity.status(HttpStatus.OK).body(new MessageResponseTO("Wenn deine E-Mail-Adresse dem System bekannt ist, erhältst du in Kürze eine Mail mit einem temporären Passwort. Bitte ändere es, nachdem du dich das erste Mal damit eingeloggt hast. Vergiss nicht, ggf. auch im Spam-Ordner nachzuschauen."));
+    public ResponseEntity<ResponseTO> forgotPassword(@RequestBody ForgotPasswordRequestTO forgotPasswordTo) {
+        try {
+            organizationService.resetPassword(forgotPasswordTo.getEmail());
+            return ResponseEntity.ok(new MessageResponseTO("success.email.reset-password"));
+        } catch (Exception e) {
+            log.error("Error while resetting password:", e.getLocalizedMessage());
+            return ResponseEntity.badRequest().body(new ErrorResponseTO(e.getMessage()));
+        }
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<MessageResponseTO> registerOrganization(@Valid @RequestBody OrganizationSignupRequest signUpRequest) {
+    public ResponseEntity<ResponseTO> registerOrganization(
+            @Valid @RequestBody OrganizationSignupRequest signUpRequest) {
         organizationService.register(
                 signUpRequest.getUsername(),
                 signUpRequest.getName(),
                 signUpRequest.getEmail(),
                 signUpRequest.getPassword());
-        return ResponseEntity.ok(new MessageResponseTO("Du hast dich erfolgreich als Teilnehmender registriert. Bitte bestätige nun noch deine E-Mail-Adresse."));
+        return ResponseEntity.ok(new MessageResponseTO("success.registered"));
     }
 }

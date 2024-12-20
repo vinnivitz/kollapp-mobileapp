@@ -1,10 +1,14 @@
 package com.none.kollappbackend.organization.application.service.impl;
 
+import com.none.kollappbackend.core.config.properties.JwtProperties;
 import com.none.kollappbackend.organization.application.exception.EmailIsNotConfirmedException;
+import com.none.kollappbackend.organization.application.exception.UsernameNotFoundException;
 import com.none.kollappbackend.organization.application.model.AuthenticatedOrganization;
 import com.none.kollappbackend.organization.application.model.OrganizationDetails;
+import com.none.kollappbackend.organization.application.repository.OrganizationRepository;
 import com.none.kollappbackend.organization.application.service.AuthService;
-import com.none.kollappbackend.organization.util.JwtUtil;
+import com.none.kollappbackend.util.JwtUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,17 +22,29 @@ import java.util.Date;
 public class AuthServiceImpl implements AuthService {
 
     @Autowired
+    private JwtProperties jwtProperties;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
+    private OrganizationRepository orgaRepo;
+
+    @Autowired
     private AuthenticationManager authenticationManager;
 
     @Override
     public AuthenticatedOrganization authenticate(String username, String password) {
+        if (!orgaRepo.existsByUsername(username)) {
+            throw new UsernameNotFoundException();
+        }
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, password));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        Date expirationDate = JwtUtil.generateExpirationDate();
-        String jwt = JwtUtil.generateJwtToken(authentication, expirationDate);
+        Date expirationDate = jwtUtil.generateExpirationDate(jwtProperties.getAuthExpirationMs());
         OrganizationDetails userDetails = (OrganizationDetails) authentication.getPrincipal();
-        if(!userDetails.isActivated()){
+        String jwt = jwtUtil.generateJwtTokenForAuthentication(userDetails.getId().toString(), expirationDate);
+        if (!userDetails.isActivated()) {
             throw new EmailIsNotConfirmedException();
         }
         return AuthenticatedOrganization.builder()

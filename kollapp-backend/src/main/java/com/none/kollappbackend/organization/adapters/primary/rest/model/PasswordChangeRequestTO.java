@@ -1,5 +1,8 @@
 package com.none.kollappbackend.organization.adapters.primary.rest.model;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,5 +12,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PasswordChangeRequestTO {
     private String oldPassword;
+
+    @NotBlank(message = "{validation.password.required}")
+    @Pattern(regexp = ".{8,}", message = "{validation.password.minlength}")
+    @Size(max = 255, message = "{validation.password.maxlength}")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$", message = "{validation.password.pattern}")
     private String newPassword;
 }

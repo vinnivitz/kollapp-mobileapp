@@ -1,7 +1,7 @@
 package com.none.kollappbackend.organization.application.exception;
 
-public class EmailIsNotConfirmedException extends RuntimeException {
+public class EmailIsNotConfirmedException extends Localization {
     public EmailIsNotConfirmedException() {
-        super("Die E-Mail-Adresse ist noch nicht bestätigt!");
+        super("error.email.not-confirmed");
     }
 }

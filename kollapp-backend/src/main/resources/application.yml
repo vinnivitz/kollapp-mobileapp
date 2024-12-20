@@ -1,0 +1,55 @@
+spring:
+  application:
+    name: ${BACKEND_APPLICATION_NAME:kollapp-backend}
+  datasource:
+    url: jdbc:mysql://${BACKEND_DB_HOST:0.0.0.0}:${BACKEND_DB_PORT:3306}/kollapp?allowPublicKeyRetrieval=true&useSSL=false
+    username: ${BACKEND_DB_USER:admin}
+    password: ${BACKEND_DB_PASSWORD:pass}
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+  mail:
+    host: ${$BACKEND_MAIL_HOST:smtp.gmail.com}
+    port: ${BACKEND_MAIL_PORT:587}
+    username: ${BACKEND_MAIL_USER:something@gmail.com}
+    password: ${BACKEND_MAIL_PASSWORD:test}
+    properties: 
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+server:
+  port: ${BACKEND_PORT:8080}
+
+i18n:
+  baseName: i18n/messages
+
+kollapp:
+  application:
+    host: ${BACKEND_HOST:localhost}
+    production: ${BACKEND_PRODUCTION:false}
+    version: ${BACKEND_VERSION:1.0.0}
+
+  cors:
+    allowedOriginPattern: ${BACKEND_CORS_URL:http://localhost:*}
+    allowedMethods: ${BACKEND_CORS_METHODS:GET,POST,PUT,DELETE,OPTIONS}
+    allowedHeaders: ${BACKEND_CORS_HEADERS:Content-Type,Authorization,Accept,X-Requested-With}
+    exposedHeaders: ${BACKEND_CORS_EXPOSED_HEADERS:Authorization,Content-Disposition}
+    allowCredentials: ${BACKEND_CORS_CREDENTIALS:true}
+
+  ratelimit:
+    requests: ${BACKEND_RATE_LIMIT:10}
+    seconds: ${BACKEND_RATE_LIMIT_TIME:60}
+
+  jwt:
+    authSecret: ${BACKEND_JWT_AUTH_SECRET:secret}
+    authExpirationMs: ${BACKEND_JWT_AUTH_EXPIRATION_MS:7776000000}
+    refreshSecret: ${BACKEND_JWT_REFRESH_SECRET:refresh}
+    refreshExpirationMs: ${BACKEND_JWT_REFRESH_EXPIRATION_MS:7776000000}
+    confirmationSecret: ${BACKEND_JWT_CONFIRMATION_SECRET:confirm}
+    confirmationExpirationMs: ${BACKEND_JWT_CONFIRMATION_EXPIRATION_MS:7776000000}
+
+    

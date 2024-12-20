@@ -9,6 +9,11 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class DataResponseTO extends ResponseTO {
+public class DataResponseTO extends MessageResponseTO {
     private Object data;
+
+    public DataResponseTO(Object data, String message) {
+        super(message);
+        this.data = data;
+    }
 }
