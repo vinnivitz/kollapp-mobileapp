@@ -11,4 +11,5 @@ public interface OrganizationJpaRepository extends JpaRepository<Organization, L
     Optional<Organization> findByUsername(String username);
     Optional<Organization> findByEmail(String email);
     boolean existsByUsername(String username);
+    boolean existsByEmail(String email);
 }

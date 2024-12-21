@@ -18,6 +18,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Organization organization = orgaRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username " + username + " not found."));
-        return OrganizationDetails.builder().username(organization.getUsername()).isActivated(organization.isActivated()).email(organization.getEmail()).name(organization.getName()).password(organization.getPassword()).build();
+        return OrganizationDetails.builder().id(organization.getId()).username(organization.getUsername()).isActivated(organization.isActivated()).email(organization.getEmail()).name(organization.getName()).password(organization.getPassword()).build();
     }
 }

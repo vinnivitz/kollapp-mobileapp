@@ -1,17 +1,13 @@
 package com.none.kollappbackend.core.adapters.primary.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
-public class ValidationFailureResponseTO extends MessageResponseTO {
+@AllArgsConstructor
+public class ValidationFailureResponseTO extends ResponseTO {
+    private String message;
     private String validationField;
-
-    public ValidationFailureResponseTO(String message, String validationField) {
-        super(message);
-        this.validationField = validationField;
-    }
 }

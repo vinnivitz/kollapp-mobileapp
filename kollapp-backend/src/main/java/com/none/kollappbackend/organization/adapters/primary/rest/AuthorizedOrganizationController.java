@@ -13,6 +13,7 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +28,9 @@ import org.springframework.web.bind.annotation.RestController;
 @PrimaryAdapter
 public class AuthorizedOrganizationController {
     @Autowired
+    private MessageSource messageSource;
+
+    @Autowired
     private OrganizationService organizationService;
 
     @PostMapping("/change-password")
@@ -34,9 +38,9 @@ public class AuthorizedOrganizationController {
     public ResponseEntity<ResponseTO> changePassword(@RequestBody PasswordChangeRequestTO changeRequestTo) {
         try {
             organizationService.changePassword(changeRequestTo.getOldPassword(), changeRequestTo.getNewPassword());
-            return ResponseEntity.status(HttpStatus.OK).body(new MessageResponseTO("success.password.changed"));
+            return ResponseEntity.ok(new MessageResponseTO(messageSource, "success.password.changed"));
         } catch (Exception e) {
-            log.error("Error while changing password:", e.getLocalizedMessage());
+            log.error("Error while changing password:" + e.getMessage());
             if (e instanceof IncorrectPasswordException) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(new ValidationFailureResponseTO("error.password.incorrect", "oldPassword"));

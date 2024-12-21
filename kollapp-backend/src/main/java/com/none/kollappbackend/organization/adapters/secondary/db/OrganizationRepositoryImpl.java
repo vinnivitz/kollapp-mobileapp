@@ -36,7 +36,12 @@ public class OrganizationRepositoryImpl implements OrganizationRepository {
     }
 
     @Override
-    public void save(Organization organization) {
-        jpaRepository.save(organization);
+    public boolean existsByEmail(String email) {
+        return jpaRepository.existsByEmail(email);
+    }
+
+    @Override
+    public Organization save(Organization organization) {
+        return jpaRepository.save(organization);
     }
 }

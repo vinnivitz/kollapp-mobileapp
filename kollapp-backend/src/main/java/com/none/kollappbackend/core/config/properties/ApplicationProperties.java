@@ -18,4 +18,6 @@ public class ApplicationProperties {
     private String host;
     private String production;
     private String version;
+    private String port;
+    private int staticCacheDays;
 }

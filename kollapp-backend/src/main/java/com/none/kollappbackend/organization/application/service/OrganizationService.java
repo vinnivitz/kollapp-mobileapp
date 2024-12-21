@@ -8,7 +8,6 @@ import java.util.Optional;
 
 @PrimaryPort
 public interface OrganizationService {
-    boolean isUsernameFree(String username);
     Organization getLoggedInOrganization();
     Organization getOrganizationByUsername(String username);
     Optional<Organization> getOrganizationOptionalByEmail(String email);

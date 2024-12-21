@@ -11,5 +11,6 @@ public interface OrganizationRepository {
     Optional<Organization> findByUsername(String username);
     Optional<Organization> findByEmail(String email);
     boolean existsByUsername(String username);
-    void save(Organization organization);
+    boolean existsByEmail(String email);
+    Organization save(Organization organization);
 }

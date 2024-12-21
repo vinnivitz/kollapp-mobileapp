@@ -1,7 +1,9 @@
 package com.none.kollappbackend.organization.application.exception;
 
-public class IncorrectPasswordException extends Localization {
-    public IncorrectPasswordException() {
-        super("error.password.incorrect");
+import org.springframework.context.MessageSource;
+
+public class IncorrectPasswordException extends AbstractLocalizedException {
+    public IncorrectPasswordException(MessageSource messageSource) {
+        super(messageSource, "error.password.incorrect");
     }
 }

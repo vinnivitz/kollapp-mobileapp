@@ -1,19 +1,17 @@
 package com.none.kollappbackend.core.adapters.primary.model;
 
-import lombok.AllArgsConstructor;
+import org.springframework.context.MessageSource;
+
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 public class DataResponseTO extends MessageResponseTO {
     private Object data;
 
-    public DataResponseTO(Object data, String message) {
-        super(message);
+    public DataResponseTO(MessageSource messageSource, Object data, String message) {
+        super(messageSource, message);
         this.data = data;
     }
 }

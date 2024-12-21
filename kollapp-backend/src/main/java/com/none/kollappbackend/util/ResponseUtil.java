@@ -2,6 +2,8 @@ package com.none.kollappbackend.util;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 public class ResponseUtil {
-
     public void createMessageResponse(HttpServletResponse response, int code, String message)
             throws JsonProcessingException, IOException {
         log.error("Error response:", message);

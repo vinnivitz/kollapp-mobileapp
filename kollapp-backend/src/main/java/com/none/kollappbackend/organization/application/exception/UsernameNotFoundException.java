@@ -1,7 +1,9 @@
 package com.none.kollappbackend.organization.application.exception;
 
-public class UsernameNotFoundException extends Localization {
-    public UsernameNotFoundException() {
-        super("error.username.not-found");
+import org.springframework.context.MessageSource;
+
+public class UsernameNotFoundException extends AbstractLocalizedException {
+    public UsernameNotFoundException(MessageSource messageSource) {
+        super(messageSource, "error.username.not-found");
     }
 }

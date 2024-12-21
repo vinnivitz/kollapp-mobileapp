@@ -1,6 +1,7 @@
 package com.none.kollappbackend.organization.application.service.impl;
 
 import com.none.kollappbackend.core.config.properties.ApplicationProperties;
+import com.none.kollappbackend.organization.application.exception.EmailExistsException;
 import com.none.kollappbackend.organization.application.exception.EmailIsAlreadyConfirmedException;
 import com.none.kollappbackend.organization.application.exception.IncorrectPasswordException;
 import com.none.kollappbackend.organization.application.exception.InvalidConfirmationLinkException;
@@ -15,6 +16,7 @@ import com.none.kollappbackend.organization.application.service.EmailService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,9 @@ import java.util.Optional;
 @Slf4j
 @Service
 public class OrganizationServiceImpl implements OrganizationService {
+    @Autowired
+    private MessageSource messageSource;
+
     @Autowired
     private ApplicationProperties applicationProperties;
 
@@ -40,14 +45,14 @@ public class OrganizationServiceImpl implements OrganizationService {
     PasswordEncoder encoder;
 
     public Organization getOrganizationByUsername(String username) {
-        return orgaRepo.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException());
+        return orgaRepo.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(messageSource));
     }
 
     public Organization getLoggedInOrganization() {
         String username = ((OrganizationDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
                 .getUsername();
         return orgaRepo.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException());
+                .orElseThrow(() -> new UsernameNotFoundException(messageSource));
     }
 
     public Optional<Organization> getOrganizationOptionalByEmail(String email) {
@@ -56,14 +61,14 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     public void activateOrganization(String confirmationToken) {
-        if (!jwtUtil.validateJwtTokenForAuthentication(confirmationToken)) {
-            throw new InvalidConfirmationLinkException();
+        if (!jwtUtil.validateConfirmationToken(confirmationToken)) {
+            throw new InvalidConfirmationLinkException(messageSource);
         }
-        long userId = Long.parseLong(jwtUtil.getSubjectFromJwtToken(confirmationToken));
+        long userId = Long.parseLong(jwtUtil.getSubjectFromConfirmationToken(confirmationToken));
         Organization organization = orgaRepo.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("error.organization.not-found"));
         if (organization.isActivated()) {
-            throw new EmailIsAlreadyConfirmedException();
+            throw new EmailIsAlreadyConfirmedException(messageSource);
         }
         organization.setActivated(true);
     }
@@ -74,7 +79,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         Organization organization = getOrganizationByUsername(usernameOfLoggedInUser);
         boolean oldPasswordIsCorrect = encoder.matches(oldPassword, organization.getPassword());
         if (!oldPasswordIsCorrect) {
-            throw new IncorrectPasswordException();
+            throw new IncorrectPasswordException(messageSource);
         }
         organization.setPassword(encoder.encode(newPassword));
     }
@@ -86,30 +91,31 @@ public class OrganizationServiceImpl implements OrganizationService {
             Organization organization = orgaOpt.get();
             String tempPassword = RandomStringUtils.randomAlphanumeric(8);
             String tempPasswordEncoding = encoder.encode(tempPassword);
-            emailService.sendForgotPasswordMail(organization.getEmail(), tempPassword);
+            // emailService.sendForgotPasswordMail(organization.getEmail(), tempPassword);
             organization.setPassword(tempPasswordEncoding);
         }
     }
 
     @Override
     public void register(String username, String name, String email, String password) {
-        String confirmationBaseUrl = "http" + (Boolean.parseBoolean(applicationProperties.getProduction()) ? "s" : "")
-                + "://" + applicationProperties.getHost()
-                + "/api/public/organization/confirmation";
-        assert isUsernameFree(username);
+        if (orgaRepo.existsByUsername(username)) {
+            throw new UsernameExistsException(messageSource);
+        }
+        if (orgaRepo.existsByEmail(email)) {
+            throw new EmailExistsException(messageSource);
+        }
         String encodedPassword = encoder.encode(password);
         Organization organization = Organization.builder().username(username).name(name).email(email)
                 .password(encodedPassword).build();
-        orgaRepo.save(organization);
-        String confirmationToken = jwtUtil.generateJwtTokenForConfirmation(organization);
-        String confirmationUrl = confirmationBaseUrl + "?confirmationToken=" + confirmationToken;
-        emailService.sendConfirmationMail(organization.getEmail(), confirmationUrl);
+        Long organizationId = orgaRepo.save(organization).getId();
+        String confirmationToken = jwtUtil.generateConfirmationToken(organizationId.toString());
+        emailService.sendConfirmationMail(organization.getEmail(), createConfirmationBaseUrl(confirmationToken));
     }
 
-    public boolean isUsernameFree(String username) {
-        if (orgaRepo.existsByUsername(username)) {
-            throw new UsernameExistsException();
-        }
-        return true;
+    private String createConfirmationBaseUrl(String token) {
+        boolean isProduction = Boolean.parseBoolean(applicationProperties.getProduction());
+        return "http" + (isProduction ? "s" : "")
+                + "://" + applicationProperties.getHost() + (isProduction ? "" : ":") + applicationProperties.getPort()
+                + "/api/public/organization/confirmation" + "?confirmationToken=" + token;
     }
 }

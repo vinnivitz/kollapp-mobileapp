@@ -1,7 +1,9 @@
 package com.none.kollappbackend.organization.application.exception;
 
-public class EmailIsAlreadyConfirmedException extends Localization {
-    public EmailIsAlreadyConfirmedException() {
-        super("error.email.already-confirmed");
+import org.springframework.context.MessageSource;
+
+public class EmailIsAlreadyConfirmedException extends AbstractLocalizedException {
+    public EmailIsAlreadyConfirmedException(MessageSource messageSource) {
+        super(messageSource, "error.email.already-confirmed");
     }
 }

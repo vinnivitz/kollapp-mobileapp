@@ -35,14 +35,15 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     @Autowired
     private ResponseUtil responseUtil;
 
+    @SuppressWarnings("null")
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
             String jwt = parseJwt(request);
             if (jwt != null) {
-                if (jwtUtil.validateJwtTokenForAuthentication(jwt)) {
-                    String username = jwtUtil.getSubjectFromJwtToken(jwt);
+                if (jwtUtil.validateConfirmationToken(jwt)) {
+                    String username = jwtUtil.getSubjectFromConfirmationToken(jwt);
                     UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             userDetails,
@@ -52,7 +53,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 } else {
                     responseUtil.createMessageResponse(response, HttpServletResponse.SC_UNAUTHORIZED,
-                            "error.jwt.invalid");
+                            "error.jwt.confirmation.invalid");
                     return;
                 }
             }

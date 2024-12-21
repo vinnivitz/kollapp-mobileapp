@@ -23,21 +23,6 @@ public class JwtUtil {
     private JwtProperties jwtProperties;
 
     /**
-     * Generate a JWT token for an organization.
-     * 
-     * @param organization the organization for which the token is generated
-     * @return a JWT token as a String
-     */
-    public String generateJwtTokenForConfirmation(Organization organization) {
-
-        return Jwts.builder()
-                .setSubject(organization.getId().toString())
-                .setExpiration(generateExpirationDate(jwtProperties.getConfirmationExpirationMs()))
-                .signWith(generateSigningKey(jwtProperties.getConfirmationSecret()), SignatureAlgorithm.HS256)
-                .compact();
-    }
-
-    /**
      * Generate the signing key for a given secret.
      * 
      * @param secret the secret to use for generating the key
@@ -57,13 +42,13 @@ public class JwtUtil {
     }
 
     /**
-     * Generate a JWT token for a user (organization principal).
+     * Generate a JWT token for a authentication.
      * 
-     * @param principalDetails the authenticated user's details
-     * @param expirationDate   when the token should expire
+     * @param subject the subject of the token
+     * @param expirationDate when the token should expire
      * @return a JWT token as a String
      */
-    public String generateJwtTokenForAuthentication(String subject, Date expirationDate) {
+    public String generateAuthenticationToken(String subject, Date expirationDate) {
         return Jwts.builder()
                 .setSubject(subject)
                 .setIssuedAt(new Date())
@@ -72,15 +57,59 @@ public class JwtUtil {
                 .compact();
     }
 
+        /**
+     * Generate a JWT token for an account confirmation.
+     * 
+     * @param organization the organization for which the token is generated
+     * @return a JWT token as a String
+     */
+    public String generateConfirmationToken(String subject) {
+
+        return Jwts.builder()
+                .setSubject(subject.toString())
+                .setExpiration(generateExpirationDate(jwtProperties.getConfirmationExpirationMs()))
+                .signWith(generateSigningKey(jwtProperties.getConfirmationSecret()), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
     /**
-     * Extracts the subject (usually username or user ID) from a given JWT token.
+     * Generate a JWT token for a refresh token.
+     * 
+     * @param subject the subject of the token
+     * @return a JWT token as a String
+     */
+    public String generateRefreshToken(String subject) {
+        return Jwts.builder()
+                .setSubject(subject)
+                .setExpiration(generateExpirationDate(jwtProperties.getRefreshExpirationMs()))
+                .signWith(generateSigningKey(jwtProperties.getRefreshSecret()), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    /**
+     * Extracts the subject (organization id) from a given JWT token.
      * 
      * @param token the JWT token
      * @return the subject contained in the token
      */
-    public String getSubjectFromJwtToken(String token) {
+    public String getSubjectFromConfirmationToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(generateSigningKey(jwtProperties.getConfirmationSecret()))
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+    }
+
+    /**
+     * Extracts the subject (organization id) from a given JWT token.
+     * 
+     * @param token the JWT token
+     * @return the subject contained in the token
+     */
+    public String getSubjectFromRefreshToken(String token) {    
+        return Jwts.parserBuilder()
+                .setSigningKey(generateSigningKey(jwtProperties.getRefreshSecret()))
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
@@ -93,9 +122,25 @@ public class JwtUtil {
      * @param token the JWT token to validate
      * @return true if valid, false otherwise
      */
-    public boolean validateJwtTokenForAuthentication(String token) {
+    public boolean validateConfirmationToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(generateSigningKey(jwtProperties.getAuthSecret())).build().parse(token);
+            Jwts.parserBuilder().setSigningKey(generateSigningKey(jwtProperties.getConfirmationSecret())).build().parse(token);
+            return true;
+        } catch (MalformedJwtException e) {
+            log.error("Invalid JWT token format: {}", e.getMessage(), e);
+        } catch (ExpiredJwtException e) {
+            log.error("JWT token is expired: {}", e.getMessage(), e);
+        } catch (JwtException e) {
+            log.error("JWT token parsing failed: {}", e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
+            log.error("JWT claims string is empty: {}", e.getMessage(), e);
+        }
+        return false;
+    }
+
+    public boolean validateRefreshToken(String token) {
+        try {
+            Jwts.parserBuilder().setSigningKey(generateSigningKey(jwtProperties.getRefreshSecret())).build().parse(token);
             return true;
         } catch (MalformedJwtException e) {
             log.error("Invalid JWT token format: {}", e.getMessage(), e);

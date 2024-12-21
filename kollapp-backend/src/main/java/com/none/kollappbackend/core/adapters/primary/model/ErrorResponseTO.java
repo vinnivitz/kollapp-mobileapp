@@ -1,7 +1,12 @@
 package com.none.kollappbackend.core.adapters.primary.model;
 
-public class ErrorResponseTO extends MessageResponseTO {
-    public ErrorResponseTO(String message) {
-        super(message);
-    }
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
+@AllArgsConstructor
+@Getter
+@Setter
+public class ErrorResponseTO extends ResponseTO {
+    private String message;
 }
