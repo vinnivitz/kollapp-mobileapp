@@ -1,100 +1,95 @@
 package com.none.kollappbackend.util;
 
 import com.none.kollappbackend.core.config.properties.JwtProperties;
-import com.none.kollappbackend.organization.application.model.Organization;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
 import java.time.Instant;
 import java.util.Date;
 
-import javax.crypto.SecretKey;
-
+/**
+ * Utility class for generating and validating JWT tokens.
+ */
+@AllArgsConstructor
 @Slf4j
 @Component
 public class JwtUtil {
 
-    @Autowired
-    private JwtProperties jwtProperties;
+    private final JwtProperties jwtProperties;
 
     /**
-     * Generate the signing key for a given secret.
-     * 
-     * @param secret the secret to use for generating the key
-     * @return the signing key
+     * Generates a future expiration {@link Date} by adding the specified number of
+     * milliseconds to the current time.
+     *
+     * @param expirationInSeconds number of milliseconds until the token should expire
+     * @return a future {@link Date}
      */
-    public SecretKey generateSigningKey(String secret) {
-        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
+    public Date generateExpirationDate(long expirationInSeconds) {
+        return Date.from(Instant.now().plusSeconds(expirationInSeconds));
     }
 
     /**
-     * Generates an expiration date based on the configured expiration period.
-     * 
-     * @return the expiration Date for a token
-     */
-    public Date generateExpirationDate(long expirationMs) {
-        return Date.from(Instant.now().plusMillis(expirationMs));
-    }
-
-    /**
-     * Generate a JWT token for a authentication.
-     * 
-     * @param subject the subject of the token
-     * @param expirationDate when the token should expire
-     * @return a JWT token as a String
+     * Generates a JWT token for user authentication.
+     *
+     * @param subject        the subject (usually a user identifier)
+     * @param expirationDate the date at which the token should expire
+     * @return a signed JWT as a {@link String}
      */
     public String generateAuthenticationToken(String subject, Date expirationDate) {
+        SecretKey signingKey = generateSigningKey(jwtProperties.getAuthSecret());
         return Jwts.builder()
                 .setSubject(subject)
                 .setIssuedAt(new Date())
                 .setExpiration(expirationDate)
-                .signWith(generateSigningKey(jwtProperties.getAuthSecret()), SignatureAlgorithm.HS256)
+                .signWith(signingKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 
-        /**
-     * Generate a JWT token for an account confirmation.
-     * 
-     * @param organization the organization for which the token is generated
-     * @return a JWT token as a String
+    /**
+     * Generates a JWT token for account confirmation.
+     *
+     * @param subject the subject (e.g., user ID or email) to be confirmed
+     * @return a signed confirmation JWT as a {@link String}
      */
     public String generateConfirmationToken(String subject) {
-
-        return Jwts.builder()
-                .setSubject(subject.toString())
-                .setExpiration(generateExpirationDate(jwtProperties.getConfirmationExpirationMs()))
-                .signWith(generateSigningKey(jwtProperties.getConfirmationSecret()), SignatureAlgorithm.HS256)
-                .compact();
-    }
-
-    /**
-     * Generate a JWT token for a refresh token.
-     * 
-     * @param subject the subject of the token
-     * @return a JWT token as a String
-     */
-    public String generateRefreshToken(String subject) {
+        SecretKey signingKey = generateSigningKey(jwtProperties.getConfirmationSecret());
         return Jwts.builder()
                 .setSubject(subject)
-                .setExpiration(generateExpirationDate(jwtProperties.getRefreshExpirationMs()))
-                .signWith(generateSigningKey(jwtProperties.getRefreshSecret()), SignatureAlgorithm.HS256)
+                .setExpiration(generateExpirationDate(jwtProperties.getConfirmationExpirationInSeconds()))
+                .signWith(signingKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 
     /**
-     * Extracts the subject (organization id) from a given JWT token.
-     * 
+     * Generates a JWT token for refreshing a session.
+     *
+     * @param subject the subject (usually a user identifier)
+     * @return a signed refresh JWT as a {@link String}
+     */
+    public String generateRefreshToken(String subject) {
+        SecretKey signingKey = generateSigningKey(jwtProperties.getRefreshSecret());
+        return Jwts.builder()
+                .setSubject(subject)
+                .setExpiration(generateExpirationDate(jwtProperties.getRefreshExpirationInSeconds()))
+                .signWith(signingKey, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    /**
+     * Retrieves the subject from a confirmation token.
+     *
      * @param token the JWT token
-     * @return the subject contained in the token
+     * @return the subject (e.g., user ID) contained in the token
      */
     public String getSubjectFromConfirmationToken(String token) {
+        SecretKey signingKey = generateSigningKey(jwtProperties.getConfirmationSecret());
         return Jwts.parserBuilder()
-                .setSigningKey(generateSigningKey(jwtProperties.getConfirmationSecret()))
+                .setSigningKey(signingKey)
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
@@ -102,14 +97,15 @@ public class JwtUtil {
     }
 
     /**
-     * Extracts the subject (organization id) from a given JWT token.
-     * 
+     * Retrieves the subject from a refresh token.
+     *
      * @param token the JWT token
-     * @return the subject contained in the token
+     * @return the subject (e.g., user ID) contained in the token
      */
-    public String getSubjectFromRefreshToken(String token) {    
+    public String getSubjectFromRefreshToken(String token) {
+        SecretKey signingKey = generateSigningKey(jwtProperties.getRefreshSecret());
         return Jwts.parserBuilder()
-                .setSigningKey(generateSigningKey(jwtProperties.getRefreshSecret()))
+                .setSigningKey(signingKey)
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
@@ -117,40 +113,63 @@ public class JwtUtil {
     }
 
     /**
-     * Validates a given JWT token to ensure it is well-formed and not expired.
-     * 
-     * @param token the JWT token to validate
+     * Validates the given confirmation token (checks format and expiration).
+     *
+     * @param token the JWT token
      * @return true if valid, false otherwise
      */
     public boolean validateConfirmationToken(String token) {
-        try {
-            Jwts.parserBuilder().setSigningKey(generateSigningKey(jwtProperties.getConfirmationSecret())).build().parse(token);
-            return true;
-        } catch (MalformedJwtException e) {
-            log.error("Invalid JWT token format: {}", e.getMessage(), e);
-        } catch (ExpiredJwtException e) {
-            log.error("JWT token is expired: {}", e.getMessage(), e);
-        } catch (JwtException e) {
-            log.error("JWT token parsing failed: {}", e.getMessage(), e);
-        } catch (IllegalArgumentException e) {
-            log.error("JWT claims string is empty: {}", e.getMessage(), e);
-        }
-        return false;
+        SecretKey signingKey = generateSigningKey(jwtProperties.getConfirmationSecret());
+        return validateToken(token, signingKey);
     }
 
+    /**
+     * Validates the given refresh token (checks format and expiration).
+     *
+     * @param token the JWT token
+     * @return true if valid, false otherwise
+     */
     public boolean validateRefreshToken(String token) {
+        SecretKey signingKey = generateSigningKey(jwtProperties.getRefreshSecret());
+        return validateToken(token, signingKey);
+    }
+
+    /**
+     * Generates a SecretKey from the provided Base64-encoded secret.
+     *
+     * @param secret Base64-encoded secret string
+     * @return the corresponding {@link SecretKey}
+     */
+    private SecretKey generateSigningKey(String secret) {
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
+    }
+
+    /**
+     * Parses and validates the JWT token using the given {@link SecretKey}.
+     *
+     * @param token      the JWT token
+     * @param signingKey the key used to sign the token
+     * @return true if the token is valid, false otherwise
+     */
+    private boolean validateToken(String token, SecretKey signingKey) {
         try {
-            Jwts.parserBuilder().setSigningKey(generateSigningKey(jwtProperties.getRefreshSecret())).build().parse(token);
+            Jwts.parserBuilder()
+                    .setSigningKey(signingKey)
+                    .build()
+                    .parseClaimsJws(token);
             return true;
-        } catch (MalformedJwtException e) {
-            log.error("Invalid JWT token format: {}", e.getMessage(), e);
-        } catch (ExpiredJwtException e) {
-            log.error("JWT token is expired: {}", e.getMessage(), e);
-        } catch (JwtException e) {
-            log.error("JWT token parsing failed: {}", e.getMessage(), e);
-        } catch (IllegalArgumentException e) {
-            log.error("JWT claims string is empty: {}", e.getMessage(), e);
+        } catch (Exception exception) {
+            if (exception instanceof ExpiredJwtException) {
+                log.error("JWT token is expired: {}", exception.getMessage());
+            } else if (exception instanceof MalformedJwtException) {
+                log.error("Invalid JWT format: {}", exception.getMessage());
+            } else if (exception instanceof JwtException) {
+                log.error("JWT parsing failed: {}", exception.getMessage());
+            } else if (exception instanceof IllegalArgumentException) {
+                log.error("JWT claims string is empty: {}", exception.getMessage());
+            }
         }
         return false;
+
     }
 }

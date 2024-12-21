@@ -22,6 +22,7 @@ public class OrganizationSignupRequest {
 
     @NotBlank(message = "{validation.email.required}")
     @Email(message = "{validation.email.invalid}")
+    @Size(max = 50, message = "{validation.email.maxlength}")
     String email;
 
     @NotBlank(message = "{validation.password.required}")

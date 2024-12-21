@@ -16,11 +16,11 @@ import lombok.Setter;
 @ConfigurationProperties(prefix = "kollapp.jwt")
 public class JwtProperties {
     String authSecret;
-    long authExpirationMs;
+    long authExpirationInSeconds;
 
     String refreshSecret;
-    long refreshExpirationMs;
+    long refreshExpirationInSeconds;
 
     String confirmationSecret;
-    long confirmationExpirationMs;
+    long confirmationExpirationInSeconds;
 }

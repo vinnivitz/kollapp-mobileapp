@@ -1,6 +1,5 @@
 package com.none.kollappbackend.organization.application.service.impl;
 
-import com.none.kollappbackend.core.config.properties.ApplicationProperties;
 import com.none.kollappbackend.organization.application.exception.EmailExistsException;
 import com.none.kollappbackend.organization.application.exception.EmailIsAlreadyConfirmedException;
 import com.none.kollappbackend.organization.application.exception.IncorrectPasswordException;
@@ -33,9 +32,6 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Autowired
     private MessageSource messageSource;
-
-    @Autowired
-    private ApplicationProperties applicationProperties;
 
     @Autowired
     private JwtUtil jwtUtil;

@@ -50,7 +50,7 @@ public class AuthServiceImpl implements AuthService {
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(username, password));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        Date expirationDate = jwtUtil.generateExpirationDate(jwtProperties.getAuthExpirationMs());
+        Date expirationDate = jwtUtil.generateExpirationDate(jwtProperties.getAuthExpirationInSeconds());
         OrganizationDetails organizationDetails = (OrganizationDetails) authentication.getPrincipal();
         if (!organizationDetails.isActivated()) {
             throw new EmailIsNotConfirmedException(messageSource);
@@ -102,7 +102,7 @@ public class AuthServiceImpl implements AuthService {
         if (!organization.isActivated()) {
             throw new EmailIsNotConfirmedException(messageSource);
         }
-        Date expirationDate = jwtUtil.generateExpirationDate(jwtProperties.getAuthExpirationMs());
+        Date expirationDate = jwtUtil.generateExpirationDate(jwtProperties.getAuthExpirationInSeconds());
         return jwtUtil.generateAuthenticationToken(organizationId, expirationDate);
     }
 }
