@@ -12,6 +12,7 @@ import org.thymeleaf.context.Context;
 
 import com.none.kollappbackend.core.config.properties.ApplicationProperties;
 import com.none.kollappbackend.organization.application.service.EmailService;
+import com.none.kollappbackend.util.UrlBuilderUtil;
 
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.MessagingException;
@@ -19,6 +20,9 @@ import jakarta.mail.MessagingException;
 @Service
 @Slf4j
 public class EmailServiceImpl implements EmailService {
+    @Autowired
+    private UrlBuilderUtil urlBuilderUtil;
+
     @Autowired
     private MessageSource messageSource;
 
@@ -39,7 +43,7 @@ public class EmailServiceImpl implements EmailService {
         context.setVariable("text", messageSource.getMessage("mail.confirmation.text", null, LocaleContextHolder.getLocale()));
         context.setVariable("confirmationUrl", confirmationUrl);
         context.setVariable("button", messageSource.getMessage("mail.confirmation.button", null, LocaleContextHolder.getLocale()));
-        context.setVariable("serverUrl", "https://your-server-url.com");
+        context.setVariable("logoUrl", urlBuilderUtil.buildServerUrl("/logo.png"));
 
         String htmlContent = templateEngine.process("confirmation", context);
 

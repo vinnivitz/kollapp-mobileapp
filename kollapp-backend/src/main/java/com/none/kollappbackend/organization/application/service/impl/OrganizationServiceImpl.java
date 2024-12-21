@@ -11,6 +11,7 @@ import com.none.kollappbackend.organization.application.model.OrganizationDetail
 import com.none.kollappbackend.organization.application.repository.OrganizationRepository;
 import com.none.kollappbackend.organization.application.service.OrganizationService;
 import com.none.kollappbackend.util.JwtUtil;
+import com.none.kollappbackend.util.UrlBuilderUtil;
 import com.none.kollappbackend.organization.application.model.Organization;
 import com.none.kollappbackend.organization.application.service.EmailService;
 import lombok.extern.slf4j.Slf4j;
@@ -21,11 +22,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
 @Service
 public class OrganizationServiceImpl implements OrganizationService {
+    @Autowired
+    private UrlBuilderUtil urlBuilderUtil;
+
     @Autowired
     private MessageSource messageSource;
 
@@ -113,9 +118,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     private String createConfirmationBaseUrl(String token) {
-        boolean isProduction = Boolean.parseBoolean(applicationProperties.getProduction());
-        return "http" + (isProduction ? "s" : "")
-                + "://" + applicationProperties.getHost() + (isProduction ? "" : ":") + applicationProperties.getPort()
-                + "/api/public/organization/confirmation" + "?confirmationToken=" + token;
+        Map<String, String> params = Map.of("confirmationToken", token);
+        return urlBuilderUtil.buildServerUrl("/api/public/organization/confirmation", params);
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.none.kollappbackend.core.adapters.primary.model.ErrorResponseTO;
 import com.none.kollappbackend.core.adapters.primary.model.ResponseTO;
@@ -55,9 +56,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ResponseTO> handleException(Exception exception) {
         if (exception instanceof NoSuchMessageException) {
             log.error(exception.getMessage());
-        } else {
-            log.error("Error occurred", exception);
+        } else if (exception instanceof NoResourceFoundException) {
+            log.error(exception.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseTO(messageSource
+                    .getMessage("error.resource.not-found", null, LocaleContextHolder.getLocale())));
         }
+        log.error("Error occurred", exception);
         return ResponseEntity.internalServerError().body(new ErrorResponseTO(
                 messageSource.getMessage("error.generic", null, LocaleContextHolder.getLocale())));
     }

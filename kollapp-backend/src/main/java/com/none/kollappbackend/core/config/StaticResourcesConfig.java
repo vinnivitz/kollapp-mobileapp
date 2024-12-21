@@ -11,7 +11,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import com.none.kollappbackend.core.config.properties.ApplicationProperties;
 
 @Configuration
-public class PublicResourcesConfig implements WebMvcConfigurer {
+public class StaticResourcesConfig implements WebMvcConfigurer {
     @Autowired
     private ApplicationProperties applicationProperties;
 
@@ -19,7 +19,7 @@ public class PublicResourcesConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/resources/**")
-                .addResourceLocations("/public", "classpath:/static/")
+                .addResourceLocations("classpath:/static/")
                 .setCacheControl(CacheControl.maxAge(Duration.ofDays(applicationProperties.getStaticCacheDays())));
     }
 }
