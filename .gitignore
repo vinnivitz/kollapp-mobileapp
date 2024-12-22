@@ -1,22 +1,23 @@
 # Default ignored files
 .idea
 target
+.vscode
 
-/orgaapp-frontend/test-results
-/orgaapp-frontend/node_modules
-/orgaapp-frontend/node
+/kollapp-frontend/test-results
+/kollapp-frontend/node_modules
+/kollapp-frontend/node
 
 # Output
-/orgaapp-frontend/.output
-/orgaapp-frontend/.vercel
-/orgaapp-frontend/.svelte-kit
-/orgaapp-frontend/build
-/orgaapp-frontend/dist
-/orgaapp-frontend/docs
+/kollapp-frontend/.output
+/kollapp-frontend/.vercel
+/kollapp-frontend/.svelte-kit
+/kollapp-frontend/build
+/kollapp-frontend/dist
+/kollapp-frontend/docs
 
 # OS
-/orgaapp-frontend/.DS_Store
-/orgaapp-frontend/Thumbs.db
+/kollapp-frontend/.DS_Store
+/kollapp-frontend/Thumbs.db
 
 # Env
 .env
@@ -25,14 +26,14 @@ target
 !.env.test
 
 # Vite
-/orgaapp-frontend/vite.config.js.timestamp-*
-/orgaapp-frontend/vite.config.ts.timestamp-*
+/kollapp-frontend/vite.config.js.timestamp-*
+/kollapp-frontend/vite.config.ts.timestamp-*
 
-/orgaapp-frontend/*storybook.log
+/kollapp-frontend/*storybook.log
 
 # android and ios
-/orgaapp-frontend/android
-/orgaapp-frontend/ios
+/kollapp-frontend/android
+/kollapp-frontend/ios
 
-# database 
+# database
 /db

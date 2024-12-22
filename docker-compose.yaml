@@ -1,0 +1,22 @@
+services:
+  kollapp-db:
+    image: mysql
+    container_name: kollapp-db
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./db:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: kollapp
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: pass
+
+  kollapp-mail:
+    image: mailhog/mailhog
+    container_name: mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025"
+      - "8025:8025"
