@@ -23,4 +23,7 @@ public class JwtProperties {
 
     String confirmationSecret;
     long confirmationExpirationInSeconds;
+
+    String resetPasswordSecret;
+    long resetPasswordExpirationInSeconds;
 }

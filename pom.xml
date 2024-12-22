@@ -69,7 +69,7 @@
 				<version>${jmolecules.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.github.vladimir-bukhtoyarov</groupId>
+				<groupId>com.bucket4j</groupId>
 				<artifactId>bucket4j-core</artifactId>
 				<version>8.0.1</version>
 			</dependency>
@@ -84,18 +84,13 @@
 				<version>3.0.5</version>
 			</dependency>
 			<dependency>
-				<groupId>com.sun.mail</groupId>
-				<artifactId>javax.mail</artifactId>
-				<version>1.6.2</version>
-			</dependency>
-			<dependency>
 				<groupId>org.thymeleaf</groupId>
 				<artifactId>thymeleaf-spring6</artifactId>
 				<version>3.1.3.RELEASE</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	<!-- <build>
+	<build>
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -105,7 +100,7 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
-	</build> -->
+	</build>
 	<modules>
 		<module>kollapp-frontend</module>
 		<module>kollapp-backend</module>

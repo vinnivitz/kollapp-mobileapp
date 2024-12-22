@@ -21,7 +21,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Field;
 import java.util.Date;
 
 @Slf4j
@@ -55,7 +54,6 @@ public class AuthServiceImpl implements AuthService {
         if (!organizationDetails.isActivated()) {
             throw new EmailIsNotConfirmedException(messageSource);
         }
-        listProperties(organizationDetails);
         String accessToken = jwtUtil.generateAuthenticationToken(organizationDetails.getId().toString(),
                 expirationDate);
         String refreshToken = jwtUtil.generateRefreshToken(organizationDetails.getId().toString());
@@ -67,27 +65,6 @@ public class AuthServiceImpl implements AuthService {
                 .name(organizationDetails.getName())
                 .loggedInUntil(expirationDate.getTime())
                 .build();
-    }
-
-    public static void listProperties(Object obj) {
-        if (obj == null) {
-            System.out.println("Object is null");
-            return;
-        }
-
-        Class<?> clazz = obj.getClass(); // Get the object's class
-        Field[] fields = clazz.getDeclaredFields(); // Get all declared fields
-
-        System.out.println("Properties of class: " + clazz.getName());
-        for (Field field : fields) {
-            field.setAccessible(true); // Access private fields if necessary
-            try {
-                // Print the field name and value
-                System.out.println(field.getName() + " = " + field.get(obj));
-            } catch (IllegalAccessException e) {
-                System.out.println("Could not access field: " + field.getName());
-            }
-        }
     }
 
     @Override

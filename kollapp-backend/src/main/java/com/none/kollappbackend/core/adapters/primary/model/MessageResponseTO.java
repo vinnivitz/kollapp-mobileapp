@@ -11,7 +11,7 @@ import lombok.Setter;
 public class MessageResponseTO extends ResponseTO {
     private String message;
 
-    public MessageResponseTO(MessageSource messageSource, String message) {
+    public MessageResponseTO(String message, MessageSource messageSource) {
         this.message = messageSource.getMessage(message, null, LocaleContextHolder.getLocale());
     }
 }

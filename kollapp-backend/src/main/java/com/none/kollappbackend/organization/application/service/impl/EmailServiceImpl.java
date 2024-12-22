@@ -46,7 +46,6 @@ public class EmailServiceImpl implements EmailService {
         context.setVariable("logoUrl", urlBuilderUtil.buildServerUrl("/logo.png"));
 
         String htmlContent = templateEngine.process("confirmation", context);
-
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
@@ -54,12 +53,39 @@ public class EmailServiceImpl implements EmailService {
             helper.setTo(recipientMail);
             helper.setSubject(subject);
             helper.setText(htmlContent, true);
-
+            
             mailSender.send(message);
             log.info("Confirmation email sent to: " + recipientMail);
 
         } catch (MessagingException e) {
             log.error("Failed to send confirmation email to: " + recipientMail + " " + e);
+        }
+    }
+
+    public void sendForgotPasswordMail(String recipientMail, String resetPasswordUrl) {
+        String subject = messageSource.getMessage("mail.forgot-password.subject", null, LocaleContextHolder.getLocale());
+
+        Context context = new Context();
+        context.setVariable("title", messageSource.getMessage("mail.forgot-password.title", null, LocaleContextHolder.getLocale()));
+        context.setVariable("text", messageSource.getMessage("mail.forgot-password.text", null, LocaleContextHolder.getLocale()));
+        context.setVariable("resetPasswordUrl", resetPasswordUrl);
+        context.setVariable("button", messageSource.getMessage("mail.forgot-password.button", null, LocaleContextHolder.getLocale()));
+        context.setVariable("logoUrl", urlBuilderUtil.buildServerUrl("/logo.png"));
+
+        String htmlContent = templateEngine.process("forgot-password", context);
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setFrom("noreply@" + applicationProperties.getHost());
+            helper.setTo(recipientMail);
+            helper.setSubject(subject);
+            helper.setText(htmlContent, true);
+            
+            mailSender.send(message);
+            log.info("Forgot password email sent to: " + recipientMail);
+
+        } catch (MessagingException e) {
+            log.error("Failed to send forgot password email to: " + recipientMail + " " + e);
         }
     }
 }

@@ -10,8 +10,8 @@ import lombok.Setter;
 public class DataResponseTO extends MessageResponseTO {
     private Object data;
 
-    public DataResponseTO(MessageSource messageSource, Object data, String message) {
-        super(messageSource, message);
+    public DataResponseTO(Object data, String message, MessageSource messageSource) {
+        super(message, messageSource);
         this.data = data;
     }
 }

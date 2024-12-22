@@ -93,7 +93,7 @@
 			<artifactId>jmolecules-hexagonal-architecture</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.github.vladimir-bukhtoyarov</groupId>
+			<groupId>com.bucket4j</groupId>
 			<artifactId>bucket4j-core</artifactId>
 		</dependency>
 		<dependency>
@@ -103,10 +103,6 @@
 		<dependency>
 			<groupId>com.github.ulisesbocchio</groupId>
 			<artifactId>jasypt-spring-boot-starter</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.mail</groupId>
-			<artifactId>javax.mail</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.thymeleaf</groupId>
@@ -119,7 +115,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-			<!-- <plugin>
+			<plugin>
 				<groupId>com.buschmais.jqassistant</groupId>
 				<artifactId>jqassistant-maven-plugin</artifactId>
 				<executions>
@@ -130,7 +126,7 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin> -->
+			</plugin>
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
 				<executions>

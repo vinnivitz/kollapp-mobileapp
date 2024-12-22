@@ -13,6 +13,7 @@ public interface OrganizationService {
     Optional<Organization> getOrganizationOptionalByEmail(String email);
     void activateOrganization(String confirmationToken);
     void changePassword(String oldPassword, String newPassword);
-    void resetPassword(String email);
+    void forgotPassword(String email);
+    void resetPassword(String token, String oldPassword, String newPassword);
     void register(String username, String name, String email, String password);
 }
