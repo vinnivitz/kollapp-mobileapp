@@ -45,6 +45,8 @@ export async function customFetch<T = never>(config: CustomFetchConfig): Promise
 	try {
 		const headers = new Headers(options.headers);
 
+		headers.set('Accept-Language', await determineLocale());
+
 		if (hasRequestBody(options)) {
 			headers.set('Content-Type', ContentType.JSON);
 		}
@@ -195,10 +197,8 @@ async function getEnhancedUrl(
 	url: string,
 	query: Record<string, string> | undefined
 ): Promise<string> {
-	query = query || {};
-	query.locale = await determineLocale();
 	const queryParameters = new URLSearchParams(query).toString();
-	return `${url}?${queryParameters}`;
+	return queryParameters ? `${url}?${queryParameters}` : url;
 }
 
 async function getToken(): Promise<string | undefined> {
