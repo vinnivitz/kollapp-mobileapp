@@ -3,8 +3,10 @@
 
 	import { goto } from '$app/navigation';
 
+	import type { PageData } from './$types';
+
 	import { apiResources } from '$lib/api';
-	import { registerSchema, type RegisterDto } from '$lib/api/dto';
+	import { resetPasswordSchema, type ResetPasswordDto } from '$lib/api/dto';
 	import { getValidationResult } from '$lib/api/utils';
 	import IonLayout from '$lib/components/layout/Layout.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
@@ -16,17 +18,19 @@
 		type FormConfig,
 		type ValidationResult
 	} from '$lib/models';
-	import { clickableElement, customForm } from '$lib/utils';
+	import { customForm } from '$lib/utils';
 
-	const model = registerSchema().cast({}) as RegisterDto;
+	const { data }: { data: PageData } = $props();
+
+	const model = resetPasswordSchema().cast({}) as ResetPasswordDto;
 	let validationResult: ValidationResult;
-	let actions: FormActions<RegisterDto>;
+	let actions: FormActions<ResetPasswordDto>;
 	let touched = false;
 	let password: string;
 	let confirmPassword = $state<string>();
 
-	const config: FormConfig<RegisterDto> = {
-		schema: registerSchema(),
+	const config: FormConfig<ResetPasswordDto> = {
+		schema: resetPasswordSchema(),
 		onSubmit,
 		onChange,
 		exposedActions: (exposedActions) => (actions = exposedActions),
@@ -35,20 +39,21 @@
 
 	const form = new Form(model, config);
 
-	async function onSubmit(model: RegisterDto, result: ValidationResult): Promise<void> {
+	async function onSubmit(model: ResetPasswordDto, result: ValidationResult): Promise<void> {
 		touched = true;
 		validationResult = result;
 		if (validationResult.valid) {
 			const loading = await loadingController.create({});
 			await loading.present();
-			validationResult = getValidationResult(await apiResources.publicOrganization.register(model));
-			await loading.dismiss();
+			validationResult = getValidationResult(
+				await apiResources.publicOrganization.resetPassword(model, data.token!)
+			);
 			if (validationResult.valid) {
-				actions.resetModel();
-				confirmPassword = '';
+				await goto(PageRoute.AUTH_LOGIN);
 			} else {
 				actions.applyValidationFeedback(validationResult);
 			}
+			await loading.dismiss();
 		}
 	}
 
@@ -78,31 +83,21 @@
 					errors: [
 						{
 							field: 'confirmPassword',
-							message: $t('api.dto.register.schema.validation.confirm-password.no-match')
+							message: $t('api.dto.reset-password.schema.validation.confirm-password.no-match')
 						}
 					]
 				};
 	}
 </script>
 
-<IonLayout title={$t('routes.auth.register.title')} showBackButton>
-	<Card title={$t('routes.auth.register.form.title')}>
+<IonLayout title={$t('routes.auth.reset-password.confirmation.title')} showBackButton>
+	<Card title={$t('routes.auth.reset-password.confirmation.form.title')}>
 		<form use:customForm={form}>
-			<ion-item>
-				<ion-input name="username" label={$t('routes.auth.register.form.input.username')}
-				></ion-input>
-			</ion-item>
-			<ion-item>
-				<ion-input name="email" type="email" label={$t('routes.auth.register.form.input.email')}>
-				</ion-input>
-			</ion-item>
 			<ion-item>
 				<ion-input
 					name="password"
-					type="password"
-					label={$t('routes.auth.register.form.input.password')}
-				>
-				</ion-input>
+					label={$t('routes.auth.reset-password.confirmation.form.input.password')}
+				></ion-input>
 			</ion-item>
 			<ion-item>
 				<!-- svelte-ignore event_directive_deprecated -->
@@ -111,19 +106,13 @@
 					type="password"
 					value={confirmPassword}
 					on:ionInput={(event) => updateConfirmPassword(event.detail.value || '')}
-					label={$t('routes.auth.register.form.input.confirm-password')}
+					label={$t('routes.auth.reset-password.confirmation.form.input.confirm-password')}
 				>
 				</ion-input>
 			</ion-item>
 			<ion-button class="mt-3" expand="block" type="submit">
-				{$t('routes.auth.register.form.submit')}
+				{$t('routes.auth.reset-password.confirmation.form.submit')}
 			</ion-button>
 		</form>
-		<Card>
-			<div class="text-center" use:clickableElement={() => goto(PageRoute.AUTH_LOGIN)}>
-				{$t('routes.auth.register.login.text')}
-				<span class="text-[--ion-color-secondary]">{$t('routes.auth.register.login.link')}</span>
-			</div>
-		</Card>
 	</Card>
 </IonLayout>

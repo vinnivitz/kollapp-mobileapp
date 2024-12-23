@@ -16,7 +16,7 @@
 		Form,
 		PageRoute
 	} from '$lib/models';
-	import { userStore } from '$lib/store';
+	import { organizationStore } from '$lib/store';
 	import { clickableElement, customForm } from '$lib/utils';
 
 	const model = loginSchema().cast({}) as LoginDto;
@@ -40,12 +40,12 @@
 			validationResult = getValidationResult(body);
 			if (validationResult.valid) {
 				await storeTokens(body.data);
-				await userStore.init();
-				await loading.dismiss();
-				return goto(PageRoute.HOME);
+				await organizationStore.init();
+				await goto(PageRoute.HOME);
+			} else {
+				actions.applyValidationFeedback(validationResult);
 			}
 			await loading.dismiss();
-			actions.applyValidationFeedback(validationResult);
 		}
 	}
 </script>

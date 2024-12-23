@@ -4,7 +4,7 @@
 	import { goto } from '$app/navigation';
 
 	import { apiResources } from '$lib/api';
-	import { registerSchema, type RegisterDto } from '$lib/api/dto';
+	import { changePasswordSchema, type ChangePasswordDto } from '$lib/api/dto';
 	import { getValidationResult } from '$lib/api/utils';
 	import IonLayout from '$lib/components/layout/Layout.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
@@ -16,17 +16,17 @@
 		type FormConfig,
 		type ValidationResult
 	} from '$lib/models';
-	import { clickableElement, customForm } from '$lib/utils';
+	import { customForm } from '$lib/utils';
 
-	const model = registerSchema().cast({}) as RegisterDto;
+	const model = changePasswordSchema().cast({}) as ChangePasswordDto;
 	let validationResult: ValidationResult;
-	let actions: FormActions<RegisterDto>;
+	let actions: FormActions<ChangePasswordDto>;
 	let touched = false;
-	let password: string;
+	let newPassword: string;
 	let confirmPassword = $state<string>();
 
-	const config: FormConfig<RegisterDto> = {
-		schema: registerSchema(),
+	const config: FormConfig<ChangePasswordDto> = {
+		schema: changePasswordSchema(),
 		onSubmit,
 		onChange,
 		exposedActions: (exposedActions) => (actions = exposedActions),
@@ -35,29 +35,28 @@
 
 	const form = new Form(model, config);
 
-	async function onSubmit(model: RegisterDto, result: ValidationResult): Promise<void> {
+	async function onSubmit(model: ChangePasswordDto, result: ValidationResult): Promise<void> {
 		touched = true;
 		validationResult = result;
 		if (validationResult.valid) {
 			const loading = await loadingController.create({});
 			await loading.present();
-			validationResult = getValidationResult(await apiResources.publicOrganization.register(model));
-			await loading.dismiss();
+			validationResult = getValidationResult(await apiResources.organization.changePassword(model));
 			if (validationResult.valid) {
-				actions.resetModel();
-				confirmPassword = '';
+				await goto(PageRoute.ACCOUNT);
 			} else {
 				actions.applyValidationFeedback(validationResult);
 			}
+			await loading.dismiss();
 		}
 	}
 
 	function onChange(key: string, value: string | number): void {
-		if (key === 'password') {
-			password = value as string;
+		if (key === 'newPassword') {
+			newPassword = value as string;
 			if (touched) {
 				const result = confirmPasswordValidator();
-				actions.applyValidationFeedbackByKey('confirmPassword', result);
+				actions.applyValidationFeedbackByKey('confirmNewPassword', result);
 			}
 		}
 	}
@@ -66,64 +65,54 @@
 		confirmPassword = value;
 		if (touched) {
 			const result = confirmPasswordValidator();
-			actions.applyValidationFeedbackByKey('confirmPassword', result);
+			actions.applyValidationFeedbackByKey('confirmNewPassword', result);
 		}
 	}
 
 	function confirmPasswordValidator(): ValidationResult {
-		return password === confirmPassword
+		return newPassword === confirmPassword
 			? { valid: true }
 			: {
 					valid: false,
 					errors: [
 						{
-							field: 'confirmPassword',
-							message: $t('api.dto.register.schema.validation.confirm-password.no-match')
+							field: 'confirmNewPassword',
+							message: $t('api.dto.reset-password.schema.validation.confirm-password.no-match')
 						}
 					]
 				};
 	}
 </script>
 
-<IonLayout title={$t('routes.auth.register.title')} showBackButton>
-	<Card title={$t('routes.auth.register.form.title')}>
+<IonLayout title={$t('routes.auth.reset-password.confirmation.title')} showBackButton>
+	<Card title={$t('routes.auth.reset-password.confirmation.form.title')}>
 		<form use:customForm={form}>
 			<ion-item>
-				<ion-input name="username" label={$t('routes.auth.register.form.input.username')}
+				<ion-input
+					name="currentPassword"
+					label={$t('routes.account.change-password.form.input.current-password')}
 				></ion-input>
 			</ion-item>
 			<ion-item>
-				<ion-input name="email" type="email" label={$t('routes.auth.register.form.input.email')}>
-				</ion-input>
-			</ion-item>
-			<ion-item>
 				<ion-input
-					name="password"
-					type="password"
-					label={$t('routes.auth.register.form.input.password')}
-				>
-				</ion-input>
+					name="newPassword"
+					label={$t('routes.account.change-password.form.input.new-password')}
+				></ion-input>
 			</ion-item>
 			<ion-item>
 				<!-- svelte-ignore event_directive_deprecated -->
 				<ion-input
-					name="confirmPassword"
+					name="confirmNewPassword"
 					type="password"
 					value={confirmPassword}
 					on:ionInput={(event) => updateConfirmPassword(event.detail.value || '')}
-					label={$t('routes.auth.register.form.input.confirm-password')}
+					label={$t('routes.auth.reset-password.confirmation.form.input.confirm-password')}
 				>
 				</ion-input>
 			</ion-item>
 			<ion-button class="mt-3" expand="block" type="submit">
-				{$t('routes.auth.register.form.submit')}
+				{$t('routes.account.change-password.form.submit')}
 			</ion-button>
 		</form>
-		<Card>
-			<div class="text-center" use:clickableElement={() => goto(PageRoute.AUTH_LOGIN)}>
-				{$t('routes.auth.register.login.text')}
-				<span class="text-[--ion-color-secondary]">{$t('routes.auth.register.login.link')}</span>
-			</div>
-		</Card>
 	</Card>
 </IonLayout>

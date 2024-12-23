@@ -4,7 +4,7 @@ import { ObjectSchema, type AnyObject, object, string } from 'yup';
 import { t } from '$lib/locales';
 
 /**
- * Register DTO for user registration.
+ * Register DTO for organization registration.
  */
 export type RegisterDto = {
 	username: string;
@@ -13,7 +13,7 @@ export type RegisterDto = {
 };
 
 /**
- * Register schema for user registration.
+ * Register schema for organization registration.
  * @returns {ObjectSchema<AnyObject, RegisterDto>}
  */
 export const registerSchema = (): ObjectSchema<AnyObject, RegisterDto> => {

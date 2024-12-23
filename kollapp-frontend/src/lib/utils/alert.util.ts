@@ -10,10 +10,9 @@ const $t = get(t);
 export async function showAlert(model: AlertModel) {
 	const toast = await toastController.create({
 		color: model.type,
-		duration: 2000,
+		duration: model.duration ?? 3000,
 		message: model.message,
 		icon: model.type === AlertType.ERROR ? alertCircleOutline : checkmarkCircleSharp,
-		// animated: true,
 		buttons: [$t('utils.alert.button')]
 	});
 

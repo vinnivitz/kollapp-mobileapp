@@ -20,7 +20,7 @@
 					<img
 						use:clickableElement={() => goto(PageRoute.HOME)}
 						src="/logo.png"
-						alt="User"
+						alt="Logo"
 						class="h-8 w-8"
 					/>
 				{/if}

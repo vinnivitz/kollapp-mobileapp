@@ -1,9 +1,17 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 
+	import { apiResources } from '$lib/api';
+	import { isAuthenticated } from '$lib/api/utils';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models';
 	import { clickableElement } from '$lib/utils';
+
+	async function logout(): Promise<void> {
+		await apiResources.auth.logout();
+		await goto(PageRoute.HOME);
+		location.reload();
+	}
 </script>
 
 <ion-menu side="end" content-id="menu">
@@ -15,12 +23,20 @@
 	</ion-header>
 	<ion-content class="ion-padding relative text-center">
 		<div class="flex justify-center gap-2">
-			<ion-button fill="outline" use:clickableElement={() => goto(PageRoute.AUTH_LOGIN)}>
-				{$t('components.layout.header.button.login')}
-			</ion-button>
-			<ion-button fill="outline" use:clickableElement={() => goto(PageRoute.AUTH_REGISTER)}>
-				{$t('components.layout.header.button.register')}
-			</ion-button>
+			{#await isAuthenticated() then authenticated}
+				{#if authenticated}
+					<ion-button fill="outline" use:clickableElement={() => logout()}>
+						{$t('components.layout.header.button.logout')}
+					</ion-button>
+				{:else}
+					<ion-button fill="outline" use:clickableElement={() => goto(PageRoute.AUTH_LOGIN)}>
+						{$t('components.layout.header.button.login')}
+					</ion-button>
+					<ion-button fill="outline" use:clickableElement={() => goto(PageRoute.AUTH_REGISTER)}>
+						{$t('components.layout.header.button.register')}
+					</ion-button>
+				{/if}
+			{/await}
 		</div>
 		<hr class="my-3" />
 		<div class="absolute bottom-2 left-0 right-0">

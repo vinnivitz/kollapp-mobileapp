@@ -28,7 +28,7 @@
 			const loading = await loadingController.create({});
 			await loading.present();
 			const validationResult = getValidationResult(
-				await apiResources.organization.requestPasswordReset(model)
+				await apiResources.publicOrganization.forgotPassword(model)
 			);
 			await loading.dismiss();
 			if (validationResult.valid) {

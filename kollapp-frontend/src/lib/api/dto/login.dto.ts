@@ -4,7 +4,7 @@ import { ObjectSchema, type AnyObject, object, string } from 'yup';
 import { t } from '$lib/locales';
 
 /**
- * Login DTO for user login.
+ * Login DTO for organization login.
  */
 export type LoginDto = {
 	username: string;
@@ -12,7 +12,7 @@ export type LoginDto = {
 };
 
 /**
- * Login schema for user login.
+ * Login schema for organization login.
  * @returns {ObjectSchema<AnyObject, LoginDto>}
  */
 export const loginSchema = (): ObjectSchema<AnyObject, LoginDto> => {
@@ -20,17 +20,7 @@ export const loginSchema = (): ObjectSchema<AnyObject, LoginDto> => {
 	return object<LoginDto>({
 		username: string()
 			.default('')
-			.min(2, $t('api.dto.login.schema.validation.username.min'))
-			.max(255, $t('api.dto.login.schema.validation.username.max'))
 			.required($t('api.dto.login.schema.validation.username.required')),
-		password: string()
-			.default('')
-			.min(8, $t('api.dto.login.schema.validation.password.min'))
-			.max(255, $t('api.dto.login.schema.validation.password.max'))
-			.matches(
-				/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/,
-				$t('api.dto.login.schema.validation.password.matches')
-			)
-			.required($t('api.dto.login.schema.validation.password.required'))
+		password: string().default('').required($t('api.dto.login.schema.validation.password.required'))
 	});
 };

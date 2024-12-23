@@ -2,6 +2,7 @@ import { Network } from '@capacitor/network';
 import { get } from 'svelte/store';
 
 import { PUBLIC_API_URL } from '$env/static/public';
+import { apiResources } from '$lib/api';
 import type { TokenDto } from '$lib/api/dto';
 import {
 	AuthorizationType,
@@ -11,7 +12,7 @@ import {
 	type CustomFetchConfig,
 	type ResponseBody,
 	type ServerResponseBody,
-	type UserModel
+	type OrganizationModel
 } from '$lib/api/models';
 import { t } from '$lib/locales';
 import {
@@ -19,15 +20,8 @@ import {
 	PreferencesKey,
 	type ValidationResult as ValidationResponse
 } from '$lib/models';
-import { userStore } from '$lib/store';
-import {
-	determineLocale,
-	getStoredValue,
-	removeStoredValue,
-	showAlert,
-	storeValue
-} from '$lib/utils';
-import { apiResources } from '$lib/api';
+import { organizationStore } from '$lib/store';
+import { determineLocale, getStoredValue, showAlert, storeValue } from '$lib/utils';
 
 const $t = get(t);
 
@@ -40,13 +34,14 @@ const $t = get(t);
  * @returns {Promise<ResponseBody<T>>}
  */
 export async function customFetch<T = never>(config: CustomFetchConfig): Promise<ResponseBody<T>> {
-	let {
+	const {
 		url,
+		query,
 		options = { method: RequestMethod.GET },
 		authorizationType = AuthorizationType.BEARER,
 		silent = false
 	} = config;
-	
+
 	try {
 		const headers = new Headers(options.headers);
 
@@ -63,8 +58,16 @@ export async function customFetch<T = never>(config: CustomFetchConfig): Promise
 			}
 		}
 
-		const enhancedUrl = await getEnhancedUrl(url);
-		const response = await fetch(enhancedUrl, { ...options, headers });
+		const enhancedUrl = await getEnhancedUrl(url, query);
+		let response = await fetch(enhancedUrl, { ...options, headers });
+
+		if (StatusChecks.isUnauthorized(response.status)) {
+			const newToken = await getNewToken();
+			if (newToken) {
+				headers.set('Authorization', `Bearer ${newToken}`);
+				response = await fetch(enhancedUrl, { ...options, headers });
+			}
+		}
 
 		const networkStatus = await Network.getStatus();
 		const isOnline = networkStatus?.connected;
@@ -98,12 +101,14 @@ export function getUrl(endpoint: string): string {
 }
 
 /**
- * Checks if the user is authenticated based on stored tokens.
+ * Checks if the organization is authenticated based on stored tokens.
  * @returns True if authenticated; otherwise, false.
  */
 export async function isAuthenticated(): Promise<boolean> {
-	const user = get(userStore) || (await getStoredValue<UserModel>(PreferencesKey.USER));
-	return Boolean(user);
+	const organization =
+		get(organizationStore) ||
+		(await getStoredValue<OrganizationModel>(PreferencesKey.ORGANIZATION));
+	return Boolean(organization);
 }
 
 /**
@@ -164,8 +169,11 @@ async function getResponseBody<T>(response: Response, silent: boolean): Promise<
 		return { status: response.status, message, data: {} as T };
 	}
 	const body = (await response.json()) as ServerResponseBody<T>;
-	if (!response.status && !silent) {
-		showAlert({ message: body.message ?? message, type: AlertType.ERROR });
+	if (!silent && !body.validationField) {
+		showAlert({
+			message: body.message ?? message,
+			type: response.ok ? AlertType.INFO : AlertType.ERROR
+		});
 	}
 	return {
 		status: response.status,
@@ -183,10 +191,14 @@ function hasRequestBody(options: RequestInit): boolean {
 	);
 }
 
-async function getEnhancedUrl(url: string): Promise<string> {
-	const locale = await determineLocale();
-	const separator = url.includes('?') ? '&' : '?';
-	return `${url}${separator}locale=${locale}`;
+async function getEnhancedUrl(
+	url: string,
+	query: Record<string, string> | undefined
+): Promise<string> {
+	query = query || {};
+	query.locale = await determineLocale();
+	const queryParameters = new URLSearchParams(query).toString();
+	return `${url}?${queryParameters}`;
 }
 
 async function getToken(): Promise<string | undefined> {
@@ -201,7 +213,7 @@ async function getNewToken(): Promise<string | undefined> {
 	}
 	const body = await apiResources.auth.refresh(token);
 	if (StatusChecks.isOK(body.status)) {
-		token = body.data.refreshToken;
+		token = body.data.token;
 		await storeValue(PreferencesKey.ACCESS_TOKEN, token);
 		return token;
 	}

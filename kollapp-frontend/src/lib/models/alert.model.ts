@@ -1,9 +1,10 @@
 /**
- * Alert model for displaying messages to the user.
+ * Alert model for displaying messages.
  */
 export type AlertModel = {
 	message: string;
 	type: AlertType;
+	duration?: number;
 };
 
 /**

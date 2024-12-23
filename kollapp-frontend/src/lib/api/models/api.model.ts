@@ -51,10 +51,10 @@ export enum StatusCode {
 	SERVICE_UNAVAILABLE = 503
 }
 
-
 export type CustomFetchConfig = {
 	url: string;
+	query?: Record<string, string>;
 	options?: RequestInit;
 	authorizationType?: AuthorizationType;
 	silent?: boolean;
-} 
+};

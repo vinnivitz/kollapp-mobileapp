@@ -1,33 +1,25 @@
-import type { EmailDto } from '../dto/email.dto';
+import type { ChangePasswordDto } from '../dto';
 
-import type { RegisterDto } from '$lib/api/dto';
-import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/api/models';
+import { RequestMethod, type OrganizationModel, type ResponseBody } from '$lib/api/models';
 import { customFetch, getUrl } from '$lib/api/utils';
 
-const ENDPOINT = 'public/organization';
+const ENDPOINT = 'organization';
 
 /**
- * Registers a new user and returns the validation result
- * @param model registration model
- * @returns {Promise<ResponseBody>} validation result
- */
-export async function register(model: RegisterDto): Promise<ResponseBody> {
-	return customFetch({
-		url: getUrl(`${ENDPOINT}/register`),
-		options: { method: RequestMethod.POST, body: JSON.stringify(model) },
-		authorizationType: AuthorizationType.NONE
-	});
-}
-
-/**
- * Requests an email to reset the password
- * @param model email model
+ * Gets the organization data
  * @returns {Promise<ResponseBody>}
  */
-export async function requestPasswordReset(model: EmailDto): Promise<ResponseBody> {
+export async function getOrganization(silent = true): Promise<ResponseBody<OrganizationModel>> {
+	return customFetch({ url: getUrl(`${ENDPOINT}`), silent });
+}
+
+export async function changePassword(
+	model: ChangePasswordDto,
+	silent = false
+): Promise<ResponseBody> {
 	return customFetch({
-		url: getUrl(`${ENDPOINT}/reset-password`),
+		url: getUrl(`${ENDPOINT}/change-password`),
 		options: { method: RequestMethod.POST, body: JSON.stringify(model) },
-		authorizationType: AuthorizationType.NONE
+		silent
 	});
 }
