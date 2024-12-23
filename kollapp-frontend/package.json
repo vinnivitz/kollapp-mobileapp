@@ -16,14 +16,6 @@
 		"visualize": "madge --extensions ts,svelte --image visualize/dependency-graph.png src"
 	},
 	"type": "module",
-	"overrides": {
-		"@ionic/core/components": {
-			"type": "module"
-		},
-		"@ionic/core": {
-			"type": "module"
-		}
-	},
 	"devDependencies": {
 		"@capacitor/android": "^6.2.0",
 		"@capacitor/assets": "^3.0.5",
