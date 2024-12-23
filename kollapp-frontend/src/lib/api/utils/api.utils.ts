@@ -3,7 +3,6 @@ import { get } from 'svelte/store';
 
 import { PUBLIC_API_URL } from '$env/static/public';
 import { apiResources } from '$lib/api';
-import type { TokenDto } from '$lib/api/dto';
 import {
 	AuthorizationType,
 	ContentType,
@@ -11,13 +10,14 @@ import {
 	StatusCode,
 	type CustomFetchConfig,
 	type ResponseBody,
-	type ServerResponseBody,
-	type OrganizationModel
+	type ServerResponseBody
 } from '$lib/api/models';
 import { t } from '$lib/locales';
 import {
 	AlertType,
 	PreferencesKey,
+	type AuthenticationTokenModel,
+	type OrganizationModel,
 	type ValidationResult as ValidationResponse
 } from '$lib/models';
 import { organizationStore } from '$lib/store';
@@ -117,7 +117,7 @@ export async function isAuthenticated(): Promise<boolean> {
  * Stores access and refresh tokens in the preferences store.
  * @param model Token data transfer object.
  */
-export async function storeTokens(model: TokenDto): Promise<void> {
+export async function storeTokens(model: AuthenticationTokenModel): Promise<void> {
 	await Promise.all([
 		storeValue(PreferencesKey.ACCESS_TOKEN, model.accessToken),
 		storeValue(PreferencesKey.REFRESH_TOKEN, model.refreshToken)

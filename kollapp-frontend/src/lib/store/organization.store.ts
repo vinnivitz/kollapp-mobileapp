@@ -1,13 +1,12 @@
 import { get, writable, type Writable } from 'svelte/store';
 
 import { apiResources } from '$lib/api';
-import type { OrganizationModel } from '$lib/api/models';
 import { StatusChecks } from '$lib/api/utils';
-import { PreferencesKey } from '$lib/models';
+import { PreferencesKey, type OrganizationModel } from '$lib/models';
 import { getStoredValue, removeStoredValue, storeValue } from '$lib/utils';
 
 function createOrganizationStore(): Writable<OrganizationModel | undefined> & {
-	init: () => Promise<void>;
+	init: (organization?: OrganizationModel) => Promise<void>;
 } {
 	const { subscribe, set, update } = writable<OrganizationModel | undefined>();
 
@@ -21,8 +20,10 @@ function createOrganizationStore(): Writable<OrganizationModel | undefined> & {
 		}
 	}
 
-	async function init(): Promise<void> {
-		if (get(organizationStore)) {
+	async function init(organization?: OrganizationModel): Promise<void> {
+		if (organization) {
+			return setOrganization(organization);
+		} else if (get(organizationStore)) {
 			return;
 		}
 		const body = await apiResources.organization.getOrganization();

@@ -14,7 +14,9 @@
 		type FormActions,
 		type FormConfig,
 		Form,
-		PageRoute
+		PageRoute,
+		type AuthenticationTokenModel,
+		type OrganizationModel
 	} from '$lib/models';
 	import { organizationStore } from '$lib/store';
 	import { clickableElement, customForm } from '$lib/utils';
@@ -39,8 +41,16 @@
 			const body = await apiResources.auth.login(model);
 			validationResult = getValidationResult(body);
 			if (validationResult.valid) {
-				await storeTokens(body.data);
-				await organizationStore.init();
+				const authenticationTokenModel: AuthenticationTokenModel = {
+					accessToken: body.data.accessToken,
+					refreshToken: body.data.refreshToken
+				};
+				await storeTokens(authenticationTokenModel);
+				const organizationModel: OrganizationModel = {
+					username: body.data.username,
+					email: body.data.email
+				};
+				await organizationStore.init(organizationModel);
 				await goto(PageRoute.HOME);
 			} else {
 				actions.applyValidationFeedback(validationResult);

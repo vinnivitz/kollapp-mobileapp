@@ -6,3 +6,4 @@ export * from './locale.model';
 export * from './preferences.model';
 export * from './form.model';
 export * from './theme.model';
+export * from './api.model';

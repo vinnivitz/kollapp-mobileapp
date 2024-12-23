@@ -15,7 +15,6 @@ export const load: LayoutLoad = async () => {
 	await loadTranslations(currentLocale);
 	locale.set(currentLocale);
 	await organizationStore.init();
-	await organizationStore.init();
 	await themeStore.init();
 	handleAppEvents();
 };

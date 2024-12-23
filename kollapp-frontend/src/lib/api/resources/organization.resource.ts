@@ -1,7 +1,8 @@
 import type { ChangePasswordDto } from '../dto';
 
-import { RequestMethod, type OrganizationModel, type ResponseBody } from '$lib/api/models';
+import { RequestMethod, type ResponseBody } from '$lib/api/models';
 import { customFetch, getUrl } from '$lib/api/utils';
+import type { OrganizationModel } from '$lib/models';
 
 const ENDPOINT = 'organization';
 
