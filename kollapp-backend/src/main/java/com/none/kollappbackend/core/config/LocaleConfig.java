@@ -1,14 +1,16 @@
 package com.none.kollappbackend.core.config;
 
 import java.util.Locale;
+import java.util.Optional;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.LocaleResolver;
-import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
-import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+import org.springframework.web.servlet.i18n.AbstractLocaleResolver;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class LocaleConfig {
@@ -33,20 +35,27 @@ public class LocaleConfig {
      */
     @Bean
     public LocaleResolver localeResolver() {
-        SessionLocaleResolver sessionLocaleResolver = new SessionLocaleResolver();
-        sessionLocaleResolver.setDefaultLocale(Locale.forLanguageTag("en"));
-        return sessionLocaleResolver;
+        return new HeaderLocaleResolver();
     }
 
     /**
-     * It intercepts the incoming requests and changes the locale.
-     * 
-     * @return the locale change interceptor
+     * Custom implementation of LocaleResolver that retrieves locale from the
+     * 'Accept-Language' header.
      */
-    @Bean
-    public LocaleChangeInterceptor localeChangeInterceptor() {
-        LocaleChangeInterceptor localeChangeInterceptor = new LocaleChangeInterceptor();
-        localeChangeInterceptor.setParamName("locale");
-        return localeChangeInterceptor;
+    public static class HeaderLocaleResolver extends AbstractLocaleResolver {
+        @SuppressWarnings("null")
+        @Override
+        public Locale resolveLocale(HttpServletRequest request) {
+            String acceptLanguage = request.getHeader("Accept-Language");
+            return Optional.ofNullable(acceptLanguage)
+                    .map(Locale::forLanguageTag)
+                    .orElse(getDefaultLocale());
+        }
+
+        @SuppressWarnings("null")
+        @Override
+        public void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale) {
+            throw new UnsupportedOperationException("Cannot change HTTP header 'Accept-Language'");
+        }
     }
 }

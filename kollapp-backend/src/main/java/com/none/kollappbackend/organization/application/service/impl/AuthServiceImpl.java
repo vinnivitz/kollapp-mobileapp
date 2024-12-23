@@ -63,7 +63,6 @@ public class AuthServiceImpl implements AuthService {
                 .refreshToken(refreshToken)
                 .username(organizationDetails.getUsername())
                 .email(organizationDetails.getEmail())
-                .loggedInUntil(expirationDate.getTime())
                 .build();
     }
 

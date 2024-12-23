@@ -11,9 +11,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class LoginRequestTO {
-    @NotBlank
+    @NotBlank(message = "{validation.username.required}")
     private String username;
 
-    @NotBlank
+    @NotBlank(message = "{validation.password.required}")
     private String password;
 }
