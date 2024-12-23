@@ -29,9 +29,6 @@ public class Organization {
     private String username;
 
     @NotBlank
-    private String name;
-
-    @NotBlank
     @Size(max = 50)
     @Email
     private String email;

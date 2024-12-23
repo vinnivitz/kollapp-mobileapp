@@ -6,6 +6,7 @@ import com.none.kollappbackend.organization.application.exception.InvalidRefresh
 import com.none.kollappbackend.organization.application.exception.OrganizationNotFoundException;
 import com.none.kollappbackend.organization.application.exception.UsernameNotFoundException;
 import com.none.kollappbackend.organization.application.model.AuthenticatedOrganization;
+import com.none.kollappbackend.organization.application.model.Organization;
 import com.none.kollappbackend.organization.application.model.OrganizationDetails;
 import com.none.kollappbackend.organization.application.repository.OrganizationRepository;
 import com.none.kollappbackend.organization.application.service.AuthService;
@@ -54,15 +55,14 @@ public class AuthServiceImpl implements AuthService {
         if (!organizationDetails.isActivated()) {
             throw new EmailIsNotConfirmedException(messageSource);
         }
-        String accessToken = jwtUtil.generateAuthenticationToken(organizationDetails.getId().toString(),
+        String accessToken = jwtUtil.generateAuthenticationToken(organizationDetails.getUsername(),
                 expirationDate);
-        String refreshToken = jwtUtil.generateRefreshToken(organizationDetails.getId().toString());
+        String refreshToken = jwtUtil.generateRefreshToken(organizationDetails.getUsername());
         return AuthenticatedOrganization.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .username(organizationDetails.getUsername())
                 .email(organizationDetails.getEmail())
-                .name(organizationDetails.getName())
                 .loggedInUntil(expirationDate.getTime())
                 .build();
     }
@@ -73,13 +73,13 @@ public class AuthServiceImpl implements AuthService {
             throw new InvalidRefreshTokenException(messageSource);
         }
 
-        String organizationId = jwtUtil.getSubjectFromRefreshToken(token);
-        var organization = orgaRepo.findById(Long.parseLong(organizationId))
+        String username = jwtUtil.getSubjectFromRefreshToken(token);
+        Organization organization = orgaRepo.findByUsername(username)
                 .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
         if (!organization.isActivated()) {
             throw new EmailIsNotConfirmedException(messageSource);
         }
         Date expirationDate = jwtUtil.generateExpirationDate(jwtProperties.getAuthExpirationInSeconds());
-        return jwtUtil.generateAuthenticationToken(organizationId, expirationDate);
+        return jwtUtil.generateAuthenticationToken(username, expirationDate);
     }
 }

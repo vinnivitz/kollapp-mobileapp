@@ -7,7 +7,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ClientPlatform {
     ANDROID("Android"),
-    IOS("iPhone"),
     WEB("Web");
 
     private String platformName;

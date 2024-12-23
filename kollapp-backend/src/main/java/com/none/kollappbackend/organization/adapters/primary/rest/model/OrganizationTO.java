@@ -11,6 +11,5 @@ import lombok.*;
 public class OrganizationTO {
     private long id;
     private String username;
-    private String name;
     private String email;
 }

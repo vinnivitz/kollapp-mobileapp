@@ -16,6 +16,5 @@ public class AuthenticatedOrganization {
     private String refreshToken;
     private String username;
     private String email;
-    private String name;
     private long loggedInUntil;
 }

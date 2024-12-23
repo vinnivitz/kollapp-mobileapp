@@ -39,14 +39,13 @@ public class AuthController {
     public ResponseEntity<ResponseTO> authenticateOrganization(@Valid @RequestBody LoginRequestTO loginRequestTO) {
         AuthenticatedOrganization authenticatedOrganization = authService.authenticate(loginRequestTO.getUsername(),
                 loginRequestTO.getPassword());
-        return ResponseEntity.ok(new DataResponseTO(authenticatedOrganization, "success.user.signin", messageSource));
+        return ResponseEntity.ok(new DataResponseTO(authenticatedOrganization, "success.organization.signin", messageSource));
     }
 
     @GetMapping("/refresh")
     @Operation(summary = "Refresh the access token")
     public ResponseEntity<ResponseTO> refreshAccessToken(@RequestParam("token") String refreshToken) {
         String accessToken = authService.refresh(refreshToken);
-        AccessToken token = new AccessToken(accessToken);
-        return ResponseEntity.ok(new DataResponseTO(token, "success.user.refresh-token", messageSource));
+        return ResponseEntity.ok(new DataResponseTO(new AccessToken(accessToken), "success.organization.refresh-token", messageSource));
     }
 }

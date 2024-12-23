@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ResponseUtil {
     public void createMessageResponse(HttpServletResponse response, int code, String message)
             throws JsonProcessingException, IOException {
-        log.error("Error response:", message);
+        log.error("Error response: " + message);
         response.setStatus(code);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         ErrorResponseTO responseBody = new ErrorResponseTO(message);

@@ -16,11 +16,6 @@ public class OrganizationRepositoryImpl implements OrganizationRepository {
     private OrganizationJpaRepository jpaRepository;
 
     @Override
-    public Optional<Organization> findById(long id) {
-        return jpaRepository.findById(id);
-    }
-
-    @Override
     public Optional<Organization> findByUsername(String username) {
         return jpaRepository.findByUsername(username);
     }
@@ -41,7 +36,7 @@ public class OrganizationRepositoryImpl implements OrganizationRepository {
     }
 
     @Override
-    public Organization save(Organization organization) {
-        return jpaRepository.save(organization);
+    public void save(Organization organization) {
+        jpaRepository.save(organization);
     }
 }

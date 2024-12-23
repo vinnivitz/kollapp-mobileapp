@@ -11,7 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PasswordChangeRequestTO {
-    private String oldPassword;
+    @NotBlank(message = "{validation.password.required}")
+    private String currentPassword;
 
     @NotBlank(message = "{validation.password.required}")
     @Pattern(regexp = ".{8,}", message = "{validation.password.minlength}")

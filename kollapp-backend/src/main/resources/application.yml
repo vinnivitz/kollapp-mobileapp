@@ -2,7 +2,7 @@ spring:
   application:
     name: ${BACKEND_APPLICATION_NAME:kollapp-backend}
   datasource:
-    url: jdbc:mysql://${BACKEND_DB_HOST:0.0.0.0}:${BACKEND_DB_PORT:3306}/kollapp?allowPublicKeyRetrieval=true&useSSL=false
+    url: jdbc:mysql://${BACKEND_DB_HOST:localhost}:${BACKEND_DB_PORT:3306}/kollapp?allowPublicKeyRetrieval=true&useSSL=false
     username: ${BACKEND_DB_USER:admin}
     password: ${BACKEND_DB_PASSWORD:pass}
   jpa:
@@ -15,7 +15,7 @@ spring:
     username: ${BACKEND_MAIL_USER:}
     password: ${BACKEND_MAIL_PASSWORD:}
     default-encoding: UTF-8
-    properties: 
+    properties:
       mail:
         smtp:
           auth: ${BACKEND_MAIL_AUTH:false}
@@ -43,6 +43,10 @@ kollapp:
     port: ${BACKEND_PORT:8080}
     staticCacheDays: ${BACKEND_STATIC_CACHE_DAYS:356}
 
+  client:
+    webBaseUrl: ${BACKEND_CLIENT_WEB_URL:http://localhost:5173}
+    androidBaseUrl: ${BACKEND_CLIENT_ANDROID_URL:kollapp:/}
+
   cors:
     allowedOriginPattern: ${BACKEND_CORS_URL:http://localhost:*}
     allowedMethods: ${BACKEND_CORS_METHODS:GET,POST,PUT,DELETE,OPTIONS}
@@ -63,5 +67,3 @@ kollapp:
     confirmationExpirationInSeconds: ${BACKEND_JWT_CONFIRMATION_EXPIRATION_IN_SECONDS:3600}
     resetPasswordSecret: ${BACKEND_JWT_RESET_PASSWORD_SECRET:363KNcnu8e2hPYImKLcLIofgDfAeQBPEVYtphCONRL1jac2vkr}
     resetPasswordExpirationInSeconds: ${BACKEND_JWT_RESET_PASSWORD_EXPIRATION_IN_SECONDS:3600}
-
-    

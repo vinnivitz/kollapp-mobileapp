@@ -95,6 +95,16 @@ public class JwtUtil {
                 .compact();
     }
 
+    public String getSubjectFromAuthenticationToken(String token) {
+        Key signingKey = generateSigningKey(jwtProperties.getAuthSecret());
+        return Jwts.parserBuilder()
+                .setSigningKey(signingKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+    }
+
     /**
      * Retrieves the subject from a confirmation token.
      *
@@ -140,6 +150,17 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
+    }
+
+    /**
+     * Validates the given authentication token (checks format and expiration).
+     *
+     * @param token the JWT token
+     * @return true if valid, false otherwise
+     */
+    public boolean validateAuthenticationToken(String token) {
+        Key signingKey = generateSigningKey(jwtProperties.getAuthSecret());
+        return validateToken(token, signingKey);
     }
 
     /**
@@ -201,13 +222,13 @@ public class JwtUtil {
             return true;
         } catch (Exception exception) {
             if (exception instanceof ExpiredJwtException) {
-                log.error("JWT token is expired: {}", exception.getMessage());
+                log.error("JWT token is expired: " + exception.getMessage());
             } else if (exception instanceof MalformedJwtException) {
-                log.error("Invalid JWT format: {}", exception.getMessage());
+                log.error("Invalid JWT format: " + exception.getMessage());
             } else if (exception instanceof JwtException) {
-                log.error("JWT parsing failed: {}", exception.getMessage());
+                log.error("JWT parsing failed: " + exception.getMessage());
             } else if (exception instanceof IllegalArgumentException) {
-                log.error("JWT claims string is empty: {}", exception.getMessage());
+                log.error("JWT claims string is empty: " + exception.getMessage());
             }
         }
         return false;

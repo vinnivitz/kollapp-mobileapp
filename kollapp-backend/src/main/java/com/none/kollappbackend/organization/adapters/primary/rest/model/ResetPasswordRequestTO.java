@@ -13,12 +13,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ResetPasswordRequestTO {
-    @NotNull(message = "validation.old-password.required")
-    private String oldPassword;
-
-    @NotNull(message = "validation.new-password.required")
-    @Pattern(regexp = ".{8,}", message = "{validation.new-password.minlength}")
-    @Size(max = 255, message = "{validation.new-password.maxlength}")
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$", message = "{validation.new-password.pattern}")
-    private String newPassword;
+    @NotNull(message = "validation.password.required")
+    @Pattern(regexp = ".{8,}", message = "{validation.password.minlength}")
+    @Size(max = 255, message = "{validation.password.maxlength}")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$", message = "{validation.password.pattern}")
+    private String password;
 }

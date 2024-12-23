@@ -8,11 +8,16 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.none.kollappbackend.core.config.properties.ApplicationProperties;
+import com.none.kollappbackend.core.config.properties.ClientProperties;
+import com.none.kollappbackend.organization.application.model.ClientPlatform;
 
 @Component
 public class UrlBuilderUtil {
     @Autowired
     private ApplicationProperties applicationProperties;
+
+    @Autowired
+    private ClientProperties clientProperties;
 
     public String buildServerUrl(String path, Map<String, String> queryMap) {
         String baseUrl = "http" + (Boolean.parseBoolean(applicationProperties.getProduction()) ? "s" : "") + "://"
@@ -42,5 +47,40 @@ public class UrlBuilderUtil {
 
     public String buildServerUrl(Map<String, String> queryMap) {
         return buildServerUrl(null, queryMap);
+    }
+
+    public String buildClientUrl(ClientPlatform clientPlatform, String path, Map<String, String> queryMap) {
+        String baseUrl = getClientBaseUrl(clientPlatform);
+
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(baseUrl + path);
+
+        if (queryMap != null) {
+            queryMap.forEach(uriBuilder::queryParam);
+        }
+
+        return uriBuilder.toUriString();
+    }
+
+    public String buildClientUrl() {
+        return buildClientUrl(null, null);
+    }
+
+    public String buildClientUrl(ClientPlatform clientPlatform, String path) {
+        return getClientBaseUrl(clientPlatform) + path;
+    }
+
+    public String buildClientUrl(Map<String, String> queryMap) {
+        return buildClientUrl(null, null, queryMap);
+    }
+
+    private String getClientBaseUrl(ClientPlatform clientPlatform) {
+        switch (clientPlatform) {
+            case ANDROID:
+                return clientProperties.getAndroidBaseUrl();
+            case WEB:
+                return clientProperties.getWebBaseUrl();
+            default:
+                return null;
+        }
     }
 }

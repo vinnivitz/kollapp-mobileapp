@@ -7,10 +7,9 @@ import java.util.Optional;
 
 @SecondaryPort
 public interface OrganizationRepository {
-    Optional<Organization> findById(long id);
     Optional<Organization> findByUsername(String username);
     Optional<Organization> findByEmail(String email);
     boolean existsByUsername(String username);
     boolean existsByEmail(String email);
-    Organization save(Organization organization);
+    void save(Organization organization);
 }

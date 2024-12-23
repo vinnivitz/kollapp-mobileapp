@@ -19,11 +19,9 @@ import java.util.Collection;
 @Getter
 @Setter
 public class OrganizationDetails implements UserDetails {
-
     private Long id;
     private String username;
     private String email;
-    private String name;
     private boolean isActivated;
     @JsonIgnore
     private String password;

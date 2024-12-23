@@ -1,8 +1,11 @@
 package com.none.kollappbackend.organization.adapters.primary.rest;
 
+import com.none.kollappbackend.core.adapters.primary.model.DataResponseTO;
 import com.none.kollappbackend.core.adapters.primary.model.MessageResponseTO;
 import com.none.kollappbackend.core.adapters.primary.model.ResponseTO;
 import com.none.kollappbackend.organization.adapters.primary.rest.model.PasswordChangeRequestTO;
+import com.none.kollappbackend.organization.application.model.Organization;
+import com.none.kollappbackend.organization.application.model.OrganizationDetails;
 import com.none.kollappbackend.organization.application.service.OrganizationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -12,6 +15,10 @@ import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,10 +36,18 @@ public class AuthorizedOrganizationController {
     @Autowired
     private OrganizationService organizationService;
 
+    @GetMapping("")
+    @Operation(summary = "Get the organization details", security = { @SecurityRequirement(name = "bearer-key") })
+    public ResponseEntity<ResponseTO> getOrganization() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        OrganizationDetails organizationDetails = (OrganizationDetails) authentication.getPrincipal();
+        return ResponseEntity.ok(new DataResponseTO(organizationDetails, "success.organization.get-data", messageSource));
+    }
+
     @PostMapping("/change-password")
     @Operation(summary = "Change the password", security = { @SecurityRequirement(name = "bearer-key") })
     public ResponseEntity<ResponseTO> changePassword(@RequestBody PasswordChangeRequestTO changeRequestTo) {
-        organizationService.changePassword(changeRequestTo.getOldPassword(), changeRequestTo.getNewPassword());
+        organizationService.changePassword(changeRequestTo.getCurrentPassword(), changeRequestTo.getNewPassword());
         return ResponseEntity.ok(new MessageResponseTO("success.password.changed", messageSource));
     }
 }

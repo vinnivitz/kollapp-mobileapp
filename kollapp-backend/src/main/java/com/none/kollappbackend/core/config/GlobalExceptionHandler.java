@@ -2,9 +2,11 @@ package com.none.kollappbackend.core.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -36,7 +38,6 @@ public class GlobalExceptionHandler {
     @Autowired
     private MessageSource messageSource;
 
-    @SuppressWarnings("null")
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ResponseTO> handleValidationExceptions(
             MethodArgumentNotValidException exception) {
@@ -47,20 +48,18 @@ public class GlobalExceptionHandler {
             if (!fieldErrors.isEmpty()) {
                 FieldError firstError = fieldErrors.get(0);
 
-                String message = messageSource.getMessage(firstError.getDefaultMessage(), null,
-                        LocaleContextHolder.getLocale());
+                String message = firstError.getDefaultMessage();
 
                 ValidationFailureResponseTO responseTO = new ValidationFailureResponseTO(message,
                         firstError.getField());
 
-                log.info(message);
                 return ResponseEntity.badRequest().body(responseTO);
             }
 
             ValidationFailureResponseTO responseTO = new ValidationFailureResponseTO("Validation failed");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseTO);
         } catch (Exception e) {
-            log.error("Error occurred while handling validation exception", e);
+            log.error("Error occurred while handling validation exception " + e);
             return ResponseEntity.internalServerError().body(new ErrorResponseTO("error.generic", messageSource));
         }
     }
@@ -127,16 +126,31 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ResponseTO> handleNoResourceFound(NoResourceFoundException ex) {
+        log.error(ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponseTO(ex.getMessage(), messageSource));
+                .body(new ErrorResponseTO("error.resource-not-found", messageSource));
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ResponseTO> handleMethodNotAllowed(HttpRequestMethodNotSupportedException ex) {
+        log.error(ex.getMessage());
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
-                .body(new ErrorResponseTO(ex.getMessage(), messageSource));
+                .body(new ErrorResponseTO("error.method-not-allowed", messageSource));
     }
 
+    @ExceptionHandler(NoSuchMessageException.class)
+    public ResponseEntity<ResponseTO> handleNoSuchMessage(NoSuchMessageException ex) {
+        log.error(ex.getMessage());
+        return ResponseEntity.internalServerError()
+                .body(new ErrorResponseTO("error.generic", messageSource));
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ResponseTO> handleBadCredentials(BadCredentialsException ex) {
+        return ResponseEntity.badRequest()
+                .body(new ValidationFailureResponseTO(messageSource.getMessage("validation.password.incorrect", null,
+                        LocaleContextHolder.getLocale()), "password"));
+    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResponseTO> handleException(Exception exception) {

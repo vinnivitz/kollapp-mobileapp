@@ -1,6 +1,6 @@
 package com.none.kollappbackend.core.config;
 
-import com.none.kollappbackend.organization.application.service.impl.UserDetailsServiceImpl;
+import com.none.kollappbackend.organization.application.model.OrganizationDetails;
 import com.none.kollappbackend.util.ResponseUtil;
 import com.none.kollappbackend.util.JwtUtil;
 
@@ -8,12 +8,14 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -21,16 +23,17 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+@Slf4j
 @Component
 public class AuthTokenFilter extends OncePerRequestFilter {
     @Autowired
     private JwtUtil jwtUtil;
 
     @Autowired
-    private UserDetailsServiceImpl userDetailsService;
+    private UserDetailsService userDetailsService;
 
     @Autowired
-    MessageSource messageSource;
+    private MessageSource messageSource;
 
     @Autowired
     private ResponseUtil responseUtil;
@@ -42,18 +45,20 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         try {
             String jwt = parseJwt(request);
             if (jwt != null) {
-                if (jwtUtil.validateConfirmationToken(jwt)) {
-                    String username = jwtUtil.getSubjectFromConfirmationToken(jwt);
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                if (jwtUtil.validateAuthenticationToken(jwt)) {
+                    String username = jwtUtil.getSubjectFromAuthenticationToken(jwt);
+                    OrganizationDetails organizationDetails = (OrganizationDetails) userDetailsService
+                            .loadUserByUsername(username);
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            userDetails,
+                            organizationDetails,
                             null,
-                            userDetails.getAuthorities());
+                            organizationDetails.getAuthorities());
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 } else {
                     responseUtil.createMessageResponse(response, HttpServletResponse.SC_UNAUTHORIZED,
-                            "error.jwt.confirmation.invalid");
+                            messageSource.getMessage("error.jwt.authentication.invalid", null,
+                                    LocaleContextHolder.getLocale()));
                     return;
                 }
             }

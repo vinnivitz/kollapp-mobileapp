@@ -1,14 +1,22 @@
 services:
-  orgaapp-db:
+  kollapp-db:
     image: mysql
-    container_name: orgaapp-db
+    container_name: kollapp-db
     restart: unless-stopped
     ports:
       - "3306:3306"
     volumes:
       - ./db:/var/lib/mysql
     environment:
-      MYSQL_DATABASE: orgaapp
+      MYSQL_DATABASE: kollapp
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_USER: orgaapp
-      MYSQL_PASSWORD: orgaapp
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: pass
+
+  kollapp-mail:
+    image: mailhog/mailhog
+    container_name: kollapp-mail
+    restart: unless-stopped
+    ports:
+      - "1025:1025"
+      - "8025:8025"

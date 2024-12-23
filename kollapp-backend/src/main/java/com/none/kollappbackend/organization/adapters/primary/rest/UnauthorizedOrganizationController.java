@@ -41,7 +41,7 @@ public class UnauthorizedOrganizationController {
     @PostMapping("/reset-password")
     public ResponseEntity<ResponseTO> resetPassword(@RequestParam("token") String token,
             @Valid @RequestBody ResetPasswordRequestTO resetPasswordTo) {
-        organizationService.resetPassword(token, resetPasswordTo.getOldPassword(), resetPasswordTo.getNewPassword());
+        organizationService.resetPassword(token, resetPasswordTo.getPassword());
         return ResponseEntity.ok(new MessageResponseTO("success.password.reset", messageSource));
     }
 
@@ -50,7 +50,6 @@ public class UnauthorizedOrganizationController {
             @Valid @RequestBody OrganizationSignupRequest signUpRequest) {
         organizationService.register(
                 signUpRequest.getUsername(),
-                signUpRequest.getName(),
                 signUpRequest.getEmail(),
                 signUpRequest.getPassword());
         return ResponseEntity.ok(new MessageResponseTO("success.registration", messageSource));

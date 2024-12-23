@@ -5,7 +5,6 @@ import com.none.kollappbackend.organization.application.exception.EmailIsAlready
 import com.none.kollappbackend.organization.application.exception.EmailNotFoundException;
 import com.none.kollappbackend.organization.application.exception.IncorrectPasswordException;
 import com.none.kollappbackend.organization.application.exception.InvalidConfirmationLinkException;
-import com.none.kollappbackend.organization.application.exception.OrganizationNotFoundException;
 import com.none.kollappbackend.organization.application.exception.UsernameExistsException;
 import com.none.kollappbackend.organization.application.exception.UsernameNotFoundException;
 import com.none.kollappbackend.organization.application.model.OrganizationDetails;
@@ -16,6 +15,7 @@ import com.none.kollappbackend.util.UrlBuilderUtil;
 
 import jakarta.transaction.Transactional;
 
+import com.none.kollappbackend.organization.application.model.ClientPlatform;
 import com.none.kollappbackend.organization.application.model.Organization;
 import com.none.kollappbackend.organization.application.service.EmailService;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.Map;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -59,8 +58,8 @@ public class OrganizationServiceImpl implements OrganizationService {
                 .orElseThrow(() -> new UsernameNotFoundException(messageSource));
     }
 
-    public Optional<Organization> getOrganizationOptionalByEmail(String email) {
-        return this.orgaRepo.findByEmail(email);
+    public Organization getOrganizationOptionalByEmail(String email) {
+        return this.orgaRepo.findByEmail(email).orElseThrow(() -> new EmailNotFoundException(messageSource));
     }
 
     @Override
@@ -68,8 +67,8 @@ public class OrganizationServiceImpl implements OrganizationService {
         if (!jwtUtil.validateConfirmationToken(confirmationToken)) {
             throw new InvalidConfirmationLinkException(messageSource);
         }
-        long organizationId = Long.parseLong(jwtUtil.getSubjectFromConfirmationToken(confirmationToken));
-        Organization organization = orgaRepo.findById(organizationId)
+        String username = jwtUtil.getSubjectFromConfirmationToken(confirmationToken);
+        Organization organization = orgaRepo.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("error.organization.not-found"));
         if (organization.isActivated()) {
             throw new EmailIsAlreadyConfirmedException(messageSource);
@@ -90,35 +89,24 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     public void forgotPassword(String email) {
-        Optional<Organization> orgaOpt = getOrganizationOptionalByEmail(email);
-        if (!orgaOpt.isPresent()) {
-            throw new EmailNotFoundException(messageSource);
-        }
-        Organization organization = orgaOpt.get();
-        String token = jwtUtil.generateResetPasswordToken(organization.getId().toString());
+        Organization organization = getOrganizationOptionalByEmail(email);
+        String token = jwtUtil.generateResetPasswordToken(organization.getUsername());
         emailService.sendForgotPasswordMail(email, createResetPasswordBaseUrl(token));
     }
 
     @Override
-    public void resetPassword(String token, String oldPassword, String newPassword) {
+    public void resetPassword(String token, String password) {
         if (!jwtUtil.validateResetPasswordToken(token)) {
             throw new InvalidConfirmationLinkException(messageSource);
         }
-        String organizationId = jwtUtil.getSubjectFromResetPasswordToken(token);
-        Optional<Organization> orgaOpt = orgaRepo.findById(Long.parseLong(organizationId));
-        if (!orgaOpt.isPresent()) {
-            throw new OrganizationNotFoundException(messageSource);
-        }
-        Organization organization = orgaOpt.get();
-        if (!encoder.matches(oldPassword, organization.getPassword())) {
-            throw new IncorrectPasswordException(messageSource);
-        }
-        organization.setPassword(encoder.encode(newPassword));
+        String username = jwtUtil.getSubjectFromResetPasswordToken(token);
+        Organization organization = getOrganizationByUsername(username);
+        organization.setPassword(encoder.encode(password));
     }
 
     @Override
     @Transactional
-    public void register(String username, String name, String email, String password) {
+    public void register(String username, String email, String password) {
         if (orgaRepo.existsByUsername(username)) {
             throw new UsernameExistsException(messageSource);
         }
@@ -126,21 +114,10 @@ public class OrganizationServiceImpl implements OrganizationService {
             throw new EmailExistsException(messageSource);
         }
         String encodedPassword = encoder.encode(password);
-        Organization organization = Organization.builder().username(username).name(name).email(email)
+        Organization organization = Organization.builder().username(username).email(email)
                 .password(encodedPassword).build();
-        Long organizationId = orgaRepo.save(organization).getId();
-        String confirmationToken = jwtUtil.generateConfirmationToken(organizationId.toString());
-        emailService.sendConfirmationMail(organization.getEmail(), createConfirmationBaseUrl(confirmationToken));
-    }
-
-    @Transactional
-    private void createOrganizationAndSendConfirmationMail(String username, String name, String email,
-            String password) {
-        String encodedPassword = encoder.encode(password);
-        Organization organization = Organization.builder().username(username).name(name).email(email)
-                .password(encodedPassword).build();
-        Long organizationId = orgaRepo.save(organization).getId();
-        String confirmationToken = jwtUtil.generateConfirmationToken(organizationId.toString());
+        orgaRepo.save(organization);
+        String confirmationToken = jwtUtil.generateConfirmationToken(username);
         emailService.sendConfirmationMail(organization.getEmail(), createConfirmationBaseUrl(confirmationToken));
     }
 
@@ -151,6 +128,6 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     private String createResetPasswordBaseUrl(String token) {
         Map<String, String> params = Map.of("resetPasswordToken", token);
-        return urlBuilderUtil.buildServerUrl("/api/public/organization/reset-password", params);
+        return urlBuilderUtil.buildClientUrl(ClientPlatform.WEB, "/auth/reset-password/confirmation", params);
     }
 }
