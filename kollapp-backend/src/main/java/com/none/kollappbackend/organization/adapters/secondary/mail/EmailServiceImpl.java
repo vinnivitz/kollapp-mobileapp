@@ -1,6 +1,7 @@
-package com.none.kollappbackend.organization.application.service.impl;
+package com.none.kollappbackend.organization.adapters.secondary.mail;
 
 import lombok.extern.slf4j.Slf4j;
+import org.jmolecules.architecture.hexagonal.SecondaryAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -18,6 +19,7 @@ import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.MessagingException;
 
 @Service
+@SecondaryAdapter
 @Slf4j
 public class EmailServiceImpl implements EmailService {
     @Autowired
