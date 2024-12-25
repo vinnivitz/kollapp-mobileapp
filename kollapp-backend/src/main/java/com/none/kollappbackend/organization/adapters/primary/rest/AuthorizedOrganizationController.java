@@ -34,6 +34,7 @@ public class AuthorizedOrganizationController {
     @Autowired
     private OrganizationService organizationService;
 
+    @GetMapping
     @Operation(summary = "Get the organization details", security = { @SecurityRequirement(name = "bearer-key") })
     public ResponseEntity<ResponseTO> getOrganization() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
