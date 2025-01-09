@@ -1,6 +1,6 @@
 package com.none.kollappbackend.core.config;
 
-import com.none.kollappbackend.util.ResponseUtil;
+import com.none.kollappbackend.core.util.ResponseUtil;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

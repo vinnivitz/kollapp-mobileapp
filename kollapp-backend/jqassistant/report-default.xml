@@ -18,5 +18,27 @@
         ]]></cypher>
         <report type="plantuml-component-diagram"/>
     </concept>
+    
+    <concept id="kollap:DefinedBoundedContextDependencies">
+        <providesConcept refId="jmolecules-ddd:AllowedBoundedContextDependency"/>
+        <description>Propagates the allowed Bounded Context dependencies</description>
+        <cypher><![CDATA[
+            WITH
+                [
+                    {upstream: 'Core', downstream: 'Organization'}
+                ] as allowedDependencies
+            UNWIND
+                allowedDependencies as allowedDependency
+            MATCH
+                (upstreamBC:JMolecules:DDD {name: allowedDependency.upstream})
+            MATCH
+                (downstreamBC:JMolecules:DDD {name: allowedDependency.downstream})
+            MERGE
+                (downstream)-[:DEFINES_DEPENDENCY]->(upstream)
+            RETURN
+                downstream.name AS downstream,
+                upstream.name AS upstream
+        ]]></cypher>
+    </concept>
 
 </jqassistant-rules>

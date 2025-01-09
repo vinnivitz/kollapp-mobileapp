@@ -1,4 +1,4 @@
-package com.none.kollappbackend.core.adapters.primary.model;
+package com.none.kollappbackend.core.adapters.primary.rest.model;
 
 import lombok.Getter;
 import lombok.Setter;

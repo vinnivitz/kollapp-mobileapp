@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.none.kollappbackend.core.config.properties.RateLimitProperties;
-import com.none.kollappbackend.util.ResponseUtil;
+import com.none.kollappbackend.core.util.ResponseUtil;
 
 import java.io.IOException;
 import java.time.Duration;

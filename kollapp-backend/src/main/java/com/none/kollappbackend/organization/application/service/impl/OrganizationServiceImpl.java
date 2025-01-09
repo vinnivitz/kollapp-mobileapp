@@ -10,8 +10,8 @@ import com.none.kollappbackend.organization.application.exception.UsernameNotFou
 import com.none.kollappbackend.organization.application.model.OrganizationDetails;
 import com.none.kollappbackend.organization.application.repository.OrganizationRepository;
 import com.none.kollappbackend.organization.application.service.OrganizationService;
-import com.none.kollappbackend.util.JwtUtil;
-import com.none.kollappbackend.util.UrlBuilderUtil;
+import com.none.kollappbackend.core.util.JwtUtil;
+import com.none.kollappbackend.core.util.UrlBuilderUtil;
 
 import jakarta.transaction.Transactional;
 

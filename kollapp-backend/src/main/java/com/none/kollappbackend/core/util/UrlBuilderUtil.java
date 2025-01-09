@@ -1,4 +1,4 @@
-package com.none.kollappbackend.util;
+package com.none.kollappbackend.core.util;
 
 import java.util.Map;
 

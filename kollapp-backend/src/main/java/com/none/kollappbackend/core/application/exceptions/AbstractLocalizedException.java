@@ -1,4 +1,4 @@
-package com.none.kollappbackend.organization.application.exception;
+package com.none.kollappbackend.core.application.exceptions;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;

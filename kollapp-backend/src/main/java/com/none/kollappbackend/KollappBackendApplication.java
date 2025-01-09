@@ -1,4 +1,4 @@
-package com.none.kollappbackend.core;
+package com.none.kollappbackend;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -15,9 +15,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import com.none.kollappbackend.core.config.properties.ApplicationProperties;
 
-@SpringBootApplication(scanBasePackages = "com.none.kollappbackend")
-@EnableJpaRepositories("com.none.kollappbackend.*")
-@EntityScan("com.none.kollappbackend.*")
+@SpringBootApplication
 public class KollappBackendApplication {
 	@Autowired
 	private ApplicationProperties applicationProperties;

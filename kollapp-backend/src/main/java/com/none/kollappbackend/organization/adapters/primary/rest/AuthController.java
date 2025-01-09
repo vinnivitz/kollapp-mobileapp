@@ -1,7 +1,7 @@
 package com.none.kollappbackend.organization.adapters.primary.rest;
 
-import com.none.kollappbackend.core.adapters.primary.model.DataResponseTO;
-import com.none.kollappbackend.core.adapters.primary.model.ResponseTO;
+import com.none.kollappbackend.core.adapters.primary.rest.model.DataResponseTO;
+import com.none.kollappbackend.core.adapters.primary.rest.model.ResponseTO;
 import com.none.kollappbackend.organization.adapters.primary.rest.model.LoginRequestTO;
 import com.none.kollappbackend.organization.application.model.AuthenticatedOrganization;
 import com.none.kollappbackend.organization.application.model.AccessToken;

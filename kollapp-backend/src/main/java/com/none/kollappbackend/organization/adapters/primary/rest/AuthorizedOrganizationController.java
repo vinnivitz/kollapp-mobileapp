@@ -1,8 +1,8 @@
 package com.none.kollappbackend.organization.adapters.primary.rest;
 
-import com.none.kollappbackend.core.adapters.primary.model.DataResponseTO;
-import com.none.kollappbackend.core.adapters.primary.model.MessageResponseTO;
-import com.none.kollappbackend.core.adapters.primary.model.ResponseTO;
+import com.none.kollappbackend.core.adapters.primary.rest.model.DataResponseTO;
+import com.none.kollappbackend.core.adapters.primary.rest.model.MessageResponseTO;
+import com.none.kollappbackend.core.adapters.primary.rest.model.ResponseTO;
 import com.none.kollappbackend.organization.adapters.primary.rest.model.PasswordChangeRequestTO;
 import com.none.kollappbackend.organization.application.model.OrganizationDetails;
 import com.none.kollappbackend.organization.application.service.OrganizationService;

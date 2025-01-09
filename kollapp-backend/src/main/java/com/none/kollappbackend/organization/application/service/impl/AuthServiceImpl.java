@@ -10,7 +10,7 @@ import com.none.kollappbackend.organization.application.model.Organization;
 import com.none.kollappbackend.organization.application.model.OrganizationDetails;
 import com.none.kollappbackend.organization.application.repository.OrganizationRepository;
 import com.none.kollappbackend.organization.application.service.AuthService;
-import com.none.kollappbackend.util.JwtUtil;
+import com.none.kollappbackend.core.util.JwtUtil;
 
 import lombok.extern.slf4j.Slf4j;
 

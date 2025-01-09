@@ -13,7 +13,7 @@ import org.thymeleaf.context.Context;
 
 import com.none.kollappbackend.core.config.properties.ApplicationProperties;
 import com.none.kollappbackend.organization.application.service.EmailService;
-import com.none.kollappbackend.util.UrlBuilderUtil;
+import com.none.kollappbackend.core.util.UrlBuilderUtil;
 
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.MessagingException;

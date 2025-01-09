@@ -1,4 +1,4 @@
-package com.none.kollappbackend.util;
+package com.none.kollappbackend.core.util;
 
 import java.io.IOException;
 
@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.none.kollappbackend.core.adapters.primary.model.ErrorResponseTO;
+import com.none.kollappbackend.core.adapters.primary.rest.model.ErrorResponseTO;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;

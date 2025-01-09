@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.none.kollappbackend.organization.application.model.ClientPlatform;
-import com.none.kollappbackend.util.ClientPlatformContext;
+import com.none.kollappbackend.core.util.ClientPlatformContext;
 
 @Component
 public class ClientPlatformFilter extends OncePerRequestFilter {

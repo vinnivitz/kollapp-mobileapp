@@ -1,8 +1,8 @@
 package com.none.kollappbackend.core.config;
 
 import com.none.kollappbackend.organization.application.model.OrganizationDetails;
-import com.none.kollappbackend.util.ResponseUtil;
-import com.none.kollappbackend.util.JwtUtil;
+import com.none.kollappbackend.core.util.ResponseUtil;
+import com.none.kollappbackend.core.util.JwtUtil;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
