@@ -3,7 +3,6 @@ import { get } from 'svelte/store';
 
 import { dev } from '$app/environment';
 
-import { PUBLIC_API_URL } from '$env/static/public';
 import { apiResources } from '$lib/api';
 import {
 	AuthorizationType,
@@ -23,6 +22,7 @@ import {
 } from '$lib/models';
 import { authenticationTokenStore, organizationStore } from '$lib/store';
 import { determineLocale, getStoredValue, showAlert, storeValue } from '$lib/utils';
+import environment from '$lib/environment';
 
 const $t = get(t);
 let lastNetworkCheck = 0;
@@ -100,7 +100,7 @@ export async function customFetch<T = never>(
  * @returns Full API URL as a string.
  */
 export function getUrl(endpoint: string): string {
-	return `${PUBLIC_API_URL}/${endpoint}`;
+	return `${environment.apiUrl}/${endpoint}`;
 }
 
 /**
@@ -183,7 +183,7 @@ async function getResponseBody<T>(
 async function getCachedNetworkStatus(): Promise<ConnectionStatus> {
 	const now = Date.now();
 	// Check once every 10 seconds
-	if (!cachedNetworkStatus || now - lastNetworkCheck > 10_000) {
+	if (!cachedNetworkStatus || now - lastNetworkCheck > environment.networkCheckInterval) {
 		cachedNetworkStatus = await Network.getStatus();
 		lastNetworkCheck = now;
 	}
