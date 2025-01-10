@@ -1,6 +1,5 @@
 package com.none.kollappbackend.organization.application.service;
 
-import org.jmolecules.architecture.hexagonal.PrimaryPort;
 import org.jmolecules.architecture.hexagonal.SecondaryPort;
 
 @SecondaryPort
