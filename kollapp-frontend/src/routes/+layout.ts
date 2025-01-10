@@ -4,17 +4,12 @@ import { goto } from '$app/navigation';
 
 import type { LayoutLoad } from './$types';
 
-import { loadTranslations, locale } from '$lib/locales';
-import { organizationStore, themeStore } from '$lib/store';
-import { determineLocale, navigateBack } from '$lib/utils';
+import { themeStore } from '$lib/store';
+import { navigateBack } from '$lib/utils';
 
 export const ssr = false;
 
 export const load: LayoutLoad = async () => {
-	const currentLocale = await determineLocale();
-	await loadTranslations(currentLocale);
-	locale.set(currentLocale);
-	await organizationStore.init();
 	await themeStore.init();
 	handleAppEvents();
 };

@@ -9,5 +9,6 @@ export enum PageRoute {
 	ACCOUNT_CHANGE_PASSWORD = '/account/change-password',
 	AUTH_LOGIN = '/auth/login',
 	AUTH_REGISTER = '/auth/register',
-	AUTH_RESET_PASSWORD = '/auth/reset-password'
+	AUTH_RESET_PASSWORD = '/auth/reset-password',
+	AUTH_RESEND_CONFIRMATION = '/auth/resend-confirmation'
 }

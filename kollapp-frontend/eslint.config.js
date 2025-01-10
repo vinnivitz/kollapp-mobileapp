@@ -58,7 +58,8 @@ export default ts.config(
 				...globals.browser,
 				...globals.node,
 				HTMLIonTabsElement: 'readonly',
-				HTMLIonRefresherElement: 'readonly'
+				HTMLIonRefresherElement: 'readonly',
+				HTMLIonLoadingElement: 'readonly'
 			}
 		}
 	},

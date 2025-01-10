@@ -1,6 +1,8 @@
 {
 	"api": {
 		"error": "Es ist ein Fehler aufgetreten.",
+		"success": "Anfrage erfolgreich",
+		"not-available": "Server nicht erreichbar",
 		"dto": {
 			"register": {
 				"schema": {
@@ -80,7 +82,8 @@
 			}
 		},
 		"offline": "Du bist offline",
-		"online": "Du bist online"
+		"online": "Du bist online",
+		"unauthorized": "Authentifizierung fehlgeschlagen"
 	},
 	"common": {
 		"page-routes": {
@@ -188,6 +191,13 @@
 				"forgot-password": {
 					"link": "Zurücksetzen",
 					"text": "Passwort vergessen?"
+				},
+				"resend-confirmation": {
+					"link": "Erneut senden",
+					"text": "Du hast die Bestätigungsmail nicht erhalten?"
+				},
+				"alert": {
+					"email-not-confirmed": "E-Mail ist nicht bestätigt"
 				}
 			},
 			"register": {
@@ -231,6 +241,17 @@
 						"form": {}
 					},
 					"title": "Passwort zurücksetzen"
+				}
+			},
+			"resend-confirmation": {
+				"title": "Bestätigung erneut senden",
+				"card": {
+					"title": "Gib deine E-Mail-Adresse ein"
+				},
+				"form": {
+					"buttons": {
+						"send": "Bestätigungs-E-Mail senden"
+					}
 				}
 			}
 		},

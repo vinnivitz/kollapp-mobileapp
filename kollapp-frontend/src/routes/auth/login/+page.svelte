@@ -5,7 +5,8 @@
 
 	import { apiResources } from '$lib/api';
 	import { loginSchema, type LoginDto } from '$lib/api/dto';
-	import { getValidationResult, storeTokens } from '$lib/api/utils';
+	import { ValidationCode } from '$lib/api/models';
+	import { getValidationResult } from '$lib/api/utils';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
 	import { t } from '$lib/locales';
@@ -16,14 +17,17 @@
 		Form,
 		PageRoute,
 		type AuthenticationTokenModel,
-		type OrganizationModel
+		type OrganizationModel,
+		PreferencesKey,
+		AlertType
 	} from '$lib/models';
-	import { organizationStore } from '$lib/store';
-	import { clickableElement, customForm } from '$lib/utils';
+	import { authenticationTokenStore, organizationStore } from '$lib/store';
+	import { clickableElement, customForm, showAlert, storeValue } from '$lib/utils';
 
 	const model = loginSchema().cast({}) as LoginDto;
 	let validationResult: ValidationResult;
 	let actions: FormActions<LoginDto>;
+	let emailNotConfirmed = $state(false);
 
 	const config: FormConfig<LoginDto> = {
 		schema: loginSchema(),
@@ -45,7 +49,7 @@
 					accessToken: body.data.accessToken,
 					refreshToken: body.data.refreshToken
 				};
-				await storeTokens(authenticationTokenModel);
+				await storeAuthenticationTokens(authenticationTokenModel);
 				const organizationModel: OrganizationModel = {
 					username: body.data.username,
 					email: body.data.email
@@ -53,10 +57,25 @@
 				await organizationStore.init(organizationModel);
 				await goto(PageRoute.HOME);
 			} else {
+				if (validationResult.errors?.[0].code === ValidationCode.EMAIL_NOT_CONFIRMED) {
+					emailNotConfirmed = true;
+					showAlert({
+						type: AlertType.ERROR,
+						message: $t('routes.auth.login.alert.email-not-confirmed')
+					});
+				}
 				actions.applyValidationFeedback(validationResult);
 			}
 			await loading.dismiss();
 		}
+	}
+
+	async function storeAuthenticationTokens(model: AuthenticationTokenModel): Promise<void> {
+		await Promise.all([
+			storeValue(PreferencesKey.ACCESS_TOKEN, model.accessToken),
+			authenticationTokenStore.set(model.accessToken),
+			storeValue(PreferencesKey.REFRESH_TOKEN, model.refreshToken)
+		]);
 	}
 </script>
 
@@ -77,18 +96,27 @@
 				{$t('routes.auth.login.form.submit')}
 			</ion-button>
 		</form>
+		{#if emailNotConfirmed}
+			<Card>
+				<div
+					class="text-center"
+					use:clickableElement={() => goto(PageRoute.AUTH_RESEND_CONFIRMATION)}
+				>
+					{$t('routes.auth.login.resend-confirmation.text')}
+					<ion-text color="primary">{$t('routes.auth.login.resend-confirmation.link')}</ion-text>
+				</div>
+			</Card>
+		{/if}
 		<Card>
 			<div class="text-center" use:clickableElement={() => goto(PageRoute.AUTH_REGISTER)}>
 				{$t('routes.auth.login.register.text')}
-				<span class="text-[--ion-color-secondary]">{$t('routes.auth.login.register.link')}</span>
+				<ion-text color="primary">{$t('routes.auth.login.register.link')}</ion-text>
 			</div>
 		</Card>
 		<Card>
 			<div class="text-center" use:clickableElement={() => goto(PageRoute.AUTH_RESET_PASSWORD)}>
 				{$t('routes.auth.login.forgot-password.text')}
-				<span class="text-[--ion-color-secondary]">
-					{$t('routes.auth.login.forgot-password.link')}
-				</span>
+				<ion-text color="primary">{$t('routes.auth.login.forgot-password.link')}</ion-text>
 			</div>
 		</Card>
 	</Card>
