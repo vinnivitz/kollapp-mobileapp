@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -22,7 +23,8 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 import java.util.List;
 
 @Slf4j
-@ControllerAdvice
+@Order(1)
+@ControllerAdvice(basePackages = {"com.none.kollappbackend.organization"})
 public class OrganizationExceptionHandler {
     @Autowired
     private MessageSource messageSource;

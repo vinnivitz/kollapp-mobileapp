@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -34,6 +35,7 @@ import java.util.List;
 
 @Slf4j
 @ControllerAdvice
+@Order(2)
 public class GlobalExceptionHandler {
     @Autowired
     private MessageSource messageSource;
