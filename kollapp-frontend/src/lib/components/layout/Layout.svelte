@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
+	import { onDestroy, type Snippet } from 'svelte';
 
 	import { navigating } from '$app/stores';
 
@@ -29,8 +29,16 @@
 	});
 
 	$effect(() => {
-		clearTimeout(navigationTimeout);
-		navigationDebounced = false;
+		if (navigationTimeout) {
+			clearTimeout(navigationTimeout);
+			navigationDebounced = false;
+		}
+	});
+
+	onDestroy(() => {
+		if (navigationTimeout) {
+			clearTimeout(navigationTimeout);
+		}
 	});
 </script>
 

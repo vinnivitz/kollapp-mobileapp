@@ -11,13 +11,10 @@ function createOrganizationStore(): Writable<OrganizationModel | undefined> & {
 	const { subscribe, set, update } = writable<OrganizationModel | undefined>();
 
 	async function setOrganization(organization?: OrganizationModel): Promise<void> {
+		await (organization
+			? storeValue(PreferencesKey.ORGANIZATION, organization)
+			: removeStoredValue(PreferencesKey.ORGANIZATION));
 		set(organization);
-		if (organization) {
-			await storeValue(PreferencesKey.ORGANIZATION, organization);
-		} else {
-			set(undefined);
-			await removeStoredValue(PreferencesKey.ORGANIZATION);
-		}
 	}
 
 	async function init(organization?: OrganizationModel): Promise<void> {
@@ -25,6 +22,8 @@ function createOrganizationStore(): Writable<OrganizationModel | undefined> & {
 			return setOrganization(organization);
 		} else if (get(organizationStore)) {
 			return;
+		} else if (!(await getStoredValue<OrganizationModel>(PreferencesKey.ACCESS_TOKEN))) {
+			return setOrganization();
 		}
 		const body = await apiResources.organization.getOrganization();
 		if (StatusChecks.isOK(body.status)) {

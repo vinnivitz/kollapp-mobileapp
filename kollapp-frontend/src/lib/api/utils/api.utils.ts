@@ -1,95 +1,96 @@
-import { Network } from '@capacitor/network';
+import { Network, type ConnectionStatus } from '@capacitor/network';
 import { get } from 'svelte/store';
+
+import { dev } from '$app/environment';
 
 import { PUBLIC_API_URL } from '$env/static/public';
 import { apiResources } from '$lib/api';
 import {
 	AuthorizationType,
 	ContentType,
+	HeaderKey,
 	RequestMethod,
 	StatusCode,
 	type CustomFetchConfig,
-	type ResponseBody,
-	type ServerResponseBody
+	type ResponseBody
 } from '$lib/api/models';
 import { t } from '$lib/locales';
 import {
 	AlertType,
 	PreferencesKey,
-	type AuthenticationTokenModel,
 	type OrganizationModel,
 	type ValidationResult as ValidationResponse
 } from '$lib/models';
-import { organizationStore } from '$lib/store';
+import { authenticationTokenStore, organizationStore } from '$lib/store';
 import { determineLocale, getStoredValue, showAlert, storeValue } from '$lib/utils';
 
 const $t = get(t);
+let lastNetworkCheck = 0;
+let cachedNetworkStatus: ConnectionStatus;
 
 /**
  * Custom fetch function with authentication and error handling.
- * @param url Endpoint URL.
- * @param options Fetch options.
- * @param authorizationType Authorization type.
- * @param silent If true, no alert is shown.
+ * @param url url string
+ * @param config config object
  * @returns {Promise<ResponseBody<T>>}
  */
-export async function customFetch<T = never>(config: CustomFetchConfig): Promise<ResponseBody<T>> {
-	const {
-		url,
-		query,
-		options = { method: RequestMethod.GET },
-		authorizationType = AuthorizationType.BEARER,
-		silent = false
-	} = config;
+export async function customFetch<T = never>(
+	url: string,
+	config?: CustomFetchConfig
+): Promise<ResponseBody<T>> {
+	url = getUrl(url);
+	const method = config?.method ?? RequestMethod.GET;
+	const body = config?.body;
+	const query = config?.query;
+	const authorizationType = config?.authorizationType ?? AuthorizationType.BEARER;
+	const silentOnSuccess = config?.silentOnSuccess ?? false;
+	const silentOnError = config?.silentOnError ?? false;
 
 	try {
-		const headers = new Headers(options.headers);
+		const options: RequestInit = { method };
+		const headers = new Headers();
 
-		headers.set('Accept-Language', await determineLocale());
+		headers.set(HeaderKey.ACCEPT_LANGUAGE, await determineLocale());
 
-		if (hasRequestBody(options)) {
-			headers.set('Content-Type', ContentType.JSON);
+		if (hasRequestBody(method)) {
+			headers.set(HeaderKey.CONTENT_TYPE, ContentType.JSON);
+			options.body = body;
 		}
 
 		if (authorizationType === AuthorizationType.BEARER) {
-			const token = await getToken();
+			const token = await getAuthenticationToken();
 			if (token) {
-				headers.set('Authorization', `Bearer ${token}`);
+				headers.set(HeaderKey.AUTHORIZATION, getBearerToken(token));
 			} else {
-				return createErrorResponse(StatusCode.UNAUTHORIZED, $t('api.error'), silent);
+				return createErrorResponse(StatusCode.UNAUTHORIZED, $t('api.unauthorized'), silentOnError);
 			}
 		}
 
 		const enhancedUrl = await getEnhancedUrl(url, query);
+
 		let response = await fetch(enhancedUrl, { ...options, headers });
 
 		if (StatusChecks.isUnauthorized(response.status)) {
-			const newToken = await getNewToken();
-			if (newToken) {
-				headers.set('Authorization', `Bearer ${newToken}`);
-				response = await fetch(enhancedUrl, { ...options, headers });
+			const newToken = await getNewAuthenticationToken();
+			if (!newToken) {
+				return createErrorResponse(StatusCode.UNAUTHORIZED, $t('api.unauthorized'), silentOnError);
 			}
+			headers.set(HeaderKey.AUTHORIZATION, getBearerToken(newToken));
+			response = await fetch(enhancedUrl, { ...options, headers });
 		}
 
-		const networkStatus = await Network.getStatus();
-		const isOnline = networkStatus?.connected;
-		const wasOnline = await getStoredValue<boolean>(PreferencesKey.ONLINE);
+		await handleNetworkStatusChange();
 
-		if (!isOnline && wasOnline) {
-			await storeValue(PreferencesKey.ONLINE, false);
-			showAlert({ message: $t('api.offline'), type: AlertType.ERROR });
-		} else if (isOnline && !wasOnline) {
-			await storeValue(PreferencesKey.ONLINE, true);
-			showAlert({ message: $t('api.online'), type: AlertType.INFO });
-		}
-
-		return getResponseBody(response, silent);
+		return getResponseBody(response, silentOnSuccess, silentOnError);
 	} catch (error) {
 		let message = $t('api.error');
+		let status = StatusCode.SERVICE_UNAVAILABLE;
 		if (error instanceof Error) {
-			message = error.message === 'Failed to fetch' ? message : error.message;
+			message = error.message === 'Failed to fetch' ? $t('api.not-available') : error.message;
+		} else if (error instanceof Response) {
+			status = error.status;
 		}
-		return createErrorResponse(StatusCode.SERVICE_UNAVAILABLE, message, silent);
+		return createErrorResponse(status, message, false);
 	}
 }
 
@@ -114,17 +115,6 @@ export async function isAuthenticated(): Promise<boolean> {
 }
 
 /**
- * Stores access and refresh tokens in the preferences store.
- * @param model Token data transfer object.
- */
-export async function storeTokens(model: AuthenticationTokenModel): Promise<void> {
-	await Promise.all([
-		storeValue(PreferencesKey.ACCESS_TOKEN, model.accessToken),
-		storeValue(PreferencesKey.REFRESH_TOKEN, model.refreshToken)
-	]);
-}
-
-/**
  * Processes the validation response, showing alerts as necessary.
  * @param body Fetch response.
  * @param silent If true, no alert is shown.
@@ -133,28 +123,14 @@ export async function storeTokens(model: AuthenticationTokenModel): Promise<void
 export function getValidationResult<T>(body: ResponseBody<T>): ValidationResponse {
 	return {
 		valid: StatusChecks.isOK(body.status),
-		errors: [{ message: body.message ?? $t('api.error'), field: body.validationField }]
+		errors: [
+			{
+				message: body.message ?? $t('api.error'),
+				field: body.validationField,
+				code: body.validationCode
+			}
+		]
 	};
-}
-
-/**
- * Processes response failures (where no response with satus code is returned), showing alerts as necessary.
- * @param error error object
- * @param silent if true, no alert is shown
- * @returns {ApiResponse<T>}
- */
-export function handleResponseFailure<T>(error: unknown, silent = false): ResponseBody<T> {
-	let message = $t('api.error');
-
-	if (error instanceof Error) {
-		message = error.message;
-	}
-
-	if (!silent) {
-		showAlert({ message, type: AlertType.ERROR });
-	}
-
-	return { status: 501, message } as ResponseBody<T>;
 }
 
 /**
@@ -165,32 +141,73 @@ export const StatusChecks = {
 	isUnauthorized: (status: number): boolean => status === StatusCode.UNAUTHORIZED
 };
 
-async function getResponseBody<T>(response: Response, silent: boolean): Promise<ResponseBody<T>> {
-	const message = $t('api.error');
-	if (response.headers.get('Content-Type') !== ContentType.JSON) {
-		return { status: response.status, message, data: {} as T };
+async function getResponseBody<T>(
+	response: Response,
+	silentOnSuccess: boolean,
+	silentOnError: boolean
+): Promise<ResponseBody<T>> {
+	const status = response.status;
+	let message = $t('api.success');
+	let data = {} as T;
+	const contentType = response.headers.get(HeaderKey.CONTENT_TYPE);
+	const silent = response.ok ? silentOnSuccess : silentOnError;
+	if (!contentType?.includes(ContentType.JSON)) {
+		message = contentType?.includes(ContentType.TEXT) ? $t('api.error') : await response.text();
+		return { status, message, data };
 	}
-	const body = (await response.json()) as ServerResponseBody<T>;
-	if (!silent && !body.validationField) {
-		showAlert({
-			message: body.message ?? message,
-			type: response.ok ? AlertType.INFO : AlertType.ERROR
-		});
+	const body = (await response.json()) as ResponseBody<T>;
+	message = body.message ?? (response.ok ? message : $t('api.error'));
+	data = body.data ?? data;
+	const validationField = body.validationField;
+	const validationCode = body.validationCode;
+	if (!silent && !validationField) {
+		showAlert({ message, type: response.ok ? AlertType.INFO : AlertType.ERROR });
+	}
+	// only triggered in dev mode
+	if (dev) {
+		if (response.ok) {
+			console.info(message);
+		} else {
+			console.error(`status: ${response.status}, msg: ${message}`);
+		}
 	}
 	return {
-		status: response.status,
-		message: body.message,
-		data: body.data ?? ({} as T),
-		validationField: body.validationField
+		status,
+		message,
+		data,
+		validationField,
+		validationCode
 	};
 }
 
-function hasRequestBody(options: RequestInit): boolean {
-	const method = options.method?.toUpperCase();
-	return (
-		(method === RequestMethod.POST || method === RequestMethod.PUT) &&
-		typeof options.body === 'string'
-	);
+async function getCachedNetworkStatus(): Promise<ConnectionStatus> {
+	const now = Date.now();
+	// Check once every 10 seconds
+	if (!cachedNetworkStatus || now - lastNetworkCheck > 10_000) {
+		cachedNetworkStatus = await Network.getStatus();
+		lastNetworkCheck = now;
+	}
+	return cachedNetworkStatus;
+}
+
+async function handleNetworkStatusChange() {
+	const networkStatus = await getCachedNetworkStatus();
+	const isOnline = networkStatus?.connected;
+	const wasOnline = await getStoredValue<boolean>(PreferencesKey.ONLINE);
+
+	if (!isOnline && wasOnline) {
+		await storeValue(PreferencesKey.ONLINE, false);
+		showAlert({ message: $t('api.offline'), type: AlertType.ERROR });
+		console.info($t('api.offline'));
+	} else if (isOnline && !wasOnline) {
+		await storeValue(PreferencesKey.ONLINE, true);
+		showAlert({ message: $t('api.online'), type: AlertType.INFO });
+		console.info($t('api.online'));
+	}
+}
+
+function hasRequestBody(method: RequestMethod): boolean {
+	return method === RequestMethod.POST || method === RequestMethod.PUT;
 }
 
 async function getEnhancedUrl(
@@ -201,12 +218,15 @@ async function getEnhancedUrl(
 	return queryParameters ? `${url}?${queryParameters}` : url;
 }
 
-async function getToken(): Promise<string | undefined> {
-	const token = getStoredValue<string>(PreferencesKey.ACCESS_TOKEN);
-	return token || getNewToken();
+async function getAuthenticationToken(): Promise<string | undefined> {
+	return (
+		get(authenticationTokenStore) ??
+		(await getStoredValue<string>(PreferencesKey.ACCESS_TOKEN)) ??
+		(await getNewAuthenticationToken())
+	);
 }
 
-async function getNewToken(): Promise<string | undefined> {
+async function getNewAuthenticationToken(): Promise<string | undefined> {
 	let token = await getStoredValue(PreferencesKey.REFRESH_TOKEN);
 	if (!token) {
 		return undefined;
@@ -215,6 +235,7 @@ async function getNewToken(): Promise<string | undefined> {
 	if (StatusChecks.isOK(body.status)) {
 		token = body.data.token;
 		await storeValue(PreferencesKey.ACCESS_TOKEN, token);
+		authenticationTokenStore.set(token);
 		return token;
 	}
 	return undefined;
@@ -222,11 +243,18 @@ async function getNewToken(): Promise<string | undefined> {
 
 async function createErrorResponse(
 	status: number,
-	message: string = $t('api.error'),
+	message: string,
 	silent: boolean
 ): Promise<ResponseBody> {
 	if (!silent) {
 		showAlert({ message, type: AlertType.ERROR });
 	}
+	if (dev) {
+		console.error(`status: ${status}, msg: ${message}`);
+	}
 	return { status, message, data: {} as never };
+}
+
+function getBearerToken(token: string): string {
+	return `Bearer ${token}`;
 }

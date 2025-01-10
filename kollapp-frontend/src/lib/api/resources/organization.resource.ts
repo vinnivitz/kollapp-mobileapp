@@ -1,7 +1,7 @@
 import type { ChangePasswordDto } from '../dto';
 
 import { RequestMethod, type ResponseBody } from '$lib/api/models';
-import { customFetch, getUrl } from '$lib/api/utils';
+import { customFetch } from '$lib/api/utils';
 import type { OrganizationModel } from '$lib/models';
 
 const ENDPOINT = 'organization';
@@ -10,17 +10,13 @@ const ENDPOINT = 'organization';
  * Gets the organization data
  * @returns {Promise<ResponseBody>}
  */
-export async function getOrganization(silent = true): Promise<ResponseBody<OrganizationModel>> {
-	return customFetch({ url: getUrl(`${ENDPOINT}`), silent });
+export async function getOrganization(): Promise<ResponseBody<OrganizationModel>> {
+	return customFetch(ENDPOINT, { silentOnSuccess: true, silentOnError: true });
 }
 
-export async function changePassword(
-	model: ChangePasswordDto,
-	silent = false
-): Promise<ResponseBody> {
-	return customFetch({
-		url: getUrl(`${ENDPOINT}/change-password`),
-		options: { method: RequestMethod.POST, body: JSON.stringify(model) },
-		silent
+export async function changePassword(model: ChangePasswordDto): Promise<ResponseBody> {
+	return customFetch(`${ENDPOINT}/change-password`, {
+		method: RequestMethod.POST,
+		body: JSON.stringify(model)
 	});
 }

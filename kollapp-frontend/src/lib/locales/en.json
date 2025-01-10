@@ -28,6 +28,13 @@
 				"forgot-password": {
 					"text": "Forgot your password?",
 					"link": "Reset"
+				},
+				"resend-confirmation": {
+					"text": "Didn´t received the confirmation mail?",
+					"link": "Resend"
+				},
+				"alert": {
+					"email-not-confirmed": "Email is not confirmed"
 				}
 			},
 			"register": {
@@ -70,6 +77,17 @@
 							"confirm-password": "Confirm new password"
 						},
 						"submit": "Update password"
+					}
+				}
+			},
+			"resend-confirmation": {
+				"title": "Resend confirmation",
+				"card": {
+					"title": "Enter your email"
+				},
+				"form": {
+					"buttons": {
+						"send": "Send confirmation email"
 					}
 				}
 			}
@@ -246,8 +264,11 @@
 			}
 		},
 		"error": "An error occurred.",
+		"success": "Request successful",
+		"not-available": "Server not reachable",
 		"offline": "You are offline",
-		"online": "You are online"
+		"online": "You are online",
+		"unauthorized": "Authentifcation failed"
 	},
 	"utils": {
 		"alert": {

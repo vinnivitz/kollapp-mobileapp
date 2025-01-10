@@ -1,9 +1,20 @@
+import type { ValidationCode } from './validation.model';
+
 /**
  * Content type for the request and response
  */
 export enum ContentType {
 	JSON = 'application/json',
 	TEXT = 'text/plain'
+}
+
+/**
+ * Header key for the request
+ */
+export enum HeaderKey {
+	CONTENT_TYPE = 'Content-Type',
+	AUTHORIZATION = 'Authorization',
+	ACCEPT_LANGUAGE = 'Accept-Language'
 }
 
 /**
@@ -24,12 +35,7 @@ export type ResponseBody<T = never> = {
 	message?: string;
 	data: T;
 	validationField?: string;
-};
-
-export type ServerResponseBody<T = undefined> = {
-	message?: string;
-	data?: T;
-	validationField?: string;
+	validationCode?: ValidationCode;
 };
 
 /**
@@ -52,9 +58,10 @@ export enum StatusCode {
 }
 
 export type CustomFetchConfig = {
-	url: string;
 	query?: Record<string, string>;
-	options?: RequestInit;
+	method?: RequestMethod;
+	body?: string;
 	authorizationType?: AuthorizationType;
-	silent?: boolean;
+	silentOnSuccess?: boolean;
+	silentOnError?: boolean;
 };

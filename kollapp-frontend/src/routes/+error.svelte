@@ -1,4 +1,4 @@
-<script lang="ts">
+<script>
 	import PageNotFound from '$lib/components/widgets/PageNotFound.svelte';
 </script>
 
