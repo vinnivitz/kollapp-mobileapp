@@ -20,11 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/user")
@@ -41,7 +37,7 @@ public class AuthorizedKollappUserController {
     private KollappUserMapper kollappUserMapper;
 
     @GetMapping
-    @Operation(summary = "Get the logged-in kollapp user", security = { @SecurityRequirement(name = "bearer-key") })
+    @Operation(summary = "Get the logged in user", security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('MANAGER') or hasRole('MEMBER')")
     public ResponseEntity<ResponseTO> getKollappUser() {
         KollappUser kollappUser = kollappUserService.getLoggedInKollappUser();
@@ -50,7 +46,7 @@ public class AuthorizedKollappUserController {
     }
 
     @PostMapping("/change-password")
-    @Operation(summary = "Change the password", security = { @SecurityRequirement(name = "bearer-key") })
+    @Operation(summary = "Change the password of the logged in user", security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('MANAGER') or hasRole('MEMBER')")
     public ResponseEntity<ResponseTO> changePassword(@RequestBody PasswordChangeRequestTO changeRequestTo) {
         kollappUserService.changePassword(changeRequestTo.getCurrentPassword(), changeRequestTo.getNewPassword());
@@ -58,12 +54,20 @@ public class AuthorizedKollappUserController {
     }
 
     @PostMapping("/update-information")
-    @Operation(summary = "Change user base information", security = { @SecurityRequirement(name = "bearer-key") })
+    @Operation(summary = "Change user base information of the logged in user", security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasRole('MANAGER') or hasRole('MEMBER')")
     public ResponseEntity<ResponseTO> updateUser(@RequestBody KollappUserTO kollappUserTO) {
         KollappUser updatedUserData = kollappUserMapper.UserTOToUser(kollappUserTO);
         KollappUser updatedUser = kollappUserService.updateKollappUser(updatedUserData);
         KollappUserTO updatedUserTO = kollappUserMapper.userToUserTO(updatedUser);
         return ResponseEntity.ok(new DataResponseTO(updatedUserTO, "success.user.update-data", messageSource));
+    }
+
+    @DeleteMapping("/delete")
+    @Operation(summary = "Delete the logged in user", security = { @SecurityRequirement(name = "bearer-key") })
+    @PreAuthorize("hasRole('MANAGER') or hasRole('MEMBER')")
+    public ResponseEntity<ResponseTO> deleteUser() {
+        kollappUserService.deleteKollappUser();
+        return ResponseEntity.ok(new MessageResponseTO("success.user.delete", messageSource));
     }
 }

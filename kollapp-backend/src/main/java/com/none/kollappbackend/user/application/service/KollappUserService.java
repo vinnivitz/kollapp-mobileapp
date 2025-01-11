@@ -26,5 +26,7 @@ public interface KollappUserService {
 
     void register(String username, String email, String password, List<ERole> roles);
 
-    KollappUser updateKollappUser(KollappUser kollappUser);
+    KollappUser updateKollappUser(KollappUser updatedUserData);
+
+    void deleteKollappUser();
 }

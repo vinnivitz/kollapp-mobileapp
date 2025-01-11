@@ -39,4 +39,9 @@ public class KollappUserRepositoryImpl implements KollappUserRepository {
     public void save(KollappUser organization) {
         jpaRepository.save(organization);
     }
+
+    @Override
+    public void deleteById(long id) {
+        jpaRepository.deleteById(id);
+    }
 }

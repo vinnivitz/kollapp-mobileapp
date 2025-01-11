@@ -137,6 +137,13 @@ public class KollappUserServiceImpl implements KollappUserService {
         return kollappUser;
     }
 
+    @Override
+    public void deleteKollappUser() {
+        KollappUser kollappUser = getLoggedInKollappUser();
+        SecurityContextHolder.getContext().setAuthentication(null);
+        userRepo.deleteById(kollappUser.getId());
+    }
+
     private String createConfirmationBaseUrl(String token) {
         Map<String, String> params = Map.of("confirmationToken", token);
         return urlBuilderUtil.buildServerUrl("/api/public/organization/confirmation", params);
