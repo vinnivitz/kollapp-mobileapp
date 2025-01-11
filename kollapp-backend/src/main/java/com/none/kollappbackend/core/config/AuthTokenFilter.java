@@ -1,6 +1,6 @@
 package com.none.kollappbackend.core.config;
 
-import com.none.kollappbackend.organization.application.model.OrganizationDetails;
+import com.none.kollappbackend.user.application.model.KollappUserDetails;
 import com.none.kollappbackend.core.util.ResponseUtil;
 import com.none.kollappbackend.core.util.JwtUtil;
 
@@ -47,7 +47,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             if (jwt != null) {
                 if (jwtUtil.validateAuthenticationToken(jwt)) {
                     String username = jwtUtil.getSubjectFromAuthenticationToken(jwt);
-                    OrganizationDetails organizationDetails = (OrganizationDetails) userDetailsService
+                    KollappUserDetails organizationDetails = (KollappUserDetails) userDetailsService
                             .loadUserByUsername(username);
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             organizationDetails,
