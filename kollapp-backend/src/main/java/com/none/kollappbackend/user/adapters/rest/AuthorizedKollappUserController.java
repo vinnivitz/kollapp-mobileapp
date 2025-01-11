@@ -56,4 +56,14 @@ public class AuthorizedKollappUserController {
         kollappUserService.changePassword(changeRequestTo.getCurrentPassword(), changeRequestTo.getNewPassword());
         return ResponseEntity.ok(new MessageResponseTO("success.password.changed", messageSource));
     }
+
+    @PostMapping("/update-information")
+    @Operation(summary = "Change user base information", security = { @SecurityRequirement(name = "bearer-key") })
+    @PreAuthorize("hasRole('MANAGER') or hasRole('MEMBER')")
+    public ResponseEntity<ResponseTO> updateUser(@RequestBody KollappUserTO kollappUserTO) {
+        KollappUser updatedUserData = kollappUserMapper.UserTOToUser(kollappUserTO);
+        KollappUser updatedUser = kollappUserService.updateKollappUser(updatedUserData);
+        KollappUserTO updatedUserTO = kollappUserMapper.userToUserTO(updatedUser);
+        return ResponseEntity.ok(new DataResponseTO(updatedUserTO, "success.user.update-data", messageSource));
+    }
 }

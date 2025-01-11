@@ -7,4 +7,5 @@ import org.mapstruct.Mapper;
 @Mapper
 public interface KollappUserMapper {
     KollappUserTO userToUserTO(KollappUser user);
+    KollappUser UserTOToUser(KollappUserTO userTO);
 }

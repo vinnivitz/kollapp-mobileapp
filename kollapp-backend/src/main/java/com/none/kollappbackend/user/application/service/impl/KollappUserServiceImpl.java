@@ -121,6 +121,22 @@ public class KollappUserServiceImpl implements KollappUserService {
         emailService.sendConfirmationMail(kollappUser.getEmail(), createConfirmationBaseUrl(confirmationToken));
     }
 
+    @Override
+    public KollappUser updateKollappUser(KollappUser updatedUserData) {
+        KollappUser kollappUser = getLoggedInKollappUser();
+        kollappUser.setName(updatedUserData.getName());
+        kollappUser.setSurname(updatedUserData.getSurname());
+        kollappUser.setUsername(updatedUserData.getUsername());
+        if(!kollappUser.getEmail().equals(updatedUserData.getEmail())){
+            kollappUser.setActivated(false);
+            kollappUser.setEmail(updatedUserData.getEmail());
+            String confirmationToken = jwtUtil.generateConfirmationToken(updatedUserData.getUsername());
+            String confirmationBaseUrl = createConfirmationBaseUrl(confirmationToken);
+            emailService.sendConfirmationMail(kollappUser.getEmail(), confirmationBaseUrl);
+        }
+        return kollappUser;
+    }
+
     private String createConfirmationBaseUrl(String token) {
         Map<String, String> params = Map.of("confirmationToken", token);
         return urlBuilderUtil.buildServerUrl("/api/public/organization/confirmation", params);

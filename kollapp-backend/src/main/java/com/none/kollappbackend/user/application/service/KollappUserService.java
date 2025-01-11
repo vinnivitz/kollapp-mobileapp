@@ -25,4 +25,6 @@ public interface KollappUserService {
     void resetPassword(String token, String password);
 
     void register(String username, String email, String password, List<ERole> roles);
+
+    KollappUser updateKollappUser(KollappUser kollappUser);
 }
