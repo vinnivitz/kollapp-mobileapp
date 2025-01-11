@@ -7,6 +7,7 @@ import com.none.kollappbackend.user.application.exception.IncorrectPasswordExcep
 import com.none.kollappbackend.user.application.exception.InvalidConfirmationLinkException;
 import com.none.kollappbackend.user.application.exception.UsernameExistsException;
 import com.none.kollappbackend.user.application.exception.UsernameNotFoundException;
+import com.none.kollappbackend.user.application.model.ERole;
 import com.none.kollappbackend.user.application.model.KollappUser;
 import com.none.kollappbackend.user.application.model.KollappUserDetails;
 import com.none.kollappbackend.user.application.repository.KollappUserRepository;
@@ -22,6 +23,8 @@ import org.springframework.context.MessageSource;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -103,7 +106,7 @@ public class KollappUserServiceImpl implements KollappUserService {
     }
 
     @Override
-    public void register(String username, String email, String password) {
+    public void register(String username, String email, String password, List<ERole> roles) {
         if (userRepo.existsByUsername(username)) {
             throw new UsernameExistsException(messageSource);
         }
@@ -112,7 +115,7 @@ public class KollappUserServiceImpl implements KollappUserService {
         }
         String encodedPassword = encoder.encode(password);
         KollappUser kollappUser = KollappUser.builder().username(username).email(email)
-                .password(encodedPassword).build();
+                .password(encodedPassword).roles(roles).build();
         userRepo.save(kollappUser);
         String confirmationToken = jwtUtil.generateConfirmationToken(username);
         emailService.sendConfirmationMail(kollappUser.getEmail(), createConfirmationBaseUrl(confirmationToken));

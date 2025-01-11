@@ -1,9 +1,11 @@
 package com.none.kollappbackend.user.application.service;
 
+import com.none.kollappbackend.user.application.model.ERole;
 import com.none.kollappbackend.user.application.model.KollappUser;
-import com.none.kollappbackend.user.application.model.Organization;
 import jakarta.transaction.Transactional;
 import org.jmolecules.architecture.hexagonal.PrimaryPort;
+
+import java.util.List;
 
 @PrimaryPort
 @Transactional
@@ -22,5 +24,5 @@ public interface KollappUserService {
 
     void resetPassword(String token, String password);
 
-    void register(String username, String email, String password);
+    void register(String username, String email, String password, List<ERole> roles);
 }

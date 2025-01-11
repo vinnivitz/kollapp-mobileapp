@@ -3,6 +3,7 @@ package com.none.kollappbackend.user.adapters.rest;
 import com.none.kollappbackend.core.adapters.primary.rest.model.MessageResponseTO;
 import com.none.kollappbackend.core.adapters.primary.rest.model.ResponseTO;
 import com.none.kollappbackend.user.adapters.rest.model.*;
+import com.none.kollappbackend.user.application.model.ERole;
 import com.none.kollappbackend.user.application.service.KollappUserService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -13,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/public/user")
@@ -45,13 +48,25 @@ public class UnauthorizedKollappUserController {
         return ResponseEntity.ok(new MessageResponseTO("success.password.reset", messageSource));
     }
 
-    @PostMapping("/signup")
-    public ResponseEntity<ResponseTO> registerOrganization(
+    @PostMapping("/manager-signup")
+    public ResponseEntity<ResponseTO> registerKollappAdmin(
             @Valid @RequestBody KollappUserSignupRequest signUpRequest) {
         kollappUserService.register(
                 signUpRequest.getUsername(),
                 signUpRequest.getEmail(),
-                signUpRequest.getPassword());
+                signUpRequest.getPassword(),
+                List.of(ERole.MANAGER, ERole.MEMBER));
+        return ResponseEntity.ok(new MessageResponseTO("success.registration", messageSource));
+    }
+
+    @PostMapping("/member-signup")
+    public ResponseEntity<ResponseTO> registerKollappMember(
+            @Valid @RequestBody KollappUserSignupRequest signUpRequest) {
+        kollappUserService.register(
+                signUpRequest.getUsername(),
+                signUpRequest.getEmail(),
+                signUpRequest.getPassword(),
+                List.of(ERole.MEMBER));
         return ResponseEntity.ok(new MessageResponseTO("success.registration", messageSource));
     }
 }

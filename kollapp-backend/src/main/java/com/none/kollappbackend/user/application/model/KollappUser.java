@@ -42,6 +42,7 @@ public class KollappUser {
 
     private boolean isActivated;
 
-    @OneToMany
-    private List<Role> roles;
+    @ElementCollection
+    @Enumerated(EnumType.STRING)
+    private List<ERole> roles;
 }
