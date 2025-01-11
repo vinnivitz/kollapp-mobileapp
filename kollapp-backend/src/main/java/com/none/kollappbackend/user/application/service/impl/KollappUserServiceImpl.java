@@ -70,7 +70,7 @@ public class KollappUserServiceImpl implements KollappUserService {
         }
         String username = jwtUtil.getSubjectFromConfirmationToken(confirmationToken);
         KollappUser kollappUser = userRepo.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("error.organization.not-found"));
+                .orElseThrow(() -> new IllegalArgumentException("error.user.not-found"));
         if (kollappUser.isActivated()) {
             throw new EmailIsAlreadyConfirmedException(messageSource);
         }

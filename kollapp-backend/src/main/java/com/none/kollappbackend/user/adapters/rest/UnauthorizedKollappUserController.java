@@ -19,7 +19,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/public/user")
-@Transactional
 @Slf4j
 @PrimaryAdapter
 public class UnauthorizedKollappUserController {

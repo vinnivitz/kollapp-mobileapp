@@ -5,6 +5,6 @@ import org.springframework.context.MessageSource;
 
 public class KollappUserNotFoundException extends AbstractLocalizedException {
     public KollappUserNotFoundException(MessageSource messageSource) {
-        super(messageSource, "error.organization.not-found");
+        super(messageSource, "error.user.not-found");
     }
 }

@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/user")
-@Transactional
 @Slf4j
 @PrimaryAdapter
 public class AuthorizedKollappUserController {
@@ -47,7 +46,7 @@ public class AuthorizedKollappUserController {
     public ResponseEntity<ResponseTO> getKollappUser() {
         KollappUser kollappUser = kollappUserService.getLoggedInKollappUser();
         KollappUserTO kollappUserTO = kollappUserMapper.userToUserTO(kollappUser);
-        return ResponseEntity.ok(new DataResponseTO(kollappUserTO, "success.organization.get-data", messageSource));
+        return ResponseEntity.ok(new DataResponseTO(kollappUserTO, "success.user.get-data", messageSource));
     }
 
     @PostMapping("/change-password")
