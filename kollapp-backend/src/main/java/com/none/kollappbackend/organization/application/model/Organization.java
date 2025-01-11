@@ -23,8 +23,4 @@ public class Organization {
     @NotBlank
     @Size(max = 255)
     private String name;
-
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "organization", orphanRemoval = true)
-    private List<KollappUser> members;
-
 }
