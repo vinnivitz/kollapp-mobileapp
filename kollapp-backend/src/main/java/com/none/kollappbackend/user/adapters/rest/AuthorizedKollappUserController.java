@@ -10,6 +10,7 @@ import com.none.kollappbackend.user.application.model.KollappUser;
 import com.none.kollappbackend.user.application.service.KollappUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,7 @@ public class AuthorizedKollappUserController {
     @PostMapping("/update-information")
     @Operation(summary = "Change user base information of the logged in user", security = { @SecurityRequirement(name = "bearer-key") })
     @PreAuthorize("hasAuthority('MANAGER') or hasAuthority('MEMBER')")
-    public ResponseEntity<ResponseTO> updateUser(@RequestBody KollappUserTO kollappUserTO) {
+    public ResponseEntity<ResponseTO> updateUser(@Valid @RequestBody KollappUserTO kollappUserTO) {
         KollappUser updatedUserData = kollappUserMapper.UserTOToUser(kollappUserTO);
         KollappUser updatedUser = kollappUserService.updateKollappUser(updatedUserData);
         KollappUserTO updatedUserTO = kollappUserMapper.userToUserTO(updatedUser);
