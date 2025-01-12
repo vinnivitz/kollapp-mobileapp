@@ -12,6 +12,7 @@ import com.none.kollappbackend.user.application.repository.KollappUserRepository
 import com.none.kollappbackend.user.application.service.AuthService;
 import com.none.kollappbackend.core.util.JwtUtil;
 
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import java.util.Date;
 
 @Slf4j
 @Service
+@Transactional
 public class AuthServiceImpl implements AuthService {
     @Autowired
     private MessageSource messageSource;

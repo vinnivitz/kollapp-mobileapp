@@ -30,4 +30,10 @@ public class KollappUserSignupRequest {
         message = "{validation.password.pattern}"
     )   
     String password;
+
+    @NotBlank(message = "{validation.name.required}")
+    String name;
+
+    @NotBlank(message = "{validation.name.required}")
+    String surname;
 }

@@ -4,6 +4,7 @@ import com.none.kollappbackend.user.application.model.KollappUser;
 import com.none.kollappbackend.user.application.model.KollappUserDetails;
 import com.none.kollappbackend.user.application.repository.KollappUserRepository;
 import com.none.kollappbackend.user.application.exception.UsernameNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class KollappUserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private MessageSource messageSource;

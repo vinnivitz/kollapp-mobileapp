@@ -17,6 +17,7 @@ import com.none.kollappbackend.core.util.UrlBuilderUtil;
 
 import com.none.kollappbackend.core.config.ClientPlatform;
 import com.none.kollappbackend.user.application.service.EmailService;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -29,6 +30,7 @@ import java.util.Map;
 
 @Slf4j
 @Service
+@Transactional
 public class KollappUserServiceImpl implements KollappUserService {
     @Autowired
     private UrlBuilderUtil urlBuilderUtil;
@@ -106,7 +108,7 @@ public class KollappUserServiceImpl implements KollappUserService {
     }
 
     @Override
-    public void register(String username, String email, String password, List<ERole> roles) {
+    public void register(String username, String email, String password, String name, String surname, List<ERole> roles) {
         if (userRepo.existsByUsername(username)) {
             throw new UsernameExistsException(messageSource);
         }
@@ -114,7 +116,12 @@ public class KollappUserServiceImpl implements KollappUserService {
             throw new EmailExistsException(messageSource);
         }
         String encodedPassword = encoder.encode(password);
-        KollappUser kollappUser = KollappUser.builder().username(username).email(email)
+        KollappUser kollappUser = KollappUser.builder()
+                .username(username)
+                .email(email)
+                .name(name)
+                .surname(surname)
+                .isActivated(false)
                 .password(encodedPassword).roles(roles).build();
         userRepo.save(kollappUser);
         String confirmationToken = jwtUtil.generateConfirmationToken(username);
@@ -146,7 +153,7 @@ public class KollappUserServiceImpl implements KollappUserService {
 
     private String createConfirmationBaseUrl(String token) {
         Map<String, String> params = Map.of("confirmationToken", token);
-        return urlBuilderUtil.buildServerUrl("/api/public/organization/confirmation", params);
+        return urlBuilderUtil.buildServerUrl("/api/public/user/confirmation", params);
     }
 
     private String createResetPasswordBaseUrl(String token) {

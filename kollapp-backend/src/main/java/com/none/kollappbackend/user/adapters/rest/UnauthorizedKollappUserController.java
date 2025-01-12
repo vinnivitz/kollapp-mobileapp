@@ -2,13 +2,13 @@ package com.none.kollappbackend.user.adapters.rest;
 
 import com.none.kollappbackend.core.adapters.primary.rest.model.MessageResponseTO;
 import com.none.kollappbackend.core.adapters.primary.rest.model.ResponseTO;
-import com.none.kollappbackend.user.adapters.rest.model.*;
+import com.none.kollappbackend.user.adapters.rest.model.ForgotPasswordRequestTO;
+import com.none.kollappbackend.user.adapters.rest.model.KollappUserSignupRequest;
+import com.none.kollappbackend.user.adapters.rest.model.ResetPasswordRequestTO;
 import com.none.kollappbackend.user.application.model.ERole;
 import com.none.kollappbackend.user.application.service.KollappUserService;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-
 import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -54,6 +54,8 @@ public class UnauthorizedKollappUserController {
                 signUpRequest.getUsername(),
                 signUpRequest.getEmail(),
                 signUpRequest.getPassword(),
+                signUpRequest.getName(),
+                signUpRequest.getSurname(),
                 List.of(ERole.MANAGER, ERole.MEMBER));
         return ResponseEntity.ok(new MessageResponseTO("success.registration", messageSource));
     }
@@ -65,6 +67,8 @@ public class UnauthorizedKollappUserController {
                 signUpRequest.getUsername(),
                 signUpRequest.getEmail(),
                 signUpRequest.getPassword(),
+                signUpRequest.getName(),
+                signUpRequest.getSurname(),
                 List.of(ERole.MEMBER));
         return ResponseEntity.ok(new MessageResponseTO("success.registration", messageSource));
     }

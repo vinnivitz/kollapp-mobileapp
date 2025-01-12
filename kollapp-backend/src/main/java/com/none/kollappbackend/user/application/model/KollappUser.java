@@ -42,7 +42,7 @@ public class KollappUser {
 
     private boolean isActivated;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     private List<ERole> roles;
 }
