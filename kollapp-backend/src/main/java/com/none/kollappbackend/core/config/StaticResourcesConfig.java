@@ -21,5 +21,9 @@ public class StaticResourcesConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/resources/**")
                 .addResourceLocations("classpath:/static/")
                 .setCacheControl(CacheControl.maxAge(Duration.ofDays(applicationProperties.getStaticCacheDays())));
+        registry.addResourceHandler("/swagger-ui/**")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/");
+        registry.addResourceHandler("/v3/api-docs/**")
+                .addResourceLocations("classpath:/META-INF/resources/");
     }
 }
