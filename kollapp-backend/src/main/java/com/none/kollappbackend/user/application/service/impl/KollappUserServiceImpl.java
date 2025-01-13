@@ -54,6 +54,7 @@ public class KollappUserServiceImpl implements KollappUserService {
         return userRepo.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(messageSource));
     }
 
+    @Override
     public KollappUser getLoggedInKollappUser() {
         String username = ((KollappUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
                 .getUsername();
@@ -61,6 +62,7 @@ public class KollappUserServiceImpl implements KollappUserService {
                 .orElseThrow(() -> new UsernameNotFoundException(messageSource));
     }
 
+    @Override
     public KollappUser getKollappUserByEmail(String email) {
         return userRepo.findByEmail(email).orElseThrow(() -> new EmailNotFoundException(messageSource));
     }

@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
@@ -17,8 +18,8 @@ import java.util.Collection;
 @Builder
 @Getter
 @Setter
-public class KollappUserDetails implements org.springframework.security.core.userdetails.UserDetails {
-    private Long id;
+public class KollappUserDetails implements UserDetails {
+    private long id;
     private String username;
     private String email;
     private boolean isActivated;

@@ -1,6 +1,7 @@
 package com.none.kollappbackend.user.adapters.rest.model;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -14,8 +15,9 @@ import java.util.List;
 @Builder
 public class KollappUserTO {
 
-    private Long id;
+    private long id;
 
+    @NotBlank
     @Pattern(regexp = ".{2,}", message = "{validation.username.minlength}")
     @Size(max = 20, message = "{validation.username.maxlength}")
     private String username;
@@ -26,8 +28,10 @@ public class KollappUserTO {
 
     private boolean activated;
 
+    @NotBlank
     private String surname;
 
+    @NotBlank
     private String name;
 
     private List<String> roles;
