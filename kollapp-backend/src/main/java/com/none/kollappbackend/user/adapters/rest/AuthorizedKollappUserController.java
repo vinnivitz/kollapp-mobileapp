@@ -35,7 +35,7 @@ public class AuthorizedKollappUserController {
 
     @GetMapping
     @Operation(summary = "Get the logged in user", security = { @SecurityRequirement(name = "bearer-key") })
-    @PreAuthorize("hasAuthority('MANAGER') or hasAuthority('MEMBER')")
+    @PreAuthorize("hasRole(ERole.ROLE_MEMBER) or hasRole(ERole.ROLE_MANAGER)")
     public ResponseEntity<ResponseTO> getKollappUser() {
         KollappUser kollappUser = kollappUserService.getLoggedInKollappUser();
         KollappUserTO kollappUserTO = kollappUserMapper.userToUserTO(kollappUser);
@@ -44,7 +44,7 @@ public class AuthorizedKollappUserController {
 
     @PostMapping("/change-password")
     @Operation(summary = "Change the password of the logged in user", security = { @SecurityRequirement(name = "bearer-key") })
-    @PreAuthorize("hasAuthority('MANAGER') or hasAuthority('MEMBER')")
+    @PreAuthorize("hasRole(ERole.ROLE_MEMBER) or hasRole(ERole.ROLE_MANAGER)")
     public ResponseEntity<ResponseTO> changePassword(@RequestBody PasswordChangeRequestTO changeRequestTo) {
         kollappUserService.changePassword(changeRequestTo.getCurrentPassword(), changeRequestTo.getNewPassword());
         return ResponseEntity.ok(new MessageResponseTO("success.password.changed", messageSource));
@@ -52,7 +52,7 @@ public class AuthorizedKollappUserController {
 
     @PostMapping("/update-information")
     @Operation(summary = "Change user base information of the logged in user", security = { @SecurityRequirement(name = "bearer-key") })
-    @PreAuthorize("hasAuthority('MANAGER') or hasAuthority('MEMBER')")
+    @PreAuthorize("hasRole(ERole.ROLE_MEMBER) or hasRole(ERole.ROLE_MANAGER)")
     public ResponseEntity<ResponseTO> updateUser(@Valid @RequestBody KollappUserTO kollappUserTO) {
         KollappUser updatedUserData = kollappUserMapper.UserTOToUser(kollappUserTO);
         KollappUser updatedUser = kollappUserService.updateKollappUser(updatedUserData);
@@ -62,7 +62,7 @@ public class AuthorizedKollappUserController {
 
     @DeleteMapping("/delete")
     @Operation(summary = "Delete the logged in user", security = { @SecurityRequirement(name = "bearer-key") })
-    @PreAuthorize("hasAuthority('MANAGER') or hasAuthority('MEMBER')")
+    @PreAuthorize("hasRole(ERole.ROLE_MEMBER) or hasRole(ERole.ROLE_MANAGER)")
     public ResponseEntity<ResponseTO> deleteUser() {
         kollappUserService.deleteKollappUser();
         return ResponseEntity.ok(new MessageResponseTO("success.user.delete", messageSource));

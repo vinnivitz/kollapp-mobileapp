@@ -48,7 +48,7 @@ public class UnauthorizedKollappUserController {
     }
 
     @PostMapping("/manager-signup")
-    public ResponseEntity<ResponseTO> registerKollappAdmin(
+    public ResponseEntity<ResponseTO> registerKollappManager(
             @Valid @RequestBody KollappUserSignupRequest signUpRequest) {
         kollappUserService.register(
                 signUpRequest.getUsername(),
@@ -56,7 +56,7 @@ public class UnauthorizedKollappUserController {
                 signUpRequest.getPassword(),
                 signUpRequest.getName(),
                 signUpRequest.getSurname(),
-                List.of(ERole.MANAGER, ERole.MEMBER));
+                List.of(ERole.ROLE_MANAGER, ERole.ROLE_MEMBER));
         return ResponseEntity.ok(new MessageResponseTO("success.registration", messageSource));
     }
 
@@ -69,7 +69,7 @@ public class UnauthorizedKollappUserController {
                 signUpRequest.getPassword(),
                 signUpRequest.getName(),
                 signUpRequest.getSurname(),
-                List.of(ERole.MEMBER));
+                List.of(ERole.ROLE_MEMBER));
         return ResponseEntity.ok(new MessageResponseTO("success.registration", messageSource));
     }
 }
