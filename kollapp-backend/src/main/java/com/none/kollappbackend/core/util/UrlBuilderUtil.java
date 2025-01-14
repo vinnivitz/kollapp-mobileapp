@@ -9,7 +9,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.none.kollappbackend.core.config.properties.ApplicationProperties;
 import com.none.kollappbackend.core.config.properties.ClientProperties;
-import com.none.kollappbackend.organization.application.model.ClientPlatform;
+import com.none.kollappbackend.core.config.ClientPlatform;
 
 @Component
 public class UrlBuilderUtil {

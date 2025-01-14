@@ -1,7 +1,7 @@
 package com.none.kollappbackend.core.config;
 
 import com.none.kollappbackend.core.config.properties.CorsProperties;
-import com.none.kollappbackend.organization.application.service.impl.UserDetailsServiceImpl;
+import com.none.kollappbackend.user.application.service.impl.KollappUserDetailsServiceImpl;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableAspectJAutoProxy
 public class WebSecurityConfig {
     @Autowired
-    private UserDetailsServiceImpl userDetailsService;
+    private KollappUserDetailsServiceImpl userDetailsService;
 
     @Autowired
     private AuthEntryPointJwt unauthorizedHandler;
