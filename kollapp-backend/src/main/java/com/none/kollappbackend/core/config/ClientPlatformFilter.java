@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.none.kollappbackend.organization.application.model.ClientPlatform;
 import com.none.kollappbackend.core.util.ClientPlatformContext;
 
 @Component

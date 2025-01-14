@@ -1,5 +1,9 @@
 package com.none.kollappbackend.core.adapters.primary.rest;
 
+import com.none.kollappbackend.core.adapters.primary.rest.model.ErrorResponseTO;
+import com.none.kollappbackend.core.adapters.primary.rest.model.ResponseTO;
+import com.none.kollappbackend.core.adapters.primary.rest.model.ValidationFailureResponseTO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
@@ -13,11 +17,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-import com.none.kollappbackend.core.adapters.primary.rest.model.ErrorResponseTO;
-import com.none.kollappbackend.core.adapters.primary.rest.model.ResponseTO;
-import com.none.kollappbackend.core.adapters.primary.rest.model.ValidationFailureResponseTO;
-import lombok.extern.slf4j.Slf4j;
-
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -30,17 +30,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ResponseTO> handleValidationExceptions(
             MethodArgumentNotValidException exception) {
-        try {
             List<FieldError> fieldErrors = exception.getBindingResult().getFieldErrors();
             FieldError firstError = fieldErrors.getFirst();
             String message = firstError.getDefaultMessage();
             ValidationFailureResponseTO responseTO = new ValidationFailureResponseTO(message,
                     firstError.getField());
             return ResponseEntity.badRequest().body(responseTO);
-        } catch (Exception e) {
-            log.error("Error occurred while handling validation exception " + e);
-            return ResponseEntity.internalServerError().body(new ErrorResponseTO("error.generic", messageSource));
-        }
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
