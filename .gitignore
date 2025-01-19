@@ -37,3 +37,11 @@ target
 
 # database
 /db
+
+# Flutter
+/webapp/.dart_tool/
+/webapp/.flutter-plugins
+/webapp/.flutter-plugins-dependencies
+/webapp/.pub-cache/
+/webapp/.pub/
+/webapp/build/
