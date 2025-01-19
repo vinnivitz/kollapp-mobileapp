@@ -1,4 +1,5 @@
 {
+  "@@locale": "en",
   "title": "My Web App Title",
   "downloadTitle": "Get the Kollapp App.",
   "playStore": "Play Store",
