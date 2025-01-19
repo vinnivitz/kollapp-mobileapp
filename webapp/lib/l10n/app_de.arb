@@ -1,0 +1,30 @@
+{
+  "title": "Meine Web-App",
+  "downloadTitle": "Hol dir die Kollapp App.",
+  "playStore": "Play Store",
+  "appStore": "App Store",
+  "downloadAPK": "APK herunterladen",
+  "english": "Englisch",
+  "german": "Deutsch",
+  "@title": {
+    "description": "Der Titel in der AppBar"
+  },
+  "@downloadTitle": {
+    "description": "Titel über den Store-Buttons"
+  },
+  "@playStore": {
+    "description": "Beschriftung für den Play Store Button"
+  },
+  "@appStore": {
+    "description": "Beschriftung für den App Store Button"
+  },
+  "@english": {
+    "description": "Beschriftung für die Dropdown-Liste der englischen Sprache"
+  },
+  "@german": {
+    "description": "Beschriftung für die Dropdown-Liste der deutschen Sprache"
+  },
+  "@downloadAPK": {
+    "description": "Beschriftung für den APK Button"
+  }
+}

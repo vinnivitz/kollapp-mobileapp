@@ -1,20 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:webapp/widgets/locale_switcher.dart';
+import 'screens/home_screen.dart';
+import 'widgets/layout.dart';
 
-import 'src/app.dart';
-import 'src/settings/settings_controller.dart';
-import 'src/settings/settings_service.dart';
+void main() {
+  runApp(const Webapp());
+}
 
-void main() async {
-  // Set up the SettingsController, which will glue user settings to multiple
-  // Flutter Widgets.
-  final settingsController = SettingsController(SettingsService());
+class Webapp extends StatefulWidget {
+  const Webapp({super.key});
 
-  // Load the user's preferred theme while the splash screen is displayed.
-  // This prevents a sudden theme change when the app is first displayed.
-  await settingsController.loadSettings();
+  @override
+  State<Webapp> createState() => _WebappState();
+}
 
-  // Run the app and pass in the SettingsController. The app listens to the
-  // SettingsController for changes, then passes it further down to the
-  // SettingsView.
-  runApp(MyApp(settingsController: settingsController));
+class _WebappState extends State<Webapp> {
+  Locale _locale = const Locale('en');
+
+  void _updateLocale(Locale newLocale) {
+    setState(() {
+      _locale = newLocale;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return LocaleSettings(
+      updateLocale: _updateLocale,
+      child: MaterialApp(
+        title: 'Kollapp',
+        locale: _locale,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal)
+        ),
+        home: const Layout(
+          child: HomeScreen(),
+        ),
+      ),
+    );
+  }
 }
