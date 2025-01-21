@@ -5,6 +5,7 @@ import com.none.kollappbackend.core.adapters.primary.rest.model.MessageResponseT
 import com.none.kollappbackend.core.adapters.primary.rest.model.ResponseTO;
 import com.none.kollappbackend.user.adapters.rest.mapper.KollappUserMapper;
 import com.none.kollappbackend.user.adapters.rest.model.KollappUserTO;
+import com.none.kollappbackend.user.adapters.rest.model.KollappUserUpdateRequestTO;
 import com.none.kollappbackend.user.adapters.rest.model.PasswordChangeRequestTO;
 import com.none.kollappbackend.user.application.model.KollappUser;
 import com.none.kollappbackend.user.application.model.RequiresMemberRole;
@@ -43,7 +44,8 @@ public class AuthorizedKollappUserController {
     }
 
     @PostMapping("/change-password")
-    @Operation(summary = "Change the password of the logged in user", security = { @SecurityRequirement(name = "bearer-key") })
+    @Operation(summary = "Change the password of the logged in user", security = {
+            @SecurityRequirement(name = "bearer-key") })
     @RequiresMemberRole
     public ResponseEntity<ResponseTO> changePassword(@RequestBody PasswordChangeRequestTO changeRequestTo) {
         kollappUserService.changePassword(changeRequestTo.getCurrentPassword(), changeRequestTo.getNewPassword());
@@ -51,11 +53,12 @@ public class AuthorizedKollappUserController {
     }
 
     @PostMapping("/update-information")
-    @Operation(summary = "Change user base information of the logged in user", security = { @SecurityRequirement(name = "bearer-key") })
-    @RequiresMemberRole
-    public ResponseEntity<ResponseTO> updateUser(@Valid @RequestBody KollappUserTO kollappUserTO) {
-        KollappUser updatedUserData = kollappUserMapper.userTOToUser(kollappUserTO);
-        KollappUser updatedUser = kollappUserService.updateKollappUser(updatedUserData);
+    @Operation(summary = "Change user base information of the logged in user", security = {
+            @SecurityRequirement(name = "bearer-key") })
+    @RequiresMemberRole 
+    public ResponseEntity<ResponseTO> updateUser(@Valid @RequestBody KollappUserUpdateRequestTO updateRequestTO) {
+        KollappUser updatedUser = kollappUserService.updateKollappUser(updateRequestTO.getUsername(),
+                updateRequestTO.getEmail(), updateRequestTO.getSurname(), updateRequestTO.getName());
         KollappUserTO updatedUserTO = kollappUserMapper.userToUserTO(updatedUser);
         return ResponseEntity.ok(new DataResponseTO(updatedUserTO, "success.user.update-data", messageSource));
     }

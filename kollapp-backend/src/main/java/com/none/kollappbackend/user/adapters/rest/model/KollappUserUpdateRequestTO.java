@@ -4,19 +4,18 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.*;
-
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class KollappUserTO {
-
-    private long id;
-
+public class KollappUserUpdateRequestTO {
     @NotBlank(message = "{validation.user.username.required}")
     @Pattern(regexp = ".{2,}", message = "{validation.username.minlength}")
     @Size(max = 20, message = "{validation.username.maxlength}")
@@ -27,15 +26,11 @@ public class KollappUserTO {
     @Size(max = 50, message = "{validation.email.maxlength}")
     private String email;
 
-    private boolean activated;
-
-    @NotBlank
+    @NotBlank(message = "{validation.user.surename.required}")
+    @Size(max = 50, message = "{validation.user.surename.maxlength}")
     private String surname;
 
-    @NotBlank
+    @NotBlank(message = "{validation.user.name.required}")
+    @Size(max = 50, message = "{validation.user.name.maxlength}")
     private String name;
-
-    private List<String> roles;
-
-    private long organizationId;
 }

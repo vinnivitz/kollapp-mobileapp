@@ -45,4 +45,6 @@ public class KollappUser {
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     private List<ERole> roles;
+
+    private long organizationId;
 }
