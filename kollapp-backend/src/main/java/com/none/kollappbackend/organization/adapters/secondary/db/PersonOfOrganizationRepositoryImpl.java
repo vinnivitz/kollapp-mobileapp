@@ -25,4 +25,9 @@ public class PersonOfOrganizationRepositoryImpl implements PersonOfOrganizationR
     public Optional<PersonOfOrganization> findByUserId(long userId) {
         return personOfOrganizationJpaRepository.findByUserId(userId);
     }
+
+    @Override
+    public void deleteById(long id) {
+        personOfOrganizationJpaRepository.deleteById(id);
+    }
 }

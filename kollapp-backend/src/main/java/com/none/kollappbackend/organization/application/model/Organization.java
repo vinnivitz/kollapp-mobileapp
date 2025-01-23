@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -28,5 +29,20 @@ public class Organization {
 
     public void addPersonOfOrganization(PersonOfOrganization personOfOrganization) {
         personsOfOrganization.add(personOfOrganization);
+    }
+
+    public List<OrganizationManager> getManagers(){
+        return personsOfOrganization.stream()
+                .filter(p -> p instanceof OrganizationManager)
+                .map(p -> (OrganizationManager) p)
+                .toList();
+    }
+
+    public boolean hasManager(OrganizationManager organizationManager) {
+        return getManagers().contains(organizationManager);
+    }
+
+    public boolean hasOnlyOneManagerLeft(){
+        return personsOfOrganization.size() == 1;
     }
 }

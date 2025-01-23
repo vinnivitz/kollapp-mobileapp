@@ -9,7 +9,9 @@ import com.none.kollappbackend.user.application.exception.UsernameExistsExceptio
 import com.none.kollappbackend.user.application.exception.UsernameNotFoundException;
 import com.none.kollappbackend.user.application.model.ERole;
 import com.none.kollappbackend.user.application.model.KollappUser;
+import com.none.kollappbackend.user.application.model.KollappUserDeletedEvent;
 import com.none.kollappbackend.user.application.model.KollappUserDetails;
+import com.none.kollappbackend.user.application.publisher.KollappUserPublisher;
 import com.none.kollappbackend.user.application.repository.KollappUserRepository;
 import com.none.kollappbackend.user.application.service.KollappUserService;
 import com.none.kollappbackend.core.util.JwtUtil;
@@ -47,6 +49,9 @@ public class KollappUserServiceImpl implements KollappUserService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private KollappUserPublisher kollappUserPublisher;
 
     @Autowired
     PasswordEncoder encoder;
@@ -158,6 +163,7 @@ public class KollappUserServiceImpl implements KollappUserService {
     @Override
     public void deleteKollappUser() {
         KollappUser kollappUser = getLoggedInKollappUser();
+        kollappUserPublisher.publishUserDeletedEvent(new KollappUserDeletedEvent(this, kollappUser.getId()));
         SecurityContextHolder.getContext().setAuthentication(null);
         userRepo.deleteById(kollappUser.getId());
     }

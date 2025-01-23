@@ -8,7 +8,7 @@ import com.none.kollappbackend.user.adapters.rest.model.KollappUserTO;
 import com.none.kollappbackend.user.adapters.rest.model.KollappUserUpdateRequestTO;
 import com.none.kollappbackend.user.adapters.rest.model.PasswordChangeRequestTO;
 import com.none.kollappbackend.user.application.model.KollappUser;
-import com.none.kollappbackend.user.application.model.RequiresMemberRole;
+import com.none.kollappbackend.user.application.model.RequiresManagerOrMemberRole;
 import com.none.kollappbackend.user.application.service.KollappUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -36,7 +36,7 @@ public class AuthorizedKollappUserController {
 
     @GetMapping
     @Operation(summary = "Get the logged in user", security = { @SecurityRequirement(name = "bearer-key") })
-    @RequiresMemberRole
+    @RequiresManagerOrMemberRole
     public ResponseEntity<ResponseTO> getKollappUser() {
         KollappUser kollappUser = kollappUserService.getLoggedInKollappUser();
         KollappUserTO kollappUserTO = kollappUserMapper.userToUserTO(kollappUser);
@@ -46,7 +46,7 @@ public class AuthorizedKollappUserController {
     @PostMapping("/change-password")
     @Operation(summary = "Change the password of the logged in user", security = {
             @SecurityRequirement(name = "bearer-key") })
-    @RequiresMemberRole
+    @RequiresManagerOrMemberRole
     public ResponseEntity<ResponseTO> changePassword(@RequestBody PasswordChangeRequestTO changeRequestTo) {
         kollappUserService.changePassword(changeRequestTo.getCurrentPassword(), changeRequestTo.getNewPassword());
         return ResponseEntity.ok(new MessageResponseTO("success.password.changed", messageSource));
@@ -55,7 +55,7 @@ public class AuthorizedKollappUserController {
     @PostMapping("/update-information")
     @Operation(summary = "Change user base information of the logged in user", security = {
             @SecurityRequirement(name = "bearer-key") })
-    @RequiresMemberRole 
+    @RequiresManagerOrMemberRole
     public ResponseEntity<ResponseTO> updateUser(@Valid @RequestBody KollappUserUpdateRequestTO updateRequestTO) {
         KollappUser updatedUser = kollappUserService.updateKollappUser(updateRequestTO.getUsername(),
                 updateRequestTO.getEmail(), updateRequestTO.getSurname(), updateRequestTO.getName());
@@ -65,7 +65,7 @@ public class AuthorizedKollappUserController {
 
     @DeleteMapping("/delete")
     @Operation(summary = "Delete the logged in user", security = { @SecurityRequirement(name = "bearer-key") })
-    @RequiresMemberRole
+    @RequiresManagerOrMemberRole
     public ResponseEntity<ResponseTO> deleteUser() {
         kollappUserService.deleteKollappUser();
         return ResponseEntity.ok(new MessageResponseTO("success.user.delete", messageSource));
