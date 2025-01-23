@@ -8,14 +8,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @Slf4j
-@ControllerAdvice
-public class KollappUserExceptionHandler {
+@Order(1)
+@ControllerAdvice(basePackages = {"com.none.kollappbackend.organization"})
+public class OrganizationExceptionHandler {
     @Autowired
     private MessageSource messageSource;
 
@@ -74,7 +76,7 @@ public class KollappUserExceptionHandler {
     }
 
     @ExceptionHandler(KollappUserNotFoundException.class)
-    public ResponseEntity<ResponseTO> handleOrganizationNotFound(KollappUserNotFoundException ex) {
+    public ResponseEntity<ResponseTO> handleUserNotFound(KollappUserNotFoundException ex) {
         return ResponseEntity.badRequest()
                 .body(new ErrorResponseTO(ex.getMessage()));
     }

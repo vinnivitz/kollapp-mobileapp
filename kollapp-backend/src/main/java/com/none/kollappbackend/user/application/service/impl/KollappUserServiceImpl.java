@@ -9,7 +9,9 @@ import com.none.kollappbackend.user.application.exception.UsernameExistsExceptio
 import com.none.kollappbackend.user.application.exception.UsernameNotFoundException;
 import com.none.kollappbackend.user.application.model.ERole;
 import com.none.kollappbackend.user.application.model.KollappUser;
+import com.none.kollappbackend.user.application.model.KollappUserDeletedEvent;
 import com.none.kollappbackend.user.application.model.KollappUserDetails;
+import com.none.kollappbackend.user.application.publisher.KollappUserPublisher;
 import com.none.kollappbackend.user.application.repository.KollappUserRepository;
 import com.none.kollappbackend.user.application.service.KollappUserService;
 import com.none.kollappbackend.core.util.JwtUtil;
@@ -21,6 +23,7 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -46,6 +49,9 @@ public class KollappUserServiceImpl implements KollappUserService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private KollappUserPublisher kollappUserPublisher;
 
     @Autowired
     PasswordEncoder encoder;
@@ -110,7 +116,8 @@ public class KollappUserServiceImpl implements KollappUserService {
     }
 
     @Override
-    public void register(String username, String email, String password, String name, String surname, List<ERole> roles) {
+    public void register(String username, String email, String password, String name, String surname,
+            List<ERole> roles) {
         if (userRepo.existsByUsername(username)) {
             throw new UsernameExistsException(messageSource);
         }
@@ -131,17 +138,24 @@ public class KollappUserServiceImpl implements KollappUserService {
     }
 
     @Override
-    public KollappUser updateKollappUser(KollappUser updatedUserData) {
+    public KollappUser updateKollappUser(@Nullable String username, @Nullable String email, @Nullable String surename, @Nullable String name) {
         KollappUser kollappUser = getLoggedInKollappUser();
-        kollappUser.setName(updatedUserData.getName());
-        kollappUser.setSurname(updatedUserData.getSurname());
-        kollappUser.setUsername(updatedUserData.getUsername());
-        if(!kollappUser.getEmail().equals(updatedUserData.getEmail())){
+        if (username != null && !kollappUser.getUsername().equals(username)) {
+            kollappUser.setUsername(username);
+        }
+        if (email != null && !kollappUser.getEmail().equals(email)) {
             kollappUser.setActivated(false);
-            kollappUser.setEmail(updatedUserData.getEmail());
-            String confirmationToken = jwtUtil.generateConfirmationToken(updatedUserData.getUsername());
+            kollappUser.setEmail(email);
+            String confirmationToken = jwtUtil.generateConfirmationToken(username);
             String confirmationBaseUrl = createConfirmationBaseUrl(confirmationToken);
             emailService.sendConfirmationMail(kollappUser.getEmail(), confirmationBaseUrl);
+            kollappUser.setEmail(email);
+        }
+        if (surename != null) {
+            kollappUser.setSurname(surename);
+        }
+        if (name != null) {
+            kollappUser.setName(name);
         }
         return kollappUser;
     }
@@ -149,6 +163,7 @@ public class KollappUserServiceImpl implements KollappUserService {
     @Override
     public void deleteKollappUser() {
         KollappUser kollappUser = getLoggedInKollappUser();
+        kollappUserPublisher.publishUserDeletedEvent(new KollappUserDeletedEvent(this, kollappUser.getId()));
         SecurityContextHolder.getContext().setAuthentication(null);
         userRepo.deleteById(kollappUser.getId());
     }

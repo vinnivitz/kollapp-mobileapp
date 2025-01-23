@@ -11,6 +11,6 @@ public interface KollappUserRepository {
     Optional<KollappUser> findByEmail(String email);
     boolean existsByUsername(String username);
     boolean existsByEmail(String email);
-    void save(KollappUser organization);
+    void save(KollappUser user);
     void deleteById(long id);
 }

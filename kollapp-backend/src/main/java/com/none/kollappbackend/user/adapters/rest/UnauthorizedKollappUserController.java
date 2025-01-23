@@ -56,7 +56,7 @@ public class UnauthorizedKollappUserController {
                 signUpRequest.getPassword(),
                 signUpRequest.getName(),
                 signUpRequest.getSurname(),
-                List.of(ERole.ROLE_MANAGER, ERole.ROLE_MEMBER));
+                List.of(ERole.ROLE_MANAGER));
         return ResponseEntity.ok(new MessageResponseTO("success.registration", messageSource));
     }
 
