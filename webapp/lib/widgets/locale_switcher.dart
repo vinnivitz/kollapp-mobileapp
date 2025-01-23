@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:webapp/utils/locale.dart';
 
 class LocaleSwitcher extends StatelessWidget {
   const LocaleSwitcher({super.key});
@@ -10,27 +11,13 @@ class LocaleSwitcher extends StatelessWidget {
     final supportedLocales = AppLocalizations.supportedLocales;
     final appLocalizations = AppLocalizations.of(context)!;
 
-    String getLanguageName(Locale locale) {
-      switch (locale.languageCode) {
-        case 'en':
-          return appLocalizations.english;
-        case 'de':
-          return appLocalizations.german;
-        default:
-          return locale.languageCode.toUpperCase();
-      }
-    }
-
     return Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: DropdownButtonHideUnderline(
             child: DropdownButton2<Locale>(
           value: Localizations.localeOf(context),
-
-          // icon: const Icon(Icons.language),
-          // padding: const EdgeInsets.symmetric(horizontal: 8.0),
           items: supportedLocales.map((locale) {
-            final language = getLanguageName(locale);
+            final language = getLanguageName(locale, appLocalizations);
             return DropdownMenuItem(
               value: locale,
               alignment: Alignment.center,
@@ -41,17 +28,17 @@ class LocaleSwitcher extends StatelessWidget {
             if (newLocale != null) {
               LocaleSettings.of(context).updateLocale(newLocale);
             }
-            FocusScope.of(context).requestFocus(FocusNode());
           },
           customButton: Padding(
-            padding: EdgeInsets.all(8.0),
+              padding: EdgeInsets.all(8.0),
               child: Row(
-            children: [
-              const Icon(Icons.language),
-              const SizedBox(width: 8.0),
-              Text(getLanguageName(Localizations.localeOf(context))),
-            ],
-          )),
+                children: [
+                  const Icon(Icons.language),
+                  const SizedBox(width: 8.0),
+                  Text(getLanguageName(
+                      Localizations.localeOf(context), appLocalizations)),
+                ],
+              )),
         )));
   }
 }
