@@ -74,7 +74,7 @@ public class KollappUserExceptionHandler {
     }
 
     @ExceptionHandler(KollappUserNotFoundException.class)
-    public ResponseEntity<ResponseTO> handleOrganizationNotFound(KollappUserNotFoundException ex) {
+    public ResponseEntity<ResponseTO> handleUserNotFound(KollappUserNotFoundException ex) {
         return ResponseEntity.badRequest()
                 .body(new ErrorResponseTO(ex.getMessage()));
     }

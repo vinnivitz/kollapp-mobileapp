@@ -36,6 +36,4 @@ public class KollappUserTO {
     private String name;
 
     private List<String> roles;
-
-    private long organizationId;
 }

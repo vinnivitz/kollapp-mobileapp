@@ -1,5 +1,6 @@
-package com.none.kollappbackend.organization.adapters.rest;
+package com.none.kollappbackend.organization.adapters.primary.rest;
 
+import com.none.kollappbackend.organization.adapters.primary.rest.model.OrganizationTO;
 import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -17,10 +18,9 @@ import jakarta.validation.Valid;
 import com.none.kollappbackend.core.adapters.primary.rest.model.DataResponseTO;
 import com.none.kollappbackend.core.adapters.primary.rest.model.MessageResponseTO;
 import com.none.kollappbackend.core.adapters.primary.rest.model.ResponseTO;
-import com.none.kollappbackend.organization.adapters.rest.mapper.OrganizationMapper;
-import com.none.kollappbackend.organization.adapters.rest.model.OrganizationCreationRequestTO;
-import com.none.kollappbackend.organization.adapters.rest.model.OrganizationTO;
-import com.none.kollappbackend.organization.adapters.rest.model.OrganizationUpdateRequestTO;
+import com.none.kollappbackend.organization.adapters.primary.rest.mapper.OrganizationMapper;
+import com.none.kollappbackend.organization.adapters.primary.rest.model.OrganizationCreationRequestTO;
+import com.none.kollappbackend.organization.adapters.primary.rest.model.OrganizationUpdateRequestTO;
 import com.none.kollappbackend.organization.application.model.Organization;
 import com.none.kollappbackend.organization.application.service.OrganizationService;
 import com.none.kollappbackend.user.application.model.RequiresManagerRole;
@@ -39,9 +39,6 @@ public class OrganizationController {
     private OrganizationService organizationService;
 
     @Autowired
-    private KollappUserService kollappUserService;
-
-    @Autowired
     private OrganizationMapper organizationMapper;
 
     @Autowired
@@ -51,7 +48,7 @@ public class OrganizationController {
     @Operation(summary = "Get the organization of the logged in user", security = {
             @SecurityRequirement(name = "bearer-key") })
     @RequiresMemberRole
-    public ResponseEntity<ResponseTO> getOrganization() {
+    public ResponseEntity<ResponseTO> getOrganizationOfLoggedInUser() {
         Organization organization = organizationService.getOrganizationByLoggedInUser();
         OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(organization);
         return ResponseEntity.ok(new DataResponseTO(organizationTO, "success.organization.get", messageSource));
@@ -62,9 +59,10 @@ public class OrganizationController {
         @SecurityRequirement(name = "bearer-key") })
     @RequiresManagerRole
     public ResponseEntity<ResponseTO> createOrganization(@Valid @RequestBody OrganizationCreationRequestTO creationRequestTO) {
-        long id = organizationService.createOrganization(creationRequestTO.getName());
-        kollappUserService.updateKollappUserOrganizationId(id);
-        return ResponseEntity.ok(new MessageResponseTO("success.organization.create", messageSource));
+        Organization organization = organizationMapper.organizationCreationRequestToOrganization(creationRequestTO);
+        Organization persistedOrganization = organizationService.createOrganization(organization);
+        OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(persistedOrganization);
+        return ResponseEntity.ok(new DataResponseTO(organizationTO, "success.organization.create", messageSource));
     }
 
     @PutMapping
@@ -72,8 +70,10 @@ public class OrganizationController {
         @SecurityRequirement(name = "bearer-key") })
     @RequiresManagerRole
     public ResponseEntity<ResponseTO> updateOrganization(@Valid @RequestBody OrganizationUpdateRequestTO updateRequestTO) {
-        organizationService.updateOrganization(updateRequestTO.getName());
-        return ResponseEntity.ok(new MessageResponseTO("success.organization.update", messageSource));
+        Organization organization = organizationMapper.organizationUpdateRequestToOrganization(updateRequestTO);
+        Organization updatedOrganization = organizationService.updateOrganization(organization);
+        OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(updatedOrganization);
+        return ResponseEntity.ok(new DataResponseTO(organizationTO,"success.organization.update", messageSource));
     }
 
     @DeleteMapping
@@ -81,8 +81,7 @@ public class OrganizationController {
         @SecurityRequirement(name = "bearer-key") })
     @RequiresManagerRole
     public ResponseEntity<ResponseTO> deleteOrganization() {
-        Organization organization = organizationService.getOrganizationByLoggedInUser();
-        organizationService.deleteOrganization(organization.getId());
+        organizationService.deleteOrganizationOfLoggedInUser();
         return ResponseEntity.ok(new MessageResponseTO("success.organization.delete", messageSource));
     }
 }

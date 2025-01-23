@@ -21,13 +21,8 @@ public class OrganizationRepositoryImpl implements OrganizationRepository {
     }
 
     @Override
-    public boolean existsById(long id) {
-        return jpaRepository.existsById(id);
-    }
-
-    @Override
-    public void save(Organization organization) {
-        jpaRepository.save(organization);
+    public Organization save(Organization organization) {
+        return jpaRepository.save(organization);
     }
 
     @Override

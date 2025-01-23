@@ -156,12 +156,6 @@ public class KollappUserServiceImpl implements KollappUserService {
     }
 
     @Override
-    public void updateKollappUserOrganizationId(long id) {
-        KollappUser kollappUser = getLoggedInKollappUser();
-        kollappUser.setOrganizationId(id);
-    }
-
-    @Override
     public void deleteKollappUser() {
         KollappUser kollappUser = getLoggedInKollappUser();
         SecurityContextHolder.getContext().setAuthentication(null);

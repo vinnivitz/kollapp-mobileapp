@@ -1,4 +1,4 @@
-package com.none.kollappbackend.organization.adapters.rest;
+package com.none.kollappbackend.organization.adapters.primary.rest;
 
 import com.none.kollappbackend.core.adapters.primary.rest.model.ErrorResponseTO;
 import com.none.kollappbackend.core.adapters.primary.rest.model.ResponseTO;

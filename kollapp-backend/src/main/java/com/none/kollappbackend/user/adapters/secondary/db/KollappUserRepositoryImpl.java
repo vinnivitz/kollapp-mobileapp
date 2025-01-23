@@ -36,8 +36,8 @@ public class KollappUserRepositoryImpl implements KollappUserRepository {
     }
 
     @Override
-    public void save(KollappUser organization) {
-        jpaRepository.save(organization);
+    public void save(KollappUser user) {
+        jpaRepository.save(user);
     }
 
     @Override

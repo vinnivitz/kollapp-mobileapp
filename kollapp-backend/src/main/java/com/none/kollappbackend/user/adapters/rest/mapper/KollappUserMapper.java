@@ -9,5 +9,4 @@ import org.springframework.stereotype.Service;
 @Service
 public interface KollappUserMapper {
     KollappUserTO userToUserTO(KollappUser user);
-    KollappUser userTOToUser(KollappUserTO userTO);
 }

@@ -1,5 +1,10 @@
 package com.none.kollappbackend.organization.application.service.impl;
 
+import com.none.kollappbackend.organization.application.model.OrganizationManager;
+import com.none.kollappbackend.organization.application.model.PersonOfOrganization;
+import com.none.kollappbackend.organization.application.repository.PersonOfOrganizationRepository;
+import com.none.kollappbackend.user.application.exception.KollappUserNotFoundException;
+import com.none.kollappbackend.user.application.model.KollappUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
@@ -21,40 +26,45 @@ public class OrganizationServiceImpl implements OrganizationService {
     private OrganizationRepository organizationRepository;
 
     @Autowired
+    private PersonOfOrganizationRepository personOfOrganizationRepository;
+
+    @Autowired
     private MessageSource messageSource;
 
     @Autowired
     private KollappUserService kollappUserService;
 
     @Override
-    public Organization getOrganizationById(long id) {
-        return organizationRepository.findById(id).orElseThrow(() -> new OrganizationNotFoundException(messageSource));
+    public Organization createOrganization(Organization organization) {
+        KollappUser user = kollappUserService.getLoggedInKollappUser();
+        Organization persistedOrganization = organizationRepository.save(organization);
+        OrganizationManager organizationManager = new OrganizationManager(user.getName(), user.getSurname(), user.getId());
+        organizationManager.setOrganization(persistedOrganization);
+        PersonOfOrganization persistedOrganizationManager = personOfOrganizationRepository.save(organizationManager);
+        persistedOrganization.addPersonOfOrganization(persistedOrganizationManager);
+        return persistedOrganization;
     }
 
     @Override
-    public long createOrganization(String name) {
-        Organization organization = Organization.builder().name(name).build();
-        organizationRepository.save(organization);
-        return organization.getId();
-    }
-
-    @Override
-    public Organization updateOrganization(String name) {
+    public Organization updateOrganization(Organization updatedOrganization) {
         Organization organization = getOrganizationByLoggedInUser();
-        if (name != null && !organization.getName().equals(name)) {
-            organization.setName(name);
+        if (updatedOrganization.getName() != null && !organization.getName().equals(updatedOrganization.getName())) {
+            organization.setName(updatedOrganization.getName());
         }
         return organization;
     }
 
     @Override
-    public void deleteOrganization(long id) {
-        organizationRepository.deleteById(id);
+    public void deleteOrganizationOfLoggedInUser() {
+        Organization organization = getOrganizationByLoggedInUser();
+        organizationRepository.deleteById(organization.getId());
     }
 
     @Override
     public Organization getOrganizationByLoggedInUser() {
-        long organizationId = kollappUserService.getLoggedInKollappUser().getOrganizationId();
-        return getOrganizationById(organizationId);
+        KollappUser loggedInkollappUser = kollappUserService.getLoggedInKollappUser();
+        PersonOfOrganization personOfOrganization = personOfOrganizationRepository.findByUserId(loggedInkollappUser.getId())
+                .orElseThrow(() -> new KollappUserNotFoundException(messageSource));
+        return personOfOrganization.getOrganization();
     }
 }

@@ -6,9 +6,8 @@ import com.none.kollappbackend.organization.application.model.Organization;
 
 @PrimaryPort
 public interface OrganizationService {
-    Organization getOrganizationById(long id);
     Organization getOrganizationByLoggedInUser();
-    long createOrganization(String name);
-    Organization updateOrganization(String name);
-    void deleteOrganization(long id);
+    Organization createOrganization(Organization organization);
+    Organization updateOrganization(Organization updatedOrganization);
+    void deleteOrganizationOfLoggedInUser();
 }

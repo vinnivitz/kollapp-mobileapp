@@ -9,7 +9,6 @@ import com.none.kollappbackend.organization.application.model.Organization;
 @SecondaryPort
 public interface OrganizationRepository {
     Optional<Organization> findById(long id);
-    boolean existsById(long id);
-    void save(Organization organization);
+    Organization save(Organization organization);
     void deleteById(long id);
 }
