@@ -78,8 +78,8 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     public Organization getOrganizationByLoggedInUser() {
-        KollappUser loggedInkollappUser = kollappUserService.getLoggedInKollappUser();
-        PersonOfOrganization personOfOrganization = getPersonOfOrganizationByUserId(loggedInkollappUser.getId());
+        KollappUser loggedInKollappUser = kollappUserService.getLoggedInKollappUser();
+        PersonOfOrganization personOfOrganization = getPersonOfOrganizationByUserId(loggedInKollappUser.getId());
         return personOfOrganization.getOrganization();
     }
 
