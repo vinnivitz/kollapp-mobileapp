@@ -1,6 +1,5 @@
 package com.none.kollappbackend.core.config;
 
-import com.none.kollappbackend.user.application.model.KollappUserDetails;
 import com.none.kollappbackend.core.util.ResponseUtil;
 import com.none.kollappbackend.core.util.JwtUtil;
 
@@ -20,6 +19,9 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import org.springframework.security.core.userdetails.UserDetails;
+
 
 import java.io.IOException;
 
@@ -47,12 +49,12 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             if (jwt != null) {
                 if (jwtUtil.validateAuthenticationToken(jwt)) {
                     String username = jwtUtil.getSubjectFromAuthenticationToken(jwt);
-                    KollappUserDetails organizationDetails = (KollappUserDetails) userDetailsService
+                    UserDetails userDetails = userDetailsService
                             .loadUserByUsername(username);
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            organizationDetails,
+                            userDetails,
                             null,
-                            organizationDetails.getAuthorities());
+                            userDetails.getAuthorities());
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 } else {

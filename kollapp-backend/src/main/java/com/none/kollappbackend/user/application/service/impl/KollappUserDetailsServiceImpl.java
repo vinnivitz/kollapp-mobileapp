@@ -22,11 +22,11 @@ public class KollappUserDetailsServiceImpl implements UserDetailsService {
     private MessageSource messageSource;
 
     @Autowired
-    private KollappUserRepository orgaRepository;
+    private KollappUserRepository userRepository;
     
     @Override
     public org.springframework.security.core.userdetails.UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        KollappUser kollappUser = orgaRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(messageSource));
+        KollappUser kollappUser = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(messageSource));
         List<GrantedAuthority> authorities = kollappUser.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.name()))
                 .collect(Collectors.toList());
