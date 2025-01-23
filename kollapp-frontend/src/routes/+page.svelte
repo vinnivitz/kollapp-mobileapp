@@ -2,9 +2,9 @@
 	import IonLayout from '$lib/components/layout/Layout.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
 	import { t } from '$lib/locales';
-	import { organizationStore } from '$lib/store';
+	import { userStore } from '$lib/store';
 
-	const username = $derived<string | undefined>($organizationStore?.username ?? '');
+	const username = $derived<string | undefined>($userStore?.username ?? '');
 </script>
 
 <IonLayout title={$t('routes.home.title')}>

@@ -4,7 +4,7 @@ import { ObjectSchema, type AnyObject, object, string } from 'yup';
 import { t } from '$lib/locales';
 
 /**
- * Email DTO for email verification.
+ * Email DTO for sending email for verification.
  */
 export type EmailDto = {
 	email: string;

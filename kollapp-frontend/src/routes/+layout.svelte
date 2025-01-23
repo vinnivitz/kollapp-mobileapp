@@ -9,7 +9,7 @@
 	import Tabs from '$lib/components/layout/Tabs.svelte';
 	import { loadTranslations, locale, t } from '$lib/locales';
 	import { PageRoute, type TabConfig } from '$lib/models';
-	import { organizationStore } from '$lib/store';
+	import { userStore } from '$lib/store';
 	import { determineLocale } from '$lib/utils';
 
 	let { children } = $props();
@@ -38,7 +38,7 @@
 			},
 			{ label: $t('common.page-routes.account'), icon: person, tab: PageRoute.ACCOUNT }
 		];
-		await organizationStore.init();
+		await userStore.init();
 		loaded = true;
 		if (loadingSpinner) {
 			await loadingSpinner.dismiss();

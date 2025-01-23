@@ -6,7 +6,7 @@
 	import type { PageData } from './$types';
 
 	import { apiResources } from '$lib/api';
-	import { resetPasswordSchema, type ResetPasswordDto } from '$lib/api/dto';
+	import { resetPasswordSchema, type ResetPasswordDto } from '$lib/api/dto/client';
 	import { getValidationResult } from '$lib/api/utils';
 	import IonLayout from '$lib/components/layout/Layout.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
@@ -46,7 +46,7 @@
 			const loading = await loadingController.create({});
 			await loading.present();
 			validationResult = getValidationResult(
-				await apiResources.publicOrganization.resetPassword(model, data.token!)
+				await apiResources.publicUser.resetPassword(model, data.token!)
 			);
 			if (validationResult.valid) {
 				await goto(PageRoute.AUTH_LOGIN);

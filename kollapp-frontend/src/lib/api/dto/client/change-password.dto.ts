@@ -3,6 +3,9 @@ import { ObjectSchema, type AnyObject, object, string } from 'yup';
 
 import { t } from '$lib/locales';
 
+/**
+ * Change password DTO for sending user password change information.
+ */
 export type ChangePasswordDto = {
 	currentPassword: string;
 	newPassword: string;

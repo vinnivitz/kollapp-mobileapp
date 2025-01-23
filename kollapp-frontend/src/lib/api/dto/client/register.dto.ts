@@ -4,21 +4,33 @@ import { ObjectSchema, type AnyObject, object, string } from 'yup';
 import { t } from '$lib/locales';
 
 /**
- * Register DTO for organization registration.
+ * Register DTO for sending user registration information.
  */
 export type RegisterDto = {
+	surname: string;
+	name: string;
 	username: string;
 	email: string;
 	password: string;
 };
 
 /**
- * Register schema for organization registration.
+ * Register schema for user registration.
  * @returns {ObjectSchema<AnyObject, RegisterDto>}
  */
 export const registerSchema = (): ObjectSchema<AnyObject, RegisterDto> => {
 	const $t = get(t);
 	return object<RegisterDto>({
+		surname: string()
+			.default('')
+			.min(2, $t('api.dto.register.schema.validation.surname.min'))
+			.max(255, $t('api.dto.register.schema.validation.surname.max'))
+			.required($t('api.dto.register.schema.validation.surname.required')),
+		name: string()
+			.default('')
+			.min(2, $t('api.dto.register.schema.validation.name.min'))
+			.max(255, $t('api.dto.register.schema.validation.name.max'))
+			.required($t('api.dto.register.schema.validation.name.required')),
 		username: string()
 			.default('')
 			.min(2, $t('api.dto.register.schema.validation.username.min'))

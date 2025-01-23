@@ -4,7 +4,7 @@
 	import { goto } from '$app/navigation';
 
 	import { apiResources } from '$lib/api';
-	import { changePasswordSchema, type ChangePasswordDto } from '$lib/api/dto';
+	import { changePasswordSchema, type ChangePasswordDto } from '$lib/api/dto/client';
 	import { getValidationResult } from '$lib/api/utils';
 	import IonLayout from '$lib/components/layout/Layout.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
@@ -41,7 +41,7 @@
 		if (validationResult.valid) {
 			const loading = await loadingController.create({});
 			await loading.present();
-			validationResult = getValidationResult(await apiResources.organization.changePassword(model));
+			validationResult = getValidationResult(await apiResources.user.changePassword(model));
 			if (validationResult.valid) {
 				await goto(PageRoute.ACCOUNT);
 			} else {

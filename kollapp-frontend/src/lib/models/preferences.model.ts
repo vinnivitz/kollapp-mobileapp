@@ -6,6 +6,6 @@ export enum PreferencesKey {
 	REFRESH_TOKEN = 'refresh-token',
 	THEME = 'theme',
 	LOCALE = 'locale',
-	ORGANIZATION = 'organization',
+	USER = 'user',
 	ONLINE = 'online'
 }

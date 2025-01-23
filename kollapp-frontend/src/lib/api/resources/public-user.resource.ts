@@ -1,18 +1,18 @@
-import type { EmailDto } from '../dto/email.dto';
+import type { EmailDto } from '../dto/client/email.dto';
 
-import type { RegisterDto, ResetPasswordDto } from '$lib/api/dto';
+import type { RegisterDto, ResetPasswordDto } from '$lib/api/dto/client';
 import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/api/models';
 import { customFetch } from '$lib/api/utils';
 
-const ENDPOINT = 'public/organization';
+const ENDPOINT = 'public/user';
 
 /**
- * Registers a new organization and returns the validation result
+ * Registers a new manager
  * @param model registration model
  * @returns {Promise<ResponseBody>}
  */
-export async function register(model: RegisterDto): Promise<ResponseBody> {
-	return customFetch(`${ENDPOINT}/signup`, {
+export async function registerManager(model: RegisterDto): Promise<ResponseBody> {
+	return customFetch(`${ENDPOINT}/manager-signup`, {
 		method: RequestMethod.POST,
 		body: JSON.stringify(model),
 		authorizationType: AuthorizationType.NONE
@@ -20,7 +20,7 @@ export async function register(model: RegisterDto): Promise<ResponseBody> {
 }
 
 /**
- * Sends a password reset email to the organization
+ * Sends a password reset email to the user
  * @param model email model
  * @returns {Promise<ResponseBody>}
  */
@@ -33,7 +33,7 @@ export async function forgotPassword(model: EmailDto): Promise<ResponseBody> {
 }
 
 /**
- * Resets the organization password
+ * Resets the user password
  * @param model password reset model
  * @returns {Promise<ResponseBody>}
  */

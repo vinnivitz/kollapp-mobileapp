@@ -4,14 +4,14 @@ import { object, string, type AnyObject, type ObjectSchema } from 'yup';
 import { t } from '$lib/locales';
 
 /**
- * Reset password DTO for organization password reset.
+ * Reset password DTO for sending user password for reset.
  */
 export type ResetPasswordDto = {
 	password: string;
 };
 
 /**
- * Reset password schema for organization password reset.
+ * Reset password schema for user password reset.
  * @returns {ObjectSchema<AnyObject, ResetPasswordDto>}
  */
 export const resetPasswordSchema = (): ObjectSchema<AnyObject, ResetPasswordDto> => {

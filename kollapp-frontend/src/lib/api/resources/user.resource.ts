@@ -1,19 +1,24 @@
-import type { ChangePasswordDto } from '../dto';
+import type { ChangePasswordDto } from '$lib/api/dto/client';
 
 import { RequestMethod, type ResponseBody } from '$lib/api/models';
 import { customFetch } from '$lib/api/utils';
-import type { OrganizationModel } from '$lib/models';
+import type { UserDto } from '$lib/api/dto/server';
 
-const ENDPOINT = 'organization';
+const ENDPOINT = 'user';
 
 /**
- * Gets the organization data
+ * Gets the data of authenticated user
  * @returns {Promise<ResponseBody>}
  */
-export async function getOrganization(): Promise<ResponseBody<OrganizationModel>> {
+export async function getAuthenticatedUser(): Promise<ResponseBody<UserDto>> {
 	return customFetch(ENDPOINT, { silentOnSuccess: true, silentOnError: true });
 }
 
+/**
+ * Changes the password of the authenticated user
+ * @param model change password model
+ * @returns
+ */
 export async function changePassword(model: ChangePasswordDto): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/change-password`, {
 		method: RequestMethod.POST,

@@ -2,7 +2,7 @@
 	import { loadingController } from 'ionic-svelte';
 
 	import { apiResources } from '$lib/api';
-	import { emailSchema, type EmailDto } from '$lib/api/dto/email.dto';
+	import { emailSchema, type EmailDto } from '$lib/api/dto/client/email.dto';
 	import { getValidationResult } from '$lib/api/utils';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
@@ -28,7 +28,7 @@
 			const loading = await loadingController.create({});
 			await loading.present();
 			const validationResult = getValidationResult(
-				await apiResources.publicOrganization.forgotPassword(model)
+				await apiResources.publicUser.forgotPassword(model)
 			);
 			await loading.dismiss();
 			if (validationResult.valid) {

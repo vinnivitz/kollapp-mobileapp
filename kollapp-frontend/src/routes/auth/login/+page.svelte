@@ -4,7 +4,7 @@
 	import { goto } from '$app/navigation';
 
 	import { apiResources } from '$lib/api';
-	import { loginSchema, type LoginDto } from '$lib/api/dto';
+	import { loginSchema, type LoginDto } from '$lib/api/dto/client';
 	import { ValidationCode } from '$lib/api/models';
 	import { getValidationResult } from '$lib/api/utils';
 	import Layout from '$lib/components/layout/Layout.svelte';
@@ -16,12 +16,14 @@
 		type FormConfig,
 		Form,
 		PageRoute,
-		type AuthenticationTokenModel,
-		type OrganizationModel,
+		type UserModel,
 		PreferencesKey,
-		AlertType
+		AlertType,
+
+		type AuthenticationTokenModel
+
 	} from '$lib/models';
-	import { authenticationTokenStore, organizationStore } from '$lib/store';
+	import { authenticationTokenStore, userStore } from '$lib/store';
 	import { clickableElement, customForm, showAlert, storeValue } from '$lib/utils';
 
 	const model = loginSchema().cast({}) as LoginDto;
@@ -50,11 +52,13 @@
 					refreshToken: body.data.refreshToken
 				};
 				await storeAuthenticationTokens(authenticationTokenModel);
-				const organizationModel: OrganizationModel = {
+				const userModel: UserModel = {
+					surname: body.data.surname,
+					name: body.data.name,
 					username: body.data.username,
 					email: body.data.email
 				};
-				await organizationStore.init(organizationModel);
+				await userStore.init(userModel);
 				await goto(PageRoute.HOME);
 			} else {
 				if (validationResult.errors?.[0].code === ValidationCode.EMAIL_NOT_CONFIRMED) {

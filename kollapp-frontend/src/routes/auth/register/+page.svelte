@@ -4,7 +4,7 @@
 	import { goto } from '$app/navigation';
 
 	import { apiResources } from '$lib/api';
-	import { registerSchema, type RegisterDto } from '$lib/api/dto';
+	import { registerSchema, type RegisterDto } from '$lib/api/dto/client';
 	import { getValidationResult } from '$lib/api/utils';
 	import IonLayout from '$lib/components/layout/Layout.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
@@ -41,7 +41,7 @@
 		if (validationResult.valid) {
 			const loading = await loadingController.create({});
 			await loading.present();
-			validationResult = getValidationResult(await apiResources.publicOrganization.register(model));
+			validationResult = getValidationResult(await apiResources.publicUser.registerManager(model));
 			await loading.dismiss();
 			if (validationResult.valid) {
 				actions.resetModel();
@@ -88,6 +88,14 @@
 <IonLayout title={$t('routes.auth.register.title')} showBackButton>
 	<Card title={$t('routes.auth.register.form.title')}>
 		<form use:customForm={form}>
+			<ion-item>
+				<ion-input name="surname" label={$t('routes.auth.register.form.input.surname')}
+				></ion-input>
+			</ion-item>
+			<ion-item>
+				<ion-input name="name" label={$t('routes.auth.register.form.input.name')}
+				></ion-input>
+			</ion-item>
 			<ion-item>
 				<ion-input name="username" label={$t('routes.auth.register.form.input.username')}
 				></ion-input>

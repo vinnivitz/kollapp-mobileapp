@@ -4,7 +4,7 @@ import { ObjectSchema, type AnyObject, object, string } from 'yup';
 import { t } from '$lib/locales';
 
 /**
- * Login DTO for organization login.
+ * Login DTO for sending user login information.
  */
 export type LoginDto = {
 	username: string;
@@ -12,7 +12,7 @@ export type LoginDto = {
 };
 
 /**
- * Login schema for organization login.
+ * Login schema for user login.
  * @returns {ObjectSchema<AnyObject, LoginDto>}
  */
 export const loginSchema = (): ObjectSchema<AnyObject, LoginDto> => {

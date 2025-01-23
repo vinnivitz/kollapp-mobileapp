@@ -17,12 +17,12 @@ import { t } from '$lib/locales';
 import {
 	AlertType,
 	PreferencesKey,
-	type OrganizationModel,
 	type ValidationResult as ValidationResponse
 } from '$lib/models';
-import { authenticationTokenStore, organizationStore } from '$lib/store';
+import { authenticationTokenStore, userStore } from '$lib/store';
 import { determineLocale, getStoredValue, showAlert, storeValue } from '$lib/utils';
 import environment from '$lib/environment';
+import type { UserDto } from '$lib/api/dto/server';
 
 const $t = get(t);
 let lastNetworkCheck = 0;
@@ -104,14 +104,12 @@ export function getUrl(endpoint: string): string {
 }
 
 /**
- * Checks if the organization is authenticated based on stored tokens.
+ * Checks if the user is authenticated based on stored tokens.
  * @returns True if authenticated; otherwise, false.
  */
 export async function isAuthenticated(): Promise<boolean> {
-	const organization =
-		get(organizationStore) ||
-		(await getStoredValue<OrganizationModel>(PreferencesKey.ORGANIZATION));
-	return Boolean(organization);
+	const user = get(userStore) || (await getStoredValue<UserDto>(PreferencesKey.USER));
+	return Boolean(user);
 }
 
 /**

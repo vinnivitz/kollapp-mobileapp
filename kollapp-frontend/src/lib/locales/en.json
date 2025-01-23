@@ -1,278 +1,290 @@
 {
-	"routes": {
-		"home": {
-			"title": "Kollapp",
-			"card": {
-				"title": "Welcome to Kollapp",
-				"content": "The app for all the collectives out there",
-				"authenticated": {
-					"title": "Hello"
-				}
-			}
-		},
-		"auth": {
-			"login": {
-				"title": "Log in",
-				"form": {
-					"title": "Log in to Kollapp",
-					"input": {
-						"password": "Password",
-						"username": "Username"
-					},
-					"submit": "Log in"
-				},
-				"register": {
-					"text": "You are not registered yet?",
-					"link": "Register"
-				},
-				"forgot-password": {
-					"text": "Forgot your password?",
-					"link": "Reset"
-				},
-				"resend-confirmation": {
-					"text": "Didn´t received the confirmation mail?",
-					"link": "Resend"
-				},
-				"alert": {
-					"email-not-confirmed": "Email is not confirmed"
-				}
-			},
-			"register": {
-				"title": "Register",
-				"form": {
-					"title": "Register to Kollapp",
-					"input": {
-						"username": "Username",
-						"email": "Email",
-						"password": "Password",
-						"confirm-password": "Confirm password"
-					},
-					"submit": "Register"
-				},
-				"login": {
-					"text": "You are already registered?",
-					"link": "Log in"
-				}
-			},
-			"reset-password": {
-				"title": "Reset password",
-				"card": {
-					"title": "Enter your email"
-				},
-				"form": {
-					"email": "Email",
-					"buttons": {
-						"send": "Reset password"
-					}
-				},
-				"confirmation": {
-					"title": "Reset password",
-					"register": {
-						"form": {}
-					},
-					"form": {
-						"title": "Reset your password",
-						"input": {
-							"password": "New password",
-							"confirm-password": "Confirm new password"
-						},
-						"submit": "Update password"
-					}
-				}
-			},
-			"resend-confirmation": {
-				"title": "Resend confirmation",
-				"card": {
-					"title": "Enter your email"
-				},
-				"form": {
-					"buttons": {
-						"send": "Send confirmation email"
-					}
-				}
-			}
-		},
-		"account": {
-			"title": "Account",
-			"list": {
-				"application": {
-					"title": "Application",
-					"button": "Application settings"
-				},
-				"account": {
-					"title": "Account settings",
-					"button": {
-						"register": "Register",
-						"login": "Log in",
-						"change-password": "Change password"
-					}
-				}
-			},
-			"app": {
-				"language": {
-					"action-sheet": {
-						"title": "Change language",
-						"buttons": {
-							"german": "German",
-							"english": "English"
-						}
-					}
-				},
-				"title": "Application",
-				"list": {
-					"appearence": {
-						"title": "Appearence",
-						"button": "Dark mode"
-					},
-					"language": {
-						"title": "Language",
-						"button": "Change language"
-					}
-				}
-			},
-			"change-password": {
-				"form": {
-					"input": {
-						"current-password": "Current password",
-						"new-password": "New password"
-					},
-					"submit": "Update password"
-				}
-			}
-		},
-		"finances": {
-			"title": "Finances",
-			"subtitle": "This is on overview over the finances."
-		}
-	},
-	"common": {
-		"page-routes": {
-			"finances": "Finances",
-			"account": "Account",
-			"home": "Home"
-		},
-		"error-page": {
-			"card": {
-				"title": "Page not found.",
-				"content": {
-					"button": "Back to home"
-				}
-			}
-		}
-	},
-	"components": {
-		"widgets": {
-			"modal": {
-				"button": {
-					"confirm": "Confirm",
-					"cancel": "Cancel"
-				}
-			}
-		},
-		"layout": {
-			"header": {
-				"button": {
-					"login": "Log in",
-					"register": "Register",
-					"logout": "Log out"
-				}
-			},
-			"menu": {
-				"searchbar": {
-					"placeholder": "Search the app..."
-				}
-			}
-		}
-	},
-	"api": {
-		"dto": {
-			"register": {
-				"schema": {
-					"validation": {
-						"username": {
-							"min": "Username must be at least 2 characters",
-							"max": "Username must be less than 255 characters",
-							"required": "Username is required"
-						},
-						"email": {
-							"email": "Email is not valid",
-							"max": "Email must be less than 50 characters",
-							"required": "Email is required"
-						},
-						"password": {
-							"min": "Password must be at least 8 characters",
-							"max": "Password must be less than 255 characters",
-							"matches": "Password must contain at least one uppercase letter, one lowercase letter and one number",
-							"required": "Password is required"
-						},
-						"confirm-password": {
-							"no-match": "Must match the password"
-						}
-					}
-				}
-			},
-			"login": {
-				"schema": {
-					"validation": {
-						"username": {
-							"required": "Username is required"
-						},
-						"password": {
-							"required": "Password is required"
-						}
-					}
-				}
-			},
-			"email": {
-				"schema": {
-					"validation": {
-						"invalid": "Invalid email",
-						"required": "Email required"
-					}
-				}
-			},
-			"reset-password": {
-				"schema": {
-					"validation": {
-						"oldPassword": {},
-						"newPassword": {
-							"min": "The new password must be at least 8 characters",
-							"max": "New password must be less then 255 characters",
-							"matches": "Password must contain at least one uppercase letter, one lowercase letter and one number",
-							"required": "New password is required"
-						},
-						"confirm-password": {
-							"no-match": "Must match the new password"
-						}
-					}
-				}
-			},
-			"change-password": {
-				"schema": {
-					"validation": {
-						"current-password": {
-							"required": "Current password is required"
-						},
-						"new-password": {
-							"max": "New password must be less than 255 characters",
-							"min": "New password must be at least 8 characters",
-							"matches": "New password must contain at least one uppercase letter, one lowercase letter and one number",
-							"required": "New password is required"
-						}
-					}
-				}
-			}
-		},
-		"error": "An error occurred.",
-		"success": "Request successful",
-		"not-available": "Server not reachable",
-		"offline": "You are offline",
-		"online": "You are online",
-		"unauthorized": "Authentifcation failed"
-	},
-	"utils": {
-		"alert": {
-			"button": "Close"
-		}
-	}
+  "routes": {
+    "home": {
+      "title": "Kollapp",
+      "card": {
+        "title": "Welcome to Kollapp",
+        "content": "The app for all the collectives out there",
+        "authenticated": {
+          "title": "Hello"
+        }
+      }
+    },
+    "auth": {
+      "login": {
+        "title": "Log in",
+        "form": {
+          "title": "Log in to Kollapp",
+          "input": {
+            "password": "Password",
+            "username": "Username"
+          },
+          "submit": "Log in"
+        },
+        "register": {
+          "text": "You are not registered yet?",
+          "link": "Register"
+        },
+        "forgot-password": {
+          "text": "Forgot your password?",
+          "link": "Reset"
+        },
+        "resend-confirmation": {
+          "text": "Didn´t received the confirmation mail?",
+          "link": "Resend"
+        },
+        "alert": {
+          "email-not-confirmed": "Email is not confirmed"
+        }
+      },
+      "register": {
+        "title": "Register",
+        "form": {
+          "title": "Register to Kollapp",
+          "input": {
+            "username": "Username",
+            "email": "Email",
+            "password": "Password",
+            "confirm-password": "Confirm password",
+            "surname": "Surname",
+            "name": "Name"
+          },
+          "submit": "Register"
+        },
+        "login": {
+          "text": "You are already registered?",
+          "link": "Log in"
+        }
+      },
+      "reset-password": {
+        "title": "Reset password",
+        "card": {
+          "title": "Enter your email"
+        },
+        "form": {
+          "email": "Email",
+          "buttons": {
+            "send": "Reset password"
+          }
+        },
+        "confirmation": {
+          "title": "Reset password",
+          "register": {
+            "form": {}
+          },
+          "form": {
+            "title": "Reset your password",
+            "input": {
+              "password": "New password",
+              "confirm-password": "Confirm new password"
+            },
+            "submit": "Update password"
+          }
+        }
+      },
+      "resend-confirmation": {
+        "title": "Resend confirmation",
+        "card": {
+          "title": "Enter your email"
+        },
+        "form": {
+          "buttons": {
+            "send": "Send confirmation email"
+          }
+        }
+      }
+    },
+    "account": {
+      "title": "Account",
+      "list": {
+        "application": {
+          "title": "Application",
+          "button": "Application settings"
+        },
+        "account": {
+          "title": "Account settings",
+          "button": {
+            "register": "Register",
+            "login": "Log in",
+            "change-password": "Change password"
+          }
+        }
+      },
+      "app": {
+        "language": {
+          "action-sheet": {
+            "title": "Change language",
+            "buttons": {
+              "german": "German",
+              "english": "English"
+            }
+          }
+        },
+        "title": "Application",
+        "list": {
+          "appearence": {
+            "title": "Appearence",
+            "button": "Dark mode"
+          },
+          "language": {
+            "title": "Language",
+            "button": "Change language"
+          }
+        }
+      },
+      "change-password": {
+        "form": {
+          "input": {
+            "current-password": "Current password",
+            "new-password": "New password"
+          },
+          "submit": "Update password"
+        }
+      }
+    },
+    "finances": {
+      "title": "Finances",
+      "subtitle": "This is on overview over the finances."
+    }
+  },
+  "common": {
+    "page-routes": {
+      "finances": "Finances",
+      "account": "Account",
+      "home": "Home"
+    },
+    "error-page": {
+      "card": {
+        "title": "Page not found.",
+        "content": {
+          "button": "Back to home"
+        }
+      }
+    }
+  },
+  "components": {
+    "widgets": {
+      "modal": {
+        "button": {
+          "confirm": "Confirm",
+          "cancel": "Cancel"
+        }
+      }
+    },
+    "layout": {
+      "header": {
+        "button": {
+          "login": "Log in",
+          "register": "Register",
+          "logout": "Log out"
+        }
+      },
+      "menu": {
+        "searchbar": {
+          "placeholder": "Search the app..."
+        }
+      }
+    }
+  },
+  "api": {
+    "dto": {
+      "register": {
+        "schema": {
+          "validation": {
+            "username": {
+              "min": "Username must be at least 2 characters",
+              "max": "Username must be less than 255 characters",
+              "required": "Username is required"
+            },
+            "email": {
+              "email": "Email is not valid",
+              "max": "Email must be less than 50 characters",
+              "required": "Email is required"
+            },
+            "password": {
+              "min": "Password must be at least 8 characters",
+              "max": "Password must be less than 255 characters",
+              "matches": "Password must contain at least one uppercase letter, one lowercase letter and one number",
+              "required": "Password is required"
+            },
+            "confirm-password": {
+              "no-match": "Must match the password"
+            },
+            "surname": {
+              "min": "Surname must be at least 1 character",
+              "max": "Surname must be less then 50 characters",
+              "required": "Surname ist required"
+            },
+            "name": {
+              "min": "Name must be at least 1 character",
+              "max": "Name must be less then 50 characters",
+              "required": "Name is required"
+            }
+          }
+        }
+      },
+      "login": {
+        "schema": {
+          "validation": {
+            "username": {
+              "required": "Username is required"
+            },
+            "password": {
+              "required": "Password is required"
+            }
+          }
+        }
+      },
+      "email": {
+        "schema": {
+          "validation": {
+            "invalid": "Invalid email",
+            "required": "Email required"
+          }
+        }
+      },
+      "reset-password": {
+        "schema": {
+          "validation": {
+            "oldPassword": {},
+            "newPassword": {
+              "min": "The new password must be at least 8 characters",
+              "max": "New password must be less then 255 characters",
+              "matches": "Password must contain at least one uppercase letter, one lowercase letter and one number",
+              "required": "New password is required"
+            },
+            "confirm-password": {
+              "no-match": "Must match the new password"
+            }
+          }
+        }
+      },
+      "change-password": {
+        "schema": {
+          "validation": {
+            "current-password": {
+              "required": "Current password is required"
+            },
+            "new-password": {
+              "max": "New password must be less than 255 characters",
+              "min": "New password must be at least 8 characters",
+              "matches": "New password must contain at least one uppercase letter, one lowercase letter and one number",
+              "required": "New password is required"
+            }
+          }
+        }
+      }
+    },
+    "error": "An error occurred.",
+    "success": "Request successful",
+    "not-available": "Server not reachable",
+    "offline": "You are offline",
+    "online": "You are online",
+    "unauthorized": "Authentifcation failed"
+  },
+  "utils": {
+    "alert": {
+      "button": "Close"
+    }
+  }
 }

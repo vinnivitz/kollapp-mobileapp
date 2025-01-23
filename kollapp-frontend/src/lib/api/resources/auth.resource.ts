@@ -1,18 +1,19 @@
-import type { LoginDto } from '$lib/api/dto';
 import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/api/models';
 import { customFetch } from '$lib/api/utils';
-import { PreferencesKey, type OrganizationTokenModel, type TokenModel } from '$lib/models';
+import { PreferencesKey } from '$lib/models';
 import { authenticationTokenStore } from '$lib/store';
 import { removeStoredValue } from '$lib/utils';
+import type { UserTokenDto } from '$lib/api/dto/server';
+import type { LoginDto, TokenDto } from '$lib/api/dto/client';
 
 const ENDPOINT = 'public/auth';
 
 /**
- * Logs in a organization and returns the validation result
+ * Logs in a user and returns the validation result
  * @param model login model
- * @returns {Promise<ResponseBody<OrganizationDto>>} validation result
+ * @returns {Promise<ResponseBody<UserDto>>} validation result
  */
-export async function login(model: LoginDto): Promise<ResponseBody<OrganizationTokenModel>> {
+export async function login(model: LoginDto): Promise<ResponseBody<UserTokenDto>> {
 	return customFetch(`${ENDPOINT}/signin`, {
 		method: RequestMethod.POST,
 		body: JSON.stringify(model),
@@ -26,7 +27,7 @@ export async function login(model: LoginDto): Promise<ResponseBody<OrganizationT
  * @param token refresh token
  * @returns {Promise<ResponseBody<AccessTokenDto>>}
  */
-export async function refresh(token: string): Promise<ResponseBody<TokenModel>> {
+export async function refresh(token: string): Promise<ResponseBody<TokenDto>> {
 	return customFetch(`${ENDPOINT}/refresh`, {
 		query: { token },
 		authorizationType: AuthorizationType.NONE,
@@ -38,5 +39,5 @@ export async function logout(): Promise<void> {
 	await removeStoredValue(PreferencesKey.ACCESS_TOKEN);
 	authenticationTokenStore.set(undefined);
 	await removeStoredValue(PreferencesKey.REFRESH_TOKEN);
-	await removeStoredValue(PreferencesKey.ORGANIZATION);
+	await removeStoredValue(PreferencesKey.USER);
 }
