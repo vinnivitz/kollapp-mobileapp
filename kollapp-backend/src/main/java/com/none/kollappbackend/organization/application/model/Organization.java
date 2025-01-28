@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,7 +29,13 @@ public class Organization {
     private List<PersonOfOrganization> personsOfOrganization;
 
     public void addPersonOfOrganization(PersonOfOrganization personOfOrganization) {
-        personsOfOrganization.add(personOfOrganization);
+        if(personsOfOrganization != null) {
+            personsOfOrganization.add(personOfOrganization);
+        }
+        else {
+            personsOfOrganization = new ArrayList<>();
+            personsOfOrganization.add(personOfOrganization);
+        }
     }
 
     public List<OrganizationManager> getManagers(){
