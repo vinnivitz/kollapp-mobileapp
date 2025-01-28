@@ -4,8 +4,8 @@ import com.none.kollappbackend.organization.adapters.secondary.db.jpa.PersonOfOr
 import com.none.kollappbackend.organization.application.model.PersonOfOrganization;
 import com.none.kollappbackend.organization.application.repository.PersonOfOrganizationRepository;
 import org.jmolecules.architecture.hexagonal.SecondaryAdapter;
-import org.jmolecules.ddd.annotation.Repository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
