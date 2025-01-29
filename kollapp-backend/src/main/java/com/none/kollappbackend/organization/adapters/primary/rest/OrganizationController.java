@@ -1,6 +1,7 @@
 package com.none.kollappbackend.organization.adapters.primary.rest;
 
 import com.none.kollappbackend.organization.adapters.primary.rest.model.OrganizationTO;
+import com.none.kollappbackend.user.application.model.RequiresManagerOrMemberRole;
 import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -47,7 +48,7 @@ public class OrganizationController {
     @GetMapping
     @Operation(summary = "Get the organization of the logged in user", security = {
             @SecurityRequirement(name = "bearer-key") })
-    @RequiresMemberRole
+    @RequiresManagerOrMemberRole
     public ResponseEntity<ResponseTO> getOrganizationOfLoggedInUser() {
         Organization organization = organizationService.getOrganizationByLoggedInUser();
         OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(organization);
