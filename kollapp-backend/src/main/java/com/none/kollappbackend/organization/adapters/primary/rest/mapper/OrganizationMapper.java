@@ -9,7 +9,6 @@ import org.mapstruct.Mapper;
 import org.springframework.stereotype.Service;
 
 @Mapper(componentModel = "spring")
-@Service
 public interface OrganizationMapper {
     Organization organizationCreationRequestToOrganization(OrganizationCreationRequestTO organizationCreationRequestTO);
     Organization organizationUpdateRequestToOrganization(OrganizationUpdateRequestTO organizationUpdateRequestTO);

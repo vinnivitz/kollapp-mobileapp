@@ -1,5 +1,6 @@
 package com.none.kollappbackend.organization.application.model;
 
+import com.none.kollappbackend.organization.application.exception.ActivityNotFoundException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,14 +29,22 @@ public class Organization {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "organization", orphanRemoval = true)
     private List<PersonOfOrganization> personsOfOrganization;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "organization", orphanRemoval = true)
+    private List<Activity> activities;
+
     public void addPersonOfOrganization(PersonOfOrganization personOfOrganization) {
         if(personsOfOrganization != null) {
             personsOfOrganization.add(personOfOrganization);
+            return;
         }
-        else {
-            personsOfOrganization = new ArrayList<>();
-            personsOfOrganization.add(personOfOrganization);
+        personsOfOrganization = List.of(personOfOrganization);
+    }
+
+    public void addActivityOfOrganization(Activity activity) {
+        if(activities != null) {
+            activities.add(activity);
         }
+        activities = List.of(activity);
     }
 
     public List<OrganizationManager> getManagers(){
