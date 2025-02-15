@@ -37,7 +37,7 @@ public class ActivityController {
     public ResponseEntity<ResponseTO> getActivitiesOfOrganization(@PathVariable("organization-id") long organizationId) {
         List<Activity> activities = activityService.getActivitiesOfOrganization(organizationId);
         List<ActivityTO> activityTOs = activities.stream().map(a -> activityMapper.activityToActivityTO(a)).toList();
-        return ResponseEntity.ok(new DataResponseTO(activityTOs, "success.organization.get", messageSource));
+        return ResponseEntity.ok(new DataResponseTO(activityTOs, "success.activity.get", messageSource));
     }
 
     @PostMapping("/{organization-id}/activity")
@@ -48,7 +48,7 @@ public class ActivityController {
                                                         @RequestBody ActivityCreationRequestTO activityCreationRequestTO ) {
         Activity activity = activityMapper.activityCreationRequestTOToActivity(activityCreationRequestTO);
         ActivityTO activityTO = activityMapper.activityToActivityTO(activity);
-        return ResponseEntity.ok(new DataResponseTO(activityTO, "success.organization.create", messageSource));
+        return ResponseEntity.ok(new DataResponseTO(activityTO, "success.activity.create", messageSource));
     }
 
     @PostMapping("/{organization-id}/activity/{activity-id}")
@@ -61,6 +61,6 @@ public class ActivityController {
         Activity activityToBeUpdated = activityMapper.activityUpdateTOToActivity(activityUpdateRequestTO);
         Activity updatedActivity = activityService.updateActivity(organizationId, activityId, activityToBeUpdated);
         ActivityTO activityTO = activityMapper.activityToActivityTO(updatedActivity);
-        return ResponseEntity.ok(new DataResponseTO(activityTO, "success.organization.update", messageSource));
+        return ResponseEntity.ok(new DataResponseTO(activityTO, "success.activity.update", messageSource));
     }
 }
