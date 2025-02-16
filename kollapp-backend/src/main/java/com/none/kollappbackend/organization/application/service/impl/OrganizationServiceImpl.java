@@ -64,16 +64,17 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    public void deleteUserFromTheirOrganization(long userId) {
+    public Organization deleteUserFromTheirOrganization(long userId) {
         PersonOfOrganization personOfOrganization = getPersonOfOrganizationByUserId(userId);
         Organization organization = personOfOrganization.getOrganization();
         if(!(personOfOrganization instanceof OrganizationManager organizationManager)) {
             personOfOrganizationRepository.deleteById(personOfOrganization.getId());
-            return;
+            return organization;
         }
         if(organization.hasManager(organizationManager) && organization.hasOnlyOneManagerLeft()) {
             organizationRepository.deleteById(organization.getId());
         }
+        return organization;
     }
 
     @Override

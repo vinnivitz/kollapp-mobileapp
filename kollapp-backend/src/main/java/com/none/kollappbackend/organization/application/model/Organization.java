@@ -1,16 +1,10 @@
 package com.none.kollappbackend.organization.application.model;
 
-import com.none.kollappbackend.organization.application.exception.ActivityNotFoundException;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -37,14 +31,16 @@ public class Organization {
             personsOfOrganization.add(personOfOrganization);
             return;
         }
-        personsOfOrganization = List.of(personOfOrganization);
+        personsOfOrganization = new ArrayList<>();
+        personsOfOrganization.add(personOfOrganization);
     }
 
     public void addActivityOfOrganization(Activity activity) {
         if(activities != null) {
             activities.add(activity);
         }
-        activities = List.of(activity);
+        activities = new ArrayList<>();
+        activities.add(activity);
     }
 
     public List<OrganizationManager> getManagers(){

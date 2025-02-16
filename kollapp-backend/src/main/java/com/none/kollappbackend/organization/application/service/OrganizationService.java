@@ -11,5 +11,5 @@ public interface OrganizationService {
     Organization createOrganization(Organization organization);
     Organization updateOrganization(Organization updatedOrganization);
     void deleteOrganizationOfLoggedInUser();
-    void deleteUserFromTheirOrganization(long userId);
+    Organization deleteUserFromTheirOrganization(long userId);
 }
