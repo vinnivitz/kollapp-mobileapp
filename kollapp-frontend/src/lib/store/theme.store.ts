@@ -1,40 +1,50 @@
-import { writable, type Readable } from 'svelte/store';
+import { writable } from 'svelte/store';
 
-import { PreferencesKey, Theme } from '$lib/models';
-import { getStoredValue, storeValue } from '$lib/utils';
+import { PreferencesKey } from '$lib/models/preferences';
+import type { ThemeStore } from '$lib/models/store';
+import { Theme } from '$lib/models/theme';
+import { getStoredValue, removeStoredValue, storeValue } from '$lib/utils';
 
-async function initStore(): Promise<Theme> {
-	const value = await getStoredValue<Theme>(PreferencesKey.THEME);
-	const prefersDarkTheme = globalThis.matchMedia('(prefers-color-scheme: dark)').matches;
-	return value === Theme.DARK || (value !== Theme.LIGHT && prefersDarkTheme)
-		? Theme.DARK
-		: Theme.LIGHT;
-}
+function createStore(): ThemeStore {
+	const { subscribe, set, update } = writable<Theme | undefined>();
 
-async function updateTheme(theme: Theme): Promise<void> {
-	document.body.classList.toggle('dark', theme === Theme.DARK);
-	await storeValue(PreferencesKey.THEME, theme);
-}
-
-function createStore(): Readable<Theme> & {
-	setTheme: (theme: Theme) => Promise<void>;
-	init: () => Promise<void>;
-} {
-	const { subscribe, set } = writable<Theme>();
 	async function init(): Promise<void> {
-		const initialTheme = await initStore();
-		await updateTheme(initialTheme);
-		set(initialTheme);
+		const initialTheme = await getInitialTheme();
+		await _set(initialTheme);
 	}
-	async function setTheme(theme: Theme): Promise<void> {
-		await updateTheme(theme);
+	async function _set(theme: Theme): Promise<void> {
+		document.body.classList.toggle('dark', theme === Theme.DARK);
+		await storeValue(PreferencesKey.THEME, theme);
 		set(theme);
+	}
+
+	async function toggle(): Promise<void> {
+		update((theme) => {
+			const newTheme = theme === Theme.DARK ? Theme.LIGHT : Theme.DARK;
+			_set(newTheme);
+			return newTheme;
+		});
+	}
+
+	async function reset(): Promise<void> {
+		await removeStoredValue(PreferencesKey.THEME);
+		set(undefined);
+	}
+
+	async function getInitialTheme(): Promise<Theme> {
+		const value = await getStoredValue<Theme>(PreferencesKey.THEME);
+		const prefersDarkTheme = globalThis.matchMedia('(prefers-color-scheme: dark)').matches;
+		return value === Theme.DARK || (value !== Theme.LIGHT && prefersDarkTheme)
+			? Theme.DARK
+			: Theme.LIGHT;
 	}
 
 	return {
 		subscribe,
-		setTheme,
-		init
+		init,
+		set: _set,
+		toggle,
+		reset
 	};
 }
 

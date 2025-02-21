@@ -1,3 +1,6 @@
 export * from './user.store';
 export * from './theme.store';
-export * from './authentication-token.store';
+export * from './authentication.store';
+export * from './organization.store';
+export * from './theme.store';
+export * from './connection.store';

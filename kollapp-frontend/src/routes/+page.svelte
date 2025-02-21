@@ -12,6 +12,7 @@
 		title={username
 			? `${$t('routes.home.card.authenticated.title')} ${username}`
 			: $t('routes.home.card.title')}
+		titleOnly={!!username}
 	>
 		<div class="text-center">
 			{$t('routes.home.card.content')}

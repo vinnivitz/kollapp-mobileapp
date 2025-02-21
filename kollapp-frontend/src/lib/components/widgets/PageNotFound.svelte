@@ -6,7 +6,7 @@
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
 	import { t } from '$lib/locales';
-	import { PageRoute } from '$lib/models';
+	import { PageRoute } from '$lib/models/routing';
 	import { clickableElement } from '$lib/utils';
 </script>
 

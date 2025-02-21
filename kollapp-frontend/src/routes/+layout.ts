@@ -4,15 +4,21 @@ import { goto } from '$app/navigation';
 
 import type { LayoutLoad } from './$types';
 
-import { themeStore } from '$lib/store';
+import { authenticationStore, connectionStore, themeStore } from '$lib/store';
 import { navigateBack } from '$lib/utils';
 
 export const ssr = false;
 
 export const load: LayoutLoad = async () => {
-	await themeStore.init();
+	initStores();
 	handleAppEvents();
 };
+
+function initStores(): void {
+	themeStore.init();
+	connectionStore.init();
+	authenticationStore.init();
+}
 
 async function handleAppEvents(): Promise<void> {
 	App.addListener('appUrlOpen', async (event: URLOpenListenerEvent) => {

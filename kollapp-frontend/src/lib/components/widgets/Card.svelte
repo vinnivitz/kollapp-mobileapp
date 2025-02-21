@@ -6,8 +6,15 @@
 		title,
 		subtitle,
 		children,
-		color
-	}: { title?: string; subtitle?: string; children?: Snippet; color?: PredefinedColors } = $props();
+		color,
+		titleOnly = false
+	}: {
+		title?: string;
+		subtitle?: string;
+		children?: Snippet;
+		color?: PredefinedColors;
+		titleOnly?: boolean;
+	} = $props();
 </script>
 
 <div></div>
@@ -20,7 +27,7 @@
 			{/if}
 		</ion-card-header>
 	{/if}
-	{#if children}
+	{#if children && !titleOnly}
 		<ion-card-content>
 			{@render children?.()}
 		</ion-card-content>

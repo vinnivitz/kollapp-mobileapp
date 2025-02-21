@@ -6,7 +6,7 @@
 	import { isAuthenticated } from '$lib/api/utils';
 	import IonLayout from '$lib/components/layout/Layout.svelte';
 	import { t } from '$lib/locales';
-	import { PageRoute } from '$lib/models';
+	import { PageRoute } from '$lib/models/routing';
 	import { clickableElement } from '$lib/utils';
 </script>
 

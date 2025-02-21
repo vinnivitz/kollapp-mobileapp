@@ -9,13 +9,8 @@
 	import IonLayout from '$lib/components/layout/Layout.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
 	import { t } from '$lib/locales';
-	import {
-		Form,
-		PageRoute,
-		type FormActions,
-		type FormConfig,
-		type ValidationResult
-	} from '$lib/models';
+	import { PageRoute } from '$lib/models/routing';
+	import { type ValidationResult, type FormActions, type FormConfig, Form } from '$lib/models/ui';
 	import { clickableElement, customForm } from '$lib/utils';
 
 	const model = registerSchema().cast({}) as RegisterDto;
@@ -89,12 +84,10 @@
 	<Card title={$t('routes.auth.register.form.title')}>
 		<form use:customForm={form}>
 			<ion-item>
-				<ion-input name="surname" label={$t('routes.auth.register.form.input.surname')}
-				></ion-input>
+				<ion-input name="surname" label={$t('routes.auth.register.form.input.surname')}></ion-input>
 			</ion-item>
 			<ion-item>
-				<ion-input name="name" label={$t('routes.auth.register.form.input.name')}
-				></ion-input>
+				<ion-input name="name" label={$t('routes.auth.register.form.input.name')}></ion-input>
 			</ion-item>
 			<ion-item>
 				<ion-input name="username" label={$t('routes.auth.register.form.input.username')}

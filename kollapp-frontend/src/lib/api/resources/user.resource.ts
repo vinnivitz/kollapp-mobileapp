@@ -1,8 +1,7 @@
 import type { ChangePasswordDto } from '$lib/api/dto/client';
-
+import type { UserDto } from '$lib/api/dto/server';
 import { RequestMethod, type ResponseBody } from '$lib/api/models';
 import { customFetch } from '$lib/api/utils';
-import type { UserDto } from '$lib/api/dto/server';
 
 const ENDPOINT = 'user';
 
@@ -11,7 +10,7 @@ const ENDPOINT = 'user';
  * @returns {Promise<ResponseBody>}
  */
 export async function getAuthenticatedUser(): Promise<ResponseBody<UserDto>> {
-	return customFetch(ENDPOINT, { silentOnSuccess: true, silentOnError: true });
+	return customFetch(ENDPOINT, { silentOnError: true });
 }
 
 /**

@@ -1,8 +1,7 @@
 import { Preferences } from '@capacitor/preferences';
 
-import { type PreferencesKey } from '$lib/models';
-
-const PREFIX = 'kollapp';
+import environment from '$lib/environment';
+import type { PreferencesKey } from '$lib/models/preferences';
 
 /**
  * Stores a value in the preferences store
@@ -38,6 +37,15 @@ export async function removeStoredValue(key: PreferencesKey): Promise<void> {
 	await Preferences.remove({ key: getKey(key) });
 }
 
+/**
+ * Checks if a value is stored for the given key
+ * @param key key name
+ * @returns {Promise<boolean>}
+ */
+export async function hasStoredValue(key: PreferencesKey): Promise<boolean> {
+	return (await getStoredValue(key)) !== undefined;
+}
+
 function getKey(key: PreferencesKey): string {
-	return `${PREFIX}.${key}`;
+	return `${environment.preferencesPrefix}.${key}`;
 }

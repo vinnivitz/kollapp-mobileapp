@@ -4,7 +4,8 @@
 	import { goto } from '$app/navigation';
 	import { page, navigating } from '$app/stores';
 
-	import { PageRoute, type TabConfig } from '$lib/models';
+	import { PageRoute } from '$lib/models/routing';
+	import type { TabConfig } from '$lib/models/ui';
 
 	let { tabs, children }: { tabs: TabConfig[]; children?: Snippet } = $props();
 

@@ -1,9 +1,9 @@
-import { Network, type ConnectionStatus } from '@capacitor/network';
 import { get } from 'svelte/store';
 
 import { dev } from '$app/environment';
 
 import { apiResources } from '$lib/api';
+import type { UserDto } from '$lib/api/dto/server';
 import {
 	AuthorizationType,
 	ContentType,
@@ -13,20 +13,14 @@ import {
 	type CustomFetchConfig,
 	type ResponseBody
 } from '$lib/api/models';
-import { t } from '$lib/locales';
-import {
-	AlertType,
-	PreferencesKey,
-	type ValidationResult as ValidationResponse
-} from '$lib/models';
-import { authenticationTokenStore, userStore } from '$lib/store';
-import { determineLocale, getStoredValue, showAlert, storeValue } from '$lib/utils';
 import environment from '$lib/environment';
-import type { UserDto } from '$lib/api/dto/server';
+import { t } from '$lib/locales';
+import { PreferencesKey } from '$lib/models/preferences';
+import { AlertType, type ValidationResult } from '$lib/models/ui';
+import { authenticationStore, connectionStore, userStore } from '$lib/store';
+import { determineLocale, getStoredValue, showAlert } from '$lib/utils';
 
 const $t = get(t);
-let lastNetworkCheck = 0;
-let cachedNetworkStatus: ConnectionStatus;
 
 /**
  * Custom fetch function with authentication and error handling.
@@ -43,7 +37,7 @@ export async function customFetch<T = never>(
 	const body = config?.body;
 	const query = config?.query;
 	const authorizationType = config?.authorizationType ?? AuthorizationType.BEARER;
-	const silentOnSuccess = config?.silentOnSuccess ?? false;
+	const silentOnSuccess = config?.silentOnSuccess ?? true;
 	const silentOnError = config?.silentOnError ?? false;
 
 	try {
@@ -79,7 +73,7 @@ export async function customFetch<T = never>(
 			response = await fetch(enhancedUrl, { ...options, headers });
 		}
 
-		await handleNetworkStatusChange();
+		connectionStore.check();
 
 		return getResponseBody(response, silentOnSuccess, silentOnError);
 	} catch (error) {
@@ -118,7 +112,7 @@ export async function isAuthenticated(): Promise<boolean> {
  * @param silent If true, no alert is shown.
  * @returns ValidationResult indicating validity and any errors.
  */
-export function getValidationResult<T>(body: ResponseBody<T>): ValidationResponse {
+export function getValidationResult<T>(body: ResponseBody<T>): ValidationResult {
 	return {
 		valid: StatusChecks.isOK(body.status),
 		errors: [
@@ -178,32 +172,6 @@ async function getResponseBody<T>(
 	};
 }
 
-async function getCachedNetworkStatus(): Promise<ConnectionStatus> {
-	const now = Date.now();
-	// Check once every 10 seconds
-	if (!cachedNetworkStatus || now - lastNetworkCheck > environment.networkCheckInterval) {
-		cachedNetworkStatus = await Network.getStatus();
-		lastNetworkCheck = now;
-	}
-	return cachedNetworkStatus;
-}
-
-async function handleNetworkStatusChange() {
-	const networkStatus = await getCachedNetworkStatus();
-	const isOnline = networkStatus?.connected;
-	const wasOnline = await getStoredValue<boolean>(PreferencesKey.ONLINE);
-
-	if (!isOnline && wasOnline) {
-		await storeValue(PreferencesKey.ONLINE, false);
-		showAlert({ message: $t('api.offline'), type: AlertType.ERROR });
-		console.info($t('api.offline'));
-	} else if (isOnline && !wasOnline) {
-		await storeValue(PreferencesKey.ONLINE, true);
-		showAlert({ message: $t('api.online'), type: AlertType.INFO });
-		console.info($t('api.online'));
-	}
-}
-
 function hasRequestBody(method: RequestMethod): boolean {
 	return method === RequestMethod.POST || method === RequestMethod.PUT;
 }
@@ -217,26 +185,21 @@ async function getEnhancedUrl(
 }
 
 async function getAuthenticationToken(): Promise<string | undefined> {
-	return (
-		get(authenticationTokenStore) ??
-		(await getStoredValue<string>(PreferencesKey.ACCESS_TOKEN)) ??
-		(await getNewAuthenticationToken())
-	);
+	const token = get(authenticationStore)?.accessToken;
+	return token ?? (await getNewAuthenticationToken());
 }
 
 async function getNewAuthenticationToken(): Promise<string | undefined> {
-	let token = await getStoredValue(PreferencesKey.REFRESH_TOKEN);
-	if (!token) {
-		return undefined;
+	const refreshToken = get(authenticationStore)?.refreshToken;
+	if (!refreshToken) {
+		return;
 	}
-	const body = await apiResources.auth.refresh(token);
+	const body = await apiResources.auth.refresh(refreshToken);
 	if (StatusChecks.isOK(body.status)) {
-		token = body.data.token;
-		await storeValue(PreferencesKey.ACCESS_TOKEN, token);
-		authenticationTokenStore.set(token);
-		return token;
+		const accessToken = body.data.token;
+		authenticationStore.set({ accessToken, refreshToken });
+		return refreshToken;
 	}
-	return undefined;
 }
 
 async function createErrorResponse(

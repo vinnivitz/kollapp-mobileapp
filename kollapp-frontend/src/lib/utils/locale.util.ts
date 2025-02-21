@@ -1,6 +1,7 @@
 import { Device } from '@capacitor/device';
 
-import { Locale, PreferencesKey } from '$lib/models';
+import { Locale } from '$lib/models/locale';
+import { PreferencesKey } from '$lib/models/preferences';
 import { getStoredValue } from '$lib/utils';
 
 /**

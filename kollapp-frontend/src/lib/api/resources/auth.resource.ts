@@ -1,10 +1,8 @@
+import type { LoginDto, TokenDto } from '$lib/api/dto/client';
+import type { UserTokenDto } from '$lib/api/dto/server';
 import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/api/models';
 import { customFetch } from '$lib/api/utils';
-import { PreferencesKey } from '$lib/models';
-import { authenticationTokenStore } from '$lib/store';
-import { removeStoredValue } from '$lib/utils';
-import type { UserTokenDto } from '$lib/api/dto/server';
-import type { LoginDto, TokenDto } from '$lib/api/dto/client';
+import { authenticationStore, userStore } from '$lib/store';
 
 const ENDPOINT = 'public/auth';
 
@@ -35,9 +33,11 @@ export async function refresh(token: string): Promise<ResponseBody<TokenDto>> {
 	});
 }
 
-export async function logout(): Promise<void> {
-	await removeStoredValue(PreferencesKey.ACCESS_TOKEN);
-	authenticationTokenStore.set(undefined);
-	await removeStoredValue(PreferencesKey.REFRESH_TOKEN);
-	await removeStoredValue(PreferencesKey.USER);
+/**
+ * Logs out the user by clearing authentication tokens and user information
+ * @returns {void}
+ */
+export function logout(): void {
+	authenticationStore.reset();
+	userStore.reset();
 }

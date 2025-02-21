@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 
-	import { PageRoute } from '$lib/models';
+	import { PageRoute } from '$lib/models/routing';
 	import { clickableElement, navigateBack } from '$lib/utils';
 
 	let { title, showBackButton }: { title: string; showBackButton?: boolean } = $props();

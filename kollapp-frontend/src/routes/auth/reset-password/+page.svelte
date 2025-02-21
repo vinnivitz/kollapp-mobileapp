@@ -7,7 +7,7 @@
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
 	import { t } from '$lib/locales';
-	import { type ValidationResult, type FormActions, type FormConfig, Form } from '$lib/models';
+	import { type ValidationResult, type FormActions, type FormConfig, Form } from '$lib/models/ui';
 	import { customForm } from '$lib/utils';
 
 	const model = emailSchema().cast({}) as EmailDto;

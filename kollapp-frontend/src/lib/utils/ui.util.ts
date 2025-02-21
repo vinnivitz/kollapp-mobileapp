@@ -3,8 +3,12 @@ import { get, writable } from 'svelte/store';
 import { ObjectSchema, type AnyObject, ValidationError } from 'yup';
 
 import { t } from '$lib/locales';
-import type { ValidationError as CustomValidationError, Form, FormActions } from '$lib/models';
-import { type ValidationResult } from '$lib/models';
+import type {
+	Form,
+	FormActions,
+	ValidationResult,
+	ValidationError as CustomValidationError
+} from '$lib/models/ui';
 
 const $t = get(t);
 

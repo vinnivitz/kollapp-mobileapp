@@ -9,13 +9,8 @@
 	import IonLayout from '$lib/components/layout/Layout.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
 	import { t } from '$lib/locales';
-	import {
-		Form,
-		PageRoute,
-		type FormActions,
-		type FormConfig,
-		type ValidationResult
-	} from '$lib/models';
+	import { PageRoute } from '$lib/models/routing';
+	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
 	import { customForm } from '$lib/utils';
 
 	const model = changePasswordSchema().cast({}) as ChangePasswordDto;

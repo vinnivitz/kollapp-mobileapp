@@ -4,7 +4,7 @@
 	import { apiResources } from '$lib/api';
 	import { isAuthenticated } from '$lib/api/utils';
 	import { t } from '$lib/locales';
-	import { PageRoute } from '$lib/models';
+	import { PageRoute } from '$lib/models/routing';
 	import { clickableElement } from '$lib/utils';
 
 	async function logout(): Promise<void> {

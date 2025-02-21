@@ -15,7 +15,8 @@ export async function registerManager(model: RegisterDto): Promise<ResponseBody>
 	return customFetch(`${ENDPOINT}/manager-signup`, {
 		method: RequestMethod.POST,
 		body: JSON.stringify(model),
-		authorizationType: AuthorizationType.NONE
+		authorizationType: AuthorizationType.NONE,
+		silentOnSuccess: false
 	});
 }
 

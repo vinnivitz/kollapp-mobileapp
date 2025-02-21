@@ -4,14 +4,11 @@
 
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import { locale, t } from '$lib/locales';
-	import { Locale, PreferencesKey, Theme } from '$lib/models';
+	import { Locale } from '$lib/models/locale';
+	import { PreferencesKey } from '$lib/models/preferences';
+	import { Theme } from '$lib/models/theme';
 	import { themeStore } from '$lib/store';
 	import { clickableElement, storeValue } from '$lib/utils';
-
-	async function toggleTheme(theme: Theme): Promise<void> {
-		theme = theme === Theme.DARK ? Theme.LIGHT : Theme.DARK;
-		themeStore.setTheme(theme);
-	}
 
 	async function updateLocale(value: Locale): Promise<void> {
 		locale.set(value);
@@ -43,7 +40,7 @@
 	<ion-list inset>
 		<ion-item color="light">
 			<ion-toggle
-				on:ionChange={async () => await toggleTheme($themeStore)}
+				onchange={() => themeStore.toggle()}
 				justify="space-between"
 				checked={$themeStore === Theme.DARK}
 			>

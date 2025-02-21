@@ -3,7 +3,7 @@ import { alertCircleOutline, checkmarkCircleSharp } from 'ionicons/icons';
 import { get } from 'svelte/store';
 
 import { t } from '$lib/locales';
-import { AlertType, type AlertModel } from '$lib/models';
+import { AlertType, type AlertModel } from '$lib/models/ui';
 
 const $t = get(t);
 

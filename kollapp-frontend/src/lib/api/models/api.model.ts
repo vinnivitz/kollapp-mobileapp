@@ -1,4 +1,9 @@
-import type { ValidationCode } from './validation.model';
+/**
+ * Validation code for the response
+ */
+export enum ValidationCode {
+	EMAIL_NOT_CONFIRMED = 'EMAIL_NOT_CONFIRMED'
+}
 
 /**
  * Content type for the request and response
@@ -57,11 +62,23 @@ export enum StatusCode {
 	SERVICE_UNAVAILABLE = 503
 }
 
-export type CustomFetchConfig = {
-	query?: Record<string, string>;
-	method?: RequestMethod;
-	body?: string;
-	authorizationType?: AuthorizationType;
-	silentOnSuccess?: boolean;
-	silentOnError?: boolean;
-};
+/**
+ * Custom fetch configuration
+ */
+export type CustomFetchConfig =
+	| {
+			method?: RequestMethod.GET | RequestMethod.DELETE;
+			body?: never;
+			query?: Record<string, string>;
+			authorizationType?: AuthorizationType;
+			silentOnSuccess?: boolean;
+			silentOnError?: boolean;
+	  }
+	| {
+			method: RequestMethod.POST | RequestMethod.PUT;
+			body: string;
+			query?: Record<string, string>;
+			authorizationType?: AuthorizationType;
+			silentOnSuccess?: boolean;
+			silentOnError?: boolean;
+	  };

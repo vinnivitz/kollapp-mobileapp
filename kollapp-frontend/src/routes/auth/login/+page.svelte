@@ -10,21 +10,17 @@
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
 	import { t } from '$lib/locales';
+	import { PageRoute } from '$lib/models/routing';
+	import type { AuthenticationModel, UserModel } from '$lib/models/store';
 	import {
-		type ValidationResult,
+		AlertType,
+		Form,
 		type FormActions,
 		type FormConfig,
-		Form,
-		PageRoute,
-		type UserModel,
-		PreferencesKey,
-		AlertType,
-
-		type AuthenticationTokenModel
-
-	} from '$lib/models';
-	import { authenticationTokenStore, userStore } from '$lib/store';
-	import { clickableElement, customForm, showAlert, storeValue } from '$lib/utils';
+		type ValidationResult
+	} from '$lib/models/ui';
+	import { authenticationStore, userStore } from '$lib/store';
+	import { clickableElement, customForm, showAlert } from '$lib/utils';
 
 	const model = loginSchema().cast({}) as LoginDto;
 	let validationResult: ValidationResult;
@@ -47,18 +43,17 @@
 			const body = await apiResources.auth.login(model);
 			validationResult = getValidationResult(body);
 			if (validationResult.valid) {
-				const authenticationTokenModel: AuthenticationTokenModel = {
+				const authenticationModel: AuthenticationModel = {
 					accessToken: body.data.accessToken,
 					refreshToken: body.data.refreshToken
 				};
-				await storeAuthenticationTokens(authenticationTokenModel);
+				authenticationStore.set(authenticationModel);
 				const userModel: UserModel = {
-					surname: body.data.surname,
 					name: body.data.name,
 					username: body.data.username,
 					email: body.data.email
 				};
-				await userStore.init(userModel);
+				userStore.set(userModel);
 				await goto(PageRoute.HOME);
 			} else {
 				if (validationResult.errors?.[0].code === ValidationCode.EMAIL_NOT_CONFIRMED) {
@@ -72,14 +67,6 @@
 			}
 			await loading.dismiss();
 		}
-	}
-
-	async function storeAuthenticationTokens(model: AuthenticationTokenModel): Promise<void> {
-		await Promise.all([
-			storeValue(PreferencesKey.ACCESS_TOKEN, model.accessToken),
-			authenticationTokenStore.set(model.accessToken),
-			storeValue(PreferencesKey.REFRESH_TOKEN, model.refreshToken)
-		]);
 	}
 </script>
 

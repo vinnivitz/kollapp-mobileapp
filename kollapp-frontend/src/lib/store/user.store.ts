@@ -1,51 +1,51 @@
-import { get, writable, type Writable } from 'svelte/store';
+import { writable } from 'svelte/store';
 
 import { apiResources } from '$lib/api';
 import { StatusChecks } from '$lib/api/utils';
-import { PreferencesKey, type UserModel } from '$lib/models';
+import { PreferencesKey } from '$lib/models/preferences';
+import type { UserModel, UserStore } from '$lib/models/store';
 import { getStoredValue, removeStoredValue, storeValue } from '$lib/utils';
 
-function createUserStore(): Writable<UserModel | undefined> & {
-	init: (model?: UserModel) => Promise<void>;
-} {
-	const { subscribe, set, update } = writable<UserModel | undefined>();
+function createStore(): UserStore {
+	const { subscribe, set } = writable<UserModel | undefined>();
 
-	async function setUser(user?: UserModel): Promise<void> {
-		await (user ? storeValue(PreferencesKey.USER, user) : removeStoredValue(PreferencesKey.USER));
-		set(user);
+	async function init(): Promise<void> {
+		const body = await apiResources.user.getAuthenticatedUser();
+
+		if (StatusChecks.isOK(body.status)) {
+			_set({
+				username: body.data.username,
+				email: body.data.email,
+				name: body.data.name
+			});
+		} else if (!StatusChecks.isUnauthorized(body.status)) {
+			const model = await getStoredValue<UserModel | undefined>(PreferencesKey.USER);
+
+			if (model) {
+				set(model);
+			}
+		}
 	}
 
-	async function init(model?: UserModel): Promise<void> {
-		if (model) {
-			return setUser(model);
-		} else if (get(userStore)) {
-			return;
-		} else if (!(await getStoredValue<UserModel>(PreferencesKey.ACCESS_TOKEN))) {
-			return setUser();
-		}
-		const body = await apiResources.user.getAuthenticatedUser();
-		if (StatusChecks.isOK(body.status)) {
-			return setUser({
-				surname: body.data.surname,
-				name: body.data.name,
-				username: body.data.username,
-				email: body.data.email
-			});
-		}
-		return StatusChecks.isUnauthorized(body.status)
-			? setUser()
-			: setUser(await getStoredValue<UserModel>(PreferencesKey.USER));
+	async function _set(model?: UserModel): Promise<void> {
+		await (model ? storeValue(PreferencesKey.USER, model) : removeStoredValue(PreferencesKey.USER));
+		set(model);
+	}
+
+	async function reset(): Promise<void> {
+		await removeStoredValue(PreferencesKey.USER);
+		set(undefined);
 	}
 
 	return {
 		subscribe,
-		update,
-		set: setUser,
-		init
+		init,
+		set: _set,
+		reset
 	};
 }
 
 /**
  * User store for handling the current user information.
  */
-export const userStore = createUserStore();
+export const userStore = createStore();
