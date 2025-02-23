@@ -1,12 +1,12 @@
-package organization;
+package com.none.kollappbackend.organization;
 
+import com.none.kollappbackend.core.BaseIT;
 import com.none.kollappbackend.organization.application.exception.OrganizationNotFoundException;
 import com.none.kollappbackend.organization.application.model.Organization;
 import com.none.kollappbackend.organization.application.repository.OrganizationRepository;
 import com.none.kollappbackend.organization.application.service.OrganizationService;
 import com.none.kollappbackend.user.application.model.KollappUser;
 import com.none.kollappbackend.user.application.service.KollappUserService;
-import core.BaseIT;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
