@@ -12,4 +12,5 @@ public interface PersonOfOrganizationRepository {
     PersonOfOrganization save(PersonOfOrganization personOfOrganization);
     Optional<PersonOfOrganization> findByUserId(long userId);
     void deleteById(long id);
+    PersonOfOrganization findById(long id);
 }

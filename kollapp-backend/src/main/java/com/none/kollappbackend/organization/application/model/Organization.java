@@ -55,6 +55,6 @@ public class Organization {
     }
 
     public boolean hasOnlyOneManagerLeft(){
-        return personsOfOrganization.size() == 1;
+        return getManagers().size() == 1;
     }
 }

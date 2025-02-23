@@ -10,6 +10,6 @@ public interface OrganizationService {
     Organization getOrganizationByLoggedInUser();
     Organization createOrganization(Organization organization);
     Organization updateOrganization(Organization updatedOrganization);
-    void deleteOrganizationOfLoggedInUser();
-    Organization deleteUserFromTheirOrganization(long userId);
+    Organization deleteUserFromOrganization(long personOfOrganizationId);
+    void leaveOrganization();
 }
