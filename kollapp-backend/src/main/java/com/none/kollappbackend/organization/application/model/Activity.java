@@ -20,7 +20,7 @@ public class Activity {
     private String location;
 
     @ManyToOne
-    @JoinColumn(name="organization_id", nullable = false)
+    @JoinColumn(name="organization_id")
     private Organization organization;
 
 }

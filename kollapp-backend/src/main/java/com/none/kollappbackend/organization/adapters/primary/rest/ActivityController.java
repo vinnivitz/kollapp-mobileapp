@@ -1,6 +1,7 @@
 package com.none.kollappbackend.organization.adapters.primary.rest;
 
 import com.none.kollappbackend.core.adapters.primary.rest.model.DataResponseTO;
+import com.none.kollappbackend.core.adapters.primary.rest.model.MessageResponseTO;
 import com.none.kollappbackend.core.adapters.primary.rest.model.ResponseTO;
 import com.none.kollappbackend.organization.adapters.primary.rest.mapper.ActivityMapper;
 import com.none.kollappbackend.organization.adapters.primary.rest.model.ActivityCreationRequestTO;
@@ -44,10 +45,11 @@ public class ActivityController {
     @Operation(summary = "Create new activity for organization", security = {
             @SecurityRequirement(name = "bearer-key") })
     @RequiresManagerRole
-    public ResponseEntity<ResponseTO> createNewActivity(@PathVariable("organizationId") long organizationId,
+    public ResponseEntity<ResponseTO> createNewActivity(@PathVariable("organization-id") long organizationId,
                                                         @RequestBody ActivityCreationRequestTO activityCreationRequestTO ) {
         Activity activity = activityMapper.activityCreationRequestTOToActivity(activityCreationRequestTO);
-        ActivityTO activityTO = activityMapper.activityToActivityTO(activity);
+        Activity persistedActivity = activityService.createActivityForOrganization(organizationId, activity);
+        ActivityTO activityTO = activityMapper.activityToActivityTO(persistedActivity);
         return ResponseEntity.ok(new DataResponseTO(activityTO, "success.activity.create", messageSource));
     }
 
@@ -63,4 +65,15 @@ public class ActivityController {
         ActivityTO activityTO = activityMapper.activityToActivityTO(updatedActivity);
         return ResponseEntity.ok(new DataResponseTO(activityTO, "success.activity.update", messageSource));
     }
+
+    @DeleteMapping("/{organization-id}/activity/{activity-id}")
+    @Operation(summary = "Update activity of organization", security = {
+            @SecurityRequirement(name = "bearer-key") })
+    @RequiresManagerRole
+    public ResponseEntity<MessageResponseTO> deleteActivityOfOrganization(@PathVariable("organization-id") long organizationId,
+                                                                          @PathVariable("activity-id") long activityId){
+        activityService.deleteActivity(organizationId, activityId);
+        return ResponseEntity.ok(new MessageResponseTO("success.activity.delete", messageSource));
+    }
+
 }

@@ -31,10 +31,10 @@ public class ActivityServiceImpl implements ActivityService {
     public Activity createActivityForOrganization(long organizationId, Activity activity) {
         Organization organization = organizationRepository.findById(organizationId)
                 .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
-        Activity newActivity = activityRepository.save(activity);
-        newActivity.setOrganization(organization);
-        organization.addActivityOfOrganization(newActivity);
-        return newActivity;
+        activity.setOrganization(organization);
+        activityRepository.save(activity);
+        organization.addActivityOfOrganization(activity);
+        return activity;
     }
 
     @Override
@@ -44,5 +44,15 @@ public class ActivityServiceImpl implements ActivityService {
         activityToBeUpdated.setName(activity.getName());
         activityToBeUpdated.setLocation(activity.getLocation());
         return activityToBeUpdated;
+    }
+
+    @Override
+    public void deleteActivity(long organizationId, long activityId) {
+        Organization organization = organizationRepository.findById(organizationId).orElseThrow(() -> new OrganizationNotFoundException(messageSource));
+        Activity activity = organization.getActivities()
+                .stream()
+                .filter(activity1 -> activity1.getId() == activityId)
+                .findFirst().orElseThrow(() -> new ActivityNotFoundException(messageSource));
+        organization.getActivities().remove(activity);
     }
 }
