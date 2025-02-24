@@ -1,13 +1,13 @@
-import { writable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 
 import { apiResources } from '$lib/api';
 import { StatusCheck } from '$lib/api/utils';
 import { PreferencesKey } from '$lib/models/preferences';
 import type { UserModel, UserStore } from '$lib/models/store';
-import { getStoredValue, removeStoredValue, storeValue } from '$lib/utils';
+import { getStoredValue, hasStoredValue, removeStoredValue, storeValue } from '$lib/utils';
 
 async function exists(): Promise<boolean> {
-	return !!(await getStoredValue(PreferencesKey.USER));
+	return !!get(userStore) || (await hasStoredValue(PreferencesKey.USER));
 }
 
 function createStore(): UserStore {

@@ -1,4 +1,4 @@
-import type { BaseStore } from './base-store.model';
+import type { BaseStore } from '$lib/models/store';
 
 /**
  * Stores basic information about an organization.

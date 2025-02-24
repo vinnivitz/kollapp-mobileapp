@@ -1,6 +1,6 @@
-import type { Theme } from '../theme';
+import type { BaseStore } from '$lib/models/store';
+import type { Theme } from '$lib/models/theme';
 
-import type { BaseStore } from './base-store.model';
 
 /**
  * Theme store model.

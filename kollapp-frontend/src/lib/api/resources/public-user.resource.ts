@@ -1,6 +1,4 @@
-import type { EmailDto } from '../dto/client/email.dto';
-
-import type { RegisterDto, ResetPasswordDto } from '$lib/api/dto/client';
+import type { EmailDto, RegisterDto, ResetPasswordDto } from '$lib/api/dto/client';
 import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/api/models';
 import { customFetch } from '$lib/api/utils';
 

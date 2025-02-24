@@ -1,6 +1,11 @@
 import { ObjectSchema, type AnyObject } from 'yup';
 
-import type { ValidationResult } from './validation.model';
+import type { ValidationResult } from '$lib/models/ui';
+
+abstract class AbstractForm<T> {
+	abstract model: T;
+	abstract config: FormConfig<T>;
+}
 
 /**
  * Actions that can be exposed from a custom form that is applied to a <form> element via Svelte Actions.
@@ -35,11 +40,12 @@ export type FormConfig<T> = {
 /**
  * Custom form class that can be used to create forms with validation and feedback.
  */
-export class Form<T> {
+export class Form<T> extends AbstractForm<T> {
 	model: T;
 	config: FormConfig<T> = { schema: new ObjectSchema() };
 
 	constructor(model: T, config?: FormConfig<T>) {
+		super();
 		this.model = model;
 		if (config) {
 			this.config = config;

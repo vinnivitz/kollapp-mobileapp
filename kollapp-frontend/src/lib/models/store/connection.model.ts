@@ -1,4 +1,4 @@
-import type { BaseStore } from './base-store.model';
+import type { BaseStore } from '$lib/models/store';
 
 /**
  * Store for connection information.

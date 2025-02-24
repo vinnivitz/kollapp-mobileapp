@@ -4,10 +4,10 @@ import { apiResources } from '$lib/api';
 import { StatusCheck } from '$lib/api/utils';
 import { PreferencesKey } from '$lib/models/preferences';
 import type { OrganizationModel, OrganizationStore } from '$lib/models/store';
-import { getStoredValue, removeStoredValue, storeValue } from '$lib/utils';
+import { getStoredValue, hasStoredValue, removeStoredValue, storeValue } from '$lib/utils';
 
 async function exists(): Promise<boolean> {
-	return !!(get(organizationStore) || (await getStoredValue(PreferencesKey.ORGANIZATION)));
+	return !!get(organizationStore) || (await hasStoredValue(PreferencesKey.ORGANIZATION));
 }
 
 function createStore(): OrganizationStore {
