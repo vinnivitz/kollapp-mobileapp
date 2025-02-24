@@ -23,7 +23,7 @@ export async function login(model: LoginDto): Promise<ResponseBody<UserTokenDto>
 /**
  * Refreshes the access token
  * @param token refresh token
- * @returns {Promise<ResponseBody<AccessTokenDto>>}
+ * @returns {Promise<ResponseBody<AccessTokenDto>>} new access token
  */
 export async function refresh(token: string): Promise<ResponseBody<TokenDto>> {
 	return customFetch(`${ENDPOINT}/refresh`, {
@@ -35,7 +35,6 @@ export async function refresh(token: string): Promise<ResponseBody<TokenDto>> {
 
 /**
  * Logs out the user by clearing authentication tokens and user information
- * @returns {void}
  */
 export function logout(): void {
 	authenticationStore.reset();

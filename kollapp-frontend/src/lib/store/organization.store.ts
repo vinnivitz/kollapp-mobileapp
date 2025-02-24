@@ -1,10 +1,14 @@
-import { writable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 
 import { apiResources } from '$lib/api';
-import { StatusChecks } from '$lib/api/utils';
+import { StatusCheck } from '$lib/api/utils';
 import { PreferencesKey } from '$lib/models/preferences';
 import type { OrganizationModel, OrganizationStore } from '$lib/models/store';
 import { getStoredValue, removeStoredValue, storeValue } from '$lib/utils';
+
+async function exists(): Promise<boolean> {
+	return !!(get(organizationStore) || (await getStoredValue(PreferencesKey.ORGANIZATION)));
+}
 
 function createStore(): OrganizationStore {
 	const { subscribe, set } = writable<OrganizationModel | undefined>();
@@ -12,9 +16,9 @@ function createStore(): OrganizationStore {
 	async function init(): Promise<void> {
 		const body = await apiResources.organization.getOrganization();
 
-		if (StatusChecks.isOK(body.status)) {
+		if (StatusCheck.isOK(body.status)) {
 			_set({ name: body.data.name });
-		} else if (!StatusChecks.isUnauthorized(body.status)) {
+		} else if (!StatusCheck.isUnauthorized(body.status)) {
 			const model = await getStoredValue<OrganizationModel | undefined>(
 				PreferencesKey.ORGANIZATION
 			);
@@ -39,7 +43,8 @@ function createStore(): OrganizationStore {
 		subscribe,
 		init,
 		set: _set,
-		reset
+		reset,
+		exists
 	};
 }
 

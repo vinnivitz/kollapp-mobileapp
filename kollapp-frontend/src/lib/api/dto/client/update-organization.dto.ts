@@ -4,19 +4,19 @@ import { object, string, type AnyObject, type ObjectSchema } from 'yup';
 import { t } from '$lib/locales';
 
 /**
- * DTO for registering an organization.
+ * DTO for updating organization information.
  */
-export type RegisterOrganizationDto = {
+export type UpdateOrganizationDto = {
 	name: string;
 };
 
 /**
- * Schema for registering an organization.
- * @returns {ObjectSchema<AnyObject, RegisterOrganizationDto>} The schema for registering an organization.
+ * Schema for validating organization information.
+ * @returns {ObjectSchema<AnyObject, UpdateOrganizationDto>} The schema for validating organization information.
  */
-export const registerOrganizationSchema = (): ObjectSchema<AnyObject, RegisterOrganizationDto> => {
+export const updateOrganizationSchema = (): ObjectSchema<AnyObject, UpdateOrganizationDto> => {
 	const $t = get(t);
-	return object<RegisterOrganizationDto>({
+	return object<UpdateOrganizationDto>({
 		name: string()
 			.default('')
 			.min(1, $t('api.dto.register-organization.schema.validation.name.min'))

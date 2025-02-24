@@ -7,6 +7,12 @@
 				"content": "The app for all the collectives out there",
 				"authenticated": {
 					"title": "Hello"
+				},
+				"organization": {
+					"button": "Go to collective"
+				},
+				"user": {
+					"button": "Go to account"
 				}
 			}
 		},
@@ -155,6 +161,16 @@
 		"finances": {
 			"title": "Finances",
 			"subtitle": "This is on overview over the finances."
+		},
+		"organization": {
+			"title": "Collective",
+			"update-info": {
+				"title": "Update collective",
+				"card": {
+					"title": "Update collective information",
+					"button": "Update information"
+				}
+			}
 		}
 	},
 	"common": {

@@ -12,7 +12,7 @@ export type ResetPasswordDto = {
 
 /**
  * Reset password schema for user password reset.
- * @returns {ObjectSchema<AnyObject, ResetPasswordDto>}
+ * @returns {ObjectSchema<AnyObject, ResetPasswordDto>} The schema for user password reset.
  */
 export const resetPasswordSchema = (): ObjectSchema<AnyObject, ResetPasswordDto> => {
 	const $t = get(t);

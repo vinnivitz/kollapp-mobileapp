@@ -1,13 +1,17 @@
 <script lang="ts">
 	import { loadingController } from 'ionic-svelte';
 
+	import { goto } from '$app/navigation';
+
 	import { apiResources } from '$lib/api';
 	import { registerOrganizationSchema, type RegisterOrganizationDto } from '$lib/api/dto/client';
 	import { getValidationResult } from '$lib/api/utils';
 	import IonLayout from '$lib/components/layout/Layout.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
 	import { t } from '$lib/locales';
+	import { PageRoute } from '$lib/models/routing';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
+	import { organizationStore } from '$lib/store';
 	import { customForm } from '$lib/utils';
 
 	const model = registerOrganizationSchema().cast({}) as RegisterOrganizationDto;
@@ -33,6 +37,8 @@
 			await loading.dismiss();
 			if (validationResult.valid) {
 				actions.resetModel();
+				organizationStore.init();
+				await goto(PageRoute.HOME);
 			} else {
 				actions.applyValidationFeedback(validationResult);
 			}

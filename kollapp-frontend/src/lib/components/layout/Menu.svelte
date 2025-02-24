@@ -29,10 +29,10 @@
 						{$t('components.layout.header.button.logout')}
 					</ion-button>
 				{:else}
-					<ion-button fill="outline" use:clickableElement={() => goto(PageRoute.AUTH_LOGIN)}>
+					<ion-button fill="outline" use:clickableElement={() => goto(PageRoute.AUTH.LOGIN)}>
 						{$t('components.layout.header.button.login')}
 					</ion-button>
-					<ion-button fill="outline" use:clickableElement={() => goto(PageRoute.AUTH_REGISTER)}>
+					<ion-button fill="outline" use:clickableElement={() => goto(PageRoute.AUTH.REGISTER)}>
 						{$t('components.layout.header.button.register')}
 					</ion-button>
 				{/if}

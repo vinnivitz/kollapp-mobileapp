@@ -49,7 +49,8 @@ export default ts.config(
 					}
 				}
 			],
-			'unicorn/filename-case': 'off'
+			'unicorn/filename-case': 'off',
+			'svelte/no-unused-svelte-ignore': 'off'
 		}
 	},
 	{

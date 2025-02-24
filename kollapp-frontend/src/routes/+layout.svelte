@@ -10,7 +10,6 @@
 	import { loadTranslations, locale, t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
 	import type { TabConfig } from '$lib/models/ui';
-	import { organizationStore, userStore } from '$lib/store';
 	import { determineLocale } from '$lib/utils';
 
 	let { children } = $props();
@@ -37,10 +36,8 @@
 				icon: cash,
 				tab: PageRoute.FINANCES
 			},
-			{ label: $t('common.page-routes.account'), icon: person, tab: PageRoute.ACCOUNT }
+			{ label: $t('common.page-routes.account'), icon: person, tab: PageRoute.ACCOUNT.ROOT }
 		];
-		await userStore.init();
-		await organizationStore.init();
 		loaded = true;
 		if (loadingSpinner) {
 			await loadingSpinner.dismiss();

@@ -39,8 +39,9 @@
 	<ion-list-header>{$t('routes.account.app.list.appearence.title')}</ion-list-header>
 	<ion-list inset>
 		<ion-item color="light">
+			<!-- svelte-ignore event_directive_deprecated -->
 			<ion-toggle
-				onchange={() => themeStore.toggle()}
+				on:ionChange={() => themeStore.toggle()}
 				justify="space-between"
 				checked={$themeStore === Theme.DARK}
 			>

@@ -15,16 +15,16 @@
 	<ion-list inset>
 		{#await isAuthenticated() then authenticated}
 			{#if authenticated}
-				<ion-item use:clickableElement={() => goto(PageRoute.ACCOUNT_CHANGE_PASSWORD)}>
+				<ion-item use:clickableElement={() => goto(PageRoute.ACCOUNT.CHANGE_PASSWORD)}>
 					<ion-label>{$t('routes.account.list.account.button.change-password')}</ion-label>
 					<ion-icon icon={arrowForward} slot="end"></ion-icon>
 				</ion-item>
 			{:else}
-				<ion-item use:clickableElement={() => goto(PageRoute.AUTH_REGISTER)}>
+				<ion-item use:clickableElement={() => goto(PageRoute.AUTH.REGISTER)}>
 					<ion-label>{$t('routes.account.list.account.button.register')}</ion-label>
 					<ion-icon icon={arrowForward} slot="end"></ion-icon>
 				</ion-item>
-				<ion-item use:clickableElement={() => goto(PageRoute.AUTH_LOGIN)}>
+				<ion-item use:clickableElement={() => goto(PageRoute.AUTH.LOGIN)}>
 					<ion-label>{$t('routes.account.list.account.button.login')}</ion-label>
 					<ion-icon icon={arrowForward} slot="end"></ion-icon>
 				</ion-item>
@@ -33,7 +33,7 @@
 	</ion-list>
 	<ion-list-header>{$t('routes.account.list.application.title')}</ion-list-header>
 	<ion-list inset>
-		<ion-item use:clickableElement={() => goto(PageRoute.ACCOUNT_APP)}>
+		<ion-item use:clickableElement={() => goto(PageRoute.ACCOUNT.APP)}>
 			<ion-label>{$t('routes.account.list.application.button')}</ion-label>
 			<ion-icon icon={arrowForward} slot="end"></ion-icon>
 		</ion-item>

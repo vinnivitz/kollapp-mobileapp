@@ -44,7 +44,7 @@
 				await apiResources.publicUser.resetPassword(model, data.token!)
 			);
 			if (validationResult.valid) {
-				await goto(PageRoute.AUTH_LOGIN);
+				await goto(PageRoute.AUTH.LOGIN);
 			} else {
 				actions.applyValidationFeedback(validationResult);
 			}

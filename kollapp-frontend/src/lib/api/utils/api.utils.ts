@@ -64,7 +64,7 @@ export async function customFetch<T = never>(
 
 		let response = await fetch(enhancedUrl, { ...options, headers });
 
-		if (StatusChecks.isUnauthorized(response.status)) {
+		if (StatusCheck.isUnauthorized(response.status)) {
 			const newToken = await getNewAuthenticationToken();
 			if (!newToken) {
 				return createErrorResponse(StatusCode.UNAUTHORIZED, $t('api.unauthorized'), silentOnError);
@@ -89,32 +89,23 @@ export async function customFetch<T = never>(
 }
 
 /**
- * Constructs the full API URL based on the endpoint.
- * @param endpoint Relative endpoint path.
- * @returns Full API URL as a string.
- */
-export function getUrl(endpoint: string): string {
-	return `${environment.apiUrl}/${endpoint}`;
-}
-
-/**
  * Checks if the user is authenticated based on stored tokens.
- * @returns True if authenticated; otherwise, false.
+ * @returns {Promise<boolean>} True if authenticated; otherwise, false.
  */
 export async function isAuthenticated(): Promise<boolean> {
 	const user = get(userStore) || (await getStoredValue<UserDto>(PreferencesKey.USER));
-	return Boolean(user);
+	return !!user;
 }
 
 /**
  * Processes the validation response, showing alerts as necessary.
  * @param body Fetch response.
  * @param silent If true, no alert is shown.
- * @returns ValidationResult indicating validity and any errors.
+ * @returns {ValidationResult} ValidationResult indicating validity and any errors.
  */
 export function getValidationResult<T>(body: ResponseBody<T>): ValidationResult {
 	return {
-		valid: StatusChecks.isOK(body.status),
+		valid: StatusCheck.isOK(body.status),
 		errors: [
 			{
 				message: body.message ?? $t('api.error'),
@@ -128,10 +119,14 @@ export function getValidationResult<T>(body: ResponseBody<T>): ValidationResult 
 /**
  * Checks if http status code is in the given range.
  */
-export const StatusChecks = {
+export const StatusCheck = {
 	isOK: (status: number): boolean => status >= 200 && status < 300,
 	isUnauthorized: (status: number): boolean => status === StatusCode.UNAUTHORIZED
 };
+
+function getUrl(endpoint: string): string {
+	return `${environment.apiUrl}/${endpoint}`;
+}
 
 async function getResponseBody<T>(
 	response: Response,
@@ -195,7 +190,7 @@ async function getNewAuthenticationToken(): Promise<string | undefined> {
 		return;
 	}
 	const body = await apiResources.auth.refresh(refreshToken);
-	if (StatusChecks.isOK(body.status)) {
+	if (StatusCheck.isOK(body.status)) {
 		const accessToken = body.data.token;
 		authenticationStore.set({ accessToken, refreshToken });
 		return refreshToken;

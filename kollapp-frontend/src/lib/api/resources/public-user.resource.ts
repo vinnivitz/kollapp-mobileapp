@@ -9,7 +9,7 @@ const ENDPOINT = 'public/user';
 /**
  * Registers a new manager
  * @param model registration model
- * @returns {Promise<ResponseBody>}
+ * @returns {Promise<ResponseBody>} response body
  */
 export async function registerManager(model: RegisterDto): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/manager-signup`, {
@@ -23,7 +23,7 @@ export async function registerManager(model: RegisterDto): Promise<ResponseBody>
 /**
  * Sends a password reset email to the user
  * @param model email model
- * @returns {Promise<ResponseBody>}
+ * @returns {Promise<ResponseBody>} response body
  */
 export async function forgotPassword(model: EmailDto): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/forgot-password`, {
@@ -36,7 +36,7 @@ export async function forgotPassword(model: EmailDto): Promise<ResponseBody> {
 /**
  * Resets the user password
  * @param model password reset model
- * @returns {Promise<ResponseBody>}
+ * @returns {Promise<ResponseBody>} response body
  */
 export async function resetPassword(model: ResetPasswordDto, token: string): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/reset-password`, {
@@ -50,7 +50,7 @@ export async function resetPassword(model: ResetPasswordDto, token: string): Pro
 /**
  * Resends the confirmation email
  * @param model email model
- * @returns {Promise<ResponseBody>}
+ * @returns {Promise<ResponseBody>}	response body
  */
 export async function resendConfirmation(model: EmailDto): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/resend-confirmation`, {

@@ -35,7 +35,7 @@
 			);
 			await loading.dismiss();
 			if (validationResult.valid) {
-				await goto(PageRoute.AUTH_LOGIN);
+				await goto(PageRoute.AUTH.LOGIN);
 			} else {
 				actions.applyValidationFeedback(validationResult);
 			}

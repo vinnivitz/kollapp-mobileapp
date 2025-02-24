@@ -12,7 +12,7 @@ export type EmailDto = {
 
 /**
  * Email schema for email verification.
- * @returns {ObjectSchema<AnyObject, EmailDto>}
+ * @returns {ObjectSchema<AnyObject, EmailDto>} The schema for email verification.
  */
 export const emailSchema = (): ObjectSchema<AnyObject, EmailDto> => {
 	const $t = get(t);

@@ -10,4 +10,6 @@ export type OrganizationModel = {
 /**
  * Store for organization information.
  */
-export type OrganizationStore = BaseStore<OrganizationModel>;
+export type OrganizationStore = BaseStore<OrganizationModel> & {
+	exists: () => Promise<boolean>;
+};

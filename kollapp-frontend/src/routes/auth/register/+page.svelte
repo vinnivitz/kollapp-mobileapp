@@ -121,7 +121,7 @@
 			</ion-button>
 		</form>
 		<Card>
-			<div class="text-center" use:clickableElement={() => goto(PageRoute.AUTH_LOGIN)}>
+			<div class="text-center" use:clickableElement={() => goto(PageRoute.AUTH.LOGIN)}>
 				{$t('routes.auth.register.login.text')}
 				<span class="text-[--ion-color-secondary]">{$t('routes.auth.register.login.link')}</span>
 			</div>

@@ -15,5 +15,5 @@ export type UserModel = {
  * Store for user information.
  */
 export type UserStore = BaseStore<UserModel> & {
-	init: () => Promise<void>;
+	exists: () => Promise<boolean>;
 };

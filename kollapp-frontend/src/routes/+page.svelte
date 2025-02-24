@@ -1,21 +1,54 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+
 	import IonLayout from '$lib/components/layout/Layout.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
 	import { t } from '$lib/locales';
-	import { userStore } from '$lib/store';
+	import { PageRoute } from '$lib/models/routing';
+	import type { OrganizationModel, UserModel } from '$lib/models/store';
+	import { organizationStore, userStore } from '$lib/store';
+	import { clickableElement } from '$lib/utils';
 
-	const username = $derived<string | undefined>($userStore?.username ?? '');
+	const userModel = $derived<UserModel | undefined>($userStore);
+	const organizationModel = $derived<OrganizationModel | undefined>($organizationStore);
+
+	const loading = $derived<boolean>(!userModel || !organizationModel);
 </script>
 
-<IonLayout title={$t('routes.home.title')}>
+<IonLayout title={$t('routes.home.title')} {loading}>
 	<Card
-		title={username
-			? `${$t('routes.home.card.authenticated.title')} ${username}`
+		title={userModel
+			? `${$t('routes.home.card.authenticated.title')} ${userModel.username}`
 			: $t('routes.home.card.title')}
-		titleOnly={!!username}
 	>
 		<div class="text-center">
-			{$t('routes.home.card.content')}
+			{#if userModel}
+				<ion-button
+					color="tertiary"
+					shape="round"
+					size="small"
+					use:clickableElement={() => goto(PageRoute.ACCOUNT.ROOT)}
+				>
+					{$t('routes.home.card.user.button')}
+				</ion-button>
+			{:else}
+				{$t('routes.home.card.content')}
+			{/if}
 		</div>
 	</Card>
+
+	{#if organizationModel}
+		<Card title={organizationModel.name}>
+			<div class="text-center">
+				<ion-button
+					color="tertiary"
+					shape="round"
+					size="small"
+					use:clickableElement={() => goto(PageRoute.ORGANIZATION.ROOT)}
+				>
+					{$t('routes.home.card.organization.button')}
+				</ion-button>
+			</div>
+		</Card>
+	{/if}
 </IonLayout>

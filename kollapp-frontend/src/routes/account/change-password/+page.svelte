@@ -38,7 +38,7 @@
 			await loading.present();
 			validationResult = getValidationResult(await apiResources.user.changePassword(model));
 			if (validationResult.valid) {
-				await goto(PageRoute.ACCOUNT);
+				await goto(PageRoute.ACCOUNT.ROOT);
 			} else {
 				actions.applyValidationFeedback(validationResult);
 			}

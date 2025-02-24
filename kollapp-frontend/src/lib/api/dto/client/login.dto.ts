@@ -13,7 +13,7 @@ export type LoginDto = {
 
 /**
  * Login schema for user login.
- * @returns {ObjectSchema<AnyObject, LoginDto>}
+ * @returns {ObjectSchema<AnyObject, LoginDto>} The schema for user login.
  */
 export const loginSchema = (): ObjectSchema<AnyObject, LoginDto> => {
 	const $t = get(t);

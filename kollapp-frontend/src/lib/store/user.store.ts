@@ -1,10 +1,14 @@
 import { writable } from 'svelte/store';
 
 import { apiResources } from '$lib/api';
-import { StatusChecks } from '$lib/api/utils';
+import { StatusCheck } from '$lib/api/utils';
 import { PreferencesKey } from '$lib/models/preferences';
 import type { UserModel, UserStore } from '$lib/models/store';
 import { getStoredValue, removeStoredValue, storeValue } from '$lib/utils';
+
+async function exists(): Promise<boolean> {
+	return !!(await getStoredValue(PreferencesKey.USER));
+}
 
 function createStore(): UserStore {
 	const { subscribe, set } = writable<UserModel | undefined>();
@@ -12,13 +16,13 @@ function createStore(): UserStore {
 	async function init(): Promise<void> {
 		const body = await apiResources.user.getAuthenticatedUser();
 
-		if (StatusChecks.isOK(body.status)) {
+		if (StatusCheck.isOK(body.status)) {
 			_set({
 				username: body.data.username,
 				email: body.data.email,
 				name: body.data.name
 			});
-		} else if (!StatusChecks.isUnauthorized(body.status)) {
+		} else if (!StatusCheck.isUnauthorized(body.status)) {
 			const model = await getStoredValue<UserModel | undefined>(PreferencesKey.USER);
 
 			if (model) {
@@ -41,7 +45,8 @@ function createStore(): UserStore {
 		subscribe,
 		init,
 		set: _set,
-		reset
+		reset,
+		exists
 	};
 }
 

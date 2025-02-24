@@ -91,7 +91,7 @@
 			<Card>
 				<div
 					class="text-center"
-					use:clickableElement={() => goto(PageRoute.AUTH_RESEND_CONFIRMATION)}
+					use:clickableElement={() => goto(PageRoute.AUTH.RESEND_CONFIRMATION)}
 				>
 					{$t('routes.auth.login.resend-confirmation.text')}
 					<ion-text color="primary">{$t('routes.auth.login.resend-confirmation.link')}</ion-text>
@@ -99,13 +99,13 @@
 			</Card>
 		{/if}
 		<Card>
-			<div class="text-center" use:clickableElement={() => goto(PageRoute.AUTH_REGISTER)}>
+			<div class="text-center" use:clickableElement={() => goto(PageRoute.AUTH.REGISTER)}>
 				{$t('routes.auth.login.register.text')}
 				<ion-text color="primary">{$t('routes.auth.login.register.link')}</ion-text>
 			</div>
 		</Card>
 		<Card>
-			<div class="text-center" use:clickableElement={() => goto(PageRoute.AUTH_RESET_PASSWORD)}>
+			<div class="text-center" use:clickableElement={() => goto(PageRoute.AUTH.RESET_PASSWORD)}>
 				{$t('routes.auth.login.forgot-password.text')}
 				<ion-text color="primary">{$t('routes.auth.login.forgot-password.link')}</ion-text>
 			</div>

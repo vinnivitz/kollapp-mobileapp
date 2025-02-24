@@ -11,6 +11,10 @@ export type ChangePasswordDto = {
 	newPassword: string;
 };
 
+/**
+ * Change password schema for changing user password.
+ * @returns {ObjectSchema<AnyObject, ChangePasswordDto>} The schema for changing user password.
+ */
 export const changePasswordSchema = (): ObjectSchema<AnyObject, ChangePasswordDto> => {
 	const $t = get(t);
 	return object<ChangePasswordDto>({

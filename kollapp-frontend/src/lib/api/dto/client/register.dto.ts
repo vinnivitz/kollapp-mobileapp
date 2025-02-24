@@ -16,7 +16,7 @@ export type RegisterDto = {
 
 /**
  * Register schema for user registration.
- * @returns {ObjectSchema<AnyObject, RegisterDto>}
+ * @returns {ObjectSchema<AnyObject, RegisterDto>} The schema for user registration.
  */
 export const registerSchema = (): ObjectSchema<AnyObject, RegisterDto> => {
 	const $t = get(t);

@@ -7,7 +7,7 @@ const ENDPOINT = 'user';
 
 /**
  * Gets the data of authenticated user
- * @returns {Promise<ResponseBody>}
+ * @returns {Promise<ResponseBody>} response body
  */
 export async function getAuthenticatedUser(): Promise<ResponseBody<UserDto>> {
 	return customFetch(ENDPOINT, { silentOnError: true });
@@ -16,7 +16,7 @@ export async function getAuthenticatedUser(): Promise<ResponseBody<UserDto>> {
 /**
  * Changes the password of the authenticated user
  * @param model change password model
- * @returns
+ * @returns {Promise<ResponseBody>} response body
  */
 export async function changePassword(model: ChangePasswordDto): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/change-password`, {

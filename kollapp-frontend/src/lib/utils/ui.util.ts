@@ -52,6 +52,7 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 	const customInputs = [...node.querySelectorAll('[data-name]')] as HTMLElement[];
 	const keys = Object.keys(data.model as object);
 	const passwordIcons: HTMLIonIconElement[] = [];
+	const initialModel = data.model;
 
 	if (data.config.exposedActions) {
 		data.config.exposedActions({
@@ -110,7 +111,7 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 	}
 
 	function resetModel(): void {
-		data.model = data.config.schema.cast({}) as T;
+		data.model = initialModel as T;
 		for (const input of inputs) {
 			input.classList.remove('ion-invalid');
 			input.errorText = '';

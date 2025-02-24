@@ -295,12 +295,28 @@
 				"title": "Willkommen bei Kollapp",
 				"authenticated": {
 					"title": "Hallo"
+				},
+				"organization": {
+					"button": "Gehen Sie zum Kollektiv"
+				},
+				"user": {
+					"button": "Gehen Sie auf Rechnung"
 				}
 			}
 		},
 		"finances": {
 			"subtitle": "Hier geht es um einen Überblick über die Finanzen.",
 			"title": "Finanzen"
+		},
+		"organization": {
+			"title": "Kollektiv",
+			"update-info": {
+				"card": {
+					"button": "Informationen aktualisieren",
+					"title": "Aktualisieren Sie kollektive Informationen"
+				},
+				"title": "Aktualisieren Sie das Kollektiv"
+			}
 		}
 	},
 	"utils": {
