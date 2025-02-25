@@ -61,7 +61,7 @@
 			{/if}
 		{/if}
 		{#if children}
-			<ion-text color={theme === Theme.LIGHT ? 'light' : undefined}>
+			<ion-text color={theme === Theme.LIGHT && fill !== 'outline' ? 'light' : undefined}>
 				{@render children?.()}
 			</ion-text>
 		{/if}

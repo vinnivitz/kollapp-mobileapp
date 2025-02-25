@@ -26,9 +26,9 @@
 					iconSrc={personOutline}
 					fill="outline"
 				>
-					<span class="dark:font-bold">
+					<ion-text class="dark:font-bold">
 						{$t('routes.home.card.user.button')}
-					</span>
+					</ion-text>
 				</Button>
 			</div>
 		</Card>
