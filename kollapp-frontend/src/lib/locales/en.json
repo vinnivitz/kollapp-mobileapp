@@ -42,6 +42,10 @@
 					"welcome": {
 						"title": "Welcome to Kollapp!",
 						"content": "The app for all the collectives out there."
+					},
+					"dev": {
+						"title": "Local sign in",
+						"button": "Sign in locally"
 					}
 				}
 			},

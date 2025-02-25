@@ -250,6 +250,10 @@
 					"welcome": {
 						"content": "Die App für alle Kollektive da draußen.",
 						"title": "Willkommen bei Kollapp!"
+					},
+					"dev": {
+						"title": "Lokal anzumelden",
+						"button": "Lokal anmelden"
 					}
 				}
 			},

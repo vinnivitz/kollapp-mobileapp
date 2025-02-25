@@ -14,6 +14,16 @@ function createStore(): UserStore {
 	const { subscribe, set } = writable<UserModel | undefined>();
 
 	async function init(): Promise<void> {
+		if (await getStoredValue<boolean>(PreferencesKey.LOCAL_USER)) {
+			const model: UserModel = {
+				name: 'John',
+				surname: 'Doe',
+				email: 'john@doe.com',
+				username: 'johndoe'
+			};
+			await _set(model);
+			return;
+		}
 		const body = await apiResources.user.getAuthenticatedUser();
 
 		if (StatusCheck.isOK(body.status)) {

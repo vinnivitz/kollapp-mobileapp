@@ -2,8 +2,7 @@
 	import type { PredefinedColors } from '@ionic/core';
 	import type { Snippet } from 'svelte';
 
-	import { Layout } from '$lib/models/store';
-	import { Theme } from '$lib/models/theme';
+	import { Layout, Theme } from '$lib/models/store';
 	import { layoutStore, themeStore } from '$lib/store';
 	import { clickableElement } from '$lib/utils';
 
@@ -62,7 +61,7 @@
 			{/if}
 		{/if}
 		{#if children}
-			<ion-text color={theme === Theme.DARK ? undefined : 'light'}>
+			<ion-text color={theme === Theme.LIGHT ? 'light' : undefined}>
 				{@render children?.()}
 			</ion-text>
 		{/if}

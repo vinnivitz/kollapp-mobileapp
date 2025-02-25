@@ -2,8 +2,8 @@ import { goto } from '$app/navigation';
 
 import type { PageLoad } from './$types';
 
-import { PageRoute } from '$lib/models/routing';
 import { isAuthenticated } from '$lib/api/utils';
+import { PageRoute } from '$lib/models/routing';
 
 export const load: PageLoad = async () => {
 	if (!(await isAuthenticated())) {

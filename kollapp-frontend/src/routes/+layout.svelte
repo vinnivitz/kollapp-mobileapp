@@ -18,7 +18,15 @@
 	let loadingTimeout: ReturnType<typeof setTimeout>;
 	let tabs = $state<TabConfig[] | undefined>();
 	let loaded = $state(false);
-	let isAuthenticated = $derived(!!$authenticationStore);
+	let isAuthenticated = $state(false);
+
+	$effect(() => {
+		if (loaded && $authenticationStore) {
+			userStore.init();
+			organizationStore.init();
+			isAuthenticated = true;
+		}
+	});
 
 	setupIonicBase();
 
@@ -30,10 +38,6 @@
 			}
 		}, 100);
 		await Promise.all([defineCustomElements(globalThis as unknown as Window), localeStore.init()]);
-		if (isAuthenticated) {
-			userStore.init();
-			organizationStore.init();
-		}
 		tabs = [
 			{ label: $t('common.page-routes.home'), icon: home, tab: PageRoute.HOME },
 			{

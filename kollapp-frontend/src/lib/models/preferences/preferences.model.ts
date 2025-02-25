@@ -8,5 +8,6 @@ export enum PreferencesKey {
 	USER = 'user',
 	ONLINE = 'online',
 	ORGANIZATION = 'organization',
-	LAYOUT = 'layout'
+	LAYOUT = 'layout',
+	LOCAL_USER = 'local-user'
 }

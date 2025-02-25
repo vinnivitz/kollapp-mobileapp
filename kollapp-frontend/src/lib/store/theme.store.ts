@@ -1,8 +1,7 @@
 import { writable } from 'svelte/store';
 
 import { PreferencesKey } from '$lib/models/preferences';
-import type { ThemeStore } from '$lib/models/store';
-import { Theme } from '$lib/models/theme';
+import { Theme, type ThemeStore } from '$lib/models/store';
 import { getStoredValue, storeValue } from '$lib/utils';
 
 function createStore(): ThemeStore {

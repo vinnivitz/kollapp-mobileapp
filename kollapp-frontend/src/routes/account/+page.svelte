@@ -23,8 +23,7 @@
 	import Item from '$lib/components/widgets/Item.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
-	import { Layout, Locale } from '$lib/models/store';
-	import { Theme } from '$lib/models/theme';
+	import { Layout, Locale, Theme } from '$lib/models/store';
 	import { localeStore, themeStore } from '$lib/store';
 	import { layoutStore } from '$lib/store/layout.store';
 

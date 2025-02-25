@@ -1,9 +1,9 @@
 import { get } from 'svelte/store';
 
 import { dev } from '$app/environment';
+import { goto } from '$app/navigation';
 
 import { apiResources } from '$lib/api';
-import type { UserDto } from '$lib/api/dto/server';
 import {
 	AuthorizationType,
 	ContentType,
@@ -16,9 +16,10 @@ import {
 import environment from '$lib/environment';
 import { t } from '$lib/locales';
 import { PreferencesKey } from '$lib/models/preferences';
-import { Locale } from '$lib/models/store';
+import { PageRoute } from '$lib/models/routing';
+import { Locale, type AuthenticationModel } from '$lib/models/store';
 import { AlertType, type ValidationResult } from '$lib/models/ui';
-import { authenticationStore, connectionStore, localeStore, userStore } from '$lib/store';
+import { authenticationStore, connectionStore, localeStore } from '$lib/store';
 import { getStoredValue, showAlert } from '$lib/utils';
 
 const $t = get(t);
@@ -53,7 +54,7 @@ export async function customFetch<T = never>(
 		}
 
 		if (authorizationType === AuthorizationType.BEARER) {
-			const token = await getAuthenticationToken();
+			const token = get(authenticationStore)?.accessToken;
 			if (token) {
 				headers.set(HeaderKey.AUTHORIZATION, getBearerToken(token));
 			} else {
@@ -68,6 +69,7 @@ export async function customFetch<T = never>(
 		if (StatusCheck.isUnauthorized(response.status)) {
 			const newToken = await getNewAuthenticationToken();
 			if (!newToken) {
+				await goto(PageRoute.HOME);
 				return createErrorResponse(StatusCode.UNAUTHORIZED, $t('api.unauthorized'), silentOnError);
 			}
 			headers.set(HeaderKey.AUTHORIZATION, getBearerToken(newToken));
@@ -94,8 +96,10 @@ export async function customFetch<T = never>(
  * @returns {Promise<boolean>} True if authenticated; otherwise, false.
  */
 export async function isAuthenticated(): Promise<boolean> {
-	const user = get(userStore) || (await getStoredValue<UserDto>(PreferencesKey.USER));
-	return !!user;
+	const model =
+		get(authenticationStore) ||
+		(await getStoredValue<AuthenticationModel>(PreferencesKey.AUTHENTICATION));
+	return !!model;
 }
 
 /**
@@ -156,7 +160,7 @@ async function getResponseBody<T>(
 		if (response.ok) {
 			console.info(message);
 		} else {
-			console.error(`status: ${response.status}, msg: ${message}`);
+			console.warn(`status: ${response.status}, msg: ${message}`);
 		}
 	}
 	return {
@@ -180,22 +184,17 @@ async function getEnhancedUrl(
 	return queryParameters ? `${url}?${queryParameters}` : url;
 }
 
-async function getAuthenticationToken(): Promise<string | undefined> {
-	const token = get(authenticationStore)?.accessToken;
-	return token ?? (await getNewAuthenticationToken());
-}
-
 async function getNewAuthenticationToken(): Promise<string | undefined> {
 	const refreshToken = get(authenticationStore)?.refreshToken;
-	if (!refreshToken) {
-		return;
+	if (refreshToken) {
+		const body = await apiResources.auth.refresh(refreshToken);
+		if (StatusCheck.isOK(body.status)) {
+			const accessToken = body.data.token;
+			authenticationStore.set({ accessToken, refreshToken });
+			return refreshToken;
+		}
 	}
-	const body = await apiResources.auth.refresh(refreshToken);
-	if (StatusCheck.isOK(body.status)) {
-		const accessToken = body.data.token;
-		authenticationStore.set({ accessToken, refreshToken });
-		return refreshToken;
-	}
+	await authenticationStore.reset();
 }
 
 async function createErrorResponse(
@@ -207,7 +206,7 @@ async function createErrorResponse(
 		showAlert({ message, type: AlertType.ERROR });
 	}
 	if (dev) {
-		console.error(`status: ${status}, msg: ${message}`);
+		console.warn(`status: ${status}, msg: ${message}`);
 	}
 	return { status, message, data: {} as never };
 }

@@ -7,7 +7,11 @@ import { AlertType, type AlertModel } from '$lib/models/ui';
 
 const $t = get(t);
 
-export async function showAlert(model: AlertModel) {
+/**
+ * Shows an alert to the user
+ * @param model alert model
+ */
+export async function showAlert(model: AlertModel): Promise<void> {
 	const toast = await toastController.create({
 		color: model.type,
 		duration: model.duration ?? 3000,

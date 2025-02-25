@@ -1,5 +1,14 @@
 import type { BaseStore } from '$lib/models/store';
-import type { Theme } from '$lib/models/theme';
+
+/**
+ * Theme model for available color schemes.
+ */
+export enum Theme {
+	SYSTEM = 'system',
+	LIGHT = 'light',
+	DARK = 'dark',
+	FANCY = 'fancy'
+}
 
 /**
  * Theme store model.

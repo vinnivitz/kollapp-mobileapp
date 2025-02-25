@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { loadingController } from 'ionic-svelte';
 
+	import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
 
 	import { apiResources } from '$lib/api';
@@ -12,8 +13,9 @@
 	import Card from '$lib/components/widgets/Card.svelte';
 	import Welcome from '$lib/components/widgets/Welcome.svelte';
 	import { t } from '$lib/locales';
+	import { PreferencesKey } from '$lib/models/preferences';
 	import { PageRoute } from '$lib/models/routing';
-	import type { AuthenticationModel, UserModel } from '$lib/models/store';
+	import type { AuthenticationModel } from '$lib/models/store';
 	import {
 		AlertType,
 		Form,
@@ -21,8 +23,8 @@
 		type FormConfig,
 		type ValidationResult
 	} from '$lib/models/ui';
-	import { authenticationStore, organizationStore, userStore } from '$lib/store';
-	import { clickableElement, customForm, showAlert } from '$lib/utils';
+	import { authenticationStore } from '$lib/store';
+	import { clickableElement, customForm, showAlert, storeValue } from '$lib/utils';
 
 	const model = loginSchema().cast({}) as LoginDto;
 	let validationResult: ValidationResult;
@@ -45,19 +47,12 @@
 			const body = await apiResources.auth.login(model);
 			validationResult = getValidationResult(body);
 			if (validationResult.valid) {
+				await storeValue(PreferencesKey.LOCAL_USER, false);
 				const authenticationModel: AuthenticationModel = {
 					accessToken: body.data.accessToken,
 					refreshToken: body.data.refreshToken
 				};
-				await authenticationStore.set(authenticationModel);
-				const userModel: UserModel = {
-					name: body.data.name,
-					username: body.data.username,
-					email: body.data.email
-				};
-				userStore.set(userModel);
-				organizationStore.init();
-				await goto(PageRoute.HOME);
+				await handleLogin(authenticationModel);
 			} else {
 				if (validationResult.errors?.[0].code === ValidationCode.EMAIL_NOT_CONFIRMED) {
 					emailNotConfirmed = true;
@@ -70,6 +65,17 @@
 			}
 			await loading.dismiss();
 		}
+	}
+
+	async function localSignin(): Promise<void> {
+		await storeValue(PreferencesKey.LOCAL_USER, true);
+		const model: AuthenticationModel = { accessToken: 'local', refreshToken: 'local' };
+		await handleLogin(model);
+	}
+
+	async function handleLogin(model: AuthenticationModel): Promise<void> {
+		await authenticationStore.set(model);
+		await goto(PageRoute.HOME);
 	}
 </script>
 
@@ -117,4 +123,11 @@
 			</div>
 		</Card>
 	</Card>
+	{#if dev}
+		<Card title={$t('routes.auth.login.card.dev.title')}>
+			<div class="text-center">
+				<Button click={localSignin}>{$t('routes.auth.login.card.dev.button')}</Button>
+			</div>
+		</Card>
+	{/if}
 </Layout>

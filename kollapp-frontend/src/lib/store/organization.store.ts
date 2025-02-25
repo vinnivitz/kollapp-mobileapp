@@ -14,6 +14,12 @@ function createStore(): OrganizationStore {
 	const { subscribe, set } = writable<OrganizationModel | undefined>();
 
 	async function init(): Promise<void> {
+		if (await getStoredValue<boolean>(PreferencesKey.LOCAL_USER)) {
+			const model: OrganizationModel = { name: 'My Collective' };
+			await _set(model);
+			return;
+		}
+
 		const body = await apiResources.organization.getOrganization();
 
 		if (StatusCheck.isOK(body.status)) {
