@@ -7,5 +7,6 @@ export enum PreferencesKey {
 	LOCALE = 'locale',
 	USER = 'user',
 	ONLINE = 'online',
-	ORGANIZATION = 'organization'
+	ORGANIZATION = 'organization',
+	LAYOUT = 'layout'
 }

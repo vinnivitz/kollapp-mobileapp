@@ -11,13 +11,17 @@
 		children,
 		showBackButton = false,
 		onRefresh,
-		loading = false
+		loading = false,
+		hideLayout = false,
+		hideMenu = false
 	}: {
 		title: string;
 		children?: Snippet;
 		showBackButton?: boolean;
 		onRefresh?: (refresher: HTMLIonRefresherElement) => void;
 		loading?: boolean;
+		hideLayout?: boolean;
+		hideMenu?: boolean;
 	} = $props();
 
 	let navigationDebounced = $state(false);
@@ -26,6 +30,7 @@
 
 	$effect(() => {
 		if ($navigating || loading) {
+			navigationDebounced = false;
 			navigationTimeout = setTimeout(() => (navigationDebounced = true), 100);
 		}
 	});
@@ -37,10 +42,14 @@
 	});
 </script>
 
-<Menu></Menu>
+{#if !hideLayout && !hideMenu}
+	<Menu></Menu>
+{/if}
 
 <div class="ion-page" id="menu">
-	<Header {title} {showBackButton}></Header>
+	{#if !hideLayout}
+		<Header {title} {showBackButton}></Header>
+	{/if}
 	{#if ($navigating || loading) && navigationDebounced}
 		<ion-progress-bar type="indeterminate"></ion-progress-bar>
 	{/if}

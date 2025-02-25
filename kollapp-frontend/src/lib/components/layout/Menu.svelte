@@ -1,16 +1,20 @@
 <script lang="ts">
+	import { logInOutline, logOutOutline, personAddOutline } from 'ionicons/icons';
+
 	import { goto } from '$app/navigation';
 
 	import { apiResources } from '$lib/api';
 	import { isAuthenticated } from '$lib/api/utils';
+	import Button from '$lib/components/widgets/Button.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
-	import { clickableElement } from '$lib/utils';
+	import { organizationStore, userStore } from '$lib/store';
 
 	async function logout(): Promise<void> {
-		await apiResources.auth.logout();
-		await goto(PageRoute.HOME);
-		location.reload();
+		apiResources.auth.logout();
+		organizationStore.reset();
+		userStore.reset();
+		await goto(PageRoute.AUTH.LOGIN);
 	}
 </script>
 
@@ -25,16 +29,26 @@
 		<div class="flex justify-center gap-2">
 			{#await isAuthenticated() then authenticated}
 				{#if authenticated}
-					<ion-button fill="outline" use:clickableElement={() => logout()}>
+					<Button size="small" fill="outline" click={() => logout()} iconSrc={logOutOutline}>
 						{$t('components.layout.header.button.logout')}
-					</ion-button>
+					</Button>
 				{:else}
-					<ion-button fill="outline" use:clickableElement={() => goto(PageRoute.AUTH.LOGIN)}>
+					<Button
+						size="small"
+						fill="outline"
+						click={() => goto(PageRoute.AUTH.LOGIN)}
+						iconSrc={logInOutline}
+					>
 						{$t('components.layout.header.button.login')}
-					</ion-button>
-					<ion-button fill="outline" use:clickableElement={() => goto(PageRoute.AUTH.REGISTER)}>
+					</Button>
+					<Button
+						size="small"
+						fill="outline"
+						click={() => goto(PageRoute.AUTH.REGISTER)}
+						iconSrc={personAddOutline}
+					>
 						{$t('components.layout.header.button.register')}
-					</ion-button>
+					</Button>
 				{/if}
 			{/await}
 		</div>

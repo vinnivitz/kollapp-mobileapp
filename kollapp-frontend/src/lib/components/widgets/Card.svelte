@@ -2,6 +2,9 @@
 	import type { PredefinedColors } from '@ionic/core';
 	import type { Snippet } from 'svelte';
 
+	import { Layout } from '$lib/models/store';
+	import { layoutStore } from '$lib/store';
+
 	let {
 		title,
 		subtitle,
@@ -15,10 +18,12 @@
 		color?: PredefinedColors;
 		titleOnly?: boolean;
 	} = $props();
+
+	const isModernLayout = $derived($layoutStore === Layout.MODERN);
+	const isPlayfulLayout = $derived($layoutStore === Layout.PLAYFUL);
 </script>
 
-<div></div>
-<ion-card {color}>
+<ion-card {color} class:rounded-3xl={isPlayfulLayout} class:squared={isModernLayout}>
 	{#if title || subtitle}
 		<ion-card-header>
 			<ion-card-title class="text-center">{title}</ion-card-title>
@@ -33,3 +38,9 @@
 		</ion-card-content>
 	{/if}
 </ion-card>
+
+<style lang="postcss">
+	.squared {
+		border-radius: unset !important;
+	}
+</style>

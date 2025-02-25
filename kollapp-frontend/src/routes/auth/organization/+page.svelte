@@ -7,6 +7,7 @@
 	import { registerOrganizationSchema, type RegisterOrganizationDto } from '$lib/api/dto/client';
 	import { getValidationResult } from '$lib/api/utils';
 	import IonLayout from '$lib/components/layout/Layout.svelte';
+	import Button from '$lib/components/widgets/Button.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
@@ -53,9 +54,9 @@
 				<ion-input name="name" label={$t('routes.auth.register.organization.form.input.name')}
 				></ion-input>
 			</ion-item>
-			<ion-button class="mt-3" expand="block" type="submit">
+			<Button classProp="mt-3" expand="block" type="submit">
 				{$t('routes.auth.register.organization.form.submit')}
-			</ion-button>
+			</Button>
 		</form>
 	</Card>
 </IonLayout>

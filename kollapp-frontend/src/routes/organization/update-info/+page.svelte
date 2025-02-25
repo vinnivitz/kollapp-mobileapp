@@ -5,7 +5,9 @@
 	import { updateOrganizationSchema, type UpdateOrganizationDto } from '$lib/api/dto/client';
 	import { getValidationResult } from '$lib/api/utils';
 	import IonLayout from '$lib/components/layout/Layout.svelte';
+	import Button from '$lib/components/widgets/Button.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
+	import Item from '$lib/components/widgets/Item.svelte';
 	import { t } from '$lib/locales';
 	import type { OrganizationModel } from '$lib/models/store';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
@@ -61,13 +63,13 @@
 	{#if form}
 		<Card title={$t('routes.organization.update-info.card.title')}>
 			<form use:customForm={form}>
-				<ion-item>
+				<Item color="light">
 					<ion-input name="name" label={$t('routes.auth.register.organization.form.input.name')}>
 					</ion-input>
-				</ion-item>
-				<ion-button class="mt-3" expand="block" type="submit" disabled={!touched}>
+				</Item>
+				<Button classProp="mt-3" expand="block" type="submit" disabled={!touched}>
 					{$t('routes.organization.update-info.card.button')}
-				</ion-button>
+				</Button>
 			</form>
 		</Card>
 	{/if}

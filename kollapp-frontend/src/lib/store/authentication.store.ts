@@ -18,6 +18,7 @@ function createStore(): AuthenticationStore {
 			set(model);
 		}
 	}
+
 	async function _set(model: AuthenticationModel): Promise<void> {
 		await storeValue(PreferencesKey.AUTHENTICATION, model);
 		set(model);

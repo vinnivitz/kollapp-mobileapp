@@ -4,3 +4,5 @@ export * from './authentication.store';
 export * from './organization.store';
 export * from './theme.store';
 export * from './connection.store';
+export * from './locale.store';
+export * from './layout.store';

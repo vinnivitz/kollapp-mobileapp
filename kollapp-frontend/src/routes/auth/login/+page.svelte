@@ -8,7 +8,9 @@
 	import { ValidationCode } from '$lib/api/models';
 	import { getValidationResult } from '$lib/api/utils';
 	import Layout from '$lib/components/layout/Layout.svelte';
+	import Button from '$lib/components/widgets/Button.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
+	import Welcome from '$lib/components/widgets/Welcome.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
 	import type { AuthenticationModel, UserModel } from '$lib/models/store';
@@ -19,7 +21,7 @@
 		type FormConfig,
 		type ValidationResult
 	} from '$lib/models/ui';
-	import { authenticationStore, userStore } from '$lib/store';
+	import { authenticationStore, organizationStore, userStore } from '$lib/store';
 	import { clickableElement, customForm, showAlert } from '$lib/utils';
 
 	const model = loginSchema().cast({}) as LoginDto;
@@ -47,13 +49,14 @@
 					accessToken: body.data.accessToken,
 					refreshToken: body.data.refreshToken
 				};
-				authenticationStore.set(authenticationModel);
+				await authenticationStore.set(authenticationModel);
 				const userModel: UserModel = {
 					name: body.data.name,
 					username: body.data.username,
 					email: body.data.email
 				};
 				userStore.set(userModel);
+				organizationStore.init();
 				await goto(PageRoute.HOME);
 			} else {
 				if (validationResult.errors?.[0].code === ValidationCode.EMAIL_NOT_CONFIRMED) {
@@ -70,8 +73,11 @@
 	}
 </script>
 
-<Layout title={$t('routes.auth.login.title')} showBackButton>
-	<Card title={$t('routes.auth.login.form.title')}>
+<Layout title={$t('routes.auth.login.title')} hideLayout>
+	<div class="mb-6">
+		<Welcome></Welcome>
+	</div>
+	<Card>
 		<form use:customForm={form}>
 			<ion-item>
 				<ion-input name="username" label={$t('routes.auth.login.form.input.username')}></ion-input>
@@ -83,9 +89,9 @@
 					label={$t('routes.auth.login.form.input.password')}
 				></ion-input>
 			</ion-item>
-			<ion-button class="mt-3" expand="block" type="submit">
+			<Button classProp="mt-3" expand="block" type="submit">
 				{$t('routes.auth.login.form.submit')}
-			</ion-button>
+			</Button>
 		</form>
 		{#if emailNotConfirmed}
 			<Card>

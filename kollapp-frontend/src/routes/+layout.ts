@@ -4,28 +4,21 @@ import { goto } from '$app/navigation';
 
 import type { LayoutLoad } from './$types';
 
-import {
-	authenticationStore,
-	connectionStore,
-	organizationStore,
-	themeStore,
-	userStore
-} from '$lib/store';
+import { authenticationStore, connectionStore, layoutStore, themeStore } from '$lib/store';
 import { navigateBack } from '$lib/utils';
 
 export const ssr = false;
 
 export const load: LayoutLoad = async () => {
-	initStores();
 	handleAppEvents();
+	initStores();
 };
 
-function initStores(): void {
+async function initStores(): Promise<void> {
 	themeStore.init();
+	layoutStore.init();
 	connectionStore.init();
-	authenticationStore.init();
-	userStore.init();
-	organizationStore.init();
+	await authenticationStore.init();
 }
 
 async function handleAppEvents(): Promise<void> {

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { arrowForward } from 'ionicons/icons';
+	import { accessibilityOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
 
@@ -15,13 +15,17 @@
 	const loading = $derived<boolean>(!organizationModel);
 </script>
 
-<Layout title={$t('routes.organization.title')} {loading}>
+<Layout title={$t('routes.organization.title')} {loading} showBackButton>
 	{#if organizationModel}
 		<ion-list-header>Update information</ion-list-header>
 		<ion-list inset>
-			<ion-item use:clickableElement={() => goto(PageRoute.ORGANIZATION.UPDATE_INFO)}>
+			<ion-item
+				color="light"
+				detail
+				use:clickableElement={() => goto(PageRoute.ORGANIZATION.UPDATE_INFO)}
+			>
+				<ion-icon slot="start" color="medium" icon={accessibilityOutline}></ion-icon>
 				<ion-label>Update collective info</ion-label>
-				<ion-icon icon={arrowForward} slot="end"></ion-icon>
 			</ion-item>
 		</ion-list>
 	{/if}

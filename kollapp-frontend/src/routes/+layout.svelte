@@ -7,28 +7,33 @@
 	import { onDestroy, onMount } from 'svelte';
 
 	import Tabs from '$lib/components/layout/Tabs.svelte';
-	import { loadTranslations, locale, t } from '$lib/locales';
+	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
 	import type { TabConfig } from '$lib/models/ui';
-	import { determineLocale } from '$lib/utils';
+	import { authenticationStore, localeStore, organizationStore, userStore } from '$lib/store';
 
 	let { children } = $props();
 
+	let loadingSpinner: HTMLIonLoadingElement | undefined;
 	let loadingTimeout: ReturnType<typeof setTimeout>;
 	let tabs = $state<TabConfig[] | undefined>();
 	let loaded = $state(false);
+	let isAuthenticated = $derived(!!$authenticationStore);
 
 	setupIonicBase();
 
 	onMount(async () => {
-		let loadingSpinner: HTMLIonLoadingElement | undefined;
 		loadingTimeout = setTimeout(async () => {
 			if (!loaded) {
 				loadingSpinner = await loadingController.create({});
 				await loadingSpinner.present();
 			}
 		}, 100);
-		await Promise.all([defineCustomElements(globalThis as unknown as Window), initTranslations()]);
+		await Promise.all([defineCustomElements(globalThis as unknown as Window), localeStore.init()]);
+		if (isAuthenticated) {
+			userStore.init();
+			organizationStore.init();
+		}
 		tabs = [
 			{ label: $t('common.page-routes.home'), icon: home, tab: PageRoute.HOME },
 			{
@@ -44,12 +49,6 @@
 		}
 	});
 
-	async function initTranslations(): Promise<void> {
-		const currentLocale = await determineLocale();
-		await loadTranslations(currentLocale);
-		locale.set(currentLocale);
-	}
-
 	onDestroy(() => {
 		if (loadingTimeout) {
 			clearTimeout(loadingTimeout);
@@ -62,11 +61,13 @@
 </svelte:head>
 
 <ion-app>
-	{#if tabs}
-		<Tabs {tabs}>
-			{#if loaded}
+	{#if loaded}
+		{#if isAuthenticated && tabs}
+			<Tabs {tabs}>
 				{@render children?.()}
-			{/if}
-		</Tabs>
+			</Tabs>
+		{:else}
+			{@render children?.()}
+		{/if}
 	{/if}
 </ion-app>

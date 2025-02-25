@@ -31,7 +31,7 @@ function createStore(): UserStore {
 		}
 	}
 
-	async function _set(model?: UserModel): Promise<void> {
+	async function _set(model: UserModel): Promise<void> {
 		await (model ? storeValue(PreferencesKey.USER, model) : removeStoredValue(PreferencesKey.USER));
 		set(model);
 	}

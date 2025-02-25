@@ -7,7 +7,9 @@
 	import { registerSchema, type RegisterDto } from '$lib/api/dto/client';
 	import { getValidationResult } from '$lib/api/utils';
 	import IonLayout from '$lib/components/layout/Layout.svelte';
+	import Button from '$lib/components/widgets/Button.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
+	import Welcome from '$lib/components/widgets/Welcome.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
 	import { type ValidationResult, type FormActions, type FormConfig, Form } from '$lib/models/ui';
@@ -80,8 +82,11 @@
 	}
 </script>
 
-<IonLayout title={$t('routes.auth.register.title')} showBackButton>
-	<Card title={$t('routes.auth.register.form.title')}>
+<IonLayout title={$t('routes.auth.register.title')} hideLayout>
+	<div class="mb-6">
+		<Welcome></Welcome>
+	</div>
+	<Card>
 		<form use:customForm={form}>
 			<ion-item>
 				<ion-input name="surname" label={$t('routes.auth.register.form.input.surname')}></ion-input>
@@ -116,9 +121,9 @@
 				>
 				</ion-input>
 			</ion-item>
-			<ion-button class="mt-3" expand="block" type="submit">
+			<Button classProp="mt-3" expand="block" type="submit">
 				{$t('routes.auth.register.form.submit')}
-			</ion-button>
+			</Button>
 		</form>
 		<Card>
 			<div class="text-center" use:clickableElement={() => goto(PageRoute.AUTH.LOGIN)}>

@@ -16,9 +16,10 @@ import {
 import environment from '$lib/environment';
 import { t } from '$lib/locales';
 import { PreferencesKey } from '$lib/models/preferences';
+import { Locale } from '$lib/models/store';
 import { AlertType, type ValidationResult } from '$lib/models/ui';
-import { authenticationStore, connectionStore, userStore } from '$lib/store';
-import { determineLocale, getStoredValue, showAlert } from '$lib/utils';
+import { authenticationStore, connectionStore, localeStore, userStore } from '$lib/store';
+import { getStoredValue, showAlert } from '$lib/utils';
 
 const $t = get(t);
 
@@ -44,7 +45,7 @@ export async function customFetch<T = never>(
 		const options: RequestInit = { method };
 		const headers = new Headers();
 
-		headers.set(HeaderKey.ACCEPT_LANGUAGE, await determineLocale());
+		headers.set(HeaderKey.ACCEPT_LANGUAGE, get(localeStore) ?? Locale.DE);
 
 		if (hasRequestBody(method)) {
 			headers.set(HeaderKey.CONTENT_TYPE, ContentType.JSON);

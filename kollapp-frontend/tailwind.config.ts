@@ -4,10 +4,15 @@ import type { Config } from 'tailwindcss';
 
 export default {
 	content: ['./src/**/*.{html,js,svelte,ts}'],
-
+	darkMode: 'class',
 	theme: {
 		extend: {}
 	},
-
-	plugins: [typography, scrollbarHide]
+	plugins: [
+		typography,
+		scrollbarHide,
+		function ({ addVariant }) {
+			addVariant('fancy', '&:is(.fancy *)');
+		}
+	]
 } satisfies Config;

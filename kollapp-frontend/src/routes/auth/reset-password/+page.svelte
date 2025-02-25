@@ -5,6 +5,7 @@
 	import { emailSchema, type EmailDto } from '$lib/api/dto/client/email.dto';
 	import { getValidationResult } from '$lib/api/utils';
 	import Layout from '$lib/components/layout/Layout.svelte';
+	import Button from '$lib/components/widgets/Button.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
 	import { t } from '$lib/locales';
 	import { type ValidationResult, type FormActions, type FormConfig, Form } from '$lib/models/ui';
@@ -40,16 +41,16 @@
 	}
 </script>
 
-<Layout title={$t('routes.auth.reset-password.title')} showBackButton>
+<Layout title={$t('routes.auth.reset-password.title')} showBackButton hideMenu>
 	<Card title={$t('routes.auth.reset-password.card.title')}>
 		<form use:customForm={form}>
 			<ion-item>
 				<ion-input name="email" type="email" label={$t('routes.auth.reset-password.form.email')}
 				></ion-input>
 			</ion-item>
-			<ion-button class="mt-3" expand="block" type="submit">
+			<Button classProp="mt-3" expand="block" type="submit">
 				{$t('routes.auth.reset-password.form.buttons.send')}
-			</ion-button>
+			</Button>
 		</form>
 	</Card>
 </Layout>

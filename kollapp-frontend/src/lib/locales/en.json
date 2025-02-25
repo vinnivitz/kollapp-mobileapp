@@ -3,16 +3,13 @@
 		"home": {
 			"title": "Kollapp",
 			"card": {
-				"title": "Welcome to Kollapp",
-				"content": "The app for all the collectives out there",
-				"authenticated": {
-					"title": "Hello"
-				},
+				"authenticated": {},
 				"organization": {
 					"button": "Go to collective"
 				},
 				"user": {
-					"button": "Go to account"
+					"button": "Go to account",
+					"title": "Hello {{value}}"
 				}
 			}
 		},
@@ -20,7 +17,6 @@
 			"login": {
 				"title": "Log in",
 				"form": {
-					"title": "Log in to Kollapp",
 					"input": {
 						"password": "Password",
 						"username": "Username"
@@ -41,12 +37,17 @@
 				},
 				"alert": {
 					"email-not-confirmed": "Email is not confirmed"
+				},
+				"card": {
+					"welcome": {
+						"title": "Welcome to Kollapp!",
+						"content": "The app for all the collectives out there."
+					}
 				}
 			},
 			"register": {
 				"title": "Register",
 				"form": {
-					"title": "Register to Kollapp",
 					"input": {
 						"username": "Username",
 						"email": "Email",
@@ -108,20 +109,25 @@
 						"send": "Send confirmation email"
 					}
 				}
+			},
+			"change-password": {
+				"confirmation": {
+					"title": "Change password",
+					"form": {
+						"title": "Update your password"
+					}
+				}
 			}
 		},
 		"account": {
 			"title": "Account",
 			"list": {
 				"application": {
-					"title": "Application",
-					"button": "Application settings"
+					"title": "Application"
 				},
 				"account": {
 					"title": "Account settings",
 					"button": {
-						"register": "Register",
-						"login": "Log in",
 						"change-password": "Change password"
 					}
 				}
@@ -129,22 +135,22 @@
 			"app": {
 				"language": {
 					"action-sheet": {
-						"title": "Change language",
-						"buttons": {
-							"german": "German",
-							"english": "English"
-						}
+						"buttons": {}
 					}
 				},
-				"title": "Application",
 				"list": {
-					"appearence": {
-						"title": "Appearence",
-						"button": "Dark mode"
-					},
+					"appearence": {},
 					"language": {
-						"title": "Language",
 						"button": "Change language"
+					},
+					"layout": {
+						"button": "Change layout"
+					},
+					"theme": {
+						"button": "Change color theme"
+					},
+					"restore": {
+						"button": "Restore defaults"
 					}
 				}
 			},
@@ -155,6 +161,36 @@
 						"new-password": "New password"
 					},
 					"submit": "Update password"
+				}
+			},
+			"language": {
+				"action-sheet": {
+					"buttons": {
+						"german": "German",
+						"english": "English"
+					},
+					"title": "Change language"
+				}
+			},
+			"layout": {
+				"action-sheet": {
+					"buttons": {
+						"classic": "Classic",
+						"modern": "Modern",
+						"playful": "Playful"
+					},
+					"title": "Change layout"
+				}
+			},
+			"theme": {
+				"action-sheet": {
+					"buttons": {
+						"light": "Light",
+						"dark": "Dark",
+						"system": "System",
+						"fancy": "Fancy"
+					},
+					"title": "Change color theme"
 				}
 			}
 		},

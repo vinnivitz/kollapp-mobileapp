@@ -151,34 +151,31 @@
 			"app": {
 				"language": {
 					"action-sheet": {
-						"buttons": {
-							"english": "Englisch",
-							"german": "Deutsch"
-						},
-						"title": "Sprache ändern"
+						"buttons": {}
 					}
 				},
 				"list": {
-					"appearence": {
-						"button": "Dunkler Modus",
-						"title": "Darstellung"
-					},
+					"appearence": {},
 					"language": {
-						"button": "Sprache ändern",
-						"title": "Sprache"
+						"button": "Sprache ändern"
+					},
+					"layout": {
+						"button": "Layout ändern"
+					},
+					"theme": {
+						"button": "Farbthema ändern"
+					},
+					"restore": {
+						"button": "Standardeinstellungen wiederherstellen"
 					}
-				},
-				"title": "Anwendung"
+				}
 			},
 			"list": {
 				"application": {
-					"button": "Anwendungseinstellungen",
 					"title": "Anwendung"
 				},
 				"account": {
 					"button": {
-						"register": "Registrieren",
-						"login": "Einloggen",
 						"change-password": "Password ändern"
 					},
 					"title": "Kontoeinstellungen"
@@ -192,6 +189,36 @@
 					},
 					"submit": "Passwort aktualisieren"
 				}
+			},
+			"language": {
+				"action-sheet": {
+					"buttons": {
+						"english": "Englisch",
+						"german": "Deutsch"
+					},
+					"title": "Sprache ändern"
+				}
+			},
+			"layout": {
+				"action-sheet": {
+					"buttons": {
+						"classic": "Klassisch",
+						"modern": "Modern",
+						"playful": "Verspielt"
+					},
+					"title": "Layout ändern"
+				}
+			},
+			"theme": {
+				"action-sheet": {
+					"buttons": {
+						"dark": "Dunkel",
+						"fancy": "Schick",
+						"light": "Licht",
+						"system": "System"
+					},
+					"title": "Farbthema ändern"
+				}
 			}
 		},
 		"auth": {
@@ -202,8 +229,7 @@
 						"password": "Passwort",
 						"username": "Benutzername"
 					},
-					"submit": "Einloggen",
-					"title": "Melde dich bei Kollapp an"
+					"submit": "Einloggen"
 				},
 				"register": {
 					"link": "Registrieren",
@@ -219,6 +245,12 @@
 				},
 				"alert": {
 					"email-not-confirmed": "E-Mail ist nicht bestätigt"
+				},
+				"card": {
+					"welcome": {
+						"content": "Die App für alle Kollektive da draußen.",
+						"title": "Willkommen bei Kollapp!"
+					}
 				}
 			},
 			"register": {
@@ -231,8 +263,7 @@
 						"surname": "Vorname",
 						"name": "Nachname"
 					},
-					"submit": "Registrieren",
-					"title": "Registriere dich bei Kollapp"
+					"submit": "Registrieren"
 				},
 				"login": {
 					"link": "Einloggen",
@@ -286,21 +317,26 @@
 						"send": "Bestätigungs-E-Mail senden"
 					}
 				}
+			},
+			"change-password": {
+				"confirmation": {
+					"form": {
+						"title": "Aktualisieren Sie Ihr Passwort"
+					},
+					"title": "Kennwort ändern"
+				}
 			}
 		},
 		"home": {
 			"title": "Kollapp",
 			"card": {
-				"content": "Die App für alle Kollektive",
-				"title": "Willkommen bei Kollapp",
-				"authenticated": {
-					"title": "Hallo"
-				},
+				"authenticated": {},
 				"organization": {
 					"button": "Gehen Sie zum Kollektiv"
 				},
 				"user": {
-					"button": "Gehen Sie auf Rechnung"
+					"button": "Gehen Sie auf Rechnung",
+					"title": "Hallo {{value}}"
 				}
 			}
 		},

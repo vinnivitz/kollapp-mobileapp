@@ -6,7 +6,7 @@ import { t } from '$lib/locales';
 import { PreferencesKey } from '$lib/models/preferences';
 import { type ConnectionStore } from '$lib/models/store';
 import { AlertType } from '$lib/models/ui';
-import { removeStoredValue, showAlert, storeValue } from '$lib/utils';
+import { showAlert, storeValue } from '$lib/utils';
 
 const $t = get(t);
 
@@ -28,8 +28,7 @@ function createStore(): ConnectionStore {
 	}
 
 	async function reset(): Promise<void> {
-		await removeStoredValue(PreferencesKey.ONLINE);
-		set(true);
+		await _set(true);
 	}
 
 	async function getStatus(): Promise<ConnectionStatus> {
