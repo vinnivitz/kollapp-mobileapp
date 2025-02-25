@@ -25,6 +25,7 @@
 	} from '$lib/models/ui';
 	import { authenticationStore } from '$lib/store';
 	import { clickableElement, customForm, showAlert, storeValue } from '$lib/utils';
+	import environment from '$lib/environment';
 
 	const model = loginSchema().cast({}) as LoginDto;
 	let validationResult: ValidationResult;
@@ -123,7 +124,7 @@
 			</div>
 		</Card>
 	</Card>
-	{#if dev}
+	{#if environment.localUser}
 		<Card title={$t('routes.auth.login.card.dev.title')}>
 			<div class="text-center">
 				<Button click={localSignin}>{$t('routes.auth.login.card.dev.button')}</Button>
