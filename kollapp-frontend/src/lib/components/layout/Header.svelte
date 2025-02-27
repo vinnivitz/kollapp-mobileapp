@@ -8,7 +8,7 @@
 </script>
 
 <ion-header>
-	<ion-toolbar color="primary">
+	<ion-toolbar>
 		<ion-title>{title}</ion-title>
 
 		<ion-buttons slot="start">

@@ -5,11 +5,11 @@
 		balloonOutline,
 		colorPaletteOutline,
 		colorWandOutline,
+		contrastOutline,
 		diamondOutline,
 		gridOutline,
 		keyOutline,
 		languageOutline,
-		maleFemaleOutline,
 		moonOutline,
 		refreshOutline,
 		saveOutline,
@@ -104,10 +104,10 @@
 				role: currentTheme === Theme.DARK ? 'selected' : undefined
 			},
 			{
-				text: $t('routes.account.theme.action-sheet.buttons.fancy'),
-				handler: () => themeStore.set(Theme.FANCY),
-				icon: maleFemaleOutline,
-				role: currentTheme === Theme.FANCY ? 'selected' : undefined
+				text: $t('routes.account.theme.action-sheet.buttons.black-and-white'),
+				handler: () => themeStore.set(Theme.BLACK_AND_WHITE),
+				icon: contrastOutline,
+				role: currentTheme === Theme.BLACK_AND_WHITE ? 'selected' : undefined
 			}
 		]);
 	}

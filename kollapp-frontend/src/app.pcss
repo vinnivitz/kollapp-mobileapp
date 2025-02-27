@@ -2,19 +2,20 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
-@import 'theme.pcss';
+@import './themes/light.pcss';
+@import './themes/dark.pcss';
+@import './themes/fancy.pcss';
+@import './themes/black-and-white.pcss';
+
+@import './themes/common.pcss';
 
 :root {
 	ion-list {
-		padding-top: 0;
-		padding-bottom: 0;
-		background: none;
-
 		ion-item {
 			--padding-start: 0;
 
 			:first-child {
-				padding-left: 16px;
+				padding-left: 8px;
 			}
 		}
 	}

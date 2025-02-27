@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { loadingController } from 'ionic-svelte';
 
-	import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
 
 	import { apiResources } from '$lib/api';
@@ -12,6 +11,7 @@
 	import Button from '$lib/components/widgets/Button.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
 	import Welcome from '$lib/components/widgets/Welcome.svelte';
+	import environment from '$lib/environment';
 	import { t } from '$lib/locales';
 	import { PreferencesKey } from '$lib/models/preferences';
 	import { PageRoute } from '$lib/models/routing';
@@ -25,7 +25,6 @@
 	} from '$lib/models/ui';
 	import { authenticationStore } from '$lib/store';
 	import { clickableElement, customForm, showAlert, storeValue } from '$lib/utils';
-	import environment from '$lib/environment';
 
 	const model = loginSchema().cast({}) as LoginDto;
 	let validationResult: ValidationResult;

@@ -34,31 +34,14 @@ function createStore(): ThemeStore {
 	}
 
 	function setClass(value: Theme): void {
-		switch (value) {
-			case Theme.DARK: {
-				document.body.classList.add(Theme.DARK);
-				document.body.classList.remove(Theme.LIGHT);
-				document.body.classList.remove(Theme.FANCY);
-				break;
-			}
-			case Theme.LIGHT: {
-				document.body.classList.add(Theme.LIGHT);
-				document.body.classList.remove(Theme.DARK);
-				document.body.classList.remove(Theme.FANCY);
-				break;
-			}
-			case Theme.FANCY: {
-				document.body.classList.add(Theme.FANCY);
-				document.body.classList.remove(Theme.DARK);
-				document.body.classList.remove(Theme.LIGHT);
-				break;
-			}
-			case Theme.SYSTEM: {
-				value = getPreferedColorScheme();
-				setClass(value);
-				break;
-			}
+		if (value === Theme.SYSTEM) {
+			value = getPreferedColorScheme();
+			setClass(value);
+			return;
 		}
+
+		document.body.classList.remove(...Object.values(Theme));
+		document.body.classList.add(value);
 	}
 
 	return {

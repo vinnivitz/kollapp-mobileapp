@@ -21,8 +21,11 @@
 <ion-menu side="end" content-id="menu">
 	<ion-header>
 		<ion-toolbar>
-			<ion-searchbar debounce={100} placeholder={$t('components.layout.menu.searchbar.placeholder')}
-			></ion-searchbar>
+			<ion-searchbar
+				debounce={100}
+				placeholder={$t('components.layout.menu.searchbar.placeholder')}
+			>
+			</ion-searchbar>
 		</ion-toolbar>
 	</ion-header>
 	<ion-content class="ion-padding relative text-center">
@@ -55,9 +58,7 @@
 		<hr class="my-3" />
 		<div class="absolute bottom-2 left-0 right-0">
 			<hr class="my-2" />
-			<ion-text color="medium">Made with </ion-text>
-			<ion-text class="text-red-600">&#10084;</ion-text>
-			<ion-text color="medium"> from Dresden.</ion-text>
+			<ion-note>Made with <span class="text-red-600">&#10084;</span> from Dresden.</ion-note>
 		</div>
 	</ion-content>
 </ion-menu>
