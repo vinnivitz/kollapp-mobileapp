@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { loadingController } from 'ionic-svelte';
+	import { accessibilityOutline } from 'ionicons/icons';
 
 	import { apiResources } from '$lib/api';
 	import { updateOrganizationSchema, type UpdateOrganizationDto } from '$lib/api/dto/client';
@@ -7,7 +8,7 @@
 	import IonLayout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
-	import Item from '$lib/components/widgets/Item.svelte';
+	import InputItem from '$lib/components/widgets/InputItem.svelte';
 	import { t } from '$lib/locales';
 	import type { OrganizationModel } from '$lib/models/store';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
@@ -63,10 +64,11 @@
 	{#if form}
 		<Card title={$t('routes.organization.update-info.card.title')}>
 			<form use:customForm={form}>
-				<Item color="light">
-					<ion-input name="name" label={$t('routes.auth.register.organization.form.input.name')}>
-					</ion-input>
-				</Item>
+				<InputItem
+					name="name"
+					label={$t('routes.auth.register.organization.form.input.name')}
+					iconSrc={accessibilityOutline}
+				/>
 				<Button classProp="mt-3" expand="block" type="submit" disabled={!touched}>
 					{$t('routes.organization.update-info.card.button')}
 				</Button>

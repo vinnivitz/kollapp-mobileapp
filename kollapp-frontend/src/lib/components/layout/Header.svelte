@@ -21,7 +21,7 @@
 						use:clickableElement={() => goto(PageRoute.HOME)}
 						src="/logo.png"
 						alt="Logo"
-						class="h-8 w-8"
+						class="h-8 w-8 black-and-white:grayscale"
 					/>
 				{/if}
 			</ion-button>

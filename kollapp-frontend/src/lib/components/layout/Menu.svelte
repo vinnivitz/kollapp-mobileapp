@@ -1,20 +1,17 @@
 <script lang="ts">
-	import { logInOutline, logOutOutline, personAddOutline } from 'ionicons/icons';
+	import { accessibilityOutline, logOutOutline, personOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
 
 	import { apiResources } from '$lib/api';
-	import { isAuthenticated } from '$lib/api/utils';
 	import Button from '$lib/components/widgets/Button.svelte';
+	import LabeledItem from '$lib/components/widgets/LabeledItem.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
-	import { organizationStore, userStore } from '$lib/store';
 
 	async function logout(): Promise<void> {
-		apiResources.auth.logout();
-		organizationStore.reset();
-		userStore.reset();
-		await goto(PageRoute.AUTH.LOGIN);
+		await apiResources.auth.logout();
+		goto(PageRoute.AUTH.LOGIN);
 	}
 </script>
 
@@ -29,32 +26,23 @@
 		</ion-toolbar>
 	</ion-header>
 	<ion-content class="ion-padding relative text-center">
-		<div class="flex justify-center gap-2">
-			{#await isAuthenticated() then authenticated}
-				{#if authenticated}
-					<Button size="small" fill="outline" click={() => logout()} iconSrc={logOutOutline}>
-						{$t('components.layout.header.button.logout')}
-					</Button>
-				{:else}
-					<Button
-						size="small"
-						fill="outline"
-						click={() => goto(PageRoute.AUTH.LOGIN)}
-						iconSrc={logInOutline}
-					>
-						{$t('components.layout.header.button.login')}
-					</Button>
-					<Button
-						size="small"
-						fill="outline"
-						click={() => goto(PageRoute.AUTH.REGISTER)}
-						iconSrc={personAddOutline}
-					>
-						{$t('components.layout.header.button.register')}
-					</Button>
-				{/if}
-			{/await}
-		</div>
+		<ion-list>
+			<LabeledItem
+				color="white"
+				click={() => goto(PageRoute.ACCOUNT.ROOT)}
+				iconSrc={personOutline}
+				label={$t('components.layout.header.button.account')}
+			/>
+			<LabeledItem
+				color="white"
+				click={() => goto(PageRoute.ORGANIZATION.ROOT)}
+				iconSrc={accessibilityOutline}
+				label={$t('components.layout.menu.list.organization')}
+			/>
+		</ion-list>
+		<Button size="small" fill="outline" click={() => logout()} iconSrc={logOutOutline}>
+			{$t('components.layout.header.button.logout')}
+		</Button>
 		<hr class="my-3" />
 		<div class="absolute bottom-2 left-0 right-0">
 			<hr class="my-2" />

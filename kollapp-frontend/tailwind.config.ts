@@ -4,7 +4,6 @@ import type { Config } from 'tailwindcss';
 
 export default {
 	content: ['./src/**/*.{html,js,svelte,ts}'],
-	darkMode: 'class',
 	theme: {
 		extend: {}
 	},
@@ -12,7 +11,9 @@ export default {
 		typography,
 		scrollbarHide,
 		function ({ addVariant }) {
-			addVariant('fancy', '&:is(.fancy *)');
+			addVariant('light', '&:is(.light *)');
+			addVariant('dark', '&:is(.dark *)');
+			addVariant('black-and-white', '&:is(.black-and-white *)');
 		}
 	]
 } satisfies Config;

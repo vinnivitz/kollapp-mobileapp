@@ -1,8 +1,8 @@
 <script lang="ts">
-	import type { PredefinedColors } from '@ionic/core';
 	import type { Snippet } from 'svelte';
 
 	import { Layout } from '$lib/models/store';
+	import type { Colors } from '$lib/models/ui';
 	import { layoutStore } from '$lib/store';
 
 	let {
@@ -15,7 +15,7 @@
 		title?: string;
 		subtitle?: string;
 		children?: Snippet;
-		color?: PredefinedColors;
+		color?: Colors | undefined;
 		titleOnly?: boolean;
 	} = $props();
 

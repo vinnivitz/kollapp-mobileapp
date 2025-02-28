@@ -1,367 +1,409 @@
 {
-  "routes": {
-    "home": {
-      "title": "Kollapp",
-      "card": {
-        "authenticated": {},
-        "organization": {
-          "button": "Go to collective"
-        },
-        "user": {
-          "button": "Go to account",
-          "title": "Hello {{value}}"
-        }
-      }
-    },
-    "auth": {
-      "login": {
-        "title": "Log in",
-        "form": {
-          "input": {
-            "password": "Password",
-            "username": "Username"
-          },
-          "submit": "Log in"
-        },
-        "register": {
-          "text": "You are not registered yet?",
-          "link": "Register"
-        },
-        "forgot-password": {
-          "text": "Forgot your password?",
-          "link": "Reset"
-        },
-        "resend-confirmation": {
-          "text": "Didn´t received the confirmation mail?",
-          "link": "Resend"
-        },
-        "alert": {
-          "email-not-confirmed": "Email is not confirmed"
-        },
-        "card": {
-          "welcome": {
-            "title": "Welcome to Kollapp!",
-            "content": "The app for all the collectives out there."
-          },
-          "dev": {
-            "title": "Local sign in",
-            "button": "Sign in locally"
-          }
-        }
-      },
-      "register": {
-        "title": "Register",
-        "form": {
-          "input": {
-            "username": "Username",
-            "email": "Email",
-            "password": "Password",
-            "confirm-password": "Confirm password",
-            "surname": "Surname",
-            "name": "Name"
-          },
-          "submit": "Register"
-        },
-        "login": {
-          "text": "You are already registered?",
-          "link": "Log in"
-        },
-        "organization": {
-          "form": {
-            "input": {
-              "name": "Name"
-            },
-            "submit": "Create collective",
-            "title": "Whats your collective called?"
-          },
-          "title": "Create collective"
-        }
-      },
-      "reset-password": {
-        "title": "Reset password",
-        "card": {
-          "title": "Enter your email"
-        },
-        "form": {
-          "email": "Email",
-          "buttons": {
-            "send": "Reset password"
-          }
-        },
-        "confirmation": {
-          "title": "Reset password",
-          "register": {
-            "form": {}
-          },
-          "form": {
-            "title": "Reset your password",
-            "input": {
-              "password": "New password",
-              "confirm-password": "Confirm new password"
-            },
-            "submit": "Update password"
-          }
-        }
-      },
-      "resend-confirmation": {
-        "title": "Resend confirmation",
-        "card": {
-          "title": "Enter your email"
-        },
-        "form": {
-          "buttons": {
-            "send": "Send confirmation email"
-          }
-        }
-      },
-      "change-password": {
-        "confirmation": {
-          "title": "Change password",
-          "form": {
-            "title": "Update your password"
-          }
-        }
-      }
-    },
-    "account": {
-      "title": "Account",
-      "list": {
-        "application": {
-          "title": "Application"
-        },
-        "account": {
-          "title": "Account settings",
-          "button": {
-            "change-password": "Change password"
-          }
-        }
-      },
-      "app": {
-        "language": {
-          "action-sheet": {
-            "buttons": {}
-          }
-        },
-        "list": {
-          "appearence": {},
-          "language": {
-            "button": "Change language"
-          },
-          "layout": {
-            "button": "Change layout"
-          },
-          "theme": {
-            "button": "Change color theme"
-          },
-          "restore": {
-            "button": "Restore defaults"
-          }
-        }
-      },
-      "change-password": {
-        "form": {
-          "input": {
-            "current-password": "Current password",
-            "new-password": "New password"
-          },
-          "submit": "Update password"
-        }
-      },
-      "language": {
-        "action-sheet": {
-          "buttons": {
-            "german": "German",
-            "english": "English"
-          },
-          "title": "Change language"
-        }
-      },
-      "layout": {
-        "action-sheet": {
-          "buttons": {
-            "classic": "Classic",
-            "modern": "Modern",
-            "playful": "Playful"
-          },
-          "title": "Change layout"
-        }
-      },
-      "theme": {
-        "action-sheet": {
-          "buttons": {
-            "light": "Light",
-            "dark": "Dark",
-            "system": "System",
-            "black-and-white": "Black and white"
-          },
-          "title": "Change color theme"
-        }
-      }
-    },
-    "finances": {
-      "title": "Finances",
-      "subtitle": "This is on overview over the finances."
-    },
-    "organization": {
-      "title": "Collective",
-      "update-info": {
-        "title": "Update collective",
-        "card": {
-          "title": "Update collective information",
-          "button": "Update information"
-        }
-      }
-    }
-  },
-  "common": {
-    "page-routes": {
-      "finances": "Finances",
-      "account": "Account",
-      "home": "Home"
-    },
-    "error-page": {
-      "card": {
-        "title": "Page not found.",
-        "content": {
-          "button": "Back to home"
-        }
-      }
-    }
-  },
-  "components": {
-    "widgets": {
-      "modal": {
-        "button": {
-          "confirm": "Confirm",
-          "cancel": "Cancel"
-        }
-      }
-    },
-    "layout": {
-      "header": {
-        "button": {
-          "login": "Log in",
-          "register": "Register",
-          "logout": "Log out"
-        }
-      },
-      "menu": {
-        "searchbar": {
-          "placeholder": "Search the app..."
-        }
-      }
-    }
-  },
-  "api": {
-    "dto": {
-      "register": {
-        "schema": {
-          "validation": {
-            "username": {
-              "min": "Username must be at least 2 characters",
-              "max": "Username must be less than 255 characters",
-              "required": "Username is required"
-            },
-            "email": {
-              "email": "Email is not valid",
-              "max": "Email must be less than 50 characters",
-              "required": "Email is required"
-            },
-            "password": {
-              "min": "Password must be at least 8 characters",
-              "max": "Password must be less than 255 characters",
-              "matches": "Password must contain at least one uppercase letter, one lowercase letter and one number",
-              "required": "Password is required"
-            },
-            "confirm-password": {
-              "no-match": "Must match the password"
-            },
-            "surname": {
-              "min": "Surname must be at least 1 character",
-              "max": "Surname must be less then 50 characters",
-              "required": "Surname ist required"
-            },
-            "name": {
-              "min": "Name must be at least 1 character",
-              "max": "Name must be less then 50 characters",
-              "required": "Name is required"
-            }
-          }
-        }
-      },
-      "login": {
-        "schema": {
-          "validation": {
-            "username": {
-              "required": "Username is required"
-            },
-            "password": {
-              "required": "Password is required"
-            }
-          }
-        }
-      },
-      "email": {
-        "schema": {
-          "validation": {
-            "invalid": "Invalid email",
-            "required": "Email required"
-          }
-        }
-      },
-      "reset-password": {
-        "schema": {
-          "validation": {
-            "oldPassword": {},
-            "newPassword": {
-              "min": "The new password must be at least 8 characters",
-              "max": "New password must be less then 255 characters",
-              "matches": "Password must contain at least one uppercase letter, one lowercase letter and one number",
-              "required": "New password is required"
-            },
-            "confirm-password": {
-              "no-match": "Must match the new password"
-            }
-          }
-        }
-      },
-      "change-password": {
-        "schema": {
-          "validation": {
-            "current-password": {
-              "required": "Current password is required"
-            },
-            "new-password": {
-              "max": "New password must be less than 255 characters",
-              "min": "New password must be at least 8 characters",
-              "matches": "New password must contain at least one uppercase letter, one lowercase letter and one number",
-              "required": "New password is required"
-            }
-          }
-        }
-      },
-      "register-organization": {
-        "schema": {
-          "validation": {
-            "name": {
-              "min": "Name must be at least one character long",
-              "max": "Name must be less than 50 characters long",
-              "required": "Name is required"
-            }
-          }
-        }
-      }
-    },
-    "error": "An error occurred.",
-    "success": "Request successful",
-    "not-available": "Server not reachable",
-    "offline": "You are offline",
-    "online": "You are online",
-    "unauthorized": "Authentification failed"
-  },
-  "utils": {
-    "alert": {
-      "button": "Close"
-    }
-  }
+	"routes": {
+		"home": {
+			"title": "Kollapp",
+			"card": {
+				"authenticated": {},
+				"organization": {
+					"button": "Go to collective"
+				},
+				"user": {
+					"button": "Go to account",
+					"title": "Hello {{value}}"
+				}
+			}
+		},
+		"auth": {
+			"login": {
+				"title": "Log in",
+				"form": {
+					"input": {
+						"password": "Password",
+						"username": "Username"
+					},
+					"submit": "Log in"
+				},
+				"register": {
+					"text": "You are not registered yet?",
+					"link": "Register"
+				},
+				"forgot-password": {
+					"text": "Forgot your password?",
+					"link": "Reset"
+				},
+				"resend-confirmation": {
+					"text": "Didn´t received the confirmation mail?",
+					"link": "Resend"
+				},
+				"alert": {
+					"email-not-confirmed": "Email is not confirmed"
+				},
+				"card": {
+					"welcome": {
+						"title": "Welcome to Kollapp!",
+						"content": "The app for all the collectives out there."
+					},
+					"dev": {
+						"title": "Local sign in",
+						"button": "Sign in locally"
+					}
+				}
+			},
+			"register": {
+				"title": "Register",
+				"form": {
+					"input": {
+						"username": "Username",
+						"email": "Email",
+						"password": "Password",
+						"confirm-password": "Confirm password",
+						"surname": "Surname",
+						"name": "Name"
+					},
+					"submit": "Register"
+				},
+				"login": {
+					"text": "You are already registered?",
+					"link": "Log in"
+				},
+				"organization": {
+					"form": {
+						"input": {
+							"name": "Name"
+						},
+						"submit": "Create collective",
+						"title": "Whats your collective called?"
+					},
+					"title": "Create collective"
+				}
+			},
+			"reset-password": {
+				"title": "Reset password",
+				"card": {
+					"title": "Enter your email"
+				},
+				"form": {
+					"email": "Email",
+					"buttons": {
+						"send": "Reset password"
+					}
+				},
+				"confirmation": {
+					"title": "Reset password",
+					"register": {
+						"form": {}
+					},
+					"form": {
+						"title": "Reset your password",
+						"input": {
+							"password": "New password",
+							"confirm-password": "Confirm new password"
+						},
+						"submit": "Update password"
+					}
+				}
+			},
+			"resend-confirmation": {
+				"title": "Resend confirmation",
+				"card": {
+					"title": "Enter your email"
+				},
+				"form": {
+					"buttons": {
+						"send": "Send confirmation email"
+					}
+				}
+			},
+			"change-password": {
+				"confirmation": {
+					"title": "Change password",
+					"form": {
+						"title": "Update your password"
+					}
+				}
+			}
+		},
+		"account": {
+			"title": "Account",
+			"list": {
+				"application": {
+					"title": "Application"
+				},
+				"account": {
+					"title": "Account settings",
+					"button": {
+						"change-password": "Change password",
+						"update-data": "Update user data",
+						"delete-account": "Delete account"
+					}
+				}
+			},
+			"app": {
+				"language": {
+					"action-sheet": {
+						"buttons": {}
+					}
+				},
+				"list": {
+					"appearence": {},
+					"language": {
+						"button": "Change language"
+					},
+					"layout": {
+						"button": "Change layout"
+					},
+					"theme": {
+						"button": "Change color theme"
+					},
+					"restore": {
+						"button": "Restore defaults"
+					}
+				}
+			},
+			"change-password": {
+				"form": {
+					"input": {
+						"current-password": "Current password",
+						"new-password": "New password"
+					},
+					"submit": "Update password"
+				}
+			},
+			"language": {
+				"action-sheet": {
+					"buttons": {
+						"german": "German",
+						"english": "English"
+					},
+					"title": "Change language"
+				}
+			},
+			"layout": {
+				"action-sheet": {
+					"buttons": {
+						"classic": "Classic",
+						"modern": "Modern",
+						"playful": "Playful"
+					},
+					"title": "Change layout"
+				}
+			},
+			"theme": {
+				"action-sheet": {
+					"buttons": {
+						"light": "Light",
+						"dark": "Dark",
+						"system": "System",
+						"black-and-white": "Black and white"
+					},
+					"title": "Change color theme"
+				}
+			},
+			"account": {
+				"form": {
+					"button": {}
+				}
+			},
+			"update-data": {
+				"title": "Update user data",
+				"card": {
+					"title": "Update your data",
+					"form": {
+						"surename": "Surename",
+						"name": "Name",
+						"username": "Username",
+						"email": "Email",
+						"button": {
+							"submit": "Update"
+						}
+					}
+				}
+			},
+			"delete": {
+				"title": "Delete account",
+				"card": {
+					"title": "Are you sure?",
+					"button": "Delete account",
+					"note": "This cannot be undone."
+				}
+			}
+		},
+		"finances": {
+			"title": "Finances",
+			"subtitle": "This is on overview over the finances."
+		},
+		"organization": {
+			"title": "Collective",
+			"update-info": {
+				"title": "Update collective",
+				"card": {
+					"title": "Update collective information",
+					"button": "Update information"
+				}
+			},
+			"list": {
+				"update-info": {
+					"title": "Update information",
+					"update-info": "Update collective info"
+				},
+				"danger-zone": {}
+			},
+			"delete": {
+				"card": {}
+			}
+		}
+	},
+	"common": {
+		"page-routes": {
+			"finances": "Finances",
+			"account": "Account",
+			"home": "Home"
+		},
+		"error-page": {
+			"card": {
+				"title": "Page not found.",
+				"content": {
+					"button": "Back to home"
+				}
+			}
+		}
+	},
+	"components": {
+		"widgets": {
+			"modal": {
+				"button": {
+					"confirm": "Confirm",
+					"cancel": "Cancel"
+				}
+			}
+		},
+		"layout": {
+			"header": {
+				"button": {
+					"logout": "Log out",
+					"account": "Account"
+				}
+			},
+			"menu": {
+				"searchbar": {
+					"placeholder": "Search the app..."
+				},
+				"list": {
+					"organization": "Collective"
+				}
+			}
+		}
+	},
+	"api": {
+		"dto": {
+			"register": {
+				"schema": {
+					"validation": {
+						"username": {
+							"min": "Username must be at least 2 characters",
+							"max": "Username must be less than 255 characters",
+							"required": "Username is required"
+						},
+						"email": {
+							"email": "Email is not valid",
+							"max": "Email must be less than 50 characters",
+							"required": "Email is required"
+						},
+						"password": {
+							"min": "Password must be at least 8 characters",
+							"max": "Password must be less than 255 characters",
+							"matches": "Password must contain at least one uppercase letter, one lowercase letter and one number",
+							"required": "Password is required"
+						},
+						"confirm-password": {
+							"no-match": "Must match the password"
+						},
+						"surname": {
+							"min": "Surname must be at least 1 character",
+							"max": "Surname must be less then 50 characters",
+							"required": "Surname ist required"
+						},
+						"name": {
+							"min": "Name must be at least 1 character",
+							"max": "Name must be less then 50 characters",
+							"required": "Name is required"
+						}
+					}
+				}
+			},
+			"login": {
+				"schema": {
+					"validation": {
+						"username": {
+							"required": "Username is required"
+						},
+						"password": {
+							"required": "Password is required"
+						}
+					}
+				}
+			},
+			"email": {
+				"schema": {
+					"validation": {
+						"invalid": "Invalid email",
+						"required": "Email required"
+					}
+				}
+			},
+			"reset-password": {
+				"schema": {
+					"validation": {
+						"oldPassword": {},
+						"newPassword": {
+							"min": "The new password must be at least 8 characters",
+							"max": "New password must be less then 255 characters",
+							"matches": "Password must contain at least one uppercase letter, one lowercase letter and one number",
+							"required": "New password is required"
+						},
+						"confirm-password": {
+							"no-match": "Must match the new password"
+						}
+					}
+				}
+			},
+			"change-password": {
+				"schema": {
+					"validation": {
+						"current-password": {
+							"required": "Current password is required"
+						},
+						"new-password": {
+							"max": "New password must be less than 255 characters",
+							"min": "New password must be at least 8 characters",
+							"matches": "New password must contain at least one uppercase letter, one lowercase letter and one number",
+							"required": "New password is required"
+						}
+					}
+				}
+			},
+			"register-organization": {
+				"schema": {
+					"validation": {
+						"name": {
+							"min": "Name must be at least one character long",
+							"max": "Name must be less than 50 characters long",
+							"required": "Name is required"
+						}
+					}
+				}
+			}
+		},
+		"error": "An error occurred.",
+		"success": "Request successful",
+		"not-available": "Server not reachable",
+		"offline": "You are offline",
+		"online": "You are online",
+		"unauthorized": "Authentification failed"
+	},
+	"utils": {
+		"alert": {
+			"button": "Close"
+		}
+	}
 }

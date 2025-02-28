@@ -9,6 +9,7 @@
 	import IonLayout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
+	import InputItem from '$lib/components/widgets/InputItem.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
@@ -50,10 +51,7 @@
 <IonLayout title={$t('routes.auth.register.organization.title')} showBackButton>
 	<Card title={$t('routes.auth.register.organization.form.title')}>
 		<form use:customForm={form}>
-			<ion-item>
-				<ion-input name="name" label={$t('routes.auth.register.organization.form.input.name')}
-				></ion-input>
-			</ion-item>
+			<InputItem name="name" label={$t('routes.auth.register.organization.form.input.name')} />
 			<Button classProp="mt-3" expand="block" type="submit">
 				{$t('routes.auth.register.organization.form.submit')}
 			</Button>

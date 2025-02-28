@@ -30,6 +30,7 @@ function createStore(): UserStore {
 			_set({
 				username: body.data.username,
 				email: body.data.email,
+				surname: body.data.surname,
 				name: body.data.name
 			});
 		} else if (!StatusCheck.isUnauthorized(body.status)) {

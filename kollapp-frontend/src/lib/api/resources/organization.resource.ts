@@ -37,3 +37,14 @@ export function updateOrganization(model: UpdateOrganizationDto): Promise<Respon
 		silentOnSuccess: false
 	});
 }
+
+/**
+ * Deletes the organization.
+ * @returns {Promise<ResponseBody>} The response body.
+ */
+export function deleteOrganization(): Promise<ResponseBody> {
+	return customFetch(`${ENDPOINT}`, {
+		method: RequestMethod.DELETE,
+		silentOnSuccess: false
+	});
+}

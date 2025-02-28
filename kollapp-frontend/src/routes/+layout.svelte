@@ -21,10 +21,14 @@
 	let isAuthenticated = $state(false);
 
 	$effect(() => {
-		if (loaded && $authenticationStore) {
-			userStore.init();
-			organizationStore.init();
-			isAuthenticated = true;
+		if (loaded) {
+			if ($authenticationStore) {
+				userStore.init();
+				organizationStore.init();
+				isAuthenticated = true;
+			} else {
+				isAuthenticated = false;
+			}
 		}
 	});
 

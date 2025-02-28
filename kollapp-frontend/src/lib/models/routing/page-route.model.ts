@@ -7,7 +7,9 @@ export const PageRoute = {
 	ACCOUNT: {
 		ROOT: '/account',
 		APP: '/account/app',
-		CHANGE_PASSWORD: '/account/change-password'
+		CHANGE_PASSWORD: '/account/change-password',
+		UPDATE_DATA: '/account/update-data',
+		DELETE_ACCOUNT: '/account/delete'
 	},
 	AUTH: {
 		LOGIN: '/auth/login',

@@ -1,5 +1,12 @@
 <script lang="ts">
 	import { loadingController } from 'ionic-svelte';
+	import {
+		keyOutline,
+		keySharp,
+		peopleOutline,
+		personCircleOutline,
+		personOutline
+	} from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
 
@@ -9,6 +16,7 @@
 	import IonLayout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
+	import InputItem from '$lib/components/widgets/InputItem.svelte';
 	import Welcome from '$lib/components/widgets/Welcome.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
@@ -88,39 +96,41 @@
 	</div>
 	<Card>
 		<form use:customForm={form}>
-			<ion-item>
-				<ion-input name="surname" label={$t('routes.auth.register.form.input.surname')}></ion-input>
-			</ion-item>
-			<ion-item>
-				<ion-input name="name" label={$t('routes.auth.register.form.input.name')}></ion-input>
-			</ion-item>
-			<ion-item>
-				<ion-input name="username" label={$t('routes.auth.register.form.input.username')}
-				></ion-input>
-			</ion-item>
-			<ion-item>
-				<ion-input name="email" type="email" label={$t('routes.auth.register.form.input.email')}>
-				</ion-input>
-			</ion-item>
-			<ion-item>
-				<ion-input
-					name="password"
-					type="password"
-					label={$t('routes.auth.register.form.input.password')}
-				>
-				</ion-input>
-			</ion-item>
-			<ion-item>
-				<!-- svelte-ignore event_directive_deprecated -->
-				<ion-input
-					name="confirmPassword"
-					type="password"
-					value={confirmPassword}
-					on:ionInput={(event) => updateConfirmPassword(event.detail.value || '')}
-					label={$t('routes.auth.register.form.input.confirm-password')}
-				>
-				</ion-input>
-			</ion-item>
+			<InputItem
+				name="surname"
+				label={$t('routes.auth.register.form.input.surname')}
+				iconSrc={personOutline}
+			/>
+			<InputItem
+				name="name"
+				label={$t('routes.auth.register.form.input.name')}
+				iconSrc={peopleOutline}
+			/>
+			<InputItem
+				name="username"
+				label={$t('routes.auth.register.form.input.username')}
+				iconSrc={personOutline}
+			/>
+			<InputItem
+				name="email"
+				type="email"
+				label={$t('routes.auth.register.form.input.email')}
+				iconSrc={personCircleOutline}
+			/>
+			<InputItem
+				name="password"
+				type="password"
+				label={$t('routes.auth.register.form.input.password')}
+				iconSrc={keyOutline}
+			/>
+			<InputItem
+				name="confirmPassword"
+				type="password"
+				value={confirmPassword}
+				change={updateConfirmPassword}
+				label={$t('routes.auth.register.form.input.confirm-password')}
+				iconSrc={keySharp}
+			/>
 			<Button classProp="mt-3" expand="block" type="submit">
 				{$t('routes.auth.register.form.submit')}
 			</Button>

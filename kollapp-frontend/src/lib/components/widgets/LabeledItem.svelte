@@ -1,8 +1,8 @@
 <script lang="ts">
-	import type { PredefinedColors } from '@ionic/core';
 	import type { Snippet } from 'svelte';
 
 	import { Layout } from '$lib/models/store';
+	import type { Colors } from '$lib/models/ui';
 	import { layoutStore } from '$lib/store';
 	import { clickableElement } from '$lib/utils';
 
@@ -10,37 +10,42 @@
 		click,
 		children,
 		color = 'light',
-		detail = false
+		detail = false,
+		iconSrc,
+		label
 	}: {
 		click?: () => void | Promise<void>;
 		children?: Snippet;
 		detail?: boolean;
-		color?: PredefinedColors;
+		color?: Colors | undefined;
+		iconSrc?: string;
+		label?: string;
 	} = $props();
 
 	const isPlayfulLayout = $derived($layoutStore === Layout.PLAYFUL);
 	const isClassicLayout = $derived($layoutStore === Layout.CLASSIC);
 </script>
 
-{#if click}
-	<ion-item
-		{color}
-		{detail}
-		data-playful={isPlayfulLayout}
-		data-classic={isClassicLayout}
-		use:clickableElement={click}
-	>
-		{#if children}
-			{@render children?.()}
-		{/if}
-	</ion-item>
-{:else}
-	<ion-item {color} {detail} data-playful={isPlayfulLayout} data-classic={isClassicLayout}>
-		{#if children}
-			{@render children?.()}
-		{/if}
-	</ion-item>
-{/if}
+<ion-item
+	{color}
+	{detail}
+	data-playful={isPlayfulLayout}
+	data-classic={isClassicLayout}
+	use:clickableElement={() => click?.()}
+>
+	{#if iconSrc || label}
+		<div class="flex flex-row items-center gap-4">
+			{#if iconSrc}
+				<ion-icon icon={iconSrc} size="large"></ion-icon>
+			{/if}
+			{#if label}
+				<ion-label>{label}</ion-label>
+			{/if}
+		</div>
+	{:else if children}
+		{@render children?.()}
+	{/if}
+</ion-item>
 
 <style lang="postcss">
 	ion-item::part(native) {

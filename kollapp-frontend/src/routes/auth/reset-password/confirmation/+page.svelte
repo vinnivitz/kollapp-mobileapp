@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { loadingController } from 'ionic-svelte';
+	import { keyOutline, keySharp } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
 
@@ -11,6 +12,7 @@
 	import IonLayout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
+	import InputItem from '$lib/components/widgets/InputItem.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
@@ -89,23 +91,19 @@
 <IonLayout title={$t('routes.auth.reset-password.confirmation.title')} showBackButton>
 	<Card title={$t('routes.auth.reset-password.confirmation.form.title')}>
 		<form use:customForm={form}>
-			<ion-item>
-				<ion-input
-					name="password"
-					label={$t('routes.auth.reset-password.confirmation.form.input.password')}
-				></ion-input>
-			</ion-item>
-			<ion-item>
-				<!-- svelte-ignore event_directive_deprecated -->
-				<ion-input
-					name="confirmPassword"
-					type="password"
-					value={confirmPassword}
-					on:ionInput={(event) => updateConfirmPassword(event.detail.value || '')}
-					label={$t('routes.auth.reset-password.confirmation.form.input.confirm-password')}
-				>
-				</ion-input>
-			</ion-item>
+			<InputItem
+				name="password"
+				label={$t('routes.auth.reset-password.confirmation.form.input.password')}
+				iconSrc={keyOutline}
+			/>
+			<InputItem
+				name="confirmPassword"
+				type="password"
+				value={confirmPassword}
+				change={updateConfirmPassword}
+				label={$t('routes.auth.reset-password.confirmation.form.input.confirm-password')}
+				iconSrc={keySharp}
+			/>
 			<Button classProp="mt-3" expand="block" type="submit">
 				{$t('routes.auth.reset-password.confirmation.form.submit')}
 			</Button>

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { loadingController } from 'ionic-svelte';
+	import { mailOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
 
@@ -9,6 +10,7 @@
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
+	import InputItem from '$lib/components/widgets/InputItem.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
 	import { type ValidationResult, type FormActions, type FormConfig, Form } from '$lib/models/ui';
@@ -47,10 +49,11 @@
 <Layout title={$t('routes.auth.resend-confirmation.title')} showBackButton>
 	<Card title={$t('routes.auth.resend-confirmation.card.title')}>
 		<form use:customForm={form}>
-			<ion-item>
-				<ion-input name="email" type="email" label={$t('routes.auth.reset-password.form.email')}
-				></ion-input>
-			</ion-item>
+			<InputItem
+				name="email"
+				label={$t('routes.auth.reset-password.form.email')}
+				iconSrc={mailOutline}
+			/>
 			<Button classProp="mt-3" expand="block" type="submit">
 				{$t('routes.auth.resend-confirmation.form.buttons.send')}
 			</Button>

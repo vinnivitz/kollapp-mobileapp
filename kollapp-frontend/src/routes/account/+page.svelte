@@ -11,16 +11,18 @@
 		keyOutline,
 		languageOutline,
 		moonOutline,
+		personOutline,
 		refreshOutline,
 		saveOutline,
-		sunnyOutline
+		sunnyOutline,
+		trashOutline
 	} from 'ionicons/icons';
 	import { get } from 'svelte/store';
 
 	import { goto } from '$app/navigation';
 
 	import IonLayout from '$lib/components/layout/Layout.svelte';
-	import Item from '$lib/components/widgets/Item.svelte';
+	import LabeledItem from '$lib/components/widgets/LabeledItem.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
 	import { Layout, Locale, Theme } from '$lib/models/store';
@@ -122,38 +124,51 @@
 <IonLayout title={$t('routes.account.title')}>
 	<ion-list-header>{$t('routes.account.list.account.title')}</ion-list-header>
 	<ion-list inset>
-		<Item detail click={() => goto(PageRoute.ACCOUNT.CHANGE_PASSWORD)}>
-			<div class="flex flex-row items-center gap-4">
-				<ion-icon icon={keyOutline} size="large"></ion-icon>
-				<ion-label>{$t('routes.account.list.account.button.change-password')}</ion-label>
-			</div>
-		</Item>
+		<LabeledItem
+			detail
+			click={() => goto(PageRoute.ACCOUNT.UPDATE_DATA)}
+			iconSrc={personOutline}
+			label={$t('routes.account.list.account.button.update-data')}
+		/>
+		<LabeledItem
+			detail
+			click={() => goto(PageRoute.ACCOUNT.CHANGE_PASSWORD)}
+			iconSrc={keyOutline}
+			label={$t('routes.account.list.account.button.change-password')}
+		/>
+		<LabeledItem
+			detail
+			color="danger"
+			click={() => goto(PageRoute.ACCOUNT.DELETE_ACCOUNT)}
+			iconSrc={trashOutline}
+			label={$t('routes.account.list.account.button.delete-account')}
+		/>
 	</ion-list>
 	<ion-list-header>{$t('routes.account.list.application.title')}</ion-list-header>
 	<ion-list inset>
-		<Item detail click={openLocaleActionSheet}>
-			<div class="flex flex-row items-center gap-4">
-				<ion-icon icon={languageOutline} size="large"></ion-icon>
-				<ion-label>{$t('routes.account.app.list.language.button')}</ion-label>
-			</div>
-		</Item>
-		<Item detail click={openColorThemeActionSheet}>
-			<div class="flex flex-row items-center gap-4">
-				<ion-icon icon={colorPaletteOutline} size="large"></ion-icon>
-				<ion-label>{$t('routes.account.app.list.theme.button')}</ion-label>
-			</div>
-		</Item>
-		<Item detail click={openLayoutActionSheet}>
-			<div class="flex flex-row items-center gap-4">
-				<ion-icon icon={colorWandOutline} size="large"></ion-icon>
-				<ion-label>{$t('routes.account.app.list.layout.button')}</ion-label>
-			</div>
-		</Item>
-		<Item detail click={restoreApplicationDefaults}>
-			<div class="flex flex-row items-center gap-4">
-				<ion-icon icon={refreshOutline} size="large"></ion-icon>
-				<ion-label>{$t('routes.account.app.list.restore.button')}</ion-label>
-			</div>
-		</Item>
+		<LabeledItem
+			detail
+			click={openLocaleActionSheet}
+			iconSrc={languageOutline}
+			label={$t('routes.account.app.list.language.button')}
+		/>
+		<LabeledItem
+			detail
+			click={openColorThemeActionSheet}
+			iconSrc={colorPaletteOutline}
+			label={$t('routes.account.app.list.theme.button')}
+		/>
+		<LabeledItem
+			detail
+			click={openLayoutActionSheet}
+			iconSrc={colorWandOutline}
+			label={$t('routes.account.app.list.layout.button')}
+		/>
+		<LabeledItem
+			detail
+			click={restoreApplicationDefaults}
+			iconSrc={refreshOutline}
+			label={$t('routes.account.app.list.restore.button')}
+		/>
 	</ion-list>
 </IonLayout>

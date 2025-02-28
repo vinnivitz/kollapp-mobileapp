@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { loadingController } from 'ionic-svelte';
+	import { keyOutline, personOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
 
@@ -10,6 +11,7 @@
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
+	import InputItem from '$lib/components/widgets/InputItem.svelte';
 	import Welcome from '$lib/components/widgets/Welcome.svelte';
 	import environment from '$lib/environment';
 	import { t } from '$lib/locales';
@@ -85,16 +87,17 @@
 	</div>
 	<Card>
 		<form use:customForm={form}>
-			<ion-item>
-				<ion-input name="username" label={$t('routes.auth.login.form.input.username')}></ion-input>
-			</ion-item>
-			<ion-item>
-				<ion-input
-					name="password"
-					type="password"
-					label={$t('routes.auth.login.form.input.password')}
-				></ion-input>
-			</ion-item>
+			<InputItem
+				name="username"
+				label={$t('routes.auth.login.form.input.username')}
+				iconSrc={personOutline}
+			/>
+			<InputItem
+				name="password"
+				type="password"
+				label={$t('routes.auth.login.form.input.password')}
+				iconSrc={keyOutline}
+			/>
 			<Button classProp="mt-3" expand="block" type="submit">
 				{$t('routes.auth.login.form.submit')}
 			</Button>

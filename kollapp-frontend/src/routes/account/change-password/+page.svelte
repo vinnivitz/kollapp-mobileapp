@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { loadingController } from 'ionic-svelte';
+	import { keyOutline, keySharp } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
 
@@ -9,6 +10,7 @@
 	import IonLayout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
+	import InputItem from '$lib/components/widgets/InputItem.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
@@ -17,7 +19,7 @@
 	const model = changePasswordSchema().cast({}) as ChangePasswordDto;
 	let validationResult: ValidationResult;
 	let actions: FormActions<ChangePasswordDto>;
-	let touched = false;
+	let submitted = false;
 	let newPassword: string;
 	let confirmPassword = $state<string>();
 
@@ -32,7 +34,7 @@
 	const form = new Form(model, config);
 
 	async function onSubmit(model: ChangePasswordDto, result: ValidationResult): Promise<void> {
-		touched = true;
+		submitted = true;
 		validationResult = result;
 		if (validationResult.valid) {
 			const loading = await loadingController.create({});
@@ -50,7 +52,7 @@
 	function onChange(key: string, value: string | number): void {
 		if (key === 'newPassword') {
 			newPassword = value as string;
-			if (touched) {
+			if (submitted) {
 				const result = confirmPasswordValidator();
 				actions.applyValidationFeedbackByKey('confirmNewPassword', result);
 			}
@@ -59,7 +61,7 @@
 
 	function updateConfirmPassword(value: string): void {
 		confirmPassword = value;
-		if (touched) {
+		if (submitted) {
 			const result = confirmPasswordValidator();
 			actions.applyValidationFeedbackByKey('confirmNewPassword', result);
 		}
@@ -83,30 +85,25 @@
 <IonLayout title={$t('routes.auth.change-password.confirmation.title')} showBackButton>
 	<Card title={$t('routes.auth.change-password.confirmation.form.title')}>
 		<form use:customForm={form}>
-			<ion-item>
-				<ion-input
-					name="currentPassword"
-					label={$t('routes.account.change-password.form.input.current-password')}
-				></ion-input>
-			</ion-item>
-			<ion-item>
-				<ion-input
-					name="newPassword"
-					label={$t('routes.account.change-password.form.input.new-password')}
-				></ion-input>
-			</ion-item>
-			<ion-item>
-				<!-- svelte-ignore event_directive_deprecated -->
-				<ion-input
-					name="confirmNewPassword"
-					type="password"
-					value={confirmPassword}
-					on:ionInput={(event) => updateConfirmPassword(event.detail.value || '')}
-					label={$t('routes.auth.reset-password.confirmation.form.input.confirm-password')}
-				>
-				</ion-input>
-			</ion-item>
-			<Button classProp="mt-3" expand="block" type="submit">
+			<InputItem
+				name="currentPassword"
+				label={$t('routes.account.change-password.form.input.current-password')}
+				iconSrc={keyOutline}
+			/>
+			<InputItem
+				name="newPassword"
+				label={$t('routes.account.change-password.form.input.new-password')}
+				iconSrc={keySharp}
+			/>
+			<InputItem
+				name="confirmNewPassword"
+				type="password"
+				value={confirmPassword}
+				change={updateConfirmPassword}
+				label={$t('routes.auth.reset-password.confirmation.form.input.confirm-password')}
+				iconSrc={keySharp}
+			/>
+			<Button classProp="mt-3" expand="block" type="submit" fill="outline">
 				{$t('routes.account.change-password.form.submit')}
 			</Button>
 		</form>
