@@ -12,17 +12,11 @@ import { PageRoute } from '$lib/models/routing';
 export async function navigateBack(): Promise<void> {
 	const path = getPath();
 	if (path !== PageRoute.HOME) {
-		const currentPath = path;
-		if (browser) {
-			globalThis.history.back();
-		}
-		if (currentPath === getPath()) {
-			const segments = path.split('/').filter(Boolean); // Split the path and remove any empty segments
-			if (segments.length > 0) {
-				segments.pop();
-				const newPath = `/${segments.join('/')}`;
-				await goto(newPath === '/' ? PageRoute.HOME : newPath);
-			}
+		const segments = path.split('/').filter(Boolean); // Split the path and remove any empty segments
+		if (segments.length > 0) {
+			segments.pop();
+			const newPath = `/${segments.join('/')}`;
+			await goto(newPath === '/' ? PageRoute.HOME : newPath);
 		}
 	}
 }
