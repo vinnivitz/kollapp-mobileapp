@@ -2,7 +2,7 @@
 	import { trashOutline } from 'ionicons/icons';
 
 	import { apiResources } from '$lib/api';
-	import IonLayout from '$lib/components/layout/Layout.svelte';
+	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
 	import { t } from '$lib/locales';
@@ -12,7 +12,7 @@
 	}
 </script>
 
-<IonLayout title={$t('routes.account.delete.title')} showBackButton>
+<Layout title={$t('routes.account.delete.title')} showBackButton>
 	<Card title={$t('routes.account.delete.card.title')}>
 		<Button
 			classProp="mt-3"
@@ -27,4 +27,4 @@
 			<ion-note>{$t('routes.account.delete.card.note')}</ion-note>
 		</div>
 	</Card>
-</IonLayout>
+</Layout>

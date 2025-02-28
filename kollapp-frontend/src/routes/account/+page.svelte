@@ -21,7 +21,7 @@
 
 	import { goto } from '$app/navigation';
 
-	import IonLayout from '$lib/components/layout/Layout.svelte';
+	import LayoutComponent from '$lib/components/layout/Layout.svelte';
 	import LabeledItem from '$lib/components/widgets/LabeledItem.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
@@ -121,7 +121,7 @@
 	}
 </script>
 
-<IonLayout title={$t('routes.account.title')}>
+<LayoutComponent title={$t('routes.account.title')}>
 	<ion-list-header>{$t('routes.account.list.account.title')}</ion-list-header>
 	<ion-list inset>
 		<LabeledItem
@@ -171,4 +171,4 @@
 			label={$t('routes.account.app.list.restore.button')}
 		/>
 	</ion-list>
-</IonLayout>
+</LayoutComponent>

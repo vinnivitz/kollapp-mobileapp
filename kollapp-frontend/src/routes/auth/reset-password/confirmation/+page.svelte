@@ -9,7 +9,7 @@
 	import { apiResources } from '$lib/api';
 	import { resetPasswordSchema, type ResetPasswordDto } from '$lib/api/dto/client';
 	import { getValidationResult } from '$lib/api/utils';
-	import IonLayout from '$lib/components/layout/Layout.svelte';
+	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
 	import InputItem from '$lib/components/widgets/InputItem.svelte';
@@ -88,7 +88,7 @@
 	}
 </script>
 
-<IonLayout title={$t('routes.auth.reset-password.confirmation.title')} showBackButton>
+<Layout title={$t('routes.auth.reset-password.confirmation.title')} showBackButton>
 	<Card title={$t('routes.auth.reset-password.confirmation.form.title')}>
 		<form use:customForm={form}>
 			<InputItem
@@ -112,4 +112,4 @@
 			/>
 		</form>
 	</Card>
-</IonLayout>
+</Layout>

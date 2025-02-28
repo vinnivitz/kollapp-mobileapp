@@ -6,7 +6,7 @@
 	import { apiResources } from '$lib/api';
 	import { registerOrganizationSchema, type RegisterOrganizationDto } from '$lib/api/dto/client';
 	import { getValidationResult } from '$lib/api/utils';
-	import IonLayout from '$lib/components/layout/Layout.svelte';
+	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
 	import InputItem from '$lib/components/widgets/InputItem.svelte';
@@ -48,7 +48,7 @@
 	}
 </script>
 
-<IonLayout title={$t('routes.auth.register.organization.title')} showBackButton>
+<Layout title={$t('routes.auth.register.organization.title')} showBackButton>
 	<Card title={$t('routes.auth.register.organization.form.title')}>
 		<form use:customForm={form}>
 			<InputItem name="name" label={$t('routes.auth.register.organization.form.input.name')} />
@@ -60,4 +60,4 @@
 			/>
 		</form>
 	</Card>
-</IonLayout>
+</Layout>

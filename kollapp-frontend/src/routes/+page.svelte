@@ -3,7 +3,7 @@
 
 	import { goto } from '$app/navigation';
 
-	import IonLayout from '$lib/components/layout/Layout.svelte';
+	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
 	import { t } from '$lib/locales';
@@ -16,7 +16,7 @@
 	const loading = $derived(!userModel || !organizationModel);
 </script>
 
-<IonLayout title={$t('routes.home.title')} {loading}>
+<Layout title={$t('routes.home.title')} {loading}>
 	{#if userModel}
 		<Card title={$t('routes.home.card.user.title', { value: userModel.username })}>
 			<div class="text-center">
@@ -44,4 +44,4 @@
 			</div>
 		</Card>
 	{/if}
-</IonLayout>
+</Layout>

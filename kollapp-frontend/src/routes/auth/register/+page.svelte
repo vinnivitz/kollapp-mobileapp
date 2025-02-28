@@ -13,7 +13,7 @@
 	import { apiResources } from '$lib/api';
 	import { registerSchema, type RegisterDto } from '$lib/api/dto/client';
 	import { getValidationResult } from '$lib/api/utils';
-	import IonLayout from '$lib/components/layout/Layout.svelte';
+	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
 	import InputItem from '$lib/components/widgets/InputItem.svelte';
@@ -90,7 +90,7 @@
 	}
 </script>
 
-<IonLayout title={$t('routes.auth.register.title')} hideLayout>
+<Layout title={$t('routes.auth.register.title')} hideLayout>
 	<div class="mb-6">
 		<Welcome></Welcome>
 	</div>
@@ -143,4 +143,4 @@
 			<ion-text color="tertiary">{$t('routes.auth.register.login.link')}</ion-text>
 		</Card>
 	</Card>
-</IonLayout>
+</Layout>

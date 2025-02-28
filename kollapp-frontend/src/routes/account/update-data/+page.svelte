@@ -5,7 +5,7 @@
 	import { apiResources } from '$lib/api';
 	import { updateUserDataSchema, type UpdateUserDataDto } from '$lib/api/dto/client';
 	import { getValidationResult } from '$lib/api/utils';
-	import IonLayout from '$lib/components/layout/Layout.svelte';
+	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
 	import InputItem from '$lib/components/widgets/InputItem.svelte';
@@ -59,7 +59,7 @@
 	}
 </script>
 
-<IonLayout title={$t('routes.account.update-data.title')} showBackButton>
+<Layout title={$t('routes.account.update-data.title')} showBackButton>
 	{#if form}
 		<Card title={$t('routes.account.update-data.card.title')}>
 			<form use:customForm={form}>
@@ -94,4 +94,4 @@
 			</form>
 		</Card>
 	{/if}
-</IonLayout>
+</Layout>
