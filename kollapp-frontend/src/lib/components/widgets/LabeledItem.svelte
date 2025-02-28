@@ -12,7 +12,8 @@
 		color = 'light',
 		detail = false,
 		iconSrc,
-		label
+		label,
+		transparent = false
 	}: {
 		click?: () => void | Promise<void>;
 		children?: Snippet;
@@ -20,6 +21,7 @@
 		color?: Colors | undefined;
 		iconSrc?: string;
 		label?: string;
+		transparent?: boolean;
 	} = $props();
 
 	const isPlayfulLayout = $derived($layoutStore === Layout.PLAYFUL);
@@ -31,6 +33,8 @@
 	{detail}
 	data-playful={isPlayfulLayout}
 	data-classic={isClassicLayout}
+	data-transparent={transparent}
+
 	use:clickableElement={() => click?.()}
 >
 	{#if iconSrc || label}
@@ -57,5 +61,9 @@
 	}
 	ion-item[data-classic='true']::part(native) {
 		border-radius: 5px;
+	}
+
+	ion-item[data-transparent='true']::part(native) {
+		background-color: transparent;
 	}
 </style>

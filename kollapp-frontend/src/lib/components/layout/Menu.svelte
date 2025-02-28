@@ -28,13 +28,13 @@
 	<ion-content class="ion-padding relative text-center">
 		<ion-list>
 			<LabeledItem
-				color="white"
+				transparent
 				click={() => goto(PageRoute.ACCOUNT.ROOT)}
 				iconSrc={personOutline}
 				label={$t('components.layout.header.button.account')}
 			/>
 			<LabeledItem
-				color="white"
+				transparent
 				click={() => goto(PageRoute.ORGANIZATION.ROOT)}
 				iconSrc={accessibilityOutline}
 				label={$t('components.layout.menu.list.organization')}
