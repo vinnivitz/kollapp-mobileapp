@@ -69,9 +69,13 @@
 					label={$t('routes.auth.register.organization.form.input.name')}
 					iconSrc={accessibilityOutline}
 				/>
-				<Button classProp="mt-3" expand="block" type="submit" disabled={!touched}>
-					{$t('routes.organization.update-info.card.button')}
-				</Button>
+				<Button
+					classProp="mt-3"
+					expand="block"
+					type="submit"
+					disabled={!touched}
+					label={$t('routes.organization.update-info.card.button')}
+				/>
 			</form>
 		</Card>
 	{/if}

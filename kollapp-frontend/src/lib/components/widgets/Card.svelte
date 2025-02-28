@@ -10,20 +10,47 @@
 		subtitle,
 		children,
 		color,
-		titleOnly = false
+		classProp,
+		click
 	}: {
 		title?: string;
 		subtitle?: string;
 		children?: Snippet;
 		color?: Colors | undefined;
-		titleOnly?: boolean;
+		classProp?: string;
+		click?: () => void | Promise<void>;
 	} = $props();
 
 	const isModernLayout = $derived($layoutStore === Layout.MODERN);
 	const isPlayfulLayout = $derived($layoutStore === Layout.PLAYFUL);
 </script>
 
-<ion-card {color} class:rounded-3xl={isPlayfulLayout} class:squared={isModernLayout}>
+{#if !!click}
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<ion-card
+		{color}
+		button={!!click}
+		class={classProp}
+		class:rounded-3xl={isPlayfulLayout}
+		class:squared={isModernLayout}
+		onclick={click}
+	>
+		{@render content()}
+	</ion-card>
+{:else}
+	<ion-card
+		{color}
+		button={!!click}
+		class={classProp}
+		class:rounded-3xl={isPlayfulLayout}
+		class:squared={isModernLayout}
+	>
+		{@render content()}
+	</ion-card>
+{/if}
+
+{#snippet content()}
 	{#if title || subtitle}
 		<ion-card-header>
 			<ion-card-title class="text-center">{title}</ion-card-title>
@@ -32,14 +59,21 @@
 			{/if}
 		</ion-card-header>
 	{/if}
-	{#if children && !titleOnly}
+	{#if children}
 		<ion-card-content>
-			{@render children?.()}
+			{@render children()}
 		</ion-card-content>
 	{/if}
-</ion-card>
+{/snippet}
 
 <style lang="postcss">
+	ion-card {
+		--background: var(--ion-color-light);
+
+		ion-card-title {
+			--color: var(--ion-color-dark);
+		}
+	}
 	.squared {
 		border-radius: unset !important;
 	}

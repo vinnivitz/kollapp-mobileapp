@@ -26,7 +26,7 @@
 		type ValidationResult
 	} from '$lib/models/ui';
 	import { authenticationStore } from '$lib/store';
-	import { clickableElement, customForm, showAlert, storeValue } from '$lib/utils';
+	import { customForm, showAlert, storeValue } from '$lib/utils';
 
 	const model = loginSchema().cast({}) as LoginDto;
 	let validationResult: ValidationResult;
@@ -98,38 +98,32 @@
 				label={$t('routes.auth.login.form.input.password')}
 				iconSrc={keyOutline}
 			/>
-			<Button classProp="mt-3" expand="block" type="submit">
-				{$t('routes.auth.login.form.submit')}
-			</Button>
+			<Button
+				classProp="mt-3"
+				expand="block"
+				type="submit"
+				label={$t('routes.auth.login.form.submit')}
+			/>
 		</form>
 		{#if emailNotConfirmed}
-			<Card>
-				<div
-					class="text-center"
-					use:clickableElement={() => goto(PageRoute.AUTH.RESEND_CONFIRMATION)}
-				>
-					{$t('routes.auth.login.resend-confirmation.text')}
-					<ion-text color="primary">{$t('routes.auth.login.resend-confirmation.link')}</ion-text>
-				</div>
+			<Card click={() => goto(PageRoute.AUTH.RESEND_CONFIRMATION)} classProp="text-center">
+				{$t('routes.auth.login.resend-confirmation.text')}
+				<ion-text color="tertiary">{$t('routes.auth.login.resend-confirmation.link')}</ion-text>
 			</Card>
 		{/if}
-		<Card>
-			<div class="text-center" use:clickableElement={() => goto(PageRoute.AUTH.REGISTER)}>
-				{$t('routes.auth.login.register.text')}
-				<ion-text color="primary">{$t('routes.auth.login.register.link')}</ion-text>
-			</div>
+		<Card click={() => goto(PageRoute.AUTH.REGISTER)} classProp="text-center">
+			{$t('routes.auth.login.register.text')}
+			<ion-text color="tertiary">{$t('routes.auth.login.register.link')}</ion-text>
 		</Card>
-		<Card>
-			<div class="text-center" use:clickableElement={() => goto(PageRoute.AUTH.RESET_PASSWORD)}>
-				{$t('routes.auth.login.forgot-password.text')}
-				<ion-text color="primary">{$t('routes.auth.login.forgot-password.link')}</ion-text>
-			</div>
+		<Card click={() => goto(PageRoute.AUTH.RESET_PASSWORD)} classProp="text-center">
+			{$t('routes.auth.login.forgot-password.text')}
+			<ion-text color="tertiary">{$t('routes.auth.login.forgot-password.link')}</ion-text>
 		</Card>
 	</Card>
 	{#if environment.localUser}
 		<Card title={$t('routes.auth.login.card.dev.title')}>
 			<div class="text-center">
-				<Button click={localSignin}>{$t('routes.auth.login.card.dev.button')}</Button>
+				<Button click={localSignin} label={$t('routes.auth.login.card.dev.button')} />
 			</div>
 		</Card>
 	{/if}

@@ -103,9 +103,13 @@
 				label={$t('routes.auth.reset-password.confirmation.form.input.confirm-password')}
 				iconSrc={keySharp}
 			/>
-			<Button classProp="mt-3" expand="block" type="submit" fill="outline">
-				{$t('routes.account.change-password.form.submit')}
-			</Button>
+			<Button
+				classProp="mt-3"
+				expand="block"
+				type="submit"
+				fill="outline"
+				label={$t('routes.account.change-password.form.submit')}
+			/>
 		</form>
 	</Card>
 </IonLayout>

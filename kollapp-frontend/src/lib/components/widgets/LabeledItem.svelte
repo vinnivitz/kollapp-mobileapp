@@ -4,7 +4,6 @@
 	import { Layout } from '$lib/models/store';
 	import type { Colors } from '$lib/models/ui';
 	import { layoutStore } from '$lib/store';
-	import { clickableElement } from '$lib/utils';
 
 	let {
 		click,
@@ -28,14 +27,16 @@
 	const isClassicLayout = $derived($layoutStore === Layout.CLASSIC);
 </script>
 
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <ion-item
+	button
 	{color}
 	{detail}
 	data-playful={isPlayfulLayout}
 	data-classic={isClassicLayout}
 	data-transparent={transparent}
-
-	use:clickableElement={() => click?.()}
+	onclick={click}
 >
 	{#if iconSrc || label}
 		<div class="flex flex-row items-center gap-4">
@@ -43,11 +44,11 @@
 				<ion-icon icon={iconSrc} size="large"></ion-icon>
 			{/if}
 			{#if label}
-				<ion-label>{label}</ion-label>
+				<ion-label color="dark">{label}</ion-label>
 			{/if}
 		</div>
 	{:else if children}
-		{@render children?.()}
+		{@render children()}
 	{/if}
 </ion-item>
 

@@ -84,9 +84,13 @@
 					iconSrc={mailOutline}
 					type="email"
 				/>
-				<Button classProp="mt-3" expand="block" type="submit" disabled={!touched}>
-					{$t('routes.account.update-data.card.form.button.submit')}
-				</Button>
+				<Button
+					classProp="mt-3"
+					expand="block"
+					type="submit"
+					disabled={!touched}
+					label={$t('routes.account.update-data.card.form.button.submit')}
+				/>
 			</form>
 		</Card>
 	{/if}

@@ -64,6 +64,6 @@
 		border-radius: 5px;
 	}
 	ion-input {
-		--color: var(--ion-text-color-step-300);
+		--highlight-color-focused: var(--ion-color-secondary);
 	}
 </style>

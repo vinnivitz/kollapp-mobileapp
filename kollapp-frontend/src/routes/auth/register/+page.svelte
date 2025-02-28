@@ -21,7 +21,7 @@
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
 	import { type ValidationResult, type FormActions, type FormConfig, Form } from '$lib/models/ui';
-	import { clickableElement, customForm } from '$lib/utils';
+	import { customForm } from '$lib/utils';
 
 	const model = registerSchema().cast({}) as RegisterDto;
 	let validationResult: ValidationResult;
@@ -131,15 +131,16 @@
 				label={$t('routes.auth.register.form.input.confirm-password')}
 				iconSrc={keySharp}
 			/>
-			<Button classProp="mt-3" expand="block" type="submit">
-				{$t('routes.auth.register.form.submit')}
-			</Button>
+			<Button
+				classProp="mt-3"
+				expand="block"
+				type="submit"
+				label={$t('routes.auth.register.form.submit')}
+			/>
 		</form>
-		<Card>
-			<div class="text-center" use:clickableElement={() => goto(PageRoute.AUTH.LOGIN)}>
-				{$t('routes.auth.register.login.text')}
-				<span class="text-[--ion-color-secondary]">{$t('routes.auth.register.login.link')}</span>
-			</div>
+		<Card click={() => goto(PageRoute.AUTH.LOGIN)} classProp="text-center">
+			{$t('routes.auth.register.login.text')}
+			<ion-text color="tertiary">{$t('routes.auth.register.login.link')}</ion-text>
 		</Card>
 	</Card>
 </IonLayout>

@@ -1,13 +1,10 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
-
 	import { Layout } from '$lib/models/store';
 	import type { Colors } from '$lib/models/ui';
 	import { layoutStore } from '$lib/store';
-	import { clickableElement } from '$lib/utils';
 
 	let {
-		children,
+		label,
 		classProp,
 		color = 'secondary',
 		expand,
@@ -20,8 +17,8 @@
 		disabled,
 		click
 	}: {
+		label?: string;
 		color?: Colors | undefined;
-		children?: Snippet;
 		expand?: 'full' | 'block' | undefined;
 		fill?: 'clear' | 'default' | 'outline' | 'solid' | undefined;
 		classProp?: string;
@@ -38,36 +35,64 @@
 	const isPlayfulLayout = $derived($layoutStore === Layout.PLAYFUL);
 	const shape = $derived(isPlayfulLayout ? 'round' : undefined);
 	const textColor = $derived(fill === 'outline' ? color : 'white');
+	const fontWeight = $derived(fill === 'outline' ? 'font-extrabold' : 'font-medium');
 </script>
 
-<ion-button
-	{color}
-	{expand}
-	{fill}
-	class={classProp}
-	class:squared={isMondernLayout}
-	{size}
-	{shape}
-	{type}
-	{disabled}
-	use:clickableElement={() => click?.()}
->
+{#if !!click}
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<ion-button
+		{color}
+		{expand}
+		{fill}
+		class={classProp}
+		class:squared={isMondernLayout}
+		{size}
+		{shape}
+		{type}
+		{disabled}
+		onclick={click}
+	>
+		{@render content()}
+	</ion-button>
+{:else}
+	<ion-button
+		{color}
+		{expand}
+		{fill}
+		class={classProp}
+		class:squared={isMondernLayout}
+		{size}
+		{shape}
+		{type}
+		{disabled}
+	>
+		{@render content()}
+	</ion-button>
+{/if}
+
+{#snippet content()}
 	{#if iconSrc}
 		{#if iconPosition === 'start'}
-			<ion-icon slot="start" icon={iconSrc} size={iconSize}></ion-icon>
+			{@render startIcon()}
 		{:else}
-			<ion-icon slot="end" icon={iconSrc} size={iconSize}></ion-icon>
+			{@render endIcon()}
 		{/if}
 	{/if}
-	{#if children}
-		<ion-text
-			color={textColor}
-			class="light:font-medium black-and-white:font-medium dark:font-bold"
-		>
-			{@render children?.()}
+	{#if label}
+		<ion-text color={textColor} class={fontWeight}>
+			{label}
 		</ion-text>
 	{/if}
-</ion-button>
+{/snippet}
+
+{#snippet startIcon()}
+	<ion-icon slot="start" icon={iconSrc} size={iconSize}></ion-icon>
+{/snippet}
+
+{#snippet endIcon()}
+	<ion-icon slot="end" icon={iconSrc} size={iconSize}></ion-icon>
+{/snippet}
 
 <style lang="postcss">
 	ion-button {

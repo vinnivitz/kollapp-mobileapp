@@ -25,11 +25,8 @@
 					click={() => goto(PageRoute.ACCOUNT.ROOT)}
 					iconSrc={personOutline}
 					fill="outline"
-				>
-					<ion-text class="dark:font-bold">
-						{$t('routes.home.card.user.button')}
-					</ion-text>
-				</Button>
+					label={$t('routes.home.card.user.button')}
+				/>
 			</div>
 		</Card>
 	{/if}
@@ -42,11 +39,8 @@
 					click={() => goto(PageRoute.ORGANIZATION.ROOT)}
 					fill="outline"
 					iconSrc={accessibilityOutline}
-				>
-					<span class="dark:font-bold">
-						{$t('routes.home.card.organization.button')}
-					</span>
-				</Button>
+					label={$t('routes.home.card.organization.button')}
+				/>
 			</div>
 		</Card>
 	{/if}

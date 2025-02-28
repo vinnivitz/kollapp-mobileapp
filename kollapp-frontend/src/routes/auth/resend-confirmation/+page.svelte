@@ -54,9 +54,12 @@
 				label={$t('routes.auth.reset-password.form.email')}
 				iconSrc={mailOutline}
 			/>
-			<Button classProp="mt-3" expand="block" type="submit">
-				{$t('routes.auth.resend-confirmation.form.buttons.send')}
-			</Button>
+			<Button
+				classProp="mt-3"
+				expand="block"
+				type="submit"
+				label={$t('routes.auth.resend-confirmation.form.buttons.send')}
+			/>
 		</form>
 	</Card>
 </Layout>

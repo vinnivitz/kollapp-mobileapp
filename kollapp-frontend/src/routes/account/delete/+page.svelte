@@ -14,14 +14,15 @@
 
 <IonLayout title={$t('routes.account.delete.title')} showBackButton>
 	<Card title={$t('routes.account.delete.card.title')}>
-		<Button classProp="mt-3" expand="block" type="submit" color="danger" click={deleteOrganization}>
-			<div class="flex flex-row items-center gap-4">
-				<ion-icon icon={trashOutline} size="large"></ion-icon>
-				<ion-text color="light">
-					{$t('routes.account.delete.card.button')}
-				</ion-text>
-			</div>
-		</Button>
+		<Button
+			classProp="mt-3"
+			expand="block"
+			type="submit"
+			color="danger"
+			click={deleteOrganization}
+			iconSrc={trashOutline}
+			label={$t('routes.account.delete.card.button')}
+		/>
 		<div class="text-center">
 			<ion-note>{$t('routes.account.delete.card.note')}</ion-note>
 		</div>

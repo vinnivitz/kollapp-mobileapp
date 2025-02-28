@@ -52,9 +52,12 @@
 	<Card title={$t('routes.auth.register.organization.form.title')}>
 		<form use:customForm={form}>
 			<InputItem name="name" label={$t('routes.auth.register.organization.form.input.name')} />
-			<Button classProp="mt-3" expand="block" type="submit">
-				{$t('routes.auth.register.organization.form.submit')}
-			</Button>
+			<Button
+				classProp="mt-3"
+				expand="block"
+				type="submit"
+				label={$t('routes.auth.register.organization.form.submit')}
+			/>
 		</form>
 	</Card>
 </IonLayout>

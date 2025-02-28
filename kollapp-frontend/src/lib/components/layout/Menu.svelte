@@ -40,13 +40,17 @@
 				label={$t('components.layout.menu.list.organization')}
 			/>
 		</ion-list>
-		<Button size="small" fill="outline" click={() => logout()} iconSrc={logOutOutline}>
-			{$t('components.layout.header.button.logout')}
-		</Button>
+		<Button
+			size="small"
+			fill="outline"
+			click={() => logout()}
+			iconSrc={logOutOutline}
+			label={$t('components.layout.header.button.logout')}
+		/>
 		<hr class="my-3" />
 		<div class="absolute bottom-2 left-0 right-0">
 			<hr class="my-2" />
-			<ion-note>Made with <span class="text-red-600">&#10084;</span> from Dresden.</ion-note>
+			<ion-note>Made with <ion-text color="danger">&#10084;</ion-text> from Dresden.</ion-note>
 		</div>
 	</ion-content>
 </ion-menu>

@@ -16,9 +16,10 @@
 	</div>
 	<Card title={$t('common.error-page.card.title')}>
 		<div class="text-center">
-			<Button click={async () => await goto(PageRoute.HOME)}>
-				{$t('common.error-page.card.content.button')}
-			</Button>
+			<Button
+				click={async () => await goto(PageRoute.HOME)}
+				label={$t('common.error-page.card.content.button')}
+			/>
 		</div>
 	</Card>
 </Layout>

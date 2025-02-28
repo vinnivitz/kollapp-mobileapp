@@ -14,8 +14,9 @@
 		<ion-buttons slot="start">
 			<ion-button>
 				{#if showBackButton}
-					<ion-back-button default-href="/" use:clickableElement={async () => await navigateBack()}>
-					</ion-back-button>
+					<!-- svelte-ignore a11y_click_events_have_key_events -->
+					<!-- svelte-ignore a11y_no_static_element_interactions -->
+					<ion-back-button default-href="/" onclick={navigateBack}> </ion-back-button>
 				{:else}
 					<img
 						use:clickableElement={() => goto(PageRoute.HOME)}

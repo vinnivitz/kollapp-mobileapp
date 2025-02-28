@@ -229,7 +229,7 @@
 						"surename": "Nachname",
 						"username": "Benutzername"
 					},
-					"title": "Aktualisieren Sie Ihre Daten"
+					"title": "Aktualisiere deine Daten"
 				},
 				"title": "Benutzerdaten"
 			},
@@ -373,7 +373,7 @@
 					"button": "Aktualisieren",
 					"title": "Aktualisiere die Daten"
 				},
-				"title": "Kollektivdaten aktualisieren"
+				"title": "Kollektivdaten"
 			},
 			"list": {
 				"update-info": {
