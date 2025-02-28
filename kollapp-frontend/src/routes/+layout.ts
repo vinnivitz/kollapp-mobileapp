@@ -6,12 +6,29 @@ import type { LayoutLoad } from './$types';
 
 import { authenticationStore, connectionStore, layoutStore, themeStore } from '$lib/store';
 import { navigateBack } from '$lib/utils';
+import { isAuthenticated } from '$lib/api/utils';
+import { PageRoute } from '$lib/models/routing';
+
+let initialized = false;
 
 export const ssr = false;
 
-export const load: LayoutLoad = async () => {
-	handleAppEvents();
-	initStores();
+export const load: LayoutLoad = async ({ url }) => {
+	const { pathname } = url;
+
+	const authenticated = await isAuthenticated();
+
+	if (authenticated && pathname.startsWith('/auth')) {
+		goto(PageRoute.HOME);
+	} else if (!authenticated && !pathname.startsWith('/auth')) {
+		goto(PageRoute.AUTH.LOGIN);
+	}
+
+	if (!initialized) {
+		initialized = true;
+		handleAppEvents();
+		initStores();
+	}
 };
 
 async function initStores(): Promise<void> {

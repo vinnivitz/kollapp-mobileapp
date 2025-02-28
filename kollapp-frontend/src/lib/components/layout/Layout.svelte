@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onDestroy, type Snippet } from 'svelte';
+	import { fade } from 'svelte/transition';
 
 	import { navigating } from '$app/stores';
 
@@ -53,7 +54,7 @@
 	{#if ($navigating || loading) && navigationDebounced}
 		<ion-progress-bar type="indeterminate"></ion-progress-bar>
 	{/if}
-	<ion-content class="ion-padding">
+	<ion-content class="ion-padding" in:fade={{ duration: 200, delay: 0 }}>
 		{#if onRefresh}
 			<!-- svelte-ignore event_directive_deprecated -->
 			<ion-refresher

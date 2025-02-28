@@ -107,7 +107,6 @@
 				classProp="mt-3"
 				expand="block"
 				type="submit"
-				fill="outline"
 				label={$t('routes.account.change-password.form.submit')}
 			/>
 		</form>

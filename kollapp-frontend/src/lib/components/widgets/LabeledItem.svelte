@@ -25,6 +25,7 @@
 
 	const isPlayfulLayout = $derived($layoutStore === Layout.PLAYFUL);
 	const isClassicLayout = $derived($layoutStore === Layout.CLASSIC);
+	const labelColor = $derived(color === 'light' ? 'dark' : undefined);
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -44,7 +45,7 @@
 				<ion-icon icon={iconSrc} size="large"></ion-icon>
 			{/if}
 			{#if label}
-				<ion-label color="dark">{label}</ion-label>
+				<ion-label color={labelColor}>{label}</ion-label>
 			{/if}
 		</div>
 	{:else if children}
