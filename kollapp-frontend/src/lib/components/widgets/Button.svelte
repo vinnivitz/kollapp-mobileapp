@@ -11,7 +11,7 @@
 		fill,
 		size,
 		iconSrc,
-		iconSize = 'large',
+		iconSize = 'small',
 		iconPosition = 'start',
 		type,
 		disabled,
@@ -87,17 +87,15 @@
 {/snippet}
 
 {#snippet startIcon()}
-	<ion-icon slot="start" icon={iconSrc} size={iconSize}></ion-icon>
+	<ion-icon slot="start" color={textColor} icon={iconSrc} size={iconSize}></ion-icon>
 {/snippet}
 
 {#snippet endIcon()}
-	<ion-icon slot="end" icon={iconSrc} size={iconSize}></ion-icon>
+	<ion-icon slot="end" color={textColor} icon={iconSrc} size={iconSize}></ion-icon>
 {/snippet}
 
 <style lang="postcss">
-	ion-button {
-		.squared {
-			--border-radius: 0;
-		}
+	.squared {
+		--border-radius: 0;
 	}
 </style>

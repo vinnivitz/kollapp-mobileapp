@@ -1,6 +1,12 @@
 <script lang="ts">
 	import { loadingController } from 'ionic-svelte';
-	import { mailOutline, peopleOutline, personCircleOutline, personOutline } from 'ionicons/icons';
+	import {
+		mailOutline,
+		peopleOutline,
+		personCircleOutline,
+		personOutline,
+		saveOutline
+	} from 'ionicons/icons';
 
 	import { apiResources } from '$lib/api';
 	import { updateUserDataSchema, type UpdateUserDataDto } from '$lib/api/dto/client';
@@ -90,6 +96,7 @@
 					type="submit"
 					disabled={!touched}
 					label={$t('routes.account.update-data.card.form.button.submit')}
+					iconSrc={saveOutline}
 				/>
 			</form>
 		</Card>

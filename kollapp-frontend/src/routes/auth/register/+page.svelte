@@ -26,16 +26,12 @@
 	const model = registerSchema().cast({}) as RegisterDto;
 	let validationResult: ValidationResult;
 	let actions: FormActions<RegisterDto>;
-	let touched = false;
-	let password: string;
-	let confirmPassword = $state<string>();
+	let touched = $state(false);
 
 	const config: FormConfig<RegisterDto> = {
 		schema: registerSchema(),
 		onSubmit,
-		onChange,
-		exposedActions: (exposedActions) => (actions = exposedActions),
-		customValidators: [confirmPasswordValidator]
+		exposedActions: (exposedActions) => (actions = exposedActions)
 	};
 
 	const form = new Form(model, config);
@@ -46,47 +42,15 @@
 		if (validationResult.valid) {
 			const loading = await loadingController.create({});
 			await loading.present();
+			delete model.confirmPassword;
 			validationResult = getValidationResult(await apiResources.publicUser.registerManager(model));
 			await loading.dismiss();
 			if (validationResult.valid) {
 				actions.resetModel();
-				confirmPassword = '';
 			} else {
 				actions.applyValidationFeedback(validationResult);
 			}
 		}
-	}
-
-	function onChange(key: string, value: string | number): void {
-		if (key === 'password') {
-			password = value as string;
-			if (touched) {
-				const result = confirmPasswordValidator();
-				actions.applyValidationFeedbackByKey('confirmPassword', result);
-			}
-		}
-	}
-
-	function updateConfirmPassword(value: string): void {
-		confirmPassword = value;
-		if (touched) {
-			const result = confirmPasswordValidator();
-			actions.applyValidationFeedbackByKey('confirmPassword', result);
-		}
-	}
-
-	function confirmPasswordValidator(): ValidationResult {
-		return password === confirmPassword
-			? { valid: true }
-			: {
-					valid: false,
-					errors: [
-						{
-							field: 'confirmPassword',
-							message: $t('api.dto.register.schema.validation.confirm-password.no-match')
-						}
-					]
-				};
 	}
 </script>
 
@@ -126,8 +90,6 @@
 			<InputItem
 				name="confirmPassword"
 				type="password"
-				value={confirmPassword}
-				change={updateConfirmPassword}
 				label={$t('routes.auth.register.form.input.confirm-password')}
 				iconSrc={keySharp}
 			/>
@@ -136,6 +98,7 @@
 				expand="block"
 				type="submit"
 				label={$t('routes.auth.register.form.submit')}
+				disabled={!touched}
 			/>
 		</form>
 		<Card click={() => goto(PageRoute.AUTH.LOGIN)} classProp="text-center">

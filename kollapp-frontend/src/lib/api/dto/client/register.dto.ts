@@ -1,5 +1,5 @@
 import { get } from 'svelte/store';
-import { ObjectSchema, type AnyObject, object, string } from 'yup';
+import { ObjectSchema, type AnyObject, object, string, ref } from 'yup';
 
 import { t } from '$lib/locales';
 
@@ -12,6 +12,7 @@ export type RegisterDto = {
 	username: string;
 	email: string;
 	password: string;
+	confirmPassword?: string;
 };
 
 /**
@@ -49,6 +50,9 @@ export const registerSchema = (): ObjectSchema<AnyObject, RegisterDto> => {
 				/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/,
 				$t('api.dto.register.schema.validation.password.matches')
 			)
-			.required($t('api.dto.register.schema.validation.password.required'))
+			.required($t('api.dto.register.schema.validation.password.required')),
+		confirmPassword: string()
+			.default('')
+			.oneOf([ref('password')], $t('api.dto.register.schema.validation.confirm-password.no-match'))
 	});
 };

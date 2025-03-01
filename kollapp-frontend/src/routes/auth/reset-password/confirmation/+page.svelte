@@ -23,16 +23,12 @@
 	const model = resetPasswordSchema().cast({}) as ResetPasswordDto;
 	let validationResult: ValidationResult;
 	let actions: FormActions<ResetPasswordDto>;
-	let touched = false;
-	let password: string;
-	let confirmPassword = $state<string>();
+	let touched = $state(false);
 
 	const config: FormConfig<ResetPasswordDto> = {
 		schema: resetPasswordSchema(),
 		onSubmit,
-		onChange,
-		exposedActions: (exposedActions) => (actions = exposedActions),
-		customValidators: [confirmPasswordValidator]
+		exposedActions: (exposedActions) => (actions = exposedActions)
 	};
 
 	const form = new Form(model, config);
@@ -43,6 +39,7 @@
 		if (validationResult.valid) {
 			const loading = await loadingController.create({});
 			await loading.present();
+			delete model.confirmPassword;
 			validationResult = getValidationResult(
 				await apiResources.publicUser.resetPassword(model, data.token!)
 			);
@@ -54,38 +51,6 @@
 			await loading.dismiss();
 		}
 	}
-
-	function onChange(key: string, value: string | number): void {
-		if (key === 'password') {
-			password = value as string;
-			if (touched) {
-				const result = confirmPasswordValidator();
-				actions.applyValidationFeedbackByKey('confirmPassword', result);
-			}
-		}
-	}
-
-	function updateConfirmPassword(value: string): void {
-		confirmPassword = value;
-		if (touched) {
-			const result = confirmPasswordValidator();
-			actions.applyValidationFeedbackByKey('confirmPassword', result);
-		}
-	}
-
-	function confirmPasswordValidator(): ValidationResult {
-		return password === confirmPassword
-			? { valid: true }
-			: {
-					valid: false,
-					errors: [
-						{
-							field: 'confirmPassword',
-							message: $t('api.dto.reset-password.schema.validation.confirm-password.no-match')
-						}
-					]
-				};
-	}
 </script>
 
 <Layout title={$t('routes.auth.reset-password.confirmation.title')} showBackButton>
@@ -93,14 +58,13 @@
 		<form use:customForm={form}>
 			<InputItem
 				name="password"
+				type="password"
 				label={$t('routes.auth.reset-password.confirmation.form.input.password')}
 				iconSrc={keyOutline}
 			/>
 			<InputItem
 				name="confirmPassword"
 				type="password"
-				value={confirmPassword}
-				change={updateConfirmPassword}
 				label={$t('routes.auth.reset-password.confirmation.form.input.confirm-password')}
 				iconSrc={keySharp}
 			/>
@@ -109,6 +73,7 @@
 				expand="block"
 				type="submit"
 				label={$t('routes.auth.reset-password.confirmation.form.submit')}
+				disabled={!touched}
 			/>
 		</form>
 	</Card>

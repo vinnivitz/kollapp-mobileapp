@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { loadingController } from 'ionic-svelte';
-	import { keyOutline, keySharp } from 'ionicons/icons';
+	import { keyOutline, keySharp, saveOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
 
@@ -19,26 +19,23 @@
 	const model = changePasswordSchema().cast({}) as ChangePasswordDto;
 	let validationResult: ValidationResult;
 	let actions: FormActions<ChangePasswordDto>;
-	let submitted = false;
-	let newPassword: string;
-	let confirmPassword = $state<string>();
+	let touched = $state(false);
 
 	const config: FormConfig<ChangePasswordDto> = {
 		schema: changePasswordSchema(),
 		onSubmit,
-		onChange,
-		exposedActions: (exposedActions) => (actions = exposedActions),
-		customValidators: [confirmPasswordValidator]
+		onTouched: () => (touched = true),
+		exposedActions: (exposedActions) => (actions = exposedActions)
 	};
 
 	const form = new Form(model, config);
 
 	async function onSubmit(model: ChangePasswordDto, result: ValidationResult): Promise<void> {
-		submitted = true;
 		validationResult = result;
 		if (validationResult.valid) {
 			const loading = await loadingController.create({});
 			await loading.present();
+			delete model.confirmNewPassword;
 			validationResult = getValidationResult(await apiResources.user.changePassword(model));
 			if (validationResult.valid) {
 				await goto(PageRoute.ACCOUNT.ROOT);
@@ -48,38 +45,6 @@
 			await loading.dismiss();
 		}
 	}
-
-	function onChange(key: string, value: string | number): void {
-		if (key === 'newPassword') {
-			newPassword = value as string;
-			if (submitted) {
-				const result = confirmPasswordValidator();
-				actions.applyValidationFeedbackByKey('confirmNewPassword', result);
-			}
-		}
-	}
-
-	function updateConfirmPassword(value: string): void {
-		confirmPassword = value;
-		if (submitted) {
-			const result = confirmPasswordValidator();
-			actions.applyValidationFeedbackByKey('confirmNewPassword', result);
-		}
-	}
-
-	function confirmPasswordValidator(): ValidationResult {
-		return newPassword === confirmPassword
-			? { valid: true }
-			: {
-					valid: false,
-					errors: [
-						{
-							field: 'confirmNewPassword',
-							message: $t('api.dto.reset-password.schema.validation.confirm-password.no-match')
-						}
-					]
-				};
-	}
 </script>
 
 <Layout title={$t('routes.auth.change-password.confirmation.title')} showBackButton>
@@ -87,19 +52,19 @@
 		<form use:customForm={form}>
 			<InputItem
 				name="currentPassword"
+				type="password"
 				label={$t('routes.account.change-password.form.input.current-password')}
 				iconSrc={keyOutline}
 			/>
 			<InputItem
 				name="newPassword"
+				type="password"
 				label={$t('routes.account.change-password.form.input.new-password')}
 				iconSrc={keySharp}
 			/>
 			<InputItem
 				name="confirmNewPassword"
 				type="password"
-				value={confirmPassword}
-				change={updateConfirmPassword}
 				label={$t('routes.auth.reset-password.confirmation.form.input.confirm-password')}
 				iconSrc={keySharp}
 			/>
@@ -108,6 +73,8 @@
 				expand="block"
 				type="submit"
 				label={$t('routes.account.change-password.form.submit')}
+				iconSrc={saveOutline}
+				disabled={!touched}
 			/>
 		</form>
 	</Card>

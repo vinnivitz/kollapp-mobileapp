@@ -21,7 +21,6 @@
 		<Card title={$t('routes.home.card.user.title', { value: userModel.username })}>
 			<div class="text-center">
 				<Button
-					size="small"
 					click={() => goto(PageRoute.ACCOUNT.ROOT)}
 					iconSrc={personOutline}
 					fill="outline"
@@ -35,7 +34,6 @@
 		<Card title={organizationModel.name}>
 			<div class="text-center">
 				<Button
-					size="small"
 					click={() => goto(PageRoute.ORGANIZATION.ROOT)}
 					fill="outline"
 					iconSrc={accessibilityOutline}

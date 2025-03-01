@@ -4,10 +4,10 @@ import { goto } from '$app/navigation';
 
 import type { LayoutLoad } from './$types';
 
-import { authenticationStore, connectionStore, layoutStore, themeStore } from '$lib/store';
-import { navigateBack } from '$lib/utils';
 import { isAuthenticated } from '$lib/api/utils';
 import { PageRoute } from '$lib/models/routing';
+import { authenticationStore, connectionStore, layoutStore, themeStore } from '$lib/store';
+import { navigateBack } from '$lib/utils';
 
 let initialized = false;
 

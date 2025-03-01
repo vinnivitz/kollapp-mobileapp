@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { loadingController } from 'ionic-svelte';
-	import { accessibilityOutline } from 'ionicons/icons';
+	import { accessibilityOutline, saveOutline } from 'ionicons/icons';
 
 	import { apiResources } from '$lib/api';
 	import { updateOrganizationSchema, type UpdateOrganizationDto } from '$lib/api/dto/client';
@@ -75,6 +75,7 @@
 					type="submit"
 					disabled={!touched}
 					label={$t('routes.organization.update-info.card.button')}
+					iconSrc={saveOutline}
 				/>
 			</form>
 		</Card>

@@ -378,6 +378,9 @@
 							"min": "New password must be at least 8 characters",
 							"matches": "New password must contain at least one uppercase letter, one lowercase letter and one number",
 							"required": "New password is required"
+						},
+						"confirm-password": {
+							"no-match": "Must match the new password"
 						}
 					}
 				}

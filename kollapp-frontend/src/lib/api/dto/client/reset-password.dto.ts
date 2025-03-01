@@ -1,5 +1,5 @@
 import { get } from 'svelte/store';
-import { object, string, type AnyObject, type ObjectSchema } from 'yup';
+import { object, ref, string, type AnyObject, type ObjectSchema } from 'yup';
 
 import { t } from '$lib/locales';
 
@@ -8,6 +8,7 @@ import { t } from '$lib/locales';
  */
 export type ResetPasswordDto = {
 	password: string;
+	confirmPassword?: string;
 };
 
 /**
@@ -25,6 +26,12 @@ export const resetPasswordSchema = (): ObjectSchema<AnyObject, ResetPasswordDto>
 				/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/,
 				$t('api.dto.reset-password.schema.validation.newPassword.matches')
 			)
-			.required($t('api.dto.reset-password.schema.validation.newPassword.required'))
+			.required($t('api.dto.reset-password.schema.validation.newPassword.required')),
+		confirmPassword: string()
+			.default('')
+			.oneOf(
+				[ref('password')],
+				$t('api.dto.reset-password.schema.validation.confirm-password.no-match')
+			)
 	});
 };
