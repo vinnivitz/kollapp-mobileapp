@@ -1,1 +1,50 @@
-[{"id":"01955ce7-d53f-734b-87cc-01ec11bcd87e","label":"routes.account.list.account.button.update-data","icon":"personOutline","route":"/account/update-data"},{"id":"01955ce7-d53f-734b-87cc-051a6c94fedd","label":"routes.account.list.account.button.change-password","icon":"keyOutline","route":"/account/change-password"},{"id":"01955ce7-d53f-734b-87cc-0b76c830a1f0","label":"routes.account.list.account.button.delete-account","icon":"trashOutline","route":"/account/delete"},{"id":"01955ce7-d540-7232-894f-4fc68639639f","label":"routes.account.app.list.language.button","icon":"languageOutline","route":"/account"},{"id":"01955ce7-d540-7232-894f-501717ecdc06","label":"routes.account.app.list.theme.button","icon":"colorPaletteOutline","route":"/account"},{"id":"01955ce7-d540-7232-894f-54c45763b673","label":"routes.account.app.list.layout.button","icon":"colorWandOutline","route":"/account"},{"id":"01955ce7-d540-7232-894f-5868d1c85e75","label":"routes.account.app.list.restore.button","icon":"refreshOutline","route":"/account"},{"id":"01955ce7-d553-74fe-a166-9698a773547d","label":"routes.organization.list.update-info.update-info","icon":"accessibilityOutline","route":"/organization/update-data"}]
+[
+  {
+    "id": 1,
+    "label": "routes.account.list.account.button.update-data",
+    "icon": "personOutline",
+    "route": "/account/update-data"
+  },
+  {
+    "id": 2,
+    "label": "routes.account.list.account.button.change-password",
+    "icon": "keyOutline",
+    "route": "/account/change-password"
+  },
+  {
+    "id": 3,
+    "label": "routes.account.list.account.button.delete-account",
+    "icon": "trashOutline",
+    "route": "/account/delete"
+  },
+  {
+    "id": 4,
+    "label": "routes.account.app.list.language.button",
+    "icon": "languageOutline",
+    "route": "/account"
+  },
+  {
+    "id": 5,
+    "label": "routes.account.app.list.theme.button",
+    "icon": "colorPaletteOutline",
+    "route": "/account"
+  },
+  {
+    "id": 6,
+    "label": "routes.account.app.list.layout.button",
+    "icon": "colorWandOutline",
+    "route": "/account"
+  },
+  {
+    "id": 7,
+    "label": "routes.account.app.list.restore.button",
+    "icon": "refreshOutline",
+    "route": "/account"
+  },
+  {
+    "id": 8,
+    "label": "routes.organization.list.update-info.update-info",
+    "icon": "accessibilityOutline",
+    "route": "/organization/update-data"
+  }
+]
