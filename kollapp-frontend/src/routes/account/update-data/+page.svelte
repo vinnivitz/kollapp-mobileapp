@@ -2,7 +2,7 @@
 	import { loadingController } from 'ionic-svelte';
 	import {
 		mailOutline,
-		peopleOutline,
+		peopleCircleOutline,
 		personCircleOutline,
 		personOutline,
 		saveOutline
@@ -72,17 +72,17 @@
 				<InputItem
 					name="name"
 					label={$t('routes.account.update-data.card.form.name')}
-					iconSrc={personOutline}
+					iconSrc={personCircleOutline}
 				/>
 				<InputItem
 					name="surname"
 					label={$t('routes.account.update-data.card.form.surename')}
-					iconSrc={peopleOutline}
+					iconSrc={peopleCircleOutline}
 				/>
 				<InputItem
 					name="username"
 					label={$t('routes.account.update-data.card.form.username')}
-					iconSrc={personCircleOutline}
+					iconSrc={personOutline}
 				/>
 				<InputItem
 					name="email"

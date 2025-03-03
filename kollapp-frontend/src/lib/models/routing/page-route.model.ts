@@ -22,7 +22,7 @@ export const PageRoute = {
 	},
 	ORGANIZATION: {
 		ROOT: '/organization',
-		UPDATE_INFO: '/organization/update-info'
+		UPDATE_DATA: '/organization/update-data'
 	}
 } as const;
 

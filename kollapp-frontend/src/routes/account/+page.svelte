@@ -17,12 +17,9 @@
 		sunnyOutline,
 		trashOutline
 	} from 'ionicons/icons';
-	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
 
 	import { goto } from '$app/navigation';
-
-	import type { PageData } from './$types';
 
 	import LayoutComponent from '$lib/components/layout/Layout.svelte';
 	import LabeledItem from '$lib/components/widgets/LabeledItem.svelte';
@@ -32,15 +29,11 @@
 	import { localeStore, themeStore } from '$lib/store';
 	import { layoutStore } from '$lib/store/layout.store';
 
-	let { data }: { data: PageData } = $props();
-
 	async function openActionSheet(header: string, buttons: ActionSheetButton[]): Promise<void> {
 		const actionsheet = await actionSheetController.create({
 			translucent: true,
 			header,
-			buttons,
-			cssClass: 'custom-action-sheet',
-			id: 'custom-action-sheet'
+			buttons
 		});
 
 		await actionsheet.present();
@@ -126,25 +119,6 @@
 		layoutStore.reset();
 		localeStore.reset();
 	}
-
-	function triggerHighlighting(): void {
-		const labels = document.querySelectorAll('ion-label');
-		const element = [...labels].find((label) => label.textContent === data.label);
-		if (element) {
-			element.style.setProperty('color', 'var(--ion-color-primary)');
-			setTimeout(() => element.style.removeProperty('color'), 200);
-			setTimeout(() => element.style.setProperty('color', 'var(--ion-color-primary)'), 400);
-			setTimeout(() => element.style.removeProperty('color'), 600);
-			setTimeout(() => element.style.setProperty('color', 'var(--ion-color-primary)'), 800);
-			setTimeout(() => element.style.removeProperty('color'), 1000);
-		}
-	}
-
-	onMount(() => {
-		if (data?.label) {
-			triggerHighlighting();
-		}
-	});
 </script>
 
 <LayoutComponent title={$t('routes.account.title')}>

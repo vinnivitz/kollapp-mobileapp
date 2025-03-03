@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"scripts": {
 		"dev": "cross-env NODE_ENV=development vite dev",
-		"build": "cross-env NODE_ENV=production vite build",
+		"build": "cross-env NODE_ENV=production && npm run index-searchables && vite build",
 		"preview": "cross-env NODE_ENV=production vite preview",
 		"check": "cross-env NODE_ENV=development svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"format": "prettier --write . && eslint . --fix",

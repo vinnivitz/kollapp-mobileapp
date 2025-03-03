@@ -40,6 +40,17 @@ export function clickableElement<T>(
 }
 
 /**
+ * Triggers a click event on an element with a specific label
+ * @param label label of the element to click
+ */
+export function triggerClickByLabel(label: string): void {
+	[...document.querySelectorAll('ion-label')]
+		.find((element) => element.textContent === label)
+		?.closest('ion-item')
+		?.click();
+}
+
+/**
  * Creates a custom form with validation and feedback
  * @param node form element
  * @param data form data

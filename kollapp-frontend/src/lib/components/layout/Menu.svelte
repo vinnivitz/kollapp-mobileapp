@@ -8,7 +8,8 @@
 	import Button from '$lib/components/widgets/Button.svelte';
 	import LabeledItem from '$lib/components/widgets/LabeledItem.svelte';
 	import { t } from '$lib/locales';
-	import { PageRoute } from '$lib/models/routing';
+	import { PageRoute, type PageRoutePaths } from '$lib/models/routing';
+	import { triggerClickByLabel } from '$lib/utils';
 
 	let searchedItems = $state<SearchableItem[]>([]);
 	let searchValue = $state('');
@@ -24,13 +25,17 @@
 		searchedItems = await apiResources.searchable.filter(searchValue);
 	}
 
-	async function navigate(route: string): Promise<void> {
+	async function navigate(route: PageRoutePaths, label?: string): Promise<void> {
 		await menuController.close();
-		goto(route);
+		searchValue = '';
+		await goto(route);
+		if (label) {
+			triggerClickByLabel(label);
+		}
 	}
 </script>
 
-<ion-menu side="end" menu-id="menu1" content-id="menu" bind:this={menuController}>
+<ion-menu side="end" content-id="menu" bind:this={menuController}>
 	<ion-header>
 		<ion-toolbar>
 			<!-- svelte-ignore event_directive_deprecated -->
@@ -41,6 +46,7 @@
 				debounce={100}
 				placeholder={$t('components.layout.menu.searchbar.placeholder')}
 				on:ionInput={onSearch}
+				value={searchValue}
 			>
 			</ion-searchbar>
 		</ion-toolbar>
@@ -64,7 +70,7 @@
 						transparent
 						label={item.label}
 						iconSrc={icons[item.icon as keyof typeof icons]}
-						click={() => navigate(`${item.route}?label=${item.label}`)}
+						click={() => navigate(item.route, item.label)}
 					/>
 				{/each}
 			{:else}

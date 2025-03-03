@@ -17,11 +17,12 @@
 
 <Layout title={$t('routes.organization.title')} {loading} showBackButton>
 	{#if organizationModel}
-		<ion-list-header>{$t('routes.organization.list.update-info.title')}</ion-list-header>
 		<ion-list inset>
+			<ion-list-header>{$t('routes.organization.list.update-info.title')}</ion-list-header>
 			<LabeledItem
+				searchable={PageRoute.ORGANIZATION.UPDATE_DATA}
 				detail
-				click={() => goto(PageRoute.ORGANIZATION.UPDATE_INFO)}
+				click={() => goto(PageRoute.ORGANIZATION.UPDATE_DATA)}
 				iconSrc={accessibilityOutline}
 				label={$t('routes.organization.list.update-info.update-info')}
 			/>

@@ -7,7 +7,7 @@
 	import Card from '$lib/components/widgets/Card.svelte';
 	import { t } from '$lib/locales';
 
-	async function deleteOrganization() {
+	async function deleteOrganization(): Promise<void> {
 		await apiResources.organization.deleteOrganization();
 	}
 </script>
@@ -17,7 +17,6 @@
 		<Button
 			classProp="mt-3"
 			expand="block"
-			type="submit"
 			color="danger"
 			click={deleteOrganization}
 			iconSrc={trashOutline}

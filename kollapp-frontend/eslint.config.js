@@ -87,7 +87,8 @@ export default ts.config(
 			'node_modules/',
 			'test-results/',
 			'.env',
-			'vite.config.ts.*'
+			'vite.config.ts.*',
+			'static/'
 		]
 	}
 );
