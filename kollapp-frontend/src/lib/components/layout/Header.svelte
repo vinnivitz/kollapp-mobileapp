@@ -30,3 +30,9 @@
 		</ion-buttons>
 	</ion-toolbar>
 </ion-header>
+
+<style lang="postcss">
+	ion-toolbar {
+		--min-height: 3.25rem;
+	}
+</style>

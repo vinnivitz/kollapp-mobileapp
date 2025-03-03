@@ -13,7 +13,8 @@
 		"test": "npm run test:unit -- --run && npm run test:e2e",
 		"typedoc": "typedoc & live-server ./docs --watch --silent --no-browser --port=1234 & chokidar 'src/lib' -c 'typedoc' --silent",
 		"build-android": "export CAPACITOR_ANDROID_STUDIO_PATH=/usr/bin/android-studio && npm run build && cap sync && cap open android",
-		"visualize": "mkdir -p visualize && madge --extensions ts,svelte --image visualize/dependency-graph.png src"
+		"visualize": "mkdir -p visualize && madge --extensions ts,svelte --image visualize/dependency-graph.png src",
+		"index-searchables": "tsx ./index-searchables.ts"
 	},
 	"type": "module",
 	"devDependencies": {
@@ -27,6 +28,9 @@
 		"@sveltejs/package": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^4.0.0",
 		"@testing-library/svelte": "^5.2.6",
+		"@types/estree": "^1.0.6",
+		"@types/node": "^22.10.1",
+		"@types/uuid": "^10.0.0",
 		"autoprefixer": "^10.4.20",
 		"chokidar-cli": "^3.0.0",
 		"cross-env": "^7.0.3",
@@ -48,9 +52,11 @@
 		"prettier-plugin-tailwindcss": "^0.6.5",
 		"svelte": "^5.0.0",
 		"svelte-check": "^4.0.0",
+		"tsx": "^4.19.3",
 		"typedoc": "^0.27.2",
 		"typescript": "^5.6.3",
 		"typescript-eslint": "^8.0.0",
+		"uuid": "^11.1.0",
 		"vite": "^5.0.11",
 		"vitest": "^2.0.4"
 	},
@@ -62,7 +68,6 @@
 		"@ionic/core": "^8.4.1",
 		"@ionic/pwa-elements": "^3.3.0",
 		"@tailwindcss/typography": "^0.5.15",
-		"@types/node": "^22.10.1",
 		"ionic-svelte": "^0.5.85",
 		"ionicons": "^7.4.0",
 		"sveltekit-i18n": "^2.4.2",

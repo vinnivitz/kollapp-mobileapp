@@ -52,7 +52,6 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 	const customInputs = [...node.querySelectorAll('[data-name]')] as HTMLElement[];
 	const keys = Object.keys(data.model as object);
 	const passwordIcons: HTMLIonIconElement[] = [];
-	const initialModel = data.model;
 
 	if (data.config.exposedActions) {
 		data.config.exposedActions({
@@ -109,17 +108,19 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 		passwordIcons.push(icon);
 	}
 
-	function resetModel(): void {
-		data.model = initialModel as T;
+	function resetModel(clear = false): void {
+		data.model = (clear ? {} : data.config.schema.cast({})) as T;
 		for (const input of inputs) {
 			input.classList.remove('ion-invalid');
 			input.errorText = '';
-			input.value = data.model[input.name as keyof T] as string;
+			input.value = clear ? '' : (data.model[input.name as keyof T] as string);
 		}
-		for (const input of customInputs) resetCustomInput(input);
+		for (const input of customInputs) {
+			removeCustomValidationFeedback(input);
+		}
 	}
 
-	function resetCustomInput(input: HTMLElement): void {
+	function removeCustomValidationFeedback(input: HTMLElement): void {
 		const ionItem = input.closest('ion-item');
 		if (ionItem) {
 			ionItem.style.removeProperty('--border-color');
@@ -143,10 +144,12 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 	}
 
 	async function onUpdate(key: keyof T, value: T[keyof T]): Promise<void> {
-		const input = inputs.find((input) => input.name === key);
-		if (input) {
-			const formatter = data.config.formatters?.[key as keyof T];
-			input.value = (formatter ? formatter(value) : value) as string;
+		const formatter = data.config.formatters?.[key as keyof T];
+		if (formatter) {
+			const input = inputs.find((input) => input.name === key);
+			if (input) {
+				input.value = formatter(value) as string;
+			}
 		}
 		_onUpdate(key, value);
 	}
@@ -166,18 +169,30 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 		for (const input of inputs) {
 			applyValidationFeedbackByKey(input.name as keyof T, result);
 		}
+		for (const input of customInputs) {
+			applyValidationFeedbackByKey(input.dataset.name as keyof T, result);
+		}
 	}
 
 	function applyValidationFeedbackByKey(key: keyof T, result: ValidationResult): void {
 		const input = inputs.find((input) => input.name === key);
+		const message = result.errors?.find((error) => error.field === key)?.message;
+
 		if (input) {
-			const message = result.errors?.find((error) => error.field === key)?.message;
 			if (message) {
 				input.classList.add('ion-invalid');
 				input.errorText = message;
 			} else {
 				input.classList.remove('ion-invalid');
 				input.errorText = '';
+			}
+		} else {
+			const customInput = customInputs.find((input) => input.dataset.name === key);
+			if (customInput) {
+				removeCustomValidationFeedback(customInput);
+				if (message) {
+					applyCustomValidationFeedback(customInput, message);
+				}
 			}
 		}
 	}
@@ -218,6 +233,27 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 		}
 		if (data.config.onSubmit) {
 			data.config.onSubmit(data.model, validationResult);
+		}
+	}
+
+	function applyCustomValidationFeedback(element: HTMLElement, message: string): void {
+		const item = element.closest('ion-item');
+		if (item) {
+			item.style.setProperty('--border-color', 'var(--highlight-color-invalid)');
+			const label = item.querySelector('ion-label');
+			if (label) {
+				label.style.setProperty('--color', 'var(--ion-color-danger)');
+			} else {
+				item.style.setProperty('--color', 'var(--ion-color-danger)');
+			}
+			const ionItem = document.createElement('ion-item');
+			ionItem.dataset.error = 'true';
+			ionItem.style.setProperty('--min-height', '0');
+			const div = document.createElement('ion-note');
+			div.style.setProperty('--color', 'var(--ion-color-danger)');
+			div.textContent = message;
+			ionItem.append(div);
+			item.after(ionItem);
 		}
 	}
 

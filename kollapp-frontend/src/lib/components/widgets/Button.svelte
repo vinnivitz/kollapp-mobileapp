@@ -4,6 +4,7 @@
 	import { layoutStore } from '$lib/store';
 
 	let {
+		click,
 		label,
 		classProp,
 		color = 'secondary',
@@ -14,62 +15,48 @@
 		iconSize = 'small',
 		iconPosition = 'start',
 		type,
-		disabled,
-		click
+		disabled
 	}: {
-		label?: string;
+		click?: () => void | Promise<void>;
+		label: string;
 		color?: Colors | undefined;
 		expand?: 'full' | 'block' | undefined;
 		fill?: 'clear' | 'default' | 'outline' | 'solid' | undefined;
 		classProp?: string;
 		size?: 'default' | 'small' | 'large' | undefined;
-		click?: () => void | Promise<void>;
 		iconSrc?: string;
 		iconSize?: 'small' | 'large' | undefined;
 		iconPosition?: 'start' | 'end';
 		type?: 'button' | 'submit' | 'reset';
 		disabled?: boolean;
-	} = $props();
+	} & (
+		| { type: 'submit'; click?: never }
+		| { type?: 'button' | 'reset'; click: () => void | Promise<void> }
+	) = $props();
 
 	const isMondernLayout = $derived($layoutStore === Layout.MODERN);
 	const isPlayfulLayout = $derived($layoutStore === Layout.PLAYFUL);
 	const shape = $derived(isPlayfulLayout ? 'round' : undefined);
-	const textColor = $derived(fill === 'outline' ? color : 'white');
 	const fontWeight = $derived(fill === 'outline' ? 'font-extrabold' : 'font-medium');
 </script>
 
-{#if !!click}
-	<!-- svelte-ignore a11y_click_events_have_key_events -->
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<ion-button
-		{color}
-		{expand}
-		{fill}
-		class={classProp}
-		class:squared={isMondernLayout}
-		{size}
-		{shape}
-		{type}
-		{disabled}
-		onclick={click}
-	>
-		{@render content()}
-	</ion-button>
-{:else}
-	<ion-button
-		{color}
-		{expand}
-		{fill}
-		class={classProp}
-		class:squared={isMondernLayout}
-		{size}
-		{shape}
-		{type}
-		{disabled}
-	>
-		{@render content()}
-	</ion-button>
-{/if}
+<ion-button
+	{color}
+	{expand}
+	{fill}
+	class={classProp}
+	class:squared={isMondernLayout}
+	{size}
+	{shape}
+	{type}
+	{disabled}
+	onclick={click}
+	onkeydown={(event) => event.key === 'Enter' && click?.()}
+	role="button"
+	tabindex="0"
+>
+	{@render content()}
+</ion-button>
 
 {#snippet content()}
 	{#if iconSrc}
@@ -80,18 +67,18 @@
 		{/if}
 	{/if}
 	{#if label}
-		<ion-text color={textColor} class={fontWeight}>
+		<ion-text class={fontWeight}>
 			{label}
 		</ion-text>
 	{/if}
 {/snippet}
 
 {#snippet startIcon()}
-	<ion-icon slot="start" color={textColor} icon={iconSrc} size={iconSize}></ion-icon>
+	<ion-icon slot="start" icon={iconSrc} size={iconSize}></ion-icon>
 {/snippet}
 
 {#snippet endIcon()}
-	<ion-icon slot="end" color={textColor} icon={iconSrc} size={iconSize}></ion-icon>
+	<ion-icon slot="end" icon={iconSrc} size={iconSize}></ion-icon>
 {/snippet}
 
 <style lang="postcss">

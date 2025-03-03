@@ -1,3 +1,5 @@
+type ExtractPaths<T> = T extends string ? T : { [K in keyof T]: ExtractPaths<T[K]> }[keyof T];
+
 /**
  * Enum for all the routes in the application
  */
@@ -9,11 +11,12 @@ export const PageRoute = {
 		APP: '/account/app',
 		CHANGE_PASSWORD: '/account/change-password',
 		UPDATE_DATA: '/account/update-data',
-		DELETE_ACCOUNT: '/account/delete'
+		DELETE: '/account/delete'
 	},
 	AUTH: {
 		LOGIN: '/auth/login',
 		REGISTER: '/auth/register',
+		REGISTER_ORGANIZATION: '/auth/register-organization',
 		RESET_PASSWORD: '/auth/reset-password',
 		RESEND_CONFIRMATION: '/auth/resend-confirmation'
 	},
@@ -22,3 +25,8 @@ export const PageRoute = {
 		UPDATE_INFO: '/organization/update-info'
 	}
 } as const;
+
+/**
+ * Type for all the routes in the application
+ */
+export type PageRoutePaths = ExtractPaths<typeof PageRoute>;

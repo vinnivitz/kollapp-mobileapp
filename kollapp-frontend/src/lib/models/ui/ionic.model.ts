@@ -1,4 +1,4 @@
-import { PageRoute } from '$lib/models/routing';
+import type { PageRoutePaths } from '$lib/models/routing';
 
 /**
  * Configuration for a page route tab.
@@ -8,7 +8,3 @@ export type TabConfig = {
 	icon: string;
 	tab: PageRoutePaths;
 };
-
-type ExtractPaths<T> = T extends string ? T : { [K in keyof T]: ExtractPaths<T[K]> }[keyof T];
-
-type PageRoutePaths = ExtractPaths<typeof PageRoute>;

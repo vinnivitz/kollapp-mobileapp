@@ -1,71 +1,36 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
-
-	import { Layout } from '$lib/models/store';
+	import CustomItem from '$lib/components/widgets/CustomItem.svelte';
 	import type { Colors } from '$lib/models/ui';
-	import { layoutStore } from '$lib/store';
 
 	let {
-		click,
-		children,
-		color = 'light',
-		detail = false,
-		iconSrc,
 		label,
-		transparent = false
+		click,
+		detail = false,
+		color = 'light',
+		iconSrc,
+		transparent = false,
+		searchable
 	}: {
-		click?: () => void | Promise<void>;
-		children?: Snippet;
+		label: string;
 		detail?: boolean;
 		color?: Colors | undefined;
 		iconSrc?: string;
-		label?: string;
 		transparent?: boolean;
-	} = $props();
+		button?: boolean;
+		searchable?: string;
+	} & (
+		| { searchable: string; click: () => void | Promise<void> }
+		| { searchable?: string; click?: () => void | Promise<void> }
+	) = $props();
 
-	const isPlayfulLayout = $derived($layoutStore === Layout.PLAYFUL);
-	const isClassicLayout = $derived($layoutStore === Layout.CLASSIC);
-	const labelColor = $derived(color === 'light' ? 'dark' : undefined);
+	// workaround to avoid reference linting error
+	void searchable;
+
+	const labelColor = $derived(color === 'light' || color === 'white' ? 'dark' : 'white');
 </script>
 
-<!-- svelte-ignore a11y_click_events_have_key_events -->
-<!-- svelte-ignore a11y_no_static_element_interactions -->
-<ion-item
-	button
-	{color}
-	{detail}
-	data-playful={isPlayfulLayout}
-	data-classic={isClassicLayout}
-	data-transparent={transparent}
-	onclick={click}
->
-	{#if iconSrc || label}
-		<div class="flex flex-row items-center gap-4">
-			{#if iconSrc}
-				<ion-icon icon={iconSrc} size="large"></ion-icon>
-			{/if}
-			{#if label}
-				<ion-label color={labelColor}>{label}</ion-label>
-			{/if}
-		</div>
-	{:else if children}
-		{@render children()}
+<CustomItem button={!!click} {click} {color} {detail} {transparent} {iconSrc}>
+	{#if label}
+		<ion-label class="ms-4" color={labelColor}>{label}</ion-label>
 	{/if}
-</ion-item>
-
-<style lang="postcss">
-	ion-item::part(native) {
-		margin-bottom: 5px;
-	}
-
-	ion-item[data-playful='true']::part(native) {
-		border-radius: 20px;
-	}
-	ion-item[data-classic='true']::part(native) {
-		border-radius: 5px;
-	}
-
-	ion-item[data-transparent='true']::part(native) {
-		background-color: transparent;
-	}
-</style>
+</CustomItem>

@@ -1,0 +1,44 @@
+[
+	{
+		"id": "01955a3a-591e-76f8-a1b8-417036d780a7",
+		"label": "routes.account.list.account.button.update-data",
+		"icon": "personOutline",
+		"route": "/account/update-data"
+	},
+	{
+		"id": "01955a3a-591f-7635-808c-e49204c12281",
+		"label": "routes.account.list.account.button.change-password",
+		"icon": "keyOutline",
+		"route": "/account/change-password"
+	},
+	{
+		"id": "01955a3a-591f-7635-808c-ebff4697d327",
+		"label": "routes.account.list.account.button.delete-account",
+		"icon": "trashOutline",
+		"route": "/account/delete"
+	},
+	{
+		"id": "01955a3a-591f-7635-808c-ef474e77bff0",
+		"label": "routes.account.app.list.language.button",
+		"icon": "languageOutline",
+		"route": "/account"
+	},
+	{
+		"id": "01955a3a-591f-7635-808c-f25e20eee4c6",
+		"label": "routes.account.app.list.theme.button",
+		"icon": "colorPaletteOutline",
+		"route": "/account"
+	},
+	{
+		"id": "01955a3a-591f-7635-808c-f796ccdd7bf6",
+		"label": "routes.account.app.list.layout.button",
+		"icon": "colorWandOutline",
+		"route": "/account"
+	},
+	{
+		"id": "01955a3a-591f-7635-808c-fa99e11f3669",
+		"label": "routes.account.app.list.restore.button",
+		"icon": "refreshOutline",
+		"route": "/account"
+	}
+]

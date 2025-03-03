@@ -50,7 +50,8 @@ export default ts.config(
 				}
 			],
 			'unicorn/filename-case': 'off',
-			'svelte/no-unused-svelte-ignore': 'off'
+			'svelte/no-unused-svelte-ignore': 'off',
+			'security/detect-non-literal-fs-filename': 'off'
 		}
 	},
 	{
@@ -60,7 +61,8 @@ export default ts.config(
 				...globals.node,
 				HTMLIonTabsElement: 'readonly',
 				HTMLIonRefresherElement: 'readonly',
-				HTMLIonLoadingElement: 'readonly'
+				HTMLIonLoadingElement: 'readonly',
+				HTMLIonMenuElement: 'readonly'
 			}
 		}
 	},

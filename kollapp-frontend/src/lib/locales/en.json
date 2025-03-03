@@ -57,8 +57,8 @@
 						"email": "Email",
 						"password": "Password",
 						"confirm-password": "Confirm password",
-						"surname": "Surname",
-						"name": "Name"
+						"surname": "First name",
+						"name": "Last name"
 					},
 					"submit": "Register"
 				},
@@ -71,10 +71,20 @@
 						"input": {
 							"name": "Name"
 						},
-						"submit": "Create collective",
-						"title": "Whats your collective called?"
+						"submit": "Register collective",
+						"title": "Whats your collective called?",
+						"cancel": "Cancel"
 					},
 					"title": "Create collective"
+				},
+				"card": {
+					"join-organization": {
+						"title": "Join an existing Collective?",
+						"content": "Contact the the collective admin for sending you an invitation email."
+					},
+					"register-organization": {
+						"title": "Register a new collective!"
+					}
 				}
 			},
 			"reset-password": {
@@ -100,7 +110,8 @@
 							"confirm-password": "Confirm new password"
 						},
 						"submit": "Update password"
-					}
+					},
+					"no-token": "Authentication token not found."
 				}
 			},
 			"resend-confirmation": {
@@ -121,6 +132,10 @@
 						"title": "Update your password"
 					}
 				}
+			},
+			"register-organization": {
+				"no-token": "Authentication token not found.",
+				"not-authenticated": "User not authenticated"
 			}
 		},
 		"account": {
@@ -286,7 +301,11 @@
 			},
 			"menu": {
 				"searchbar": {
-					"placeholder": "Search the app..."
+					"placeholder": "Search the app...",
+					"title": {
+						"found": "Search results for \"{{value}}\"",
+						"not-found": "No results found for \"{{value}}\""
+					}
 				},
 				"list": {
 					"organization": "Collective"

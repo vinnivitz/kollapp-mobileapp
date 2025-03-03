@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { Layout } from '$lib/models/store';
+	import CustomItem from '$lib/components/widgets/CustomItem.svelte';
 	import type { Colors } from '$lib/models/ui';
-	import { layoutStore } from '$lib/store';
 
 	let {
 		color,
@@ -33,15 +32,9 @@
 		value?: string | number | null | undefined;
 		change?: (value: string) => void;
 	} = $props();
-
-	const isPlayfulLayout = $derived($layoutStore === Layout.PLAYFUL);
-	const isClassicLayout = $derived($layoutStore === Layout.CLASSIC);
 </script>
 
-<ion-item {color} data-playful={isPlayfulLayout} data-classic={isClassicLayout}>
-	{#if iconSrc}
-		<ion-icon icon={iconSrc} slot="start"></ion-icon>
-	{/if}
+<CustomItem {color} {iconSrc}>
 	<!-- svelte-ignore event_directive_deprecated -->
 	<ion-input
 		{name}
@@ -50,20 +43,4 @@
 		{value}
 		on:ionInput={(event) => change?.(event.detail.value || '')}
 	></ion-input>
-</ion-item>
-
-<style lang="postcss">
-	ion-item::part(native) {
-		margin-bottom: 5px;
-	}
-
-	ion-item[data-playful='true']::part(native) {
-		border-radius: 20px;
-	}
-	ion-item[data-classic='true']::part(native) {
-		border-radius: 5px;
-	}
-	ion-input {
-		--highlight-color-focused: var(--ion-color-secondary);
-	}
-</style>
+</CustomItem>

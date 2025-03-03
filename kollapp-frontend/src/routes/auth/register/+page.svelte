@@ -3,9 +3,12 @@
 	import {
 		keyOutline,
 		keySharp,
+		mailOpenOutline,
+		mailOutline,
 		peopleOutline,
 		personCircleOutline,
-		personOutline
+		personOutline,
+		saveOutline
 	} from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
@@ -31,6 +34,7 @@
 	const config: FormConfig<RegisterDto> = {
 		schema: registerSchema(),
 		onSubmit,
+		onTouched: () => (touched = true),
 		exposedActions: (exposedActions) => (actions = exposedActions)
 	};
 
@@ -56,30 +60,38 @@
 
 <Layout title={$t('routes.auth.register.title')} hideLayout>
 	<div class="mb-6">
-		<Welcome></Welcome>
+		<Welcome />
 	</div>
-	<Card>
+	<Card title={$t('routes.auth.register.card.join-organization.title')}>
+		<div class="flex items-center gap-4">
+			<ion-icon icon={mailOpenOutline} size="large" class="flex-none"></ion-icon>
+			<ion-text class="flex-auto">
+				{$t('routes.auth.register.card.join-organization.content')}
+			</ion-text>
+		</div>
+	</Card>
+	<Card title={$t('routes.auth.register.card.register-organization.title')}>
 		<form use:customForm={form}>
 			<InputItem
-				name="surname"
+				name="name"
 				label={$t('routes.auth.register.form.input.surname')}
 				iconSrc={personOutline}
 			/>
 			<InputItem
-				name="name"
+				name="surname"
 				label={$t('routes.auth.register.form.input.name')}
 				iconSrc={peopleOutline}
 			/>
 			<InputItem
 				name="username"
 				label={$t('routes.auth.register.form.input.username')}
-				iconSrc={personOutline}
+				iconSrc={personCircleOutline}
 			/>
 			<InputItem
 				name="email"
 				type="email"
 				label={$t('routes.auth.register.form.input.email')}
-				iconSrc={personCircleOutline}
+				iconSrc={mailOutline}
 			/>
 			<InputItem
 				name="password"
@@ -99,6 +111,7 @@
 				type="submit"
 				label={$t('routes.auth.register.form.submit')}
 				disabled={!touched}
+				iconSrc={saveOutline}
 			/>
 		</form>
 		<Card click={() => goto(PageRoute.AUTH.LOGIN)} classProp="text-center">

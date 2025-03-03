@@ -1,4 +1,5 @@
 import { App, type URLOpenListenerEvent } from '@capacitor/app';
+import { get } from 'svelte/store';
 
 import { goto } from '$app/navigation';
 
@@ -6,7 +7,13 @@ import type { LayoutLoad } from './$types';
 
 import { isAuthenticated } from '$lib/api/utils';
 import { PageRoute } from '$lib/models/routing';
-import { authenticationStore, connectionStore, layoutStore, themeStore } from '$lib/store';
+import {
+	authenticationStore,
+	connectionStore,
+	layoutStore,
+	organizationStore,
+	themeStore
+} from '$lib/store';
 import { navigateBack } from '$lib/utils';
 
 let initialized = false;
@@ -14,15 +21,7 @@ let initialized = false;
 export const ssr = false;
 
 export const load: LayoutLoad = async ({ url }) => {
-	const { pathname } = url;
-
-	const authenticated = await isAuthenticated();
-
-	if (authenticated && pathname.startsWith('/auth')) {
-		goto(PageRoute.HOME);
-	} else if (!authenticated && !pathname.startsWith('/auth')) {
-		goto(PageRoute.AUTH.LOGIN);
-	}
+	handleRouting(url.pathname, await isAuthenticated());
 
 	if (!initialized) {
 		initialized = true;
@@ -30,6 +29,20 @@ export const load: LayoutLoad = async ({ url }) => {
 		initStores();
 	}
 };
+
+async function handleRouting(pathname: string, authenticated: boolean): Promise<void> {
+	const isAuthPath = pathname.startsWith('/auth');
+
+	if (!authenticated && !isAuthPath) {
+		goto(PageRoute.AUTH.LOGIN);
+	} else if (
+		authenticated &&
+		isAuthPath &&
+		!(pathname === PageRoute.AUTH.REGISTER_ORGANIZATION && !get(organizationStore))
+	) {
+		return goto(PageRoute.HOME);
+	}
+}
 
 async function initStores(): Promise<void> {
 	themeStore.init();

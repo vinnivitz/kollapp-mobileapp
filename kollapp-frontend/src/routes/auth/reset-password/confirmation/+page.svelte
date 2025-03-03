@@ -15,10 +15,26 @@
 	import InputItem from '$lib/components/widgets/InputItem.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
-	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
-	import { customForm } from '$lib/utils';
+	import {
+		AlertType,
+		Form,
+		type FormActions,
+		type FormConfig,
+		type ValidationResult
+	} from '$lib/models/ui';
+	import { customForm, showAlert } from '$lib/utils';
 
 	const { data }: { data: PageData } = $props();
+
+	$effect(() => {
+		if (!data.token) {
+			showAlert({
+				type: AlertType.ERROR,
+				message: $t('routes.auth.reset-password.confirmation.no-token')
+			});
+			goto(PageRoute.AUTH.LOGIN);
+		}
+	});
 
 	const model = resetPasswordSchema().cast({}) as ResetPasswordDto;
 	let validationResult: ValidationResult;

@@ -6,6 +6,8 @@
 	import { home, cash, person } from 'ionicons/icons';
 	import { onDestroy, onMount } from 'svelte';
 
+	import { goto } from '$app/navigation';
+
 	import Tabs from '$lib/components/layout/Tabs.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
@@ -24,7 +26,11 @@
 		if (loaded) {
 			if ($authenticationStore) {
 				userStore.init();
-				organizationStore.init();
+				organizationStore.init().then(() => {
+					if (!$organizationStore) {
+						goto(PageRoute.AUTH.REGISTER_ORGANIZATION);
+					}
+				});
 				isAuthenticated = true;
 			} else {
 				isAuthenticated = false;

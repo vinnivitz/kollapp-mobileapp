@@ -142,7 +142,11 @@
 			},
 			"menu": {
 				"searchbar": {
-					"placeholder": "Durchsuche die App..."
+					"placeholder": "Durchsuche die App...",
+					"title": {
+						"found": "Suchergebnisse für \"{{value}}\" \"",
+						"not-found": "Keine Ergebnisse für \"{{value}}\" gefunden \""
+					}
 				},
 				"list": {
 					"organization": "Kollektiv"
@@ -303,10 +307,19 @@
 						"input": {
 							"name": "Name"
 						},
-						"submit": "Kollektiv erstellen",
+						"submit": "Kollektiv registrieren",
 						"title": "Wie heißt dein Kollektiv?"
 					},
 					"title": "Kollektiv erstellen"
+				},
+				"card": {
+					"join-organization": {
+						"content": "Wende dich an den Kollektiv-Administrator, welcher dir  eine Einladungs-Mail zusendet.",
+						"title": "Einem vorhandenen Kollektiv beitreten?"
+					},
+					"register-organization": {
+						"title": "Registriere ein neues Kollektiv!"
+					}
 				}
 			},
 			"reset-password": {
@@ -329,7 +342,8 @@
 						"submit": "Passwort aktualisieren",
 						"title": "Setz dein Passwort zurück"
 					},
-					"title": "Passwort zurücksetzen"
+					"title": "Passwort zurücksetzen",
+					"no-token": "Authentifizierungstoken nicht gefunden."
 				}
 			},
 			"resend-confirmation": {

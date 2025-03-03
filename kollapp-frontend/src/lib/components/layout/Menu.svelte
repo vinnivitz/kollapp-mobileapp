@@ -1,56 +1,106 @@
 <script lang="ts">
-	import { accessibilityOutline, logOutOutline, personOutline } from 'ionicons/icons';
+	import * as icons from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
 
 	import { apiResources } from '$lib/api';
+	import type { SearchableItem } from '$lib/api/dto/server';
 	import Button from '$lib/components/widgets/Button.svelte';
 	import LabeledItem from '$lib/components/widgets/LabeledItem.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
 
+	let searchedItems = $state<SearchableItem[]>([]);
+	let searchValue = $state('');
+	let menuController: HTMLIonMenuElement;
+
 	async function logout(): Promise<void> {
 		await apiResources.auth.logout();
 		goto(PageRoute.AUTH.LOGIN);
 	}
+
+	async function onSearch(event: CustomEvent): Promise<void> {
+		searchValue = event.detail.value ?? '';
+		searchedItems = await apiResources.searchable.filter(searchValue);
+	}
+
+	async function navigate(route: string): Promise<void> {
+		await menuController.close();
+		goto(route);
+	}
 </script>
 
-<ion-menu side="end" content-id="menu">
+<ion-menu side="end" menu-id="menu1" content-id="menu" bind:this={menuController}>
 	<ion-header>
 		<ion-toolbar>
+			<!-- svelte-ignore event_directive_deprecated -->
 			<ion-searchbar
+				class="pt-5"
+				color="light"
+				show-clear-button="always"
 				debounce={100}
 				placeholder={$t('components.layout.menu.searchbar.placeholder')}
+				on:ionInput={onSearch}
 			>
 			</ion-searchbar>
 		</ion-toolbar>
 	</ion-header>
 	<ion-content class="ion-padding relative text-center">
 		<ion-list>
-			<LabeledItem
-				transparent
-				click={() => goto(PageRoute.ACCOUNT.ROOT)}
-				iconSrc={personOutline}
-				label={$t('components.layout.header.button.account')}
-			/>
-			<LabeledItem
-				transparent
-				click={() => goto(PageRoute.ORGANIZATION.ROOT)}
-				iconSrc={accessibilityOutline}
-				label={$t('components.layout.menu.list.organization')}
-			/>
+			{#if searchValue !== ''}
+				<ion-list-header>
+					{#if searchedItems.length > 0}
+						{$t('components.layout.menu.searchbar.title.found', {
+							value: searchValue
+						})}
+					{:else}
+						{$t('components.layout.menu.searchbar.title.not-found', {
+							value: searchValue
+						})}
+					{/if}
+				</ion-list-header>
+				{#each searchedItems as item (item.id)}
+					<LabeledItem
+						transparent
+						label={item.label}
+						iconSrc={icons[item.icon as keyof typeof icons]}
+						click={() => navigate(`${item.route}?label=${item.label}`)}
+					/>
+				{/each}
+			{:else}
+				<LabeledItem
+					transparent
+					click={() => navigate(PageRoute.ACCOUNT.ROOT)}
+					iconSrc={icons.personOutline}
+					label={$t('components.layout.header.button.account')}
+				/>
+				<LabeledItem
+					transparent
+					click={() => navigate(PageRoute.ORGANIZATION.ROOT)}
+					iconSrc={icons.accessibilityOutline}
+					label={$t('components.layout.menu.list.organization')}
+				/>
+			{/if}
 		</ion-list>
-		<Button
-			size="small"
-			fill="outline"
-			click={() => logout()}
-			iconSrc={logOutOutline}
-			label={$t('components.layout.header.button.logout')}
-		/>
-		<hr class="my-3" />
+		{#if searchValue === ''}
+			<Button
+				size="default"
+				fill="outline"
+				click={() => logout()}
+				iconSrc={icons.logOutOutline}
+				label={$t('components.layout.header.button.logout')}
+			/>
+			<hr class="my-3" />
+		{/if}
 		<div class="absolute bottom-2 left-0 right-0">
 			<hr class="my-2" />
 			<ion-note>Made with <ion-text color="danger">&#10084;</ion-text> from Dresden.</ion-note>
 		</div>
 	</ion-content>
 </ion-menu>
+
+<style lang="postcss">
+	ion-searchbar {
+		padding: 0 4px;
+	}
+</style>

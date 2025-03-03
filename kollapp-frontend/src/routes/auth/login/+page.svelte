@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { loadingController } from 'ionic-svelte';
-	import { keyOutline, personOutline } from 'ionicons/icons';
+	import { keyOutline, logInOutline, personOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
 
@@ -83,7 +83,7 @@
 
 <Layout title={$t('routes.auth.login.title')} hideLayout>
 	<div class="mb-6">
-		<Welcome></Welcome>
+		<Welcome />
 	</div>
 	<Card>
 		<form use:customForm={form}>
@@ -103,6 +103,7 @@
 				expand="block"
 				type="submit"
 				label={$t('routes.auth.login.form.submit')}
+				iconSrc={logInOutline}
 			/>
 		</form>
 		{#if emailNotConfirmed}
