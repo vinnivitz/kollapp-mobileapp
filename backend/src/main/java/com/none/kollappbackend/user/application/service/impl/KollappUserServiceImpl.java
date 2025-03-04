@@ -1,5 +1,8 @@
 package com.none.kollappbackend.user.application.service.impl;
 
+import com.none.kollappbackend.core.config.ClientPlatform;
+import com.none.kollappbackend.core.util.JwtUtil;
+import com.none.kollappbackend.core.util.UrlBuilderUtil;
 import com.none.kollappbackend.user.application.exception.EmailExistsException;
 import com.none.kollappbackend.user.application.exception.EmailIsAlreadyConfirmedException;
 import com.none.kollappbackend.user.application.exception.EmailNotFoundException;
@@ -13,12 +16,8 @@ import com.none.kollappbackend.user.application.model.KollappUserDeletedEvent;
 import com.none.kollappbackend.user.application.model.KollappUserDetails;
 import com.none.kollappbackend.user.application.publisher.KollappUserPublisher;
 import com.none.kollappbackend.user.application.repository.KollappUserRepository;
-import com.none.kollappbackend.user.application.service.KollappUserService;
-import com.none.kollappbackend.core.util.JwtUtil;
-import com.none.kollappbackend.core.util.UrlBuilderUtil;
-
-import com.none.kollappbackend.core.config.ClientPlatform;
 import com.none.kollappbackend.user.application.service.EmailService;
+import com.none.kollappbackend.user.application.service.KollappUserService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,25 +35,19 @@ import java.util.Map;
 @Transactional
 public class KollappUserServiceImpl implements KollappUserService {
     @Autowired
+    PasswordEncoder encoder;
+    @Autowired
     private UrlBuilderUtil urlBuilderUtil;
-
     @Autowired
     private MessageSource messageSource;
-
     @Autowired
     private JwtUtil jwtUtil;
-
     @Autowired
     private KollappUserRepository userRepo;
-
     @Autowired
     private EmailService emailService;
-
     @Autowired
     private KollappUserPublisher kollappUserPublisher;
-
-    @Autowired
-    PasswordEncoder encoder;
 
     public KollappUser getKollappUserByUsername(String username) {
         return userRepo.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(messageSource));
@@ -62,10 +55,9 @@ public class KollappUserServiceImpl implements KollappUserService {
 
     @Override
     public KollappUser getLoggedInKollappUser() {
-        String username = ((KollappUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
-                .getUsername();
-        return userRepo.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException(messageSource));
+        String username = ((KollappUserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal()).getUsername();
+        return userRepo.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(messageSource));
     }
 
     @Override
@@ -117,7 +109,7 @@ public class KollappUserServiceImpl implements KollappUserService {
 
     @Override
     public void register(String username, String email, String password, String name, String surname,
-            List<ERole> roles) {
+                         List<ERole> roles) {
         if (userRepo.existsByUsername(username)) {
             throw new UsernameExistsException(messageSource);
         }
@@ -125,20 +117,17 @@ public class KollappUserServiceImpl implements KollappUserService {
             throw new EmailExistsException(messageSource);
         }
         String encodedPassword = encoder.encode(password);
-        KollappUser kollappUser = KollappUser.builder()
-                .username(username)
-                .email(email)
-                .name(name)
-                .surname(surname)
-                .isActivated(false)
-                .password(encodedPassword).roles(roles).build();
+        KollappUser kollappUser =
+                KollappUser.builder().username(username).email(email).name(name).surname(surname).isActivated(false)
+                        .password(encodedPassword).roles(roles).build();
         userRepo.save(kollappUser);
         String confirmationToken = jwtUtil.generateConfirmationToken(username);
         emailService.sendConfirmationMail(kollappUser.getEmail(), createConfirmationBaseUrl(confirmationToken));
     }
 
     @Override
-    public KollappUser updateKollappUser(@Nullable String username, @Nullable String email, @Nullable String surename, @Nullable String name) {
+    public KollappUser updateKollappUser(@Nullable String username, @Nullable String email, @Nullable String surename,
+                                         @Nullable String name) {
         KollappUser kollappUser = getLoggedInKollappUser();
         if (username != null && !kollappUser.getUsername().equals(username)) {
             kollappUser.setUsername(username);

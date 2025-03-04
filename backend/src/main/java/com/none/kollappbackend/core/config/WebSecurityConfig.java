@@ -2,8 +2,6 @@ package com.none.kollappbackend.core.config;
 
 import com.none.kollappbackend.core.config.properties.CorsProperties;
 import com.none.kollappbackend.user.application.service.impl.KollappUserDetailsServiceImpl;
-
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,6 +21,9 @@ import org.springframework.security.web.header.writers.XXssProtectionHeaderWrite
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
+
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
@@ -41,7 +42,7 @@ public class WebSecurityConfig {
 
     /**
      * It intercepts the incoming requests and validates the JWT token.
-     * 
+     *
      * @return the JWT authentication token filter
      */
     @Bean
@@ -51,7 +52,7 @@ public class WebSecurityConfig {
 
     /**
      * It provides the authentication provider.
-     * 
+     *
      * @return the authentication provider
      */
     @Bean
@@ -66,7 +67,7 @@ public class WebSecurityConfig {
 
     /**
      * It authenticates the user credentials.
-     * 
+     *
      * @param authConfig the authentication configuration
      * @return the authentication manager
      */
@@ -77,7 +78,7 @@ public class WebSecurityConfig {
 
     /**
      * It encodes the password before storing it in the database.
-     * 
+     *
      * @return the password encoder
      */
     @Bean
@@ -86,9 +87,10 @@ public class WebSecurityConfig {
     }
 
     /**
-     * It configures the allowed origins, methods, headers, and credentials of the
+     * It configures the allowed origins, methods, headers, and credentials
+     * of the
      * CORS.
-     * 
+     *
      * @return the CorsConfigurationSource
      */
     @Bean
@@ -112,30 +114,29 @@ public class WebSecurityConfig {
     }
 
     /**
-     * It configures the security filter chain with the XXS protection, content type
-     * options, frame options, HSTS, CSP, CORS, CSRF, exception handling, session
+     * It configures the security filter chain with the XXS protection,
+     * content type
+     * options, frame options, HSTS, CSP, CORS, CSRF, exception handling,
+     * session
      * management, and authorization.
-     * 
+     *
      * @param http the HttpSecurity
      * @return the SecurityFilterChain
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.headers(headers -> headers
-                .xssProtection(xss -> xss.headerValue(XXssProtectionHeaderWriter.HeaderValue.ENABLED_MODE_BLOCK))
-                .contentTypeOptions(withDefaults())
-                .frameOptions(frame -> frame.sameOrigin())
-                .httpStrictTransportSecurity(hsts -> hsts
-                        .includeSubDomains(true)
-                        .maxAgeInSeconds(31536000))
+        http.headers(headers -> headers.xssProtection(
+                        xss -> xss.headerValue(XXssProtectionHeaderWriter.HeaderValue.ENABLED_MODE_BLOCK))
+                .contentTypeOptions(withDefaults()).frameOptions(frame -> frame.sameOrigin())
+                .httpStrictTransportSecurity(hsts -> hsts.includeSubDomains(true).maxAgeInSeconds(31536000))
                 .contentSecurityPolicy(csp -> csp.policyDirectives(
-                        "default-src 'self'; img-src 'self' data:; script-src 'self'; style-src 'self';")));
-        http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.disable())
+                        "default-src 'self'; img-src 'self' data:; script-src" + " 'self'; style-src 'self';")));
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource())).csrf(csrf -> csrf.disable())
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/api/public/**").permitAll()
-                        .requestMatchers("/api/**").authenticated().anyRequest().permitAll());
+                .authorizeHttpRequests(
+                        auth -> auth.requestMatchers("/api/public/**").permitAll().requestMatchers("/api/**")
+                                .authenticated().anyRequest().permitAll());
 
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);

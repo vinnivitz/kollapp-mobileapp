@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -28,14 +27,12 @@ public class GlobalExceptionHandler {
     private MessageSource messageSource;
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ResponseTO> handleValidationExceptions(
-            MethodArgumentNotValidException exception) {
-            List<FieldError> fieldErrors = exception.getBindingResult().getFieldErrors();
-            FieldError firstError = fieldErrors.getFirst();
-            String message = firstError.getDefaultMessage();
-            ValidationFailureResponseTO responseTO = new ValidationFailureResponseTO(message,
-                    firstError.getField());
-            return ResponseEntity.badRequest().body(responseTO);
+    public ResponseEntity<ResponseTO> handleValidationExceptions(MethodArgumentNotValidException exception) {
+        List<FieldError> fieldErrors = exception.getBindingResult().getFieldErrors();
+        FieldError firstError = fieldErrors.getFirst();
+        String message = firstError.getDefaultMessage();
+        ValidationFailureResponseTO responseTO = new ValidationFailureResponseTO(message, firstError.getField());
+        return ResponseEntity.badRequest().body(responseTO);
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
@@ -55,8 +52,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NoSuchMessageException.class)
     public ResponseEntity<ResponseTO> handleNoSuchMessage(NoSuchMessageException ex) {
         log.error(ex.getMessage());
-        return ResponseEntity.internalServerError()
-                .body(new ErrorResponseTO("error.generic", messageSource));
+        return ResponseEntity.internalServerError().body(new ErrorResponseTO("error.generic", messageSource));
     }
 
     @ExceptionHandler(Exception.class)

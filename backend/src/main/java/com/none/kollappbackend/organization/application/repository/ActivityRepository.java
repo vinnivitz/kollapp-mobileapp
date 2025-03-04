@@ -9,6 +9,8 @@ import java.util.Optional;
 @Repository
 public interface ActivityRepository {
     List<Activity> getActivitiesOfOrganization(long organizationId);
+
     Optional<Activity> findById(long activityId);
+
     Activity save(Activity activity);
 }

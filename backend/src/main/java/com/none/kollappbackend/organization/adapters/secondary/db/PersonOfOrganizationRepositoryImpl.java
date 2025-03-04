@@ -37,6 +37,7 @@ public class PersonOfOrganizationRepositoryImpl implements PersonOfOrganizationR
 
     @Override
     public PersonOfOrganization findById(long id) {
-        return personOfOrganizationJpaRepository.findById(id).orElseThrow(() -> new PersonNotRegisteredInOrganizationException(messageSource));
+        return personOfOrganizationJpaRepository.findById(id)
+                .orElseThrow(() -> new PersonNotRegisteredInOrganizationException(messageSource));
     }
 }

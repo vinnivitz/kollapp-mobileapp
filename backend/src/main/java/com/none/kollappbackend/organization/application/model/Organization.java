@@ -1,7 +1,17 @@
 package com.none.kollappbackend.organization.application.model;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +37,7 @@ public class Organization {
     private List<Activity> activities;
 
     public void addPersonOfOrganization(PersonOfOrganization personOfOrganization) {
-        if(personsOfOrganization != null) {
+        if (personsOfOrganization != null) {
             personsOfOrganization.add(personOfOrganization);
             return;
         }
@@ -36,25 +46,23 @@ public class Organization {
     }
 
     public void addActivityOfOrganization(Activity activity) {
-        if(activities != null) {
+        if (activities != null) {
             activities.add(activity);
         }
         activities = new ArrayList<>();
         activities.add(activity);
     }
 
-    public List<OrganizationManager> getManagers(){
-        return personsOfOrganization.stream()
-                .filter(p -> p instanceof OrganizationManager)
-                .map(p -> (OrganizationManager) p)
-                .toList();
+    public List<OrganizationManager> getManagers() {
+        return personsOfOrganization.stream().filter(p -> p instanceof OrganizationManager)
+                .map(p -> (OrganizationManager) p).toList();
     }
 
     public boolean hasManager(OrganizationManager organizationManager) {
         return getManagers().contains(organizationManager);
     }
 
-    public boolean hasOnlyOneManagerLeft(){
+    public boolean hasOnlyOneManagerLeft() {
         return getManagers().size() == 1;
     }
 }

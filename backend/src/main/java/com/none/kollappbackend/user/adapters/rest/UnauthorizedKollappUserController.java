@@ -13,7 +13,12 @@ import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -42,7 +47,7 @@ public class UnauthorizedKollappUserController {
 
     @PostMapping("/reset-password")
     public ResponseEntity<ResponseTO> resetPassword(@RequestParam("token") String token,
-            @Valid @RequestBody ResetPasswordRequestTO resetPasswordTo) {
+                                                    @Valid @RequestBody ResetPasswordRequestTO resetPasswordTo) {
         kollappUserService.resetPassword(token, resetPasswordTo.getPassword());
         return ResponseEntity.ok(new MessageResponseTO("success.password.reset", messageSource));
     }
@@ -50,26 +55,16 @@ public class UnauthorizedKollappUserController {
     @PostMapping("/manager-signup")
     public ResponseEntity<ResponseTO> registerKollappManager(
             @Valid @RequestBody KollappUserSignupRequest signUpRequest) {
-        kollappUserService.register(
-                signUpRequest.getUsername(),
-                signUpRequest.getEmail(),
-                signUpRequest.getPassword(),
-                signUpRequest.getName(),
-                signUpRequest.getSurname(),
-                List.of(ERole.ROLE_MANAGER));
+        kollappUserService.register(signUpRequest.getUsername(), signUpRequest.getEmail(), signUpRequest.getPassword(),
+                signUpRequest.getName(), signUpRequest.getSurname(), List.of(ERole.ROLE_MANAGER));
         return ResponseEntity.ok(new MessageResponseTO("success.registration", messageSource));
     }
 
     @PostMapping("/member-signup")
     public ResponseEntity<ResponseTO> registerKollappMember(
             @Valid @RequestBody KollappUserSignupRequest signUpRequest) {
-        kollappUserService.register(
-                signUpRequest.getUsername(),
-                signUpRequest.getEmail(),
-                signUpRequest.getPassword(),
-                signUpRequest.getName(),
-                signUpRequest.getSurname(),
-                List.of(ERole.ROLE_MEMBER));
+        kollappUserService.register(signUpRequest.getUsername(), signUpRequest.getEmail(), signUpRequest.getPassword(),
+                signUpRequest.getName(), signUpRequest.getSurname(), List.of(ERole.ROLE_MEMBER));
         return ResponseEntity.ok(new MessageResponseTO("success.registration", messageSource));
     }
 }

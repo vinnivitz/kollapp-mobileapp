@@ -9,6 +9,8 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface ActivityMapper {
     ActivityTO activityToActivityTO(Activity activity);
+
     Activity activityCreationRequestTOToActivity(ActivityCreationRequestTO activityCreationRequestTO);
+
     Activity activityUpdateTOToActivity(ActivityUpdateRequestTO activityUpdateRequestTO);
 }

@@ -1,25 +1,19 @@
 package com.none.kollappbackend.organization.application.service.impl;
 
+import com.none.kollappbackend.organization.application.exception.OrganizationNotFoundException;
+import com.none.kollappbackend.organization.application.model.Organization;
 import com.none.kollappbackend.organization.application.model.OrganizationManager;
-import com.none.kollappbackend.organization.application.model.OrganizationMember;
 import com.none.kollappbackend.organization.application.model.PersonOfOrganization;
+import com.none.kollappbackend.organization.application.repository.OrganizationRepository;
 import com.none.kollappbackend.organization.application.repository.PersonOfOrganizationRepository;
-import com.none.kollappbackend.user.application.exception.KollappUserNotFoundException;
+import com.none.kollappbackend.organization.application.service.OrganizationService;
 import com.none.kollappbackend.user.application.model.KollappUser;
+import com.none.kollappbackend.user.application.service.KollappUserService;
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
-
-import com.none.kollappbackend.organization.application.exception.OrganizationNotFoundException;
-import com.none.kollappbackend.organization.application.model.Organization;
-import com.none.kollappbackend.organization.application.repository.OrganizationRepository;
-import com.none.kollappbackend.organization.application.service.OrganizationService;
-import com.none.kollappbackend.user.application.service.KollappUserService;
-
-import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
 
 @Transactional
 @Slf4j
@@ -41,7 +35,8 @@ public class OrganizationServiceImpl implements OrganizationService {
     public Organization createOrganization(Organization organization) {
         KollappUser user = kollappUserService.getLoggedInKollappUser();
         Organization persistedOrganization = organizationRepository.save(organization);
-        OrganizationManager organizationManager = new OrganizationManager(user.getName(), user.getSurname(), user.getId());
+        OrganizationManager organizationManager =
+                new OrganizationManager(user.getName(), user.getSurname(), user.getId());
         organizationManager.setOrganization(persistedOrganization);
         PersonOfOrganization persistedOrganizationManager = personOfOrganizationRepository.save(organizationManager);
         persistedOrganization.addPersonOfOrganization(persistedOrganizationManager);
@@ -68,11 +63,12 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public void leaveOrganization() {
         Organization organization = getOrganizationByLoggedInUser();
-        PersonOfOrganization personOfOrganization = getPersonOfOrganizationByUserId(kollappUserService.getLoggedInKollappUser().getId());
-        if(personOfOrganization instanceof OrganizationManager orgaManager && organization.hasOnlyOneManagerLeft() && organization.hasManager(orgaManager)) {
+        PersonOfOrganization personOfOrganization =
+                getPersonOfOrganizationByUserId(kollappUserService.getLoggedInKollappUser().getId());
+        if (personOfOrganization instanceof OrganizationManager orgaManager && organization.hasOnlyOneManagerLeft() &&
+                organization.hasManager(orgaManager)) {
             organizationRepository.deleteById(organization.getId());
-        }
-        else {
+        } else {
             organization.getPersonsOfOrganization().remove(personOfOrganization);
         }
     }

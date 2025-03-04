@@ -4,13 +4,13 @@ import com.none.kollappbackend.organization.adapters.primary.rest.model.Organiza
 import com.none.kollappbackend.organization.adapters.primary.rest.model.OrganizationTO;
 import com.none.kollappbackend.organization.adapters.primary.rest.model.OrganizationUpdateRequestTO;
 import com.none.kollappbackend.organization.application.model.Organization;
-
 import org.mapstruct.Mapper;
-import org.springframework.stereotype.Service;
 
 @Mapper(componentModel = "spring")
 public interface OrganizationMapper {
     Organization organizationCreationRequestToOrganization(OrganizationCreationRequestTO organizationCreationRequestTO);
+
     Organization organizationUpdateRequestToOrganization(OrganizationUpdateRequestTO organizationUpdateRequestTO);
+
     OrganizationTO organizationToOrganizationTO(Organization organization);
 }

@@ -1,12 +1,10 @@
 package com.none.kollappbackend.core.config;
 
 import com.none.kollappbackend.core.util.ResponseUtil;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -27,7 +25,7 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
-            AuthenticationException authException) throws IOException, ServletException {
+                         AuthenticationException authException) throws IOException, ServletException {
         responseUtil.createMessageResponse(response, HttpServletResponse.SC_UNAUTHORIZED,
                 messageSource.getMessage("error.authentication", null, LocaleContextHolder.getLocale()));
     }

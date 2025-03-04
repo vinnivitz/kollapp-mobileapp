@@ -1,7 +1,11 @@
 package com.none.kollappbackend.core.util;
 
 import com.none.kollappbackend.core.config.properties.JwtProperties;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.AllArgsConstructor;
@@ -23,7 +27,8 @@ public class JwtUtil {
     private final JwtProperties jwtProperties;
 
     /**
-     * Generates a future expiration {@link Date} by adding the specified number of
+     * Generates a future expiration {@link Date} by adding the specified
+     * number of
      * milliseconds to the current time.
      *
      * @param expirationInSeconds number of milliseconds until the token should
@@ -43,12 +48,8 @@ public class JwtUtil {
      */
     public String generateAuthenticationToken(String subject, Date expirationDate) {
         Key signingKey = generateSigningKey(jwtProperties.getAuthSecret());
-        return Jwts.builder()
-                .setSubject(subject)
-                .setIssuedAt(new Date())
-                .setExpiration(expirationDate)
-                .signWith(signingKey, SignatureAlgorithm.HS256)
-                .compact();
+        return Jwts.builder().setSubject(subject).setIssuedAt(new Date()).setExpiration(expirationDate)
+                .signWith(signingKey, SignatureAlgorithm.HS256).compact();
     }
 
     /**
@@ -58,11 +59,9 @@ public class JwtUtil {
      */
     public String generateConfirmationToken(String subject) {
         Key signingKey = generateSigningKey(jwtProperties.getConfirmationSecret());
-        return Jwts.builder()
-                .setSubject(subject)
+        return Jwts.builder().setSubject(subject)
                 .setExpiration(generateExpirationDate(jwtProperties.getConfirmationExpirationInSeconds()))
-                .signWith(signingKey, SignatureAlgorithm.HS256)
-                .compact();
+                .signWith(signingKey, SignatureAlgorithm.HS256).compact();
     }
 
     /**
@@ -73,11 +72,9 @@ public class JwtUtil {
      */
     public String generateRefreshToken(String subject) {
         Key signingKey = generateSigningKey(jwtProperties.getRefreshSecret());
-        return Jwts.builder()
-                .setSubject(subject)
+        return Jwts.builder().setSubject(subject)
                 .setExpiration(generateExpirationDate(jwtProperties.getRefreshExpirationInSeconds()))
-                .signWith(signingKey, SignatureAlgorithm.HS256)
-                .compact();
+                .signWith(signingKey, SignatureAlgorithm.HS256).compact();
     }
 
     /**
@@ -88,21 +85,14 @@ public class JwtUtil {
      */
     public String generateResetPasswordToken(String subject) {
         Key signingKey = generateSigningKey(jwtProperties.getResetPasswordSecret());
-        return Jwts.builder()
-                .setSubject(subject)
+        return Jwts.builder().setSubject(subject)
                 .setExpiration(generateExpirationDate(jwtProperties.getResetPasswordExpirationInSeconds()))
-                .signWith(signingKey, SignatureAlgorithm.HS256)
-                .compact();
+                .signWith(signingKey, SignatureAlgorithm.HS256).compact();
     }
 
     public String getSubjectFromAuthenticationToken(String token) {
         Key signingKey = generateSigningKey(jwtProperties.getAuthSecret());
-        return Jwts.parserBuilder()
-                .setSigningKey(signingKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+        return Jwts.parserBuilder().setSigningKey(signingKey).build().parseClaimsJws(token).getBody().getSubject();
     }
 
     /**
@@ -112,12 +102,7 @@ public class JwtUtil {
      */
     public String getSubjectFromConfirmationToken(String token) {
         Key signingKey = generateSigningKey(jwtProperties.getConfirmationSecret());
-        return Jwts.parserBuilder()
-                .setSigningKey(signingKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+        return Jwts.parserBuilder().setSigningKey(signingKey).build().parseClaimsJws(token).getBody().getSubject();
     }
 
     /**
@@ -128,12 +113,7 @@ public class JwtUtil {
      */
     public String getSubjectFromRefreshToken(String token) {
         Key signingKey = generateSigningKey(jwtProperties.getRefreshSecret());
-        return Jwts.parserBuilder()
-                .setSigningKey(signingKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+        return Jwts.parserBuilder().setSigningKey(signingKey).build().parseClaimsJws(token).getBody().getSubject();
     }
 
     /**
@@ -144,12 +124,7 @@ public class JwtUtil {
      */
     public String getSubjectFromResetPasswordToken(String token) {
         Key signingKey = generateSigningKey(jwtProperties.getResetPasswordSecret());
-        return Jwts.parserBuilder()
-                .setSigningKey(signingKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+        return Jwts.parserBuilder().setSigningKey(signingKey).build().parseClaimsJws(token).getBody().getSubject();
     }
 
     /**
@@ -209,16 +184,13 @@ public class JwtUtil {
     /**
      * Parses and validates the JWT token using the given {@link Key}.
      *
-     * @param token the JWT token
+     * @param token      the JWT token
      * @param signingKey the key used to sign the token
      * @return true if the token is valid, false otherwise
      */
     private boolean validateToken(String token, Key signingKey) {
         try {
-            Jwts.parserBuilder()
-                    .setSigningKey(signingKey)
-                    .build()
-                    .parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(signingKey).build().parseClaimsJws(token);
             return true;
         } catch (Exception exception) {
             if (exception instanceof ExpiredJwtException) {

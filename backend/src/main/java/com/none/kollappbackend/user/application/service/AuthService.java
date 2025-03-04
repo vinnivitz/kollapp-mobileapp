@@ -6,5 +6,6 @@ import org.jmolecules.architecture.hexagonal.PrimaryPort;
 @PrimaryPort
 public interface AuthService {
     AuthenticatedKollappUser authenticate(String username, String password);
+
     String refresh(String token);
 }

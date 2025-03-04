@@ -1,6 +1,7 @@
 package com.none.kollappbackend.user.application.service.impl;
 
 import com.none.kollappbackend.core.config.properties.JwtProperties;
+import com.none.kollappbackend.core.util.JwtUtil;
 import com.none.kollappbackend.user.application.exception.EmailIsNotConfirmedException;
 import com.none.kollappbackend.user.application.exception.InvalidRefreshTokenException;
 import com.none.kollappbackend.user.application.exception.KollappUserNotFoundException;
@@ -10,11 +11,8 @@ import com.none.kollappbackend.user.application.model.KollappUser;
 import com.none.kollappbackend.user.application.model.KollappUserDetails;
 import com.none.kollappbackend.user.application.repository.KollappUserRepository;
 import com.none.kollappbackend.user.application.service.AuthService;
-import com.none.kollappbackend.core.util.JwtUtil;
-
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -49,23 +47,18 @@ public class AuthServiceImpl implements AuthService {
         if (!userRepo.existsByUsername(username)) {
             throw new UsernameNotFoundException(messageSource);
         }
-        Authentication authentication = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        Authentication authentication =
+                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         Date expirationDate = jwtUtil.generateExpirationDate(jwtProperties.getAuthExpirationInSeconds());
         KollappUserDetails kollappUserDetails = (KollappUserDetails) authentication.getPrincipal();
         if (!kollappUserDetails.isActivated()) {
             throw new EmailIsNotConfirmedException(messageSource);
         }
-        String accessToken = jwtUtil.generateAuthenticationToken(kollappUserDetails.getUsername(),
-                expirationDate);
+        String accessToken = jwtUtil.generateAuthenticationToken(kollappUserDetails.getUsername(), expirationDate);
         String refreshToken = jwtUtil.generateRefreshToken(kollappUserDetails.getUsername());
-        return AuthenticatedKollappUser.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .username(kollappUserDetails.getUsername())
-                .email(kollappUserDetails.getEmail())
-                .build();
+        return AuthenticatedKollappUser.builder().accessToken(accessToken).refreshToken(refreshToken)
+                .username(kollappUserDetails.getUsername()).email(kollappUserDetails.getEmail()).build();
     }
 
     @Override
@@ -75,8 +68,8 @@ public class AuthServiceImpl implements AuthService {
         }
 
         String username = jwtUtil.getSubjectFromRefreshToken(token);
-        KollappUser kollappUser = userRepo.findByUsername(username)
-                .orElseThrow(() -> new KollappUserNotFoundException(messageSource));
+        KollappUser kollappUser =
+                userRepo.findByUsername(username).orElseThrow(() -> new KollappUserNotFoundException(messageSource));
         if (!kollappUser.isActivated()) {
             throw new EmailIsNotConfirmedException(messageSource);
         }

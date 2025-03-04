@@ -17,7 +17,13 @@ import lombok.AllArgsConstructor;
 import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
 import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -33,20 +39,21 @@ public class ActivityController {
 
     @GetMapping("/{organization-id}/activities")
     @Operation(summary = "Get the activities of an organization", security = {
-            @SecurityRequirement(name = "bearer-key") })
+            @SecurityRequirement(name = "bearer-key")})
     @RequiresManagerOrMemberRole
-    public ResponseEntity<ResponseTO> getActivitiesOfOrganization(@PathVariable("organization-id") long organizationId) {
+    public ResponseEntity<ResponseTO> getActivitiesOfOrganization(
+            @PathVariable("organization-id") long organizationId) {
         List<Activity> activities = activityService.getActivitiesOfOrganization(organizationId);
         List<ActivityTO> activityTOs = activities.stream().map(a -> activityMapper.activityToActivityTO(a)).toList();
         return ResponseEntity.ok(new DataResponseTO(activityTOs, "success.activity.get", messageSource));
     }
 
     @PostMapping("/{organization-id}/activity")
-    @Operation(summary = "Create new activity for organization", security = {
-            @SecurityRequirement(name = "bearer-key") })
+    @Operation(summary = "Create new activity for organization", security = {@SecurityRequirement(name = "bearer-key")})
     @RequiresManagerRole
     public ResponseEntity<ResponseTO> createNewActivity(@PathVariable("organization-id") long organizationId,
-                                                        @RequestBody ActivityCreationRequestTO activityCreationRequestTO ) {
+                                                        @RequestBody
+                                                        ActivityCreationRequestTO activityCreationRequestTO) {
         Activity activity = activityMapper.activityCreationRequestTOToActivity(activityCreationRequestTO);
         Activity persistedActivity = activityService.createActivityForOrganization(organizationId, activity);
         ActivityTO activityTO = activityMapper.activityToActivityTO(persistedActivity);
@@ -54,12 +61,12 @@ public class ActivityController {
     }
 
     @PostMapping("/{organization-id}/activity/{activity-id}")
-    @Operation(summary = "Update activity of organization", security = {
-            @SecurityRequirement(name = "bearer-key") })
+    @Operation(summary = "Update activity of organization", security = {@SecurityRequirement(name = "bearer-key")})
     @RequiresManagerRole
     public ResponseEntity<ResponseTO> updateActivityOfOrganization(@PathVariable("organization-id") long organizationId,
                                                                    @PathVariable("activity-id") long activityId,
-                                                                   @RequestBody ActivityUpdateRequestTO activityUpdateRequestTO) {
+                                                                   @RequestBody
+                                                                   ActivityUpdateRequestTO activityUpdateRequestTO) {
         Activity activityToBeUpdated = activityMapper.activityUpdateTOToActivity(activityUpdateRequestTO);
         Activity updatedActivity = activityService.updateActivity(organizationId, activityId, activityToBeUpdated);
         ActivityTO activityTO = activityMapper.activityToActivityTO(updatedActivity);
@@ -67,11 +74,10 @@ public class ActivityController {
     }
 
     @DeleteMapping("/{organization-id}/activity/{activity-id}")
-    @Operation(summary = "Update activity of organization", security = {
-            @SecurityRequirement(name = "bearer-key") })
+    @Operation(summary = "Update activity of organization", security = {@SecurityRequirement(name = "bearer-key")})
     @RequiresManagerRole
-    public ResponseEntity<MessageResponseTO> deleteActivityOfOrganization(@PathVariable("organization-id") long organizationId,
-                                                                          @PathVariable("activity-id") long activityId){
+    public ResponseEntity<MessageResponseTO> deleteActivityOfOrganization(
+            @PathVariable("organization-id") long organizationId, @PathVariable("activity-id") long activityId) {
         activityService.deleteActivity(organizationId, activityId);
         return ResponseEntity.ok(new MessageResponseTO("success.activity.delete", messageSource));
     }

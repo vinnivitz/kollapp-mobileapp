@@ -1,9 +1,9 @@
 package com.none.kollappbackend.user.application.service.impl;
 
+import com.none.kollappbackend.user.application.exception.UsernameNotFoundException;
 import com.none.kollappbackend.user.application.model.KollappUser;
 import com.none.kollappbackend.user.application.model.KollappUserDetails;
 import com.none.kollappbackend.user.application.repository.KollappUserRepository;
-import com.none.kollappbackend.user.application.exception.UsernameNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -23,19 +23,16 @@ public class KollappUserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
     private KollappUserRepository userRepository;
-    
+
     @Override
-    public org.springframework.security.core.userdetails.UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        KollappUser kollappUser = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(messageSource));
-        List<GrantedAuthority> authorities = kollappUser.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.name()))
-                .collect(Collectors.toList());
-        return KollappUserDetails.builder()
-                .username(kollappUser.getUsername())
-                .isActivated(kollappUser.isActivated())
-                .email(kollappUser.getEmail())
-                .password(kollappUser.getPassword())
-                .authorities(authorities)
-                .build();
+    public org.springframework.security.core.userdetails.UserDetails loadUserByUsername(String username)
+            throws UsernameNotFoundException {
+        KollappUser kollappUser =
+                userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(messageSource));
+        List<GrantedAuthority> authorities =
+                kollappUser.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.name()))
+                        .collect(Collectors.toList());
+        return KollappUserDetails.builder().username(kollappUser.getUsername()).isActivated(kollappUser.isActivated())
+                .email(kollappUser.getEmail()).password(kollappUser.getPassword()).authorities(authorities).build();
     }
 }

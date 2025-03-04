@@ -1,23 +1,23 @@
 package com.none.kollappbackend.core.config;
 
-import java.util.Locale;
-import java.util.Optional;
-
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.AbstractLocaleResolver;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+
+import java.util.Locale;
+import java.util.Optional;
 
 @Component
 public class LocaleConfig {
 
     /**
      * It provides the message source for the internationalization.
-     * 
+     *
      * @return the message source
      */
     @Bean
@@ -30,7 +30,7 @@ public class LocaleConfig {
 
     /**
      * It provides the locale resolver for the internationalization.
-     * 
+     *
      * @return the locale resolver
      */
     @Bean
@@ -47,9 +47,7 @@ public class LocaleConfig {
         @Override
         public Locale resolveLocale(HttpServletRequest request) {
             String acceptLanguage = request.getHeader("Accept-Language");
-            return Optional.ofNullable(acceptLanguage)
-                    .map(Locale::forLanguageTag)
-                    .orElse(getDefaultLocale());
+            return Optional.ofNullable(acceptLanguage).map(Locale::forLanguageTag).orElse(getDefaultLocale());
         }
 
         @SuppressWarnings("null")

@@ -1,22 +1,18 @@
 package com.none.kollappbackend.core.util;
 
-import java.io.IOException;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.none.kollappbackend.core.adapters.primary.rest.model.ErrorResponseTO;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.none.kollappbackend.core.adapters.primary.rest.model.ErrorResponseTO;
-
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
 
 @Slf4j
 @Component
 public class ResponseUtil {
-    public void createMessageResponse(HttpServletResponse response, int code, String message)
-            throws JsonProcessingException, IOException {
+    public void createMessageResponse(HttpServletResponse response, int code, String message) throws IOException {
         log.error("Error response: " + message);
         response.setStatus(code);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

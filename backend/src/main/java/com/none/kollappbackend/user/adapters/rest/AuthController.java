@@ -13,7 +13,12 @@ import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/public/auth")
@@ -29,8 +34,8 @@ public class AuthController {
     @PostMapping("/signin")
     @Operation(summary = "Sign in a kollapp user")
     public ResponseEntity<ResponseTO> authenticateKollappUser(@Valid @RequestBody LoginRequestTO loginRequestTO) {
-        AuthenticatedKollappUser authenticatedKollappUser = authService.authenticate(loginRequestTO.getUsername(),
-                loginRequestTO.getPassword());
+        AuthenticatedKollappUser authenticatedKollappUser =
+                authService.authenticate(loginRequestTO.getUsername(), loginRequestTO.getPassword());
         return ResponseEntity.ok(new DataResponseTO(authenticatedKollappUser, "success.user.signin", messageSource));
     }
 
@@ -38,6 +43,7 @@ public class AuthController {
     @Operation(summary = "Refresh the access token")
     public ResponseEntity<ResponseTO> refreshAccessToken(@RequestParam("token") String refreshToken) {
         String accessToken = authService.refresh(refreshToken);
-        return ResponseEntity.ok(new DataResponseTO(new AuthToken(accessToken), "success.user.refresh-token", messageSource));
+        return ResponseEntity.ok(
+                new DataResponseTO(new AuthToken(accessToken), "success.user.refresh-token", messageSource));
     }
 }

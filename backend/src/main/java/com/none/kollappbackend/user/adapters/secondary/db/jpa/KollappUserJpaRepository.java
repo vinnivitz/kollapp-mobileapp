@@ -9,7 +9,10 @@ import java.util.Optional;
 @Repository
 public interface KollappUserJpaRepository extends JpaRepository<KollappUser, Long> {
     Optional<KollappUser> findByUsername(String username);
+
     Optional<KollappUser> findByEmail(String email);
+
     boolean existsByUsername(String username);
+
     boolean existsByEmail(String email);
 }
