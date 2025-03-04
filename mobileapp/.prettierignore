@@ -11,13 +11,10 @@ vite.config.ts.timestamp-*
 /docs
 /assets
 /icons
-/node
 /static
 
-# Ignore files for PNPM, NPM and YARN
+# Ignore lock file
 pnpm-lock.yaml
-package-lock.json
-yarn.lock
 
 # Ignore build files
 /android

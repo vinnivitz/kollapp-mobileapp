@@ -83,7 +83,6 @@ export default ts.config(
 			'assets/',
 			'android/',
 			'icons/',
-			'node/',
 			'node_modules/',
 			'test-results/',
 			'.env',

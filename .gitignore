@@ -7,7 +7,6 @@
 
 /mobileapp/test-results
 /mobileapp/node_modules
-/mobileapp/node
 
 # Output
 /mobileapp/.output

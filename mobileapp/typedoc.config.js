@@ -2,7 +2,10 @@
 const config = {
 	entryPoints: [
 		'./src/lib/utils',
-		'./src/lib/models',
+		'./src/lib/models/preferences',
+		'./src/lib/models/routing',
+		'./src/lib/models/store',
+		'./src/lib/models/ui',
 		'./src/lib/store',
 		'./src/lib/api/resources',
 		'./src/lib/api/dto',
