@@ -1,0 +1,31 @@
+{
+  "@@locale": "en",
+  "title": "My Web App Title",
+  "downloadTitle": "Get the Kollapp App.",
+  "playStore": "Play Store",
+  "appStore": "App Store",
+  "downloadAPK": "Download APK",
+  "english": "English",
+  "german": "German",
+  "@title": {
+    "description": "The title displayed in the AppBar"
+  },
+  "@downloadTitle": {
+    "description": "Title above the store buttons"
+  },
+  "@playStore": {
+    "description": "Label for the Play Store button"
+  },
+  "@appStore": {
+    "description": "Label for the App Store button"
+  },
+  "@english": {
+    "description": "Label for the English language locale dropdown"
+  },
+  "@german": {
+    "description": "Label for the German language locale dropdown"
+  },
+  "@downloadAPK": {
+    "description": "Label for the APK download button"
+  }
+}
