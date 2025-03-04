@@ -2,8 +2,6 @@ package com.none.kollappbackend.core;
 
 import com.none.kollappbackend.KollappBackendApplication;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MySQLContainer;
@@ -13,10 +11,10 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBootTest(classes = KollappBackendApplication.class)
 public abstract class BaseIT {
 
-    static final MySQLContainer MY_SQL_CONTAINER;
+    static final MySQLContainer<?> MY_SQL_CONTAINER;
 
     static {
-        MY_SQL_CONTAINER = new MySQLContainer("mysql:latest");
+        MY_SQL_CONTAINER = new MySQLContainer<>("mysql:latest");
         MY_SQL_CONTAINER.start();
     }
 
