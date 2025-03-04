@@ -47,11 +47,11 @@ function createStore(): ConnectionStore {
 
 		if (!isOnline && wasOnline) {
 			await storeValue(PreferencesKey.ONLINE, false);
-			showAlert({ message: $t('api.offline'), type: AlertType.ERROR });
+			showAlert($t('api.offline'));
 			console.info($t('api.offline'));
 		} else if (isOnline && !wasOnline) {
 			await storeValue(PreferencesKey.ONLINE, true);
-			showAlert({ message: $t('api.online'), type: AlertType.INFO });
+			showAlert($t('api.online'), { type: AlertType.INFO });
 			console.info($t('api.online'));
 		}
 	}

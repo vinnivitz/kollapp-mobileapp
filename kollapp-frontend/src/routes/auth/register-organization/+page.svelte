@@ -14,13 +14,7 @@
 	import Welcome from '$lib/components/widgets/Welcome.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
-	import {
-		AlertType,
-		Form,
-		type FormActions,
-		type FormConfig,
-		type ValidationResult
-	} from '$lib/models/ui';
+	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
 	import { authenticationStore, organizationStore } from '$lib/store';
 	import { customForm, showAlert } from '$lib/utils';
 
@@ -29,10 +23,7 @@
 	$effect(() => {
 		if (!$authenticationStore) {
 			if (!canceled) {
-				showAlert({
-					type: AlertType.ERROR,
-					message: $t('routes.auth.register-organization.not-authenticated')
-				});
+				showAlert($t('routes.auth.register-organization.not-authenticated'));
 			}
 			goto(PageRoute.AUTH.LOGIN);
 		}

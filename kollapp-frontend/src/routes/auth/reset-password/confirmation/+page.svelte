@@ -15,23 +15,14 @@
 	import InputItem from '$lib/components/widgets/InputItem.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
-	import {
-		AlertType,
-		Form,
-		type FormActions,
-		type FormConfig,
-		type ValidationResult
-	} from '$lib/models/ui';
+	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
 	import { customForm, showAlert } from '$lib/utils';
 
 	const { data }: { data: PageData } = $props();
 
 	$effect(() => {
 		if (!data.token) {
-			showAlert({
-				type: AlertType.ERROR,
-				message: $t('routes.auth.reset-password.confirmation.no-token')
-			});
+			showAlert($t('routes.auth.reset-password.confirmation.no-token'));
 			goto(PageRoute.AUTH.LOGIN);
 		}
 	});

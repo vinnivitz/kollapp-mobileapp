@@ -1,9 +1,8 @@
 /**
  * Alert model for displaying messages.
  */
-export type AlertModel = {
-	message: string;
-	type: AlertType;
+export type AlertConfig = {
+	type?: AlertType;
 	duration?: number;
 };
 

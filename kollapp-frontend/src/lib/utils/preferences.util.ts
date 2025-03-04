@@ -1,5 +1,7 @@
 import { Preferences } from '@capacitor/preferences';
 
+import { showAlert } from './alert.util';
+
 import environment from '$lib/environment';
 import type { PreferencesKey } from '$lib/models/preferences';
 
@@ -10,7 +12,11 @@ import type { PreferencesKey } from '$lib/models/preferences';
  * @returns {Promise<void>}
  */
 export async function storeValue<T>(key: PreferencesKey, value: T): Promise<void> {
-	await Preferences.set({ key: getKey(key), value: JSON.stringify(value) });
+	try {
+		await Preferences.set({ key: getKey(key), value: JSON.stringify(value) });
+	} catch {
+		showAlert('Failed to store value');
+	}
 }
 
 /**
@@ -19,12 +25,16 @@ export async function storeValue<T>(key: PreferencesKey, value: T): Promise<void
  * @returns {Promise<T | undefined>}
  */
 export async function getStoredValue<T = string>(key: PreferencesKey): Promise<T | undefined> {
-	const result = await Preferences.get({ key: getKey(key) });
-	const value = result.value ?? undefined;
 	try {
-		return value ? (JSON.parse(value) as T) : undefined;
+		const result = await Preferences.get({ key: getKey(key) });
+		const value = result.value ?? undefined;
+		try {
+			return value ? (JSON.parse(value) as T) : undefined;
+		} catch {
+			return value as T;
+		}
 	} catch {
-		return value as T;
+		showAlert('Failed to retrieve value');
 	}
 }
 
@@ -34,7 +44,11 @@ export async function getStoredValue<T = string>(key: PreferencesKey): Promise<T
  * @returns {Promise<void>}
  */
 export async function removeStoredValue(key: PreferencesKey): Promise<void> {
-	await Preferences.remove({ key: getKey(key) });
+	try {
+		await Preferences.remove({ key: getKey(key) });
+	} catch {
+		showAlert('Failed to remove value');
+	}
 }
 
 /**

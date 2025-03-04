@@ -18,13 +18,7 @@
 	import { PreferencesKey } from '$lib/models/preferences';
 	import { PageRoute } from '$lib/models/routing';
 	import type { AuthenticationModel } from '$lib/models/store';
-	import {
-		AlertType,
-		Form,
-		type FormActions,
-		type FormConfig,
-		type ValidationResult
-	} from '$lib/models/ui';
+	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
 	import { authenticationStore } from '$lib/store';
 	import { customForm, showAlert, storeValue } from '$lib/utils';
 
@@ -58,10 +52,7 @@
 			} else {
 				if (validationResult.errors?.[0].code === ValidationCode.EMAIL_NOT_CONFIRMED) {
 					emailNotConfirmed = true;
-					showAlert({
-						type: AlertType.ERROR,
-						message: $t('routes.auth.login.alert.email-not-confirmed')
-					});
+					showAlert($t('routes.auth.login.alert.email-not-confirmed'));
 				}
 				actions.applyValidationFeedback(validationResult);
 			}

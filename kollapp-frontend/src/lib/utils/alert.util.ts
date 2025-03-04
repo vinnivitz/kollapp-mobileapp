@@ -3,20 +3,21 @@ import { alertCircleOutline, checkmarkCircleSharp } from 'ionicons/icons';
 import { get } from 'svelte/store';
 
 import { t } from '$lib/locales';
-import { AlertType, type AlertModel } from '$lib/models/ui';
+import { AlertType, type AlertConfig } from '$lib/models/ui';
 
 const $t = get(t);
 
 /**
  * Shows an alert to the user
- * @param model alert model
+ * @param config alert model
  */
-export async function showAlert(model: AlertModel): Promise<void> {
+export async function showAlert(message: string, config?: AlertConfig): Promise<void> {
+	const type = config?.type ?? AlertType.ERROR;
 	const toast = await toastController.create({
-		color: model.type,
-		duration: model.duration ?? 3000,
-		message: model.message,
-		icon: model.type === AlertType.ERROR ? alertCircleOutline : checkmarkCircleSharp,
+		message,
+		color: type,
+		duration: config?.duration ?? 3000,
+		icon: type === AlertType.ERROR ? alertCircleOutline : checkmarkCircleSharp,
 		buttons: [$t('utils.alert.button')]
 	});
 

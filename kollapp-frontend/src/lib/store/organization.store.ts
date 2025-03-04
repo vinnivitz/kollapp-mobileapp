@@ -16,8 +16,7 @@ function createStore(): OrganizationStore {
 	async function init(): Promise<void> {
 		if (await getStoredValue<boolean>(PreferencesKey.LOCAL_USER)) {
 			const model: OrganizationModel = { name: 'My Collective' };
-			await _set(model);
-			return;
+			return _set(model);
 		}
 
 		const body = await apiResources.organization.getOrganization();

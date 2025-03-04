@@ -21,8 +21,7 @@ function createStore(): UserStore {
 				email: 'john@doe.com',
 				username: 'johndoe'
 			};
-			await _set(model);
-			return;
+			return _set(model);
 		}
 		const body = await apiResources.user.getAuthenticatedUser();
 

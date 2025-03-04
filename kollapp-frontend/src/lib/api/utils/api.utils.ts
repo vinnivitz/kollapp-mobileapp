@@ -153,7 +153,7 @@ async function getResponseBody<T>(
 	const validationField = body.validationField;
 	const validationCode = body.validationCode;
 	if (!silent && !validationField) {
-		showAlert({ message, type: response.ok ? AlertType.INFO : AlertType.ERROR });
+		showAlert(message, { type: response.ok ? AlertType.INFO : AlertType.ERROR });
 	}
 	// only triggered in dev mode
 	if (dev) {
@@ -203,7 +203,7 @@ async function createErrorResponse(
 	silent: boolean
 ): Promise<ResponseBody> {
 	if (!silent) {
-		showAlert({ message, type: AlertType.ERROR });
+		showAlert(message);
 	}
 	if (dev) {
 		console.warn(`status: ${status}, msg: ${message}`);
