@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @Slf4j
 @Order(1)
-@ControllerAdvice(basePackages = {"com.none.kollappbackend.organization"})
+@ControllerAdvice(basePackages = {"com.none.kollappbackend.user"})
 public class UserExceptionHandler {
     @Autowired
     private MessageSource messageSource;
