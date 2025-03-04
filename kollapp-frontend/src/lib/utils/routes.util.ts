@@ -4,7 +4,7 @@ import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
 import { page } from '$app/stores';
 
-import { PageRoute } from '$lib/models';
+import { PageRoute } from '$lib/models/routing';
 
 /**
  * Navigates back in the browser history if history is present otherwise one hirarchy up.

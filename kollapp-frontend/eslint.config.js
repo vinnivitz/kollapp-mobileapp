@@ -49,7 +49,9 @@ export default ts.config(
 					}
 				}
 			],
-			'unicorn/filename-case': 'off'
+			'unicorn/filename-case': 'off',
+			'svelte/no-unused-svelte-ignore': 'off',
+			'security/detect-non-literal-fs-filename': 'off'
 		}
 	},
 	{
@@ -59,7 +61,8 @@ export default ts.config(
 				...globals.node,
 				HTMLIonTabsElement: 'readonly',
 				HTMLIonRefresherElement: 'readonly',
-				HTMLIonLoadingElement: 'readonly'
+				HTMLIonLoadingElement: 'readonly',
+				HTMLIonMenuElement: 'readonly'
 			}
 		}
 	},
@@ -84,7 +87,8 @@ export default ts.config(
 			'node_modules/',
 			'test-results/',
 			'.env',
-			'vite.config.ts.*'
+			'vite.config.ts.*',
+			'static/'
 		]
 	}
 );

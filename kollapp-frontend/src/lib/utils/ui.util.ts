@@ -3,8 +3,12 @@ import { get, writable } from 'svelte/store';
 import { ObjectSchema, type AnyObject, ValidationError } from 'yup';
 
 import { t } from '$lib/locales';
-import type { ValidationError as CustomValidationError, Form, FormActions } from '$lib/models';
-import { type ValidationResult } from '$lib/models';
+import type {
+	Form,
+	FormActions,
+	ValidationResult,
+	ValidationError as CustomValidationError
+} from '$lib/models/ui';
 
 const $t = get(t);
 
@@ -36,6 +40,17 @@ export function clickableElement<T>(
 }
 
 /**
+ * Triggers a click event on an element with a specific label
+ * @param label label of the element to click
+ */
+export function triggerClickByLabel(label: string): void {
+	[...document.querySelectorAll('ion-label')]
+		.find((element) => element.textContent === label)
+		?.closest('ion-item')
+		?.click();
+}
+
+/**
  * Creates a custom form with validation and feedback
  * @param node form element
  * @param data form data
@@ -53,7 +68,6 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 		data.config.exposedActions({
 			applyValidationFeedback,
 			applyValidationFeedbackByKey,
-			applyValidationFeedbackByName,
 			resetModel,
 			onUpdate,
 			onSubmit
@@ -64,8 +78,9 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 		input.classList.add('ion-touched');
 		input.labelPlacement = 'floating';
 		const formatter = data.config.formatters?.[input.name as keyof T];
-		const value = data.model[input.name as keyof T];
-		input.value = formatter ? formatter(value) : (value as string | number);
+		input.value = (
+			formatter ? formatter(data.model[input.name as keyof T]) : data.model[input.name as keyof T]
+		) as string;
 		if (input.type === 'password') {
 			input.clearOnEdit = false;
 			addPasswordIcon(input);
@@ -80,9 +95,8 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 	});
 
 	node.addEventListener('ionBlur', async (event) => {
-		const input = event.target as HTMLInputElement;
-		if (input && keys.includes(input.name) && data.config.onBlur) {
-			data.config.onBlur(input.name);
+		if (data.config?.onBlur) {
+			data.config.onBlur((event.target as HTMLInputElement).name as keyof T);
 		}
 	});
 
@@ -105,17 +119,19 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 		passwordIcons.push(icon);
 	}
 
-	function resetModel(): void {
-		data.model = data.config.schema.cast({}) as T;
+	function resetModel(clear = false): void {
+		data.model = (clear ? {} : data.config.schema.cast({})) as T;
 		for (const input of inputs) {
 			input.classList.remove('ion-invalid');
 			input.errorText = '';
-			input.value = data.model[input.name as keyof T] as string;
+			input.value = clear ? '' : (data.model[input.name as keyof T] as string);
 		}
-		for (const input of customInputs) resetCustomInput(input);
+		for (const input of customInputs) {
+			removeCustomValidationFeedback(input);
+		}
 	}
 
-	function resetCustomInput(input: HTMLElement): void {
+	function removeCustomValidationFeedback(input: HTMLElement): void {
 		const ionItem = input.closest('ion-item');
 		if (ionItem) {
 			ionItem.style.removeProperty('--border-color');
@@ -138,57 +154,56 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 		}
 	}
 
-	async function onUpdate(key: string, value: T[keyof T]): Promise<void> {
-		const input = inputs.find((input) => input.name === key);
-		if (input) {
-			const formatter = data.config.formatters?.[key as keyof T];
-			const formattedValue = formatter ? formatter(value) : (value as string | number);
-			input.value = formattedValue;
+	async function onUpdate(key: keyof T, value: T[keyof T]): Promise<void> {
+		const formatter = data.config.formatters?.[key as keyof T];
+		if (formatter) {
+			const input = inputs.find((input) => input.name === key);
+			if (input) {
+				input.value = formatter(value) as string;
+			}
 		}
 		_onUpdate(key, value);
 	}
 
-	async function _onUpdate(key: string, value: T[keyof T]): Promise<void> {
+	async function _onUpdate(key: keyof T, value: T[keyof T]): Promise<void> {
 		data.model[key as keyof T] = value;
 		onTouched();
 		if (dirty) {
 			const validationResult = await runCustomValidators(
 				await validate(data.config.schema, data.model)
 			);
-			if (inputs.some((input) => input.name === key)) {
-				applyValidationFeedbackByKey(key, validationResult);
-			} else {
-				applyValidationFeedbackByName(key, validationResult);
-			}
+			applyValidationFeedbackByKey(key, validationResult);
 		}
 	}
 
 	function applyValidationFeedback(result: ValidationResult): void {
-		for (const input of inputs) applyValidationFeedbackByKey(input.name, result);
-		for (const input of customInputs) applyValidationFeedbackByName(input.dataset.name!, result);
-	}
-
-	function applyValidationFeedbackByName(name: string, result: ValidationResult): void {
-		const message = result.errors?.find((error) => error.field === name)?.message;
-		const input = document.querySelector(`[data-name="${name}"]`) as HTMLInputElement;
-		if (input) {
-			resetCustomInput(input);
-			if (message) {
-				createErrorElement(input, message);
-			}
+		for (const input of inputs) {
+			applyValidationFeedbackByKey(input.name as keyof T, result);
+		}
+		for (const input of customInputs) {
+			applyValidationFeedbackByKey(input.dataset.name as keyof T, result);
 		}
 	}
 
-	function applyValidationFeedbackByKey(key: string, result: ValidationResult): void {
+	function applyValidationFeedbackByKey(key: keyof T, result: ValidationResult): void {
 		const input = inputs.find((input) => input.name === key);
+		const message = result.errors?.find((error) => error.field === key)?.message;
+
 		if (input) {
-			const message = result.errors?.find((error) => error.field === key)?.message;
 			if (message) {
 				input.classList.add('ion-invalid');
 				input.errorText = message;
 			} else {
 				input.classList.remove('ion-invalid');
 				input.errorText = '';
+			}
+		} else {
+			const customInput = customInputs.find((input) => input.dataset.name === key);
+			if (customInput) {
+				removeCustomValidationFeedback(customInput);
+				if (message) {
+					applyCustomValidationFeedback(customInput, message);
+				}
 			}
 		}
 	}
@@ -207,8 +222,8 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 	}
 
 	async function onChange(event: Event): Promise<void> {
-		const key = (event.target as HTMLInputElement).name;
-		const value = (event.target as HTMLInputElement).value;
+		const key = (event.target as HTMLInputElement).name as keyof T;
+		const value = (event.target as HTMLInputElement).value as T[keyof T];
 		const parser = data.config.parser?.[key as keyof T];
 		await (parser ? _onUpdate(key, await parser(value)) : _onUpdate(key, value as T[keyof T]));
 		if (data.config.onChange) {
@@ -232,7 +247,7 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 		}
 	}
 
-	function createErrorElement(element: HTMLElement, message: string): void {
+	function applyCustomValidationFeedback(element: HTMLElement, message: string): void {
 		const item = element.closest('ion-item');
 		if (item) {
 			item.style.setProperty('--border-color', 'var(--highlight-color-invalid)');
@@ -259,7 +274,6 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 		ionFormActions.set({
 			applyValidationFeedback: () => {},
 			applyValidationFeedbackByKey: () => {},
-			applyValidationFeedbackByName: () => {},
 			onUpdate: () => {},
 			resetModel: () => {},
 			onSubmit: () => {}

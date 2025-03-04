@@ -1,27 +1,26 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 
-	import { PageRoute } from '$lib/models';
+	import { PageRoute } from '$lib/models/routing';
 	import { clickableElement, navigateBack } from '$lib/utils';
 
 	let { title, showBackButton }: { title: string; showBackButton?: boolean } = $props();
 </script>
 
 <ion-header>
-	<ion-toolbar color="primary">
+	<ion-toolbar>
 		<ion-title>{title}</ion-title>
 
 		<ion-buttons slot="start">
 			<ion-button>
 				{#if showBackButton}
-					<ion-back-button default-href="/" use:clickableElement={async () => await navigateBack()}>
-					</ion-back-button>
+					<ion-back-button default-href="/" use:clickableElement={navigateBack}> </ion-back-button>
 				{:else}
 					<img
 						use:clickableElement={() => goto(PageRoute.HOME)}
 						src="/logo.png"
 						alt="Logo"
-						class="h-8 w-8"
+						class="h-8 w-8 black-and-white:grayscale"
 					/>
 				{/if}
 			</ion-button>
@@ -31,3 +30,9 @@
 		</ion-buttons>
 	</ion-toolbar>
 </ion-header>
+
+<style lang="postcss">
+	ion-toolbar {
+		--min-height: 3.25rem;
+	}
+</style>

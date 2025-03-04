@@ -25,6 +25,16 @@
 							"max": "Der Benutzername darf maximal 255 Zeichen lang sein",
 							"min": "Der Benutzername muss mindestens 2 Zeichen lang sein",
 							"required": "Benutzername ist erforderlich"
+						},
+						"surname": {
+							"min": "Vorname muss mindestens ein Zeichen lang sein",
+							"max": "Der Nachname muss weniger als 50 Zeichen lang sein",
+							"required": "Nachname ist erforderlich"
+						},
+						"name": {
+							"max": "Der Name muss weniger als 50 Zeichen lang sein",
+							"min": "Der Name muss mindestens 1 Zeichen lang sein",
+							"required": "Name ist erforderlich"
 						}
 					}
 				}
@@ -54,7 +64,7 @@
 					"validation": {
 						"newPassword": {
 							"matches": "Das Passwort muss mindestens einen Großbuchstaben, einen Kleinbuchstaben und eine Zahl enthalten",
-							"max": "Das neue Passwort muss weniger als 255 Zeichen lang sein",
+							"max": "Das neue Passwort darf maximal 255 Zeichen lang sein",
 							"min": "Das neue Passwort muss mindestens 8 Zeichen lang sein",
 							"required": "Neues Passwort ist erforderlich"
 						},
@@ -73,9 +83,23 @@
 						},
 						"new-password": {
 							"matches": "Das neue Passwort muss mindestens einen Großbuchstaben, einen Kleinbuchstaben und eine Zahl enthalten",
-							"max": "Das neue Passwort muss weniger als 255 Zeichen lang sein",
+							"max": "Das neue Passwort darf maximal 255 Zeichen lang sein",
 							"min": "Das neue Passwort muss mindestens 8 Zeichen lang sein",
 							"required": "Neues Passwort ist erforderlich"
+						},
+						"confirm-password": {
+							"no-match": "Passwörter stimmen nicht überein"
+						}
+					}
+				}
+			},
+			"register-organization": {
+				"schema": {
+					"validation": {
+						"name": {
+							"max": "Der Name darf maximal 50 Zeichen lang sein",
+							"min": "Der Name muss mindestens ein Charakter lang sein",
+							"required": "Name ist erforderlich"
 						}
 					}
 				}
@@ -112,14 +136,20 @@
 		"layout": {
 			"header": {
 				"button": {
-					"login": "Login",
-					"register": "Registrieren",
-					"logout": "Logout"
+					"logout": "Logout",
+					"account": "Konto"
 				}
 			},
 			"menu": {
 				"searchbar": {
-					"placeholder": "Durchsuche die App..."
+					"placeholder": "Durchsuche die App...",
+					"title": {
+						"found": "Suchergebnisse für \"{{value}}\" \"",
+						"not-found": "Keine Ergebnisse für \"{{value}}\" gefunden \""
+					}
+				},
+				"list": {
+					"organization": "Kollektiv"
 				}
 			}
 		}
@@ -128,37 +158,30 @@
 		"account": {
 			"title": "Konto",
 			"app": {
-				"language": {
-					"action-sheet": {
-						"buttons": {
-							"english": "Englisch",
-							"german": "Deutsch"
-						},
-						"title": "Sprache ändern"
-					}
-				},
 				"list": {
-					"appearence": {
-						"button": "Dunkler Modus",
-						"title": "Darstellung"
-					},
 					"language": {
-						"button": "Sprache ändern",
-						"title": "Sprache"
+						"button": "Sprache ändern"
+					},
+					"layout": {
+						"button": "Layout ändern"
+					},
+					"theme": {
+						"button": "Farbthema ändern"
+					},
+					"restore": {
+						"button": "Standardeinstellungen wiederherstellen"
 					}
-				},
-				"title": "Anwendung"
+				}
 			},
 			"list": {
 				"application": {
-					"button": "Anwendungseinstellungen",
 					"title": "Anwendung"
 				},
 				"account": {
 					"button": {
-						"register": "Registrieren",
-						"login": "Einloggen",
-						"change-password": "Password ändern"
+						"change-password": "Password ändern",
+						"update-data": "Benutzerdaten aktualisieren",
+						"delete-account": "Konto löschen"
 					},
 					"title": "Kontoeinstellungen"
 				}
@@ -171,6 +194,59 @@
 					},
 					"submit": "Passwort aktualisieren"
 				}
+			},
+			"language": {
+				"action-sheet": {
+					"buttons": {
+						"english": "Englisch",
+						"german": "Deutsch"
+					},
+					"title": "Sprache ändern"
+				}
+			},
+			"layout": {
+				"action-sheet": {
+					"buttons": {
+						"classic": "Klassisch",
+						"modern": "Modern",
+						"playful": "Verspielt"
+					},
+					"title": "Layout ändern"
+				}
+			},
+			"theme": {
+				"action-sheet": {
+					"buttons": {
+						"dark": "Dunkel",
+						"light": "Hell",
+						"system": "Systemeinstellung",
+						"black-and-white": "Schwarz und Weiß"
+					},
+					"title": "Farbthema ändern"
+				}
+			},
+			"update-data": {
+				"card": {
+					"form": {
+						"button": {
+							"submit": "Aktualisieren"
+						},
+						"email": "E-Mail",
+						"name": "Name",
+						"surename": "Nachname",
+						"username": "Benutzername"
+					},
+					"title": "Aktualisiere deine Daten"
+				},
+				"title": "Benutzerdaten"
+			},
+			"delete": {
+				"card": {
+					"button": "Konto löschen",
+					"title": "Bist du sicher?",
+					"note": "Dies kann nicht rückgängig gemacht werden."
+				},
+				"title": "Konto löschen"
 			}
 		},
 		"auth": {
@@ -181,8 +257,7 @@
 						"password": "Passwort",
 						"username": "Benutzername"
 					},
-					"submit": "Einloggen",
-					"title": "Melde dich bei Kollapp an"
+					"submit": "Einloggen"
 				},
 				"register": {
 					"link": "Registrieren",
@@ -198,6 +273,16 @@
 				},
 				"alert": {
 					"email-not-confirmed": "E-Mail ist nicht bestätigt"
+				},
+				"card": {
+					"welcome": {
+						"content": "Die App für alle Kollektive da draußen.",
+						"title": "Willkommen bei Kollapp!"
+					},
+					"dev": {
+						"title": "Entwickleroptionen",
+						"button": "Lokal anmelden"
+					}
 				}
 			},
 			"register": {
@@ -206,16 +291,36 @@
 						"confirm-password": "Passwort bestätigen",
 						"email": "E-Mail",
 						"password": "Passwort",
-						"username": "Benutzername"
+						"username": "Benutzername",
+						"surname": "Vorname",
+						"name": "Nachname"
 					},
-					"submit": "Registrieren",
-					"title": "Registriere dich bei Kollapp"
+					"submit": "Registrieren"
 				},
 				"login": {
 					"link": "Einloggen",
 					"text": "Du hast bereits ein Konto?"
 				},
-				"title": "Registrieren"
+				"title": "Registrieren",
+				"organization": {
+					"form": {
+						"input": {
+							"name": "Name"
+						},
+						"submit": "Kollektiv registrieren",
+						"title": "Wie heißt dein Kollektiv?"
+					},
+					"title": "Kollektiv erstellen"
+				},
+				"card": {
+					"join-organization": {
+						"content": "Wende dich an den Kollektiv-Administrator, welcher dir  eine Einladungs-Mail zusendet.",
+						"title": "Einem vorhandenen Kollektiv beitreten?"
+					},
+					"register-organization": {
+						"title": "Registriere ein neues Kollektiv!"
+					}
+				}
 			},
 			"reset-password": {
 				"card": {
@@ -237,10 +342,8 @@
 						"submit": "Passwort aktualisieren",
 						"title": "Setz dein Passwort zurück"
 					},
-					"register": {
-						"form": {}
-					},
-					"title": "Passwort zurücksetzen"
+					"title": "Passwort zurücksetzen",
+					"no-token": "Authentifizierungstoken nicht gefunden."
 				}
 			},
 			"resend-confirmation": {
@@ -253,21 +356,48 @@
 						"send": "Bestätigungs-E-Mail senden"
 					}
 				}
+			},
+			"change-password": {
+				"confirmation": {
+					"form": {
+						"title": "Aktualisiere dein Passwort"
+					},
+					"title": "Kennwort ändern"
+				}
 			}
 		},
 		"home": {
 			"title": "Kollapp",
 			"card": {
-				"content": "Die App für alle Kollektive",
-				"title": "Willkommen bei Kollapp",
-				"authenticated": {
-					"title": "Hallo"
+				"authenticated": {},
+				"organization": {
+					"button": "Zum Kollektiv"
+				},
+				"user": {
+					"button": "Zum Profil",
+					"title": "Hallo {{value}}"
 				}
 			}
 		},
 		"finances": {
 			"subtitle": "Hier geht es um einen Überblick über die Finanzen.",
 			"title": "Finanzen"
+		},
+		"organization": {
+			"title": "Kollektiv",
+			"update-info": {
+				"card": {
+					"button": "Aktualisieren",
+					"title": "Aktualisiere die Daten"
+				},
+				"title": "Kollektivdaten"
+			},
+			"list": {
+				"update-info": {
+					"title": "Informationen aktualisieren",
+					"update-info": "Kollektivdaten aktualisieren"
+				}
+			}
 		}
 	},
 	"utils": {

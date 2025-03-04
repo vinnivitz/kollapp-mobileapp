@@ -1,40 +1,54 @@
-import { writable, type Readable } from 'svelte/store';
+import { writable } from 'svelte/store';
 
-import { PreferencesKey, Theme } from '$lib/models';
+import { PreferencesKey } from '$lib/models/preferences';
+import { Theme, type ThemeStore } from '$lib/models/store';
 import { getStoredValue, storeValue } from '$lib/utils';
 
-async function initStore(): Promise<Theme> {
-	const value = await getStoredValue<Theme>(PreferencesKey.THEME);
-	const prefersDarkTheme = globalThis.matchMedia('(prefers-color-scheme: dark)').matches;
-	return value === Theme.DARK || (value !== Theme.LIGHT && prefersDarkTheme)
-		? Theme.DARK
-		: Theme.LIGHT;
-}
+function createStore(): ThemeStore {
+	const { subscribe, set } = writable<Theme | undefined>();
 
-async function updateTheme(theme: Theme): Promise<void> {
-	document.body.classList.toggle('dark', theme === Theme.DARK);
-	await storeValue(PreferencesKey.THEME, theme);
-}
-
-function createStore(): Readable<Theme> & {
-	setTheme: (theme: Theme) => Promise<void>;
-	init: () => Promise<void>;
-} {
-	const { subscribe, set } = writable<Theme>();
 	async function init(): Promise<void> {
-		const initialTheme = await initStore();
-		await updateTheme(initialTheme);
-		set(initialTheme);
+		const initialTheme = await getInitialTheme();
+		await _set(initialTheme);
 	}
-	async function setTheme(theme: Theme): Promise<void> {
-		await updateTheme(theme);
-		set(theme);
+	async function _set(value: Theme): Promise<void> {
+		setClass(value);
+		await storeValue(PreferencesKey.THEME, value);
+		set(value);
+	}
+
+	async function reset(): Promise<void> {
+		await _set(getPreferedColorScheme());
+	}
+
+	async function getInitialTheme(): Promise<Theme> {
+		const value = await getStoredValue<Theme>(PreferencesKey.THEME);
+		return value === Theme.DARK ||
+			(value !== Theme.LIGHT && getPreferedColorScheme() === Theme.DARK)
+			? Theme.DARK
+			: Theme.LIGHT;
+	}
+
+	function getPreferedColorScheme(): Theme {
+		return globalThis.matchMedia('(prefers-color-scheme: dark)').matches ? Theme.DARK : Theme.LIGHT;
+	}
+
+	function setClass(value: Theme): void {
+		if (value === Theme.SYSTEM) {
+			value = getPreferedColorScheme();
+			setClass(value);
+			return;
+		}
+
+		document.body.classList.remove(...Object.values(Theme));
+		document.body.classList.add(value);
 	}
 
 	return {
 		subscribe,
-		setTheme,
-		init
+		init,
+		set: _set,
+		reset
 	};
 }
 

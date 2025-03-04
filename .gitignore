@@ -15,6 +15,7 @@ target
 /kollapp-frontend/build
 /kollapp-frontend/dist
 /kollapp-frontend/docs
+/kollapp-frontend/visualize
 
 # OS
 /kollapp-frontend/.DS_Store

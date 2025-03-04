@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "label": "routes.account.list.account.button.update-data",
+    "icon": "personOutline",
+    "route": "/account/update-data"
+  },
+  {
+    "id": 2,
+    "label": "routes.account.list.account.button.change-password",
+    "icon": "keyOutline",
+    "route": "/account/change-password"
+  },
+  {
+    "id": 3,
+    "label": "routes.account.list.account.button.delete-account",
+    "icon": "trashOutline",
+    "route": "/account/delete"
+  },
+  {
+    "id": 4,
+    "label": "routes.account.app.list.language.button",
+    "icon": "languageOutline",
+    "route": "/account"
+  },
+  {
+    "id": 5,
+    "label": "routes.account.app.list.theme.button",
+    "icon": "colorPaletteOutline",
+    "route": "/account"
+  },
+  {
+    "id": 6,
+    "label": "routes.account.app.list.layout.button",
+    "icon": "colorWandOutline",
+    "route": "/account"
+  },
+  {
+    "id": 7,
+    "label": "routes.account.app.list.restore.button",
+    "icon": "refreshOutline",
+    "route": "/account"
+  },
+  {
+    "id": 8,
+    "label": "routes.organization.list.update-info.update-info",
+    "icon": "accessibilityOutline",
+    "route": "/organization/update-data"
+  }
+]

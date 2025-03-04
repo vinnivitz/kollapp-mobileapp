@@ -1,41 +1,181 @@
 <script lang="ts">
-	import { arrowForward } from 'ionicons/icons';
+	import type { ActionSheetButton } from '@ionic/core';
+	import { actionSheetController } from 'ionic-svelte';
+	import {
+		balloonOutline,
+		colorPaletteOutline,
+		colorWandOutline,
+		contrastOutline,
+		desktopOutline,
+		diamondOutline,
+		gridOutline,
+		keyOutline,
+		languageOutline,
+		moonOutline,
+		personOutline,
+		refreshOutline,
+		sunnyOutline,
+		trashOutline
+	} from 'ionicons/icons';
+	import { get } from 'svelte/store';
 
 	import { goto } from '$app/navigation';
 
-	import { isAuthenticated } from '$lib/api/utils';
-	import IonLayout from '$lib/components/layout/Layout.svelte';
+	import LayoutComponent from '$lib/components/layout/Layout.svelte';
+	import LabeledItem from '$lib/components/widgets/LabeledItem.svelte';
 	import { t } from '$lib/locales';
-	import { PageRoute } from '$lib/models';
-	import { clickableElement } from '$lib/utils';
+	import { PageRoute } from '$lib/models/routing';
+	import { Layout, Locale, Theme } from '$lib/models/store';
+	import { localeStore, themeStore } from '$lib/store';
+	import { layoutStore } from '$lib/store/layout.store';
+
+	async function openActionSheet(header: string, buttons: ActionSheetButton[]): Promise<void> {
+		const actionsheet = await actionSheetController.create({
+			translucent: true,
+			header,
+			buttons
+		});
+
+		await actionsheet.present();
+	}
+
+	async function openLocaleActionSheet(): Promise<void> {
+		const currentLocale = get(localeStore);
+
+		await openActionSheet($t('routes.account.language.action-sheet.title'), [
+			{
+				text: $t('routes.account.language.action-sheet.buttons.german'),
+				handler: () => localeStore.set(Locale.DE),
+				icon: '/locale/de.svg',
+				role: currentLocale === Locale.DE ? 'selected' : undefined
+			},
+			{
+				text: $t('routes.account.language.action-sheet.buttons.english'),
+				handler: () => localeStore.set(Locale.EN),
+				icon: '/locale/gb.svg',
+				role: currentLocale === Locale.EN ? 'selected' : undefined
+			}
+		]);
+	}
+
+	async function openLayoutActionSheet(): Promise<void> {
+		const currentLayout = get(layoutStore);
+
+		await openActionSheet($t('routes.account.layout.action-sheet.title'), [
+			{
+				text: $t('routes.account.layout.action-sheet.buttons.classic'),
+				handler: () => layoutStore.set(Layout.CLASSIC),
+				icon: gridOutline,
+				role: currentLayout === Layout.CLASSIC ? 'selected' : undefined
+			},
+			{
+				text: $t('routes.account.layout.action-sheet.buttons.modern'),
+				handler: () => layoutStore.set(Layout.MODERN),
+				icon: diamondOutline,
+				role: currentLayout === Layout.MODERN ? 'selected' : undefined
+			},
+			{
+				text: $t('routes.account.layout.action-sheet.buttons.playful'),
+				handler: () => layoutStore.set(Layout.PLAYFUL),
+				icon: balloonOutline,
+				role: currentLayout === Layout.PLAYFUL ? 'selected' : undefined
+			}
+		]);
+	}
+
+	async function openColorThemeActionSheet(): Promise<void> {
+		const currentTheme = get(themeStore);
+
+		await openActionSheet($t('routes.account.theme.action-sheet.title'), [
+			{
+				text: $t('routes.account.theme.action-sheet.buttons.system'),
+				handler: () => themeStore.set(Theme.SYSTEM),
+				icon: desktopOutline,
+				role: currentTheme === Theme.SYSTEM ? 'selected' : undefined
+			},
+			{
+				text: $t('routes.account.theme.action-sheet.buttons.light'),
+				handler: () => themeStore.set(Theme.LIGHT),
+				icon: sunnyOutline,
+				role: currentTheme === Theme.LIGHT ? 'selected' : undefined
+			},
+			{
+				text: $t('routes.account.theme.action-sheet.buttons.dark'),
+				handler: () => themeStore.set(Theme.DARK),
+				icon: moonOutline,
+				role: currentTheme === Theme.DARK ? 'selected' : undefined
+			},
+			{
+				text: $t('routes.account.theme.action-sheet.buttons.black-and-white'),
+				handler: () => themeStore.set(Theme.BLACK_AND_WHITE),
+				icon: contrastOutline,
+				role: currentTheme === Theme.BLACK_AND_WHITE ? 'selected' : undefined
+			}
+		]);
+	}
+
+	function restoreApplicationDefaults(): void {
+		themeStore.reset();
+		layoutStore.reset();
+		localeStore.reset();
+	}
 </script>
 
-<IonLayout title={$t('routes.account.title')}>
-	<ion-list-header>{$t('routes.account.list.account.title')}</ion-list-header>
+<LayoutComponent title={$t('routes.account.title')}>
 	<ion-list inset>
-		{#await isAuthenticated() then authenticated}
-			{#if authenticated}
-				<ion-item use:clickableElement={() => goto(PageRoute.ACCOUNT_CHANGE_PASSWORD)}>
-					<ion-label>{$t('routes.account.list.account.button.change-password')}</ion-label>
-					<ion-icon icon={arrowForward} slot="end"></ion-icon>
-				</ion-item>
-			{:else}
-				<ion-item use:clickableElement={() => goto(PageRoute.AUTH_REGISTER)}>
-					<ion-label>{$t('routes.account.list.account.button.register')}</ion-label>
-					<ion-icon icon={arrowForward} slot="end"></ion-icon>
-				</ion-item>
-				<ion-item use:clickableElement={() => goto(PageRoute.AUTH_LOGIN)}>
-					<ion-label>{$t('routes.account.list.account.button.login')}</ion-label>
-					<ion-icon icon={arrowForward} slot="end"></ion-icon>
-				</ion-item>
-			{/if}
-		{/await}
+		<ion-list-header>{$t('routes.account.list.account.title')}</ion-list-header>
+		<LabeledItem
+			searchable={PageRoute.ACCOUNT.UPDATE_DATA}
+			detail
+			click={() => goto(PageRoute.ACCOUNT.UPDATE_DATA)}
+			iconSrc={personOutline}
+			label={$t('routes.account.list.account.button.update-data')}
+		/>
+		<LabeledItem
+			searchable={PageRoute.ACCOUNT.CHANGE_PASSWORD}
+			detail
+			click={() => goto(PageRoute.ACCOUNT.CHANGE_PASSWORD)}
+			iconSrc={keyOutline}
+			label={$t('routes.account.list.account.button.change-password')}
+		/>
+		<LabeledItem
+			searchable={PageRoute.ACCOUNT.DELETE}
+			detail
+			color="danger"
+			click={() => goto(PageRoute.ACCOUNT.DELETE)}
+			iconSrc={trashOutline}
+			label={$t('routes.account.list.account.button.delete-account')}
+		/>
 	</ion-list>
-	<ion-list-header>{$t('routes.account.list.application.title')}</ion-list-header>
 	<ion-list inset>
-		<ion-item use:clickableElement={() => goto(PageRoute.ACCOUNT_APP)}>
-			<ion-label>{$t('routes.account.list.application.button')}</ion-label>
-			<ion-icon icon={arrowForward} slot="end"></ion-icon>
-		</ion-item>
+		<ion-list-header>{$t('routes.account.list.application.title')}</ion-list-header>
+		<LabeledItem
+			searchable={PageRoute.ACCOUNT.ROOT}
+			detail
+			click={openLocaleActionSheet}
+			iconSrc={languageOutline}
+			label={$t('routes.account.app.list.language.button')}
+		/>
+		<LabeledItem
+			searchable={PageRoute.ACCOUNT.ROOT}
+			detail
+			click={openColorThemeActionSheet}
+			iconSrc={colorPaletteOutline}
+			label={$t('routes.account.app.list.theme.button')}
+		/>
+		<LabeledItem
+			searchable={PageRoute.ACCOUNT.ROOT}
+			detail
+			click={openLayoutActionSheet}
+			iconSrc={colorWandOutline}
+			label={$t('routes.account.app.list.layout.button')}
+		/>
+		<LabeledItem
+			searchable={PageRoute.ACCOUNT.ROOT}
+			detail
+			click={restoreApplicationDefaults}
+			iconSrc={refreshOutline}
+			label={$t('routes.account.app.list.restore.button')}
+		/>
 	</ion-list>
-</IonLayout>
+</LayoutComponent>

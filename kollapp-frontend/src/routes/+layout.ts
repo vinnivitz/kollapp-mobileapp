@@ -1,18 +1,55 @@
 import { App, type URLOpenListenerEvent } from '@capacitor/app';
+import { get } from 'svelte/store';
 
 import { goto } from '$app/navigation';
 
 import type { LayoutLoad } from './$types';
 
-import { themeStore } from '$lib/store';
+import { isAuthenticated } from '$lib/api/utils';
+import { PageRoute } from '$lib/models/routing';
+import {
+	authenticationStore,
+	connectionStore,
+	layoutStore,
+	organizationStore,
+	themeStore
+} from '$lib/store';
 import { navigateBack } from '$lib/utils';
+
+let initialized = false;
 
 export const ssr = false;
 
-export const load: LayoutLoad = async () => {
-	await themeStore.init();
-	handleAppEvents();
+export const load: LayoutLoad = async ({ url }) => {
+	handleRouting(url.pathname, await isAuthenticated());
+
+	if (!initialized) {
+		initialized = true;
+		handleAppEvents();
+		initStores();
+	}
 };
+
+async function handleRouting(pathname: string, authenticated: boolean): Promise<void> {
+	const isAuthPath = pathname.startsWith('/auth');
+
+	if (!authenticated && !isAuthPath) {
+		goto(PageRoute.AUTH.LOGIN);
+	} else if (
+		authenticated &&
+		isAuthPath &&
+		!(pathname === PageRoute.AUTH.REGISTER_ORGANIZATION && !get(organizationStore))
+	) {
+		return goto(PageRoute.HOME);
+	}
+}
+
+async function initStores(): Promise<void> {
+	themeStore.init();
+	layoutStore.init();
+	connectionStore.init();
+	await authenticationStore.init();
+}
 
 async function handleAppEvents(): Promise<void> {
 	App.addListener('appUrlOpen', async (event: URLOpenListenerEvent) => {
@@ -28,11 +65,20 @@ async function handleAppEvents(): Promise<void> {
 // Workaround to suppress false positive error message from ion-tab
 (function () {
 	const originalConsoleError = console.error;
+
 	console.error = function (...arguments_) {
 		if (arguments_.length === 1 && arguments_[0] === 'tab with id: "undefined" does not exist') {
 			return;
 		}
 
-		originalConsoleError.apply(console, arguments_);
+		if (arguments_[0] instanceof Error) {
+			const error = arguments_[0];
+			Error.captureStackTrace(error, console.error);
+			originalConsoleError.apply(console, arguments_);
+		} else {
+			const error = new Error(typeof arguments_[0] === 'string' ? arguments_[0] : 'Unknown error');
+			Error.captureStackTrace(error, console.error);
+			originalConsoleError.call(console, error, ...arguments_.slice(1));
+		}
 	};
 })();

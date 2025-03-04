@@ -1,49 +1,112 @@
 <script lang="ts">
+	import * as icons from 'ionicons/icons';
+
 	import { goto } from '$app/navigation';
 
 	import { apiResources } from '$lib/api';
-	import { isAuthenticated } from '$lib/api/utils';
+	import type { SearchableItemDto } from '$lib/api/dto/server';
+	import Button from '$lib/components/widgets/Button.svelte';
+	import LabeledItem from '$lib/components/widgets/LabeledItem.svelte';
 	import { t } from '$lib/locales';
-	import { PageRoute } from '$lib/models';
-	import { clickableElement } from '$lib/utils';
+	import { PageRoute, type PageRoutePaths } from '$lib/models/routing';
+	import { triggerClickByLabel } from '$lib/utils';
+
+	let searchedItems = $state<SearchableItemDto[]>([]);
+	let searchValue = $state('');
+	let menuController: HTMLIonMenuElement;
 
 	async function logout(): Promise<void> {
 		await apiResources.auth.logout();
-		await goto(PageRoute.HOME);
-		location.reload();
+		goto(PageRoute.AUTH.LOGIN);
+	}
+
+	async function onSearch(event: CustomEvent): Promise<void> {
+		searchValue = event.detail.value ?? '';
+		searchedItems = await apiResources.searchable.filter(searchValue);
+	}
+
+	async function navigate(route: PageRoutePaths, label?: string): Promise<void> {
+		await menuController.close();
+		searchValue = '';
+		await goto(route);
+		if (label) {
+			triggerClickByLabel(label);
+		}
 	}
 </script>
 
-<ion-menu side="end" content-id="menu">
+<ion-menu side="end" content-id="menu" bind:this={menuController}>
 	<ion-header>
 		<ion-toolbar>
-			<ion-searchbar debounce={100} placeholder={$t('components.layout.menu.searchbar.placeholder')}
-			></ion-searchbar>
+			<!-- svelte-ignore event_directive_deprecated -->
+			<ion-searchbar
+				class="pt-5"
+				color="light"
+				show-clear-button="always"
+				debounce={100}
+				placeholder={$t('components.layout.menu.searchbar.placeholder')}
+				on:ionInput={onSearch}
+				value={searchValue}
+			>
+			</ion-searchbar>
 		</ion-toolbar>
 	</ion-header>
 	<ion-content class="ion-padding relative text-center">
-		<div class="flex justify-center gap-2">
-			{#await isAuthenticated() then authenticated}
-				{#if authenticated}
-					<ion-button fill="outline" use:clickableElement={() => logout()}>
-						{$t('components.layout.header.button.logout')}
-					</ion-button>
-				{:else}
-					<ion-button fill="outline" use:clickableElement={() => goto(PageRoute.AUTH_LOGIN)}>
-						{$t('components.layout.header.button.login')}
-					</ion-button>
-					<ion-button fill="outline" use:clickableElement={() => goto(PageRoute.AUTH_REGISTER)}>
-						{$t('components.layout.header.button.register')}
-					</ion-button>
-				{/if}
-			{/await}
-		</div>
-		<hr class="my-3" />
+		<ion-list>
+			{#if searchValue !== ''}
+				<ion-list-header>
+					{#if searchedItems.length > 0}
+						{$t('components.layout.menu.searchbar.title.found', {
+							value: searchValue
+						})}
+					{:else}
+						{$t('components.layout.menu.searchbar.title.not-found', {
+							value: searchValue
+						})}
+					{/if}
+				</ion-list-header>
+				{#each searchedItems as item (item.id)}
+					<LabeledItem
+						transparent
+						label={item.label}
+						iconSrc={icons[item.icon as keyof typeof icons]}
+						click={() => navigate(item.route, item.label)}
+					/>
+				{/each}
+			{:else}
+				<LabeledItem
+					transparent
+					click={() => navigate(PageRoute.ACCOUNT.ROOT)}
+					iconSrc={icons.personOutline}
+					label={$t('components.layout.header.button.account')}
+				/>
+				<LabeledItem
+					transparent
+					click={() => navigate(PageRoute.ORGANIZATION.ROOT)}
+					iconSrc={icons.accessibilityOutline}
+					label={$t('components.layout.menu.list.organization')}
+				/>
+			{/if}
+		</ion-list>
+		{#if searchValue === ''}
+			<Button
+				size="default"
+				fill="outline"
+				click={() => logout()}
+				iconSrc={icons.logOutOutline}
+				label={$t('components.layout.header.button.logout')}
+			/>
+			<hr class="my-3" />
+		{/if}
 		<div class="absolute bottom-2 left-0 right-0">
 			<hr class="my-2" />
-			<ion-text color="medium">Made with </ion-text>
-			<ion-text class="text-red-600">&#10084;</ion-text>
-			<ion-text color="medium"> from Dresden.</ion-text>
+			<ion-note>Made with <ion-text color="danger">&#10084;</ion-text> from Dresden.</ion-note>
 		</div>
 	</ion-content>
 </ion-menu>
+
+<style lang="postcss">
+	ion-searchbar {
+		padding: 0 4px;
+	}
+</style>

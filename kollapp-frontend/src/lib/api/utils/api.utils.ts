@@ -1,7 +1,7 @@
-import { Network, type ConnectionStatus } from '@capacitor/network';
 import { get } from 'svelte/store';
 
 import { dev } from '$app/environment';
+import { goto } from '$app/navigation';
 
 import { apiResources } from '$lib/api';
 import {
@@ -13,20 +13,16 @@ import {
 	type CustomFetchConfig,
 	type ResponseBody
 } from '$lib/api/models';
-import { t } from '$lib/locales';
-import {
-	AlertType,
-	PreferencesKey,
-	type OrganizationModel,
-	type ValidationResult as ValidationResponse
-} from '$lib/models';
-import { authenticationTokenStore, organizationStore } from '$lib/store';
-import { determineLocale, getStoredValue, showAlert, storeValue } from '$lib/utils';
 import environment from '$lib/environment';
+import { t } from '$lib/locales';
+import { PreferencesKey } from '$lib/models/preferences';
+import { PageRoute } from '$lib/models/routing';
+import { Locale, type AuthenticationModel } from '$lib/models/store';
+import { AlertType, type ValidationResult } from '$lib/models/ui';
+import { authenticationStore, connectionStore, localeStore } from '$lib/store';
+import { getStoredValue, showAlert } from '$lib/utils';
 
 const $t = get(t);
-let lastNetworkCheck = 0;
-let cachedNetworkStatus: ConnectionStatus;
 
 /**
  * Custom fetch function with authentication and error handling.
@@ -43,14 +39,14 @@ export async function customFetch<T = never>(
 	const body = config?.body;
 	const query = config?.query;
 	const authorizationType = config?.authorizationType ?? AuthorizationType.BEARER;
-	const silentOnSuccess = config?.silentOnSuccess ?? false;
+	const silentOnSuccess = config?.silentOnSuccess ?? true;
 	const silentOnError = config?.silentOnError ?? false;
 
 	try {
 		const options: RequestInit = { method };
 		const headers = new Headers();
 
-		headers.set(HeaderKey.ACCEPT_LANGUAGE, await determineLocale());
+		headers.set(HeaderKey.ACCEPT_LANGUAGE, get(localeStore) ?? Locale.DE);
 
 		if (hasRequestBody(method)) {
 			headers.set(HeaderKey.CONTENT_TYPE, ContentType.JSON);
@@ -58,7 +54,7 @@ export async function customFetch<T = never>(
 		}
 
 		if (authorizationType === AuthorizationType.BEARER) {
-			const token = await getAuthenticationToken();
+			const token = get(authenticationStore)?.accessToken;
 			if (token) {
 				headers.set(HeaderKey.AUTHORIZATION, getBearerToken(token));
 			} else {
@@ -70,16 +66,17 @@ export async function customFetch<T = never>(
 
 		let response = await fetch(enhancedUrl, { ...options, headers });
 
-		if (StatusChecks.isUnauthorized(response.status)) {
+		if (StatusCheck.isUnauthorized(response.status)) {
 			const newToken = await getNewAuthenticationToken();
 			if (!newToken) {
+				await goto(PageRoute.HOME);
 				return createErrorResponse(StatusCode.UNAUTHORIZED, $t('api.unauthorized'), silentOnError);
 			}
 			headers.set(HeaderKey.AUTHORIZATION, getBearerToken(newToken));
 			response = await fetch(enhancedUrl, { ...options, headers });
 		}
 
-		await handleNetworkStatusChange();
+		connectionStore.check();
 
 		return getResponseBody(response, silentOnSuccess, silentOnError);
 	} catch (error) {
@@ -95,34 +92,25 @@ export async function customFetch<T = never>(
 }
 
 /**
- * Constructs the full API URL based on the endpoint.
- * @param endpoint Relative endpoint path.
- * @returns Full API URL as a string.
- */
-export function getUrl(endpoint: string): string {
-	return `${environment.apiUrl}/${endpoint}`;
-}
-
-/**
- * Checks if the organization is authenticated based on stored tokens.
- * @returns True if authenticated; otherwise, false.
+ * Checks if the user is authenticated based on stored tokens.
+ * @returns {Promise<boolean>} True if authenticated; otherwise, false.
  */
 export async function isAuthenticated(): Promise<boolean> {
-	const organization =
-		get(organizationStore) ||
-		(await getStoredValue<OrganizationModel>(PreferencesKey.ORGANIZATION));
-	return Boolean(organization);
+	const model =
+		get(authenticationStore) ||
+		(await getStoredValue<AuthenticationModel>(PreferencesKey.AUTHENTICATION));
+	return !!model;
 }
 
 /**
  * Processes the validation response, showing alerts as necessary.
  * @param body Fetch response.
  * @param silent If true, no alert is shown.
- * @returns ValidationResult indicating validity and any errors.
+ * @returns {ValidationResult} ValidationResult indicating validity and any errors.
  */
-export function getValidationResult<T>(body: ResponseBody<T>): ValidationResponse {
+export function getValidationResult<T>(body: ResponseBody<T>): ValidationResult {
 	return {
-		valid: StatusChecks.isOK(body.status),
+		valid: StatusCheck.isOK(body.status),
 		errors: [
 			{
 				message: body.message ?? $t('api.error'),
@@ -136,10 +124,14 @@ export function getValidationResult<T>(body: ResponseBody<T>): ValidationRespons
 /**
  * Checks if http status code is in the given range.
  */
-export const StatusChecks = {
+export const StatusCheck = {
 	isOK: (status: number): boolean => status >= 200 && status < 300,
 	isUnauthorized: (status: number): boolean => status === StatusCode.UNAUTHORIZED
 };
+
+function getUrl(endpoint: string): string {
+	return `${environment.apiUrl}/${endpoint}`;
+}
 
 async function getResponseBody<T>(
 	response: Response,
@@ -161,14 +153,14 @@ async function getResponseBody<T>(
 	const validationField = body.validationField;
 	const validationCode = body.validationCode;
 	if (!silent && !validationField) {
-		showAlert({ message, type: response.ok ? AlertType.INFO : AlertType.ERROR });
+		showAlert(message, { type: response.ok ? AlertType.INFO : AlertType.ERROR });
 	}
 	// only triggered in dev mode
 	if (dev) {
 		if (response.ok) {
 			console.info(message);
 		} else {
-			console.error(`status: ${response.status}, msg: ${message}`);
+			console.warn(`status: ${response.status}, msg: ${message}`);
 		}
 	}
 	return {
@@ -178,32 +170,6 @@ async function getResponseBody<T>(
 		validationField,
 		validationCode
 	};
-}
-
-async function getCachedNetworkStatus(): Promise<ConnectionStatus> {
-	const now = Date.now();
-	// Check once every 10 seconds
-	if (!cachedNetworkStatus || now - lastNetworkCheck > environment.networkCheckInterval) {
-		cachedNetworkStatus = await Network.getStatus();
-		lastNetworkCheck = now;
-	}
-	return cachedNetworkStatus;
-}
-
-async function handleNetworkStatusChange() {
-	const networkStatus = await getCachedNetworkStatus();
-	const isOnline = networkStatus?.connected;
-	const wasOnline = await getStoredValue<boolean>(PreferencesKey.ONLINE);
-
-	if (!isOnline && wasOnline) {
-		await storeValue(PreferencesKey.ONLINE, false);
-		showAlert({ message: $t('api.offline'), type: AlertType.ERROR });
-		console.info($t('api.offline'));
-	} else if (isOnline && !wasOnline) {
-		await storeValue(PreferencesKey.ONLINE, true);
-		showAlert({ message: $t('api.online'), type: AlertType.INFO });
-		console.info($t('api.online'));
-	}
 }
 
 function hasRequestBody(method: RequestMethod): boolean {
@@ -218,27 +184,17 @@ async function getEnhancedUrl(
 	return queryParameters ? `${url}?${queryParameters}` : url;
 }
 
-async function getAuthenticationToken(): Promise<string | undefined> {
-	return (
-		get(authenticationTokenStore) ??
-		(await getStoredValue<string>(PreferencesKey.ACCESS_TOKEN)) ??
-		(await getNewAuthenticationToken())
-	);
-}
-
 async function getNewAuthenticationToken(): Promise<string | undefined> {
-	let token = await getStoredValue(PreferencesKey.REFRESH_TOKEN);
-	if (!token) {
-		return undefined;
+	const refreshToken = get(authenticationStore)?.refreshToken;
+	if (refreshToken) {
+		const body = await apiResources.auth.refresh(refreshToken);
+		if (StatusCheck.isOK(body.status)) {
+			const accessToken = body.data.token;
+			authenticationStore.set({ accessToken, refreshToken });
+			return refreshToken;
+		}
 	}
-	const body = await apiResources.auth.refresh(token);
-	if (StatusChecks.isOK(body.status)) {
-		token = body.data.token;
-		await storeValue(PreferencesKey.ACCESS_TOKEN, token);
-		authenticationTokenStore.set(token);
-		return token;
-	}
-	return undefined;
+	await authenticationStore.reset();
 }
 
 async function createErrorResponse(
@@ -247,10 +203,10 @@ async function createErrorResponse(
 	silent: boolean
 ): Promise<ResponseBody> {
 	if (!silent) {
-		showAlert({ message, type: AlertType.ERROR });
+		showAlert(message);
 	}
 	if (dev) {
-		console.error(`status: ${status}, msg: ${message}`);
+		console.warn(`status: ${status}, msg: ${message}`);
 	}
 	return { status, message, data: {} as never };
 }

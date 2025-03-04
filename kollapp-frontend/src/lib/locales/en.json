@@ -3,10 +3,13 @@
 		"home": {
 			"title": "Kollapp",
 			"card": {
-				"title": "Welcome to Kollapp",
-				"content": "The app for all the collectives out there",
-				"authenticated": {
-					"title": "Hello"
+				"authenticated": {},
+				"organization": {
+					"button": "Go to collective"
+				},
+				"user": {
+					"button": "Go to account",
+					"title": "Hello {{value}}"
 				}
 			}
 		},
@@ -14,7 +17,6 @@
 			"login": {
 				"title": "Log in",
 				"form": {
-					"title": "Log in to Kollapp",
 					"input": {
 						"password": "Password",
 						"username": "Username"
@@ -35,23 +37,54 @@
 				},
 				"alert": {
 					"email-not-confirmed": "Email is not confirmed"
+				},
+				"card": {
+					"welcome": {
+						"title": "Welcome to Kollapp!",
+						"content": "The app for all the collectives out there."
+					},
+					"dev": {
+						"title": "Local sign in",
+						"button": "Sign in locally"
+					}
 				}
 			},
 			"register": {
 				"title": "Register",
 				"form": {
-					"title": "Register to Kollapp",
 					"input": {
 						"username": "Username",
 						"email": "Email",
 						"password": "Password",
-						"confirm-password": "Confirm password"
+						"confirm-password": "Confirm password",
+						"surname": "First name",
+						"name": "Last name"
 					},
 					"submit": "Register"
 				},
 				"login": {
 					"text": "You are already registered?",
 					"link": "Log in"
+				},
+				"organization": {
+					"form": {
+						"input": {
+							"name": "Name"
+						},
+						"submit": "Register collective",
+						"title": "Whats your collective called?",
+						"cancel": "Cancel"
+					},
+					"title": "Create collective"
+				},
+				"card": {
+					"join-organization": {
+						"title": "Join an existing Collective?",
+						"content": "Contact the the collective admin for sending you an invitation email."
+					},
+					"register-organization": {
+						"title": "Register a new collective!"
+					}
 				}
 			},
 			"reset-password": {
@@ -77,7 +110,8 @@
 							"confirm-password": "Confirm new password"
 						},
 						"submit": "Update password"
-					}
+					},
+					"no-token": "Authentication token not found."
 				}
 			},
 			"resend-confirmation": {
@@ -90,43 +124,54 @@
 						"send": "Send confirmation email"
 					}
 				}
+			},
+			"change-password": {
+				"confirmation": {
+					"title": "Change password",
+					"form": {
+						"title": "Update your password"
+					}
+				}
+			},
+			"register-organization": {
+				"no-token": "Authentication token not found.",
+				"not-authenticated": "User not authenticated"
 			}
 		},
 		"account": {
 			"title": "Account",
 			"list": {
 				"application": {
-					"title": "Application",
-					"button": "Application settings"
+					"title": "Application"
 				},
 				"account": {
 					"title": "Account settings",
 					"button": {
-						"register": "Register",
-						"login": "Log in",
-						"change-password": "Change password"
+						"change-password": "Change password",
+						"update-data": "Update user data",
+						"delete-account": "Delete account"
 					}
 				}
 			},
 			"app": {
 				"language": {
 					"action-sheet": {
-						"title": "Change language",
-						"buttons": {
-							"german": "German",
-							"english": "English"
-						}
+						"buttons": {}
 					}
 				},
-				"title": "Application",
 				"list": {
-					"appearence": {
-						"title": "Appearence",
-						"button": "Dark mode"
-					},
+					"appearence": {},
 					"language": {
-						"title": "Language",
 						"button": "Change language"
+					},
+					"layout": {
+						"button": "Change layout"
+					},
+					"theme": {
+						"button": "Change color theme"
+					},
+					"restore": {
+						"button": "Restore defaults"
 					}
 				}
 			},
@@ -138,11 +183,89 @@
 					},
 					"submit": "Update password"
 				}
+			},
+			"language": {
+				"action-sheet": {
+					"buttons": {
+						"german": "German",
+						"english": "English"
+					},
+					"title": "Change language"
+				}
+			},
+			"layout": {
+				"action-sheet": {
+					"buttons": {
+						"classic": "Classic",
+						"modern": "Modern",
+						"playful": "Playful"
+					},
+					"title": "Change layout"
+				}
+			},
+			"theme": {
+				"action-sheet": {
+					"buttons": {
+						"light": "Light",
+						"dark": "Dark",
+						"system": "System",
+						"black-and-white": "Black and white"
+					},
+					"title": "Change color theme"
+				}
+			},
+			"account": {
+				"form": {
+					"button": {}
+				}
+			},
+			"update-data": {
+				"title": "Update user data",
+				"card": {
+					"title": "Update your data",
+					"form": {
+						"surename": "Surename",
+						"name": "Name",
+						"username": "Username",
+						"email": "Email",
+						"button": {
+							"submit": "Update"
+						}
+					}
+				}
+			},
+			"delete": {
+				"title": "Delete account",
+				"card": {
+					"title": "Are you sure?",
+					"button": "Delete account",
+					"note": "This cannot be undone."
+				}
 			}
 		},
 		"finances": {
 			"title": "Finances",
 			"subtitle": "This is on overview over the finances."
+		},
+		"organization": {
+			"title": "Collective",
+			"update-info": {
+				"title": "Update collective",
+				"card": {
+					"title": "Update collective information",
+					"button": "Update information"
+				}
+			},
+			"list": {
+				"update-info": {
+					"title": "Update information",
+					"update-info": "Update collective info"
+				},
+				"danger-zone": {}
+			},
+			"delete": {
+				"card": {}
+			}
 		}
 	},
 	"common": {
@@ -172,14 +295,20 @@
 		"layout": {
 			"header": {
 				"button": {
-					"login": "Log in",
-					"register": "Register",
-					"logout": "Log out"
+					"logout": "Log out",
+					"account": "Account"
 				}
 			},
 			"menu": {
 				"searchbar": {
-					"placeholder": "Search the app..."
+					"placeholder": "Search the app...",
+					"title": {
+						"found": "Search results for \"{{value}}\"",
+						"not-found": "No results found for \"{{value}}\""
+					}
+				},
+				"list": {
+					"organization": "Collective"
 				}
 			}
 		}
@@ -207,6 +336,16 @@
 						},
 						"confirm-password": {
 							"no-match": "Must match the password"
+						},
+						"surname": {
+							"min": "Surname must be at least 1 character",
+							"max": "Surname must be less then 50 characters",
+							"required": "Surname ist required"
+						},
+						"name": {
+							"min": "Name must be at least 1 character",
+							"max": "Name must be less then 50 characters",
+							"required": "Name is required"
 						}
 					}
 				}
@@ -258,6 +397,20 @@
 							"min": "New password must be at least 8 characters",
 							"matches": "New password must contain at least one uppercase letter, one lowercase letter and one number",
 							"required": "New password is required"
+						},
+						"confirm-password": {
+							"no-match": "Must match the new password"
+						}
+					}
+				}
+			},
+			"register-organization": {
+				"schema": {
+					"validation": {
+						"name": {
+							"min": "Name must be at least one character long",
+							"max": "Name must be less than 50 characters long",
+							"required": "Name is required"
 						}
 					}
 				}
@@ -268,7 +421,7 @@
 		"not-available": "Server not reachable",
 		"offline": "You are offline",
 		"online": "You are online",
-		"unauthorized": "Authentifcation failed"
+		"unauthorized": "Authentification failed"
 	},
 	"utils": {
 		"alert": {

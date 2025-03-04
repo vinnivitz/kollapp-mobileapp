@@ -1,40 +1,41 @@
 <script lang="ts">
 	import { loadingController } from 'ionic-svelte';
+	import { keyOutline, keySharp } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
 
 	import type { PageData } from './$types';
 
 	import { apiResources } from '$lib/api';
-	import { resetPasswordSchema, type ResetPasswordDto } from '$lib/api/dto';
+	import { resetPasswordSchema, type ResetPasswordDto } from '$lib/api/dto/client';
 	import { getValidationResult } from '$lib/api/utils';
-	import IonLayout from '$lib/components/layout/Layout.svelte';
+	import Layout from '$lib/components/layout/Layout.svelte';
+	import Button from '$lib/components/widgets/Button.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
+	import InputItem from '$lib/components/widgets/InputItem.svelte';
 	import { t } from '$lib/locales';
-	import {
-		Form,
-		PageRoute,
-		type FormActions,
-		type FormConfig,
-		type ValidationResult
-	} from '$lib/models';
-	import { customForm } from '$lib/utils';
+	import { PageRoute } from '$lib/models/routing';
+	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
+	import { customForm, showAlert } from '$lib/utils';
 
 	const { data }: { data: PageData } = $props();
+
+	$effect(() => {
+		if (!data.token) {
+			showAlert($t('routes.auth.reset-password.confirmation.no-token'));
+			goto(PageRoute.AUTH.LOGIN);
+		}
+	});
 
 	const model = resetPasswordSchema().cast({}) as ResetPasswordDto;
 	let validationResult: ValidationResult;
 	let actions: FormActions<ResetPasswordDto>;
-	let touched = false;
-	let password: string;
-	let confirmPassword = $state<string>();
+	let touched = $state(false);
 
 	const config: FormConfig<ResetPasswordDto> = {
 		schema: resetPasswordSchema(),
 		onSubmit,
-		onChange,
-		exposedActions: (exposedActions) => (actions = exposedActions),
-		customValidators: [confirmPasswordValidator]
+		exposedActions: (exposedActions) => (actions = exposedActions)
 	};
 
 	const form = new Form(model, config);
@@ -45,74 +46,42 @@
 		if (validationResult.valid) {
 			const loading = await loadingController.create({});
 			await loading.present();
+			delete model.confirmPassword;
 			validationResult = getValidationResult(
-				await apiResources.publicOrganization.resetPassword(model, data.token!)
+				await apiResources.publicUser.resetPassword(model, data.token!)
 			);
 			if (validationResult.valid) {
-				await goto(PageRoute.AUTH_LOGIN);
+				await goto(PageRoute.AUTH.LOGIN);
 			} else {
 				actions.applyValidationFeedback(validationResult);
 			}
 			await loading.dismiss();
 		}
 	}
-
-	function onChange(key: string, value: string | number): void {
-		if (key === 'password') {
-			password = value as string;
-			if (touched) {
-				const result = confirmPasswordValidator();
-				actions.applyValidationFeedbackByKey('confirmPassword', result);
-			}
-		}
-	}
-
-	function updateConfirmPassword(value: string): void {
-		confirmPassword = value;
-		if (touched) {
-			const result = confirmPasswordValidator();
-			actions.applyValidationFeedbackByKey('confirmPassword', result);
-		}
-	}
-
-	function confirmPasswordValidator(): ValidationResult {
-		return password === confirmPassword
-			? { valid: true }
-			: {
-					valid: false,
-					errors: [
-						{
-							field: 'confirmPassword',
-							message: $t('api.dto.reset-password.schema.validation.confirm-password.no-match')
-						}
-					]
-				};
-	}
 </script>
 
-<IonLayout title={$t('routes.auth.reset-password.confirmation.title')} showBackButton>
+<Layout title={$t('routes.auth.reset-password.confirmation.title')} showBackButton>
 	<Card title={$t('routes.auth.reset-password.confirmation.form.title')}>
 		<form use:customForm={form}>
-			<ion-item>
-				<ion-input
-					name="password"
-					label={$t('routes.auth.reset-password.confirmation.form.input.password')}
-				></ion-input>
-			</ion-item>
-			<ion-item>
-				<!-- svelte-ignore event_directive_deprecated -->
-				<ion-input
-					name="confirmPassword"
-					type="password"
-					value={confirmPassword}
-					on:ionInput={(event) => updateConfirmPassword(event.detail.value || '')}
-					label={$t('routes.auth.reset-password.confirmation.form.input.confirm-password')}
-				>
-				</ion-input>
-			</ion-item>
-			<ion-button class="mt-3" expand="block" type="submit">
-				{$t('routes.auth.reset-password.confirmation.form.submit')}
-			</ion-button>
+			<InputItem
+				name="password"
+				type="password"
+				label={$t('routes.auth.reset-password.confirmation.form.input.password')}
+				iconSrc={keyOutline}
+			/>
+			<InputItem
+				name="confirmPassword"
+				type="password"
+				label={$t('routes.auth.reset-password.confirmation.form.input.confirm-password')}
+				iconSrc={keySharp}
+			/>
+			<Button
+				classProp="mt-3"
+				expand="block"
+				type="submit"
+				label={$t('routes.auth.reset-password.confirmation.form.submit')}
+				disabled={!touched}
+			/>
 		</form>
 	</Card>
-</IonLayout>
+</Layout>
