@@ -21,3 +21,11 @@ jobs:
       run: |
         cd backend
         mvn -B verify --file pom.xml
+    - name: Use Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22.9.0'
+    - name: NPM Build
+      run: |
+        cd frontend
+        npm run lint && run build
