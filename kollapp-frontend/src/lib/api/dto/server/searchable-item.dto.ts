@@ -1,8 +1,8 @@
 import type { PageRoutePaths } from '$lib/models/routing';
 
-export type SearchableItem = {
+export type SearchableItemDto = {
 	id: number;
 	label: string;
 	route: PageRoutePaths;
-	icon: string | undefined;
+	icon?: string;
 };

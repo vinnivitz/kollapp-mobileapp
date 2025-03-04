@@ -4,14 +4,14 @@
 	import { goto } from '$app/navigation';
 
 	import { apiResources } from '$lib/api';
-	import type { SearchableItem } from '$lib/api/dto/server';
+	import type { SearchableItemDto } from '$lib/api/dto/server';
 	import Button from '$lib/components/widgets/Button.svelte';
 	import LabeledItem from '$lib/components/widgets/LabeledItem.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute, type PageRoutePaths } from '$lib/models/routing';
 	import { triggerClickByLabel } from '$lib/utils';
 
-	let searchedItems = $state<SearchableItem[]>([]);
+	let searchedItems = $state<SearchableItemDto[]>([]);
 	let searchValue = $state('');
 	let menuController: HTMLIonMenuElement;
 

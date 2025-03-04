@@ -1,21 +1,21 @@
-import fs from 'node:fs';
+import { writeFileSync, readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 
 import type { Expression } from 'estree';
-import { parse, AST } from 'svelte/compiler';
+import { parse, type AST } from 'svelte/compiler';
 
-import type { SearchableItem } from './src/lib/api/dto/server';
+import type { SearchableItemDto } from '$lib/api/dto/server';
 
 /**
  * Directory to scan and output file path.
  */
-const SRC_DIR = 'src';
+const SRC_DIR = './';
 const OUTPUT_FILE = './static/data/searchables.json';
 
 /**
  * Global array to store found items and a simple counter for ID assignment.
  */
-const searchableItems: SearchableItem[] = [];
+const searchableItems: SearchableItemDto[] = [];
 let idCounter = 0;
 
 /**
@@ -23,7 +23,7 @@ let idCounter = 0;
  */
 function indexSearchables(): void {
 	scanDirectory(SRC_DIR);
-	fs.writeFileSync(OUTPUT_FILE, JSON.stringify(searchableItems, undefined, 2), 'utf8');
+	writeFileSync(OUTPUT_FILE, JSON.stringify(searchableItems, undefined, 2), 'utf8');
 	console.log(`\nWrote ${searchableItems.length} entries to ${OUTPUT_FILE}`);
 }
 
@@ -32,7 +32,7 @@ function indexSearchables(): void {
  * Calls `scanSvelteFile` on each file found.
  */
 function scanDirectory(directoryPath: string): void {
-	const entries = fs.readdirSync(directoryPath, { withFileTypes: true });
+	const entries = readdirSync(directoryPath, { withFileTypes: true });
 	for (const entry of entries) {
 		const fullPath = path.join(directoryPath, entry.name);
 		if (entry.isDirectory()) {
@@ -47,7 +47,7 @@ function scanDirectory(directoryPath: string): void {
  * Reads and parses a Svelte file to find `<LabeledItem>` components.
  */
 function scanSvelteFile(filePath: string): void {
-	const fileContent = fs.readFileSync(filePath, 'utf8');
+	const fileContent = readFileSync(filePath, 'utf8');
 	const ast = parse(fileContent, { modern: true });
 	findSearchableComponents(ast);
 }
@@ -185,5 +185,4 @@ function getAttributeValue(node: ASTComponent, name: string): string | undefined
 	}
 }
 
-// Execute the main function
 indexSearchables();
