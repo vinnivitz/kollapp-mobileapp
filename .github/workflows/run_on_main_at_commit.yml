@@ -26,5 +26,5 @@ jobs:
         node-version: '22.9.0'
     - name: NPM Build
       run: |
-        npm install --frozen-lockfile
+        npm install --prefix mobileapp --frozen-lockfile
         npm run lint --prefix mobileapp && run build --prefix mobileapp
