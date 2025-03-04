@@ -15,22 +15,22 @@ public class KollappUserSignupRequest {
     @NotBlank(message = "{validation.username.required}")
     @Pattern(regexp = ".{2,}", message = "{validation.username.minlength}")
     @Size(max = 20, message = "{validation.username.maxlength}")
-    String username;
+    private String username;
 
     @NotBlank(message = "{validation.email.required}")
     @Email(message = "{validation.email.invalid}")
     @Size(max = 50, message = "{validation.email.maxlength}")
-    String email;
+    private String email;
 
     @NotBlank(message = "{validation.password.required}")
     @Pattern(regexp = ".{8,}", message = "{validation.password.minlength}")
     @Size(max = 255, message = "{validation.password.maxlength}")
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$", message = "{validation.password.pattern}")
-    String password;
+    private String password;
 
     @NotBlank(message = "{validation.name.required}")
-    String name;
+    private String name;
 
     @NotBlank(message = "{validation.name.required}")
-    String surname;
+    private String surname;
 }

@@ -35,7 +35,7 @@ import java.util.Map;
 @Transactional
 public class KollappUserServiceImpl implements KollappUserService {
     @Autowired
-    PasswordEncoder encoder;
+    private PasswordEncoder encoder;
     @Autowired
     private UrlBuilderUtil urlBuilderUtil;
     @Autowired
