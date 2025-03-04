@@ -27,4 +27,4 @@ jobs:
     - name: NPM Build
       run: |
         npm install --prefix mobileapp --frozen-lockfile
-        npm run lint --prefix mobileapp && run build --prefix mobileapp
+        npm run lint --prefix mobileapp && build --prefix mobileapp
