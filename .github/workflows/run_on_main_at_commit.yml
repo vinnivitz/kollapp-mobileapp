@@ -8,6 +8,17 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_DATABASE: kollapp
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_USER: kollapp
+          MYSQL_PASSWORD: kollapp
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
     - name: Checkout
       uses: actions/checkout@v4
