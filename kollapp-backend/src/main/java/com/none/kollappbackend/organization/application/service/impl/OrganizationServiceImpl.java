@@ -58,21 +58,22 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    public void deleteOrganizationOfLoggedInUser() {
+    public Organization deleteUserFromOrganization(long personOfOrganizationId) {
         Organization organization = getOrganizationByLoggedInUser();
-        organizationRepository.deleteById(organization.getId());
+        PersonOfOrganization personToBeDeleted = personOfOrganizationRepository.findById(personOfOrganizationId);
+        organization.getPersonsOfOrganization().remove(personToBeDeleted);
+        return organization;
     }
 
     @Override
-    public void deleteUserFromTheirOrganization(long userId) {
-        PersonOfOrganization personOfOrganization = getPersonOfOrganizationByUserId(userId);
-        Organization organization = personOfOrganization.getOrganization();
-        if(!(personOfOrganization instanceof OrganizationManager organizationManager)) {
-            personOfOrganizationRepository.deleteById(personOfOrganization.getId());
-            return;
-        }
-        if(organization.hasManager(organizationManager) && organization.hasOnlyOneManagerLeft()) {
+    public void leaveOrganization() {
+        Organization organization = getOrganizationByLoggedInUser();
+        PersonOfOrganization personOfOrganization = getPersonOfOrganizationByUserId(kollappUserService.getLoggedInKollappUser().getId());
+        if(personOfOrganization instanceof OrganizationManager orgaManager && organization.hasOnlyOneManagerLeft() && organization.hasManager(orgaManager)) {
             organizationRepository.deleteById(organization.getId());
+        }
+        else {
+            organization.getPersonsOfOrganization().remove(personOfOrganization);
         }
     }
 
@@ -85,6 +86,6 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     private PersonOfOrganization getPersonOfOrganizationByUserId(long userId) {
         return personOfOrganizationRepository.findByUserId(userId)
-                .orElseThrow(() -> new KollappUserNotFoundException(messageSource));
+                .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
     }
 }

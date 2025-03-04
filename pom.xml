@@ -32,6 +32,9 @@
 		<spring-dotenv.version>4.0.0</spring-dotenv.version>
 		<mapstruct.version>1.6.3</mapstruct.version>
 		<maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+		<testcontainers.version>1.20.4</testcontainers.version>
+		<spring-security-test.version>6.4.2</spring-security-test.version>
+		<maven-failsafe-plugin.version>3.5.2</maven-failsafe-plugin.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -105,6 +108,20 @@
 				<artifactId>mapstruct</artifactId>
 				<version>${mapstruct.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>testcontainers-bom</artifactId>
+				<version>${testcontainers.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-test</artifactId>
+				<version>${spring-security-test.version}</version>
+				<scope>test</scope>
+			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 	<build>
@@ -119,6 +136,11 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>${maven-compiler-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-failsafe-plugin</artifactId>
+					<version>${maven-failsafe-plugin.version}</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>

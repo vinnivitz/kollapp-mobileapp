@@ -1,15 +1,10 @@
 package com.none.kollappbackend.organization.application.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -28,14 +23,24 @@ public class Organization {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "organization", orphanRemoval = true)
     private List<PersonOfOrganization> personsOfOrganization;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "organization", orphanRemoval = true)
+    private List<Activity> activities;
+
     public void addPersonOfOrganization(PersonOfOrganization personOfOrganization) {
         if(personsOfOrganization != null) {
             personsOfOrganization.add(personOfOrganization);
+            return;
         }
-        else {
-            personsOfOrganization = new ArrayList<>();
-            personsOfOrganization.add(personOfOrganization);
+        personsOfOrganization = new ArrayList<>();
+        personsOfOrganization.add(personOfOrganization);
+    }
+
+    public void addActivityOfOrganization(Activity activity) {
+        if(activities != null) {
+            activities.add(activity);
         }
+        activities = new ArrayList<>();
+        activities.add(activity);
     }
 
     public List<OrganizationManager> getManagers(){
@@ -50,6 +55,6 @@ public class Organization {
     }
 
     public boolean hasOnlyOneManagerLeft(){
-        return personsOfOrganization.size() == 1;
+        return getManagers().size() == 1;
     }
 }

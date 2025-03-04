@@ -6,13 +6,7 @@ import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -78,11 +72,21 @@ public class OrganizationController {
     }
 
     @DeleteMapping
-    @Operation(summary = "Delete the organization of the logged in user", security = {
+    @Operation(summary = "Leave the organization, deletion if last manager", security = {
         @SecurityRequirement(name = "bearer-key") })
-    @RequiresManagerRole
-    public ResponseEntity<ResponseTO> deleteOrganization() {
-        organizationService.deleteOrganizationOfLoggedInUser();
+    @RequiresManagerOrMemberRole
+    public ResponseEntity<ResponseTO> leaveOrganization() {
+        organizationService.leaveOrganization();
         return ResponseEntity.ok(new MessageResponseTO("success.organization.delete", messageSource));
+    }
+
+    @DeleteMapping("/person/{person-of-organization-id}")
+    @Operation(summary = "Remove user from the organization", security = {
+            @SecurityRequirement(name = "bearer-key") })
+    @RequiresManagerRole
+    public ResponseEntity<ResponseTO> removeUserFromOrganization(@PathVariable("person-of-organization-id") long personOfOrganizationId) {
+        Organization organization = organizationService.deleteUserFromOrganization(personOfOrganizationId);
+        OrganizationTO orgaTo = organizationMapper.organizationToOrganizationTO(organization);
+        return ResponseEntity.ok(new DataResponseTO(orgaTo, "success.organization.user.delete", messageSource));
     }
 }

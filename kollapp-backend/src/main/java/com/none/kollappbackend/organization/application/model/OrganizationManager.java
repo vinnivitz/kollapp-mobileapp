@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class OrganizationManager extends PersonOfOrganization {
     public OrganizationManager(String name, String surname, long userId) {
-        super(surname, name, userId);
+        super(name, surname, userId);
     }
 }

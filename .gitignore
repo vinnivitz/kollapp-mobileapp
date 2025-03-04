@@ -2,6 +2,7 @@
 .idea
 target
 .vscode
+*.iml
 
 /kollapp-frontend/test-results
 /kollapp-frontend/node_modules
