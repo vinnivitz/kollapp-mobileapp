@@ -13,8 +13,8 @@ import lombok.Setter;
 public class ActivityCreationRequestTO {
 
     @NotBlank(message = "{validation.activity.name.required}")
-    String name;
+    private String name;
 
     @NotBlank(message = "{validation.activity.location.required}")
-    String location;
+    private String location;
 }

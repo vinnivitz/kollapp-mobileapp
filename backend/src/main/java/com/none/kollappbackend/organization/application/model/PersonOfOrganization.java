@@ -22,9 +22,9 @@ import lombok.Setter;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "role")
 public abstract class PersonOfOrganization {
-    String surname;
-    String name;
-    long userId;
+    private String surname;
+    private String name;
+    private long userId;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

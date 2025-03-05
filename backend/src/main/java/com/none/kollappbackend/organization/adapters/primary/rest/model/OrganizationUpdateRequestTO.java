@@ -8,5 +8,5 @@ import lombok.Getter;
 public class OrganizationUpdateRequestTO {
     @NotBlank(message = "{validation.organization.name.required}")
     @Size(max = 255, message = "{validation.organization.name.maxlength}")
-    String name;
+    private String name;
 }

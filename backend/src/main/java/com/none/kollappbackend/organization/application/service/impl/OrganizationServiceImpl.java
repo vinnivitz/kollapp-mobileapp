@@ -46,7 +46,8 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public Organization updateOrganization(Organization updatedOrganization) {
         Organization organization = getOrganizationByLoggedInUser();
-        if (updatedOrganization.getName() != null && !organization.getName().equals(updatedOrganization.getName())) {
+        if (updatedOrganization.getName() != null
+                && !organization.getName().equals(updatedOrganization.getName())) {
             organization.setName(updatedOrganization.getName());
         }
         return organization;
@@ -65,8 +66,9 @@ public class OrganizationServiceImpl implements OrganizationService {
         Organization organization = getOrganizationByLoggedInUser();
         PersonOfOrganization personOfOrganization =
                 getPersonOfOrganizationByUserId(kollappUserService.getLoggedInKollappUser().getId());
-        if (personOfOrganization instanceof OrganizationManager orgaManager && organization.hasOnlyOneManagerLeft() &&
-                organization.hasManager(orgaManager)) {
+        if (personOfOrganization instanceof OrganizationManager orgaManager
+                && organization.hasOnlyOneManagerLeft()
+                && organization.hasManager(orgaManager)) {
             organizationRepository.deleteById(organization.getId());
         } else {
             organization.getPersonsOfOrganization().remove(personOfOrganization);

@@ -14,15 +14,15 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "kollapp.jwt")
 public class JwtProperties {
-    String authSecret;
-    long authExpirationInSeconds;
+    private String authSecret;
+    private long authExpirationInSeconds;
 
-    String refreshSecret;
-    long refreshExpirationInSeconds;
+    private String refreshSecret;
+    private long refreshExpirationInSeconds;
 
-    String confirmationSecret;
-    long confirmationExpirationInSeconds;
+    private String confirmationSecret;
+    private long confirmationExpirationInSeconds;
 
-    String resetPasswordSecret;
-    long resetPasswordExpirationInSeconds;
+    private String resetPasswordSecret;
+    private long resetPasswordExpirationInSeconds;
 }
