@@ -25,7 +25,9 @@
         <cypher><![CDATA[
             WITH
                 [
-                    {upstream: 'Core', downstream: 'Organization'}
+                    {upstream: 'Core', downstream: 'Organization'},
+                    {upstream: 'User', downstream: 'Organization'},
+                    {upstream: 'Core', downstream: 'User'}
                 ] as allowedDependencies
             UNWIND
                 allowedDependencies as allowedDependency
@@ -34,10 +36,10 @@
             MATCH
                 (downstreamBC:JMolecules:DDD {name: allowedDependency.downstream})
             MERGE
-                (downstream)-[:DEFINES_DEPENDENCY]->(upstream)
+                (downstreamBC)-[:DEFINES_DEPENDENCY]->(upstreamBC)
             RETURN
-                downstream.name AS downstream,
-                upstream.name AS upstream
+                downstreamBC.name AS downstream,
+                upstreamBC.name AS upstream
         ]]></cypher>
     </concept>
 
