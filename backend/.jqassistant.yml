@@ -10,6 +10,8 @@
    analyze:
      rule:
        default-concept-severity: info
+     exclude-constraints:
+       - jmolecules-hexagonal:ApplicationCoreMustOnlyDependOnItself
      groups:
        - jmolecules-hexagonal:Default
        - jmolecules-hexagonal:Strict

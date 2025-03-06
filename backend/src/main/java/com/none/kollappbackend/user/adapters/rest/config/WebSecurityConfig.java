@@ -1,5 +1,7 @@
-package com.none.kollappbackend.core.config;
+package com.none.kollappbackend.user.adapters.rest.config;
 
+import com.none.kollappbackend.core.config.AuthEntryPointJwt;
+import com.none.kollappbackend.core.config.AuthTokenFilter;
 import com.none.kollappbackend.core.config.properties.CorsProperties;
 import com.none.kollappbackend.user.application.service.impl.KollappUserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;

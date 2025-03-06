@@ -9,10 +9,6 @@ public class ClientPlatformContext {
         clientPlatformHolder.set(clientPlatform);
     }
 
-    public static ClientPlatform getClientPlatform() {
-        return clientPlatformHolder.get();
-    }
-
     public static void clear() {
         clientPlatformHolder.remove();
     }
