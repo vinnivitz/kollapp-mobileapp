@@ -1,5 +1,4 @@
 import { App, type URLOpenListenerEvent } from '@capacitor/app';
-import { get } from 'svelte/store';
 
 import { goto } from '$app/navigation';
 
@@ -7,13 +6,7 @@ import type { LayoutLoad } from './$types';
 
 import { isAuthenticated } from '$lib/api/utils';
 import { PageRoute } from '$lib/models/routing';
-import {
-	authenticationStore,
-	connectionStore,
-	layoutStore,
-	organizationStore,
-	themeStore
-} from '$lib/store';
+import { authenticationStore, connectionStore, layoutStore, themeStore } from '$lib/store';
 import { navigateBack } from '$lib/utils';
 
 let initialized = false;
@@ -33,14 +26,10 @@ export const load: LayoutLoad = async ({ url }) => {
 async function handleRouting(pathname: string, authenticated: boolean): Promise<void> {
 	const isAuthPath = pathname.startsWith('/auth');
 
-	if (!authenticated && !isAuthPath) {
+	if (authenticated && isAuthPath) {
+		goto(PageRoute.HOME);
+	} else if (!authenticated && !isAuthPath) {
 		goto(PageRoute.AUTH.LOGIN);
-	} else if (
-		authenticated &&
-		isAuthPath &&
-		!(pathname === PageRoute.AUTH.REGISTER_ORGANIZATION && !get(organizationStore))
-	) {
-		return goto(PageRoute.HOME);
 	}
 }
 

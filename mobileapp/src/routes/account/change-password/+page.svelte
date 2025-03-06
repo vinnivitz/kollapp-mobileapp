@@ -5,7 +5,7 @@
 	import { goto } from '$app/navigation';
 
 	import { apiResources } from '$lib/api';
-	import { changePasswordSchema, type ChangePasswordDto } from '$lib/api/dto/client';
+	import { changePasswordSchema, type ChangePasswordDto } from '$lib/api/dto/client/user';
 	import { getValidationResult } from '$lib/api/utils';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';

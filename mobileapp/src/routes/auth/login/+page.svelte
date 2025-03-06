@@ -5,7 +5,7 @@
 	import { goto } from '$app/navigation';
 
 	import { apiResources } from '$lib/api';
-	import { loginSchema, type LoginDto } from '$lib/api/dto/client';
+	import { loginSchema, type LoginDto } from '$lib/api/dto/client/auth';
 	import { ValidationCode } from '$lib/api/models';
 	import { getValidationResult } from '$lib/api/utils';
 	import Layout from '$lib/components/layout/Layout.svelte';

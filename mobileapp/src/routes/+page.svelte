@@ -13,7 +13,7 @@
 
 	const userModel = $derived<UserModel | undefined>($userStore);
 	const organizationModel = $derived<OrganizationModel | undefined>($organizationStore);
-	const loading = $derived(!userModel || !organizationModel);
+	const loading = $derived(!userModel);
 </script>
 
 <Layout title={$t('routes.home.title')} {loading}>
@@ -38,6 +38,17 @@
 					fill="outline"
 					iconSrc={accessibilityOutline}
 					label={$t('routes.home.card.organization.button')}
+				/>
+			</div>
+		</Card>
+	{:else}
+		<Card title="Register a new collective">
+			<div class="text-center">
+				<Button
+					click={() => goto(PageRoute.ORGANIZATION.REGISTER)}
+					fill="outline"
+					iconSrc={accessibilityOutline}
+					label={$t('routes.home.card.organization.register')}
 				/>
 			</div>
 		</Card>

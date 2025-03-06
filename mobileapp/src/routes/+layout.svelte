@@ -6,8 +6,6 @@
 	import { home, cash, person } from 'ionicons/icons';
 	import { onDestroy, onMount } from 'svelte';
 
-	import { goto } from '$app/navigation';
-
 	import Tabs from '$lib/components/layout/Tabs.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
@@ -20,25 +18,13 @@
 	let loadingTimeout: ReturnType<typeof setTimeout>;
 	let tabs = $state<TabConfig[] | undefined>();
 	let loaded = $state(false);
-	let isAuthenticated = $state(false);
-
-	$effect(() => {
-		if (loaded) {
-			if ($authenticationStore) {
-				userStore.init();
-				organizationStore.init().then(() => {
-					if (!$organizationStore) {
-						goto(PageRoute.AUTH.REGISTER_ORGANIZATION);
-					}
-				});
-				isAuthenticated = true;
-			} else {
-				isAuthenticated = false;
-			}
-		}
-	});
 
 	setupIonicBase();
+
+	function initStores(): void {
+		userStore.init();
+		organizationStore.init();
+	}
 
 	onMount(async () => {
 		loadingTimeout = setTimeout(async () => {
@@ -61,6 +47,7 @@
 		if (loadingSpinner) {
 			await loadingSpinner.dismiss();
 		}
+		initStores();
 	});
 
 	onDestroy(() => {
@@ -76,7 +63,7 @@
 
 <ion-app>
 	{#if loaded}
-		{#if isAuthenticated && tabs}
+		{#if $authenticationStore && tabs}
 			<Tabs {tabs}>
 				{@render children?.()}
 			</Tabs>

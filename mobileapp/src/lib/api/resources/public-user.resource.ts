@@ -1,4 +1,4 @@
-import type { EmailDto, RegisterDto, ResetPasswordDto } from '$lib/api/dto/client';
+import type { EmailDto, RegisterDto, ResetPasswordDto } from '$lib/api/dto/client/auth';
 import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/api/models';
 import { customFetch } from '$lib/api/utils';
 
@@ -13,8 +13,7 @@ export async function registerManager(model: RegisterDto): Promise<ResponseBody>
 	return customFetch(`${ENDPOINT}/manager-signup`, {
 		method: RequestMethod.POST,
 		body: JSON.stringify(model),
-		authorizationType: AuthorizationType.NONE,
-		silentOnSuccess: false
+		authorizationType: AuthorizationType.NONE
 	});
 }
 

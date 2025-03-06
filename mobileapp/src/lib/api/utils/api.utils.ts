@@ -39,7 +39,7 @@ export async function customFetch<T = never>(
 	const body = config?.body;
 	const query = config?.query;
 	const authorizationType = config?.authorizationType ?? AuthorizationType.BEARER;
-	const silentOnSuccess = config?.silentOnSuccess ?? true;
+	const silentOnSuccess = config?.silentOnSuccess ?? false;
 	const silentOnError = config?.silentOnError ?? false;
 
 	try {
@@ -193,8 +193,9 @@ async function getNewAuthenticationToken(): Promise<string | undefined> {
 			authenticationStore.set({ accessToken, refreshToken });
 			return refreshToken;
 		}
+	} else {
+		await authenticationStore.reset();
 	}
-	await authenticationStore.reset();
 }
 
 async function createErrorResponse(

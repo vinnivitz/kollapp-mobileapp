@@ -14,7 +14,7 @@
 	import { goto } from '$app/navigation';
 
 	import { apiResources } from '$lib/api';
-	import { registerSchema, type RegisterDto } from '$lib/api/dto/client';
+	import { registerSchema, type RegisterDto } from '$lib/api/dto/client/auth';
 	import { getValidationResult } from '$lib/api/utils';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';

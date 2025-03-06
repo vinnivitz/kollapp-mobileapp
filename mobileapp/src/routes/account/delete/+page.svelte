@@ -8,7 +8,7 @@
 	import { t } from '$lib/locales';
 
 	async function deleteOrganization(): Promise<void> {
-		await apiResources.organization.deleteOrganization();
+		await apiResources.organization.leaveOrganization();
 	}
 </script>
 

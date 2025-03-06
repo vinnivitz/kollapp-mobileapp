@@ -5,7 +5,7 @@
 	import { goto } from '$app/navigation';
 
 	import { apiResources } from '$lib/api';
-	import { emailSchema, type EmailDto } from '$lib/api/dto/client/email.dto';
+	import { emailSchema, type EmailDto } from '$lib/api/dto/client/auth';
 	import { getValidationResult } from '$lib/api/utils';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';

@@ -20,6 +20,7 @@ export const PageRoute = {
 	},
 	ORGANIZATION: {
 		ROOT: '/organization',
+		REGISTER: '/organization/register',
 		UPDATE_DATA: '/organization/update-data'
 	}
 } as const;

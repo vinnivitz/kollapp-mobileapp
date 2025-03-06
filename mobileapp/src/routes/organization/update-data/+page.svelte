@@ -3,7 +3,10 @@
 	import { accessibilityOutline, saveOutline } from 'ionicons/icons';
 
 	import { apiResources } from '$lib/api';
-	import { updateOrganizationSchema, type UpdateOrganizationDto } from '$lib/api/dto/client';
+	import {
+		updateOrganizationSchema,
+		type UpdateOrganizationDto
+	} from '$lib/api/dto/client/organization';
 	import { getValidationResult } from '$lib/api/utils';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';

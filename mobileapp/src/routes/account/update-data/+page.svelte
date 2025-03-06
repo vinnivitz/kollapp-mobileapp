@@ -9,7 +9,7 @@
 	} from 'ionicons/icons';
 
 	import { apiResources } from '$lib/api';
-	import { updateUserDataSchema, type UpdateUserDataDto } from '$lib/api/dto/client';
+	import { updateUserDataSchema, type UpdateUserDataDto } from '$lib/api/dto/client/user';
 	import { getValidationResult } from '$lib/api/utils';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';

@@ -1,4 +1,4 @@
-import type { LoginDto, TokenDto } from '$lib/api/dto/client';
+import type { LoginDto, TokenDto } from '$lib/api/dto/client/auth';
 import type { UserTokenDto } from '$lib/api/dto/server';
 import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/api/models';
 import { customFetch } from '$lib/api/utils';
@@ -16,7 +16,7 @@ export async function login(model: LoginDto): Promise<ResponseBody<UserTokenDto>
 		method: RequestMethod.POST,
 		body: JSON.stringify(model),
 		authorizationType: AuthorizationType.NONE,
-		silentOnError: true
+		silentOnSuccess: true
 	});
 }
 
@@ -29,7 +29,7 @@ export async function refresh(token: string): Promise<ResponseBody<TokenDto>> {
 	return customFetch(`${ENDPOINT}/refresh`, {
 		query: { token },
 		authorizationType: AuthorizationType.NONE,
-		silentOnError: true
+		silentOnSuccess: true
 	});
 }
 
