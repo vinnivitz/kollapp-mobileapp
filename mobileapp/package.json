@@ -1,6 +1,6 @@
 {
 	"name": "orgaapp-frontend",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"scripts": {
 		"dev": "cross-env NODE_ENV=development vite dev",
 		"build": "cross-env NODE_ENV=production && npm run index-searchables && vite build",
@@ -8,6 +8,7 @@
 		"check": "cross-env NODE_ENV=development svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"format": "prettier --write . && eslint . --fix",
 		"lint": "prettier --check . && eslint .",
+		"validate": "npm run check && npm run lint",
 		"test:unit": "vitest",
 		"test:e2e": "playwright test",
 		"test": "npm run test:unit -- --run && npm run test:e2e",
