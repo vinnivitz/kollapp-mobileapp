@@ -103,6 +103,43 @@
 						}
 					}
 				}
+			},
+			"client": {
+				"organization": {
+					"create-activity": {
+						"schema": {
+							"validation": {
+								"location": {
+									"max": "Der Name des Standorts muss weniger als 50 Zeichen lang sein",
+									"min": "Name des Ortes muss mindestens ein Charakter lang sein",
+									"required": "Name des Standorts ist erforderlich"
+								},
+								"name": {
+									"empty-space": "Name kann nicht mit einem leeren Raum beginnen",
+									"max": "Der Name muss weniger als 50 Zeichen lang sein",
+									"min": "Name muss bei Lat One Charakter lang sein",
+									"required": "Name ist erforderlich"
+								}
+							}
+						}
+					},
+					"update-activity": {
+						"schema": {
+							"validation": {
+								"location": {
+									"max": "Der Name des Standorts muss weniger als 50 Zeichen lang sein",
+									"min": "Name des Ortes muss mindestens ein Charakter lang sein",
+									"required": "Name des Standorts ist erforderlich"
+								},
+								"name": {
+									"max": "Der Name muss weniger als 50 Zeichen lang sein",
+									"min": "Name muss mindestens ein Charakter lang sein",
+									"required": "Name ist erforderlich"
+								}
+							}
+						}
+					}
+				}
 			}
 		},
 		"offline": "Du bist offline",
@@ -113,7 +150,8 @@
 		"page-routes": {
 			"account": "Konto",
 			"finances": "Finanzen",
-			"home": "Start"
+			"home": "Start",
+			"organization": "Kollektiv"
 		},
 		"error-page": {
 			"card": {
@@ -144,7 +182,7 @@
 				"searchbar": {
 					"placeholder": "Durchsuche die App...",
 					"title": {
-						"found": "Suchergebnisse für \"{{value}}\" \"",
+						"found": "Suchergebnisse für \"{{value}}\"",
 						"not-found": "Keine Ergebnisse für \"{{value}}\" gefunden \""
 					}
 				},
@@ -308,9 +346,10 @@
 							"name": "Name"
 						},
 						"submit": "Kollektiv registrieren",
-						"title": "Wie heißt dein Kollektiv?"
+						"title": "Wie heißt dein Kollektiv?",
+						"cancel": "Stornieren"
 					},
-					"title": "Kollektiv erstellen"
+					"title": "Kollektiv registrieren"
 				},
 				"card": {
 					"join-organization": {
@@ -364,6 +403,9 @@
 					},
 					"title": "Kennwort ändern"
 				}
+			},
+			"register-organization": {
+				"not-authenticated": "Benutzer nicht authentifiziert"
 			}
 		},
 		"home": {
@@ -371,11 +413,19 @@
 			"card": {
 				"authenticated": {},
 				"organization": {
-					"button": "Zum Kollektiv"
+					"button": "Zum Kollektiv",
+					"register": "Registrieren",
+					"join": "Anschließen"
 				},
 				"user": {
 					"button": "Zum Profil",
-					"title": "Hallo {{value}}"
+					"title": "Hallo {{value}}!"
+				},
+				"register-organization": {
+					"title": "Registriere ein neues Kollektiv"
+				},
+				"join-organization": {
+					"title": "Schließe dich einem Kollektiv an"
 				}
 			}
 		},
@@ -394,8 +444,76 @@
 			},
 			"list": {
 				"update-info": {
-					"title": "Informationen aktualisieren",
 					"update-info": "Kollektivdaten aktualisieren"
+				},
+				"register": {},
+				"current-collective": {
+					"title": "{{value}}"
+				},
+				"general": {
+					"title": "Allgemein",
+					"register": {
+						"label": "Neues Kollektiv registrieren"
+					},
+					"join": {
+						"label": "Tritt einem Kollektiv bei"
+					}
+				},
+				"organization": {
+					"members": "Mitglieder verwalten",
+					"leave": {
+						"label": "Kollektiv verlassen"
+					},
+					"activity": {
+						"label": "Veranstaltungen verwalten"
+					}
+				},
+				"activity": {
+					"title": "Veranstaltungen",
+					"create": {
+						"label": "Neue Veranstaltung erstellen"
+					}
+				}
+			},
+			"page": {
+				"join": {
+					"title": "Kollektiv beitreten",
+					"form": {
+						"code": "Code",
+						"submit": "Beitreten"
+					}
+				},
+				"leave": {
+					"card": {
+						"button": "Verlassen",
+						"title": "Kollektiv Verlassen",
+						"note": "Alle mit dem Kollektiv zusammenhängenden persönlichen Daten werden gelöscht."
+					},
+					"title": "Kollektiv verlassen"
+				},
+				"activity": {
+					"title": "Veranstaltungen",
+					"create-modal": {
+						"card": {
+							"input": {
+								"date": "Datum",
+								"location": "Standort",
+								"name": "Name"
+							},
+							"title": "Erstellen Sie eine neue Veranstaltung"
+						},
+						"title": "Ereignis erstellen"
+					},
+					"no-organization-id": "Organisation nicht gefunden"
+				}
+			}
+		},
+		"orgnization": {
+			"page": {
+				"join": {
+					"form": {
+						"title": "Code eingeben"
+					}
 				}
 			}
 		}

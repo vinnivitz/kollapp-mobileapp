@@ -6,9 +6,8 @@
 
 	import type { PageData } from './$types';
 
-	import { apiResources } from '$lib/api';
 	import { resetPasswordSchema, type ResetPasswordDto } from '$lib/api/dto/client/auth';
-	import { getValidationResult } from '$lib/api/utils';
+	import { publicUserResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
@@ -16,7 +15,7 @@
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
-	import { customForm, showAlert } from '$lib/utils';
+	import { customForm, getValidationResult, showAlert } from '$lib/utils';
 
 	const { data }: { data: PageData } = $props();
 
@@ -28,32 +27,28 @@
 	});
 
 	const model = resetPasswordSchema().cast({}) as ResetPasswordDto;
-	let validationResult: ValidationResult;
 	let actions: FormActions<ResetPasswordDto>;
 	let touched = $state(false);
 
 	const config: FormConfig<ResetPasswordDto> = {
 		schema: resetPasswordSchema(),
 		onSubmit,
+		onTouched: () => (touched = true),
 		exposedActions: (exposedActions) => (actions = exposedActions)
 	};
 
 	const form = new Form(model, config);
 
 	async function onSubmit(model: ResetPasswordDto, result: ValidationResult): Promise<void> {
-		touched = true;
-		validationResult = result;
-		if (validationResult.valid) {
+		if (result.valid) {
 			const loading = await loadingController.create({});
 			await loading.present();
 			delete model.confirmPassword;
-			validationResult = getValidationResult(
-				await apiResources.publicUser.resetPassword(model, data.token!)
-			);
-			if (validationResult.valid) {
+			result = getValidationResult(await publicUserResource.resetPassword(model, data.token!));
+			if (result.valid) {
 				await goto(PageRoute.AUTH.LOGIN);
 			} else {
-				actions.applyValidationFeedback(validationResult);
+				actions.applyValidationFeedback(result);
 			}
 			await loading.dismiss();
 		}
@@ -67,13 +62,13 @@
 				name="password"
 				type="password"
 				label={$t('routes.auth.reset-password.confirmation.form.input.password')}
-				iconSrc={keyOutline}
+				icon={keyOutline}
 			/>
 			<InputItem
 				name="confirmPassword"
 				type="password"
 				label={$t('routes.auth.reset-password.confirmation.form.input.confirm-password')}
-				iconSrc={keySharp}
+				icon={keySharp}
 			/>
 			<Button
 				classProp="mt-3"

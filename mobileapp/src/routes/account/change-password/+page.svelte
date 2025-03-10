@@ -4,9 +4,8 @@
 
 	import { goto } from '$app/navigation';
 
-	import { apiResources } from '$lib/api';
 	import { changePasswordSchema, type ChangePasswordDto } from '$lib/api/dto/client/user';
-	import { getValidationResult } from '$lib/api/utils';
+	import { userResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
@@ -14,7 +13,7 @@
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
-	import { customForm } from '$lib/utils';
+	import { customForm, getValidationResult } from '$lib/utils';
 
 	const model = changePasswordSchema().cast({}) as ChangePasswordDto;
 	let validationResult: ValidationResult;
@@ -36,7 +35,7 @@
 			const loading = await loadingController.create({});
 			await loading.present();
 			delete model.confirmNewPassword;
-			validationResult = getValidationResult(await apiResources.user.changePassword(model));
+			validationResult = getValidationResult(await userResource.changePassword(model));
 			if (validationResult.valid) {
 				await goto(PageRoute.ACCOUNT.ROOT);
 			} else {
@@ -54,19 +53,19 @@
 				name="currentPassword"
 				type="password"
 				label={$t('routes.account.change-password.form.input.current-password')}
-				iconSrc={keyOutline}
+				icon={keyOutline}
 			/>
 			<InputItem
 				name="newPassword"
 				type="password"
 				label={$t('routes.account.change-password.form.input.new-password')}
-				iconSrc={keySharp}
+				icon={keySharp}
 			/>
 			<InputItem
 				name="confirmNewPassword"
 				type="password"
 				label={$t('routes.auth.reset-password.confirmation.form.input.confirm-password')}
-				iconSrc={keySharp}
+				icon={keySharp}
 			/>
 			<Button
 				classProp="mt-3"

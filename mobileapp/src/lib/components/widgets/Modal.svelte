@@ -1,6 +1,8 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 
+	import Button from './Button.svelte';
+
 	import { t } from '$lib/locales';
 	import { clickableElement } from '$lib/utils';
 
@@ -23,9 +25,8 @@
 	<ion-header>
 		<ion-toolbar>
 			<ion-buttons slot="start">
-				<ion-button use:clickableElement={() => cancel?.()}>
-					{$t('components.widgets.modal.button.cancel')}
-				</ion-button>
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
+				<Button color="light" label={$t('components.widgets.modal.button.cancel')} click={() => cancel?.()}></Button>
 			</ion-buttons>
 			<ion-title class="text-center">{title}</ion-title>
 			<ion-buttons slot="end">

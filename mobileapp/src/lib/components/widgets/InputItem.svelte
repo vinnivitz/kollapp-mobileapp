@@ -4,17 +4,20 @@
 
 	let {
 		color,
-		iconSrc,
+		icon,
 		label,
 		name,
 		type = 'text',
 		value,
+		helperText,
+		inputIcon,
+		inputIconClick,
 		change
 	}: {
 		label: string;
 		name: string;
 		color?: Colors | undefined;
-		iconSrc?: string;
+		icon?: string;
 		type?:
 			| 'number'
 			| 'search'
@@ -29,18 +32,23 @@
 			| 'password'
 			| 'week'
 			| undefined;
+		helperText?: string;
 		value?: string | number | null | undefined;
+		inputIcon?: string;
+		inputIconClick?: () => void | Promise<void>;
 		change?: (value: string) => void;
 	} = $props();
 </script>
 
-<CustomItem {color} {iconSrc}>
+<CustomItem {color} iconStart={icon} iconEnd={inputIcon} iconClick={inputIconClick}>
 	<!-- svelte-ignore event_directive_deprecated -->
 	<ion-input
 		{name}
 		{label}
 		{type}
 		{value}
+		helper-text={helperText}
 		on:ionInput={(event) => change?.(event.detail.value || '')}
-	></ion-input>
+	>
+	</ion-input>
 </CustomItem>

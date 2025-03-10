@@ -4,10 +4,8 @@
 
 	import { goto } from '$app/navigation';
 
-	import { apiResources } from '$lib/api';
 	import { loginSchema, type LoginDto } from '$lib/api/dto/client/auth';
-	import { ValidationCode } from '$lib/api/models';
-	import { getValidationResult } from '$lib/api/utils';
+	import { authResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
@@ -15,15 +13,15 @@
 	import Welcome from '$lib/components/widgets/Welcome.svelte';
 	import environment from '$lib/environment';
 	import { t } from '$lib/locales';
+	import { ValidationCode } from '$lib/models/api';
+	import type { AuthenticationModel } from '$lib/models/models';
 	import { PreferencesKey } from '$lib/models/preferences';
 	import { PageRoute } from '$lib/models/routing';
-	import type { AuthenticationModel } from '$lib/models/store';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
-	import { authenticationStore } from '$lib/store';
-	import { customForm, showAlert, storeValue } from '$lib/utils';
+	import { authenticationStore } from '$lib/stores';
+	import { customForm, getValidationResult, showAlert, storeValue } from '$lib/utils';
 
 	const model = loginSchema().cast({}) as LoginDto;
-	let validationResult: ValidationResult;
 	let actions: FormActions<LoginDto>;
 	let emailNotConfirmed = $state(false);
 
@@ -36,13 +34,12 @@
 	const form = new Form(model, config);
 
 	async function onSubmit(model: LoginDto, result: ValidationResult): Promise<void> {
-		validationResult = result;
-		if (validationResult.valid) {
+		if (result.valid) {
 			const loading = await loadingController.create({});
 			await loading.present();
-			const body = await apiResources.auth.login(model);
-			validationResult = getValidationResult(body);
-			if (validationResult.valid) {
+			const body = await authResource.login(model);
+			result = getValidationResult(body);
+			if (result.valid) {
 				await storeValue(PreferencesKey.LOCAL_USER, false);
 				const authenticationModel: AuthenticationModel = {
 					accessToken: body.data.accessToken,
@@ -50,17 +47,17 @@
 				};
 				await handleLogin(authenticationModel);
 			} else {
-				if (validationResult.errors?.[0].code === ValidationCode.EMAIL_NOT_CONFIRMED) {
+				if (result.errors?.[0].code === ValidationCode.EMAIL_NOT_CONFIRMED) {
 					emailNotConfirmed = true;
 					showAlert($t('routes.auth.login.alert.email-not-confirmed'));
 				}
-				actions.applyValidationFeedback(validationResult);
+				actions.applyValidationFeedback(result);
 			}
 			await loading.dismiss();
 		}
 	}
 
-	async function localSignin(): Promise<void> {
+	async function localLogin(): Promise<void> {
 		await storeValue(PreferencesKey.LOCAL_USER, true);
 		const model: AuthenticationModel = { accessToken: 'local', refreshToken: 'local' };
 		await handleLogin(model);
@@ -78,16 +75,12 @@
 	</div>
 	<Card>
 		<form use:customForm={form}>
-			<InputItem
-				name="username"
-				label={$t('routes.auth.login.form.input.username')}
-				iconSrc={personOutline}
-			/>
+			<InputItem name="username" label={$t('routes.auth.login.form.input.username')} icon={personOutline} />
 			<InputItem
 				name="password"
 				type="password"
 				label={$t('routes.auth.login.form.input.password')}
-				iconSrc={keyOutline}
+				icon={keyOutline}
 			/>
 			<Button
 				classProp="mt-3"
@@ -115,7 +108,7 @@
 	{#if environment.localUser}
 		<Card title={$t('routes.auth.login.card.dev.title')}>
 			<div class="text-center">
-				<Button click={localSignin} label={$t('routes.auth.login.card.dev.button')} />
+				<Button click={localLogin} label={$t('routes.auth.login.card.dev.button')} />
 			</div>
 		</Card>
 	{/if}

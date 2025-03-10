@@ -1,9 +1,8 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 
-	import { Layout } from '$lib/models/store';
-	import type { Colors } from '$lib/models/ui';
-	import { layoutStore } from '$lib/store';
+	import { Layout, type Colors } from '$lib/models/ui';
+	import { layoutStore } from '$lib/stores';
 
 	let {
 		children,
@@ -12,7 +11,9 @@
 		detail = false,
 		transparent = false,
 		button = false,
-		iconSrc
+		iconStart,
+		iconEnd,
+		iconClick
 	}: {
 		children: Snippet;
 		click?: () => void | Promise<void>;
@@ -20,7 +21,9 @@
 		color?: Colors | undefined;
 		transparent?: boolean;
 		button?: boolean;
-		iconSrc?: string;
+		iconStart?: string;
+		iconEnd?: string;
+		iconClick?: () => void | Promise<void>;
 	} = $props();
 
 	const isPlayfulLayout = $derived($layoutStore === Layout.PLAYFUL);
@@ -39,15 +42,16 @@
 	data-transparent={transparent}
 	onclick={click}
 >
-	{#if iconSrc}
-		{@render icon()}
+	{#if iconStart}
+		<ion-icon icon={iconStart} slot="start" color={iconColor}></ion-icon>
+	{/if}
+	{#if iconEnd}
+		<ion-button fill="clear" slot="end" class="m-0 p-0" onclick={iconClick}>
+			<ion-icon icon={iconEnd} size="large"></ion-icon>
+		</ion-button>
 	{/if}
 	{@render children()}
 </ion-item>
-
-{#snippet icon()}
-	<ion-icon icon={iconSrc} slot="start" color={iconColor}></ion-icon>
-{/snippet}
 
 <style lang="postcss">
 	ion-item::part(native) {

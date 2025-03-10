@@ -10,6 +10,6 @@ export type AlertConfig = {
  * Enumeration of alert types based on ionic color names.
  */
 export enum AlertType {
-	INFO = 'success',
+	SUCCESS = 'success',
 	ERROR = 'danger'
 }

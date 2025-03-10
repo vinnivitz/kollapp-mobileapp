@@ -2,7 +2,7 @@
   {
     "id": 1,
     "label": "routes.account.list.account.button.update-data",
-    "icon": "personOutline",
+    "icon": "buildOutline",
     "route": "/account/update-data"
   },
   {
@@ -44,7 +44,31 @@
   {
     "id": 8,
     "label": "routes.organization.list.update-info.update-info",
-    "icon": "accessibilityOutline",
-    "route": "/organization/update-data"
+    "icon": "buildOutline",
+    "route": "/organization/update-data",
+    "accessible": [
+      "ROLE_MANAGER"
+    ]
+  },
+  {
+    "id": 9,
+    "label": "routes.organization.list.organization.leave.label",
+    "icon": "logOutOutline",
+    "route": "/organization/leave",
+    "accessible": [
+      "ROLE_MANAGER"
+    ]
+  },
+  {
+    "id": 10,
+    "label": "routes.organization.list.general.register.label",
+    "icon": "createOutline",
+    "route": "/organization/register"
+  },
+  {
+    "id": 11,
+    "label": "routes.organization.list.general.join.label",
+    "icon": "personAddOutline",
+    "route": "/organization/join"
   }
 ]

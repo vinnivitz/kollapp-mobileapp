@@ -1,9 +1,8 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 
-	import { Layout } from '$lib/models/store';
-	import type { Colors } from '$lib/models/ui';
-	import { layoutStore } from '$lib/store';
+	import { Layout, type Colors } from '$lib/models/ui';
+	import { layoutStore } from '$lib/stores';
 
 	let {
 		title,

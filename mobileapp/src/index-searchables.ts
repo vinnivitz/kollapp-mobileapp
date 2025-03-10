@@ -1,10 +1,11 @@
 import { writeFileSync, readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 
-import type { Expression } from 'estree';
+import type { Expression, Identifier, MemberExpression } from 'estree';
 import { parse, type AST } from 'svelte/compiler';
 
 import type { SearchableItemDto } from '$lib/api/dto/server';
+import type { UserRole } from '$lib/models/api';
 
 /**
  * Directory to scan and output file path.
@@ -24,7 +25,7 @@ let idCounter = 0;
 function indexSearchables(): void {
 	scanDirectory(SRC_DIR);
 	writeFileSync(OUTPUT_FILE, JSON.stringify(searchableItems, undefined, 2), 'utf8');
-	console.log(`\nWrote ${searchableItems.length} entries to ${OUTPUT_FILE}`);
+	console.info(`\nWrote ${searchableItems.length} entries to ${OUTPUT_FILE}`);
 }
 
 /**
@@ -55,13 +56,7 @@ function scanSvelteFile(filePath: string): void {
 /**
  * Represents the subset of Svelte AST node types we care about.
  */
-type ASTComponent =
-	| AST.Fragment
-	| AST.Component
-	| AST.IfBlock
-	| AST.AwaitBlock
-	| AST.RegularElement
-	| AST.ExpressionTag;
+type ASTComponent = AST.Fragment | AST.Component | AST.IfBlock | AST.AwaitBlock | AST.RegularElement;
 
 /**
  * Examines the parsed AST for `<LabeledItem searchable={...} label={...} iconSrc={...}>` components,
@@ -76,14 +71,16 @@ function findSearchableComponents(ast: AST.Root): void {
 				if (attribute.type === 'Attribute' && attribute.name === 'searchable') {
 					const route = getAttributeValue(node, 'searchable');
 					const label = getAttributeValue(node, 'label');
-					const icon = getAttributeValue(node, 'iconSrc');
+					const icon = getAttributeValue(node, 'icon');
+					const accessible = getAttributeValue(node, 'accessible');
 
 					if (label && route) {
 						searchableItems.push({
 							id: ++idCounter,
 							label,
 							icon,
-							route
+							route,
+							accessible: (accessible ? accessible.split(',') : undefined) as UserRole[]
 						});
 					}
 				}
@@ -158,6 +155,11 @@ function getAttributeValue(node: ASTComponent, name: string): string | undefined
 		}
 		case 'CallExpression': {
 			return expression.arguments.find((argument) => argument.type === 'Literal')?.value as string;
+		}
+		case 'ArrayExpression': {
+			return expression.elements
+				.map((element) => `ROLE_${((element as MemberExpression).property as Identifier).name}`)
+				.join(',');
 		}
 		case 'MemberExpression': {
 			const parts: string[] = [];

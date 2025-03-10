@@ -6,17 +6,30 @@ import type {
 } from '$lib/api/dto/client/organization';
 import type { OrganizationDto } from '$lib/api/dto/server';
 import type { ActivityDto } from '$lib/api/dto/server';
-import { RequestMethod, type ResponseBody } from '$lib/api/models';
-import { customFetch } from '$lib/api/utils';
+import { type ResponseBody, RequestMethod } from '$lib/models/api';
+import { customFetch } from '$lib/utils';
 
 const ENDPOINT = 'organization';
+
+export async function getById(_id: string): Promise<ResponseBody<OrganizationDto>> {
+	// workaround for the server response until the server is fixed
+	return customFetch(`${ENDPOINT}`, { silentOnSuccess: true });
+}
 
 /**
  * Retrieves the organization information.
  * @returns {Promise<ResponseBody<OrganizationDto>>} The organization information.
  */
-export async function getOrganization(): Promise<ResponseBody<OrganizationDto>> {
-	return customFetch(`${ENDPOINT}`, { silentOnSuccess: true, silentOnError: true });
+export async function getIds(): Promise<ResponseBody<string[]>> {
+	// workaround for the server response until the server is fixed
+	const response = await customFetch<OrganizationDto>(`${ENDPOINT}`, {
+		silentOnSuccess: true,
+		silentOnError: true
+	});
+	if (response.data) {
+		return { ...response, data: [response.data.id] } as ResponseBody<string[]>;
+	}
+	return response as unknown as ResponseBody<string[]>;
 }
 
 /**
@@ -24,7 +37,7 @@ export async function getOrganization(): Promise<ResponseBody<OrganizationDto>> 
  * @param model The organization information.
  * @returns {Promise<ResponseBody>} The response body.
  */
-export async function createOrganization(model: RegisterOrganizationDto): Promise<ResponseBody> {
+export async function create(model: RegisterOrganizationDto): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}`, {
 		method: RequestMethod.POST,
 		body: JSON.stringify(model)
@@ -36,7 +49,7 @@ export async function createOrganization(model: RegisterOrganizationDto): Promis
  * @param model	The organization information.
  * @returns {Promise<ResponseBody>} The response body.
  */
-export async function updateOrganization(model: UpdateOrganizationDto): Promise<ResponseBody> {
+export async function update(model: UpdateOrganizationDto): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}`, {
 		method: RequestMethod.PUT,
 		body: JSON.stringify(model)
@@ -79,11 +92,8 @@ export async function getActivities(organizationId: string): Promise<ResponseBod
  * @param model activity model
  * @returns {Promise<ResponseBody>} response body
  */
-export async function createActivity(
-	organizationId: string,
-	model: CreateActivityDto
-): Promise<ResponseBody> {
-	return customFetch(`${ENDPOINT}/${organizationId}/${organizationId}/activity`, {
+export async function createActivity(organizationId: string, model: CreateActivityDto): Promise<ResponseBody> {
+	return customFetch(`${ENDPOINT}/${organizationId}/activity`, {
 		method: RequestMethod.POST,
 		body: JSON.stringify(model)
 	});
@@ -92,6 +102,7 @@ export async function createActivity(
 /**
  * Updates the activity of the given organization.
  * @param organizationId id of the organization
+ * @param activityId id of the activity
  * @param model activity model
  * @returns {Promise<ResponseBody>} response body
  */
@@ -112,10 +123,7 @@ export async function updateActivity(
  * @param activityId id of the activity
  * @returns {Promise<ResponseBody>} response body
  */
-export async function deleteActivity(
-	organizationId: string,
-	activityId: string
-): Promise<ResponseBody> {
+export async function deleteActivity(organizationId: string, activityId: string): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/${organizationId}/activity/${activityId}`, {
 		method: RequestMethod.DELETE
 	});

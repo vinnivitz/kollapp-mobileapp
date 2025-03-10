@@ -4,10 +4,9 @@ import { goto } from '$app/navigation';
 
 import type { LayoutLoad } from './$types';
 
-import { isAuthenticated } from '$lib/api/utils';
 import { PageRoute } from '$lib/models/routing';
-import { authenticationStore, connectionStore, layoutStore, themeStore } from '$lib/store';
-import { navigateBack } from '$lib/utils';
+import { authenticationStore, connectionStore, layoutStore, themeStore } from '$lib/stores';
+import { isAuthenticated, navigateBack } from '$lib/utils';
 
 let initialized = false;
 
@@ -34,10 +33,7 @@ async function handleRouting(pathname: string, authenticated: boolean): Promise<
 }
 
 async function initStores(): Promise<void> {
-	themeStore.init();
-	layoutStore.init();
-	connectionStore.init();
-	await authenticationStore.init();
+	await Promise.all([themeStore.init(), layoutStore.init(), connectionStore.init(), authenticationStore.init()]);
 }
 
 async function handleAppEvents(): Promise<void> {

@@ -3,12 +3,7 @@ import { get, writable } from 'svelte/store';
 import { ObjectSchema, type AnyObject, ValidationError } from 'yup';
 
 import { t } from '$lib/locales';
-import type {
-	Form,
-	FormActions,
-	ValidationResult,
-	ValidationError as CustomValidationError
-} from '$lib/models/ui';
+import type { Form, FormActions, ValidationResult, ValidationError as CustomValidationError } from '$lib/models/ui';
 
 const $t = get(t);
 
@@ -48,6 +43,27 @@ export function triggerClickByLabel(label: string): void {
 		.find((element) => element.textContent === label)
 		?.closest('ion-item')
 		?.click();
+}
+
+/**
+ * Apply this directive to any element to detect click outside of that element.
+ * @param node node to apply the directive to
+ * @returns {object} The directive
+ */
+export function clickOutside(node: Node): { destroy: () => void } {
+	const handleClick = (event: Event): void => {
+		if (node && !node.contains(event.target as Node) && !event.defaultPrevented) {
+			node.dispatchEvent(new CustomEvent('blur', node as object));
+		}
+	};
+
+	document.addEventListener('click', handleClick, true);
+
+	return {
+		destroy() {
+			document.removeEventListener('click', handleClick, true);
+		}
+	};
 }
 
 /**
@@ -169,9 +185,7 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 		data.model[key as keyof T] = value;
 		onTouched();
 		if (dirty) {
-			const validationResult = await runCustomValidators(
-				await validate(data.config.schema, data.model)
-			);
+			const validationResult = await runCustomValidators(await validate(data.config.schema, data.model));
 			applyValidationFeedbackByKey(key, validationResult);
 		}
 	}
@@ -208,9 +222,7 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 		}
 	}
 
-	async function runCustomValidators(
-		validationResult: ValidationResult
-	): Promise<ValidationResult> {
+	async function runCustomValidators(validationResult: ValidationResult): Promise<ValidationResult> {
 		for (const validator of data.config.customValidators || []) {
 			const result = await validator(data.model);
 			if (!result.valid) {

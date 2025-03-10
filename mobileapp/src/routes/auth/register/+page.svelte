@@ -13,9 +13,8 @@
 
 	import { goto } from '$app/navigation';
 
-	import { apiResources } from '$lib/api';
 	import { registerSchema, type RegisterDto } from '$lib/api/dto/client/auth';
-	import { getValidationResult } from '$lib/api/utils';
+	import { publicUserResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
@@ -24,10 +23,9 @@
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
 	import { type ValidationResult, type FormActions, type FormConfig, Form } from '$lib/models/ui';
-	import { customForm } from '$lib/utils';
+	import { customForm, getValidationResult } from '$lib/utils';
 
 	const model = registerSchema().cast({}) as RegisterDto;
-	let validationResult: ValidationResult;
 	let actions: FormActions<RegisterDto>;
 	let touched = $state(false);
 
@@ -40,17 +38,16 @@
 
 	const form = new Form(model, config);
 
-	async function onSubmit(model: RegisterDto, result: ValidationResult): Promise<void> {
-		touched = true;
-		validationResult = result;
+	async function onSubmit(model: RegisterDto, validationResult: ValidationResult): Promise<void> {
 		if (validationResult.valid) {
-			const loading = await loadingController.create({});
-			await loading.present();
+			const loader = await loadingController.create({});
+			await loader.present();
 			delete model.confirmPassword;
-			validationResult = getValidationResult(await apiResources.publicUser.registerManager(model));
-			await loading.dismiss();
+			validationResult = getValidationResult(await publicUserResource.registerManager(model));
+			await loader.dismiss();
 			if (validationResult.valid) {
 				actions.resetModel();
+				goto(PageRoute.AUTH.LOGIN);
 			} else {
 				actions.applyValidationFeedback(validationResult);
 			}
@@ -72,38 +69,21 @@
 	</Card>
 	<Card title={$t('routes.auth.register.card.register-organization.title')}>
 		<form use:customForm={form}>
-			<InputItem
-				name="name"
-				label={$t('routes.auth.register.form.input.surname')}
-				iconSrc={personOutline}
-			/>
-			<InputItem
-				name="surname"
-				label={$t('routes.auth.register.form.input.name')}
-				iconSrc={peopleOutline}
-			/>
-			<InputItem
-				name="username"
-				label={$t('routes.auth.register.form.input.username')}
-				iconSrc={personCircleOutline}
-			/>
-			<InputItem
-				name="email"
-				type="email"
-				label={$t('routes.auth.register.form.input.email')}
-				iconSrc={mailOutline}
-			/>
+			<InputItem name="name" label={$t('routes.auth.register.form.input.surname')} icon={personOutline} />
+			<InputItem name="surname" label={$t('routes.auth.register.form.input.name')} icon={peopleOutline} />
+			<InputItem name="username" label={$t('routes.auth.register.form.input.username')} icon={personCircleOutline} />
+			<InputItem name="email" type="email" label={$t('routes.auth.register.form.input.email')} icon={mailOutline} />
 			<InputItem
 				name="password"
 				type="password"
 				label={$t('routes.auth.register.form.input.password')}
-				iconSrc={keyOutline}
+				icon={keyOutline}
 			/>
 			<InputItem
 				name="confirmPassword"
 				type="password"
 				label={$t('routes.auth.register.form.input.confirm-password')}
-				iconSrc={keySharp}
+				icon={keySharp}
 			/>
 			<Button
 				classProp="mt-3"

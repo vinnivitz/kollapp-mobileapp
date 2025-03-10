@@ -62,7 +62,8 @@ export default ts.config(
 				HTMLIonTabsElement: 'readonly',
 				HTMLIonRefresherElement: 'readonly',
 				HTMLIonLoadingElement: 'readonly',
-				HTMLIonMenuElement: 'readonly'
+				HTMLIonMenuElement: 'readonly',
+				HTMLIonDatetimeElement: 'readonly'
 			}
 		}
 	},

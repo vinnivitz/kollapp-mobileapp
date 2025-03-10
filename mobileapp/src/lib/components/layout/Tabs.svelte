@@ -2,7 +2,7 @@
 	import { onMount, type Snippet } from 'svelte';
 
 	import { goto } from '$app/navigation';
-	import { page, navigating } from '$app/stores';
+	import { page, navigating } from '$app/state';
 
 	import { PageRoute } from '$lib/models/routing';
 	import type { TabConfig } from '$lib/models/ui';
@@ -10,10 +10,10 @@
 	let { tabs, children }: { tabs: TabConfig[]; children?: Snippet } = $props();
 
 	let controller: HTMLIonTabsElement;
-	let currentTabName = $state($page.route.id ?? PageRoute.HOME);
+	let currentTabName = $state(page.route.id ?? PageRoute.HOME);
 
 	$effect(() => {
-		const pathname = $navigating?.to?.route.id;
+		const pathname = navigating?.to?.route.id;
 		if (pathname && pathname !== currentTabName) {
 			currentTabName = pathname;
 		}

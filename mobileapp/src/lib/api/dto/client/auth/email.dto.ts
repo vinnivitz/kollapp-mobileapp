@@ -19,6 +19,7 @@ export const emailSchema = (): ObjectSchema<AnyObject, EmailDto> => {
 	return object<EmailDto>({
 		email: string()
 			.default('')
+			.trim()
 			.email($t('api.dto.email.schema.validation.invalid'))
 			.required($t('api.dto.email.schema.validation.required'))
 	});

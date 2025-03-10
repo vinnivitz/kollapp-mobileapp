@@ -1,4 +1,4 @@
-import type { ValidationCode } from '$lib/api/models';
+import type { ValidationCode } from '$lib/models/api';
 
 /**
  * Validation model for form validation.

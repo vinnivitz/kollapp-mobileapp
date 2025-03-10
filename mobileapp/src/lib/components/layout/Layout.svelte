@@ -1,18 +1,18 @@
 <script lang="ts">
 	import { onDestroy, type Snippet } from 'svelte';
+	import { derived } from 'svelte/store';
 	import { fade } from 'svelte/transition';
-
-	import { navigating } from '$app/stores';
 
 	import Header from './Header.svelte';
 	import Menu from './Menu.svelte';
+
+	import { organizationStore, userStore } from '$lib/stores';
 
 	let {
 		title,
 		children,
 		showBackButton = false,
 		onRefresh,
-		loading = false,
 		hideLayout = false,
 		hideMenu = false
 	}: {
@@ -20,7 +20,6 @@
 		children?: Snippet;
 		showBackButton?: boolean;
 		onRefresh?: (refresher: HTMLIonRefresherElement) => void;
-		loading?: boolean;
 		hideLayout?: boolean;
 		hideMenu?: boolean;
 	} = $props();
@@ -29,8 +28,13 @@
 	let navigationTimeout: ReturnType<typeof setTimeout>;
 	let refresher = $state<HTMLIonRefresherElement | undefined>();
 
+	const loading = !derived(
+		[userStore.initialized, organizationStore.initialized],
+		([$userInitialized, $organizationInitialized]) => $userInitialized && $organizationInitialized
+	);
+
 	$effect(() => {
-		if ($navigating || loading) {
+		if (loading) {
 			navigationDebounced = false;
 			navigationTimeout = setTimeout(() => (navigationDebounced = true), 100);
 		}
@@ -51,17 +55,13 @@
 	{#if !hideLayout}
 		<Header {title} {showBackButton}></Header>
 	{/if}
-	{#if ($navigating || loading) && navigationDebounced}
+	{#if loading && navigationDebounced}
 		<ion-progress-bar type="indeterminate"></ion-progress-bar>
 	{/if}
 	<ion-content class="ion-padding" in:fade={{ duration: 200, delay: 0 }}>
 		{#if onRefresh}
 			<!-- svelte-ignore event_directive_deprecated -->
-			<ion-refresher
-				bind:this={refresher}
-				slot="fixed"
-				on:ionRefresh={() => refresher && onRefresh?.(refresher)}
-			>
+			<ion-refresher bind:this={refresher} slot="fixed" on:ionRefresh={() => refresher && onRefresh?.(refresher)}>
 				<ion-refresher-content></ion-refresher-content>
 			</ion-refresher>
 		{/if}

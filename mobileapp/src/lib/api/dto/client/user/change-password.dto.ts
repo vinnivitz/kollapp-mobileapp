@@ -33,9 +33,6 @@ export const changePasswordSchema = (): ObjectSchema<AnyObject, ChangePasswordDt
 			.required($t('api.dto.change-password.schema.validation.new-password.required')),
 		confirmNewPassword: string()
 			.default('')
-			.oneOf(
-				[ref('newPassword')],
-				$t('api.dto.change-password.schema.validation.confirm-password.no-match')
-			)
+			.oneOf([ref('newPassword')], $t('api.dto.change-password.schema.validation.confirm-password.no-match'))
 	});
 };

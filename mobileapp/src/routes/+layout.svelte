@@ -3,14 +3,14 @@
 	import 'ionic-svelte/components/all';
 	import { defineCustomElements } from '@ionic/pwa-elements/loader';
 	import { loadingController, setupIonicBase } from 'ionic-svelte';
-	import { home, cash, person } from 'ionicons/icons';
+	import { home, person, accessibility } from 'ionicons/icons';
 	import { onDestroy, onMount } from 'svelte';
 
 	import Tabs from '$lib/components/layout/Tabs.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
 	import type { TabConfig } from '$lib/models/ui';
-	import { authenticationStore, localeStore, organizationStore, userStore } from '$lib/store';
+	import { authenticationStore, localeStore, organizationStore, userStore } from '$lib/stores';
 
 	let { children } = $props();
 
@@ -20,6 +20,12 @@
 	let loaded = $state(false);
 
 	setupIonicBase();
+
+	$effect(() => {
+		if (loaded && $authenticationStore) {
+			initStores();
+		}
+	});
 
 	function initStores(): void {
 		userStore.init();
@@ -37,9 +43,9 @@
 		tabs = [
 			{ label: $t('common.page-routes.home'), icon: home, tab: PageRoute.HOME },
 			{
-				label: $t('common.page-routes.finances'),
-				icon: cash,
-				tab: PageRoute.FINANCES
+				label: $t('common.page-routes.organization'),
+				icon: accessibility,
+				tab: PageRoute.ORGANIZATION.ROOT
 			},
 			{ label: $t('common.page-routes.account'), icon: person, tab: PageRoute.ACCOUNT.ROOT }
 		];
@@ -47,7 +53,6 @@
 		if (loadingSpinner) {
 			await loadingSpinner.dismiss();
 		}
-		initStores();
 	});
 
 	onDestroy(() => {

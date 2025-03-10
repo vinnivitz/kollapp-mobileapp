@@ -1,6 +1,6 @@
 import type { EmailDto, RegisterDto, ResetPasswordDto } from '$lib/api/dto/client/auth';
-import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/api/models';
-import { customFetch } from '$lib/api/utils';
+import { AuthorizationType, type ResponseBody, RequestMethod } from '$lib/models/api';
+import { customFetch } from '$lib/utils';
 
 const ENDPOINT = 'public/user';
 

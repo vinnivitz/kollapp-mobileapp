@@ -16,4 +16,12 @@ const config: Config<{ value?: string | number }> = {
 	]
 };
 
+/**
+ * Locale enum for the supported languages.
+ */
+export enum Locale {
+	DE = 'de',
+	EN = 'en'
+}
+
 export const { t, locale, loadTranslations } = new I18n(config);

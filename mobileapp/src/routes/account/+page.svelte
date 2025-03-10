@@ -3,6 +3,7 @@
 	import { actionSheetController } from 'ionic-svelte';
 	import {
 		balloonOutline,
+		buildOutline,
 		colorPaletteOutline,
 		colorWandOutline,
 		contrastOutline,
@@ -12,7 +13,6 @@
 		keyOutline,
 		languageOutline,
 		moonOutline,
-		personOutline,
 		refreshOutline,
 		sunnyOutline,
 		trashOutline
@@ -23,11 +23,11 @@
 
 	import LayoutComponent from '$lib/components/layout/Layout.svelte';
 	import LabeledItem from '$lib/components/widgets/LabeledItem.svelte';
-	import { t } from '$lib/locales';
+	import { Locale, t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
-	import { Layout, Locale, Theme } from '$lib/models/store';
-	import { localeStore, themeStore } from '$lib/store';
-	import { layoutStore } from '$lib/store/layout.store';
+	import { Layout, Theme } from '$lib/models/ui';
+	import { localeStore, themeStore } from '$lib/stores';
+	import { layoutStore } from '$lib/stores/layout.store';
 
 	async function openActionSheet(header: string, buttons: ActionSheetButton[]): Promise<void> {
 		const actionsheet = await actionSheetController.create({
@@ -126,24 +126,21 @@
 		<ion-list-header>{$t('routes.account.list.account.title')}</ion-list-header>
 		<LabeledItem
 			searchable={PageRoute.ACCOUNT.UPDATE_DATA}
-			detail
 			click={() => goto(PageRoute.ACCOUNT.UPDATE_DATA)}
-			iconSrc={personOutline}
+			icon={buildOutline}
 			label={$t('routes.account.list.account.button.update-data')}
 		/>
 		<LabeledItem
 			searchable={PageRoute.ACCOUNT.CHANGE_PASSWORD}
-			detail
 			click={() => goto(PageRoute.ACCOUNT.CHANGE_PASSWORD)}
-			iconSrc={keyOutline}
+			icon={keyOutline}
 			label={$t('routes.account.list.account.button.change-password')}
 		/>
 		<LabeledItem
 			searchable={PageRoute.ACCOUNT.DELETE}
-			detail
 			color="danger"
 			click={() => goto(PageRoute.ACCOUNT.DELETE)}
-			iconSrc={trashOutline}
+			icon={trashOutline}
 			label={$t('routes.account.list.account.button.delete-account')}
 		/>
 	</ion-list>
@@ -151,30 +148,26 @@
 		<ion-list-header>{$t('routes.account.list.application.title')}</ion-list-header>
 		<LabeledItem
 			searchable={PageRoute.ACCOUNT.ROOT}
-			detail
 			click={openLocaleActionSheet}
-			iconSrc={languageOutline}
+			icon={languageOutline}
 			label={$t('routes.account.app.list.language.button')}
 		/>
 		<LabeledItem
 			searchable={PageRoute.ACCOUNT.ROOT}
-			detail
 			click={openColorThemeActionSheet}
-			iconSrc={colorPaletteOutline}
+			icon={colorPaletteOutline}
 			label={$t('routes.account.app.list.theme.button')}
 		/>
 		<LabeledItem
 			searchable={PageRoute.ACCOUNT.ROOT}
-			detail
 			click={openLayoutActionSheet}
-			iconSrc={colorWandOutline}
+			icon={colorWandOutline}
 			label={$t('routes.account.app.list.layout.button')}
 		/>
 		<LabeledItem
 			searchable={PageRoute.ACCOUNT.ROOT}
-			detail
 			click={restoreApplicationDefaults}
-			iconSrc={refreshOutline}
+			icon={refreshOutline}
 			label={$t('routes.account.app.list.restore.button')}
 		/>
 	</ion-list>

@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { Layout } from '$lib/models/store';
-	import type { Colors } from '$lib/models/ui';
-	import { layoutStore } from '$lib/store';
+	import { Layout, type Colors } from '$lib/models/ui';
+	import { layoutStore } from '$lib/stores';
 
 	let {
 		click,
@@ -29,10 +28,7 @@
 		iconPosition?: 'start' | 'end';
 		type?: 'button' | 'submit' | 'reset';
 		disabled?: boolean;
-	} & (
-		| { type: 'submit'; click?: never }
-		| { type?: 'button' | 'reset'; click: () => void | Promise<void> }
-	) = $props();
+	} & ({ type: 'submit'; click?: never } | { type?: 'button' | 'reset'; click: () => void | Promise<void> }) = $props();
 
 	const isMondernLayout = $derived($layoutStore === Layout.MODERN);
 	const isPlayfulLayout = $derived($layoutStore === Layout.PLAYFUL);

@@ -18,9 +18,7 @@ export type LoginDto = {
 export const loginSchema = (): ObjectSchema<AnyObject, LoginDto> => {
 	const $t = get(t);
 	return object<LoginDto>({
-		username: string()
-			.default('')
-			.required($t('api.dto.login.schema.validation.username.required')),
+		username: string().default('').trim().required($t('api.dto.login.schema.validation.username.required')),
 		password: string().default('').required($t('api.dto.login.schema.validation.password.required'))
 	});
 };

@@ -2,25 +2,19 @@
 	import { loadingController } from 'ionic-svelte';
 	import { accessibilityOutline, saveOutline } from 'ionicons/icons';
 
-	import { apiResources } from '$lib/api';
-	import {
-		updateOrganizationSchema,
-		type UpdateOrganizationDto
-	} from '$lib/api/dto/client/organization';
-	import { getValidationResult } from '$lib/api/utils';
+	import { updateOrganizationSchema, type UpdateOrganizationDto } from '$lib/api/dto/client/organization';
+	import { organizationResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
 	import InputItem from '$lib/components/widgets/InputItem.svelte';
 	import { t } from '$lib/locales';
-	import type { OrganizationModel } from '$lib/models/store';
+	import type { OrganizationModel } from '$lib/models/models';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
-	import { organizationStore } from '$lib/store';
-	import { customForm } from '$lib/utils';
+	import { organizationStore } from '$lib/stores';
+	import { customForm, getValidationResult } from '$lib/utils';
 
 	const organizationModel = $derived<OrganizationModel | undefined>($organizationStore);
-	const loading = $derived<boolean>(!organizationModel);
-	let validationResult: ValidationResult;
 	let actions: FormActions<UpdateOrganizationDto>;
 	let model: UpdateOrganizationDto;
 	let form = $state<Form<UpdateOrganizationDto>>();
@@ -44,33 +38,30 @@
 	});
 
 	async function onSubmit(model: UpdateOrganizationDto, result: ValidationResult): Promise<void> {
-		validationResult = result;
-		if (validationResult.valid) {
-			const loading = await loadingController.create({});
-			await loading.present();
-			validationResult = getValidationResult(
-				await apiResources.organization.updateOrganization(model)
-			);
-			await loading.dismiss();
-			if (validationResult.valid) {
+		if (result.valid) {
+			const loader = await loadingController.create({});
+			await loader.present();
+			result = getValidationResult(await organizationResource.update(model));
+			await loader.dismiss();
+			if (result.valid) {
 				actions.resetModel();
 				touched = false;
 				organizationStore.init();
 			} else {
-				actions.applyValidationFeedback(validationResult);
+				actions.applyValidationFeedback(result);
 			}
 		}
 	}
 </script>
 
-<Layout title={$t('routes.organization.update-info.title')} showBackButton {loading}>
+<Layout title={$t('routes.organization.update-info.title')} showBackButton>
 	{#if form}
 		<Card title={$t('routes.organization.update-info.card.title')}>
 			<form use:customForm={form}>
 				<InputItem
 					name="name"
 					label={$t('routes.auth.register.organization.form.input.name')}
-					iconSrc={accessibilityOutline}
+					icon={accessibilityOutline}
 				/>
 				<Button
 					classProp="mt-3"

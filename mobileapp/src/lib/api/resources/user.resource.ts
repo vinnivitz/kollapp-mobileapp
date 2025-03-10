@@ -1,7 +1,7 @@
 import type { ChangePasswordDto, UpdateUserDataDto } from '$lib/api/dto/client/user';
 import type { UserDto } from '$lib/api/dto/server';
-import { RequestMethod, type ResponseBody } from '$lib/api/models';
-import { customFetch } from '$lib/api/utils';
+import { type ResponseBody, RequestMethod } from '$lib/models/api';
+import { customFetch } from '$lib/utils';
 
 const ENDPOINT = 'user';
 
@@ -9,7 +9,7 @@ const ENDPOINT = 'user';
  * Gets the data of authenticated user
  * @returns {Promise<ResponseBody>} response body
  */
-export async function getAuthenticatedUser(): Promise<ResponseBody<UserDto>> {
+export async function getByAuthentication(): Promise<ResponseBody<UserDto>> {
 	return customFetch(ENDPOINT, { silentOnError: true, silentOnSuccess: true });
 }
 
@@ -30,7 +30,7 @@ export async function changePassword(model: ChangePasswordDto): Promise<Response
  * @param model user data model
  * @returns {Promise<ResponseBody>} response body
  */
-export async function updateUserData(model: UpdateUserDataDto): Promise<ResponseBody> {
+export async function update(model: UpdateUserDataDto): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/update-information`, {
 		method: RequestMethod.POST,
 		body: JSON.stringify(model),

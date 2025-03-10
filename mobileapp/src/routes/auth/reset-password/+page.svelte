@@ -2,16 +2,15 @@
 	import { loadingController } from 'ionic-svelte';
 	import { mailOutline } from 'ionicons/icons';
 
-	import { apiResources } from '$lib/api';
 	import { emailSchema, type EmailDto } from '$lib/api/dto/client/auth';
-	import { getValidationResult } from '$lib/api/utils';
+	import { publicUserResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
 	import InputItem from '$lib/components/widgets/InputItem.svelte';
 	import { t } from '$lib/locales';
 	import { type ValidationResult, type FormActions, type FormConfig, Form } from '$lib/models/ui';
-	import { customForm } from '$lib/utils';
+	import { customForm, getValidationResult } from '$lib/utils';
 
 	const model = emailSchema().cast({}) as EmailDto;
 	let validationResult: ValidationResult;
@@ -30,9 +29,7 @@
 		if (validationResult.valid) {
 			const loading = await loadingController.create({});
 			await loading.present();
-			const validationResult = getValidationResult(
-				await apiResources.publicUser.forgotPassword(model)
-			);
+			const validationResult = getValidationResult(await publicUserResource.forgotPassword(model));
 			await loading.dismiss();
 			if (validationResult.valid) {
 				actions.resetModel();
@@ -46,11 +43,7 @@
 <Layout title={$t('routes.auth.reset-password.title')} showBackButton hideMenu>
 	<Card title={$t('routes.auth.reset-password.card.title')}>
 		<form use:customForm={form}>
-			<InputItem
-				name="email"
-				label={$t('routes.auth.reset-password.form.email')}
-				iconSrc={mailOutline}
-			/>
+			<InputItem name="email" label={$t('routes.auth.reset-password.form.email')} icon={mailOutline} />
 			<Button
 				classProp="mt-3"
 				expand="block"

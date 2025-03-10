@@ -3,8 +3,8 @@
 
 	import { goto } from '$app/navigation';
 
-	import { apiResources } from '$lib/api';
 	import type { SearchableItemDto } from '$lib/api/dto/server';
+	import { authResource, searchableResource } from '$lib/api/resources';
 	import Button from '$lib/components/widgets/Button.svelte';
 	import LabeledItem from '$lib/components/widgets/LabeledItem.svelte';
 	import { t } from '$lib/locales';
@@ -16,13 +16,13 @@
 	let menuController: HTMLIonMenuElement;
 
 	async function logout(): Promise<void> {
-		await apiResources.auth.logout();
+		await authResource.logout();
 		goto(PageRoute.AUTH.LOGIN);
 	}
 
 	async function onSearch(event: CustomEvent): Promise<void> {
 		searchValue = event.detail.value ?? '';
-		searchedItems = await apiResources.searchable.filter(searchValue);
+		searchedItems = await searchableResource.filter(searchValue);
 	}
 
 	async function navigate(route: PageRoutePaths, label?: string): Promise<void> {
@@ -56,20 +56,16 @@
 			{#if searchValue !== ''}
 				<ion-list-header>
 					{#if searchedItems.length > 0}
-						{$t('components.layout.menu.searchbar.title.found', {
-							value: searchValue
-						})}
+						{$t('components.layout.menu.searchbar.title.found', { value: searchValue })}
 					{:else}
-						{$t('components.layout.menu.searchbar.title.not-found', {
-							value: searchValue
-						})}
+						{$t('components.layout.menu.searchbar.title.not-found', { value: searchValue })}
 					{/if}
 				</ion-list-header>
 				{#each searchedItems as item (item.id)}
 					<LabeledItem
 						transparent
 						label={item.label}
-						iconSrc={icons[item.icon as keyof typeof icons]}
+						icon={icons[item.icon as keyof typeof icons]}
 						click={() => navigate(item.route, item.label)}
 					/>
 				{/each}
@@ -77,13 +73,13 @@
 				<LabeledItem
 					transparent
 					click={() => navigate(PageRoute.ACCOUNT.ROOT)}
-					iconSrc={icons.personOutline}
+					icon={icons.personOutline}
 					label={$t('components.layout.header.button.account')}
 				/>
 				<LabeledItem
 					transparent
 					click={() => navigate(PageRoute.ORGANIZATION.ROOT)}
-					iconSrc={icons.accessibilityOutline}
+					icon={icons.accessibilityOutline}
 					label={$t('components.layout.menu.list.organization')}
 				/>
 			{/if}

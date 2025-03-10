@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { accessibilityOutline, personOutline } from 'ionicons/icons';
+	import { accessibilityOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
 
@@ -7,27 +7,17 @@
 	import Button from '$lib/components/widgets/Button.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
 	import { t } from '$lib/locales';
+	import type { OrganizationModel, UserModel } from '$lib/models/models';
 	import { PageRoute } from '$lib/models/routing';
-	import type { OrganizationModel, UserModel } from '$lib/models/store';
-	import { organizationStore, userStore } from '$lib/store';
+	import { organizationStore, userStore } from '$lib/stores';
 
 	const userModel = $derived<UserModel | undefined>($userStore);
 	const organizationModel = $derived<OrganizationModel | undefined>($organizationStore);
-	const loading = $derived(!userModel);
 </script>
 
-<Layout title={$t('routes.home.title')} {loading}>
+<Layout title={$t('routes.home.title')}>
 	{#if userModel}
-		<Card title={$t('routes.home.card.user.title', { value: userModel.username })}>
-			<div class="text-center">
-				<Button
-					click={() => goto(PageRoute.ACCOUNT.ROOT)}
-					iconSrc={personOutline}
-					fill="outline"
-					label={$t('routes.home.card.user.button')}
-				/>
-			</div>
-		</Card>
+		<Card title={$t('routes.home.card.user.title', { value: userModel.username })} />
 	{/if}
 
 	{#if organizationModel}
@@ -42,13 +32,23 @@
 			</div>
 		</Card>
 	{:else}
-		<Card title="Register a new collective">
+		<Card title={$t('routes.home.card.register-organization.title')}>
 			<div class="text-center">
 				<Button
 					click={() => goto(PageRoute.ORGANIZATION.REGISTER)}
 					fill="outline"
 					iconSrc={accessibilityOutline}
 					label={$t('routes.home.card.organization.register')}
+				/>
+			</div>
+		</Card>
+		<Card title={$t('routes.home.card.join-organization.title')}>
+			<div class="text-center">
+				<Button
+					click={() => goto(PageRoute.ORGANIZATION.JOIN)}
+					fill="outline"
+					iconSrc={accessibilityOutline}
+					label={$t('routes.home.card.organization.join')}
 				/>
 			</div>
 		</Card>

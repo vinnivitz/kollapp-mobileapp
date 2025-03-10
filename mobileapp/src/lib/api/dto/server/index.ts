@@ -4,3 +4,4 @@ export * from './authentication-token.dto';
 export * from './organization.dto';
 export * from './searchable-item.dto';
 export * from './activity.dto';
+export * from './token.dto';

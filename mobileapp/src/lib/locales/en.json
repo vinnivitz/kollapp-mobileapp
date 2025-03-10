@@ -5,11 +5,19 @@
 			"card": {
 				"authenticated": {},
 				"organization": {
-					"button": "Go to collective"
+					"button": "Go to collective",
+					"register": "Register",
+					"join": "Join"
 				},
 				"user": {
 					"button": "Go to account",
-					"title": "Hello {{value}}"
+					"title": "Hello {{value}}!"
+				},
+				"register-organization": {
+					"title": "Register a new collective"
+				},
+				"join-organization": {
+					"title": "Join a collective"
 				}
 			}
 		},
@@ -75,7 +83,7 @@
 						"title": "Whats your collective called?",
 						"cancel": "Cancel"
 					},
-					"title": "Create collective"
+					"title": "Register collective"
 				},
 				"card": {
 					"join-organization": {
@@ -134,7 +142,6 @@
 				}
 			},
 			"register-organization": {
-				"no-token": "Authentication token not found.",
 				"not-authenticated": "User not authenticated"
 			}
 		},
@@ -258,13 +265,82 @@
 			},
 			"list": {
 				"update-info": {
-					"title": "Update information",
 					"update-info": "Update collective info"
 				},
-				"danger-zone": {}
+				"danger-zone": {},
+				"register": {},
+				"current-collective": {
+					"title": "{{value}}"
+				},
+				"general": {
+					"title": "General",
+					"register": {
+						"label": "Register new collective"
+					},
+					"leave": {},
+					"join": {
+						"label": "Join a collective"
+					}
+				},
+				"organization": {
+					"members": "Manage members",
+					"leave": {
+						"label": "Leave collective"
+					},
+					"activity": {
+						"label": "Manage events"
+					}
+				},
+				"activity": {
+					"title": "Events",
+					"create": {
+						"label": "Create new event"
+					}
+				}
 			},
 			"delete": {
 				"card": {}
+			},
+			"page": {
+				"join": {
+					"title": "Join a collective",
+					"form": {
+						"code": "Code",
+						"submit": "Join"
+					}
+				},
+				"leave": {
+					"title": "Leave collective",
+					"card": {
+						"title": "Leave collective",
+						"button": "Leave",
+						"note": "All personal data collected to the collective will be deleted."
+					}
+				},
+				"activity": {
+					"title": "Events",
+					"create-modal": {
+						"title": "Create event",
+						"card": {
+							"title": "Create a new event",
+							"input": {
+								"name": "Name",
+								"location": "Location",
+								"date": "Date"
+							}
+						}
+					},
+					"no-organization-id": "Organization not found"
+				}
+			}
+		},
+		"orgnization": {
+			"page": {
+				"join": {
+					"form": {
+						"title": "Enter the code"
+					}
+				}
 			}
 		}
 	},
@@ -272,7 +348,8 @@
 		"page-routes": {
 			"finances": "Finances",
 			"account": "Account",
-			"home": "Home"
+			"home": "Home",
+			"organization": "Collective"
 		},
 		"error-page": {
 			"card": {
@@ -411,6 +488,43 @@
 							"min": "Name must be at least one character long",
 							"max": "Name must be less than 50 characters long",
 							"required": "Name is required"
+						}
+					}
+				}
+			},
+			"client": {
+				"organization": {
+					"create-activity": {
+						"schema": {
+							"validation": {
+								"name": {
+									"min": "Name must be at leat one character long",
+									"max": "Name must be less then 50 characters long",
+									"required": "Name is required",
+									"empty-space": "Name cannot start with an empty space"
+								},
+								"location": {
+									"min": "Name of location must be at least one character long",
+									"max": "Name of location must be less then 50 characters long",
+									"required": "Name of location is required"
+								}
+							}
+						}
+					},
+					"update-activity": {
+						"schema": {
+							"validation": {
+								"name": {
+									"min": "Name must be at least one character long",
+									"max": "Name must be less then 50 characters long",
+									"required": "Name is required"
+								},
+								"location": {
+									"min": "Name of location must be at least one character long",
+									"max": "Name of location must be less then 50 characters long",
+									"required": "Name of location is required"
+								}
+							}
 						}
 					}
 				}
