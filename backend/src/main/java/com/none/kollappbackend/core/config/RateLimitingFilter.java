@@ -50,7 +50,6 @@ public class RateLimitingFilter extends OncePerRequestFilter {
      * @throws ServletException if a servlet exception occurs
      * @throws IOException      if an I/O exception occurs
      */
-    @SuppressWarnings("null")
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {

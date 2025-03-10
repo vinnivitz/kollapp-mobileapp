@@ -14,7 +14,6 @@ public class StaticResourcesConfig implements WebMvcConfigurer {
     @Autowired
     private ApplicationProperties applicationProperties;
 
-    @SuppressWarnings("null")
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/resources/**").addResourceLocations("classpath:/static/")
