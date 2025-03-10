@@ -46,10 +46,9 @@ public class Organization {
     }
 
     public void addActivityOfOrganization(Activity activity) {
-        if (activities != null) {
-            activities.add(activity);
+        if (activities == null) {
+            activities = new ArrayList<>();
         }
-        activities = new ArrayList<>();
         activities.add(activity);
     }
 

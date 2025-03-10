@@ -10,7 +10,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 public class ClientPlatformFilter extends OncePerRequestFilter {
 
-    @SuppressWarnings("null")
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws java.io.IOException, jakarta.servlet.ServletException {
