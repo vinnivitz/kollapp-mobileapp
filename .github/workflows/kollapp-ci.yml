@@ -27,7 +27,7 @@ jobs:
           cache: maven
 
       - name: Maven Verify
-        run: mvn -B verify --file server/pom.xml
+        run: mvn -B verify --file pom.xml
 
       - name: Set up GitHub
         run: |
@@ -45,7 +45,7 @@ jobs:
 
       - name: Perform Release
         run: |
-          mvn -B package --file server/pom.xml
+          mvn -B package --file pom.xml
 
       - name: Docker Labels
         id: meta
