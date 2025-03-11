@@ -37,8 +37,7 @@ jobs:
       - name: Prepare Release
         run: |
           mvn --file backend/server/pom.xml versions:set -DnewVersion=${{ github.event.inputs.releaseVersion }}
-          cd backend/server
-          git add .
+          git add backend/server
           git commit -m "[GitHubActions] set release version to ${{ github.event.inputs.releaseVersion }}"
           git push
           git tag -a v${{ github.event.inputs.releaseVersion }} -m "Release ${{ github.event.inputs.releaseVersion }}"
@@ -47,6 +46,13 @@ jobs:
       - name: Perform Release
         run: |
           mvn -B package --file backend/server/pom.xml
+
+      - name: Setup new development version
+        run: |
+          mvn --file backend/server/pom.xml versions:set -DnewVersion=${{ github.event.inputs.developmentVersion }}
+          git add backend/server
+          git commit -m "[GitHubActions] set release version to ${{ github.event.inputs.developmentVersion }}"
+          git push
 
       - name: Docker Labels
         id: meta
