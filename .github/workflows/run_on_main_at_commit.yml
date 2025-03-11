@@ -19,7 +19,7 @@ jobs:
         cache: maven
     - name: Maven Verify
       run: |
-        mvn -f backend/pom.xml -B verify
+        mvn -f backend/server/pom.xml -B verify
     - name: Setup Node 22.9
       uses: actions/setup-node@v4
       with:

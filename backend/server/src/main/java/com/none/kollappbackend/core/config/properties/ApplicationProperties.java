@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "kollapp.application")
 public class ApplicationProperties {
+    private String domain;
     private String host;
     private String production;
     private String version;

@@ -52,7 +52,7 @@ public class EmailServiceImpl implements EmailService {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-            helper.setFrom("noreply@" + applicationProperties.getHost());
+            helper.setFrom("noreply@" + applicationProperties.getDomain());
             helper.setTo(recipientMail);
             helper.setSubject(subject);
             helper.setText(htmlContent, true);
@@ -83,7 +83,7 @@ public class EmailServiceImpl implements EmailService {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-            helper.setFrom("noreply@" + applicationProperties.getHost());
+            helper.setFrom("noreply@" + applicationProperties.getDomain());
             helper.setTo(recipientMail);
             helper.setSubject(subject);
             helper.setText(htmlContent, true);
