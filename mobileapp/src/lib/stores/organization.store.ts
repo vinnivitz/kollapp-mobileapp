@@ -1,5 +1,7 @@
 import { writable } from 'svelte/store';
 
+import { activitiesStore } from './activity.store';
+
 import { organizationResource } from '$lib/api/resources';
 import type { OrganizationModel } from '$lib/models/models';
 import { PreferencesKey } from '$lib/models/preferences';
@@ -12,30 +14,27 @@ function createStore(): OrganizationStore {
 	const initialized = writable<boolean>(false);
 
 	async function init(): Promise<void> {
-		if (await getStoredValue<boolean>(PreferencesKey.LOCAL_USER)) {
-			const model: OrganizationModel = { id: '1', name: 'My Collective' };
-			await _set(model);
-		}
-		const id = await getStoredValue<string>(PreferencesKey.SELECTED_ORGANIZATION_ID);
-		if (id) {
-			await change(id);
-		} else {
-			const body = await organizationResource.getIds();
+		try {
+			const storedOrganizationId = await getStoredValue<string>(PreferencesKey.SELECTED_ORGANIZATION_ID);
+			if (storedOrganizationId) {
+				return change(storedOrganizationId);
+			}
 
-			if (StatusCheck.isOK(body.status)) {
-				const id = body.data.length > 0 ? body.data[0] : undefined;
-				if (id) {
-					await change(id);
-				}
-			} else if (!StatusCheck.isUnauthorized(body.status)) {
-				const model = await getStoredValue<OrganizationModel | undefined>(PreferencesKey.ORGANIZATION);
+			const response = await organizationResource.getIds();
+			if (StatusCheck.isOK(response.status) && response.data.length > 0) {
+				return change(response.data[0]);
+			}
 
-				if (model) {
-					set(model);
+			if (!StatusCheck.isUnauthorized(response.status)) {
+				const storedOrganization = await getStoredValue<OrganizationModel | undefined>(PreferencesKey.ORGANIZATION);
+				if (storedOrganization) {
+					set(storedOrganization);
+					return activitiesStore.init(storedOrganization.id);
 				}
 			}
+		} finally {
+			initialized.set(true);
 		}
-		initialized.set(true);
 	}
 
 	async function _set(model: OrganizationModel): Promise<void> {
@@ -54,8 +53,7 @@ function createStore(): OrganizationStore {
 		if (StatusCheck.isOK(body.status)) {
 			await _set(body.data);
 			await storeValue(PreferencesKey.SELECTED_ORGANIZATION_ID, id);
-		} else {
-			await reset();
+			await activitiesStore.init(id);
 		}
 	}
 

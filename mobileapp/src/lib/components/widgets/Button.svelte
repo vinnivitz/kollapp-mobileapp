@@ -10,25 +10,26 @@
 		expand,
 		fill,
 		size,
-		iconSrc,
+		icon,
 		iconSize = 'small',
 		iconPosition = 'start',
 		type,
 		disabled
 	}: {
 		click?: () => void | Promise<void>;
-		label: string;
+		label?: string;
 		color?: Colors | undefined;
 		expand?: 'full' | 'block' | undefined;
 		fill?: 'clear' | 'default' | 'outline' | 'solid' | undefined;
 		classProp?: string;
 		size?: 'default' | 'small' | 'large' | undefined;
-		iconSrc?: string;
+		icon?: string;
 		iconSize?: 'small' | 'large' | undefined;
 		iconPosition?: 'start' | 'end';
 		type?: 'button' | 'submit' | 'reset';
 		disabled?: boolean;
-	} & ({ type: 'submit'; click?: never } | { type?: 'button' | 'reset'; click: () => void | Promise<void> }) = $props();
+	} & ({ type: 'submit'; click?: never } | { type?: 'button' | 'reset'; click: () => void | Promise<void> }) &
+		({ label: string; icon?: string } | { icon: string; label?: string }) = $props();
 
 	const isMondernLayout = $derived($layoutStore === Layout.MODERN);
 	const isPlayfulLayout = $derived($layoutStore === Layout.PLAYFUL);
@@ -55,7 +56,7 @@
 </ion-button>
 
 {#snippet content()}
-	{#if iconSrc}
+	{#if icon}
 		{#if iconPosition === 'start'}
 			{@render startIcon()}
 		{:else}
@@ -70,11 +71,11 @@
 {/snippet}
 
 {#snippet startIcon()}
-	<ion-icon slot="start" icon={iconSrc} size={iconSize}></ion-icon>
+	<ion-icon slot="start" {icon} size={iconSize}></ion-icon>
 {/snippet}
 
 {#snippet endIcon()}
-	<ion-icon slot="end" icon={iconSrc} size={iconSize}></ion-icon>
+	<ion-icon slot="end" {icon} size={iconSize}></ion-icon>
 {/snippet}
 
 <style lang="postcss">

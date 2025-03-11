@@ -10,7 +10,6 @@
 					"join": "Join"
 				},
 				"user": {
-					"button": "Go to account",
 					"title": "Hello {{value}}!"
 				},
 				"register-organization": {
@@ -80,8 +79,7 @@
 							"name": "Name"
 						},
 						"submit": "Register collective",
-						"title": "Whats your collective called?",
-						"cancel": "Cancel"
+						"title": "Whats your collective called?"
 					},
 					"title": "Register collective"
 				},
@@ -141,9 +139,7 @@
 					}
 				}
 			},
-			"register-organization": {
-				"not-authenticated": "User not authenticated"
-			}
+			"register-organization": {}
 		},
 		"account": {
 			"title": "Account",
@@ -292,10 +288,7 @@
 					}
 				},
 				"activity": {
-					"title": "Events",
-					"create": {
-						"label": "Create new event"
-					}
+					"create": {}
 				}
 			},
 			"delete": {
@@ -320,7 +313,6 @@
 				"activity": {
 					"title": "Events",
 					"create-modal": {
-						"title": "Create event",
 						"card": {
 							"title": "Create a new event",
 							"input": {
@@ -328,9 +320,31 @@
 								"location": "Location",
 								"date": "Date"
 							}
+						},
+						"button": {
+							"confirm": "Create"
 						}
 					},
-					"no-organization-id": "Organization not found"
+					"no-organization-id": "Organization not found",
+					"edit-modal": {
+						"button": {
+							"confirm": "Update"
+						},
+						"card": {
+							"title": "Edit event"
+						}
+					},
+					"show-calendar-toggle": {
+						"label": "Show calendar"
+					},
+					"calendar": {
+						"done": "Create event",
+						"cancel": "Cancel",
+						"title": "Selected date"
+					},
+					"search": {
+						"placeholder": "Search events..."
+					}
 				}
 			}
 		},
@@ -346,7 +360,6 @@
 	},
 	"common": {
 		"page-routes": {
-			"finances": "Finances",
 			"account": "Account",
 			"home": "Home",
 			"organization": "Collective"
@@ -500,8 +513,7 @@
 								"name": {
 									"min": "Name must be at leat one character long",
 									"max": "Name must be less then 50 characters long",
-									"required": "Name is required",
-									"empty-space": "Name cannot start with an empty space"
+									"required": "Name is required"
 								},
 								"location": {
 									"min": "Name of location must be at least one character long",

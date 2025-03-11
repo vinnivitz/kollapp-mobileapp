@@ -115,7 +115,6 @@
 									"required": "Name des Standorts ist erforderlich"
 								},
 								"name": {
-									"empty-space": "Name kann nicht mit einem leeren Raum beginnen",
 									"max": "Der Name muss weniger als 50 Zeichen lang sein",
 									"min": "Name muss bei Lat One Charakter lang sein",
 									"required": "Name ist erforderlich"
@@ -149,7 +148,6 @@
 	"common": {
 		"page-routes": {
 			"account": "Konto",
-			"finances": "Finanzen",
 			"home": "Start",
 			"organization": "Kollektiv"
 		},
@@ -346,8 +344,7 @@
 							"name": "Name"
 						},
 						"submit": "Kollektiv registrieren",
-						"title": "Wie heißt dein Kollektiv?",
-						"cancel": "Stornieren"
+						"title": "Wie heißt dein Kollektiv?"
 					},
 					"title": "Kollektiv registrieren"
 				},
@@ -404,9 +401,7 @@
 					"title": "Kennwort ändern"
 				}
 			},
-			"register-organization": {
-				"not-authenticated": "Benutzer nicht authentifiziert"
-			}
+			"register-organization": {}
 		},
 		"home": {
 			"title": "Kollapp",
@@ -418,7 +413,6 @@
 					"join": "Anschließen"
 				},
 				"user": {
-					"button": "Zum Profil",
 					"title": "Hallo {{value}}!"
 				},
 				"register-organization": {
@@ -469,10 +463,7 @@
 					}
 				},
 				"activity": {
-					"title": "Veranstaltungen",
-					"create": {
-						"label": "Neue Veranstaltung erstellen"
-					}
+					"create": {}
 				}
 			},
 			"page": {
@@ -500,11 +491,32 @@
 								"location": "Standort",
 								"name": "Name"
 							},
-							"title": "Erstellen Sie eine neue Veranstaltung"
+							"title": "Neue Veranstaltung erstellen"
 						},
-						"title": "Ereignis erstellen"
+						"button": {
+							"confirm": "Erstellen"
+						}
 					},
-					"no-organization-id": "Organisation nicht gefunden"
+					"no-organization-id": "Organisation nicht gefunden",
+					"edit-modal": {
+						"button": {
+							"confirm": "Aktualisieren"
+						},
+						"card": {
+							"title": "Veranstaltung bearbeiten"
+						}
+					},
+					"show-calendar-toggle": {
+						"label": "Kalender anzeigen"
+					},
+					"calendar": {
+						"done": "Veranstaltung erstellen",
+						"cancel": "Abbrechen",
+						"title": "Ausgewähltes Datum"
+					},
+					"search": {
+						"placeholder": "Veranstaltungen suchen..."
+					}
 				}
 			}
 		},

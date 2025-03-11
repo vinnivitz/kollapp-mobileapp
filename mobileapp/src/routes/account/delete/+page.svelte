@@ -19,7 +19,7 @@
 			expand="block"
 			color="danger"
 			click={leaveOrganization}
-			iconSrc={trashOutline}
+			icon={trashOutline}
 			label={$t('routes.account.delete.card.button')}
 		/>
 		<div class="text-center">

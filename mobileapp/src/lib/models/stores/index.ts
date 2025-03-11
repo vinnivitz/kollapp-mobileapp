@@ -6,3 +6,4 @@ export * from './base-store.type';
 export * from './connection-store.type';
 export * from './layout-store.type';
 export * from './locale-store.type';
+export * from './activity-store.type';

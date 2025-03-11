@@ -6,7 +6,7 @@
 	import Header from './Header.svelte';
 	import Menu from './Menu.svelte';
 
-	import { organizationStore, userStore } from '$lib/stores';
+	import { activitiesStore, organizationStore, userStore } from '$lib/stores';
 
 	let {
 		title,
@@ -29,8 +29,9 @@
 	let refresher = $state<HTMLIonRefresherElement | undefined>();
 
 	const loading = !derived(
-		[userStore.initialized, organizationStore.initialized],
-		([$userInitialized, $organizationInitialized]) => $userInitialized && $organizationInitialized
+		[userStore.initialized, organizationStore.initialized, activitiesStore.initialized],
+		([$userInitialized, $organizationInitialized, $activitiesInitialized]) =>
+			$userInitialized && $organizationInitialized && $activitiesInitialized
 	);
 
 	$effect(() => {

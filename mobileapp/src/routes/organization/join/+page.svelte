@@ -68,7 +68,7 @@
 					expand="block"
 					type="submit"
 					label={$t('routes.organization.page.join.form.submit')}
-					iconSrc={saveOutline}
+					icon={saveOutline}
 					disabled={!touched}
 				/>
 			</div>

@@ -56,7 +56,7 @@
 					expand="block"
 					type="submit"
 					label={$t('routes.auth.register.organization.form.submit')}
-					iconSrc={saveOutline}
+					icon={saveOutline}
 					disabled={!touched}
 				/>
 			</div>

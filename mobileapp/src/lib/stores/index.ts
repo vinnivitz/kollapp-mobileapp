@@ -6,3 +6,4 @@ export * from './theme.store';
 export * from './connection.store';
 export * from './locale.store';
 export * from './layout.store';
+export * from './activity.store';

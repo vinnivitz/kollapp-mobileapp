@@ -12,6 +12,7 @@ import { customFetch } from '$lib/utils';
 const ENDPOINT = 'organization';
 
 export async function getById(_id: string): Promise<ResponseBody<OrganizationDto>> {
+	void _id;
 	// workaround for the server response until the server is fixed
 	return customFetch(`${ENDPOINT}`, { silentOnSuccess: true });
 }
@@ -83,7 +84,7 @@ export async function removeUserFromOrganization(userId: string): Promise<Respon
  * @returns {Promise<ResponseBody<ActivityDto[]>>} The organization activities.
  */
 export async function getActivities(organizationId: string): Promise<ResponseBody<ActivityDto[]>> {
-	return customFetch(`${ENDPOINT}/${organizationId}/activity`, { silentOnSuccess: true });
+	return customFetch(`${ENDPOINT}/${organizationId}/activities`, { silentOnSuccess: true });
 }
 
 /**
@@ -112,7 +113,7 @@ export async function updateActivity(
 	model: UpdateActivityDto
 ): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/${organizationId}/activity/${activityId}`, {
-		method: RequestMethod.PUT,
+		method: RequestMethod.POST,
 		body: JSON.stringify(model)
 	});
 }

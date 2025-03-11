@@ -1,7 +1,6 @@
 import { writable } from 'svelte/store';
 
 import { userResource } from '$lib/api/resources';
-import { UserRole } from '$lib/models/api';
 import type { UserModel } from '$lib/models/models';
 import { PreferencesKey } from '$lib/models/preferences';
 import type { UserStore } from '$lib/models/stores';
@@ -13,16 +12,6 @@ function createStore(): UserStore {
 	const initialized = writable<boolean>(false);
 
 	async function init(): Promise<void> {
-		if (await getStoredValue<boolean>(PreferencesKey.LOCAL_USER)) {
-			const model: UserModel = {
-				name: 'John',
-				surname: 'Doe',
-				email: 'john@doe.com',
-				username: 'johndoe',
-				roles: [UserRole.MANAGER, UserRole.MEMBER]
-			};
-			return _set(model);
-		}
 		const body = await userResource.getByAuthentication();
 
 		if (StatusCheck.isOK(body.status)) {
@@ -38,7 +27,7 @@ function createStore(): UserStore {
 	}
 
 	async function _set(model: UserModel): Promise<void> {
-		await (model ? storeValue(PreferencesKey.USER, model) : removeStoredValue(PreferencesKey.USER));
+		await storeValue(PreferencesKey.USER, model);
 		set(model);
 	}
 

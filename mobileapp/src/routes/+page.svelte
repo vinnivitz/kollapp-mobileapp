@@ -26,7 +26,7 @@
 				<Button
 					click={() => goto(PageRoute.ORGANIZATION.ROOT)}
 					fill="outline"
-					iconSrc={accessibilityOutline}
+					icon={accessibilityOutline}
 					label={$t('routes.home.card.organization.button')}
 				/>
 			</div>
@@ -37,7 +37,7 @@
 				<Button
 					click={() => goto(PageRoute.ORGANIZATION.REGISTER)}
 					fill="outline"
-					iconSrc={accessibilityOutline}
+					icon={accessibilityOutline}
 					label={$t('routes.home.card.organization.register')}
 				/>
 			</div>
@@ -47,7 +47,7 @@
 				<Button
 					click={() => goto(PageRoute.ORGANIZATION.JOIN)}
 					fill="outline"
-					iconSrc={accessibilityOutline}
+					icon={accessibilityOutline}
 					label={$t('routes.home.card.organization.join')}
 				/>
 			</div>

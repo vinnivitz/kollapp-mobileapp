@@ -31,7 +31,7 @@
 				color="danger"
 				expand="block"
 				label={$t('routes.organization.page.leave.card.button')}
-				iconSrc={trashOutline}
+				icon={trashOutline}
 				click={leaveOrganization}
 			/>
 			<ion-text>{$t('routes.organization.page.leave.card.note')}</ion-text>

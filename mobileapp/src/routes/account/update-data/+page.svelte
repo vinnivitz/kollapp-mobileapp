@@ -81,7 +81,7 @@
 					type="submit"
 					disabled={!touched}
 					label={$t('routes.account.update-data.card.form.button.submit')}
-					iconSrc={saveOutline}
+					icon={saveOutline}
 				/>
 			</form>
 		</Card>

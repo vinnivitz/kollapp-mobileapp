@@ -10,5 +10,6 @@ export enum PreferencesKey {
 	ORGANIZATION = 'organization',
 	SELECTED_ORGANIZATION_ID = 'selected-organization-id',
 	LAYOUT = 'layout',
-	LOCAL_USER = 'local-user'
+	LOCAL_USER = 'local-user',
+	ACTIVITIES = 'activities'
 }

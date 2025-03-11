@@ -22,7 +22,7 @@
 
 	async function onSearch(event: CustomEvent): Promise<void> {
 		searchValue = event.detail.value ?? '';
-		searchedItems = await searchableResource.filter(searchValue);
+		searchedItems = await searchableResource.filter(searchValue.toLowerCase());
 	}
 
 	async function navigate(route: PageRoutePaths, label?: string): Promise<void> {
@@ -44,7 +44,7 @@
 				color="light"
 				show-clear-button="always"
 				debounce={100}
-				placeholder={$t('components.layout.menu.searchbar.placeholder')}
+				placeholder={$t('routes.organization.page.activity.search.placeholder')}
 				on:ionInput={onSearch}
 				value={searchValue}
 			>
@@ -89,7 +89,7 @@
 				size="default"
 				fill="outline"
 				click={() => logout()}
-				iconSrc={icons.logOutOutline}
+				icon={icons.logOutOutline}
 				label={$t('components.layout.header.button.logout')}
 			/>
 			<hr class="my-3" />

@@ -91,7 +91,7 @@
 				type="submit"
 				label={$t('routes.auth.register.form.submit')}
 				disabled={!touched}
-				iconSrc={saveOutline}
+				icon={saveOutline}
 			/>
 		</form>
 		<Card click={() => goto(PageRoute.AUTH.LOGIN)} classProp="text-center">

@@ -87,7 +87,7 @@
 				expand="block"
 				type="submit"
 				label={$t('routes.auth.login.form.submit')}
-				iconSrc={logInOutline}
+				icon={logInOutline}
 			/>
 		</form>
 		{#if emailNotConfirmed}

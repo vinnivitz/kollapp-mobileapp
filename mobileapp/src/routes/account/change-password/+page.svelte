@@ -72,7 +72,7 @@
 				expand="block"
 				type="submit"
 				label={$t('routes.account.change-password.form.submit')}
-				iconSrc={saveOutline}
+				icon={saveOutline}
 				disabled={!touched}
 			/>
 		</form>
