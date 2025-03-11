@@ -68,5 +68,5 @@ jobs:
       - name: Build and Push Docker Image
         run: |
           cd backend/server
-          docker buildx build --push --tag registry.kollapp.org/kollapp-backend:v${{ github.event.inputs.releaseVersion }} .
+          docker buildx build --push --tag registry.kollapp.org/v2/kollapp-backend:v${{ github.event.inputs.releaseVersion }} .
 
