@@ -1,6 +1,6 @@
 services:
   kollapp-db:
-    image: mysql
+    image: mysql:8.4
     container_name: kollapp-db
     restart: unless-stopped
     ports:
@@ -12,9 +12,9 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_USER: admin
       MYSQL_PASSWORD: pass
-
+      
   kollapp-mail:
-    image: mailhog/mailhog
+    image: mailhog/mailhog:v1.0.1
     container_name: kollapp-mail
     restart: unless-stopped
     ports:
