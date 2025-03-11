@@ -27,13 +27,16 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Maven Verify
-        run: mvn -B verify --file backend/server/pom.xml
-
       - name: Set up GitHub
         run: |
           git config --global user.name 'GitHub-Actions'
           git config --global user.email 'gha@github.com'
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Maven Verify
+        run: mvn -B verify --file backend/server/pom.xml
 
       - name: Prepare Release
         run: |
@@ -61,10 +64,7 @@ jobs:
           registry: registry.kollapp.org
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
+          
       - name: Build and Push Docker Image
         run: |
           cd backend/server
