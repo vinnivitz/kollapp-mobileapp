@@ -42,7 +42,7 @@ jobs:
           git commit -m "[GitHubActions] set release version to ${{ github.event.inputs.releaseVersion }}"
           git push
           git tag -a v${{ github.event.inputs.releaseVersion }} -m "Release ${{ github.event.inputs.releaseVersion }}"
-          git push v${{ github.event.inputs.releaseVersion }}
+          git push origin v${{ github.event.inputs.releaseVersion }}
 
       - name: Perform Release
         run: |
