@@ -54,6 +54,9 @@ jobs:
           git add backend/server
           git commit -m "[GitHubActions] set release version to ${{ github.event.inputs.developmentVersion }}"
           git push
+          
+      - name: List Git tags
+        run: git tag
 
       - name: Docker Labels
         id: meta
