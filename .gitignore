@@ -38,7 +38,7 @@
 /mobileapp/ios
 
 # database
-/db
+/backend/db
 
 # Flutter
 /webapp/.dart_tool/
