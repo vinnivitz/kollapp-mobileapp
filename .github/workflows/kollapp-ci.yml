@@ -37,7 +37,8 @@ jobs:
       - name: Prepare Release
         run: |
           mvn --file backend/server/pom.xml versions:set -DnewVersion=${{ github.event.inputs.releaseVersion }}
-          git add backend/server/
+          cd backend/server
+          git add .
           git commit -m "[GitHubActions] set release version to ${{ github.event.inputs.releaseVersion }}"
           git push
           git tag -a v${{ github.event.inputs.releaseVersion }} -m "Release ${{ github.event.inputs.releaseVersion }}"
