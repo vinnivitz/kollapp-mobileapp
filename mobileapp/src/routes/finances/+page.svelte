@@ -5,7 +5,7 @@
 	import Card from '$lib/components/widgets/Card.svelte';
 	import { t } from '$lib/locales';
 
-	function onRefresh(refresher: HTMLIonRefresherElement) {
+	function onRefresh(refresher: HTMLIonRefresherElement): void {
 		setTimeout(() => {
 			refresher.complete();
 		}, 1000);

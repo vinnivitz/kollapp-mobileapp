@@ -1,5 +1,5 @@
 import typography from '@tailwindcss/typography';
-import scrollbarHide from 'tailwind-scrollbar-hide';
+import * as scrollbarHide from 'tailwind-scrollbar-hide';
 import type { Config } from 'tailwindcss';
 
 export default {
@@ -10,7 +10,7 @@ export default {
 	plugins: [
 		typography,
 		scrollbarHide,
-		function ({ addVariant }) {
+		({ addVariant }) => {
 			addVariant('light', '&:is(.light *)');
 			addVariant('dark', '&:is(.dark *)');
 			addVariant('black-and-white', '&:is(.black-and-white *)');

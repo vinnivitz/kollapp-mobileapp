@@ -56,7 +56,7 @@ export async function customFetch<T = never>(url: string, config?: CustomFetchCo
 			if (token) {
 				headers.set(HeaderKey.AUTHORIZATION, getBearerToken(token));
 			} else {
-				return createErrorResponse(StatusCode.UNAUTHORIZED, $t('api.unauthorized'), silentOnError);
+				return handleAuthenticationError(silentOnError);
 			}
 		}
 
@@ -67,8 +67,7 @@ export async function customFetch<T = never>(url: string, config?: CustomFetchCo
 		if (StatusCheck.isUnauthorized(response.status)) {
 			const newToken = await getNewAuthenticationToken();
 			if (!newToken) {
-				await goto(PageRoute.HOME);
-				return createErrorResponse(StatusCode.UNAUTHORIZED, $t('api.unauthorized'), silentOnError);
+				return handleAuthenticationError(silentOnError);
 			}
 			headers.set(HeaderKey.AUTHORIZATION, getBearerToken(newToken));
 			response = await fetch(enhancedUrl, { ...options, headers });
@@ -129,6 +128,12 @@ export function hasRole(role: UserRole): boolean {
 	return !!get(userStore)?.roles.includes(role);
 }
 
+async function handleAuthenticationError(silent: boolean): Promise<ResponseBody> {
+	await authResource.logout();
+	await goto(PageRoute.AUTH.LOGIN);
+	return createErrorResponse(StatusCode.UNAUTHORIZED, $t('api.unauthorized'), silent);
+}
+
 function getUrl(endpoint: string): string {
 	return `${environment.apiUrl}/${endpoint}`;
 }
@@ -150,8 +155,7 @@ async function getResponseBody<T>(
 	const body = (await response.json()) as ResponseBody<T>;
 	message = body.message ?? (response.ok ? message : $t('api.error'));
 	data = body.data ?? data;
-	const validationField = body.validationField;
-	const validationCode = body.validationCode;
+	const { validationField, validationCode } = body;
 	if (!silent && !validationField) {
 		showAlert(message, { type: response.ok ? AlertType.SUCCESS : AlertType.ERROR });
 	}

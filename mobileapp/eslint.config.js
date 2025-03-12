@@ -2,6 +2,7 @@ import js from '@eslint/js';
 import prettier from 'eslint-config-prettier';
 import importPlugin from 'eslint-plugin-import';
 import securityPlugin from 'eslint-plugin-security';
+import sonarjsPlugin from 'eslint-plugin-sonarjs';
 import sveltePlugin from 'eslint-plugin-svelte';
 import tailwindcssPlugin from 'eslint-plugin-tailwindcss';
 import unicornPlugin from 'eslint-plugin-unicorn';
@@ -17,6 +18,7 @@ export default ts.config(
 	securityPlugin.configs.recommended,
 	tailwindcssPlugin.configs['flat/recommended'],
 	unicornPlugin.configs['flat/recommended'],
+	sonarjsPlugin.configs.recommended,
 	{
 		plugins: {
 			import: importPlugin
@@ -27,6 +29,23 @@ export default ts.config(
 			}
 		},
 		rules: {
+			'sonarjs/no-unused-collection': 'off',
+			'sonarjs/void-use': 'off',
+			'sonarjs/no-use-of-empty-return-value': 'off',
+			'sonarjs/slow-regex': 'off',
+			'@typescript-eslint/explicit-function-return-type': [
+				'error',
+				{
+					allowExpressions: true,
+					allowTypedFunctionExpressions: true
+				}
+			],
+			'@typescript-eslint/no-unused-vars': [
+				'error',
+				{
+					argsIgnorePattern: '^_'
+				}
+			],
 			'import/order': [
 				'error',
 				{
@@ -49,9 +68,32 @@ export default ts.config(
 					}
 				}
 			],
+			'no-restricted-imports': [
+				'error',
+				{
+					patterns: [
+						{
+							group: [
+								'$lib/models/models/*',
+								'$lib/models/ui/*',
+								'$lib/models/routing/*',
+								'$lib/models/api/*',
+								'$lib/models/preferences/*',
+								'$lib/models/stores/*',
+								'$lib/utils/*',
+								'$lib/stores/*'
+							],
+							message: 'Please import from the index file.'
+						}
+					]
+				}
+			],
+
+			'import/no-duplicates': 'error',
 			'unicorn/filename-case': 'off',
 			'svelte/no-unused-svelte-ignore': 'off',
-			'security/detect-non-literal-fs-filename': 'off'
+			'security/detect-non-literal-fs-filename': 'off',
+			'svelte/valid-compile': 'off'
 		}
 	},
 	{

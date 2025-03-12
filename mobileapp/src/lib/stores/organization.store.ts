@@ -31,6 +31,7 @@ function createStore(): OrganizationStore {
 					set(storedOrganization);
 					return activitiesStore.init(storedOrganization.id);
 				}
+				return set(undefined);
 			}
 		} finally {
 			initialized.set(true);

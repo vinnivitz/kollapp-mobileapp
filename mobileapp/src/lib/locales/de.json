@@ -167,6 +167,14 @@
 					"cancel": "Abbrechen",
 					"confirm": "Bestätigen"
 				}
+			},
+			"calendar": {
+				"cancel-button": {
+					"label": "Abbrechen"
+				},
+				"done-button": {
+					"label": "Anwenden"
+				}
 			}
 		},
 		"layout": {
@@ -516,7 +524,13 @@
 					},
 					"search": {
 						"placeholder": "Veranstaltungen suchen..."
-					}
+					},
+					"segments": {
+						"pending": "Anstehend",
+						"done": "Erledigt",
+						"all": "Alle"
+					},
+					"no-activities-found": "Keine Ergebnisse für \"{{value}}\""
 				}
 			}
 		},

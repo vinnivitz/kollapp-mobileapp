@@ -22,7 +22,7 @@ export const resetPasswordSchema = (): ObjectSchema<AnyObject, ResetPasswordDto>
 			.default('')
 			.min(8, $t('api.dto.reset-password.schema.validation.newPassword.min'))
 			.max(255, $t('api.dto.reset-password.schema.validation.newPassword.max'))
-			.matches(/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/, $t('api.dto.reset-password.schema.validation.newPassword.matches'))
+			.matches(/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, $t('api.dto.reset-password.schema.validation.newPassword.matches'))
 			.required($t('api.dto.reset-password.schema.validation.newPassword.required')),
 		confirmPassword: string()
 			.default('')

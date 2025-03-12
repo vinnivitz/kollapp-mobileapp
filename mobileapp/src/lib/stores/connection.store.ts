@@ -40,7 +40,7 @@ function createStore(): ConnectionStore {
 		return cachedNetworkStatus;
 	}
 
-	async function check() {
+	async function check(): Promise<void> {
 		const networkStatus = await getStatus();
 		const isOnline = networkStatus?.connected;
 		const wasOnline = get(connectionStore);

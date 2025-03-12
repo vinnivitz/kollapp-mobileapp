@@ -11,15 +11,13 @@
 	import Card from '$lib/components/widgets/Card.svelte';
 	import InputItem from '$lib/components/widgets/InputItem.svelte';
 	import Welcome from '$lib/components/widgets/Welcome.svelte';
-	import environment from '$lib/environment';
 	import { t } from '$lib/locales';
 	import { ValidationCode } from '$lib/models/api';
 	import type { AuthenticationModel } from '$lib/models/models';
-	import { PreferencesKey } from '$lib/models/preferences';
 	import { PageRoute } from '$lib/models/routing';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
 	import { authenticationStore } from '$lib/stores';
-	import { customForm, getValidationResult, showAlert, storeValue } from '$lib/utils';
+	import { customForm, getValidationResult, showAlert } from '$lib/utils';
 
 	const model = loginSchema().cast({}) as LoginDto;
 	let actions: FormActions<LoginDto>;
@@ -40,7 +38,6 @@
 			const body = await authResource.login(model);
 			result = getValidationResult(body);
 			if (result.valid) {
-				await storeValue(PreferencesKey.LOCAL_USER, false);
 				const authenticationModel: AuthenticationModel = {
 					accessToken: body.data.accessToken,
 					refreshToken: body.data.refreshToken
@@ -57,15 +54,9 @@
 		}
 	}
 
-	async function localLogin(): Promise<void> {
-		await storeValue(PreferencesKey.LOCAL_USER, true);
-		const model: AuthenticationModel = { accessToken: 'local', refreshToken: 'local' };
-		await handleLogin(model);
-	}
-
 	async function handleLogin(model: AuthenticationModel): Promise<void> {
 		await authenticationStore.set(model);
-		await goto(PageRoute.HOME);
+		return goto(PageRoute.HOME);
 	}
 </script>
 
@@ -105,11 +96,4 @@
 			<ion-text color="tertiary">{$t('routes.auth.login.forgot-password.link')}</ion-text>
 		</Card>
 	</Card>
-	{#if environment.localUser}
-		<Card title={$t('routes.auth.login.card.dev.title')}>
-			<div class="text-center">
-				<Button click={localLogin} label={$t('routes.auth.login.card.dev.button')} />
-			</div>
-		</Card>
-	{/if}
 </Layout>

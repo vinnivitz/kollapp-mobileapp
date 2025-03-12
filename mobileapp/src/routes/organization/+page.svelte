@@ -23,6 +23,7 @@
 </script>
 
 <Layout title={$t('routes.organization.title')} showBackButton>
+	<div class="m-0 truncate p-0"></div>
 	{#if organizationModel}
 		<ion-list inset>
 			<ion-list-header

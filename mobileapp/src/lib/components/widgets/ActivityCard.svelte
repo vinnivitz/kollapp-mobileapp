@@ -1,29 +1,60 @@
 <script lang="ts">
-	import { calendarOutline, locationOutline } from 'ionicons/icons';
+	import { buildOutline, calendarOutline, locationOutline, trashBinOutline } from 'ionicons/icons';
 	import moment from 'moment';
+
+	import Button from './Button.svelte';
 
 	import Card from '$lib/components/widgets/Card.svelte';
 	import type { ActivityModel } from '$lib/models/models';
 
-	let { activity, click }: { activity: ActivityModel; click?: () => void | Promise<void> } = $props();
+	let {
+		value,
+		edit,
+		remove
+	}: {
+		value: ActivityModel;
+		edit?: (value: ActivityModel) => void | Promise<void>;
+		remove?: (id: string) => void | Promise<void>;
+	} = $props();
 </script>
 
-<Card color="light" click={() => click?.()}>
-	<div class="flex">
-		<div class="flex flex-col justify-center">
+<Card color="light" click={() => edit?.(value)}>
+	<div class="flex items-center justify-between">
+		<div class="flex max-w-[60%] flex-1 flex-col justify-center">
 			<div class="text-lg">
-				{activity.name}
+				{value.name}
 			</div>
-			<div class="flex items-center gap-4">
+			<div class="flex flex-wrap items-center gap-2">
 				<div class="flex items-center gap-2">
 					<ion-icon icon={calendarOutline} class="text-2xl"></ion-icon>
 					<div>{moment().format('DD.MM.YYYY')}</div>
 				</div>
 				<div class="flex items-center gap-2">
 					<ion-icon icon={locationOutline} class="text-2xl"></ion-icon>
-					<div>{activity.location}</div>
+					<div class="max-w-[60%] truncate">{value.location}</div>
 				</div>
 			</div>
+		</div>
+		<div class="flex">
+			<Button
+				color="primary"
+				fill="clear"
+				iconSize="large"
+				classProp="text-xs"
+				icon={buildOutline}
+				click={() => edit?.(value)}
+			></Button>
+			<Button
+				color="danger"
+				fill="clear"
+				iconSize="large"
+				classProp="text-xs"
+				icon={trashBinOutline}
+				click={(event) => {
+					event?.stopPropagation();
+					remove?.(value.id);
+				}}
+			></Button>
 		</div>
 	</div>
 </Card>

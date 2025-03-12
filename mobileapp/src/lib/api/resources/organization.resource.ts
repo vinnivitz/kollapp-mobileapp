@@ -4,8 +4,7 @@ import type {
 	UpdateActivityDto,
 	UpdateOrganizationDto
 } from '$lib/api/dto/client/organization';
-import type { OrganizationDto } from '$lib/api/dto/server';
-import type { ActivityDto } from '$lib/api/dto/server';
+import type { OrganizationDto, ActivityDto } from '$lib/api/dto/server';
 import { type ResponseBody, RequestMethod } from '$lib/models/api';
 import { customFetch } from '$lib/utils';
 

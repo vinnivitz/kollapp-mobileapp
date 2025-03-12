@@ -1,7 +1,18 @@
 <script lang="ts">
 	import { loadingController } from 'ionic-svelte';
-	import { calendarOutline, createOutline, documentOutline, locationOutline } from 'ionicons/icons';
+	import {
+		archiveOutline,
+		calendarOutline,
+		checkmarkDoneOutline,
+		createOutline,
+		documentOutline,
+		documentsOutline,
+		flashOutline,
+		locationOutline,
+		trashBinOutline
+	} from 'ionicons/icons';
 	import moment from 'moment';
+	import { fade } from 'svelte/transition';
 
 	import {
 		createActivitySchema,
@@ -13,22 +24,34 @@
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import ActivityCard from '$lib/components/widgets/ActivityCard.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';
+	import Calendar from '$lib/components/widgets/Calendar.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
 	import InputItem from '$lib/components/widgets/InputItem.svelte';
 	import Modal from '$lib/components/widgets/Modal.svelte';
-	import { locale, t } from '$lib/locales';
+	import { t } from '$lib/locales';
 	import type { ActivityModel } from '$lib/models/models';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
 	import { activitiesStore, organizationStore } from '$lib/stores';
-	import { clickOutside, customForm, getValidationResult, showAlert } from '$lib/utils';
+	import { customForm, getValidationResult, showAlert } from '$lib/utils';
 
-	let calendar: HTMLIonDatetimeElement;
-	let showCalendar = $state(false);
+	enum ActivityStatus {
+		PENDING = 'pending',
+		DONE = 'done',
+		ALL = 'all'
+	}
+
+	let showPopoverCalendar = $state(false);
+	let showSelectDateCalendar = $state(false);
+
 	let createModalOpen = $state(false);
 	let editModalOpen = $state(false);
+
 	let searchActivityValue = $state('');
-	let searchedActivities = $state<ActivityModel[]>([]);
+	let filteredActivities = $state<ActivityModel[]>([]);
+
 	let selectedActivityId: string;
+	let activityStatus = $state(ActivityStatus.PENDING);
+	let selectedDate = $state(moment().format('YYYY-MM-DD'));
 
 	let createActions: FormActions<CreateActivityDto>;
 	let updateActions: FormActions<UpdateActivityDto>;
@@ -49,30 +72,31 @@
 	let updateForm = $state(new Form(updateActivitySchema().cast({}) as UpdateActivityDto, updateConfig));
 
 	$effect(() => {
-		searchedActivities = $activitiesStore;
+		filteredActivities = $activitiesStore;
 	});
 
-	async function onCreateSubmit(model: CreateActivityDto, result: ValidationResult) {
+	async function onCreateSubmit(model: CreateActivityDto, result: ValidationResult): Promise<void> {
 		if (result.valid) {
 			const loader = await loadingController.create({});
 			await loader.present();
 			const organizationId = $organizationStore?.id;
 			if (organizationId) {
 				result = getValidationResult(await organizationResource.createActivity(organizationId, model));
+				if (result.valid) {
+					createActions.resetModel();
+					createModalOpen = false;
+					await activitiesStore.init(organizationId);
+				} else {
+					createActions.applyValidationFeedback(result);
+				}
 			} else {
-				showAlert($t('routes.organization.page.activity.no-organization-id'));
+				await showAlert($t('routes.organization.page.activity.no-organization-id'));
 			}
 			await loader.dismiss();
-			if (result.valid) {
-				createActions.resetModel();
-				createModalOpen = false;
-			} else {
-				createActions.applyValidationFeedback(result);
-			}
 		}
 	}
 
-	async function onUpdateSubmit(model: UpdateActivityDto, result: ValidationResult) {
+	async function onUpdateSubmit(model: UpdateActivityDto, result: ValidationResult): Promise<void> {
 		if (result.valid) {
 			const loader = await loadingController.create({});
 			await loader.present();
@@ -81,101 +105,177 @@
 				result = getValidationResult(
 					await organizationResource.updateActivity(organizationId, selectedActivityId, model)
 				);
+				if (result.valid) {
+					updateActions.resetModel();
+					editModalOpen = false;
+				} else {
+					updateActions.applyValidationFeedback(result);
+				}
 			} else {
 				showAlert($t('routes.organization.page.activity.no-organization-id'));
 			}
 			await loader.dismiss();
-			if (result.valid) {
-				updateActions.resetModel();
-				editModalOpen = false;
-			} else {
-				updateActions.applyValidationFeedback(result);
-			}
 		}
 	}
 
-	function onCreateActivity() {
+	function onCreateActivity(): void {
 		createModalOpen = true;
 	}
 
-	function onEditActivity(activity: ActivityModel) {
+	function onEditActivity(activity: ActivityModel): void {
 		selectedActivityId = activity.id;
 		updateForm = new Form(activity, updateConfig);
 		editModalOpen = true;
 	}
 
-	function onCancelCreateModal() {
+	function onArchieveEvent(): Promise<void> {
+		return showAlert('Feature not implemented yet.');
+	}
+
+	async function onDeleteActivity(id: string): Promise<void> {
+		const loader = await loadingController.create({});
+		await loader.present();
+		const organizationId = $organizationStore?.id;
+		if (organizationId) {
+			const result = getValidationResult(await organizationResource.deleteActivity(organizationId, id));
+			if (result.valid) {
+				await activitiesStore.init(organizationId);
+			}
+		} else {
+			showAlert($t('routes.organization.page.activity.no-organization-id'));
+		}
+		await loader.dismiss();
+	}
+
+	function onCancelCreateModal(): void {
 		createModalOpen = false;
 	}
 
-	function onCancelEditModal() {
+	function onCancelEditModal(): void {
 		editModalOpen = false;
 	}
 
-	function onSearchEvents(event: CustomEvent) {
+	function onSearchEvents(event: CustomEvent): void {
 		searchActivityValue = event.detail.value ?? '';
-		searchedActivities = $activitiesStore.filter((activity) =>
+		filteredActivities = $activitiesStore.filter((activity) =>
 			activity.name.toLowerCase().includes(searchActivityValue)
 		);
 	}
+
+	function onFilterByStatus(status: ActivityStatus): void {
+		void status;
+		filteredActivities = $activitiesStore;
+	}
 </script>
 
-<Layout title={$t('routes.organization.page.activity.title')} showBackButton>
-	<!-- svelte-ignore event_directive_deprecated -->
-	<ion-searchbar
-		color="light"
-		show-clear-button="always"
-		debounce={100}
-		placeholder={$t('components.layout.menu.searchbar.placeholder')}
-		on:ionInput={onSearchEvents}
-		value={searchActivityValue}
-	></ion-searchbar>
+<Layout title={$t('routes.organization.page.activity.title')} showBackButton scrollable>
+	{#if $activitiesStore.length === 0}
+		<Calendar change={onCreateActivity}></Calendar>
+	{/if}
 
-	<!-- svelte-ignore event_directive_deprecated -->
-	<div class="mx-4">
-		<ion-toggle
-			alignment="center"
-			color="secondary"
-			checked={showCalendar}
-			on:ionChange={(event) => (showCalendar = event.detail.checked)}
-		>
-			{$t('routes.organization.page.activity.show-calendar-toggle.label')}
-		</ion-toggle>
-	</div>
+	<Button click={onCreateActivity} label="Create event" expand="block" icon={createOutline}></Button>
 
-	<div class="mx-2 mt-4 flex items-center justify-between">
-		<Button click={() => {}} label="Create event" icon={createOutline}></Button>
-		<Button click={() => {}} label="Create event" icon={createOutline}></Button>
-	</div>
+	{#if $activitiesStore.length > 0}
+		<!-- svelte-ignore event_directive_deprecated -->
+		<div class="mx-4 mt-4">
+			<ion-toggle
+				alignment="center"
+				color="secondary"
+				checked={showPopoverCalendar}
+				on:ionChange={(event) => (showPopoverCalendar = event.detail.checked)}
+			>
+				{$t('routes.organization.page.activity.show-calendar-toggle.label')}
+			</ion-toggle>
+		</div>
 
-	<ion-list>
-		{#each searchedActivities as activity (activity.id)}
-			<ActivityCard {activity} click={() => onEditActivity(activity)} />
-		{/each}
-	</ion-list>
+		<!-- svelte-ignore event_directive_deprecated -->
+		<ion-searchbar
+			class="mt-4"
+			color="light"
+			show-clear-button="always"
+			debounce={100}
+			placeholder={$t('routes.organization.page.activity.search.placeholder')}
+			on:ionInput={onSearchEvents}
+			value={searchActivityValue}
+		></ion-searchbar>
+
+		{#if !searchActivityValue}
+			<!-- svelte-ignore event_directive_deprecated -->
+			<ion-segment
+				in:fade={{ duration: 100, delay: 150 }}
+				out:fade={{ duration: 100, delay: 0 }}
+				on:ionChange={(event) => onFilterByStatus(event.detail.value as ActivityStatus)}
+				value={activityStatus}
+			>
+				<ion-segment-button value={ActivityStatus.PENDING}>
+					<ion-icon icon={flashOutline}></ion-icon>
+					<ion-label>{$t('routes.organization.page.activity.segments.pending')}</ion-label>
+				</ion-segment-button>
+				<ion-segment-button value={ActivityStatus.DONE}>
+					<ion-icon icon={checkmarkDoneOutline}></ion-icon>
+					<ion-label>{$t('routes.organization.page.activity.segments.done')}</ion-label>
+				</ion-segment-button>
+				<ion-segment-button value={ActivityStatus.ALL}>
+					<ion-icon icon={documentsOutline}></ion-icon>
+					<ion-label>{$t('routes.organization.page.activity.segments.all')}</ion-label>
+				</ion-segment-button>
+			</ion-segment>
+			<ion-segment-view in:fade={{ duration: 100, delay: 150 }} out:fade={{ duration: 100, delay: 0 }}>
+				<ion-segment-content>
+					<div class="max-h-[calc(100vh-360px)] overflow-y-auto">
+						<ion-list in:fade={{ duration: 100, delay: 150 }} out:fade={{ duration: 100, delay: 0 }}>
+							{#each filteredActivities as activity (activity.id)}
+								<ActivityCard value={activity} edit={onEditActivity} remove={onDeleteActivity} />
+							{/each}
+						</ion-list>
+					</div>
+				</ion-segment-content>
+			</ion-segment-view>
+		{:else if filteredActivities.length > 0}
+			<ion-list in:fade={{ duration: 100, delay: 150 }} out:fade={{ duration: 100, delay: 0 }}>
+				{#each filteredActivities as activity (activity.id)}
+					<ActivityCard
+						value={activity}
+						edit={() => onEditActivity(activity)}
+						remove={() => onDeleteActivity(activity.id)}
+					/>
+				{/each}
+			</ion-list>
+		{:else}
+			<div class="mt-4 text-center" in:fade={{ duration: 100, delay: 150 }} out:fade={{ duration: 100, delay: 0 }}>
+				{$t('routes.organization.page.activity.no-activities-found', { value: searchActivityValue })}
+			</div>
+		{/if}
+	{/if}
 </Layout>
 
 <!-- svelte-ignore event_directive_deprecated -->
-<ion-popover is-open={showCalendar} on:didDismiss={() => (showCalendar = false)}>
+<ion-popover is-open={showPopoverCalendar} on:didDismiss={() => (showPopoverCalendar = false)}>
 	<div class="text-center">
-		<ion-datetime
-			show-default-buttons
-			show-default-title
-			cancel-text={$t('routes.organization.page.activity.calendar.cancel')}
-			done-text={$t('routes.organization.page.activity.calendar.done')}
-			use:clickOutside
-			on:blur={() => calendar.reset()}
-			color="secondary"
-			size="cover"
-			max={moment().add(10, 'years').format('YYYY-MM-DD')}
-			bind:this={calendar}
-			on:ionChange={onCreateActivity}
-			locale={$locale}
-			first-day-of-week={1}
-			presentation="date"
-		>
-			<span slot="title">{$t('routes.organization.page.activity.calendar.title')}</span>
-		</ion-datetime>
+		<Calendar
+			showApplyButton
+			showCancelButton
+			applyText={$t('routes.organization.page.activity.calendar.done')}
+			change={onCreateActivity}
+			dismiss={() => {
+				showPopoverCalendar = false;
+			}}
+		></Calendar>
+	</div>
+</ion-popover>
+
+<!-- svelte-ignore event_directive_deprecated -->
+<ion-popover is-open={showSelectDateCalendar} on:didDismiss={() => (showSelectDateCalendar = false)}>
+	<div class="text-center">
+		<Calendar
+			showApplyButton
+			change={(value) => {
+				selectedDate = value;
+			}}
+			dismiss={() => {
+				showSelectDateCalendar = false;
+			}}
+		></Calendar>
 	</div>
 </ion-popover>
 
@@ -200,8 +300,12 @@
 			<InputItem
 				name="date"
 				label={$t('routes.organization.page.activity.create-modal.card.input.date')}
-				type="date"
 				icon={calendarOutline}
+				inputIcon={calendarOutline}
+				value={selectedDate}
+				inputIconClick={() => {
+					showSelectDateCalendar = true;
+				}}
 			/>
 		</form>
 	</Card>
@@ -231,11 +335,25 @@
 					label={$t('routes.organization.page.activity.create-modal.card.input.date')}
 					type="date"
 					icon={calendarOutline}
+					inputIcon={calendarOutline}
+					inputIconClick={() => {
+						showSelectDateCalendar = true;
+					}}
 				/>
 			</form>
 		</Card>
+		<Card>
+			<div class="flex items-center justify-center gap-4 text-center">
+				<Button color="tertiary" icon={archiveOutline} label="Archive" click={() => onArchieveEvent()}></Button>
+				<Button color="danger" icon={trashBinOutline} label="Delete" click={() => {}}></Button>
+			</div>
+		</Card>
 	</Modal>
 {/key}
+
+<ion-modal>
+	<ion-datetime id="datetime"></ion-datetime>
+</ion-modal>
 
 <style lang="postcss">
 	ion-popover {

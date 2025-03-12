@@ -26,10 +26,7 @@ export const changePasswordSchema = (): ObjectSchema<AnyObject, ChangePasswordDt
 			.default('')
 			.min(8, $t('api.dto.change-password.schema.validation.new-password.min'))
 			.max(255, $t('api.dto.change-password.schema.validation.new-password.max'))
-			.matches(
-				/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/,
-				$t('api.dto.change-password.schema.validation.new-password.matches')
-			)
+			.matches(/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, $t('api.dto.change-password.schema.validation.new-password.matches'))
 			.required($t('api.dto.change-password.schema.validation.new-password.required')),
 		confirmNewPassword: string()
 			.default('')

@@ -50,7 +50,7 @@ export const registerSchema = (): ObjectSchema<AnyObject, RegisterDto> => {
 			.default('')
 			.min(8, $t('api.dto.register.schema.validation.password.min'))
 			.max(255, $t('api.dto.register.schema.validation.password.max'))
-			.matches(/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/, $t('api.dto.register.schema.validation.password.matches'))
+			.matches(/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, $t('api.dto.register.schema.validation.password.matches'))
 			.required($t('api.dto.register.schema.validation.password.required')),
 		confirmPassword: string()
 			.default('')

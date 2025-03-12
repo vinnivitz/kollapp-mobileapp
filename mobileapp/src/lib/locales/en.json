@@ -344,7 +344,13 @@
 					},
 					"search": {
 						"placeholder": "Search events..."
-					}
+					},
+					"segments": {
+						"pending": "Pending",
+						"done": "Done",
+						"all": "All"
+					},
+					"no-activities-found": "No results for \"{{value}}\""
 				}
 			}
 		},
@@ -379,6 +385,14 @@
 				"button": {
 					"confirm": "Confirm",
 					"cancel": "Cancel"
+				}
+			},
+			"calendar": {
+				"cancel-button": {
+					"label": "Cancel"
+				},
+				"done-button": {
+					"label": "Apply"
 				}
 			}
 		},

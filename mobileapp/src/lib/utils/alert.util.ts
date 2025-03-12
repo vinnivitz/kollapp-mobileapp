@@ -21,5 +21,5 @@ export async function showAlert(message: string, config?: AlertConfig): Promise<
 		buttons: [$t('utils.alert.button')]
 	});
 
-	toast.present();
+	return toast.present();
 }

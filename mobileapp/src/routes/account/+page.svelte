@@ -26,8 +26,7 @@
 	import { Locale, t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
 	import { Layout, Theme } from '$lib/models/ui';
-	import { localeStore, themeStore } from '$lib/stores';
-	import { layoutStore } from '$lib/stores/layout.store';
+	import { layoutStore, localeStore, themeStore } from '$lib/stores';
 
 	async function openActionSheet(header: string, buttons: ActionSheetButton[]): Promise<void> {
 		const actionsheet = await actionSheetController.create({

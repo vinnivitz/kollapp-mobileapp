@@ -14,7 +14,8 @@
 		showBackButton = false,
 		onRefresh,
 		hideLayout = false,
-		hideMenu = false
+		hideMenu = false,
+		scrollable = true
 	}: {
 		title: string;
 		children?: Snippet;
@@ -22,6 +23,7 @@
 		onRefresh?: (refresher: HTMLIonRefresherElement) => void;
 		hideLayout?: boolean;
 		hideMenu?: boolean;
+		scrollable?: boolean;
 	} = $props();
 
 	let navigationDebounced = $state(false);
@@ -59,7 +61,7 @@
 	{#if loading && navigationDebounced}
 		<ion-progress-bar type="indeterminate"></ion-progress-bar>
 	{/if}
-	<ion-content class="ion-padding" in:fade={{ duration: 200, delay: 0 }}>
+	<ion-content class="ion-padding" in:fade={{ duration: 200, delay: 0 }} class:no-overflow={!scrollable}>
 		{#if onRefresh}
 			<!-- svelte-ignore event_directive_deprecated -->
 			<ion-refresher bind:this={refresher} slot="fixed" on:ionRefresh={() => refresher && onRefresh?.(refresher)}>
@@ -69,3 +71,9 @@
 		{@render children?.()}
 	</ion-content>
 </div>
+
+<style lang="postcss">
+	ion-content.no-overflow {
+		--overflow: hidden;
+	}
+</style>

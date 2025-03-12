@@ -16,7 +16,7 @@
 		type,
 		disabled
 	}: {
-		click?: () => void | Promise<void>;
+		click?: (event?: MouseEvent) => void | Promise<void>;
 		label?: string;
 		color?: Colors | undefined;
 		expand?: 'full' | 'block' | undefined;
@@ -28,7 +28,10 @@
 		iconPosition?: 'start' | 'end';
 		type?: 'button' | 'submit' | 'reset';
 		disabled?: boolean;
-	} & ({ type: 'submit'; click?: never } | { type?: 'button' | 'reset'; click: () => void | Promise<void> }) &
+	} & (
+		| { type: 'submit'; click?: never }
+		| { type?: 'button' | 'reset'; click: (event?: MouseEvent) => void | Promise<void> }
+	) &
 		({ label: string; icon?: string } | { icon: string; label?: string }) = $props();
 
 	const isMondernLayout = $derived($layoutStore === Layout.MODERN);
@@ -37,6 +40,7 @@
 	const fontWeight = $derived(fill === 'outline' ? 'font-extrabold' : 'font-medium');
 </script>
 
+<!-- svelte-ignore a11y_click_events_have_key_events -->
 <ion-button
 	{color}
 	{expand}
@@ -47,8 +51,7 @@
 	{shape}
 	{type}
 	{disabled}
-	onclick={click}
-	onkeydown={(event) => event.key === 'Enter' && click?.()}
+	onclick={(event) => click?.(event)}
 	role="button"
 	tabindex="0"
 >
@@ -57,10 +60,14 @@
 
 {#snippet content()}
 	{#if icon}
-		{#if iconPosition === 'start'}
-			{@render startIcon()}
+		{#if label}
+			{#if iconPosition === 'start'}
+				{@render startIcon()}
+			{:else}
+				{@render endIcon()}
+			{/if}
 		{:else}
-			{@render endIcon()}
+			{@render iconOnly()}
 		{/if}
 	{/if}
 	{#if label}
@@ -76,6 +83,10 @@
 
 {#snippet endIcon()}
 	<ion-icon slot="end" {icon} size={iconSize}></ion-icon>
+{/snippet}
+
+{#snippet iconOnly()}
+	<ion-icon slot="icon-only" {icon} size={iconSize}></ion-icon>
 {/snippet}
 
 <style lang="postcss">

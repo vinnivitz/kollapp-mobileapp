@@ -64,68 +64,70 @@ type ASTComponent = AST.Fragment | AST.Component | AST.IfBlock | AST.AwaitBlock 
  */
 function findSearchableComponents(ast: AST.Root): void {
 	recurse(ast.fragment);
+}
 
-	function recurse(node: ASTComponent): void {
-		if (node.type === 'Component' && node.name === 'LabeledItem') {
-			for (const attribute of node.attributes) {
-				if (attribute.type === 'Attribute' && attribute.name === 'searchable') {
-					const route = getAttributeValue(node, 'searchable');
-					const label = getAttributeValue(node, 'label');
-					const icon = getAttributeValue(node, 'icon');
-					const accessible = getAttributeValue(node, 'accessible');
-
-					if (label && route) {
-						searchableItems.push({
-							id: ++idCounter,
-							label,
-							icon,
-							route,
-							accessible: (accessible ? accessible.split(',') : undefined) as UserRole[]
-						});
-					}
-				}
+function recurse(node: ASTComponent): void {
+	if (node.type === 'Component' && node.name === 'LabeledItem') {
+		for (const attribute of node.attributes) {
+			if (attribute.type === 'Attribute' && attribute.name === 'searchable') {
+				addSearchableItem(node);
 			}
 		}
+	}
 
-		// Recursively explore child nodes
-		switch (node.type) {
-			case 'Fragment': {
-				for (const child of node.nodes) {
-					recurse(child as ASTComponent);
-				}
-				break;
+	exploreChildNodes(node);
+}
+
+function exploreChildNodes(node: ASTComponent): void {
+	switch (node.type) {
+		case 'Fragment': {
+			for (const child of node.nodes) {
+				recurse(child as ASTComponent);
 			}
-			case 'Component': {
-				for (const child of node.fragment.nodes) {
-					recurse(child as ASTComponent);
-				}
-				break;
-			}
-			case 'AwaitBlock': {
-				for (const child of node.pending?.nodes ?? []) {
-					recurse(child as ASTComponent);
-				}
-				for (const child of node.then?.nodes ?? []) {
-					recurse(child as ASTComponent);
-				}
-				break;
-			}
-			case 'IfBlock': {
-				for (const child of node.consequent.nodes) {
-					recurse(child as ASTComponent);
-				}
-				for (const child of node.alternate?.nodes ?? []) {
-					recurse(child as ASTComponent);
-				}
-				break;
-			}
-			case 'RegularElement': {
-				for (const child of node.fragment.nodes) {
-					recurse(child as ASTComponent);
-				}
-				break;
-			}
+			break;
 		}
+		case 'Component':
+		case 'RegularElement': {
+			for (const child of node.fragment.nodes) {
+				recurse(child as ASTComponent);
+			}
+			break;
+		}
+		case 'AwaitBlock': {
+			for (const child of node.pending?.nodes ?? []) {
+				recurse(child as ASTComponent);
+			}
+			for (const child of node.then?.nodes ?? []) {
+				recurse(child as ASTComponent);
+			}
+			break;
+		}
+		case 'IfBlock': {
+			for (const child of node.consequent.nodes) {
+				recurse(child as ASTComponent);
+			}
+			for (const child of node.alternate?.nodes ?? []) {
+				recurse(child as ASTComponent);
+			}
+			break;
+		}
+	}
+}
+
+function addSearchableItem(node: ASTComponent): void {
+	const route = getAttributeValue(node, 'searchable');
+	const label = getAttributeValue(node, 'label');
+	const icon = getAttributeValue(node, 'icon');
+	const accessible = getAttributeValue(node, 'accessible');
+
+	if (label && route) {
+		searchableItems.push({
+			id: ++idCounter,
+			label,
+			icon,
+			route,
+			accessible: (accessible ? accessible.split(',') : undefined) as UserRole[]
+		});
 	}
 }
 
