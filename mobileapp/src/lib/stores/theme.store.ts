@@ -6,7 +6,7 @@ import { Theme } from '$lib/models/ui';
 import { getStoredValue, storeValue } from '$lib/utils';
 
 function createStore(): ThemeStore {
-	const { subscribe, set } = writable<Theme | undefined>();
+	const { set, subscribe } = writable<Theme | undefined>();
 
 	async function init(): Promise<void> {
 		const initialTheme = await getInitialTheme();
@@ -45,10 +45,10 @@ function createStore(): ThemeStore {
 	}
 
 	return {
-		subscribe,
 		init,
+		reset,
 		set: _set,
-		reset
+		subscribe
 	};
 }
 

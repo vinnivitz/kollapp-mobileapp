@@ -5,18 +5,18 @@ import type { AuthorizationType, RequestMethod } from '$lib/models/api';
  */
 export type CustomFetchConfig =
 	| {
-			method?: RequestMethod.GET | RequestMethod.DELETE;
-			body?: never;
-			query?: Record<string, string>;
 			authorizationType?: AuthorizationType;
-			silentOnSuccess?: boolean;
+			body?: never;
+			method?: RequestMethod.GET | RequestMethod.DELETE;
+			query?: Record<string, string>;
 			silentOnError?: boolean;
+			silentOnSuccess?: boolean;
 	  }
 	| {
-			method: RequestMethod.POST | RequestMethod.PUT;
-			body: string;
-			query?: Record<string, string>;
 			authorizationType?: AuthorizationType;
-			silentOnSuccess?: boolean;
+			body: string;
+			method: RequestMethod.POST | RequestMethod.PUT;
+			query?: Record<string, string>;
 			silentOnError?: boolean;
+			silentOnSuccess?: boolean;
 	  };

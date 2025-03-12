@@ -9,12 +9,12 @@ import { Locale, t } from '$lib/locales';
 import {
 	AuthorizationType,
 	ContentType,
+	type CustomFetchConfig,
 	HeaderKey,
 	RequestMethod,
+	type ResponseBody,
 	StatusCode,
-	UserRole,
-	type CustomFetchConfig,
-	type ResponseBody
+	UserRole
 } from '$lib/models/api';
 import type { AuthenticationModel } from '$lib/models/models';
 import { PreferencesKey } from '$lib/models/preferences';
@@ -105,14 +105,14 @@ export async function isAuthenticated(): Promise<boolean> {
  */
 export function getValidationResult<T>(body: ResponseBody<T>): ValidationResult {
 	return {
-		valid: StatusCheck.isOK(body.status),
 		errors: [
 			{
-				message: body.message ?? $t('api.error'),
+				code: body.validationCode,
 				field: body.validationField,
-				code: body.validationCode
+				message: body.message ?? $t('api.error')
 			}
-		]
+		],
+		valid: StatusCheck.isOK(body.status)
 	};
 }
 
@@ -150,12 +150,12 @@ async function getResponseBody<T>(
 	const silent = response.ok ? silentOnSuccess : silentOnError;
 	if (!contentType?.includes(ContentType.JSON)) {
 		message = contentType?.includes(ContentType.TEXT) ? $t('api.error') : await response.text();
-		return { status, message, data };
+		return { data, message, status };
 	}
 	const body = (await response.json()) as ResponseBody<T>;
 	message = body.message ?? (response.ok ? message : $t('api.error'));
 	data = body.data ?? data;
-	const { validationField, validationCode } = body;
+	const { validationCode, validationField } = body;
 	if (!silent && !validationField) {
 		showAlert(message, { type: response.ok ? AlertType.SUCCESS : AlertType.ERROR });
 	}
@@ -168,11 +168,11 @@ async function getResponseBody<T>(
 		}
 	}
 	return {
-		status,
-		message,
 		data,
-		validationField,
-		validationCode
+		message,
+		status,
+		validationCode,
+		validationField
 	};
 }
 
@@ -206,7 +206,7 @@ async function createErrorResponse(status: number, message: string, silent: bool
 	if (dev) {
 		console.warn(`status: ${status}, msg: ${message}`);
 	}
-	return { status, message, data: {} as never };
+	return { data: {} as never, message, status };
 }
 
 function getBearerToken(token: string): string {

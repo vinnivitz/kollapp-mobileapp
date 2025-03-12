@@ -1,5 +1,5 @@
 {
-	"name": "orgaapp-frontend",
+	"name": "mobileapp",
 	"version": "1.0.0",
 	"scripts": {
 		"dev": "cross-env NODE_ENV=development vite dev",
@@ -42,6 +42,7 @@
 		"eslint-plugin-import": "^2.31.0",
 		"eslint-plugin-security": "^3.0.1",
 		"eslint-plugin-sonarjs": "^3.0.2",
+		"eslint-plugin-sort": "^4.0.0",
 		"eslint-plugin-svelte": "^2.46.1",
 		"eslint-plugin-tailwindcss": "^3.18.0",
 		"eslint-plugin-unicorn": "^56.0.1",

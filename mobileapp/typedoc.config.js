@@ -13,8 +13,8 @@ const config = {
 		'./src/lib/api/dto'
 	],
 	excludeNotDocumented: true,
-	out: 'docs',
-	name: 'Kollapp Client Documentation'
+	name: 'Kollapp Client Documentation',
+	out: 'docs'
 };
 
 export default config;

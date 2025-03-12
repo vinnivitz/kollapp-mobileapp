@@ -4,7 +4,7 @@
 
 	import { goto } from '$app/navigation';
 
-	import { changePasswordSchema, type ChangePasswordDto } from '$lib/api/dto/client/user';
+	import { type ChangePasswordDto, changePasswordSchema } from '$lib/api/dto/client/user';
 	import { userResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';
@@ -21,10 +21,10 @@
 	let touched = $state(false);
 
 	const config: FormConfig<ChangePasswordDto> = {
-		schema: changePasswordSchema(),
+		exposedActions: (exposedActions) => (actions = exposedActions),
 		onSubmit,
 		onTouched: () => (touched = true),
-		exposedActions: (exposedActions) => (actions = exposedActions)
+		schema: changePasswordSchema()
 	};
 
 	const form = new Form(model, config);

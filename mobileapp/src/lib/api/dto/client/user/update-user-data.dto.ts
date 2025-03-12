@@ -1,5 +1,5 @@
 import { get } from 'svelte/store';
-import { ObjectSchema, type AnyObject, object, string } from 'yup';
+import { type AnyObject, object, ObjectSchema, string } from 'yup';
 
 import { t } from '$lib/locales';
 
@@ -7,10 +7,10 @@ import { t } from '$lib/locales';
  * Update user data DTO for sending user update information.
  */
 export type UpdateUserDataDto = {
-	surname: string;
-	name: string;
-	username: string;
 	email: string;
+	name: string;
+	surname: string;
+	username: string;
 };
 
 /**
@@ -20,29 +20,29 @@ export type UpdateUserDataDto = {
 export const updateUserDataSchema = (): ObjectSchema<AnyObject, UpdateUserDataDto> => {
 	const $t = get(t);
 	return object<UpdateUserDataDto>({
-		surname: string()
+		email: string()
 			.default('')
 			.trim()
-			.min(2, $t('api.dto.register.schema.validation.surname.min'))
-			.max(255, $t('api.dto.register.schema.validation.surname.max'))
-			.required($t('api.dto.register.schema.validation.surname.required')),
+			.email($t('api.dto.register.schema.validation.email.email'))
+			.max(50, $t('api.dto.register.schema.validation.email.max'))
+			.required($t('api.dto.register.schema.validation.email.required')),
 		name: string()
 			.default('')
 			.trim()
 			.min(2, $t('api.dto.register.schema.validation.name.min'))
 			.max(255, $t('api.dto.register.schema.validation.name.max'))
 			.required($t('api.dto.register.schema.validation.name.required')),
+		surname: string()
+			.default('')
+			.trim()
+			.min(2, $t('api.dto.register.schema.validation.surname.min'))
+			.max(255, $t('api.dto.register.schema.validation.surname.max'))
+			.required($t('api.dto.register.schema.validation.surname.required')),
 		username: string()
 			.default('')
 			.trim()
 			.min(2, $t('api.dto.register.schema.validation.username.min'))
 			.max(255, $t('api.dto.register.schema.validation.username.max'))
-			.required($t('api.dto.register.schema.validation.username.required')),
-		email: string()
-			.default('')
-			.trim()
-			.email($t('api.dto.register.schema.validation.email.email'))
-			.max(50, $t('api.dto.register.schema.validation.email.max'))
-			.required($t('api.dto.register.schema.validation.email.required'))
+			.required($t('api.dto.register.schema.validation.username.required'))
 	});
 };

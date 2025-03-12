@@ -3,6 +3,6 @@
  */
 export type ActivityModel = {
 	id: string;
-	name: string;
 	location: string;
+	name: string;
 };

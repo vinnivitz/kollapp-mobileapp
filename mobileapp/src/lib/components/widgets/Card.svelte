@@ -1,24 +1,19 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 
-	import { Layout, type Colors } from '$lib/models/ui';
+	import { type Colors, Layout } from '$lib/models/ui';
 	import { layoutStore } from '$lib/stores';
 
-	let {
-		title,
-		subtitle,
-		children,
-		color,
-		classProp,
-		click
-	}: {
-		title?: string;
-		subtitle?: string;
+	type Properties = {
 		children?: Snippet;
-		color?: Colors | undefined;
 		classProp?: string;
 		click?: () => void | Promise<void>;
-	} = $props();
+		color?: Colors | undefined;
+		subtitle?: string;
+		title?: string;
+	};
+
+	let { children, classProp, click, color, subtitle, title }: Properties = $props();
 
 	const isModernLayout = $derived($layoutStore === Layout.MODERN);
 	const isPlayfulLayout = $derived($layoutStore === Layout.PLAYFUL);

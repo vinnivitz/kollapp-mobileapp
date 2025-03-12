@@ -7,7 +7,7 @@ import type { LocaleStore } from '$lib/models/stores';
 import { getStoredValue, storeValue } from '$lib/utils';
 
 function createStore(): LocaleStore {
-	const { subscribe, set } = writable<Locale | undefined>();
+	const { set, subscribe } = writable<Locale | undefined>();
 
 	async function init(): Promise<void> {
 		const value = await getInitialLocale();
@@ -40,10 +40,10 @@ function createStore(): LocaleStore {
 	}
 
 	return {
-		subscribe,
-		set: _set,
 		init,
-		reset
+		reset,
+		set: _set,
+		subscribe
 	};
 }
 

@@ -4,8 +4,8 @@ import type {
 	UpdateActivityDto,
 	UpdateOrganizationDto
 } from '$lib/api/dto/client/organization';
-import type { OrganizationDto, ActivityDto } from '$lib/api/dto/server';
-import { type ResponseBody, RequestMethod } from '$lib/models/api';
+import type { ActivityDto, OrganizationDto } from '$lib/api/dto/server';
+import { RequestMethod, type ResponseBody } from '$lib/models/api';
 import { customFetch } from '$lib/utils';
 
 const ENDPOINT = 'organization';
@@ -23,8 +23,8 @@ export async function getById(_id: string): Promise<ResponseBody<OrganizationDto
 export async function getIds(): Promise<ResponseBody<string[]>> {
 	// workaround for the server response until the server is fixed
 	const response = await customFetch<OrganizationDto>(`${ENDPOINT}`, {
-		silentOnSuccess: true,
-		silentOnError: true
+		silentOnError: true,
+		silentOnSuccess: true
 	});
 	if (response.data) {
 		return { ...response, data: [response.data.id] } as ResponseBody<string[]>;
@@ -39,8 +39,8 @@ export async function getIds(): Promise<ResponseBody<string[]>> {
  */
 export async function create(model: RegisterOrganizationDto): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}`, {
-		method: RequestMethod.POST,
-		body: JSON.stringify(model)
+		body: JSON.stringify(model),
+		method: RequestMethod.POST
 	});
 }
 
@@ -51,8 +51,8 @@ export async function create(model: RegisterOrganizationDto): Promise<ResponseBo
  */
 export async function update(model: UpdateOrganizationDto): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}`, {
-		method: RequestMethod.PUT,
-		body: JSON.stringify(model)
+		body: JSON.stringify(model),
+		method: RequestMethod.PUT
 	});
 }
 
@@ -94,8 +94,8 @@ export async function getActivities(organizationId: string): Promise<ResponseBod
  */
 export async function createActivity(organizationId: string, model: CreateActivityDto): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/${organizationId}/activity`, {
-		method: RequestMethod.POST,
-		body: JSON.stringify(model)
+		body: JSON.stringify(model),
+		method: RequestMethod.POST
 	});
 }
 
@@ -112,8 +112,8 @@ export async function updateActivity(
 	model: UpdateActivityDto
 ): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/${organizationId}/activity/${activityId}`, {
-		method: RequestMethod.POST,
-		body: JSON.stringify(model)
+		body: JSON.stringify(model),
+		method: RequestMethod.POST
 	});
 }
 

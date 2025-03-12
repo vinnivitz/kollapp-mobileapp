@@ -30,9 +30,9 @@
 
 	async function openActionSheet(header: string, buttons: ActionSheetButton[]): Promise<void> {
 		const actionsheet = await actionSheetController.create({
-			translucent: true,
+			buttons,
 			header,
-			buttons
+			translucent: true
 		});
 
 		await actionsheet.present();
@@ -43,16 +43,16 @@
 
 		await openActionSheet($t('routes.account.language.action-sheet.title'), [
 			{
-				text: $t('routes.account.language.action-sheet.buttons.german'),
 				handler: () => localeStore.set(Locale.DE),
 				icon: '/locale/de.svg',
-				role: currentLocale === Locale.DE ? 'selected' : undefined
+				role: currentLocale === Locale.DE ? 'selected' : undefined,
+				text: $t('routes.account.language.action-sheet.buttons.german')
 			},
 			{
-				text: $t('routes.account.language.action-sheet.buttons.english'),
 				handler: () => localeStore.set(Locale.EN),
 				icon: '/locale/gb.svg',
-				role: currentLocale === Locale.EN ? 'selected' : undefined
+				role: currentLocale === Locale.EN ? 'selected' : undefined,
+				text: $t('routes.account.language.action-sheet.buttons.english')
 			}
 		]);
 	}
@@ -62,22 +62,22 @@
 
 		await openActionSheet($t('routes.account.layout.action-sheet.title'), [
 			{
-				text: $t('routes.account.layout.action-sheet.buttons.classic'),
 				handler: () => layoutStore.set(Layout.CLASSIC),
 				icon: gridOutline,
-				role: currentLayout === Layout.CLASSIC ? 'selected' : undefined
+				role: currentLayout === Layout.CLASSIC ? 'selected' : undefined,
+				text: $t('routes.account.layout.action-sheet.buttons.classic')
 			},
 			{
-				text: $t('routes.account.layout.action-sheet.buttons.modern'),
 				handler: () => layoutStore.set(Layout.MODERN),
 				icon: diamondOutline,
-				role: currentLayout === Layout.MODERN ? 'selected' : undefined
+				role: currentLayout === Layout.MODERN ? 'selected' : undefined,
+				text: $t('routes.account.layout.action-sheet.buttons.modern')
 			},
 			{
-				text: $t('routes.account.layout.action-sheet.buttons.playful'),
 				handler: () => layoutStore.set(Layout.PLAYFUL),
 				icon: balloonOutline,
-				role: currentLayout === Layout.PLAYFUL ? 'selected' : undefined
+				role: currentLayout === Layout.PLAYFUL ? 'selected' : undefined,
+				text: $t('routes.account.layout.action-sheet.buttons.playful')
 			}
 		]);
 	}
@@ -87,28 +87,28 @@
 
 		await openActionSheet($t('routes.account.theme.action-sheet.title'), [
 			{
-				text: $t('routes.account.theme.action-sheet.buttons.system'),
 				handler: () => themeStore.set(Theme.SYSTEM),
 				icon: desktopOutline,
-				role: currentTheme === Theme.SYSTEM ? 'selected' : undefined
+				role: currentTheme === Theme.SYSTEM ? 'selected' : undefined,
+				text: $t('routes.account.theme.action-sheet.buttons.system')
 			},
 			{
-				text: $t('routes.account.theme.action-sheet.buttons.light'),
 				handler: () => themeStore.set(Theme.LIGHT),
 				icon: sunnyOutline,
-				role: currentTheme === Theme.LIGHT ? 'selected' : undefined
+				role: currentTheme === Theme.LIGHT ? 'selected' : undefined,
+				text: $t('routes.account.theme.action-sheet.buttons.light')
 			},
 			{
-				text: $t('routes.account.theme.action-sheet.buttons.dark'),
 				handler: () => themeStore.set(Theme.DARK),
 				icon: moonOutline,
-				role: currentTheme === Theme.DARK ? 'selected' : undefined
+				role: currentTheme === Theme.DARK ? 'selected' : undefined,
+				text: $t('routes.account.theme.action-sheet.buttons.dark')
 			},
 			{
-				text: $t('routes.account.theme.action-sheet.buttons.black-and-white'),
 				handler: () => themeStore.set(Theme.BLACK_AND_WHITE),
 				icon: contrastOutline,
-				role: currentTheme === Theme.BLACK_AND_WHITE ? 'selected' : undefined
+				role: currentTheme === Theme.BLACK_AND_WHITE ? 'selected' : undefined,
+				text: $t('routes.account.theme.action-sheet.buttons.black-and-white')
 			}
 		]);
 	}

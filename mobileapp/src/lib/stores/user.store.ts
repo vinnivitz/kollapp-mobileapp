@@ -7,7 +7,7 @@ import type { UserStore } from '$lib/models/stores';
 import { getStoredValue, removeStoredValue, StatusCheck, storeValue } from '$lib/utils';
 
 function createStore(): UserStore {
-	const { subscribe, set } = writable<UserModel | undefined>();
+	const { set, subscribe } = writable<UserModel | undefined>();
 
 	const initialized = writable<boolean>(false);
 
@@ -37,11 +37,11 @@ function createStore(): UserStore {
 	}
 
 	return {
-		subscribe,
 		init,
-		set: _set,
+		initialized,
 		reset,
-		initialized
+		set: _set,
+		subscribe
 	};
 }
 

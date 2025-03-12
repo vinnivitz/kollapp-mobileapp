@@ -2,7 +2,7 @@
 	import { loadingController } from 'ionic-svelte';
 	import { accessibilityOutline, saveOutline } from 'ionicons/icons';
 
-	import { updateOrganizationSchema, type UpdateOrganizationDto } from '$lib/api/dto/client/organization';
+	import { type UpdateOrganizationDto, updateOrganizationSchema } from '$lib/api/dto/client/organization';
 	import { organizationResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';
@@ -21,10 +21,10 @@
 	let touched = $state(false);
 
 	const config: FormConfig<UpdateOrganizationDto> = {
-		schema: updateOrganizationSchema(),
-		onSubmit,
 		exposedActions: (exposedActions) => (actions = exposedActions),
-		onTouched: () => (touched = true)
+		onSubmit,
+		onTouched: () => (touched = true),
+		schema: updateOrganizationSchema()
 	};
 
 	$effect(() => {

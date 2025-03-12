@@ -4,7 +4,7 @@
 
 	import { goto } from '$app/navigation';
 
-	import { emailSchema, type EmailDto } from '$lib/api/dto/client/auth';
+	import { type EmailDto, emailSchema } from '$lib/api/dto/client/auth';
 	import { publicUserResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';
@@ -12,16 +12,16 @@
 	import InputItem from '$lib/components/widgets/InputItem.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
-	import { type ValidationResult, type FormActions, type FormConfig, Form } from '$lib/models/ui';
+	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
 	import { customForm, getValidationResult } from '$lib/utils';
 
 	const model = emailSchema().cast({}) as EmailDto;
 	let actions: FormActions<EmailDto>;
 
 	const config: FormConfig<EmailDto> = {
-		schema: emailSchema(),
+		exposedActions: (exposedActions) => (actions = exposedActions),
 		onSubmit,
-		exposedActions: (exposedActions) => (actions = exposedActions)
+		schema: emailSchema()
 	};
 
 	const form = new Form(model, config);

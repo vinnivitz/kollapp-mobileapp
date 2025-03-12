@@ -6,7 +6,7 @@ import { type AuthenticationStore as AuthenticationStore } from '$lib/models/sto
 import { getStoredValue, removeStoredValue, storeValue } from '$lib/utils';
 
 function createStore(): AuthenticationStore {
-	const { subscribe, set } = writable<AuthenticationModel | undefined>();
+	const { set, subscribe } = writable<AuthenticationModel | undefined>();
 
 	async function init(): Promise<void> {
 		const model = await getStoredValue<AuthenticationModel | undefined>(PreferencesKey.AUTHENTICATION);
@@ -26,10 +26,10 @@ function createStore(): AuthenticationStore {
 	}
 
 	return {
-		subscribe,
-		set: _set,
 		init,
-		reset
+		reset,
+		set: _set,
+		subscribe
 	};
 }
 

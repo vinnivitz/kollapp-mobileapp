@@ -9,7 +9,7 @@ import type { OrganizationStore } from '$lib/models/stores';
 import { getStoredValue, removeStoredValue, StatusCheck, storeValue } from '$lib/utils';
 
 function createStore(): OrganizationStore {
-	const { subscribe, set } = writable<OrganizationModel | undefined>();
+	const { set, subscribe } = writable<OrganizationModel | undefined>();
 
 	const initialized = writable<boolean>(false);
 
@@ -59,12 +59,12 @@ function createStore(): OrganizationStore {
 	}
 
 	return {
-		subscribe,
-		init,
-		set: _set,
-		reset,
 		change,
-		initialized
+		init,
+		initialized,
+		reset,
+		set: _set,
+		subscribe
 	};
 }
 

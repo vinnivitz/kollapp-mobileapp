@@ -2,8 +2,8 @@
  * Theme model for available color schemes.
  */
 export enum Theme {
-	SYSTEM = 'system',
-	LIGHT = 'light',
+	BLACK_AND_WHITE = 'black-and-white',
 	DARK = 'dark',
-	BLACK_AND_WHITE = 'black-and-white'
+	LIGHT = 'light',
+	SYSTEM = 'system'
 }

@@ -6,7 +6,7 @@
 
 	import type { PageData } from './$types';
 
-	import { resetPasswordSchema, type ResetPasswordDto } from '$lib/api/dto/client/auth';
+	import { type ResetPasswordDto, resetPasswordSchema } from '$lib/api/dto/client/auth';
 	import { publicUserResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';
@@ -31,10 +31,10 @@
 	let touched = $state(false);
 
 	const config: FormConfig<ResetPasswordDto> = {
-		schema: resetPasswordSchema(),
+		exposedActions: (exposedActions) => (actions = exposedActions),
 		onSubmit,
 		onTouched: () => (touched = true),
-		exposedActions: (exposedActions) => (actions = exposedActions)
+		schema: resetPasswordSchema()
 	};
 
 	const form = new Form(model, config);

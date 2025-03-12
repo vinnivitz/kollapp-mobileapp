@@ -511,7 +511,10 @@
 							"confirm": "Aktualisieren"
 						},
 						"card": {
-							"title": "Veranstaltung bearbeiten"
+							"title": "Veranstaltung bearbeiten",
+							"more-actions": {
+								"title": "Weitere Aktionen"
+							}
 						}
 					},
 					"show-calendar-toggle": {

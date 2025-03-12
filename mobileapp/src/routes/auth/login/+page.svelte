@@ -4,7 +4,7 @@
 
 	import { goto } from '$app/navigation';
 
-	import { loginSchema, type LoginDto } from '$lib/api/dto/client/auth';
+	import { type LoginDto, loginSchema } from '$lib/api/dto/client/auth';
 	import { authResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';
@@ -24,9 +24,9 @@
 	let emailNotConfirmed = $state(false);
 
 	const config: FormConfig<LoginDto> = {
-		schema: loginSchema(),
+		exposedActions: (exposedActions) => (actions = exposedActions),
 		onSubmit,
-		exposedActions: (exposedActions) => (actions = exposedActions)
+		schema: loginSchema()
 	};
 
 	const form = new Form(model, config);

@@ -2,7 +2,7 @@
  * Header key for the request
  */
 export enum HeaderKey {
-	CONTENT_TYPE = 'Content-Type',
+	ACCEPT_LANGUAGE = 'Accept-Language',
 	AUTHORIZATION = 'Authorization',
-	ACCEPT_LANGUAGE = 'Accept-Language'
+	CONTENT_TYPE = 'Content-Type'
 }

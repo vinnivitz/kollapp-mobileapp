@@ -123,6 +123,9 @@ importers:
       eslint-plugin-sonarjs:
         specifier: ^3.0.2
         version: 3.0.2(eslint@9.22.0(jiti@1.21.7))
+      eslint-plugin-sort:
+        specifier: ^4.0.0
+        version: 4.0.0(eslint@9.22.0(jiti@1.21.7))(typescript@5.8.2)
       eslint-plugin-svelte:
         specifier: ^2.46.1
         version: 2.46.1(eslint@9.22.0(jiti@1.21.7))(svelte@5.22.6)(ts-node@10.9.2(@types/node@22.13.10)(typescript@5.8.2))
@@ -2203,6 +2206,11 @@ packages:
     peerDependencies:
       eslint: ^8.0.0 || ^9.0.0
 
+  eslint-plugin-sort@4.0.0:
+    resolution: {integrity: sha512-hmYRklp3SLDjhqcFWf7J9K+yGIVfzgnWpi0EqT7HTQJMGW9LIBXw1dshSoERf8PfelVz5ecpxiN/SJjWlCQtGA==}
+    peerDependencies:
+      eslint: '>=8.56.0'
+
   eslint-plugin-svelte@2.46.1:
     resolution: {integrity: sha512-7xYr2o4NID/f9OEYMqxsEQsCsj4KaMy4q5sANaKkAb6/QeCjYFxRmDm2S3YC3A3pl1kyPZ/syOx/i7LcWYSbIw==}
     engines: {node: ^14.17.0 || >=16.0.0}
@@ -3004,6 +3012,9 @@ packages:
   isobject@3.0.1:
     resolution: {integrity: sha512-WhB9zCku7EGTj/HQQRz5aUQEUeoQZH2bWcltRErOpymJ4boYE6wL9Tbr23krRPSZ+C5zqNSrSw+Cc7sZZ4b7vg==}
     engines: {node: '>=0.10.0'}
+
+  isomorphic-resolve@1.0.0:
+    resolution: {integrity: sha512-FWn6176keSYAapzv5P6ZzLdbCXj5uaG49h1y+EXRNqZm2RBztzBOYqCMmSe4Dmo+bIvk7sX/SN4pI/3QmfH3aw==}
 
   jackspeak@3.4.3:
     resolution: {integrity: sha512-OGlZQpz2yfahA/Rd1Y8Cd9SIEsqvXkLVoSw/cgwhnhFMDbsQFeZYoJJ7bIZBS9BcamUW96asq/npPWugM+RQBw==}
@@ -7303,6 +7314,16 @@ snapshots:
       semver: 7.7.1
       typescript: 5.8.2
 
+  eslint-plugin-sort@4.0.0(eslint@9.22.0(jiti@1.21.7))(typescript@5.8.2):
+    dependencies:
+      '@typescript-eslint/utils': 8.26.0(eslint@9.22.0(jiti@1.21.7))(typescript@5.8.2)
+      eslint: 9.22.0(jiti@1.21.7)
+      isomorphic-resolve: 1.0.0
+      natural-compare: 1.4.0
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
+
   eslint-plugin-svelte@2.46.1(eslint@9.22.0(jiti@1.21.7))(svelte@5.22.6)(ts-node@10.9.2(@types/node@22.13.10)(typescript@5.8.2)):
     dependencies:
       '@eslint-community/eslint-utils': 4.4.1(eslint@9.22.0(jiti@1.21.7))
@@ -8186,6 +8207,8 @@ snapshots:
       isarray: 1.0.0
 
   isobject@3.0.1: {}
+
+  isomorphic-resolve@1.0.0: {}
 
   jackspeak@3.4.3:
     dependencies:

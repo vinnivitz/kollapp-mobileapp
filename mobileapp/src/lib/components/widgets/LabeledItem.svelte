@@ -3,28 +3,30 @@
 	import type { UserRole } from '$lib/models/api';
 	import type { Colors } from '$lib/models/ui';
 
-	let {
-		label,
-		click,
-		detail = true,
-		color = 'light',
-		icon,
-		transparent = false,
-		searchable,
-		accessible
-	}: {
-		label: string;
-		detail?: boolean;
-		color?: Colors | undefined;
-		icon?: string;
-		transparent?: boolean;
-		button?: boolean;
-		searchable?: string;
+	type Properties = {
 		accessible?: UserRole[];
+		button?: boolean;
+		color?: Colors | undefined;
+		detail?: boolean;
+		icon?: string;
+		label: string;
+		searchable?: string;
+		transparent?: boolean;
 	} & (
-		| { searchable: string; click: () => void | Promise<void> }
-		| { searchable?: string; click?: () => void | Promise<void> }
-	) = $props();
+		| { click: () => void | Promise<void>; searchable: string }
+		| { click?: () => void | Promise<void>; searchable?: string }
+	);
+
+	let {
+		accessible,
+		click,
+		color = 'light',
+		detail = true,
+		icon,
+		label,
+		searchable,
+		transparent = false
+	}: Properties = $props();
 
 	// workaround to avoid reference linting error
 	void searchable;

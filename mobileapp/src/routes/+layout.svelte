@@ -3,7 +3,7 @@
 	import 'ionic-svelte/components/all';
 	import { defineCustomElements } from '@ionic/pwa-elements/loader';
 	import { loadingController, setupIonicBase } from 'ionic-svelte';
-	import { home, person, accessibility } from 'ionicons/icons';
+	import { accessibility, home, person } from 'ionicons/icons';
 	import { onDestroy, onMount } from 'svelte';
 
 	import Tabs from '$lib/components/layout/Tabs.svelte';
@@ -41,13 +41,13 @@
 		}, 100);
 		await Promise.all([defineCustomElements(globalThis as unknown as Window), localeStore.init()]);
 		tabs = [
-			{ label: $t('common.page-routes.home'), icon: home, tab: PageRoute.HOME },
+			{ icon: home, label: $t('common.page-routes.home'), tab: PageRoute.HOME },
 			{
-				label: $t('common.page-routes.organization'),
 				icon: accessibility,
+				label: $t('common.page-routes.organization'),
 				tab: PageRoute.ORGANIZATION.ROOT
 			},
-			{ label: $t('common.page-routes.account'), icon: person, tab: PageRoute.ACCOUNT.ROOT }
+			{ icon: person, label: $t('common.page-routes.account'), tab: PageRoute.ACCOUNT.ROOT }
 		];
 		loaded = true;
 		if (loadingSpinner) {

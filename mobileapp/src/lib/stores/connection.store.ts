@@ -1,4 +1,4 @@
-import { Network, type ConnectionStatus } from '@capacitor/network';
+import { type ConnectionStatus, Network } from '@capacitor/network';
 import { get, writable } from 'svelte/store';
 
 import environment from '$lib/environment';
@@ -11,7 +11,7 @@ import { showAlert, storeValue } from '$lib/utils';
 const $t = get(t);
 
 function createStore(): ConnectionStore {
-	const { subscribe, set } = writable<boolean | undefined>();
+	const { set, subscribe } = writable<boolean | undefined>();
 
 	let lastNetworkCheck = 0;
 	let cachedNetworkStatus: ConnectionStatus;
@@ -57,11 +57,11 @@ function createStore(): ConnectionStore {
 	}
 
 	return {
-		subscribe,
-		set: _set,
+		check,
 		init,
 		reset,
-		check
+		set: _set,
+		subscribe
 	};
 }
 

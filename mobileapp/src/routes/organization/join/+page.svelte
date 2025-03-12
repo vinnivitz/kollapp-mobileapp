@@ -11,8 +11,8 @@
 	import { customForm, showAlert } from '$lib/utils';
 
 	const config: FormConfig<object> = {
-		schema: new ObjectSchema(),
-		onSubmit
+		onSubmit,
+		schema: new ObjectSchema()
 	};
 
 	const form = new Form(object, config);

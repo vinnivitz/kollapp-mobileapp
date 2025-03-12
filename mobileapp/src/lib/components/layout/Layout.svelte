@@ -8,23 +8,25 @@
 
 	import { activitiesStore, organizationStore, userStore } from '$lib/stores';
 
-	let {
-		title,
-		children,
-		showBackButton = false,
-		onRefresh,
-		hideLayout = false,
-		hideMenu = false,
-		scrollable = true
-	}: {
-		title: string;
+	type Properties = {
 		children?: Snippet;
-		showBackButton?: boolean;
-		onRefresh?: (refresher: HTMLIonRefresherElement) => void;
 		hideLayout?: boolean;
 		hideMenu?: boolean;
+		onRefresh?: (refresher: HTMLIonRefresherElement) => void;
 		scrollable?: boolean;
-	} = $props();
+		showBackButton?: boolean;
+		title: string;
+	};
+
+	let {
+		children,
+		hideLayout = false,
+		hideMenu = false,
+		onRefresh,
+		scrollable = true,
+		showBackButton = false,
+		title
+	}: Properties = $props();
 
 	let navigationDebounced = $state(false);
 	let navigationTimeout: ReturnType<typeof setTimeout>;
@@ -61,7 +63,7 @@
 	{#if loading && navigationDebounced}
 		<ion-progress-bar type="indeterminate"></ion-progress-bar>
 	{/if}
-	<ion-content class="ion-padding" in:fade={{ duration: 200, delay: 0 }} class:no-overflow={!scrollable}>
+	<ion-content class="ion-padding" in:fade={{ delay: 0, duration: 200 }} class:no-overflow={!scrollable}>
 		{#if onRefresh}
 			<!-- svelte-ignore event_directive_deprecated -->
 			<ion-refresher bind:this={refresher} slot="fixed" on:ionRefresh={() => refresher && onRefresh?.(refresher)}>

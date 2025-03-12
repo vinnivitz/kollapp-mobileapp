@@ -4,7 +4,7 @@ import type { PageRoutePaths } from '$lib/models/routing';
  * Configuration for a page route tab.
  */
 export type TabConfig = {
-	label: string;
 	icon: string;
+	label: string;
 	tab: PageRoutePaths;
 };

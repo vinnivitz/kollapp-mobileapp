@@ -4,7 +4,7 @@
 
 	import { goto } from '$app/navigation';
 
-	import { registerOrganizationSchema, type RegisterOrganizationDto } from '$lib/api/dto/client/organization';
+	import { type RegisterOrganizationDto, registerOrganizationSchema } from '$lib/api/dto/client/organization';
 	import { organizationResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';
@@ -21,10 +21,10 @@
 	let touched = $state(false);
 
 	const config: FormConfig<RegisterOrganizationDto> = {
-		schema: registerOrganizationSchema(),
+		exposedActions: (exposedActions) => (actions = exposedActions),
 		onSubmit,
 		onTouched: () => (touched = true),
-		exposedActions: (exposedActions) => (actions = exposedActions)
+		schema: registerOrganizationSchema()
 	};
 
 	const form = new Form(model, config);

@@ -2,39 +2,42 @@
 	import CustomItem from '$lib/components/widgets/CustomItem.svelte';
 	import type { Colors } from '$lib/models/ui';
 
-	type InputType = 'number' | 'text' | 'email' | 'date' | 'password';
+	type InputType = 'date' | 'email' | 'number' | 'password' | 'text';
 
-	let {
-		color,
-		icon,
-		label,
-		name,
-		type = 'text',
-		value,
-		helperText,
-		inputIcon,
-		inputIconClick,
-		change,
-		maxlength
-	}: {
-		label: string;
-		name: string;
-		color?: Colors | undefined;
-		icon?: string;
-		type?: InputType | undefined;
+	type Properties = {
+		change?: (value: string) => void;
+		color?: Colors;
 		helperText?: string;
-		value?: string | number | null | undefined;
+		icon?: string;
 		inputIcon?: string;
 		inputIconClick?: () => void | Promise<void>;
-		change?: (value: string) => void;
+		label: string;
 		maxlength?: number;
-	} = $props();
+		name: string;
+		type?: InputType;
+		value?: string | number | null;
+	};
+
+	let {
+		change,
+		color,
+		helperText,
+		icon,
+		inputIcon,
+		inputIconClick,
+		label,
+		maxlength,
+		name,
+		type = 'text',
+		value
+	}: Properties = $props();
 </script>
 
 <CustomItem {color} iconStart={icon} iconEnd={inputIcon} iconClick={inputIconClick}>
 	<!-- svelte-ignore event_directive_deprecated -->
 	<ion-input
 		{maxlength}
+		counter={!!maxlength}
 		{name}
 		{label}
 		{type}

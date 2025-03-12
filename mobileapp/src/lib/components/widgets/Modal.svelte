@@ -6,21 +6,23 @@
 
 	import { t } from '$lib/locales';
 
-	let {
-		children,
-		open = false,
-		cancel,
-		confirm,
-		cancelLabel = $t('components.widgets.modal.button.cancel'),
-		confirmLabel = $t('components.widgets.modal.button.confirm')
-	}: {
-		children: Snippet;
-		open?: boolean;
+	type Properties = {
 		cancel?: () => void;
-		confirm?: () => void;
 		cancelLabel?: string;
+		children: Snippet;
+		confirm?: () => void;
 		confirmLabel?: string;
-	} = $props();
+		open?: boolean;
+	};
+
+	let {
+		cancel,
+		cancelLabel = $t('components.widgets.modal.button.cancel'),
+		children,
+		confirm,
+		confirmLabel = $t('components.widgets.modal.button.confirm'),
+		open = false
+	}: Properties = $props();
 </script>
 
 <ion-modal is-open={open}>

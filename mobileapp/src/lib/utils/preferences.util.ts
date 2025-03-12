@@ -1,9 +1,8 @@
 import { Preferences } from '@capacitor/preferences';
 
-import { showAlert } from './alert.util';
-
 import environment from '$lib/environment';
 import type { PreferencesKey } from '$lib/models/preferences';
+import { showAlert } from '$lib/utils';
 
 /**
  * Stores a value in the preferences store

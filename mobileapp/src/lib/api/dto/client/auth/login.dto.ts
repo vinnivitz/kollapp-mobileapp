@@ -1,5 +1,5 @@
 import { get } from 'svelte/store';
-import { ObjectSchema, type AnyObject, object, string } from 'yup';
+import { type AnyObject, object, ObjectSchema, string } from 'yup';
 
 import { t } from '$lib/locales';
 
@@ -7,8 +7,8 @@ import { t } from '$lib/locales';
  * Login DTO for sending user login information.
  */
 export type LoginDto = {
-	username: string;
 	password: string;
+	username: string;
 };
 
 /**
@@ -18,7 +18,7 @@ export type LoginDto = {
 export const loginSchema = (): ObjectSchema<AnyObject, LoginDto> => {
 	const $t = get(t);
 	return object<LoginDto>({
-		username: string().default('').trim().required($t('api.dto.login.schema.validation.username.required')),
-		password: string().default('').required($t('api.dto.login.schema.validation.password.required'))
+		password: string().default('').required($t('api.dto.login.schema.validation.password.required')),
+		username: string().default('').trim().required($t('api.dto.login.schema.validation.username.required'))
 	});
 };

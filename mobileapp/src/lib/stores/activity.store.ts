@@ -7,7 +7,7 @@ import type { ActivityStore } from '$lib/models/stores';
 import { getStoredValue, removeStoredValue, StatusCheck, storeValue } from '$lib/utils';
 
 function createStore(): ActivityStore {
-	const { subscribe, set } = writable<ActivityModel[]>([]);
+	const { set, subscribe } = writable<ActivityModel[]>([]);
 
 	const initialized = writable<boolean>(false);
 
@@ -41,12 +41,12 @@ function createStore(): ActivityStore {
 	}
 
 	return {
-		subscribe,
-		init,
-		set: _set,
-		reset,
 		change,
-		initialized
+		init,
+		initialized,
+		reset,
+		set: _set,
+		subscribe
 	};
 }
 

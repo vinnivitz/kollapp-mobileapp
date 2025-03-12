@@ -2,6 +2,7 @@
 	import { loadingController } from 'ionic-svelte';
 	import {
 		archiveOutline,
+		calendarClearOutline,
 		calendarOutline,
 		checkmarkDoneOutline,
 		createOutline,
@@ -15,10 +16,10 @@
 	import { fade } from 'svelte/transition';
 
 	import {
-		createActivitySchema,
-		updateActivitySchema,
 		type CreateActivityDto,
-		type UpdateActivityDto
+		createActivitySchema,
+		type UpdateActivityDto,
+		updateActivitySchema
 	} from '$lib/api/dto/client/organization';
 	import { organizationResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
@@ -26,6 +27,7 @@
 	import Button from '$lib/components/widgets/Button.svelte';
 	import Calendar from '$lib/components/widgets/Calendar.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
+	import CustomItem from '$lib/components/widgets/CustomItem.svelte';
 	import InputItem from '$lib/components/widgets/InputItem.svelte';
 	import Modal from '$lib/components/widgets/Modal.svelte';
 	import { t } from '$lib/locales';
@@ -35,9 +37,9 @@
 	import { customForm, getValidationResult, showAlert } from '$lib/utils';
 
 	enum ActivityStatus {
-		PENDING = 'pending',
+		ALL = 'all',
 		DONE = 'done',
-		ALL = 'all'
+		PENDING = 'pending'
 	}
 
 	let showPopoverCalendar = $state(false);
@@ -57,15 +59,15 @@
 	let updateActions: FormActions<UpdateActivityDto>;
 
 	const createConfig: FormConfig<CreateActivityDto> = {
-		schema: createActivitySchema(),
+		exposedActions: (exposedActions) => (createActions = exposedActions),
 		onSubmit: onCreateSubmit,
-		exposedActions: (exposedActions) => (createActions = exposedActions)
+		schema: createActivitySchema()
 	};
 
 	const updateConfig: FormConfig<UpdateActivityDto> = {
-		schema: updateActivitySchema(),
+		exposedActions: (exposedActions) => (updateActions = exposedActions),
 		onSubmit: onUpdateSubmit,
-		exposedActions: (exposedActions) => (updateActions = exposedActions)
+		schema: updateActivitySchema()
 	};
 
 	const createForm = new Form(createActivitySchema().cast({}) as CreateActivityDto, createConfig);
@@ -128,18 +130,19 @@
 		editModalOpen = true;
 	}
 
-	function onArchieveEvent(): Promise<void> {
+	function onArchiveEvent(): Promise<void> {
 		return showAlert('Feature not implemented yet.');
 	}
 
-	async function onDeleteActivity(id: string): Promise<void> {
+	async function onDeleteActivity(): Promise<void> {
 		const loader = await loadingController.create({});
 		await loader.present();
 		const organizationId = $organizationStore?.id;
 		if (organizationId) {
-			const result = getValidationResult(await organizationResource.deleteActivity(organizationId, id));
+			const result = getValidationResult(await organizationResource.deleteActivity(organizationId, selectedActivityId));
 			if (result.valid) {
 				await activitiesStore.init(organizationId);
+				editModalOpen = false;
 			}
 		} else {
 			showAlert($t('routes.organization.page.activity.no-organization-id'));
@@ -168,16 +171,16 @@
 	}
 </script>
 
-<Layout title={$t('routes.organization.page.activity.title')} showBackButton scrollable>
+<Layout title={$t('routes.organization.page.activity.title')} showBackButton scrollable={false}>
 	{#if $activitiesStore.length === 0}
-		<Calendar change={onCreateActivity}></Calendar>
+		<Calendar apply={onCreateActivity}></Calendar>
 	{/if}
 
 	<Button click={onCreateActivity} label="Create event" expand="block" icon={createOutline}></Button>
 
 	{#if $activitiesStore.length > 0}
 		<!-- svelte-ignore event_directive_deprecated -->
-		<div class="mx-4 mt-4">
+		<div class="mx-2 mt-4">
 			<ion-toggle
 				alignment="center"
 				color="secondary"
@@ -202,8 +205,8 @@
 		{#if !searchActivityValue}
 			<!-- svelte-ignore event_directive_deprecated -->
 			<ion-segment
-				in:fade={{ duration: 100, delay: 150 }}
-				out:fade={{ duration: 100, delay: 0 }}
+				in:fade={{ delay: 150, duration: 100 }}
+				out:fade={{ delay: 0, duration: 100 }}
 				on:ionChange={(event) => onFilterByStatus(event.detail.value as ActivityStatus)}
 				value={activityStatus}
 			>
@@ -220,29 +223,25 @@
 					<ion-label>{$t('routes.organization.page.activity.segments.all')}</ion-label>
 				</ion-segment-button>
 			</ion-segment>
-			<ion-segment-view in:fade={{ duration: 100, delay: 150 }} out:fade={{ duration: 100, delay: 0 }}>
+			<ion-segment-view in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
 				<ion-segment-content>
 					<div class="max-h-[calc(100vh-360px)] overflow-y-auto">
-						<ion-list in:fade={{ duration: 100, delay: 150 }} out:fade={{ duration: 100, delay: 0 }}>
+						<ion-list in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
 							{#each filteredActivities as activity (activity.id)}
-								<ActivityCard value={activity} edit={onEditActivity} remove={onDeleteActivity} />
+								<ActivityCard value={activity} edit={onEditActivity} />
 							{/each}
 						</ion-list>
 					</div>
 				</ion-segment-content>
 			</ion-segment-view>
 		{:else if filteredActivities.length > 0}
-			<ion-list in:fade={{ duration: 100, delay: 150 }} out:fade={{ duration: 100, delay: 0 }}>
+			<ion-list in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
 				{#each filteredActivities as activity (activity.id)}
-					<ActivityCard
-						value={activity}
-						edit={() => onEditActivity(activity)}
-						remove={() => onDeleteActivity(activity.id)}
-					/>
+					<ActivityCard value={activity} edit={() => onEditActivity(activity)} />
 				{/each}
 			</ion-list>
 		{:else}
-			<div class="mt-4 text-center" in:fade={{ duration: 100, delay: 150 }} out:fade={{ duration: 100, delay: 0 }}>
+			<div class="mt-4 text-center" in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
 				{$t('routes.organization.page.activity.no-activities-found', { value: searchActivityValue })}
 			</div>
 		{/if}
@@ -253,10 +252,8 @@
 <ion-popover is-open={showPopoverCalendar} on:didDismiss={() => (showPopoverCalendar = false)}>
 	<div class="text-center">
 		<Calendar
-			showApplyButton
-			showCancelButton
 			applyText={$t('routes.organization.page.activity.calendar.done')}
-			change={onCreateActivity}
+			apply={onCreateActivity}
 			dismiss={() => {
 				showPopoverCalendar = false;
 			}}
@@ -268,8 +265,7 @@
 <ion-popover is-open={showSelectDateCalendar} on:didDismiss={() => (showSelectDateCalendar = false)}>
 	<div class="text-center">
 		<Calendar
-			showApplyButton
-			change={(value) => {
+			apply={(value) => {
 				selectedDate = value;
 			}}
 			dismiss={() => {
@@ -330,22 +326,31 @@
 					label={$t('routes.organization.page.activity.create-modal.card.input.location')}
 					icon={locationOutline}
 				/>
-				<InputItem
+				<CustomItem iconStart={calendarClearOutline}>
+					<Button
+						type="button"
+						click={() => {
+							showSelectDateCalendar = true;
+						}}
+						label={selectedDate}
+					></Button>
+				</CustomItem>
+				<!-- <InputItem
 					name="date"
 					label={$t('routes.organization.page.activity.create-modal.card.input.date')}
 					type="date"
-					icon={calendarOutline}
+					icon={calendarClearOutline}
 					inputIcon={calendarOutline}
 					inputIconClick={() => {
 						showSelectDateCalendar = true;
 					}}
-				/>
+				/> -->
 			</form>
 		</Card>
-		<Card>
+		<Card title={$t('routes.organization.page.activity.edit-modal.card.more-actions.title')}>
 			<div class="flex items-center justify-center gap-4 text-center">
-				<Button color="tertiary" icon={archiveOutline} label="Archive" click={() => onArchieveEvent()}></Button>
-				<Button color="danger" icon={trashBinOutline} label="Delete" click={() => {}}></Button>
+				<Button color="tertiary" icon={archiveOutline} label="Archive" click={onArchiveEvent}></Button>
+				<Button color="danger" icon={trashBinOutline} label="Delete" click={() => onDeleteActivity()}></Button>
 			</div>
 		</Card>
 	</Modal>

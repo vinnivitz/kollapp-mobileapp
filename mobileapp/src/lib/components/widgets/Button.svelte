@@ -1,40 +1,44 @@
 <script lang="ts">
-	import { Layout, type Colors } from '$lib/models/ui';
+	import { type Colors, Layout } from '$lib/models/ui';
 	import { layoutStore } from '$lib/stores';
 
-	let {
-		click,
-		label,
-		classProp,
-		color = 'secondary',
-		expand,
-		fill,
-		size,
-		icon,
-		iconSize = 'small',
-		iconPosition = 'start',
-		type,
-		disabled
-	}: {
+	type Properties = {
+		classProp?: string;
 		click?: (event?: MouseEvent) => void | Promise<void>;
-		label?: string;
 		color?: Colors | undefined;
+		disabled?: boolean;
 		expand?: 'full' | 'block' | undefined;
 		fill?: 'clear' | 'default' | 'outline' | 'solid' | undefined;
-		classProp?: string;
-		size?: 'default' | 'small' | 'large' | undefined;
 		icon?: string;
+		iconPosition?: 'end' | 'start';
 		iconSize?: 'small' | 'large' | undefined;
-		iconPosition?: 'start' | 'end';
-		type?: 'button' | 'submit' | 'reset';
-		disabled?: boolean;
+		id?: string;
+		label?: string;
+		size?: 'default' | 'small' | 'large' | undefined;
+		type?: 'button' | 'reset' | 'submit';
 	} & (
-		| { type: 'submit'; click?: never }
-		| { type?: 'button' | 'reset'; click: (event?: MouseEvent) => void | Promise<void> }
+		| { click?: never; type: 'submit' }
+		| { click: (event?: MouseEvent) => void | Promise<void>; type?: 'button' | 'reset' }
 	) &
-		({ label: string; icon?: string } | { icon: string; label?: string }) = $props();
+		({ icon?: string; label: string } | { icon: string; label?: string });
 
-	const isMondernLayout = $derived($layoutStore === Layout.MODERN);
+	let {
+		classProp,
+		click,
+		color = 'secondary',
+		disabled,
+		expand,
+		fill,
+		icon,
+		iconPosition = 'start',
+		iconSize = 'small',
+		id,
+		label,
+		size,
+		type
+	}: Properties = $props();
+
+	const isModernLayout = $derived($layoutStore === Layout.MODERN);
 	const isPlayfulLayout = $derived($layoutStore === Layout.PLAYFUL);
 	const shape = $derived(isPlayfulLayout ? 'round' : undefined);
 	const fontWeight = $derived(fill === 'outline' ? 'font-extrabold' : 'font-medium');
@@ -42,11 +46,12 @@
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <ion-button
+	{id}
 	{color}
 	{expand}
 	{fill}
 	class={classProp}
-	class:squared={isMondernLayout}
+	class:squared={isModernLayout}
 	{size}
 	{shape}
 	{type}

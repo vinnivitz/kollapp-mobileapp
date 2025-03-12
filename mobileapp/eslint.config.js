@@ -3,6 +3,7 @@ import prettier from 'eslint-config-prettier';
 import importPlugin from 'eslint-plugin-import';
 import securityPlugin from 'eslint-plugin-security';
 import sonarjsPlugin from 'eslint-plugin-sonarjs';
+import sortPlugin from 'eslint-plugin-sort';
 import sveltePlugin from 'eslint-plugin-svelte';
 import tailwindcssPlugin from 'eslint-plugin-tailwindcss';
 import unicornPlugin from 'eslint-plugin-unicorn';
@@ -19,20 +20,12 @@ export default ts.config(
 	tailwindcssPlugin.configs['flat/recommended'],
 	unicornPlugin.configs['flat/recommended'],
 	sonarjsPlugin.configs.recommended,
+	sortPlugin.configs['flat/recommended'],
 	{
 		plugins: {
 			import: importPlugin
 		},
-		settings: {
-			'import/parsers': {
-				'@typescript-eslint/parser': ['.ts', '.svelte']
-			}
-		},
 		rules: {
-			'sonarjs/no-unused-collection': 'off',
-			'sonarjs/void-use': 'off',
-			'sonarjs/no-use-of-empty-return-value': 'off',
-			'sonarjs/slow-regex': 'off',
 			'@typescript-eslint/explicit-function-return-type': [
 				'error',
 				{
@@ -46,26 +39,27 @@ export default ts.config(
 					argsIgnorePattern: '^_'
 				}
 			],
+			'import/no-duplicates': 'error',
 			'import/order': [
 				'error',
 				{
+					alphabetize: {
+						caseInsensitive: true,
+						order: 'asc'
+					},
+
 					groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
 
+					'newlines-between': 'always',
 					pathGroups: [
 						{
-							pattern: '$app/**',
 							group: 'internal',
+							pattern: '$app/**',
 							position: 'after'
 						}
 					],
 
-					pathGroupsExcludedImportTypes: ['builtin'],
-					'newlines-between': 'always',
-
-					alphabetize: {
-						order: 'asc',
-						caseInsensitive: true
-					}
+					pathGroupsExcludedImportTypes: ['builtin']
 				}
 			],
 			'no-restricted-imports': [
@@ -88,12 +82,23 @@ export default ts.config(
 					]
 				}
 			],
-
-			'import/no-duplicates': 'error',
-			'unicorn/filename-case': 'off',
-			'svelte/no-unused-svelte-ignore': 'off',
 			'security/detect-non-literal-fs-filename': 'off',
-			'svelte/valid-compile': 'off'
+			'sonarjs/no-unused-collection': 'off',
+			'sonarjs/no-use-of-empty-return-value': 'off',
+			'sonarjs/slow-regex': 'off',
+			'sonarjs/void-use': 'off',
+			'sort/imports': 'off',
+			'sort/string-enums': 'error',
+			'sort/string-unions': 'error',
+			'sort/type-properties': 'error',
+			'svelte/no-unused-svelte-ignore': 'off',
+			'svelte/valid-compile': 'off',
+			'unicorn/filename-case': 'off'
+		},
+		settings: {
+			'import/parsers': {
+				'@typescript-eslint/parser': ['.ts', '.svelte']
+			}
 		}
 	},
 	{
@@ -101,11 +106,11 @@ export default ts.config(
 			globals: {
 				...globals.browser,
 				...globals.node,
-				HTMLIonTabsElement: 'readonly',
-				HTMLIonRefresherElement: 'readonly',
+				HTMLIonDatetimeElement: 'readonly',
 				HTMLIonLoadingElement: 'readonly',
 				HTMLIonMenuElement: 'readonly',
-				HTMLIonDatetimeElement: 'readonly'
+				HTMLIonRefresherElement: 'readonly',
+				HTMLIonTabsElement: 'readonly'
 			}
 		}
 	},

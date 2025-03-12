@@ -1,5 +1,5 @@
 import type { EmailDto, RegisterDto, ResetPasswordDto } from '$lib/api/dto/client/auth';
-import { AuthorizationType, type ResponseBody, RequestMethod } from '$lib/models/api';
+import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/models/api';
 import { customFetch } from '$lib/utils';
 
 const ENDPOINT = 'public/user';
@@ -11,9 +11,9 @@ const ENDPOINT = 'public/user';
  */
 export async function registerManager(model: RegisterDto): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/manager-signup`, {
-		method: RequestMethod.POST,
+		authorizationType: AuthorizationType.NONE,
 		body: JSON.stringify(model),
-		authorizationType: AuthorizationType.NONE
+		method: RequestMethod.POST
 	});
 }
 
@@ -24,9 +24,9 @@ export async function registerManager(model: RegisterDto): Promise<ResponseBody>
  */
 export async function forgotPassword(model: EmailDto): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/forgot-password`, {
-		method: RequestMethod.POST,
+		authorizationType: AuthorizationType.NONE,
 		body: JSON.stringify(model),
-		authorizationType: AuthorizationType.NONE
+		method: RequestMethod.POST
 	});
 }
 
@@ -37,10 +37,10 @@ export async function forgotPassword(model: EmailDto): Promise<ResponseBody> {
  */
 export async function resetPassword(model: ResetPasswordDto, token: string): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/reset-password`, {
-		query: { token },
-		method: RequestMethod.POST,
+		authorizationType: AuthorizationType.NONE,
 		body: JSON.stringify(model),
-		authorizationType: AuthorizationType.NONE
+		method: RequestMethod.POST,
+		query: { token }
 	});
 }
 
@@ -51,8 +51,8 @@ export async function resetPassword(model: ResetPasswordDto, token: string): Pro
  */
 export async function resendConfirmation(model: EmailDto): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/resend-confirmation`, {
-		method: RequestMethod.POST,
+		authorizationType: AuthorizationType.NONE,
 		body: JSON.stringify(model),
-		authorizationType: AuthorizationType.NONE
+		method: RequestMethod.POST
 	});
 }

@@ -1,9 +1,9 @@
 import { eye, eyeOff } from 'ionicons/icons';
 import { get, writable } from 'svelte/store';
-import { ObjectSchema, type AnyObject, ValidationError } from 'yup';
+import { type AnyObject, ObjectSchema, ValidationError } from 'yup';
 
 import { t } from '$lib/locales';
-import type { Form, FormActions, ValidationResult, ValidationError as CustomValidationError } from '$lib/models/ui';
+import type { Form, FormActions, ValidationError as CustomValidationError, ValidationResult } from '$lib/models/ui';
 
 const $t = get(t);
 
@@ -84,9 +84,9 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 		data.config.exposedActions({
 			applyValidationFeedback,
 			applyValidationFeedbackByKey,
-			resetModel,
+			onSubmit,
 			onUpdate,
-			onSubmit
+			resetModel
 		});
 	}
 
@@ -286,9 +286,9 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 		ionFormActions.set({
 			applyValidationFeedback: () => {},
 			applyValidationFeedbackByKey: () => {},
+			onSubmit: () => {},
 			onUpdate: () => {},
-			resetModel: () => {},
-			onSubmit: () => {}
+			resetModel: () => {}
 		});
 		for (const icon of passwordIcons) {
 			icon.remove();
@@ -311,13 +311,13 @@ async function validate<T>(schema: ObjectSchema<AnyObject, T>, data: T): Promise
 				.map(
 					(error_) =>
 						({
-							message: error_.message,
-							field: error_.path?.split('.')?.[0]
+							field: error_.path?.split('.')?.[0],
+							message: error_.message
 						}) as CustomValidationError
 				)
 				.toReversed()
 				.filter((item, index, array) => array.findIndex((t) => t.field === item.field) === index);
 		}
-		return { valid: false, errors };
+		return { errors, valid: false };
 	}
 }

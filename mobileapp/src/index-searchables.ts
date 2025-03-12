@@ -1,8 +1,8 @@
-import { writeFileSync, readdirSync, readFileSync } from 'node:fs';
+import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
 import type { Expression, Identifier, MemberExpression } from 'estree';
-import { parse, type AST } from 'svelte/compiler';
+import { type AST, parse } from 'svelte/compiler';
 
 import type { SearchableItemDto } from '$lib/api/dto/server';
 import type { UserRole } from '$lib/models/api';
@@ -122,11 +122,11 @@ function addSearchableItem(node: ASTComponent): void {
 
 	if (label && route) {
 		searchableItems.push({
+			accessible: (accessible ? accessible.split(',') : undefined) as UserRole[],
+			icon,
 			id: ++idCounter,
 			label,
-			icon,
-			route,
-			accessible: (accessible ? accessible.split(',') : undefined) as UserRole[]
+			route
 		});
 	}
 }

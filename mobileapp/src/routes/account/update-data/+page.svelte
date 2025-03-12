@@ -2,7 +2,7 @@
 	import { loadingController } from 'ionic-svelte';
 	import { mailOutline, peopleCircleOutline, personCircleOutline, personOutline, saveOutline } from 'ionicons/icons';
 
-	import { updateUserDataSchema, type UpdateUserDataDto } from '$lib/api/dto/client/user';
+	import { type UpdateUserDataDto, updateUserDataSchema } from '$lib/api/dto/client/user';
 	import { userResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';
@@ -22,19 +22,19 @@
 	let touched = $state(false);
 
 	const config: FormConfig<UpdateUserDataDto> = {
-		schema: updateUserDataSchema(),
+		exposedActions: (exposedActions) => (actions = exposedActions),
 		onSubmit,
 		onTouched: () => (touched = true),
-		exposedActions: (exposedActions) => (actions = exposedActions)
+		schema: updateUserDataSchema()
 	};
 
 	$effect(() => {
 		if (userModel) {
 			model = updateUserDataSchema().cast({
-				surname: userModel.surname,
+				email: userModel.email,
 				name: userModel.name,
-				username: userModel.username,
-				email: userModel.email
+				surname: userModel.surname,
+				username: userModel.username
 			}) as UpdateUserDataDto;
 
 			form = new Form(model, config);

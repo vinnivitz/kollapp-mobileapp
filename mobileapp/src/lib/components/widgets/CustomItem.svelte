@@ -1,30 +1,32 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 
-	import { Layout, type Colors } from '$lib/models/ui';
+	import { type Colors, Layout } from '$lib/models/ui';
 	import { layoutStore } from '$lib/stores';
 
+	type Properties = {
+		button?: boolean;
+		children: Snippet;
+		click?: () => void | Promise<void>;
+		color?: Colors | undefined;
+		detail?: boolean;
+		iconClick?: () => void | Promise<void>;
+		iconEnd?: string;
+		iconStart?: string;
+		transparent?: boolean;
+	};
+
 	let {
+		button = false,
 		children,
 		click,
 		color = 'light',
 		detail = false,
-		transparent = false,
-		button = false,
-		iconStart,
+		iconClick,
 		iconEnd,
-		iconClick
-	}: {
-		children: Snippet;
-		click?: () => void | Promise<void>;
-		detail?: boolean;
-		color?: Colors | undefined;
-		transparent?: boolean;
-		button?: boolean;
-		iconStart?: string;
-		iconEnd?: string;
-		iconClick?: () => void | Promise<void>;
-	} = $props();
+		iconStart,
+		transparent = false
+	}: Properties = $props();
 
 	const isPlayfulLayout = $derived($layoutStore === Layout.PLAYFUL);
 	const isClassicLayout = $derived($layoutStore === Layout.CLASSIC);
@@ -46,8 +48,8 @@
 		<ion-icon icon={iconStart} slot="start" color={iconColor}></ion-icon>
 	{/if}
 	{#if iconEnd}
-		<ion-button fill="clear" slot="end" class="m-0 p-0" onclick={iconClick}>
-			<ion-icon icon={iconEnd} size="large"></ion-icon>
+		<ion-button fill="clear" slot="end" onclick={iconClick}>
+			<ion-icon icon={iconEnd} slot="icon-only" size="large"></ion-icon>
 		</ion-button>
 	{/if}
 	{@render children()}

@@ -331,7 +331,10 @@
 							"confirm": "Update"
 						},
 						"card": {
-							"title": "Edit event"
+							"title": "Edit event",
+							"more-actions": {
+								"title": "More actions"
+							}
 						}
 					},
 					"show-calendar-toggle": {
@@ -393,6 +396,9 @@
 				},
 				"done-button": {
 					"label": "Apply"
+				},
+				"dismiss-button": {
+					"label": "Dismiss"
 				}
 			}
 		},

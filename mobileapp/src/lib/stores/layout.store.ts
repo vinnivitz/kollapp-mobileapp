@@ -6,7 +6,7 @@ import { Layout } from '$lib/models/ui';
 import { getStoredValue, storeValue } from '$lib/utils';
 
 function createStore(): LayoutStore {
-	const { subscribe, set } = writable<Layout | undefined>();
+	const { set, subscribe } = writable<Layout | undefined>();
 
 	async function init(): Promise<void> {
 		const value = await getStoredValue<Layout | undefined>(PreferencesKey.LAYOUT);
@@ -26,10 +26,10 @@ function createStore(): LayoutStore {
 	}
 
 	return {
-		subscribe,
-		set: _set,
 		init,
-		reset
+		reset,
+		set: _set,
+		subscribe
 	};
 }
 

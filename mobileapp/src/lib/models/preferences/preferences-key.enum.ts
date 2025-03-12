@@ -2,13 +2,13 @@
  * Enum for key names for preferences stored in local storage.
  */
 export enum PreferencesKey {
+	ACTIVITIES = 'activities',
 	AUTHENTICATION = 'authentication',
-	THEME = 'theme',
+	LAYOUT = 'layout',
 	LOCALE = 'locale',
-	USER = 'user',
 	ONLINE = 'online',
 	ORGANIZATION = 'organization',
 	SELECTED_ORGANIZATION_ID = 'selected-organization-id',
-	LAYOUT = 'layout',
-	ACTIVITIES = 'activities'
+	THEME = 'theme',
+	USER = 'user'
 }

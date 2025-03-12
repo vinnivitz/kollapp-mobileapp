@@ -13,9 +13,9 @@ const ENDPOINT = 'public/auth';
  */
 export async function login(model: LoginDto): Promise<ResponseBody<UserTokenDto>> {
 	return customFetch(`${ENDPOINT}/signin`, {
-		method: RequestMethod.POST,
-		body: JSON.stringify(model),
 		authorizationType: AuthorizationType.NONE,
+		body: JSON.stringify(model),
+		method: RequestMethod.POST,
 		silentOnSuccess: true
 	});
 }
@@ -27,8 +27,8 @@ export async function login(model: LoginDto): Promise<ResponseBody<UserTokenDto>
  */
 export async function refresh(token: string): Promise<ResponseBody<TokenDto>> {
 	return customFetch(`${ENDPOINT}/refresh`, {
-		query: { token },
 		authorizationType: AuthorizationType.NONE,
+		query: { token },
 		silentOnSuccess: true
 	});
 }

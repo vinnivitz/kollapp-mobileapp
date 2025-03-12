@@ -2,12 +2,17 @@
 	import { onMount, type Snippet } from 'svelte';
 
 	import { goto } from '$app/navigation';
-	import { page, navigating } from '$app/state';
+	import { navigating, page } from '$app/state';
 
 	import { PageRoute } from '$lib/models/routing';
 	import type { TabConfig } from '$lib/models/ui';
 
-	let { tabs, children }: { tabs: TabConfig[]; children?: Snippet } = $props();
+	type Properties = {
+		children?: Snippet;
+		tabs: TabConfig[];
+	};
+
+	let { children, tabs }: Properties = $props();
 
 	let controller: HTMLIonTabsElement;
 	let currentTabName = $state(page.route.id ?? PageRoute.HOME);

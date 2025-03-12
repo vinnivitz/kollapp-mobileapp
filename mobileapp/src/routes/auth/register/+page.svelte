@@ -13,7 +13,7 @@
 
 	import { goto } from '$app/navigation';
 
-	import { registerSchema, type RegisterDto } from '$lib/api/dto/client/auth';
+	import { type RegisterDto, registerSchema } from '$lib/api/dto/client/auth';
 	import { publicUserResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';
@@ -22,7 +22,7 @@
 	import Welcome from '$lib/components/widgets/Welcome.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
-	import { type ValidationResult, type FormActions, type FormConfig, Form } from '$lib/models/ui';
+	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
 	import { customForm, getValidationResult } from '$lib/utils';
 
 	const model = registerSchema().cast({}) as RegisterDto;
@@ -30,10 +30,10 @@
 	let touched = $state(false);
 
 	const config: FormConfig<RegisterDto> = {
-		schema: registerSchema(),
+		exposedActions: (exposedActions) => (actions = exposedActions),
 		onSubmit,
 		onTouched: () => (touched = true),
-		exposedActions: (exposedActions) => (actions = exposedActions)
+		schema: registerSchema()
 	};
 
 	const form = new Form(model, config);

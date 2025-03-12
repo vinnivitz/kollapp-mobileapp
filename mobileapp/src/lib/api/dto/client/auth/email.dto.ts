@@ -1,5 +1,5 @@
 import { get } from 'svelte/store';
-import { ObjectSchema, type AnyObject, object, string } from 'yup';
+import { type AnyObject, object, ObjectSchema, string } from 'yup';
 
 import { t } from '$lib/locales';
 

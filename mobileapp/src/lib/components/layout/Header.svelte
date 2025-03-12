@@ -4,7 +4,12 @@
 	import { PageRoute } from '$lib/models/routing';
 	import { clickableElement, navigateBack } from '$lib/utils';
 
-	let { title, showBackButton }: { title: string; showBackButton?: boolean } = $props();
+	type Properties = {
+		showBackButton?: boolean;
+		title: string;
+	};
+
+	let { showBackButton, title }: Properties = $props();
 </script>
 
 <ion-header>
