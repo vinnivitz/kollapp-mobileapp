@@ -9,8 +9,8 @@
 	type Properties = {
 		apply?: (value: string) => void | Promise<void>;
 		applyText?: string;
-		dismiss?: () => void | Promise<void>;
 		color?: Colors;
+		dismiss?: () => void | Promise<void>;
 		dismissText?: string;
 		showTitle?: boolean;
 	};
