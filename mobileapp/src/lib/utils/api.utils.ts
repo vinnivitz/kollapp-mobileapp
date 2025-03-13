@@ -100,7 +100,6 @@ export async function isAuthenticated(): Promise<boolean> {
 /**
  * Processes the validation response, showing alerts as necessary.
  * @param body Fetch response.
- * @param silent If true, no alert is shown.
  * @returns {ValidationResult} ValidationResult indicating validity and any errors.
  */
 export function getValidationResult<T>(body: ResponseBody<T>): ValidationResult {
@@ -124,6 +123,11 @@ export const StatusCheck = {
 	isUnauthorized: (status: number): boolean => status === StatusCode.UNAUTHORIZED
 };
 
+/**
+ * Checks if the user has the given role.
+ * @param role UserRole to check.
+ * @returns {boolean} True if the user has the role; otherwise, false.
+ */
 export function hasRole(role: UserRole): boolean {
 	return !!get(userStore)?.roles.includes(role);
 }
@@ -191,7 +195,7 @@ async function getNewAuthenticationToken(): Promise<string | undefined> {
 		const body = await authResource.refresh(refreshToken);
 		if (StatusCheck.isOK(body.status)) {
 			const accessToken = body.data.token;
-			authenticationStore.set({ accessToken, refreshToken });
+			await authenticationStore.set({ accessToken, refreshToken });
 			return refreshToken;
 		}
 	} else {
