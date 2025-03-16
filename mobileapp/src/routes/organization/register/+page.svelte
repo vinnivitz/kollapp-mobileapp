@@ -14,7 +14,7 @@
 	import { PageRoute } from '$lib/models/routing';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';
-	import { customForm, getValidationResult } from '$lib/utils';
+	import { customForm, getValidationResult } from '$lib/utility';
 
 	const model = registerOrganizationSchema().cast({}) as RegisterOrganizationDto;
 	let actions: FormActions<RegisterOrganizationDto>;

@@ -7,7 +7,7 @@ import type {
 import type { ActivityDto, OrganizationDto } from '$lib/api/dto/server';
 
 import { RequestMethod, type ResponseBody } from '$lib/models/api';
-import { customFetch } from '$lib/utils';
+import { customFetch } from '$lib/utility';
 
 const ENDPOINT = 'organization';
 

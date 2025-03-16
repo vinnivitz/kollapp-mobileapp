@@ -8,7 +8,7 @@
 	import InputItem from '$lib/components/widgets/InputItem.svelte';
 	import { t } from '$lib/locales';
 	import { Form, type FormConfig } from '$lib/models/ui';
-	import { customForm, showAlert } from '$lib/utils';
+	import { customForm, showAlert } from '$lib/utility';
 
 	const config: FormConfig<object> = {
 		onSubmit,

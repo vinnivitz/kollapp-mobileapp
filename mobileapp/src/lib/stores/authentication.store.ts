@@ -4,7 +4,7 @@ import { writable } from 'svelte/store';
 
 import { PreferencesKey } from '$lib/models/preferences';
 import { type AuthenticationStore as AuthenticationStore } from '$lib/models/stores';
-import { getStoredValue, removeStoredValue, storeValue } from '$lib/utils';
+import { getStoredValue, removeStoredValue, storeValue } from '$lib/utility';
 
 function createStore(): AuthenticationStore {
 	const { set, subscribe } = writable<AuthenticationModel | undefined>();

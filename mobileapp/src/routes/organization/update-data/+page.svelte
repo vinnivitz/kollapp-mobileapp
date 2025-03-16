@@ -13,7 +13,7 @@
 	import { t } from '$lib/locales';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';
-	import { customForm, getValidationResult } from '$lib/utils';
+	import { customForm, getValidationResult } from '$lib/utility';
 
 	const organizationModel = $derived<OrganizationModel | undefined>($organizationStore);
 	let actions: FormActions<UpdateOrganizationDto>;

@@ -13,7 +13,7 @@
 	import { Locale, locale } from '$lib/locales';
 	import { AlertType, Layout, Theme } from '$lib/models/ui';
 	import { layoutStore, localeStore, themeStore } from '$lib/stores';
-	import { showAlert } from '$lib/utils';
+	import { showAlert } from '$lib/utility';
 
 	let modalOpen = $state(false);
 

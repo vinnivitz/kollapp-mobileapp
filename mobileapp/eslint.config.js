@@ -5,7 +5,6 @@ import perfectionistPlugin from 'eslint-plugin-perfectionist';
 import securityPlugin from 'eslint-plugin-security';
 import sonarjsPlugin from 'eslint-plugin-sonarjs';
 import sveltePlugin from 'eslint-plugin-svelte';
-import tailwindcssPlugin from 'eslint-plugin-tailwindcss';
 import unicornPlugin from 'eslint-plugin-unicorn';
 import globals from 'globals';
 import ts from 'typescript-eslint';
@@ -17,8 +16,7 @@ export default ts.config(
 	prettier,
 	sveltePlugin.configs['flat/prettier'],
 	securityPlugin.configs.recommended,
-	tailwindcssPlugin.configs['flat/recommended'],
-	unicornPlugin.configs['flat/recommended'],
+	unicornPlugin.configs.recommended,
 	sonarjsPlugin.configs.recommended,
 	{
 		plugins: {

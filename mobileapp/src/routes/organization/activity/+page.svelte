@@ -35,7 +35,7 @@
 	import { t } from '$lib/locales';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
 	import { activitiesStore, organizationStore } from '$lib/stores';
-	import { customForm, getDate, getValidationResult, showAlert } from '$lib/utils';
+	import { customForm, getDate, getValidationResult, showAlert } from '$lib/utility';
 
 	enum ActivityStatus {
 		ALL = 'all',

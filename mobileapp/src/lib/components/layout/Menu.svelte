@@ -12,7 +12,7 @@
 	import LabeledItem from '$lib/components/widgets/LabeledItem.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute, type PageRoutePaths } from '$lib/models/routing';
-	import { triggerClickByLabel } from '$lib/utils';
+	import { triggerClickByLabel } from '$lib/utility';
 
 	let searchedItems = $state<SearchableItemDto[]>([]);
 	let searchValue = $state('');
@@ -100,7 +100,7 @@
 			/>
 			<hr class="my-3" />
 		{/if}
-		<div class="absolute bottom-2 left-0 right-0">
+		<div class="absolute right-0 bottom-2 left-0">
 			<hr class="my-2" />
 			<ion-note>
 				Made with <ion-text color="danger">&#10084;</ion-text> from Dresden.

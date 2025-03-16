@@ -5,7 +5,7 @@ import { writable } from 'svelte/store';
 
 import { userResource } from '$lib/api/resources';
 import { PreferencesKey } from '$lib/models/preferences';
-import { getStoredValue, removeStoredValue, StatusCheck, storeValue } from '$lib/utils';
+import { getStoredValue, removeStoredValue, StatusCheck, storeValue } from '$lib/utility';
 
 function createStore(): UserStore {
 	const { set, subscribe } = writable<undefined | UserModel>();

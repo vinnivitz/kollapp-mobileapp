@@ -22,7 +22,7 @@ import { PreferencesKey } from '$lib/models/preferences';
 import { PageRoute } from '$lib/models/routing';
 import { AlertType, type ValidationResult } from '$lib/models/ui';
 import { authenticationStore, connectionStore, localeStore, userStore } from '$lib/stores';
-import { getStoredValue, showAlert } from '$lib/utils';
+import { getStoredValue, showAlert } from '$lib/utility';
 
 const $t = get(t);
 

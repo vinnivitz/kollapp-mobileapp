@@ -4,7 +4,7 @@ import { writable } from 'svelte/store';
 import { PreferencesKey } from '$lib/models/preferences';
 import { type LayoutStore } from '$lib/models/stores';
 import { Layout } from '$lib/models/ui';
-import { getStoredValue, storeValue } from '$lib/utils';
+import { getStoredValue, storeValue } from '$lib/utility';
 
 function createStore(): LayoutStore {
 	const { set, subscribe } = writable<Layout | undefined>();

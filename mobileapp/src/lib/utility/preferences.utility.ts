@@ -3,7 +3,7 @@ import type { PreferencesKey } from '$lib/models/preferences';
 import { Preferences } from '@capacitor/preferences';
 
 import environment from '$lib/environment';
-import { showAlert } from '$lib/utils';
+import { showAlert } from '$lib/utility';
 
 /**
  * Stores a value in the preferences store

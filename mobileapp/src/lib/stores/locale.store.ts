@@ -5,7 +5,7 @@ import { writable } from 'svelte/store';
 
 import { loadTranslations, Locale, locale } from '$lib/locales';
 import { PreferencesKey } from '$lib/models/preferences';
-import { getStoredValue, storeValue } from '$lib/utils';
+import { getStoredValue, storeValue } from '$lib/utility';
 
 function createStore(): LocaleStore {
 	const { set, subscribe } = writable<Locale | undefined>();

@@ -3,7 +3,7 @@ import { writable } from 'svelte/store';
 import { PreferencesKey } from '$lib/models/preferences';
 import { type ThemeStore } from '$lib/models/stores';
 import { Theme } from '$lib/models/ui';
-import { getStoredValue, storeValue } from '$lib/utils';
+import { getStoredValue, storeValue } from '$lib/utility';
 
 function createStore(): ThemeStore {
 	const { set, subscribe } = writable<Theme | undefined>();

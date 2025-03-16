@@ -5,7 +5,7 @@
 	import moment from 'moment';
 
 	import { locale, t } from '$lib/locales';
-	import { clickOutside } from '$lib/utils';
+	import { clickOutside } from '$lib/utility';
 
 	type Properties = {
 		applyText?: string;

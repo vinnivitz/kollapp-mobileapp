@@ -18,7 +18,7 @@
 	import { PageRoute } from '$lib/models/routing';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
 	import { authenticationStore } from '$lib/stores';
-	import { customForm, getValidationResult, showAlert } from '$lib/utils';
+	import { customForm, getValidationResult, showAlert } from '$lib/utility';
 
 	const model = loginSchema().cast({}) as LoginDto;
 	let actions: FormActions<LoginDto>;

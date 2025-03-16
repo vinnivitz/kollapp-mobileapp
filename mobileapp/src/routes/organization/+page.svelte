@@ -18,7 +18,7 @@
 	import { UserRole } from '$lib/models/api';
 	import { PageRoute } from '$lib/models/routing';
 	import { organizationStore } from '$lib/stores';
-	import { hasRole, showAlert } from '$lib/utils';
+	import { hasRole, showAlert } from '$lib/utility';
 
 	const organizationModel = $derived<OrganizationModel | undefined>($organizationStore);
 </script>

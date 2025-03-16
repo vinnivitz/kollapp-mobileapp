@@ -3,7 +3,7 @@ import type { TokenDto, UserTokenDto } from '$lib/api/dto/server';
 
 import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/models/api';
 import { authenticationStore, organizationStore, userStore } from '$lib/stores';
-import { customFetch } from '$lib/utils';
+import { customFetch } from '$lib/utility';
 
 const ENDPOINT = 'public/auth';
 

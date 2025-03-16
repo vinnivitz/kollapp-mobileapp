@@ -15,7 +15,7 @@
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
-	import { customForm, getValidationResult, showAlert } from '$lib/utils';
+	import { customForm, getValidationResult, showAlert } from '$lib/utility';
 
 	const { data }: { data: PageData } = $props();
 

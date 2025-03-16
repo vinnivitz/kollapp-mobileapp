@@ -6,7 +6,7 @@ import { goto } from '$app/navigation';
 
 import { PageRoute } from '$lib/models/routing';
 import { authenticationStore, connectionStore, layoutStore, themeStore } from '$lib/stores';
-import { isAuthenticated, navigateBack } from '$lib/utils';
+import { isAuthenticated, navigateBack } from '$lib/utility';
 
 let initialized = false;
 

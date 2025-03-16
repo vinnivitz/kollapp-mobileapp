@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 
 	import { PageRoute } from '$lib/models/routing';
-	import { clickableElement, navigateBack } from '$lib/utils';
+	import { clickableElement, navigateBack } from '$lib/utility';
 
 	type Properties = {
 		title: string;
@@ -25,7 +25,7 @@
 						use:clickableElement={() => goto(PageRoute.HOME)}
 						src="/logo.png"
 						alt="Logo"
-						class="h-8 w-8 black-and-white:grayscale"
+						class="black-and-white:grayscale h-8 w-8"
 					/>
 				{/if}
 			</ion-button>

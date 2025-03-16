@@ -10,7 +10,7 @@
 	import InputItem from '$lib/components/widgets/InputItem.svelte';
 	import { t } from '$lib/locales';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
-	import { customForm, getValidationResult } from '$lib/utils';
+	import { customForm, getValidationResult } from '$lib/utility';
 
 	const model = resetPasswordConfirmationSchema().cast({}) as ResetPasswordConfirmationDto;
 	let validationResult: ValidationResult;

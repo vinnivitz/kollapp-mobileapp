@@ -6,7 +6,7 @@ import { t } from '$lib/locales';
 import { PreferencesKey } from '$lib/models/preferences';
 import { type ConnectionStore } from '$lib/models/stores';
 import { AlertType } from '$lib/models/ui';
-import { showAlert, storeValue } from '$lib/utils';
+import { showAlert, storeValue } from '$lib/utility';
 
 const $t = get(t);
 

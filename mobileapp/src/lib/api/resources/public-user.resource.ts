@@ -1,7 +1,7 @@
 import type { RegisterDto, ResetPasswordConfirmationDto } from '$lib/api/dto/client/auth';
 
 import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/models/api';
-import { customFetch } from '$lib/utils';
+import { customFetch } from '$lib/utility';
 
 const ENDPOINT = 'public/user';
 

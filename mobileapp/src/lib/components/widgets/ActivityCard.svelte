@@ -4,7 +4,7 @@
 	import { calendarOutline, locationOutline } from 'ionicons/icons';
 
 	import Card from '$lib/components/widgets/Card.svelte';
-	import { getDate } from '$lib/utils';
+	import { getDate } from '$lib/utility';
 
 	type Properties = {
 		value: ActivityModel;
