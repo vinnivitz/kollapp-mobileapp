@@ -1,7 +1,8 @@
 import type { Config } from 'sveltekit-i18n';
+
 import I18n from 'sveltekit-i18n';
 
-const config: Config<{ value?: string | number }> = {
+const config: Config<{ value?: number | string }> = {
 	loaders: [
 		{
 			key: '',

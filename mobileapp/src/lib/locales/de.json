@@ -71,6 +71,10 @@
 						"oldPassword": {},
 						"confirm-password": {
 							"no-match": "Muss mit dem neuen Passwort übereinstimmen"
+						},
+						"email": {
+							"invalid": "Ungültige E -Mail",
+							"required": "E -Mail ist erforderlich"
 						}
 					}
 				}
@@ -139,6 +143,16 @@
 						}
 					}
 				}
+			},
+			"resend-confirmation": {
+				"schema": {
+					"validation": {
+						"email": {
+							"invalid": "Ungültige E -Mail",
+							"required": "E -Mail ist erforderlich"
+						}
+					}
+				}
 			}
 		},
 		"offline": "Du bist offline",
@@ -174,6 +188,9 @@
 				},
 				"done-button": {
 					"label": "Anwenden"
+				},
+				"dismiss-button": {
+					"label": "Abbrechen"
 				}
 			}
 		},
@@ -253,7 +270,9 @@
 					"buttons": {
 						"classic": "Klassisch",
 						"modern": "Modern",
-						"playful": "Verspielt"
+						"playful": "Verspielt",
+						"md": "Android (Material Design)",
+						"ios": "iOS (Human Interface Guidelines)"
 					},
 					"title": "Layout ändern"
 				}
@@ -533,7 +552,10 @@
 						"done": "Erledigt",
 						"all": "Alle"
 					},
-					"no-activities-found": "Keine Ergebnisse für \"{{value}}\""
+					"no-activities-found": "Keine Ergebnisse für \"{{value}}\"",
+					"button": {
+						"create-event": "Veranstaltung erstellen"
+					}
 				}
 			}
 		},

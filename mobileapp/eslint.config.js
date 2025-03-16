@@ -1,9 +1,9 @@
 import js from '@eslint/js';
 import prettier from 'eslint-config-prettier';
 import importPlugin from 'eslint-plugin-import';
+import perfectionistPlugin from 'eslint-plugin-perfectionist';
 import securityPlugin from 'eslint-plugin-security';
 import sonarjsPlugin from 'eslint-plugin-sonarjs';
-import sortPlugin from 'eslint-plugin-sort';
 import sveltePlugin from 'eslint-plugin-svelte';
 import tailwindcssPlugin from 'eslint-plugin-tailwindcss';
 import unicornPlugin from 'eslint-plugin-unicorn';
@@ -20,10 +20,10 @@ export default ts.config(
 	tailwindcssPlugin.configs['flat/recommended'],
 	unicornPlugin.configs['flat/recommended'],
 	sonarjsPlugin.configs.recommended,
-	sortPlugin.configs['flat/recommended'],
 	{
 		plugins: {
-			import: importPlugin
+			import: importPlugin,
+			perfectionist: perfectionistPlugin
 		},
 		rules: {
 			'@typescript-eslint/explicit-function-return-type': [
@@ -48,7 +48,7 @@ export default ts.config(
 						order: 'asc'
 					},
 
-					groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
+					groups: ['type', 'builtin', 'external', 'internal', ['parent', 'sibling'], 'index'],
 
 					'newlines-between': 'always',
 					pathGroups: [
@@ -82,15 +82,22 @@ export default ts.config(
 					]
 				}
 			],
+			'perfectionist/sort-array-includes': 'error',
+			'perfectionist/sort-enums': 'error',
+			'perfectionist/sort-exports': 'error',
+			'perfectionist/sort-named-exports': 'error',
+			'perfectionist/sort-named-imports': 'error',
+			'perfectionist/sort-object-types': [
+				'error',
+				{ groups: ['required-property', 'optional-property', 'required-method', 'optional-method'] }
+			],
+			'perfectionist/sort-objects': 'error',
+			'perfectionist/sort-union-types': 'error',
 			'security/detect-non-literal-fs-filename': 'off',
 			'sonarjs/no-unused-collection': 'off',
 			'sonarjs/no-use-of-empty-return-value': 'off',
 			'sonarjs/slow-regex': 'off',
 			'sonarjs/void-use': 'off',
-			'sort/imports': 'off',
-			'sort/string-enums': 'error',
-			'sort/string-unions': 'error',
-			'sort/type-properties': 'error',
 			'svelte/no-unused-svelte-ignore': 'off',
 			'svelte/valid-compile': 'off',
 			'unicorn/filename-case': 'off'
@@ -106,11 +113,14 @@ export default ts.config(
 			globals: {
 				...globals.browser,
 				...globals.node,
+				HTMLIonCardElement: 'readonly',
+				HTMLIonCardTitleElement: 'readonly',
 				HTMLIonDatetimeElement: 'readonly',
 				HTMLIonLoadingElement: 'readonly',
 				HTMLIonMenuElement: 'readonly',
 				HTMLIonRefresherElement: 'readonly',
-				HTMLIonTabsElement: 'readonly'
+				HTMLIonTabsElement: 'readonly',
+				NodeListOf: 'readonly'
 			}
 		}
 	},

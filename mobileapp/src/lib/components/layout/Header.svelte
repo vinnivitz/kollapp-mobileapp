@@ -5,8 +5,8 @@
 	import { clickableElement, navigateBack } from '$lib/utils';
 
 	type Properties = {
-		showBackButton?: boolean;
 		title: string;
+		showBackButton?: boolean;
 	};
 
 	let { showBackButton, title }: Properties = $props();

@@ -1,9 +1,10 @@
+import type { ActivityModel } from '$lib/models/models';
+import type { ActivityStore } from '$lib/models/stores';
+
 import { writable } from 'svelte/store';
 
 import { organizationResource } from '$lib/api/resources';
-import type { ActivityModel } from '$lib/models/models';
 import { PreferencesKey } from '$lib/models/preferences';
-import type { ActivityStore } from '$lib/models/stores';
 import { getStoredValue, removeStoredValue, StatusCheck, storeValue } from '$lib/utils';
 
 function createStore(): ActivityStore {

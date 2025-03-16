@@ -1,15 +1,16 @@
 <script lang="ts">
+	import type { TabConfig } from '$lib/models/ui';
+
 	import { onMount, type Snippet } from 'svelte';
 
 	import { goto } from '$app/navigation';
 	import { navigating, page } from '$app/state';
 
 	import { PageRoute } from '$lib/models/routing';
-	import type { TabConfig } from '$lib/models/ui';
 
 	type Properties = {
-		children?: Snippet;
 		tabs: TabConfig[];
+		children?: Snippet;
 	};
 
 	let { children, tabs }: Properties = $props();

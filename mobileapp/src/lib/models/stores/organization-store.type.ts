@@ -1,12 +1,11 @@
-import type { Readable } from 'svelte/store';
-
 import type { OrganizationModel } from '$lib/models/models';
 import type { BaseStore } from '$lib/models/stores';
+import type { Readable } from 'svelte/store';
 
 /**
  * Store for organization information.
  */
 export type OrganizationStore = BaseStore<OrganizationModel> & {
-	change: (id: string) => Promise<void>;
 	initialized: Readable<boolean>;
+	change: (id: string) => Promise<void>;
 };

@@ -1,18 +1,19 @@
 <script lang="ts">
+	import type { Colors } from '$lib/models/ui';
 	import type { DatetimeChangeEventDetail } from '@ionic/core';
+
 	import moment from 'moment';
 
 	import { locale, t } from '$lib/locales';
-	import type { Colors } from '$lib/models/ui';
 	import { clickOutside } from '$lib/utils';
 
 	type Properties = {
-		apply?: (value: string) => void | Promise<void>;
 		applyText?: string;
 		color?: Colors;
-		dismiss?: () => void | Promise<void>;
 		dismissText?: string;
 		showTitle?: boolean;
+		apply?: (value: string) => Promise<void> | void;
+		dismiss?: () => Promise<void> | void;
 	};
 
 	let {

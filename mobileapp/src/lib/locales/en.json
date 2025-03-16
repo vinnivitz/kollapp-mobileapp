@@ -201,7 +201,9 @@
 					"buttons": {
 						"classic": "Classic",
 						"modern": "Modern",
-						"playful": "Playful"
+						"playful": "Playful",
+						"md": "Android (Material Design)",
+						"ios": "iOS (Human Interface Guidelines)"
 					},
 					"title": "Change layout"
 				}
@@ -353,7 +355,10 @@
 						"done": "Done",
 						"all": "All"
 					},
-					"no-activities-found": "No results for \"{{value}}\""
+					"no-activities-found": "No results for \"{{value}}\"",
+					"button": {
+						"create-event": "Create event"
+					}
 				}
 			}
 		},
@@ -492,6 +497,10 @@
 						},
 						"confirm-password": {
 							"no-match": "Must match the new password"
+						},
+						"email": {
+							"invalid": "Invalid email",
+							"required": "Email is required"
 						}
 					}
 				}
@@ -557,6 +566,16 @@
 									"required": "Name of location is required"
 								}
 							}
+						}
+					}
+				}
+			},
+			"resend-confirmation": {
+				"schema": {
+					"validation": {
+						"email": {
+							"invalid": "Invalid Email",
+							"required": "Email is required"
 						}
 					}
 				}

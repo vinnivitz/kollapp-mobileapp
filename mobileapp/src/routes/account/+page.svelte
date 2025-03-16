@@ -1,17 +1,17 @@
 <script lang="ts">
 	import type { ActionSheetButton } from '@ionic/core';
+
 	import { actionSheetController } from 'ionic-svelte';
 	import {
-		balloonOutline,
 		buildOutline,
 		colorPaletteOutline,
 		colorWandOutline,
 		contrastOutline,
 		desktopOutline,
-		diamondOutline,
-		gridOutline,
 		keyOutline,
 		languageOutline,
+		logoAndroid,
+		logoApple,
 		moonOutline,
 		refreshOutline,
 		sunnyOutline,
@@ -62,22 +62,16 @@
 
 		await openActionSheet($t('routes.account.layout.action-sheet.title'), [
 			{
-				handler: () => layoutStore.set(Layout.CLASSIC),
-				icon: gridOutline,
-				role: currentLayout === Layout.CLASSIC ? 'selected' : undefined,
-				text: $t('routes.account.layout.action-sheet.buttons.classic')
+				handler: () => layoutStore.set(Layout.MD),
+				icon: logoAndroid,
+				role: currentLayout === Layout.MD ? 'selected' : undefined,
+				text: $t('routes.account.layout.action-sheet.buttons.md')
 			},
 			{
-				handler: () => layoutStore.set(Layout.MODERN),
-				icon: diamondOutline,
-				role: currentLayout === Layout.MODERN ? 'selected' : undefined,
-				text: $t('routes.account.layout.action-sheet.buttons.modern')
-			},
-			{
-				handler: () => layoutStore.set(Layout.PLAYFUL),
-				icon: balloonOutline,
-				role: currentLayout === Layout.PLAYFUL ? 'selected' : undefined,
-				text: $t('routes.account.layout.action-sheet.buttons.playful')
+				handler: () => layoutStore.set(Layout.IOS),
+				icon: logoApple,
+				role: currentLayout === Layout.IOS ? 'selected' : undefined,
+				text: $t('routes.account.layout.action-sheet.buttons.ios')
 			}
 		]);
 	}

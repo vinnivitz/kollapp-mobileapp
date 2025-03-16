@@ -1,11 +1,11 @@
+import type { SearchableItemDto } from '$lib/api/dto/server';
+import type { UserRole } from '$lib/models/api';
+import type { Expression, Identifier, MemberExpression } from 'estree';
+
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
-import type { Expression, Identifier, MemberExpression } from 'estree';
 import { type AST, parse } from 'svelte/compiler';
-
-import type { SearchableItemDto } from '$lib/api/dto/server';
-import type { UserRole } from '$lib/models/api';
 
 /**
  * Directory to scan and output file path.
@@ -56,7 +56,7 @@ function scanSvelteFile(filePath: string): void {
 /**
  * Represents the subset of Svelte AST node types we care about.
  */
-type ASTComponent = AST.Fragment | AST.Component | AST.IfBlock | AST.AwaitBlock | AST.RegularElement;
+type ASTComponent = AST.AwaitBlock | AST.Component | AST.Fragment | AST.IfBlock | AST.RegularElement;
 
 /**
  * Examines the parsed AST for `<LabeledItem searchable={...} label={...} iconSrc={...}>` components,

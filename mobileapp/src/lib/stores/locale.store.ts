@@ -1,9 +1,10 @@
+import type { LocaleStore } from '$lib/models/stores';
+
 import { Device } from '@capacitor/device';
 import { writable } from 'svelte/store';
 
 import { loadTranslations, Locale, locale } from '$lib/locales';
 import { PreferencesKey } from '$lib/models/preferences';
-import type { LocaleStore } from '$lib/models/stores';
 import { getStoredValue, storeValue } from '$lib/utils';
 
 function createStore(): LocaleStore {

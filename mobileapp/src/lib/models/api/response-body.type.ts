@@ -5,8 +5,8 @@ import type { ValidationCode } from '$lib/models/api';
  */
 export type ResponseBody<T = never> = {
 	data: T;
-	message?: string;
 	status: number;
+	message?: string;
 	validationCode?: ValidationCode;
 	validationField?: string;
 };

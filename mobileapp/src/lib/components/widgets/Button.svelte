@@ -1,26 +1,25 @@
 <script lang="ts">
-	import { type Colors, Layout } from '$lib/models/ui';
-	import { layoutStore } from '$lib/stores';
+	import { type Colors } from '$lib/models/ui';
 
 	type Properties = {
 		classProp?: string;
-		click?: (event?: MouseEvent) => void | Promise<void>;
 		color?: Colors | undefined;
 		disabled?: boolean;
-		expand?: 'full' | 'block' | undefined;
+		expand?: 'block' | 'full' | undefined;
 		fill?: 'clear' | 'default' | 'outline' | 'solid' | undefined;
 		icon?: string;
 		iconPosition?: 'end' | 'start';
-		iconSize?: 'small' | 'large' | undefined;
+		iconSize?: 'large' | 'small' | undefined;
 		id?: string;
 		label?: string;
-		size?: 'default' | 'small' | 'large' | undefined;
+		size?: 'default' | 'large' | 'small' | undefined;
 		type?: 'button' | 'reset' | 'submit';
+		click?: (event?: MouseEvent) => Promise<void> | void;
 	} & (
-		| { click?: never; type: 'submit' }
-		| { click: (event?: MouseEvent) => void | Promise<void>; type?: 'button' | 'reset' }
+		| { type: 'submit'; click?: never }
+		| { type?: 'button' | 'reset'; click: (event?: MouseEvent) => Promise<void> | void }
 	) &
-		({ icon?: string; label: string } | { icon: string; label?: string });
+		({ icon: string; label?: string } | { label: string; icon?: string });
 
 	let {
 		classProp,
@@ -31,16 +30,13 @@
 		fill,
 		icon,
 		iconPosition = 'start',
-		iconSize = 'small',
+		iconSize,
 		id,
 		label,
 		size,
 		type
 	}: Properties = $props();
 
-	const isModernLayout = $derived($layoutStore === Layout.MODERN);
-	const isPlayfulLayout = $derived($layoutStore === Layout.PLAYFUL);
-	const shape = $derived(isPlayfulLayout ? 'round' : undefined);
 	const fontWeight = $derived(fill === 'outline' ? 'font-extrabold' : 'font-medium');
 </script>
 
@@ -51,9 +47,7 @@
 	{expand}
 	{fill}
 	class={classProp}
-	class:squared={isModernLayout}
 	{size}
-	{shape}
 	{type}
 	{disabled}
 	onclick={(event) => click?.(event)}
@@ -83,19 +77,13 @@
 {/snippet}
 
 {#snippet startIcon()}
-	<ion-icon slot="start" {icon} size={iconSize}></ion-icon>
+	<ion-icon slot="start" {icon} size={size === 'large' ? 'large' : iconSize}></ion-icon>
 {/snippet}
 
 {#snippet endIcon()}
-	<ion-icon slot="end" {icon} size={iconSize}></ion-icon>
+	<ion-icon slot="end" {icon} size={size === 'large' ? 'large' : iconSize}></ion-icon>
 {/snippet}
 
 {#snippet iconOnly()}
-	<ion-icon slot="icon-only" {icon} size={iconSize}></ion-icon>
+	<ion-icon slot="icon-only" {icon} size={size === 'large' ? 'large' : iconSize}></ion-icon>
 {/snippet}
-
-<style lang="postcss">
-	.squared {
-		--border-radius: 0;
-	}
-</style>

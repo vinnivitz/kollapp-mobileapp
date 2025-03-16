@@ -1,45 +1,28 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 
-	import { type Colors, Layout } from '$lib/models/ui';
-	import { layoutStore } from '$lib/stores';
+	import { type Colors } from '$lib/models/ui';
 
 	type Properties = {
 		children?: Snippet;
 		classProp?: string;
-		click?: () => void | Promise<void>;
 		color?: Colors | undefined;
 		subtitle?: string;
 		title?: string;
+		click?: () => Promise<void> | void;
 	};
 
 	let { children, classProp, click, color, subtitle, title }: Properties = $props();
-
-	const isModernLayout = $derived($layoutStore === Layout.MODERN);
-	const isPlayfulLayout = $derived($layoutStore === Layout.PLAYFUL);
 </script>
 
 {#if !!click}
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<ion-card
-		{color}
-		button={!!click}
-		class={classProp}
-		class:rounded-3xl={isPlayfulLayout}
-		class:squared={isModernLayout}
-		onclick={click}
-	>
+	<ion-card {color} button={!!click} class={classProp} onclick={click}>
 		{@render content()}
 	</ion-card>
 {:else}
-	<ion-card
-		{color}
-		button={!!click}
-		class={classProp}
-		class:rounded-3xl={isPlayfulLayout}
-		class:squared={isModernLayout}
-	>
+	<ion-card {color} button={!!click} class={classProp}>
 		{@render content()}
 	</ion-card>
 {/if}

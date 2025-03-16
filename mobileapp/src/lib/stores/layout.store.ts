@@ -1,3 +1,4 @@
+import { isPlatform } from '@ionic/core';
 import { writable } from 'svelte/store';
 
 import { PreferencesKey } from '$lib/models/preferences';
@@ -12,17 +13,23 @@ function createStore(): LayoutStore {
 		const value = await getStoredValue<Layout | undefined>(PreferencesKey.LAYOUT);
 		if (value) {
 			set(value);
+			document.documentElement.setAttribute('mode', value);
 		} else {
-			_set(Layout.CLASSIC);
+			_set(getDefaultLayout());
 		}
 	}
 	async function _set(value: Layout): Promise<void> {
 		await storeValue(PreferencesKey.LAYOUT, value);
 		set(value);
+		document.documentElement.setAttribute('mode', value);
 	}
 
 	async function reset(): Promise<void> {
-		await _set(Layout.CLASSIC);
+		await _set(getDefaultLayout());
+	}
+
+	function getDefaultLayout(): Layout {
+		return isPlatform('ios') ? Layout.IOS : Layout.MD;
 	}
 
 	return {

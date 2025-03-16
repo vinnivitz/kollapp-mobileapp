@@ -1,6 +1,7 @@
+import type { SearchableItemDto } from '$lib/api/dto/server';
+
 import { get } from 'svelte/store';
 
-import type { SearchableItemDto } from '$lib/api/dto/server';
 import { t } from '$lib/locales';
 import { PageRoute } from '$lib/models/routing';
 import { organizationStore, userStore } from '$lib/stores';

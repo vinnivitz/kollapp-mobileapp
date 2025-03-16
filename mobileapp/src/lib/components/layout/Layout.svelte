@@ -9,13 +9,13 @@
 	import { activitiesStore, organizationStore, userStore } from '$lib/stores';
 
 	type Properties = {
+		title: string;
 		children?: Snippet;
 		hideLayout?: boolean;
 		hideMenu?: boolean;
-		onRefresh?: (refresher: HTMLIonRefresherElement) => void;
 		scrollable?: boolean;
 		showBackButton?: boolean;
-		title: string;
+		onRefresh?: (refresher: HTMLIonRefresherElement) => void;
 	};
 
 	let {

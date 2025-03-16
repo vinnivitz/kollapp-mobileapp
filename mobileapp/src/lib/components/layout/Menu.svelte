@@ -1,9 +1,12 @@
 <script lang="ts">
-	import * as icons from 'ionicons/icons';
+	import type { SearchableItemDto } from '$lib/api/dto/server';
 
+	import * as icons from 'ionicons/icons';
+	import { diamondOutline } from 'ionicons/icons';
+
+	import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
 
-	import type { SearchableItemDto } from '$lib/api/dto/server';
 	import { authResource, searchableResource } from '$lib/api/resources';
 	import Button from '$lib/components/widgets/Button.svelte';
 	import LabeledItem from '$lib/components/widgets/LabeledItem.svelte';
@@ -82,6 +85,9 @@
 					icon={icons.accessibilityOutline}
 					label={$t('components.layout.menu.list.organization')}
 				/>
+				{#if dev}
+					<LabeledItem transparent icon={diamondOutline} click={() => navigate('showcase')} label="Showcase" />
+				{/if}
 			{/if}
 		</ion-list>
 		{#if searchValue === ''}
@@ -96,7 +102,9 @@
 		{/if}
 		<div class="absolute bottom-2 left-0 right-0">
 			<hr class="my-2" />
-			<ion-note>Made with <ion-text color="danger">&#10084;</ion-text> from Dresden.</ion-note>
+			<ion-note>
+				Made with <ion-text color="danger">&#10084;</ion-text> from Dresden.
+			</ion-note>
 		</div>
 	</ion-content>
 </ion-menu>

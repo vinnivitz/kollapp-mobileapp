@@ -1,4 +1,6 @@
 <script lang="ts">
+	import type { ActivityModel } from '$lib/models/models';
+
 	import { loadingController } from 'ionic-svelte';
 	import {
 		archiveOutline,
@@ -31,10 +33,9 @@
 	import InputItem from '$lib/components/widgets/InputItem.svelte';
 	import Modal from '$lib/components/widgets/Modal.svelte';
 	import { t } from '$lib/locales';
-	import type { ActivityModel } from '$lib/models/models';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
 	import { activitiesStore, organizationStore } from '$lib/stores';
-	import { customForm, getValidationResult, showAlert } from '$lib/utils';
+	import { customForm, getDate, getValidationResult, showAlert } from '$lib/utils';
 
 	enum ActivityStatus {
 		ALL = 'all',
@@ -176,7 +177,12 @@
 		<Calendar apply={onCreateActivity}></Calendar>
 	{/if}
 
-	<Button click={onCreateActivity} label="Create event" expand="block" icon={createOutline}></Button>
+	<Button
+		click={onCreateActivity}
+		label={$t('routes.organization.page.activity.button.create-event')}
+		expand="block"
+		icon={createOutline}
+	></Button>
 
 	{#if $activitiesStore.length > 0}
 		<!-- svelte-ignore event_directive_deprecated -->
@@ -328,23 +334,17 @@
 				/>
 				<CustomItem iconStart={calendarClearOutline}>
 					<Button
+						classProp="ms-[-8px]"
+						fill="clear"
+						color="dark"
+						size="default"
 						type="button"
 						click={() => {
 							showSelectDateCalendar = true;
 						}}
-						label={selectedDate}
+						label={getDate(selectedDate)}
 					></Button>
 				</CustomItem>
-				<!-- <InputItem
-					name="date"
-					label={$t('routes.organization.page.activity.create-modal.card.input.date')}
-					type="date"
-					icon={calendarClearOutline}
-					inputIcon={calendarOutline}
-					inputIconClick={() => {
-						showSelectDateCalendar = true;
-					}}
-				/> -->
 			</form>
 		</Card>
 		<Card title={$t('routes.organization.page.activity.edit-modal.card.more-actions.title')}>
@@ -357,7 +357,7 @@
 {/key}
 
 <ion-modal>
-	<ion-datetime id="datetime"></ion-datetime>
+	<ion-datetime id="datetime-selector"></ion-datetime>
 </ion-modal>
 
 <style lang="postcss">

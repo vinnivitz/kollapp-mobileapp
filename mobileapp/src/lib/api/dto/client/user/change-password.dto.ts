@@ -7,9 +7,9 @@ import { t } from '$lib/locales';
  * Change password DTO for sending user password change information.
  */
 export type ChangePasswordDto = {
-	confirmNewPassword?: string;
 	currentPassword: string;
 	newPassword: string;
+	confirmNewPassword?: string;
 };
 
 /**

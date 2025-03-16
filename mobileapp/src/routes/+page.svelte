@@ -1,4 +1,6 @@
 <script lang="ts">
+	import type { OrganizationModel, UserModel } from '$lib/models/models';
+
 	import { accessibilityOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
@@ -7,11 +9,10 @@
 	import Button from '$lib/components/widgets/Button.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
 	import { t } from '$lib/locales';
-	import type { OrganizationModel, UserModel } from '$lib/models/models';
 	import { PageRoute } from '$lib/models/routing';
 	import { organizationStore, userStore } from '$lib/stores';
 
-	const userModel = $derived<UserModel | undefined>($userStore);
+	const userModel = $derived<undefined | UserModel>($userStore);
 	const organizationModel = $derived<OrganizationModel | undefined>($organizationStore);
 </script>
 

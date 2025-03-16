@@ -1,13 +1,14 @@
+import type { UserModel } from '$lib/models/models';
+import type { UserStore } from '$lib/models/stores';
+
 import { writable } from 'svelte/store';
 
 import { userResource } from '$lib/api/resources';
-import type { UserModel } from '$lib/models/models';
 import { PreferencesKey } from '$lib/models/preferences';
-import type { UserStore } from '$lib/models/stores';
 import { getStoredValue, removeStoredValue, StatusCheck, storeValue } from '$lib/utils';
 
 function createStore(): UserStore {
-	const { set, subscribe } = writable<UserModel | undefined>();
+	const { set, subscribe } = writable<undefined | UserModel>();
 
 	const initialized = writable<boolean>(false);
 
@@ -17,7 +18,7 @@ function createStore(): UserStore {
 		if (StatusCheck.isOK(body.status)) {
 			_set(body.data);
 		} else if (!StatusCheck.isUnauthorized(body.status)) {
-			const model = await getStoredValue<UserModel | undefined>(PreferencesKey.USER);
+			const model = await getStoredValue<undefined | UserModel>(PreferencesKey.USER);
 
 			if (model) {
 				set(model);

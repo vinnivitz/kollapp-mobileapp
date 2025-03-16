@@ -1,6 +1,6 @@
-import { type AnyObject, ObjectSchema } from 'yup';
-
 import type { ValidationResult } from '$lib/models/ui';
+
+import { type AnyObject, ObjectSchema } from 'yup';
 
 abstract class AbstractForm<T> {
 	abstract model: T;
@@ -22,18 +22,18 @@ export type FormActions<T = object> = {
  * Configuration for a custom form.
  */
 export type FormConfig<T> = {
+	schema: ObjectSchema<AnyObject, T>;
 	customValidators?: (
-		| ((model: T) => ValidationResult | Promise<ValidationResult>)
-		| (() => ValidationResult | Promise<ValidationResult>)
+		| (() => Promise<ValidationResult> | ValidationResult)
+		| ((model: T) => Promise<ValidationResult> | ValidationResult)
 	)[];
-	exposedActions?: (actions: FormActions<T>) => void;
 	formatters?: { [K in keyof T]?: (value: T[K]) => T[K] };
+	parser?: { [K in keyof T]?: (value: T[K]) => Promise<T[K]> };
+	exposedActions?: (actions: FormActions<T>) => void;
 	onBlur?: (key: keyof T) => void;
-	onChange?: (key: keyof T, value: T[keyof T]) => void | Promise<void>;
+	onChange?: (key: keyof T, value: T[keyof T]) => Promise<void> | void;
 	onSubmit?: (model: T, result: ValidationResult) => void;
 	onTouched?: () => void;
-	parser?: { [K in keyof T]?: (value: T[K]) => Promise<T[K]> };
-	schema: ObjectSchema<AnyObject, T>;
 };
 
 /**

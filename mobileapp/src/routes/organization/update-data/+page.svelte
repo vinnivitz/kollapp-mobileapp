@@ -1,4 +1,6 @@
 <script lang="ts">
+	import type { OrganizationModel } from '$lib/models/models';
+
 	import { loadingController } from 'ionic-svelte';
 	import { accessibilityOutline, saveOutline } from 'ionicons/icons';
 
@@ -9,7 +11,6 @@
 	import Card from '$lib/components/widgets/Card.svelte';
 	import InputItem from '$lib/components/widgets/InputItem.svelte';
 	import { t } from '$lib/locales';
-	import type { OrganizationModel } from '$lib/models/models';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';
 	import { customForm, getValidationResult } from '$lib/utils';

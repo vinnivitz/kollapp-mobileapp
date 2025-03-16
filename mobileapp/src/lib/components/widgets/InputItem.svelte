@@ -1,21 +1,22 @@
 <script lang="ts">
-	import CustomItem from '$lib/components/widgets/CustomItem.svelte';
 	import type { Colors } from '$lib/models/ui';
+
+	import CustomItem from '$lib/components/widgets/CustomItem.svelte';
 
 	type InputType = 'date' | 'email' | 'number' | 'password' | 'text';
 
 	type Properties = {
-		change?: (value: string) => void;
+		label: string;
+		name: string;
 		color?: Colors;
 		helperText?: string;
 		icon?: string;
 		inputIcon?: string;
-		inputIconClick?: () => void | Promise<void>;
-		label: string;
 		maxlength?: number;
-		name: string;
 		type?: InputType;
-		value?: string | number | null;
+		value?: null | number | string;
+		change?: (value: string) => void;
+		inputIconClick?: () => Promise<void> | void;
 	};
 
 	let {
@@ -36,6 +37,7 @@
 <CustomItem {color} iconStart={icon} iconEnd={inputIcon} iconClick={inputIconClick}>
 	<!-- svelte-ignore event_directive_deprecated -->
 	<ion-input
+		label-placement="floating"
 		{maxlength}
 		counter={!!maxlength}
 		{name}

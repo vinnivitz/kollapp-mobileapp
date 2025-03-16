@@ -4,7 +4,7 @@
 
 	import { goto } from '$app/navigation';
 
-	import { type EmailDto, emailSchema } from '$lib/api/dto/client/auth';
+	import { type ResetPasswordConfirmationDto, resetPasswordConfirmationSchema } from '$lib/api/dto/client/auth';
 	import { publicUserResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';
@@ -15,18 +15,18 @@
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
 	import { customForm, getValidationResult } from '$lib/utils';
 
-	const model = emailSchema().cast({}) as EmailDto;
-	let actions: FormActions<EmailDto>;
+	const model = resetPasswordConfirmationSchema().cast({}) as ResetPasswordConfirmationDto;
+	let actions: FormActions<ResetPasswordConfirmationDto>;
 
-	const config: FormConfig<EmailDto> = {
+	const config: FormConfig<ResetPasswordConfirmationDto> = {
 		exposedActions: (exposedActions) => (actions = exposedActions),
 		onSubmit,
-		schema: emailSchema()
+		schema: resetPasswordConfirmationSchema()
 	};
 
 	const form = new Form(model, config);
 
-	async function onSubmit(model: EmailDto, result: ValidationResult): Promise<void> {
+	async function onSubmit(model: ResetPasswordConfirmationDto, result: ValidationResult): Promise<void> {
 		if (result.valid) {
 			const loading = await loadingController.create({});
 			await loading.present();

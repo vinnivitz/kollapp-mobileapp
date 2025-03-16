@@ -1,5 +1,6 @@
 import type { ChangePasswordDto, UpdateUserDataDto } from '$lib/api/dto/client/user';
 import type { UserDto } from '$lib/api/dto/server';
+
 import { RequestMethod, type ResponseBody } from '$lib/models/api';
 import { customFetch } from '$lib/utils';
 

@@ -1,18 +1,19 @@
 <script lang="ts">
-	import { saveOutline, trashBinOutline } from 'ionicons/icons';
 	import type { Snippet } from 'svelte';
+
+	import { saveOutline, trashBinOutline } from 'ionicons/icons';
 
 	import Button from './Button.svelte';
 
 	import { t } from '$lib/locales';
 
 	type Properties = {
-		cancel?: () => void;
-		cancelLabel?: string;
 		children: Snippet;
-		confirm?: () => void;
+		cancelLabel?: string;
 		confirmLabel?: string;
 		open?: boolean;
+		cancel?: () => void;
+		confirm?: () => void;
 	};
 
 	let {
@@ -29,7 +30,15 @@
 	<ion-header>
 		<ion-toolbar>
 			<ion-buttons slot="start">
-				<Button label={cancelLabel} color="light" click={() => cancel?.()} icon={trashBinOutline} />
+				<Button
+					label={cancelLabel}
+					color="light"
+					click={() => {
+						open = false;
+						cancel?.();
+					}}
+					icon={trashBinOutline}
+				/>
 			</ion-buttons>
 			<ion-buttons slot="end">
 				<Button label={confirmLabel} color="light" click={() => confirm?.()} icon={saveOutline} />

@@ -7,15 +7,15 @@ export type CustomFetchConfig =
 	| {
 			authorizationType?: AuthorizationType;
 			body?: never;
-			method?: RequestMethod.GET | RequestMethod.DELETE;
+			method?: RequestMethod.DELETE | RequestMethod.GET;
 			query?: Record<string, string>;
 			silentOnError?: boolean;
 			silentOnSuccess?: boolean;
 	  }
 	| {
-			authorizationType?: AuthorizationType;
 			body: string;
 			method: RequestMethod.POST | RequestMethod.PUT;
+			authorizationType?: AuthorizationType;
 			query?: Record<string, string>;
 			silentOnError?: boolean;
 			silentOnSuccess?: boolean;

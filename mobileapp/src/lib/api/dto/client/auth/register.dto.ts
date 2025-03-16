@@ -7,12 +7,12 @@ import { t } from '$lib/locales';
  * Register DTO for sending user registration information.
  */
 export type RegisterDto = {
-	confirmPassword?: string;
 	email: string;
 	name: string;
 	password: string;
 	surname: string;
 	username: string;
+	confirmPassword?: string;
 };
 
 /**

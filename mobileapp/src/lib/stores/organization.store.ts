@@ -1,11 +1,12 @@
+import type { OrganizationModel } from '$lib/models/models';
+import type { OrganizationStore } from '$lib/models/stores';
+
 import { writable } from 'svelte/store';
 
 import { activitiesStore } from './activity.store';
 
 import { organizationResource } from '$lib/api/resources';
-import type { OrganizationModel } from '$lib/models/models';
 import { PreferencesKey } from '$lib/models/preferences';
-import type { OrganizationStore } from '$lib/models/stores';
 import { getStoredValue, removeStoredValue, StatusCheck, storeValue } from '$lib/utils';
 
 function createStore(): OrganizationStore {
@@ -22,10 +23,8 @@ function createStore(): OrganizationStore {
 
 			const response = await organizationResource.getIds();
 			if (StatusCheck.isOK(response.status) && response.data.length > 0) {
-				return change(response.data[0]);
-			}
-
-			if (!StatusCheck.isUnauthorized(response.status)) {
+				return response.data[0] ? change(response.data[0]) : set(undefined);
+			} else if (!StatusCheck.isUnauthorized(response.status)) {
 				const storedOrganization = await getStoredValue<OrganizationModel | undefined>(PreferencesKey.ORGANIZATION);
 				if (storedOrganization) {
 					set(storedOrganization);

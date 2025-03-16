@@ -1,8 +1,8 @@
+import type { LayoutLoad } from './$types';
+
 import { App, type URLOpenListenerEvent } from '@capacitor/app';
 
 import { goto } from '$app/navigation';
-
-import type { LayoutLoad } from './$types';
 
 import { PageRoute } from '$lib/models/routing';
 import { authenticationStore, connectionStore, layoutStore, themeStore } from '$lib/stores';

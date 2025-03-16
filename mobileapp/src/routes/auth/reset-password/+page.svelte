@@ -2,7 +2,7 @@
 	import { loadingController } from 'ionic-svelte';
 	import { mailOutline } from 'ionicons/icons';
 
-	import { type EmailDto, emailSchema } from '$lib/api/dto/client/auth';
+	import { type ResetPasswordConfirmationDto, resetPasswordConfirmationSchema } from '$lib/api/dto/client/auth';
 	import { publicUserResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';
@@ -12,19 +12,19 @@
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
 	import { customForm, getValidationResult } from '$lib/utils';
 
-	const model = emailSchema().cast({}) as EmailDto;
+	const model = resetPasswordConfirmationSchema().cast({}) as ResetPasswordConfirmationDto;
 	let validationResult: ValidationResult;
-	let actions: FormActions<EmailDto>;
+	let actions: FormActions<ResetPasswordConfirmationDto>;
 
-	const config: FormConfig<EmailDto> = {
+	const config: FormConfig<ResetPasswordConfirmationDto> = {
 		exposedActions: (exposedActions) => (actions = exposedActions),
 		onSubmit,
-		schema: emailSchema()
+		schema: resetPasswordConfirmationSchema()
 	};
 
 	const form = new Form(model, config);
 
-	async function onSubmit(model: EmailDto, result: ValidationResult): Promise<void> {
+	async function onSubmit(model: ResetPasswordConfirmationDto, result: ValidationResult): Promise<void> {
 		validationResult = result;
 		if (validationResult.valid) {
 			const loading = await loadingController.create({});

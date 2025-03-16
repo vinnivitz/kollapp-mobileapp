@@ -1,49 +1,26 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 
-	import { type Colors, Layout } from '$lib/models/ui';
-	import { layoutStore } from '$lib/stores';
+	import { type Colors } from '$lib/models/ui';
 
 	type Properties = {
-		button?: boolean;
 		children: Snippet;
-		click?: () => void | Promise<void>;
 		color?: Colors | undefined;
-		detail?: boolean;
-		iconClick?: () => void | Promise<void>;
 		iconEnd?: string;
 		iconStart?: string;
 		transparent?: boolean;
+		click?: () => Promise<void> | void;
+		iconClick?: () => Promise<void> | void;
 	};
 
-	let {
-		button = false,
-		children,
-		click,
-		color = 'light',
-		detail = false,
-		iconClick,
-		iconEnd,
-		iconStart,
-		transparent = false
-	}: Properties = $props();
+	let { children, click, color = 'light', iconClick, iconEnd, iconStart, transparent = false }: Properties = $props();
 
-	const isPlayfulLayout = $derived($layoutStore === Layout.PLAYFUL);
-	const isClassicLayout = $derived($layoutStore === Layout.CLASSIC);
 	const iconColor = $derived(color === 'light' || color === 'white' ? 'medium' : 'white');
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<ion-item
-	{button}
-	{color}
-	{detail}
-	data-playful={isPlayfulLayout}
-	data-classic={isClassicLayout}
-	data-transparent={transparent}
-	onclick={click}
->
+<ion-item button={!!click} {color} detail={!!click} data-transparent={transparent} onclick={click}>
 	{#if iconStart}
 		<ion-icon icon={iconStart} slot="start" color={iconColor}></ion-icon>
 	{/if}
@@ -58,13 +35,6 @@
 <style lang="postcss">
 	ion-item::part(native) {
 		margin-bottom: 5px;
-	}
-
-	ion-item[data-playful='true']::part(native) {
-		border-radius: 20px;
-	}
-	ion-item[data-classic='true']::part(native) {
-		border-radius: 5px;
 	}
 
 	ion-item[data-transparent='true']::part(native) {

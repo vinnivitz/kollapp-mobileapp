@@ -1,4 +1,6 @@
 <script lang="ts">
+	import type { UserModel } from '$lib/models/models';
+
 	import { loadingController } from 'ionic-svelte';
 	import { mailOutline, peopleCircleOutline, personCircleOutline, personOutline, saveOutline } from 'ionicons/icons';
 
@@ -9,7 +11,6 @@
 	import Card from '$lib/components/widgets/Card.svelte';
 	import InputItem from '$lib/components/widgets/InputItem.svelte';
 	import { t } from '$lib/locales';
-	import type { UserModel } from '$lib/models/models';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
 	import { userStore } from '$lib/stores';
 	import { customForm, getValidationResult } from '$lib/utils';
@@ -17,7 +18,7 @@
 	let validationResult: ValidationResult;
 	let actions: FormActions<UpdateUserDataDto>;
 	let form = $state<Form<UpdateUserDataDto>>();
-	let userModel = $derived<UserModel | undefined>($userStore);
+	let userModel = $derived<undefined | UserModel>($userStore);
 	let model: UpdateUserDataDto;
 	let touched = $state(false);
 

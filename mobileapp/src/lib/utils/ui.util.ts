@@ -1,11 +1,18 @@
+import type { ValidationError as CustomValidationError, Form, FormActions, ValidationResult } from '$lib/models/ui';
+
 import { eye, eyeOff } from 'ionicons/icons';
+import moment from 'moment/min/moment-with-locales';
 import { get, writable } from 'svelte/store';
 import { type AnyObject, ObjectSchema, ValidationError } from 'yup';
 
-import { t } from '$lib/locales';
-import type { Form, FormActions, ValidationError as CustomValidationError, ValidationResult } from '$lib/models/ui';
+import { locale, t } from '$lib/locales';
 
 const $t = get(t);
+
+export function getDate(value: Date | string, format?: string): string {
+	moment.locale(get(locale));
+	return moment(value).format(format ?? 'LL');
+}
 
 /**
  * Creates a clickable element with a ripple effect
@@ -15,7 +22,7 @@ const $t = get(t);
  */
 export function clickableElement<T>(
 	node: HTMLElement,
-	callback: (value?: Event) => T | Promise<T>
+	callback: (value?: Event) => Promise<T> | T
 ): { destroy(): void } {
 	function onClick(): void {
 		callback();
@@ -92,7 +99,6 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 
 	for (const input of inputs) {
 		input.classList.add('ion-touched');
-		input.labelPlacement = 'floating';
 		const formatter = data.config.formatters?.[input.name as keyof T];
 		input.value = (
 			formatter ? formatter(data.model[input.name as keyof T]) : data.model[input.name as keyof T]
@@ -125,8 +131,8 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 		icon.setAttribute('icon', eye);
 		icon.classList.add('invisible');
 		input.after(icon);
-		input.addEventListener('input', (event_) =>
-			icon.classList.toggle('invisible', (event_.target as HTMLInputElement).value?.length === 0)
+		input.addEventListener('input', (event) =>
+			icon.classList.toggle('invisible', (event.target as HTMLInputElement).value?.length === 0)
 		);
 		icon.addEventListener('click', () => {
 			input.type = input.type === 'password' ? 'text' : 'password';

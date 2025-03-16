@@ -1,5 +1,6 @@
 import type { LoginDto } from '$lib/api/dto/client/auth';
 import type { TokenDto, UserTokenDto } from '$lib/api/dto/server';
+
 import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/models/api';
 import { authenticationStore, organizationStore, userStore } from '$lib/stores';
 import { customFetch } from '$lib/utils';

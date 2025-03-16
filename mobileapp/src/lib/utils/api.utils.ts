@@ -1,3 +1,5 @@
+import type { AuthenticationModel } from '$lib/models/models';
+
 import { get } from 'svelte/store';
 
 import { dev } from '$app/environment';
@@ -16,7 +18,6 @@ import {
 	StatusCode,
 	UserRole
 } from '$lib/models/api';
-import type { AuthenticationModel } from '$lib/models/models';
 import { PreferencesKey } from '$lib/models/preferences';
 import { PageRoute } from '$lib/models/routing';
 import { AlertType, type ValidationResult } from '$lib/models/ui';
@@ -56,7 +57,7 @@ export async function customFetch<T = never>(url: string, config?: CustomFetchCo
 			if (token) {
 				headers.set(HeaderKey.AUTHORIZATION, getBearerToken(token));
 			} else {
-				return handleAuthenticationError(silentOnError);
+				return handleAuthenticationError(true);
 			}
 		}
 
@@ -67,7 +68,7 @@ export async function customFetch<T = never>(url: string, config?: CustomFetchCo
 		if (StatusCheck.isUnauthorized(response.status)) {
 			const newToken = await getNewAuthenticationToken();
 			if (!newToken) {
-				return handleAuthenticationError(silentOnError);
+				return handleAuthenticationError(false);
 			}
 			headers.set(HeaderKey.AUTHORIZATION, getBearerToken(newToken));
 			response = await fetch(enhancedUrl, { ...options, headers });

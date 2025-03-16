@@ -1,12 +1,12 @@
 <script lang="ts">
+	import type { PageData } from './$types';
+
 	import { loadingController } from 'ionic-svelte';
 	import { keyOutline, keySharp } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
 
-	import type { PageData } from './$types';
-
-	import { type ResetPasswordDto, resetPasswordSchema } from '$lib/api/dto/client/auth';
+	import { type ResetPasswordConfirmationDto, resetPasswordConfirmationSchema } from '$lib/api/dto/client/auth';
 	import { publicUserResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';
@@ -26,20 +26,20 @@
 		}
 	});
 
-	const model = resetPasswordSchema().cast({}) as ResetPasswordDto;
-	let actions: FormActions<ResetPasswordDto>;
+	const model = resetPasswordConfirmationSchema().cast({}) as ResetPasswordConfirmationDto;
+	let actions: FormActions<ResetPasswordConfirmationDto>;
 	let touched = $state(false);
 
-	const config: FormConfig<ResetPasswordDto> = {
+	const config: FormConfig<ResetPasswordConfirmationDto> = {
 		exposedActions: (exposedActions) => (actions = exposedActions),
 		onSubmit,
 		onTouched: () => (touched = true),
-		schema: resetPasswordSchema()
+		schema: resetPasswordConfirmationSchema()
 	};
 
 	const form = new Form(model, config);
 
-	async function onSubmit(model: ResetPasswordDto, result: ValidationResult): Promise<void> {
+	async function onSubmit(model: ResetPasswordConfirmationDto, result: ValidationResult): Promise<void> {
 		if (result.valid) {
 			const loading = await loadingController.create({});
 			await loading.present();

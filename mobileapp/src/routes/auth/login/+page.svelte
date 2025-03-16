@@ -1,4 +1,6 @@
 <script lang="ts">
+	import type { AuthenticationModel } from '$lib/models/models';
+
 	import { loadingController } from 'ionic-svelte';
 	import { keyOutline, logInOutline, personOutline } from 'ionicons/icons';
 
@@ -13,7 +15,6 @@
 	import Welcome from '$lib/components/widgets/Welcome.svelte';
 	import { t } from '$lib/locales';
 	import { ValidationCode } from '$lib/models/api';
-	import type { AuthenticationModel } from '$lib/models/models';
 	import { PageRoute } from '$lib/models/routing';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
 	import { authenticationStore } from '$lib/stores';
@@ -44,7 +45,7 @@
 				};
 				await handleLogin(authenticationModel);
 			} else {
-				if (result.errors?.[0].code === ValidationCode.EMAIL_NOT_CONFIRMED) {
+				if (result.errors?.[0]?.code === ValidationCode.EMAIL_NOT_CONFIRMED) {
 					emailNotConfirmed = true;
 					showAlert($t('routes.auth.login.alert.email-not-confirmed'));
 				}

@@ -1,6 +1,7 @@
+import type { AuthenticationModel } from '$lib/models/models';
+
 import { writable } from 'svelte/store';
 
-import type { AuthenticationModel } from '$lib/models/models';
 import { PreferencesKey } from '$lib/models/preferences';
 import { type AuthenticationStore as AuthenticationStore } from '$lib/models/stores';
 import { getStoredValue, removeStoredValue, storeValue } from '$lib/utils';

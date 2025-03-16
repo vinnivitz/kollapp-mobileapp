@@ -1,6 +1,9 @@
 <script lang="ts">
 	import '../app.pcss';
 	import 'ionic-svelte/components/all';
+
+	import type { TabConfig } from '$lib/models/ui';
+
 	import { defineCustomElements } from '@ionic/pwa-elements/loader';
 	import { loadingController, setupIonicBase } from 'ionic-svelte';
 	import { accessibility, home, person } from 'ionicons/icons';
@@ -9,8 +12,7 @@
 	import Tabs from '$lib/components/layout/Tabs.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
-	import type { TabConfig } from '$lib/models/ui';
-	import { authenticationStore, localeStore, organizationStore, userStore } from '$lib/stores';
+	import { authenticationStore, layoutStore, localeStore, organizationStore, userStore } from '$lib/stores';
 
 	let { children } = $props();
 
@@ -66,14 +68,16 @@
 	<title>Kollapp - Die Kollektiv App</title>
 </svelte:head>
 
-<ion-app>
-	{#if loaded}
-		{#if $authenticationStore && tabs}
-			<Tabs {tabs}>
+{#key $layoutStore}
+	<ion-app>
+		{#if loaded}
+			{#if $authenticationStore && tabs}
+				<Tabs {tabs}>
+					{@render children?.()}
+				</Tabs>
+			{:else}
 				{@render children?.()}
-			</Tabs>
-		{:else}
-			{@render children?.()}
+			{/if}
 		{/if}
-	{/if}
-</ion-app>
+	</ion-app>
+{/key}

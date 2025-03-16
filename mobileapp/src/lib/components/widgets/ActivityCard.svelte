@@ -1,13 +1,14 @@
 <script lang="ts">
-	import { calendarOutline, locationOutline } from 'ionicons/icons';
-	import moment from 'moment';
-
-	import Card from '$lib/components/widgets/Card.svelte';
 	import type { ActivityModel } from '$lib/models/models';
 
+	import { calendarOutline, locationOutline } from 'ionicons/icons';
+
+	import Card from '$lib/components/widgets/Card.svelte';
+	import { getDate } from '$lib/utils';
+
 	type Properties = {
-		edit?: (value: ActivityModel) => void | Promise<void>;
 		value: ActivityModel;
+		edit?: (value: ActivityModel) => Promise<void> | void;
 	};
 
 	let { edit, value }: Properties = $props();
@@ -21,7 +22,7 @@
 		<div class="flex flex-wrap items-center gap-2">
 			<div class="flex items-center gap-2">
 				<ion-icon icon={calendarOutline} class="text-2xl"></ion-icon>
-				<div>{moment().format('DD.MM.YYYY')}</div>
+				<div>{getDate(new Date())}</div>
 			</div>
 			<div class="flex items-center gap-2">
 				<ion-icon icon={locationOutline} class="text-2xl"></ion-icon>

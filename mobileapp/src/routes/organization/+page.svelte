@@ -1,4 +1,6 @@
 <script lang="ts">
+	import type { OrganizationModel } from '$lib/models/models';
+
 	import {
 		buildOutline,
 		calendarOutline,
@@ -14,7 +16,6 @@
 	import LabeledItem from '$lib/components/widgets/LabeledItem.svelte';
 	import { t } from '$lib/locales';
 	import { UserRole } from '$lib/models/api';
-	import type { OrganizationModel } from '$lib/models/models';
 	import { PageRoute } from '$lib/models/routing';
 	import { organizationStore } from '$lib/stores';
 	import { hasRole, showAlert } from '$lib/utils';
