@@ -100,7 +100,7 @@
 			/>
 			<hr class="my-3" />
 		{/if}
-		<div class="absolute right-0 bottom-2 left-0">
+		<div class="absolute bottom-2 left-0 right-0">
 			<hr class="my-2" />
 			<ion-note>
 				Made with <ion-text color="danger">&#10084;</ion-text> from Dresden.
