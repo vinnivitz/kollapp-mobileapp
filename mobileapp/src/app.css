@@ -1,0 +1,26 @@
+@layer theme, base, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+@config '../tailwind.config.ts';
+
+@import './themes/light.css';
+@import './themes/dark.css';
+@import './themes/black-and-white.css';
+
+@import './themes/common.css';
+@import './themes/colors.css';
+
+:root {
+	ion-item {
+		--padding-start: 0;
+
+		:first-child {
+			padding-left: 8px;
+		}
+
+		ion-icon {
+			margin: 0;
+		}
+	}
+}

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { ActivityModel } from '$lib/models/models';
 
+	import { format } from 'date-fns';
 	import { loadingController } from 'ionic-svelte';
 	import {
 		archiveOutline,
@@ -14,7 +15,6 @@
 		locationOutline,
 		trashBinOutline
 	} from 'ionicons/icons';
-	import moment from 'moment';
 	import { fade } from 'svelte/transition';
 
 	import {
@@ -35,7 +35,7 @@
 	import { t } from '$lib/locales';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
 	import { activitiesStore, organizationStore } from '$lib/stores';
-	import { customForm, getDate, getValidationResult, showAlert } from '$lib/utility';
+	import { customForm, getValidationResult, showAlert } from '$lib/utility';
 
 	enum ActivityStatus {
 		ALL = 'all',
@@ -54,7 +54,7 @@
 
 	let selectedActivityId: string;
 	let activityStatus = $state(ActivityStatus.PENDING);
-	let selectedDate = $state(moment().format('YYYY-MM-DD'));
+	let selectedDate = $state(new Date().toISOString());
 
 	let createActions: FormActions<CreateActivityDto>;
 	let updateActions: FormActions<UpdateActivityDto>;
@@ -342,7 +342,7 @@
 						click={() => {
 							showSelectDateCalendar = true;
 						}}
-						label={getDate(selectedDate)}
+						label={format(selectedDate, 'PPP')}
 					></Button>
 				</CustomItem>
 			</form>

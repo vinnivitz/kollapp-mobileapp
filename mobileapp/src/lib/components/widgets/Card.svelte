@@ -43,15 +43,12 @@
 	{/if}
 {/snippet}
 
-<style lang="postcss">
+<style>
 	ion-card {
 		--background: var(--ion-color-light);
 
 		ion-card-title {
 			--color: var(--ion-color-dark);
 		}
-	}
-	.squared {
-		border-radius: unset !important;
 	}
 </style>

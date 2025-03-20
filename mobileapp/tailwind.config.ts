@@ -4,7 +4,7 @@ import typography from '@tailwindcss/typography';
 import scrollbarHide from 'tailwind-scrollbar-hide';
 
 export default {
-	content: ['./src/**/*.{html,js,svelte,ts}'],
+	content: ['./src/**/*.{svelte,ts}'],
 	plugins: [
 		typography,
 		scrollbarHide,
@@ -13,8 +13,5 @@ export default {
 			addVariant('dark', '&:is(.dark *)');
 			addVariant('black-and-white', '&:is(.black-and-white *)');
 		}
-	],
-	theme: {
-		extend: {}
-	}
+	]
 } satisfies Config;

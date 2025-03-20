@@ -1,10 +1,10 @@
 <script lang="ts">
 	import type { ActivityModel } from '$lib/models/models';
 
+	import { format } from 'date-fns';
 	import { calendarOutline, locationOutline } from 'ionicons/icons';
 
 	import Card from '$lib/components/widgets/Card.svelte';
-	import { getDate } from '$lib/utility';
 
 	type Properties = {
 		value: ActivityModel;
@@ -22,7 +22,7 @@
 		<div class="flex flex-wrap items-center gap-2">
 			<div class="flex items-center gap-2">
 				<ion-icon icon={calendarOutline} class="text-2xl"></ion-icon>
-				<div>{getDate(new Date())}</div>
+				<div>{format(new Date(), 'PPP')}</div>
 			</div>
 			<div class="flex items-center gap-2">
 				<ion-icon icon={locationOutline} class="text-2xl"></ion-icon>

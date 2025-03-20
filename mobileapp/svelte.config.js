@@ -16,7 +16,7 @@ const config = {
 			strict: true
 		})
 	},
-	preprocess: vitePreprocess({ script: true })
+	preprocess: vitePreprocess({ script: true, style: true })
 };
 
 export default config;

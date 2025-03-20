@@ -1,18 +1,12 @@
 import type { ValidationError as CustomValidationError, Form, FormActions, ValidationResult } from '$lib/models/ui';
 
 import { eye, eyeOff } from 'ionicons/icons';
-import moment from 'moment/min/moment-with-locales';
 import { get, writable } from 'svelte/store';
 import { type AnyObject, ObjectSchema, ValidationError } from 'yup';
 
-import { locale, t } from '$lib/locales';
+import { t } from '$lib/locales';
 
 const $t = get(t);
-
-export function getDate(value: Date | string, format?: string): string {
-	moment.locale(get(locale));
-	return moment(value).format(format ?? 'LL');
-}
 
 /**
  * Creates a clickable element with a ripple effect

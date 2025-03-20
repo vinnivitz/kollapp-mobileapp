@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '../app.pcss';
+	import '../app.css';
 	import 'ionic-svelte/components/all';
 
 	import type { TabConfig } from '$lib/models/ui';
@@ -10,9 +10,9 @@
 	import { onDestroy, onMount } from 'svelte';
 
 	import Tabs from '$lib/components/layout/Tabs.svelte';
-	import { t } from '$lib/locales';
+	import { initialized, t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
-	import { authenticationStore, layoutStore, localeStore, organizationStore, userStore } from '$lib/stores';
+	import { authenticationStore, localeStore, organizationStore, userStore } from '$lib/stores';
 
 	let { children } = $props();
 
@@ -29,6 +29,20 @@
 		}
 	});
 
+	$effect(() => {
+		if (loaded && initialized) {
+			tabs = [
+				{ icon: home, label: $t('common.page-routes.home'), tab: PageRoute.HOME },
+				{
+					icon: accessibility,
+					label: $t('common.page-routes.organization'),
+					tab: PageRoute.ORGANIZATION.ROOT
+				},
+				{ icon: person, label: $t('common.page-routes.account'), tab: PageRoute.ACCOUNT.ROOT }
+			];
+		}
+	});
+
 	function initStores(): void {
 		userStore.init();
 		organizationStore.init();
@@ -42,15 +56,6 @@
 			}
 		}, 100);
 		await Promise.all([defineCustomElements(globalThis as unknown as Window), localeStore.init()]);
-		tabs = [
-			{ icon: home, label: $t('common.page-routes.home'), tab: PageRoute.HOME },
-			{
-				icon: accessibility,
-				label: $t('common.page-routes.organization'),
-				tab: PageRoute.ORGANIZATION.ROOT
-			},
-			{ icon: person, label: $t('common.page-routes.account'), tab: PageRoute.ACCOUNT.ROOT }
-		];
 		loaded = true;
 		if (loadingSpinner) {
 			await loadingSpinner.dismiss();
@@ -68,16 +73,14 @@
 	<title>Kollapp - Die Kollektiv App</title>
 </svelte:head>
 
-{#key $layoutStore}
-	<ion-app>
-		{#if loaded}
-			{#if $authenticationStore && tabs}
-				<Tabs {tabs}>
-					{@render children?.()}
-				</Tabs>
-			{:else}
+<ion-app>
+	{#if loaded}
+		{#if $authenticationStore && tabs}
+			<Tabs {tabs}>
 				{@render children?.()}
-			{/if}
+			</Tabs>
+		{:else}
+			{@render children?.()}
 		{/if}
-	</ion-app>
-{/key}
+	{/if}
+</ion-app>

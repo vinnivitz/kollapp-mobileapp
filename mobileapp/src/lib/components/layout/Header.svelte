@@ -25,7 +25,7 @@
 						use:clickableElement={() => goto(PageRoute.HOME)}
 						src="/logo.png"
 						alt="Logo"
-						class="h-8 w-8 black-and-white:grayscale"
+						class="black-and-white:grayscale h-8 w-8"
 					/>
 				{/if}
 			</ion-button>
@@ -36,7 +36,7 @@
 	</ion-toolbar>
 </ion-header>
 
-<style lang="postcss">
+<style>
 	ion-toolbar {
 		--min-height: 3.25rem;
 	}

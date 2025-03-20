@@ -1,6 +1,8 @@
 import type { LocaleStore } from '$lib/models/stores';
 
 import { Device } from '@capacitor/device';
+import { setDefaultOptions } from 'date-fns';
+import { type Locale as DateFnsLocale, de, enUS } from 'date-fns/locale';
 import { writable } from 'svelte/store';
 
 import { loadTranslations, Locale, locale } from '$lib/locales';
@@ -18,6 +20,7 @@ function createStore(): LocaleStore {
 	async function _set(value: Locale): Promise<void> {
 		await storeValue(PreferencesKey.LOCALE, value);
 		locale.set(value);
+		setDefaultOptions({ locale: getDateFnsLocale(value) });
 		set(value);
 	}
 
@@ -38,6 +41,20 @@ function createStore(): LocaleStore {
 		const code = await Device.getLanguageCode();
 		const locale = code?.value as Locale | undefined;
 		return locale && Object.values(Locale).includes(locale) ? locale : undefined;
+	}
+
+	function getDateFnsLocale(locale: Locale): DateFnsLocale {
+		switch (locale) {
+			case Locale.DE: {
+				return de;
+			}
+			case Locale.EN: {
+				return enUS;
+			}
+			default: {
+				return enUS;
+			}
+		}
 	}
 
 	return {

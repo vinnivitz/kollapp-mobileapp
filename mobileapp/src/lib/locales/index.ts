@@ -25,4 +25,4 @@ export enum Locale {
 	EN = 'en'
 }
 
-export const { loadTranslations, locale, t } = new I18n(config);
+export const { initialized, loadTranslations, locale, t } = new I18n(config);

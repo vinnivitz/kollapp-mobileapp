@@ -2,7 +2,7 @@
 	import type { Colors } from '$lib/models/ui';
 	import type { DatetimeChangeEventDetail } from '@ionic/core';
 
-	import moment from 'moment';
+	import { addYears } from 'date-fns';
 
 	import { locale, t } from '$lib/locales';
 	import { clickOutside } from '$lib/utility';
@@ -26,7 +26,7 @@
 	}: Properties = $props();
 
 	let calendar = $state<HTMLIonDatetimeElement>();
-	let selectedDate = $state(moment().format('YYYY-MM-DD'));
+	let selectedDate = $state(new Date().toISOString());
 
 	function onDismiss(): void {
 		calendar?.reset();
@@ -49,7 +49,7 @@
 	on:blur={onDismiss}
 	{color}
 	size="cover"
-	max={moment().add(10, 'years').format('YYYY-MM-DD')}
+	max={addYears(new Date(), 10).toISOString()}
 	bind:this={calendar}
 	locale={$locale}
 	on:ionChange={onApply}
