@@ -12,8 +12,8 @@
     "route": "/account/change-password"
   },
   {
-    "id": 3,
     "icon": "trashOutline",
+    "id": 3,
     "label": "routes.account.list.account.button.delete-account",
     "route": "/account/delete"
   },

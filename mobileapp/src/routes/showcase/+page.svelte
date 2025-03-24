@@ -200,9 +200,3 @@
 		</div>
 	</Card>
 </LayoutComponent>
-
-<style>
-	:host .select-wrapper {
-		justify-content: center;
-	}
-</style>
