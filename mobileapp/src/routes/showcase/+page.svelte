@@ -45,7 +45,7 @@
 <LayoutComponent title="Showcase">
 	<!-- svelte-ignore event_directive_deprecated -->
 	<ion-searchbar on:ionInput={onFilter} color="light"></ion-searchbar>
-	<div class="mx-2 flex justify-between gap-2">
+	<div class="mx-2 flex justify-between gap-2 truncate">
 		<ion-select
 			aria-label="Layout"
 			interface="popover"

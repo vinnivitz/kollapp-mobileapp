@@ -57,7 +57,7 @@ export async function customFetch<T = never>(url: string, config?: CustomFetchCo
 			if (token) {
 				headers.set(HeaderKey.AUTHORIZATION, getBearerToken(token));
 			} else {
-				return handleAuthenticationError(true);
+				return handleAuthenticationError();
 			}
 		}
 
@@ -68,7 +68,7 @@ export async function customFetch<T = never>(url: string, config?: CustomFetchCo
 		if (StatusCheck.isUnauthorized(response.status)) {
 			const newToken = await getNewAuthenticationToken();
 			if (!newToken) {
-				return handleAuthenticationError(false);
+				return handleAuthenticationError();
 			}
 			headers.set(HeaderKey.AUTHORIZATION, getBearerToken(newToken));
 			response = await fetch(enhancedUrl, { ...options, headers });
@@ -133,10 +133,10 @@ export function hasRole(role: UserRole): boolean {
 	return !!get(userStore)?.roles.includes(role);
 }
 
-async function handleAuthenticationError(silent: boolean): Promise<ResponseBody> {
+async function handleAuthenticationError(): Promise<ResponseBody> {
 	await authResource.logout();
 	await goto(PageRoute.AUTH.LOGIN);
-	return createErrorResponse(StatusCode.UNAUTHORIZED, $t('api.unauthorized'), silent);
+	return createErrorResponse(StatusCode.UNAUTHORIZED, $t('api.unauthorized'), true);
 }
 
 function getUrl(endpoint: string): string {
