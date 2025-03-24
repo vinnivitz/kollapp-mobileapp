@@ -11,7 +11,7 @@ import { customFetch } from '$lib/utility';
 
 const ENDPOINT = 'organization';
 
-export async function getById(_id: string): Promise<ResponseBody<OrganizationDto>> {
+export async function getById(_id: number): Promise<ResponseBody<OrganizationDto>> {
 	void _id;
 	// workaround for the server response until the server is fixed
 	return customFetch(`${ENDPOINT}`, { silentOnSuccess: true });
@@ -21,16 +21,16 @@ export async function getById(_id: string): Promise<ResponseBody<OrganizationDto
  * Retrieves the organization information.
  * @returns {Promise<ResponseBody<OrganizationDto>>} The organization information.
  */
-export async function getIds(): Promise<ResponseBody<string[]>> {
+export async function getIds(): Promise<ResponseBody<number[]>> {
 	// workaround for the server response until the server is fixed
 	const response = await customFetch<OrganizationDto>(`${ENDPOINT}`, {
 		silentOnError: true,
 		silentOnSuccess: true
 	});
 	if (response.data) {
-		return { ...response, data: [response.data.id] } as ResponseBody<string[]>;
+		return { ...response, data: [response.data.id] } as ResponseBody<number[]>;
 	}
-	return response as unknown as ResponseBody<string[]>;
+	return response as unknown as ResponseBody<number[]>;
 }
 
 /**
@@ -72,7 +72,7 @@ export async function leaveOrganization(): Promise<ResponseBody> {
  * @param userId The user id.
  * @returns {Promise<ResponseBody>} The response body.
  */
-export async function removeUserFromOrganization(userId: string): Promise<ResponseBody> {
+export async function removeUserFromOrganization(userId: number): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/person/${userId}`, {
 		method: RequestMethod.DELETE
 	});
@@ -83,7 +83,7 @@ export async function removeUserFromOrganization(userId: string): Promise<Respon
  * @param organizationId The organization id.
  * @returns {Promise<ResponseBody<ActivityDto[]>>} The organization activities.
  */
-export async function getActivities(organizationId: string): Promise<ResponseBody<ActivityDto[]>> {
+export async function getActivities(organizationId: number): Promise<ResponseBody<ActivityDto[]>> {
 	return customFetch(`${ENDPOINT}/${organizationId}/activities`, { silentOnSuccess: true });
 }
 
@@ -93,7 +93,7 @@ export async function getActivities(organizationId: string): Promise<ResponseBod
  * @param model activity model
  * @returns {Promise<ResponseBody>} response body
  */
-export async function createActivity(organizationId: string, model: CreateActivityDto): Promise<ResponseBody> {
+export async function createActivity(organizationId: number, model: CreateActivityDto): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/${organizationId}/activity`, {
 		body: JSON.stringify(model),
 		method: RequestMethod.POST
@@ -108,8 +108,8 @@ export async function createActivity(organizationId: string, model: CreateActivi
  * @returns {Promise<ResponseBody>} response body
  */
 export async function updateActivity(
-	organizationId: string,
-	activityId: string,
+	organizationId: number,
+	activityId: number,
 	model: UpdateActivityDto
 ): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/${organizationId}/activity/${activityId}`, {
@@ -124,7 +124,7 @@ export async function updateActivity(
  * @param activityId id of the activity
  * @returns {Promise<ResponseBody>} response body
  */
-export async function deleteActivity(organizationId: string, activityId: string): Promise<ResponseBody> {
+export async function deleteActivity(organizationId: number, activityId: number): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/${organizationId}/activity/${activityId}`, {
 		method: RequestMethod.DELETE
 	});

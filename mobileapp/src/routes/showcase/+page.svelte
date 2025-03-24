@@ -44,23 +44,29 @@
 
 <LayoutComponent title="Showcase">
 	<!-- svelte-ignore event_directive_deprecated -->
-	<ion-searchbar on:ionInput={onFilter}></ion-searchbar>
-	<div class="mx-4 flex justify-between gap-4">
-		<ion-select aria-label="Layout" interface="popover" value={$layoutStore} on:ionChange={onLayoutChange}>
+	<ion-searchbar on:ionInput={onFilter} color="light"></ion-searchbar>
+	<div class="mx-2 flex justify-between gap-2">
+		<ion-select
+			aria-label="Layout"
+			interface="popover"
+			value={$layoutStore}
+			on:ionChange={onLayoutChange}
+			fill="outline"
+		>
 			<ion-select-option value={Layout.MD}>Android</ion-select-option>
 			<ion-select-option value={Layout.IOS}>iOS</ion-select-option>
 		</ion-select>
-		<ion-select aria-label="Language" interface="popover" value={$locale} on:ionChange={onLocaleChange}>
+		<ion-select aria-label="Language" interface="popover" value={$locale} on:ionChange={onLocaleChange} fill="outline">
 			<ion-select-option value={Locale.DE}>German</ion-select-option>
 			<ion-select-option value={Locale.EN}>English</ion-select-option>
 		</ion-select>
-		<ion-select aria-label="Theme" interface="popover" value={$themeStore} on:ionChange={onThemeChange}>
+		<ion-select aria-label="Theme" interface="popover" value={$themeStore} on:ionChange={onThemeChange} fill="outline">
 			<ion-select-option value={Theme.LIGHT}>Light</ion-select-option>
 			<ion-select-option value={Theme.DARK}>Dark</ion-select-option>
 			<ion-select-option value={Theme.BLACK_AND_WHITE}>Black and white</ion-select-option>
 		</ion-select>
 	</div>
-	<Card title="Buttons" color="white">
+	<Card title="Buttons">
 		<div class="flex flex-wrap items-center justify-center">
 			<Button
 				label="Default"
@@ -125,36 +131,40 @@
 			></Button>
 		</div>
 	</Card>
-	<Card title="Calendar" color="white">
+	<Card title="Calendar">
 		<div class="flex flex-col gap-4">
 			<Calendar apply={() => showAlert('Date selected', { type: AlertType.SUCCESS })}></Calendar>
 			<Calendar showTitle={false}></Calendar>
 		</div>
 	</Card>
-	<Card title="Activity card" color="white">
-		<ActivityCard value={{ id: '1', location: 'Activity location', name: 'Activity name' }}></ActivityCard>
+	<Card title="Activity card" classProp="bg-transparent">
+		<ActivityCard value={{ id: 1, location: 'Activity location', name: 'Activity name' }}></ActivityCard>
 	</Card>
-	<Card title="Items" color="white">
-		<CustomItem>
+	<Card title="Items">
+		<CustomItem card>
 			<div class="flex w-full items-center justify-between gap-4">
 				<ion-label>Custom item</ion-label>
 				<Button
 					click={() => {
-						showAlert('Button clickedU+', { type: AlertType.SUCCESS });
+						showAlert('Button clicked', { type: AlertType.SUCCESS });
 					}}
 					label="Click me"
 				></Button>
 			</div>
 		</CustomItem>
-		<LabeledItem label="Labeled item"></LabeledItem>
-		<LabeledItem transparent label="Transparent labeled item"></LabeledItem>
-		<LabeledItem label="Clickable labeled item" click={() => showAlert('Item clicked', { type: AlertType.SUCCESS })}
+		<LabeledItem card label="Labeled item"></LabeledItem>
+		<LabeledItem card transparent label="Transparent labeled item"></LabeledItem>
+		<LabeledItem
+			card
+			label="Clickable labeled item"
+			click={() => showAlert('Item clicked', { type: AlertType.SUCCESS })}
 		></LabeledItem>
-		<LabeledItem label="Labeled item with icon" icon={documentOutline}></LabeledItem>
-		<InputItem label="Input item" name="value"></InputItem>
-		<InputItem label="Input item" name="value" helperText="With helper text"></InputItem>
-		<InputItem label="Input item with icon" name="value" icon={personOutline}></InputItem>
+		<LabeledItem card label="Labeled item with icon" icon={documentOutline}></LabeledItem>
+		<InputItem card label="Input item" name="value"></InputItem>
+		<InputItem card label="Input item" name="value" helperText="With helper text"></InputItem>
+		<InputItem card label="Input item with icon" name="value" icon={personOutline}></InputItem>
 		<InputItem
+			card
 			label="Input item with clickable icon"
 			name="value"
 			inputIcon={attachOutline}
@@ -163,7 +173,7 @@
 			}}
 		></InputItem>
 	</Card>
-	<Card title="Modal" color="white">
+	<Card title="Modal">
 		<div class="text-center">
 			<Button
 				label="Open modal"
@@ -180,6 +190,6 @@
 	cancel={() => showAlert('Modal canceled')}
 	confirm={() => {
 		modalOpen = false;
-		showAlert('Model confirmed');
+		showAlert('Model confirmed', { type: AlertType.SUCCESS });
 	}}>This is a modal.</Modal
 >

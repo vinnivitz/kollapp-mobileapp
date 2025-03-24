@@ -1,11 +1,16 @@
 <script lang="ts">
+	import { accessibilityOutline, diamondOutline, personOutline } from 'ionicons/icons';
 	import { onDestroy, type Snippet } from 'svelte';
 	import { derived } from 'svelte/store';
 	import { fade } from 'svelte/transition';
 
-	import Header from './Header.svelte';
-	import Menu from './Menu.svelte';
+	import { dev } from '$app/environment';
 
+	import Header from '$lib/components/layout/Header.svelte';
+	import Menu from '$lib/components/layout/Menu.svelte';
+	import LabeledItem from '$lib/components/widgets/LabeledItem.svelte';
+	import { t } from '$lib/locales';
+	import { PageRoute } from '$lib/models/routing';
 	import { activitiesStore, organizationStore, userStore } from '$lib/stores';
 
 	type Properties = {
@@ -31,6 +36,7 @@
 	let navigationDebounced = $state(false);
 	let navigationTimeout: ReturnType<typeof setTimeout>;
 	let refresher = $state<HTMLIonRefresherElement | undefined>();
+	let menuComponent = $state<ReturnType<typeof Menu>>();
 
 	const loading = !derived(
 		[userStore.initialized, organizationStore.initialized, activitiesStore.initialized],
@@ -50,10 +56,32 @@
 			clearTimeout(navigationTimeout);
 		}
 	});
+
+	async function navigate(route: string): Promise<void> {
+		menuComponent?.navigate(route);
+	}
 </script>
 
 {#if !hideLayout && !hideMenu}
-	<Menu></Menu>
+	<Menu bind:this={menuComponent}>
+		<ion-list>
+			<LabeledItem
+				transparent
+				click={() => navigate(PageRoute.ACCOUNT.ROOT)}
+				icon={personOutline}
+				label={$t('components.layout.header.button.account')}
+			/>
+			<LabeledItem
+				transparent
+				click={() => navigate(PageRoute.ORGANIZATION.ROOT)}
+				icon={accessibilityOutline}
+				label={$t('components.layout.menu.list.organization')}
+			/>
+			{#if dev}
+				<LabeledItem transparent icon={diamondOutline} click={() => navigate('showcase')} label="Showcase" />
+			{/if}
+		</ion-list>
+	</Menu>
 {/if}
 
 <div class="ion-page" id="menu">
@@ -74,7 +102,7 @@
 	</ion-content>
 </div>
 
-<style lang="postcss">
+<style>
 	ion-content.no-overflow {
 		--overflow: hidden;
 	}

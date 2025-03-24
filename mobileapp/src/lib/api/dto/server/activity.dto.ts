@@ -1,5 +1,5 @@
 export type ActivityDto = {
-	id: string;
+	id: number;
 	location: string;
 	name: string;
 };

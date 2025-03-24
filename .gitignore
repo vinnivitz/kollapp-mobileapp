@@ -16,6 +16,7 @@
 # Mobile App
 /mobileapp/node_modules
 /mobileapp/test-results
+/mobileapp/coverage
 
 /mobileapp/.output
 /mobileapp/.vercel

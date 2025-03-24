@@ -4,6 +4,6 @@ export default defineConfig({
 	testDir: 'e2e',
 	webServer: {
 		command: 'npm run build && npm run preview',
-		port: 5173
+		port: 5174
 	}
 });

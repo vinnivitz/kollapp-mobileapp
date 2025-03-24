@@ -23,10 +23,7 @@ function createStore(): ThemeStore {
 	}
 
 	async function getInitialTheme(): Promise<Theme> {
-		const value = await getStoredValue<Theme>(PreferencesKey.THEME);
-		return value === Theme.DARK || (value !== Theme.LIGHT && getPreferedColorScheme() === Theme.DARK)
-			? Theme.DARK
-			: Theme.LIGHT;
+		return (await getStoredValue<Theme>(PreferencesKey.THEME)) || getPreferedColorScheme();
 	}
 
 	function getPreferedColorScheme(): Theme {

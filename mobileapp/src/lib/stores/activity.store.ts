@@ -12,7 +12,7 @@ function createStore(): ActivityStore {
 
 	const initialized = writable<boolean>(false);
 
-	async function init(organizationId?: string): Promise<void> {
+	async function init(organizationId?: number): Promise<void> {
 		if (organizationId) {
 			await change(organizationId);
 		} else {
@@ -34,10 +34,10 @@ function createStore(): ActivityStore {
 		set([]);
 	}
 
-	async function change(organizationId: string): Promise<void> {
+	async function change(organizationId: number): Promise<void> {
 		const body = await organizationResource.getActivities(organizationId);
 		if (StatusCheck.isOK(body.status)) {
-			await _set(body.data);
+			await _set(body.data.map((activity) => ({ id: activity.id, location: activity.location, name: activity.name })));
 		}
 	}
 

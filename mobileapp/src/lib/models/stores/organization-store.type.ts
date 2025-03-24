@@ -7,5 +7,5 @@ import type { Readable } from 'svelte/store';
  */
 export type OrganizationStore = BaseStore<OrganizationModel> & {
 	initialized: Readable<boolean>;
-	change: (id: string) => Promise<void>;
+	change: (id: number) => Promise<void>;
 };

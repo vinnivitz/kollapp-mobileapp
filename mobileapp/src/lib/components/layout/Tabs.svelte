@@ -25,7 +25,9 @@
 		}
 	});
 
-	onMount(async () => await controller.select(currentTabName));
+	onMount(async () => {
+		await controller.select(currentTabName);
+	});
 
 	const onTabSelect = async (selectedTab: string): Promise<void> => {
 		await goto(selectedTab);

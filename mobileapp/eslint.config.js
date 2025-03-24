@@ -143,7 +143,8 @@ export default ts.config(
 			'test-results/',
 			'.env',
 			'vite.config.ts.*',
-			'static/'
+			'static/*',
+			'coverage/'
 		]
 	}
 );

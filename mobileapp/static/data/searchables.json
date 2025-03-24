@@ -1,74 +1,74 @@
 [
   {
+    "icon": "buildOutline",
     "id": 1,
     "label": "routes.account.list.account.button.update-data",
-    "icon": "buildOutline",
     "route": "/account/update-data"
   },
   {
+    "icon": "keyOutline",
     "id": 2,
     "label": "routes.account.list.account.button.change-password",
-    "icon": "keyOutline",
     "route": "/account/change-password"
   },
   {
     "id": 3,
-    "label": "routes.account.list.account.button.delete-account",
     "icon": "trashOutline",
+    "label": "routes.account.list.account.button.delete-account",
     "route": "/account/delete"
   },
   {
+    "icon": "languageOutline",
     "id": 4,
     "label": "routes.account.app.list.language.button",
-    "icon": "languageOutline",
     "route": "/account"
   },
   {
+    "icon": "colorPaletteOutline",
     "id": 5,
     "label": "routes.account.app.list.theme.button",
-    "icon": "colorPaletteOutline",
     "route": "/account"
   },
   {
+    "icon": "colorWandOutline",
     "id": 6,
     "label": "routes.account.app.list.layout.button",
-    "icon": "colorWandOutline",
     "route": "/account"
   },
   {
+    "icon": "refreshOutline",
     "id": 7,
     "label": "routes.account.app.list.restore.button",
-    "icon": "refreshOutline",
     "route": "/account"
   },
   {
+    "accessible": [
+      "ROLE_MANAGER"
+    ],
+    "icon": "buildOutline",
     "id": 8,
     "label": "routes.organization.list.update-info.update-info",
-    "icon": "buildOutline",
-    "route": "/organization/update-data",
-    "accessible": [
-      "ROLE_MANAGER"
-    ]
+    "route": "/organization/update-data"
   },
   {
+    "accessible": [
+      "ROLE_MANAGER"
+    ],
+    "icon": "logOutOutline",
     "id": 9,
     "label": "routes.organization.list.organization.leave.label",
-    "icon": "logOutOutline",
-    "route": "/organization/leave",
-    "accessible": [
-      "ROLE_MANAGER"
-    ]
+    "route": "/organization/leave"
   },
   {
+    "icon": "createOutline",
     "id": 10,
     "label": "routes.organization.list.general.register.label",
-    "icon": "createOutline",
     "route": "/organization/register"
   },
   {
+    "icon": "personAddOutline",
     "id": 11,
     "label": "routes.organization.list.general.join.label",
-    "icon": "personAddOutline",
     "route": "/organization/join"
   }
 ]

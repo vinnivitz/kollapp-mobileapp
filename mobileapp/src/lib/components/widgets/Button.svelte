@@ -10,7 +10,6 @@
 		icon?: string;
 		iconPosition?: 'end' | 'start';
 		iconSize?: 'large' | 'small' | undefined;
-		id?: string;
 		label?: string;
 		size?: 'default' | 'large' | 'small' | undefined;
 		type?: 'button' | 'reset' | 'submit';
@@ -31,7 +30,6 @@
 		icon,
 		iconPosition = 'start',
 		iconSize,
-		id,
 		label,
 		size,
 		type
@@ -42,7 +40,6 @@
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <ion-button
-	{id}
 	{color}
 	{expand}
 	{fill}

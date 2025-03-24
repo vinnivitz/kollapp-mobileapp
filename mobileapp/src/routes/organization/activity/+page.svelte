@@ -52,7 +52,7 @@
 	let searchActivityValue = $state('');
 	let filteredActivities = $state<ActivityModel[]>([]);
 
-	let selectedActivityId: string;
+	let selectedActivityId: number;
 	let activityStatus = $state(ActivityStatus.PENDING);
 	let selectedDate = $state(new Date().toISOString());
 
@@ -360,7 +360,7 @@
 	<ion-datetime id="datetime-selector"></ion-datetime>
 </ion-modal>
 
-<style lang="postcss">
+<style>
 	ion-popover {
 		--width: 95%;
 	}

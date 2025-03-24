@@ -16,7 +16,7 @@ function createStore(): OrganizationStore {
 
 	async function init(): Promise<void> {
 		try {
-			const storedOrganizationId = await getStoredValue<string>(PreferencesKey.SELECTED_ORGANIZATION_ID);
+			const storedOrganizationId = await getStoredValue<number>(PreferencesKey.SELECTED_ORGANIZATION_ID);
 			if (storedOrganizationId) {
 				return change(storedOrganizationId);
 			}
@@ -48,7 +48,7 @@ function createStore(): OrganizationStore {
 		set(undefined);
 	}
 
-	async function change(id: string): Promise<void> {
+	async function change(id: number): Promise<void> {
 		const body = await organizationResource.getById(id);
 		if (StatusCheck.isOK(body.status)) {
 			await _set(body.data);

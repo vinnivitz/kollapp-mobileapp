@@ -9,7 +9,13 @@ export default defineConfig({
 		noExternal: ['@ionic/core']
 	},
 	test: {
+		coverage: {
+			enabled: true,
+			include: ['src/lib/components/**/*.svelte']
+		},
 		environment: 'jsdom',
-		include: ['src/**/*.{test,spec}.{js,ts}']
+		globals: true,
+		include: ['src/**/*.{test,spec}.{js,ts}'],
+		setupFiles: './vitest.setup.ts'
 	}
 });

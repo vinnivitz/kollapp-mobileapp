@@ -6,8 +6,8 @@ import type { Readable } from 'svelte/store';
  */
 export type ActivityStore = Readable<ActivityModel[]> & {
 	initialized: Readable<boolean>;
-	change: (id: string) => Promise<void>;
-	init: (organizationId: string) => Promise<void>;
+	change: (id: number) => Promise<void>;
+	init: (organizationId: number) => Promise<void>;
 	reset: () => Promise<void>;
 	set: (value: ActivityModel[]) => Promise<void>;
 };

@@ -45,7 +45,7 @@
 
 <style>
 	ion-card {
-		--background: var(--ion-color-light);
+		--background: var(--ion-background-color-step-50);
 
 		ion-card-title {
 			--color: var(--ion-color-dark);

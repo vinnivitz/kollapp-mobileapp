@@ -1,5 +1,8 @@
 <script lang="ts">
+	import Layout from '$lib/components/layout/Layout.svelte';
 	import PageNotFound from '$lib/components/widgets/PageNotFound.svelte';
 </script>
 
-<PageNotFound></PageNotFound>
+<Layout title="Kollapp">
+	<PageNotFound></PageNotFound>
+</Layout>

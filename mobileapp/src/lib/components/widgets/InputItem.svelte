@@ -8,6 +8,7 @@
 	type Properties = {
 		label: string;
 		name: string;
+		card?: boolean;
 		color?: Colors;
 		helperText?: string;
 		icon?: string;
@@ -20,6 +21,7 @@
 	};
 
 	let {
+		card,
 		change,
 		color,
 		helperText,
@@ -34,7 +36,7 @@
 	}: Properties = $props();
 </script>
 
-<CustomItem {color} iconStart={icon} iconEnd={inputIcon} iconClick={inputIconClick}>
+<CustomItem {card} {color} iconStart={icon} iconEnd={inputIcon} iconClick={inputIconClick}>
 	<!-- svelte-ignore event_directive_deprecated -->
 	<ion-input
 		label-placement="floating"
@@ -49,3 +51,10 @@
 	>
 	</ion-input>
 </CustomItem>
+
+<style>
+	ion-input {
+		--highlight-color-focused: var(--ion-color-secondary);
+		--color: var(--ion-color-dark);
+	}
+</style>

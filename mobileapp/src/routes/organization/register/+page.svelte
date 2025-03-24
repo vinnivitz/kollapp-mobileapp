@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { loadingController } from 'ionic-svelte';
-	import { saveOutline } from 'ionicons/icons';
+	import { accessibilityOutline, saveOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
 
@@ -49,7 +49,11 @@
 <Layout title={$t('routes.auth.register.organization.title')} showBackButton>
 	<Card title={$t('routes.auth.register.organization.form.title')}>
 		<form use:customForm={form}>
-			<InputItem name="name" label={$t('routes.auth.register.organization.form.input.name')} />
+			<InputItem
+				name="name"
+				label={$t('routes.auth.register.organization.form.input.name')}
+				icon={accessibilityOutline}
+			/>
 			<div class="text-center">
 				<Button
 					classProp="mt-3"

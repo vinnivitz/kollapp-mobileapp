@@ -1,10 +1,9 @@
 <script lang="ts">
 	import type { SearchableItemDto } from '$lib/api/dto/server';
+	import type { Snippet } from 'svelte';
 
 	import * as icons from 'ionicons/icons';
-	import { diamondOutline } from 'ionicons/icons';
 
-	import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
 
 	import { authResource, searchableResource } from '$lib/api/resources';
@@ -14,9 +13,24 @@
 	import { PageRoute, type PageRoutePaths } from '$lib/models/routing';
 	import { triggerClickByLabel } from '$lib/utility';
 
+	type Properties = {
+		children: Snippet;
+	};
+
+	let { children }: Properties = $props();
+
 	let searchedItems = $state<SearchableItemDto[]>([]);
 	let searchValue = $state('');
 	let menuController: HTMLIonMenuElement;
+
+	export async function navigate(route: PageRoutePaths, label?: string): Promise<void> {
+		await menuController.close();
+		searchValue = '';
+		await goto(route);
+		if (label) {
+			triggerClickByLabel(label);
+		}
+	}
 
 	async function logout(): Promise<void> {
 		await authResource.logout();
@@ -24,17 +38,8 @@
 	}
 
 	async function onSearch(event: CustomEvent): Promise<void> {
-		searchValue = event.detail.value ?? '';
+		searchValue = event.detail.value;
 		searchedItems = await searchableResource.filter(searchValue.toLowerCase());
-	}
-
-	async function navigate(route: PageRoutePaths, label?: string): Promise<void> {
-		await menuController.close();
-		searchValue = '';
-		await goto(route);
-		if (label) {
-			triggerClickByLabel(label);
-		}
 	}
 </script>
 
@@ -45,7 +50,6 @@
 			<ion-searchbar
 				class="pt-5"
 				color="light"
-				show-clear-button="always"
 				debounce={100}
 				placeholder={$t('routes.organization.page.activity.search.placeholder')}
 				on:ionInput={onSearch}
@@ -55,8 +59,8 @@
 		</ion-toolbar>
 	</ion-header>
 	<ion-content class="ion-padding relative text-center">
-		<ion-list>
-			{#if searchValue !== ''}
+		{#if searchValue !== ''}
+			<ion-list>
 				<ion-list-header>
 					{#if searchedItems.length > 0}
 						{$t('components.layout.menu.searchbar.title.found', { value: searchValue })}
@@ -72,24 +76,10 @@
 						click={() => navigate(item.route, item.label)}
 					/>
 				{/each}
-			{:else}
-				<LabeledItem
-					transparent
-					click={() => navigate(PageRoute.ACCOUNT.ROOT)}
-					icon={icons.personOutline}
-					label={$t('components.layout.header.button.account')}
-				/>
-				<LabeledItem
-					transparent
-					click={() => navigate(PageRoute.ORGANIZATION.ROOT)}
-					icon={icons.accessibilityOutline}
-					label={$t('components.layout.menu.list.organization')}
-				/>
-				{#if dev}
-					<LabeledItem transparent icon={diamondOutline} click={() => navigate('showcase')} label="Showcase" />
-				{/if}
-			{/if}
-		</ion-list>
+			</ion-list>
+		{:else}
+			{@render children()}
+		{/if}
 		{#if searchValue === ''}
 			<Button
 				size="default"
@@ -109,7 +99,7 @@
 	</ion-content>
 </ion-menu>
 
-<style lang="postcss">
+<style>
 	ion-searchbar {
 		padding: 0 4px;
 	}

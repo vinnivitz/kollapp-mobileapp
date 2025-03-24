@@ -2,7 +2,7 @@
  * Stores activity information of an organization.
  */
 export type ActivityModel = {
-	id: string;
+	id: number;
 	location: string;
 	name: string;
 };
