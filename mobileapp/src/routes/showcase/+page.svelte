@@ -45,7 +45,7 @@
 <LayoutComponent title="Showcase">
 	<!-- svelte-ignore event_directive_deprecated -->
 	<ion-searchbar on:ionInput={onFilter} color="light"></ion-searchbar>
-	<div class="mx-2 flex justify-between gap-2 truncate">
+	<div class="mx-2 flex gap-2 truncate">
 		<ion-select
 			aria-label="Layout"
 			interface="popover"
@@ -67,6 +67,22 @@
 		</ion-select>
 	</div>
 	<Card title="Buttons">
+		<Modal
+			dismissed={() => {
+				modalOpen = false;
+			}}
+			open={modalOpen}
+			cancel={() => {
+				modalOpen = false;
+				showAlert('Modal canceled');
+			}}
+			confirm={() => {
+				modalOpen = false;
+				showAlert('Model confirmed', { type: AlertType.SUCCESS });
+			}}
+		>
+			This is a modal.
+		</Modal>
 		<div class="flex flex-wrap items-center justify-center">
 			<Button
 				label="Default"
@@ -185,11 +201,8 @@
 	</Card>
 </LayoutComponent>
 
-<Modal
-	open={modalOpen}
-	cancel={() => showAlert('Modal canceled')}
-	confirm={() => {
-		modalOpen = false;
-		showAlert('Model confirmed', { type: AlertType.SUCCESS });
-	}}>This is a modal.</Modal
->
+<style>
+	:host .select-wrapper {
+		justify-content: center;
+	}
+</style>

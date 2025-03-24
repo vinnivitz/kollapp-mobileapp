@@ -283,6 +283,9 @@
 
 <Modal
 	open={createModalOpen}
+	dismissed={() => {
+		createModalOpen = false;
+	}}
 	cancel={onCancelCreateModal}
 	confirm={() => createActions.onSubmit()}
 	confirmLabel={$t('routes.organization.page.activity.create-modal.button.confirm')}
@@ -315,6 +318,9 @@
 
 {#key updateForm}
 	<Modal
+		dismissed={() => {
+			editModalOpen = false;
+		}}
 		open={editModalOpen}
 		cancel={onCancelEditModal}
 		confirm={() => updateActions.onSubmit()}
