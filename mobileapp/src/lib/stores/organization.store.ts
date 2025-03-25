@@ -12,34 +12,28 @@ import { getStoredValue, removeStoredValue, StatusCheck, storeValue } from '$lib
 function createStore(): OrganizationStore {
 	const { set, subscribe } = writable<OrganizationModel | undefined>();
 
-	const initialized = writable<boolean>(false);
-
 	async function init(): Promise<void> {
-		try {
-			const storedOrganizationId = await getStoredValue<number>(PreferencesKey.SELECTED_ORGANIZATION_ID);
-			if (storedOrganizationId) {
-				return change(storedOrganizationId);
-			}
+		const storedOrganizationId = await getStoredValue<number>(PreferencesKey.SELECTED_ORGANIZATION_ID);
+		if (storedOrganizationId) {
+			return change(storedOrganizationId);
+		}
 
-			const response = await organizationResource.getIds();
-			if (StatusCheck.isOK(response.status) && response.data.length > 0) {
-				return response.data[0] ? change(response.data[0]) : set(undefined);
-			} else if (!StatusCheck.isUnauthorized(response.status)) {
-				const storedOrganization = await getStoredValue<OrganizationModel | undefined>(PreferencesKey.ORGANIZATION);
-				if (storedOrganization) {
-					set(storedOrganization);
-					return activitiesStore.init(storedOrganization.id);
-				}
-				return set(undefined);
+		const response = await organizationResource.getIds();
+		if (StatusCheck.isOK(response.status) && response.data.length > 0) {
+			return response.data[0] ? change(response.data[0]) : set(undefined);
+		} else if (!StatusCheck.isUnauthorized(response.status)) {
+			const storedOrganization = await getStoredValue<OrganizationModel | undefined>(PreferencesKey.ORGANIZATION);
+			if (storedOrganization) {
+				set({ ...storedOrganization, initialized: true });
+				return activitiesStore.init(storedOrganization.id);
 			}
-		} finally {
-			initialized.set(true);
+			return set(undefined);
 		}
 	}
 
 	async function _set(model: OrganizationModel): Promise<void> {
 		await storeValue(PreferencesKey.ORGANIZATION, model);
-		set(model);
+		set({ ...model, initialized: true });
 	}
 
 	async function reset(): Promise<void> {
@@ -51,7 +45,7 @@ function createStore(): OrganizationStore {
 	async function change(id: number): Promise<void> {
 		const body = await organizationResource.getById(id);
 		if (StatusCheck.isOK(body.status)) {
-			await _set(body.data);
+			await _set({ id: body.data.id, name: body.data.name });
 			await storeValue(PreferencesKey.SELECTED_ORGANIZATION_ID, id);
 			await activitiesStore.init(id);
 		}
@@ -60,7 +54,6 @@ function createStore(): OrganizationStore {
 	return {
 		change,
 		init,
-		initialized,
 		reset,
 		set: _set,
 		subscribe

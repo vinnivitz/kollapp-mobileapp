@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ActivityModel } from '$lib/models/models';
+	import type { ActivityItem } from '$lib/models/models';
 
 	import { format } from 'date-fns';
 	import { loadingController } from 'ionic-svelte';
@@ -43,6 +43,8 @@
 		PENDING = 'pending'
 	}
 
+	const activityItems = $derived($activitiesStore?.items ?? []);
+
 	let showPopoverCalendar = $state(false);
 	let showSelectDateCalendar = $state(false);
 
@@ -50,7 +52,7 @@
 	let editModalOpen = $state(false);
 
 	let searchActivityValue = $state('');
-	let filteredActivities = $state<ActivityModel[]>([]);
+	let filteredActivities = $state<ActivityItem[]>([]);
 
 	let selectedActivityId: number;
 	let activityStatus = $state(ActivityStatus.PENDING);
@@ -75,7 +77,7 @@
 	let updateForm = $state(new Form(updateActivitySchema().cast({}) as UpdateActivityDto, updateConfig));
 
 	$effect(() => {
-		filteredActivities = $activitiesStore;
+		filteredActivities = activityItems;
 	});
 
 	async function onCreateSubmit(model: CreateActivityDto, result: ValidationResult): Promise<void> {
@@ -125,7 +127,7 @@
 		createModalOpen = true;
 	}
 
-	function onEditActivity(activity: ActivityModel): void {
+	function onEditActivity(activity: ActivityItem): void {
 		selectedActivityId = activity.id;
 		updateForm = new Form(activity, updateConfig);
 		editModalOpen = true;
@@ -161,19 +163,17 @@
 
 	function onSearchEvents(event: CustomEvent): void {
 		searchActivityValue = event.detail.value ?? '';
-		filteredActivities = $activitiesStore.filter((activity) =>
-			activity.name.toLowerCase().includes(searchActivityValue)
-		);
+		filteredActivities = activityItems.filter((activity) => activity.name.toLowerCase().includes(searchActivityValue));
 	}
 
 	function onFilterByStatus(status: ActivityStatus): void {
 		void status;
-		filteredActivities = $activitiesStore;
+		filteredActivities = activityItems;
 	}
 </script>
 
 <Layout title={$t('routes.organization.page.activity.title')} showBackButton scrollable={false}>
-	{#if $activitiesStore.length === 0}
+	{#if activityItems.length === 0}
 		<Calendar apply={onCreateActivity}></Calendar>
 	{/if}
 
@@ -184,7 +184,7 @@
 		icon={createOutline}
 	></Button>
 
-	{#if $activitiesStore.length > 0}
+	{#if activityItems.length > 0}
 		<!-- svelte-ignore event_directive_deprecated -->
 		<div class="mx-2 mt-4">
 			<ion-toggle

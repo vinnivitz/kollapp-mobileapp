@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { OrganizationModel, UserModel } from '$lib/models/models';
+	import type { OrganizationModel } from '$lib/models/models';
 
 	import { accessibilityOutline } from 'ionicons/icons';
 
@@ -12,14 +12,11 @@
 	import { PageRoute } from '$lib/models/routing';
 	import { organizationStore, userStore } from '$lib/stores';
 
-	const userModel = $derived<undefined | UserModel>($userStore);
 	const organizationModel = $derived<OrganizationModel | undefined>($organizationStore);
 </script>
 
 <Layout title={$t('routes.home.title')}>
-	{#if userModel}
-		<Card title={$t('routes.home.card.user.title', { value: userModel.username })} />
-	{/if}
+	<Card title={$t('routes.home.card.user.title', { value: $userStore?.username })} />
 
 	{#if organizationModel}
 		<Card title={organizationModel.name}>

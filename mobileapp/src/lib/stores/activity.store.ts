@@ -8,43 +8,44 @@ import { PreferencesKey } from '$lib/models/preferences';
 import { getStoredValue, removeStoredValue, StatusCheck, storeValue } from '$lib/utility';
 
 function createStore(): ActivityStore {
-	const { set, subscribe } = writable<ActivityModel[]>([]);
-
-	const initialized = writable<boolean>(false);
+	const { set, subscribe } = writable<ActivityModel | undefined>();
 
 	async function init(organizationId?: number): Promise<void> {
 		if (organizationId) {
 			await change(organizationId);
 		} else {
-			const model = await getStoredValue<ActivityModel[]>(PreferencesKey.ACTIVITIES);
+			const model = await getStoredValue<ActivityModel | undefined>(PreferencesKey.ACTIVITIES);
 			if (model) {
-				set(model);
+				set({ ...model, initialized: true });
 			}
 		}
-		initialized.set(true);
 	}
 
-	async function _set(model: ActivityModel[]): Promise<void> {
+	async function _set(model: ActivityModel): Promise<void> {
 		await storeValue(PreferencesKey.ACTIVITIES, model);
-		set(model);
+		set({ ...model, initialized: true });
 	}
 
 	async function reset(): Promise<void> {
 		await removeStoredValue(PreferencesKey.ACTIVITIES);
-		set([]);
+		set(undefined);
 	}
 
 	async function change(organizationId: number): Promise<void> {
 		const body = await organizationResource.getActivities(organizationId);
 		if (StatusCheck.isOK(body.status)) {
-			await _set(body.data.map((activity) => ({ id: activity.id, location: activity.location, name: activity.name })));
+			const items = body.data.map((activity) => ({
+				id: activity.id,
+				location: activity.location,
+				name: activity.name
+			}));
+			await _set({ items });
 		}
 	}
 
 	return {
 		change,
 		init,
-		initialized,
 		reset,
 		set: _set,
 		subscribe

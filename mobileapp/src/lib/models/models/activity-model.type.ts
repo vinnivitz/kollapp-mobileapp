@@ -1,8 +1,9 @@
+import type { ActivityItem } from '$lib/models/models';
+
 /**
  * Stores activity information of an organization.
  */
 export type ActivityModel = {
-	id: number;
-	location: string;
-	name: string;
+	items: ActivityItem[];
+	initialized?: boolean;
 };

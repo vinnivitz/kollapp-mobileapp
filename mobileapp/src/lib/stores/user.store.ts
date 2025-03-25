@@ -10,8 +10,6 @@ import { getStoredValue, removeStoredValue, StatusCheck, storeValue } from '$lib
 function createStore(): UserStore {
 	const { set, subscribe } = writable<undefined | UserModel>();
 
-	const initialized = writable<boolean>(false);
-
 	async function init(): Promise<void> {
 		const body = await userResource.getByAuthentication();
 
@@ -21,15 +19,14 @@ function createStore(): UserStore {
 			const model = await getStoredValue<undefined | UserModel>(PreferencesKey.USER);
 
 			if (model) {
-				set(model);
+				set({ ...model, initialized: true });
 			}
 		}
-		initialized.set(true);
 	}
 
 	async function _set(model: UserModel): Promise<void> {
 		await storeValue(PreferencesKey.USER, model);
-		set(model);
+		set({ ...model, initialized: true });
 	}
 
 	async function reset(): Promise<void> {
@@ -39,7 +36,6 @@ function createStore(): UserStore {
 
 	return {
 		init,
-		initialized,
 		reset,
 		set: _set,
 		subscribe

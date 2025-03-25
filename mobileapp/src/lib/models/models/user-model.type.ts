@@ -9,4 +9,5 @@ export type UserModel = {
 	roles: UserRole[];
 	surname: string;
 	username: string;
+	initialized?: boolean;
 };

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { accessibilityOutline, diamondOutline, personOutline } from 'ionicons/icons';
 	import { onDestroy, type Snippet } from 'svelte';
-	import { derived } from 'svelte/store';
 	import { fade } from 'svelte/transition';
 
 	import { dev } from '$app/environment';
@@ -38,10 +37,8 @@
 	let refresher = $state<HTMLIonRefresherElement | undefined>();
 	let menuComponent = $state<ReturnType<typeof Menu>>();
 
-	const loading = !derived(
-		[userStore.initialized, organizationStore.initialized, activitiesStore.initialized],
-		([$userInitialized, $organizationInitialized, $activitiesInitialized]) =>
-			$userInitialized && $organizationInitialized && $activitiesInitialized
+	const loading = $derived(
+		!$userStore?.initialized || !$organizationStore?.initialized || !$activitiesStore?.initialized
 	);
 
 	$effect(() => {
@@ -88,18 +85,21 @@
 	{#if !hideLayout}
 		<Header {title} {showBackButton}></Header>
 	{/if}
-	{#if loading && navigationDebounced}
-		<ion-progress-bar type="indeterminate"></ion-progress-bar>
-	{/if}
-	<ion-content class="ion-padding" in:fade={{ delay: 0, duration: 200 }} class:no-overflow={!scrollable}>
-		{#if onRefresh}
-			<!-- svelte-ignore event_directive_deprecated -->
-			<ion-refresher bind:this={refresher} slot="fixed" on:ionRefresh={() => refresher && onRefresh?.(refresher)}>
-				<ion-refresher-content></ion-refresher-content>
-			</ion-refresher>
+	{#if loading}
+		{#if navigationDebounced}
+			<ion-progress-bar type="indeterminate"></ion-progress-bar>
 		{/if}
-		{@render children?.()}
-	</ion-content>
+	{:else}
+		<ion-content class="ion-padding" in:fade={{ delay: 0, duration: 200 }} class:no-overflow={!scrollable}>
+			{#if onRefresh}
+				<!-- svelte-ignore event_directive_deprecated -->
+				<ion-refresher bind:this={refresher} slot="fixed" on:ionRefresh={() => refresher && onRefresh?.(refresher)}>
+					<ion-refresher-content></ion-refresher-content>
+				</ion-refresher>
+			{/if}
+			{@render children?.()}
+		</ion-content>
+	{/if}
 </div>
 
 <style>

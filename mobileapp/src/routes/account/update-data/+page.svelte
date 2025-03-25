@@ -1,6 +1,4 @@
 <script lang="ts">
-	import type { UserModel } from '$lib/models/models';
-
 	import { loadingController } from 'ionic-svelte';
 	import { mailOutline, peopleCircleOutline, personCircleOutline, personOutline, saveOutline } from 'ionicons/icons';
 
@@ -15,32 +13,23 @@
 	import { userStore } from '$lib/stores';
 	import { customForm, getValidationResult } from '$lib/utility';
 
-	let validationResult: ValidationResult;
 	let actions: FormActions<UpdateUserDataDto>;
-	let form = $state<Form<UpdateUserDataDto>>();
-	let userModel = $derived<undefined | UserModel>($userStore);
-	let model: UpdateUserDataDto;
-	let touched = $state(false);
+	let validationResult: ValidationResult;
 
+	const model = updateUserDataSchema().cast({
+		email: $userStore?.email,
+		name: $userStore?.name,
+		surname: $userStore?.surname,
+		username: $userStore?.username
+	}) as UpdateUserDataDto;
 	const config: FormConfig<UpdateUserDataDto> = {
 		exposedActions: (exposedActions) => (actions = exposedActions),
 		onSubmit,
 		onTouched: () => (touched = true),
 		schema: updateUserDataSchema()
 	};
-
-	$effect(() => {
-		if (userModel) {
-			model = updateUserDataSchema().cast({
-				email: userModel.email,
-				name: userModel.name,
-				surname: userModel.surname,
-				username: userModel.username
-			}) as UpdateUserDataDto;
-
-			form = new Form(model, config);
-		}
-	});
+	const form = new Form(model, config);
+	let touched = $state(false);
 
 	async function onSubmit(model: UpdateUserDataDto, result: ValidationResult): Promise<void> {
 		validationResult = result;
