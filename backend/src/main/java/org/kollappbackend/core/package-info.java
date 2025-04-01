@@ -1,4 +1,3 @@
 @BoundedContext(name = "Core")
-package com.none.kollappbackend.core;
+package org.kollappbackend.core;
 
-import org.jmolecules.ddd.annotation.BoundedContext;

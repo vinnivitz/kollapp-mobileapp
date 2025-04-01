@@ -1,7 +1,7 @@
-package com.none.kollappbackend.user.application.service;
+package org.kollappbackend.user.application.service;
 
-import com.none.kollappbackend.user.application.model.AuthenticatedKollappUser;
 import org.jmolecules.architecture.hexagonal.PrimaryPort;
+import org.kollappbackend.user.application.model.AuthenticatedKollappUser;
 
 @PrimaryPort
 public interface AuthService {

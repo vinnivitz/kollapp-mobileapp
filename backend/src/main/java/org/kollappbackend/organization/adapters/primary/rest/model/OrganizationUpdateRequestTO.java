@@ -1,4 +1,4 @@
-package com.none.kollappbackend.organization.adapters.primary.rest.model;
+package org.kollappbackend.organization.adapters.primary.rest.model;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

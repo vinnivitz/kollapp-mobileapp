@@ -1,6 +1,6 @@
-package com.none.kollappbackend.organization.application.repository;
+package org.kollappbackend.organization.application.repository;
 
-import com.none.kollappbackend.organization.application.model.Activity;
+import org.kollappbackend.organization.application.model.Activity;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

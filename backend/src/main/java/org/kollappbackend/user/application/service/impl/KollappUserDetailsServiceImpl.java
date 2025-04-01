@@ -1,10 +1,10 @@
-package com.none.kollappbackend.user.application.service.impl;
+package org.kollappbackend.user.application.service.impl;
 
-import com.none.kollappbackend.user.application.exception.UsernameNotFoundException;
-import com.none.kollappbackend.user.application.model.KollappUser;
-import com.none.kollappbackend.user.application.model.KollappUserDetails;
-import com.none.kollappbackend.user.application.repository.KollappUserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.kollappbackend.user.application.exception.UsernameNotFoundException;
+import org.kollappbackend.user.application.model.KollappUser;
+import org.kollappbackend.user.application.model.KollappUserDetails;
+import org.kollappbackend.user.application.repository.KollappUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.security.core.GrantedAuthority;

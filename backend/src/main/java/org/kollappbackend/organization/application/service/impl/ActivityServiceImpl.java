@@ -1,14 +1,14 @@
-package com.none.kollappbackend.organization.application.service.impl;
+package org.kollappbackend.organization.application.service.impl;
 
-import com.none.kollappbackend.organization.application.exception.ActivityNotFoundException;
-import com.none.kollappbackend.organization.application.exception.OrganizationNotFoundException;
-import com.none.kollappbackend.organization.application.model.Activity;
-import com.none.kollappbackend.organization.application.model.Organization;
-import com.none.kollappbackend.organization.application.repository.ActivityRepository;
-import com.none.kollappbackend.organization.application.repository.OrganizationRepository;
-import com.none.kollappbackend.organization.application.service.ActivityService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.kollappbackend.organization.application.exception.ActivityNotFoundException;
+import org.kollappbackend.organization.application.exception.OrganizationNotFoundException;
+import org.kollappbackend.organization.application.model.Activity;
+import org.kollappbackend.organization.application.model.Organization;
+import org.kollappbackend.organization.application.repository.ActivityRepository;
+import org.kollappbackend.organization.application.repository.OrganizationRepository;
+import org.kollappbackend.organization.application.service.ActivityService;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 

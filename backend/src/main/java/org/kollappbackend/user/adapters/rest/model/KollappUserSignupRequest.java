@@ -1,4 +1,4 @@
-package com.none.kollappbackend.user.adapters.rest.model;
+package org.kollappbackend.user.adapters.rest.model;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

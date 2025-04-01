@@ -1,8 +1,8 @@
-package com.none.kollappbackend.user.application.service;
+package org.kollappbackend.user.application.service;
 
-import com.none.kollappbackend.user.application.model.ERole;
-import com.none.kollappbackend.user.application.model.KollappUser;
 import org.jmolecules.architecture.hexagonal.PrimaryPort;
+import org.kollappbackend.user.application.model.ERole;
+import org.kollappbackend.user.application.model.KollappUser;
 import org.springframework.lang.Nullable;
 
 import java.util.List;

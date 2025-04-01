@@ -1,12 +1,12 @@
-package com.none.kollappbackend.core.config;
+package org.kollappbackend.core.config;
 
-import com.none.kollappbackend.core.util.JwtUtil;
-import com.none.kollappbackend.core.util.ResponseUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.kollappbackend.core.util.JwtUtil;
+import org.kollappbackend.core.util.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;

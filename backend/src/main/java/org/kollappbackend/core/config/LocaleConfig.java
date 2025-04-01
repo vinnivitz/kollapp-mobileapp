@@ -1,4 +1,4 @@
-package com.none.kollappbackend.core.config;
+package org.kollappbackend.core.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

@@ -1,12 +1,12 @@
-package com.none.kollappbackend.user.adapters.secondary.mail;
+package org.kollappbackend.user.adapters.secondary.mail;
 
-import com.none.kollappbackend.core.config.properties.ApplicationProperties;
-import com.none.kollappbackend.core.util.UrlBuilderUtil;
-import com.none.kollappbackend.user.application.service.EmailService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.jmolecules.architecture.hexagonal.SecondaryAdapter;
+import org.kollappbackend.core.config.properties.ApplicationProperties;
+import org.kollappbackend.core.util.UrlBuilderUtil;
+import org.kollappbackend.user.application.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;

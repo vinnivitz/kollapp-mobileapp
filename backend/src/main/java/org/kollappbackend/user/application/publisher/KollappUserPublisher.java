@@ -1,7 +1,7 @@
-package com.none.kollappbackend.user.application.publisher;
+package org.kollappbackend.user.application.publisher;
 
-import com.none.kollappbackend.user.application.model.KollappUserDeletedEvent;
 import org.jmolecules.architecture.hexagonal.SecondaryPort;
+import org.kollappbackend.user.application.model.KollappUserDeletedEvent;
 import org.springframework.stereotype.Service;
 
 @SecondaryPort

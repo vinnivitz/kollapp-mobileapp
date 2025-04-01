@@ -1,19 +1,10 @@
-package com.none.kollappbackend.user.adapters.rest;
+package org.kollappbackend.user.adapters.rest;
 
-import com.none.kollappbackend.core.adapters.primary.rest.model.ErrorResponseTO;
-import com.none.kollappbackend.core.adapters.primary.rest.model.ResponseTO;
-import com.none.kollappbackend.core.adapters.primary.rest.model.ValidationFailureResponseTO;
-import com.none.kollappbackend.user.application.exception.EmailExistsException;
-import com.none.kollappbackend.user.application.exception.EmailIsAlreadyConfirmedException;
-import com.none.kollappbackend.user.application.exception.EmailIsNotConfirmedException;
-import com.none.kollappbackend.user.application.exception.EmailNotFoundException;
-import com.none.kollappbackend.user.application.exception.IncorrectPasswordException;
-import com.none.kollappbackend.user.application.exception.InvalidConfirmationLinkException;
-import com.none.kollappbackend.user.application.exception.InvalidRefreshTokenException;
-import com.none.kollappbackend.user.application.exception.KollappUserNotFoundException;
-import com.none.kollappbackend.user.application.exception.UsernameExistsException;
-import com.none.kollappbackend.user.application.exception.UsernameNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.kollappbackend.core.adapters.primary.rest.model.ErrorResponseTO;
+import org.kollappbackend.core.adapters.primary.rest.model.ResponseTO;
+import org.kollappbackend.core.adapters.primary.rest.model.ValidationFailureResponseTO;
+import org.kollappbackend.user.application.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -25,7 +16,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @Slf4j
 @Order(1)
-@ControllerAdvice(basePackages = {"com.none.kollappbackend.user"})
+@ControllerAdvice(basePackages = {"org.kollappbackend.user"})
 public class UserExceptionHandler {
     @Autowired
     private MessageSource messageSource;

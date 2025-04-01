@@ -1,4 +1,4 @@
-package com.none.kollappbackend.user.application.model;
+package org.kollappbackend.user.application.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

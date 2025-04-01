@@ -1,9 +1,9 @@
-package com.none.kollappbackend.core.adapters.primary.rest;
+package org.kollappbackend.core.adapters.primary.rest;
 
-import com.none.kollappbackend.core.adapters.primary.rest.model.ErrorResponseTO;
-import com.none.kollappbackend.core.adapters.primary.rest.model.ResponseTO;
-import com.none.kollappbackend.core.adapters.primary.rest.model.ValidationFailureResponseTO;
 import lombok.extern.slf4j.Slf4j;
+import org.kollappbackend.core.adapters.primary.rest.model.ErrorResponseTO;
+import org.kollappbackend.core.adapters.primary.rest.model.ResponseTO;
+import org.kollappbackend.core.adapters.primary.rest.model.ValidationFailureResponseTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;

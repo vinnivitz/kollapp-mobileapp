@@ -1,9 +1,9 @@
-package com.none.kollappbackend.organization.adapters.primary.rest.mapper;
+package org.kollappbackend.organization.adapters.primary.rest.mapper;
 
-import com.none.kollappbackend.organization.adapters.primary.rest.model.ActivityCreationRequestTO;
-import com.none.kollappbackend.organization.adapters.primary.rest.model.ActivityTO;
-import com.none.kollappbackend.organization.adapters.primary.rest.model.ActivityUpdateRequestTO;
-import com.none.kollappbackend.organization.application.model.Activity;
+import org.kollappbackend.organization.adapters.primary.rest.model.ActivityCreationRequestTO;
+import org.kollappbackend.organization.adapters.primary.rest.model.ActivityTO;
+import org.kollappbackend.organization.adapters.primary.rest.model.ActivityUpdateRequestTO;
+import org.kollappbackend.organization.application.model.Activity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

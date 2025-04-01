@@ -1,29 +1,23 @@
-package com.none.kollappbackend.organization.adapters.primary.rest;
+package org.kollappbackend.organization.adapters.primary.rest;
 
-import com.none.kollappbackend.core.adapters.primary.rest.model.DataResponseTO;
-import com.none.kollappbackend.core.adapters.primary.rest.model.MessageResponseTO;
-import com.none.kollappbackend.core.adapters.primary.rest.model.ResponseTO;
-import com.none.kollappbackend.organization.adapters.primary.rest.mapper.ActivityMapper;
-import com.none.kollappbackend.organization.adapters.primary.rest.model.ActivityCreationRequestTO;
-import com.none.kollappbackend.organization.adapters.primary.rest.model.ActivityTO;
-import com.none.kollappbackend.organization.adapters.primary.rest.model.ActivityUpdateRequestTO;
-import com.none.kollappbackend.organization.application.model.Activity;
-import com.none.kollappbackend.organization.application.service.ActivityService;
-import com.none.kollappbackend.user.application.model.RequiresManagerOrMemberRole;
-import com.none.kollappbackend.user.application.model.RequiresManagerRole;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
 import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
+import org.kollappbackend.core.adapters.primary.rest.model.DataResponseTO;
+import org.kollappbackend.core.adapters.primary.rest.model.MessageResponseTO;
+import org.kollappbackend.core.adapters.primary.rest.model.ResponseTO;
+import org.kollappbackend.organization.adapters.primary.rest.mapper.ActivityMapper;
+import org.kollappbackend.organization.adapters.primary.rest.model.ActivityCreationRequestTO;
+import org.kollappbackend.organization.adapters.primary.rest.model.ActivityTO;
+import org.kollappbackend.organization.adapters.primary.rest.model.ActivityUpdateRequestTO;
+import org.kollappbackend.organization.application.model.Activity;
+import org.kollappbackend.organization.application.service.ActivityService;
+import org.kollappbackend.user.application.model.RequiresManagerOrMemberRole;
+import org.kollappbackend.user.application.model.RequiresManagerRole;
 import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 

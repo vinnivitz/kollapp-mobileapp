@@ -1,7 +1,7 @@
-package com.none.kollappbackend.organization.adapters.secondary.db.jpa;
+package org.kollappbackend.organization.adapters.secondary.db.jpa;
 
-import com.none.kollappbackend.organization.application.model.PersonOfOrganization;
 import org.jmolecules.ddd.annotation.Repository;
+import org.kollappbackend.organization.application.model.PersonOfOrganization;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -1,10 +1,10 @@
-package com.none.kollappbackend.organization.adapters.secondary.db;
+package org.kollappbackend.organization.adapters.secondary.db;
 
-import com.none.kollappbackend.organization.adapters.secondary.db.jpa.PersonOfOrganizationJpaRepository;
-import com.none.kollappbackend.organization.application.exception.PersonNotRegisteredInOrganizationException;
-import com.none.kollappbackend.organization.application.model.PersonOfOrganization;
-import com.none.kollappbackend.organization.application.repository.PersonOfOrganizationRepository;
 import org.jmolecules.architecture.hexagonal.SecondaryAdapter;
+import org.kollappbackend.organization.adapters.secondary.db.jpa.PersonOfOrganizationJpaRepository;
+import org.kollappbackend.organization.application.exception.PersonNotRegisteredInOrganizationException;
+import org.kollappbackend.organization.application.model.PersonOfOrganization;
+import org.kollappbackend.organization.application.repository.PersonOfOrganizationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Repository;

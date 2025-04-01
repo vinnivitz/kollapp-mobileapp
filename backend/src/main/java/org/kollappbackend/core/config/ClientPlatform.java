@@ -1,4 +1,4 @@
-package com.none.kollappbackend.core.config;
+package org.kollappbackend.core.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

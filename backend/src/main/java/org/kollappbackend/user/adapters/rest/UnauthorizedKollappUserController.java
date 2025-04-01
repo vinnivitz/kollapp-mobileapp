@@ -1,24 +1,19 @@
-package com.none.kollappbackend.user.adapters.rest;
+package org.kollappbackend.user.adapters.rest;
 
-import com.none.kollappbackend.core.adapters.primary.rest.model.MessageResponseTO;
-import com.none.kollappbackend.core.adapters.primary.rest.model.ResponseTO;
-import com.none.kollappbackend.user.adapters.rest.model.ForgotPasswordRequestTO;
-import com.none.kollappbackend.user.adapters.rest.model.KollappUserSignupRequest;
-import com.none.kollappbackend.user.adapters.rest.model.ResetPasswordRequestTO;
-import com.none.kollappbackend.user.application.model.ERole;
-import com.none.kollappbackend.user.application.service.KollappUserService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
+import org.kollappbackend.core.adapters.primary.rest.model.MessageResponseTO;
+import org.kollappbackend.core.adapters.primary.rest.model.ResponseTO;
+import org.kollappbackend.user.adapters.rest.model.ForgotPasswordRequestTO;
+import org.kollappbackend.user.adapters.rest.model.KollappUserSignupRequest;
+import org.kollappbackend.user.adapters.rest.model.ResetPasswordRequestTO;
+import org.kollappbackend.user.application.model.ERole;
+import org.kollappbackend.user.application.service.KollappUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 

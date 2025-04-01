@@ -1,4 +1,4 @@
-package com.none.kollappbackend.core.config;
+package org.kollappbackend.core.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

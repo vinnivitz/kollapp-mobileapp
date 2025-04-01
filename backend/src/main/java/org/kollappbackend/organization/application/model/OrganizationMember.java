@@ -1,4 +1,4 @@
-package com.none.kollappbackend.organization.application.model;
+package org.kollappbackend.organization.application.model;
 
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;

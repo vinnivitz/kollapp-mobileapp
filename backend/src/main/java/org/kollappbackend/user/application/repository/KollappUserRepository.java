@@ -1,7 +1,7 @@
-package com.none.kollappbackend.user.application.repository;
+package org.kollappbackend.user.application.repository;
 
-import com.none.kollappbackend.user.application.model.KollappUser;
 import org.jmolecules.architecture.hexagonal.SecondaryPort;
+import org.kollappbackend.user.application.model.KollappUser;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;

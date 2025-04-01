@@ -1,7 +1,7 @@
-package com.none.kollappbackend.organization.application.service;
+package org.kollappbackend.organization.application.service;
 
-import com.none.kollappbackend.organization.application.model.Organization;
 import org.jmolecules.architecture.hexagonal.PrimaryPort;
+import org.kollappbackend.organization.application.model.Organization;
 
 @PrimaryPort
 public interface OrganizationService {

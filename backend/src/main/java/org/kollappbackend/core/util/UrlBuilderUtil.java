@@ -1,8 +1,8 @@
-package com.none.kollappbackend.core.util;
+package org.kollappbackend.core.util;
 
-import com.none.kollappbackend.core.config.ClientPlatform;
-import com.none.kollappbackend.core.config.properties.ApplicationProperties;
-import com.none.kollappbackend.core.config.properties.ClientProperties;
+import org.kollappbackend.core.config.ClientPlatform;
+import org.kollappbackend.core.config.properties.ApplicationProperties;
+import org.kollappbackend.core.config.properties.ClientProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
@@ -19,9 +19,9 @@ public class UrlBuilderUtil {
     private ClientProperties clientProperties;
 
     public String buildServerUrl(String path, Map<String, String> queryMap) {
-        String baseUrl = "http" + (Boolean.parseBoolean(applicationProperties.getProduction()) ? "s" : "") + "://"
-                + applicationProperties.getHost() + (Boolean.parseBoolean(applicationProperties.getProduction()) ? ""
-                : (":" + applicationProperties.getPort())) + (path != null ? path : "");
+        String baseUrl = "http" + (Boolean.parseBoolean(applicationProperties.getProduction()) ? "s" : "") + "://" +
+                applicationProperties.getHost() + (Boolean.parseBoolean(applicationProperties.getProduction()) ? "" :
+                (":" + applicationProperties.getPort())) + (path != null ? path : "");
 
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(baseUrl);
 

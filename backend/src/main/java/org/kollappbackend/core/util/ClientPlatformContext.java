@@ -1,6 +1,6 @@
-package com.none.kollappbackend.core.util;
+package org.kollappbackend.core.util;
 
-import com.none.kollappbackend.core.config.ClientPlatform;
+import org.kollappbackend.core.config.ClientPlatform;
 
 public class ClientPlatformContext {
     private static final ThreadLocal<ClientPlatform> clientPlatformHolder = new ThreadLocal<>();

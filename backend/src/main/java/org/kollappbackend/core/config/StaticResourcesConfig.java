@@ -1,6 +1,6 @@
-package com.none.kollappbackend.core.config;
+package org.kollappbackend.core.config;
 
-import com.none.kollappbackend.core.config.properties.ApplicationProperties;
+import org.kollappbackend.core.config.properties.ApplicationProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.CacheControl;

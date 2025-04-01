@@ -1,4 +1,4 @@
-package com.none.kollappbackend.user.application.service;
+package org.kollappbackend.user.application.service;
 
 import org.jmolecules.architecture.hexagonal.SecondaryPort;
 

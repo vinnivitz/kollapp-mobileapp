@@ -1,15 +1,11 @@
-package com.none.kollappbackend.core.util;
+package org.kollappbackend.core.util;
 
-import com.none.kollappbackend.core.config.properties.JwtProperties;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.kollappbackend.core.config.properties.JwtProperties;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;

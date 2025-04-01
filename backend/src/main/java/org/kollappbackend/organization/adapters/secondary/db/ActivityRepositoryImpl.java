@@ -1,9 +1,9 @@
-package com.none.kollappbackend.organization.adapters.secondary.db;
+package org.kollappbackend.organization.adapters.secondary.db;
 
-import com.none.kollappbackend.organization.adapters.secondary.db.jpa.ActivityJpaRepository;
-import com.none.kollappbackend.organization.application.model.Activity;
-import com.none.kollappbackend.organization.application.repository.ActivityRepository;
 import lombok.AllArgsConstructor;
+import org.kollappbackend.organization.adapters.secondary.db.jpa.ActivityJpaRepository;
+import org.kollappbackend.organization.application.model.Activity;
+import org.kollappbackend.organization.application.repository.ActivityRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

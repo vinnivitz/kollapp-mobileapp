@@ -1,9 +1,9 @@
-package com.none.kollappbackend.user.adapters.secondary.publisher;
+package org.kollappbackend.user.adapters.secondary.publisher;
 
-import com.none.kollappbackend.user.application.model.KollappUserDeletedEvent;
-import com.none.kollappbackend.user.application.publisher.KollappUserPublisher;
 import lombok.extern.slf4j.Slf4j;
 import org.jmolecules.architecture.hexagonal.SecondaryAdapter;
+import org.kollappbackend.user.application.model.KollappUserDeletedEvent;
+import org.kollappbackend.user.application.publisher.KollappUserPublisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;

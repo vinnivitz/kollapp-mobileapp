@@ -1,32 +1,25 @@
-package com.none.kollappbackend.organization.adapters.primary.rest;
+package org.kollappbackend.organization.adapters.primary.rest;
 
-import com.none.kollappbackend.core.adapters.primary.rest.model.DataResponseTO;
-import com.none.kollappbackend.core.adapters.primary.rest.model.MessageResponseTO;
-import com.none.kollappbackend.core.adapters.primary.rest.model.ResponseTO;
-import com.none.kollappbackend.organization.adapters.primary.rest.mapper.OrganizationMapper;
-import com.none.kollappbackend.organization.adapters.primary.rest.model.OrganizationCreationRequestTO;
-import com.none.kollappbackend.organization.adapters.primary.rest.model.OrganizationTO;
-import com.none.kollappbackend.organization.adapters.primary.rest.model.OrganizationUpdateRequestTO;
-import com.none.kollappbackend.organization.application.model.Organization;
-import com.none.kollappbackend.organization.application.service.OrganizationService;
-import com.none.kollappbackend.user.application.model.RequiresManagerOrMemberRole;
-import com.none.kollappbackend.user.application.model.RequiresManagerRole;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
+import org.kollappbackend.core.adapters.primary.rest.model.DataResponseTO;
+import org.kollappbackend.core.adapters.primary.rest.model.MessageResponseTO;
+import org.kollappbackend.core.adapters.primary.rest.model.ResponseTO;
+import org.kollappbackend.organization.adapters.primary.rest.mapper.OrganizationMapper;
+import org.kollappbackend.organization.adapters.primary.rest.model.OrganizationCreationRequestTO;
+import org.kollappbackend.organization.adapters.primary.rest.model.OrganizationTO;
+import org.kollappbackend.organization.adapters.primary.rest.model.OrganizationUpdateRequestTO;
+import org.kollappbackend.organization.application.model.Organization;
+import org.kollappbackend.organization.application.service.OrganizationService;
+import org.kollappbackend.user.application.model.RequiresManagerOrMemberRole;
+import org.kollappbackend.user.application.model.RequiresManagerRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/organization")

@@ -1,4 +1,3 @@
 @BoundedContext(name = "Organization")
-package com.none.kollappbackend.organization;
+package org.kollappbackend.organization;
 
-import org.jmolecules.ddd.annotation.BoundedContext;

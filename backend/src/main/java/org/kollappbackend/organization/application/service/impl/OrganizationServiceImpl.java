@@ -1,16 +1,16 @@
-package com.none.kollappbackend.organization.application.service.impl;
+package org.kollappbackend.organization.application.service.impl;
 
-import com.none.kollappbackend.organization.application.exception.OrganizationNotFoundException;
-import com.none.kollappbackend.organization.application.model.Organization;
-import com.none.kollappbackend.organization.application.model.OrganizationManager;
-import com.none.kollappbackend.organization.application.model.PersonOfOrganization;
-import com.none.kollappbackend.organization.application.repository.OrganizationRepository;
-import com.none.kollappbackend.organization.application.repository.PersonOfOrganizationRepository;
-import com.none.kollappbackend.organization.application.service.OrganizationService;
-import com.none.kollappbackend.user.application.model.KollappUser;
-import com.none.kollappbackend.user.application.service.KollappUserService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.kollappbackend.organization.application.exception.OrganizationNotFoundException;
+import org.kollappbackend.organization.application.model.Organization;
+import org.kollappbackend.organization.application.model.OrganizationManager;
+import org.kollappbackend.organization.application.model.PersonOfOrganization;
+import org.kollappbackend.organization.application.repository.OrganizationRepository;
+import org.kollappbackend.organization.application.repository.PersonOfOrganizationRepository;
+import org.kollappbackend.organization.application.service.OrganizationService;
+import org.kollappbackend.user.application.model.KollappUser;
+import org.kollappbackend.user.application.service.KollappUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
@@ -46,8 +46,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public Organization updateOrganization(Organization updatedOrganization) {
         Organization organization = getOrganizationByLoggedInUser();
-        if (updatedOrganization.getName() != null
-                && !organization.getName().equals(updatedOrganization.getName())) {
+        if (updatedOrganization.getName() != null && !organization.getName().equals(updatedOrganization.getName())) {
             organization.setName(updatedOrganization.getName());
         }
         return organization;
@@ -66,9 +65,8 @@ public class OrganizationServiceImpl implements OrganizationService {
         Organization organization = getOrganizationByLoggedInUser();
         PersonOfOrganization personOfOrganization =
                 getPersonOfOrganizationByUserId(kollappUserService.getLoggedInKollappUser().getId());
-        if (personOfOrganization instanceof OrganizationManager orgaManager
-                && organization.hasOnlyOneManagerLeft()
-                && organization.hasManager(orgaManager)) {
+        if (personOfOrganization instanceof OrganizationManager orgaManager && organization.hasOnlyOneManagerLeft() &&
+                organization.hasManager(orgaManager)) {
             organizationRepository.deleteById(organization.getId());
         } else {
             organization.getPersonsOfOrganization().remove(personOfOrganization);

@@ -1,4 +1,4 @@
-package com.none.kollappbackend.user.application.model;
+package org.kollappbackend.user.application.model;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -8,6 +8,6 @@ import java.lang.annotation.RetentionPolicy;
 
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
-@PreAuthorize("hasRole(T(com.none.kollappbackend.user.application.model" + ".ERole).ROLE_MANAGER.name())")
+@PreAuthorize("hasRole(T(org.kollappbackend.user.application.model" + ".ERole).ROLE_MANAGER.name())")
 public @interface RequiresManagerRole {
 }

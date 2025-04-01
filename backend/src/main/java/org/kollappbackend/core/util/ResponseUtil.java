@@ -1,9 +1,9 @@
-package com.none.kollappbackend.core.util;
+package org.kollappbackend.core.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.none.kollappbackend.core.adapters.primary.rest.model.ErrorResponseTO;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.kollappbackend.core.adapters.primary.rest.model.ErrorResponseTO;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 

@@ -1,8 +1,8 @@
-package com.none.kollappbackend.organization.application.repository;
+package org.kollappbackend.organization.application.repository;
 
-import com.none.kollappbackend.organization.application.model.PersonOfOrganization;
 import org.jmolecules.architecture.hexagonal.SecondaryPort;
 import org.jmolecules.ddd.annotation.Repository;
+import org.kollappbackend.organization.application.model.PersonOfOrganization;
 
 import java.util.Optional;
 

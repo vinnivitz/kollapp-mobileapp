@@ -1,9 +1,9 @@
-package com.none.kollappbackend.organization.adapters.primary.rest.mapper;
+package org.kollappbackend.organization.adapters.primary.rest.mapper;
 
-import com.none.kollappbackend.organization.adapters.primary.rest.model.OrganizationCreationRequestTO;
-import com.none.kollappbackend.organization.adapters.primary.rest.model.OrganizationTO;
-import com.none.kollappbackend.organization.adapters.primary.rest.model.OrganizationUpdateRequestTO;
-import com.none.kollappbackend.organization.application.model.Organization;
+import org.kollappbackend.organization.adapters.primary.rest.model.OrganizationCreationRequestTO;
+import org.kollappbackend.organization.adapters.primary.rest.model.OrganizationTO;
+import org.kollappbackend.organization.adapters.primary.rest.model.OrganizationUpdateRequestTO;
+import org.kollappbackend.organization.application.model.Organization;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

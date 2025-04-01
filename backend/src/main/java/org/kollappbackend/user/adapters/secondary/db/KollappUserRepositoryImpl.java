@@ -1,9 +1,9 @@
-package com.none.kollappbackend.user.adapters.secondary.db;
+package org.kollappbackend.user.adapters.secondary.db;
 
-import com.none.kollappbackend.user.adapters.secondary.db.jpa.KollappUserJpaRepository;
-import com.none.kollappbackend.user.application.model.KollappUser;
-import com.none.kollappbackend.user.application.repository.KollappUserRepository;
 import org.jmolecules.architecture.hexagonal.SecondaryAdapter;
+import org.kollappbackend.user.adapters.secondary.db.jpa.KollappUserJpaRepository;
+import org.kollappbackend.user.application.model.KollappUser;
+import org.kollappbackend.user.application.repository.KollappUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

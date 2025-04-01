@@ -1,9 +1,9 @@
-package com.none.kollappbackend.organization.adapters.primary.listener;
+package org.kollappbackend.organization.adapters.primary.listener;
 
-import com.none.kollappbackend.organization.application.service.OrganizationService;
-import com.none.kollappbackend.user.application.model.KollappUserDeletedEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
+import org.kollappbackend.organization.application.service.OrganizationService;
+import org.kollappbackend.user.application.model.KollappUserDeletedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;

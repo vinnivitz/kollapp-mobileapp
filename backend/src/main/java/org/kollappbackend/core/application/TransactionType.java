@@ -1,4 +1,4 @@
-package com.none.kollappbackend.core.application;
+package org.kollappbackend.core.application;
 
 public enum TransactionType {
     EXPENSE, INCOME

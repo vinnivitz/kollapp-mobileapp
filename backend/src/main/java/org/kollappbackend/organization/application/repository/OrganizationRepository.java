@@ -1,7 +1,7 @@
-package com.none.kollappbackend.organization.application.repository;
+package org.kollappbackend.organization.application.repository;
 
-import com.none.kollappbackend.organization.application.model.Organization;
 import org.jmolecules.architecture.hexagonal.SecondaryPort;
+import org.kollappbackend.organization.application.model.Organization;
 
 import java.util.Optional;
 

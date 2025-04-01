@@ -1,6 +1,5 @@
-package com.none.kollappbackend.core.config;
+package org.kollappbackend.core.config;
 
-import com.none.kollappbackend.core.config.properties.RateLimitProperties;
 import com.none.kollappbackend.core.util.ResponseUtil;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
@@ -9,6 +8,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.kollappbackend.core.config.properties.RateLimitProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
