@@ -30,6 +30,8 @@ public class Organization {
 
     private String name;
 
+    private long budgetAccountId;
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "organization", orphanRemoval = true)
     private List<PersonOfOrganization> personsOfOrganization;
 
