@@ -1,20 +1,19 @@
-package com.none.kollappbackend.organization;
+package org.kollappbackend.organization;
 
-import com.none.kollappbackend.core.BaseIT;
-import com.none.kollappbackend.organization.application.exception.OrganizationNotFoundException;
-import com.none.kollappbackend.organization.application.model.Organization;
-import com.none.kollappbackend.organization.application.repository.OrganizationRepository;
-import com.none.kollappbackend.organization.application.service.OrganizationService;
-import com.none.kollappbackend.user.application.model.KollappUser;
-import com.none.kollappbackend.user.application.service.KollappUserService;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.kollappbackend.core.BaseIT;
+import org.kollappbackend.organization.application.exception.OrganizationNotFoundException;
+import org.kollappbackend.organization.application.model.Organization;
+import org.kollappbackend.organization.application.repository.OrganizationRepository;
+import org.kollappbackend.organization.application.service.OrganizationService;
+import org.kollappbackend.user.application.model.KollappUser;
+import org.kollappbackend.user.application.service.KollappUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.jdbc.Sql;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
@@ -33,14 +32,14 @@ public class OrganizationServiceIT extends BaseIT {
     private OrganizationRepository organizationRepository;
 
     @BeforeEach
-    public void beforeEach(){
+    public void beforeEach() {
         KollappUser mockUser = KollappUser.builder().id(1L).name("Erika").surname("Musterfrau").build();
         when(kollappUserService.getLoggedInKollappUser()).thenReturn(mockUser);
     }
 
     @Test
     @Sql("/sql/organization/organization_with_single_manager.sql")
-    public void getOrganizationByLoggedInUser(){
+    public void getOrganizationByLoggedInUser() {
         Organization organization = organizationService.getOrganizationByLoggedInUser();
         assertThat(organization.getId()).isEqualTo(1L);
         assertThat(organization.getName()).isEqualTo("NMS");

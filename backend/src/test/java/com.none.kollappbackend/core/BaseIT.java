@@ -1,6 +1,6 @@
-package com.none.kollappbackend.core;
+package org.kollappbackend.core;
 
-import com.none.kollappbackend.KollappBackendApplication;
+import org.kollappbackend.KollappBackendApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -19,10 +19,10 @@ public abstract class BaseIT {
     }
 
     @DynamicPropertySource
-    static void configureTestProperties(DynamicPropertyRegistry registry){
+    static void configureTestProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", MY_SQL_CONTAINER::getJdbcUrl);
         registry.add("spring.datasource.username", MY_SQL_CONTAINER::getUsername);
         registry.add("spring.datasource.password", MY_SQL_CONTAINER::getPassword);
-        registry.add("spring.jpa.hibernate.ddl-auto",() -> "update");
+        registry.add("spring.jpa.hibernate.ddl-auto", () -> "update");
     }
 }

@@ -18,7 +18,7 @@
         ]]></cypher>
         <report type="plantuml-component-diagram"/>
     </concept>
-    
+
     <concept id="kollap:DefinedBoundedContextDependencies">
         <providesConcept refId="jmolecules-ddd:AllowedBoundedContextDependency"/>
         <description>Propagates the allowed Bounded Context dependencies</description>
