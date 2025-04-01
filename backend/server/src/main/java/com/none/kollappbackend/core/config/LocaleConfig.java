@@ -43,14 +43,12 @@ public class LocaleConfig {
      * 'Accept-Language' header.
      */
     public static class HeaderLocaleResolver extends AbstractLocaleResolver {
-        @SuppressWarnings("null")
         @Override
         public Locale resolveLocale(HttpServletRequest request) {
             String acceptLanguage = request.getHeader("Accept-Language");
             return Optional.ofNullable(acceptLanguage).map(Locale::forLanguageTag).orElse(getDefaultLocale());
         }
 
-        @SuppressWarnings("null")
         @Override
         public void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale) {
             throw new UnsupportedOperationException("Cannot change HTTP header 'Accept-Language'");
