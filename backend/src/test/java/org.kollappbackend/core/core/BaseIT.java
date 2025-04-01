@@ -1,4 +1,4 @@
-package org.kollappbackend.core;
+package org.kollappbackend.core.core;
 
 import org.kollappbackend.KollappBackendApplication;
 import org.springframework.boot.test.context.SpringBootTest;

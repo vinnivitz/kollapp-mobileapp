@@ -19,9 +19,9 @@ public class UrlBuilderUtil {
     private ClientProperties clientProperties;
 
     public String buildServerUrl(String path, Map<String, String> queryMap) {
-        String baseUrl = "http" + (Boolean.parseBoolean(applicationProperties.getProduction()) ? "s" : "") + "://" +
-                applicationProperties.getHost() + (Boolean.parseBoolean(applicationProperties.getProduction()) ? "" :
-                (":" + applicationProperties.getPort())) + (path != null ? path : "");
+        String baseUrl = "http" + (Boolean.parseBoolean(applicationProperties.getProduction()) ? "s" : "") + "://"
+                + applicationProperties.getHost() + (Boolean.parseBoolean(applicationProperties.getProduction()) ? ""
+                : (":" + applicationProperties.getPort())) + (path != null ? path : "");
 
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(baseUrl);
 

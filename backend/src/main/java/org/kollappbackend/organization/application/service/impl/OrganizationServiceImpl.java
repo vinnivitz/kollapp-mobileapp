@@ -65,8 +65,8 @@ public class OrganizationServiceImpl implements OrganizationService {
         Organization organization = getOrganizationByLoggedInUser();
         PersonOfOrganization personOfOrganization =
                 getPersonOfOrganizationByUserId(kollappUserService.getLoggedInKollappUser().getId());
-        if (personOfOrganization instanceof OrganizationManager orgaManager && organization.hasOnlyOneManagerLeft() &&
-                organization.hasManager(orgaManager)) {
+        if (personOfOrganization instanceof OrganizationManager orgaManager && organization.hasOnlyOneManagerLeft()
+                && organization.hasManager(orgaManager)) {
             organizationRepository.deleteById(organization.getId());
         } else {
             organization.getPersonsOfOrganization().remove(personOfOrganization);

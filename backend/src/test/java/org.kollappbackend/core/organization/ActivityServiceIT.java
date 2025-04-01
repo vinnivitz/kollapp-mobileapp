@@ -1,9 +1,9 @@
-package org.kollappbackend.organization;
+package org.kollappbackend.core.organization;
 
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kollappbackend.core.BaseIT;
+import org.kollappbackend.core.core.BaseIT;
 import org.kollappbackend.organization.application.exception.ActivityNotFoundException;
 import org.kollappbackend.organization.application.model.Activity;
 import org.kollappbackend.organization.application.repository.OrganizationRepository;
