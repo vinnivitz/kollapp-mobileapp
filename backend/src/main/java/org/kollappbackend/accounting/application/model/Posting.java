@@ -36,6 +36,8 @@ public abstract class Posting {
 
     private String date;
 
+    private String purpose;
+
     @ManyToOne
     @JoinColumn(name = "budgetAccount_id")
     private BudgetAccount budgetAccount;

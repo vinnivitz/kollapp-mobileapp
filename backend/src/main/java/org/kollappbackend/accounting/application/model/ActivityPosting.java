@@ -8,7 +8,9 @@ import lombok.NoArgsConstructor;
 @DiscriminatorValue("activity")
 @NoArgsConstructor
 public class ActivityPosting extends Posting {
-    public ActivityPosting(PostingType type, long amountInCents) {
+    private long activityId;
+    public ActivityPosting(PostingType type, long amountInCents, long activityId) {
         super(type, amountInCents);
+        this.activityId = activityId;
     }
 }
