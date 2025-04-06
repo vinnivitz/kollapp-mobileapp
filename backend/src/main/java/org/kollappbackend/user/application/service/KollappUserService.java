@@ -1,11 +1,8 @@
 package org.kollappbackend.user.application.service;
 
 import org.jmolecules.architecture.hexagonal.PrimaryPort;
-import org.kollappbackend.user.application.model.ERole;
 import org.kollappbackend.user.application.model.KollappUser;
 import org.springframework.lang.Nullable;
-
-import java.util.List;
 
 @PrimaryPort
 public interface KollappUserService {
@@ -23,10 +20,9 @@ public interface KollappUserService {
 
     void resetPassword(String token, String password);
 
-    void register(String username, String email, String password, String name, String surname, List<ERole> roles);
+    void register(String username, String email, String password);
 
-    KollappUser updateKollappUser(@Nullable String username, @Nullable String email, @Nullable String surname,
-                                  @Nullable String name);
+    KollappUser updateKollappUser(@Nullable String username, @Nullable String email);
 
     void deleteKollappUser();
 }

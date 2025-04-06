@@ -27,10 +27,4 @@ public class KollappUserSignupRequest {
     @Size(max = 255, message = "{validation.password.maxlength}")
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$", message = "{validation.password.pattern}")
     private String password;
-
-    @NotBlank(message = "{validation.name.required}")
-    private String name;
-
-    @NotBlank(message = "{validation.name.required}")
-    private String surname;
 }

@@ -36,7 +36,7 @@ public class ActivityServiceIT extends BaseIT {
 
     @BeforeEach
     public void beforeEach() {
-        KollappUser mockUser = KollappUser.builder().id(1L).name("Erika").surname("Musterfrau").build();
+        KollappUser mockUser = KollappUser.builder().id(1L).username("Erika").build();
         when(kollappUserService.getLoggedInKollappUser()).thenReturn(mockUser);
     }
 
@@ -54,7 +54,7 @@ public class ActivityServiceIT extends BaseIT {
         activityService.createActivityForOrganization(1, activity);
         List<Activity> activities = organizationRepository.findById(1).get().getActivities();
         assertThat(activities.size()).isEqualTo(1);
-        assertThat(activities.get(0).getName()).isEqualTo("Halloween");
+        assertThat(activities.getFirst().getName()).isEqualTo("Halloween");
     }
 
     @Test
@@ -80,6 +80,6 @@ public class ActivityServiceIT extends BaseIT {
         activityService.deleteActivity(1, 1);
         List<Activity> activities = organizationRepository.findById(1).get().getActivities();
         assertThat(activities.size()).isEqualTo(1);
-        assertThat(activities.get(0).getName()).isEqualTo("Silvester");
+        assertThat(activities.getFirst().getName()).isEqualTo("Silvester");
     }
 }

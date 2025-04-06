@@ -33,11 +33,5 @@ public class KollappUserTO {
 
     private boolean activated;
 
-    @NotBlank
-    private String surname;
-
-    @NotBlank
-    private String name;
-
     private List<String> roles;
 }
