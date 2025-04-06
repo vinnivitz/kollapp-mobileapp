@@ -1,0 +1,23 @@
+jqassistant:
+  plugins:
+    - group-id: org.jqassistant.plugin
+      artifact-id: jqassistant-jmolecules-plugin
+      version: 2.1.0-M4
+    - group-id: org.jqassistant.plugin
+      artifact-id: jqassistant-plantuml-report-plugin
+      version: 2.0.1
+  scan:
+  analyze:
+    rule:
+      default-concept-severity: info
+    exclude-constraints:
+      - jmolecules-hexagonal:ApplicationCoreMustOnlyDependOnItself
+    groups:
+      - jmolecules-hexagonal:Default
+      - jmolecules-hexagonal:Strict
+      - jmolecules-ddd:Default
+      - jmolecules-ddd:Strict
+      - kollapp-report:Default
+    execute-applied-concepts: false
+    report:
+      fail-on-severity: CRITICAL

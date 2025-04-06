@@ -1,0 +1,12 @@
+package org.kollappbackend.core.config;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
+public enum ClientPlatform {
+    ANDROID("Android"), WEB("Web");
+
+    private String platformName;
+}
