@@ -58,6 +58,16 @@ public class OrganizationController {
         return ResponseEntity.ok(new DataResponseTO(organizationTOs, "success.organization.get", messageSource));
     }
 
+    @GetMapping("/{organization-id}")
+    @Operation(summary = "Get an organization by its id", security = {
+            @SecurityRequirement(name = "bearer-key")})
+    @RequiresKollappUserRole
+    public ResponseEntity<ResponseTO> getOrganizationById(@PathVariable("organization-id") long organizationId) {
+        Organization organization = organizationService.getOrganizationById(organizationId);
+        OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(organization);
+        return ResponseEntity.ok(new DataResponseTO(organizationTO, "success.organization.get", messageSource));
+    }
+
     @PostMapping
     @Operation(summary = "Create an organization", security = {@SecurityRequirement(name = "bearer-key")})
     @RequiresKollappUserRole

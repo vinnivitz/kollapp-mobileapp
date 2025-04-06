@@ -100,6 +100,11 @@ public class OrganizationServiceImpl implements OrganizationService {
         return personsOfOrganization.stream().map(PersonOfOrganization::getOrganization).collect(Collectors.toList());
     }
 
+    @Override
+    public Organization getOrganizationById(long id) {
+        return organizationRepository.findById(id).orElseThrow(() -> new OrganizationNotFoundException(messageSource));
+    }
+
     private List<PersonOfOrganization> getPersonOfOrganizationsByUserId(long userId) {
         return personOfOrganizationRepository.findByUserId(userId);
     }
