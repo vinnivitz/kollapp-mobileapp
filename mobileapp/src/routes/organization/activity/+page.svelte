@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ActivityItem } from '$lib/models/models';
+	import type { ActivityModel } from '$lib/models/models';
 
 	import { format } from 'date-fns';
 	import { loadingController } from 'ionic-svelte';
@@ -43,7 +43,7 @@
 		PENDING = 'pending'
 	}
 
-	const activityItems = $derived($activitiesStore?.items ?? []);
+	const activityItems = $derived($activitiesStore ?? []);
 
 	let showPopoverCalendar = $state(false);
 	let showSelectDateCalendar = $state(false);
@@ -52,7 +52,7 @@
 	let editModalOpen = $state(false);
 
 	let searchActivityValue = $state('');
-	let filteredActivities = $state<ActivityItem[]>([]);
+	let filteredActivities = $state<ActivityModel[]>([]);
 
 	let selectedActivityId: number;
 	let activityStatus = $state(ActivityStatus.PENDING);
@@ -90,7 +90,7 @@
 				if (result.valid) {
 					createActions.resetModel();
 					createModalOpen = false;
-					await activitiesStore.init(organizationId);
+					await activitiesStore.init();
 				} else {
 					createActions.applyValidationFeedback(result);
 				}
@@ -127,7 +127,7 @@
 		createModalOpen = true;
 	}
 
-	function onEditActivity(activity: ActivityItem): void {
+	function onEditActivity(activity: ActivityModel): void {
 		selectedActivityId = activity.id;
 		updateForm = new Form(activity, updateConfig);
 		editModalOpen = true;
@@ -144,7 +144,7 @@
 		if (organizationId) {
 			const result = getValidationResult(await organizationResource.deleteActivity(organizationId, selectedActivityId));
 			if (result.valid) {
-				await activitiesStore.init(organizationId);
+				await activitiesStore.init();
 				editModalOpen = false;
 			}
 		} else {

@@ -18,7 +18,7 @@ export const load: LayoutLoad = async ({ url }) => {
 	if (!initialized) {
 		initialized = true;
 		handleAppEvents();
-		initStores();
+		await initStores();
 	}
 };
 

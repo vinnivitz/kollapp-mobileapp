@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { accessibilityOutline, diamondOutline, personOutline } from 'ionicons/icons';
-	import { onDestroy, type Snippet } from 'svelte';
+	import { type Snippet } from 'svelte';
 	import { fade } from 'svelte/transition';
 
 	import { dev } from '$app/environment';
@@ -10,7 +10,7 @@
 	import LabeledItem from '$lib/components/widgets/LabeledItem.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
-	import { activitiesStore, organizationStore, userStore } from '$lib/stores';
+	import { initializationStore } from '$lib/stores';
 
 	type Properties = {
 		title: string;
@@ -32,27 +32,10 @@
 		title
 	}: Properties = $props();
 
-	let navigationDebounced = $state(false);
-	let navigationTimeout: ReturnType<typeof setTimeout>;
+	const loading = $derived(!$initializationStore);
+
 	let refresher = $state<HTMLIonRefresherElement | undefined>();
 	let menuComponent = $state<ReturnType<typeof Menu>>();
-
-	const loading = $derived(
-		!$userStore?.initialized || !$organizationStore?.initialized || !$activitiesStore?.initialized
-	);
-
-	$effect(() => {
-		if (loading) {
-			navigationDebounced = false;
-			navigationTimeout = setTimeout(() => (navigationDebounced = true), 100);
-		}
-	});
-
-	onDestroy(() => {
-		if (navigationTimeout) {
-			clearTimeout(navigationTimeout);
-		}
-	});
 
 	async function navigate(route: string): Promise<void> {
 		menuComponent?.navigate(route);
@@ -85,11 +68,7 @@
 	{#if !hideLayout}
 		<Header {title} {showBackButton}></Header>
 	{/if}
-	{#if loading}
-		{#if navigationDebounced}
-			<ion-progress-bar type="indeterminate"></ion-progress-bar>
-		{/if}
-	{:else}
+	{#if !loading}
 		<ion-content class="ion-padding" in:fade={{ delay: 0, duration: 200 }} class:no-overflow={!scrollable}>
 			{#if onRefresh}
 				<!-- svelte-ignore event_directive_deprecated -->

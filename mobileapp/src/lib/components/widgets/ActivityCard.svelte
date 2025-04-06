@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ActivityItem } from '$lib/models/models';
+	import type { ActivityModel } from '$lib/models/models';
 
 	import { format } from 'date-fns';
 	import { calendarOutline, locationOutline } from 'ionicons/icons';
@@ -7,8 +7,8 @@
 	import Card from '$lib/components/widgets/Card.svelte';
 
 	type Properties = {
-		value: ActivityItem;
-		edit?: (value: ActivityItem) => Promise<void> | void;
+		value: ActivityModel;
+		edit?: (value: ActivityModel) => Promise<void> | void;
 	};
 
 	let { edit, value }: Properties = $props();

@@ -90,7 +90,6 @@ describe('Button Component', () => {
 		const iconOnly = container.querySelector('ion-icon[slot="icon-only"]');
 
 		expect(iconOnly).toBeTruthy();
-		console.log('icon only', iconOnly);
 		expect(iconOnly?.getAttribute('size')).toBe(properties.iconSize);
 
 		const properties2 = {

@@ -5,47 +5,41 @@ import { writable } from 'svelte/store';
 
 import { organizationResource } from '$lib/api/resources';
 import { PreferencesKey } from '$lib/models/preferences';
-import { getStoredValue, removeStoredValue, StatusCheck, storeValue } from '$lib/utility';
+import { getStoredValue, removeStoredValue, storeValue } from '$lib/utility';
 
 function createStore(): ActivityStore {
-	const { set, subscribe } = writable<ActivityModel | undefined>();
+	const { set, subscribe } = writable<ActivityModel[] | undefined>();
+	const initialized = writable(false);
 
-	async function init(organizationId?: number): Promise<void> {
+	async function init(): Promise<void> {
+		const organizationId = await getStoredValue<number>(PreferencesKey.SELECTED_ORGANIZATION_ID);
 		if (organizationId) {
 			await change(organizationId);
 		} else {
-			const model = await getStoredValue<ActivityModel | undefined>(PreferencesKey.ACTIVITIES);
-			if (model) {
-				set({ ...model, initialized: true });
-			}
+			const model = await getStoredValue<ActivityModel[]>(PreferencesKey.ACTIVITIES);
+			_set(model);
 		}
 	}
 
-	async function _set(model: ActivityModel): Promise<void> {
-		await storeValue(PreferencesKey.ACTIVITIES, model);
-		set({ ...model, initialized: true });
+	async function _set(model?: ActivityModel[]): Promise<void> {
+		await (model ? storeValue(PreferencesKey.ACTIVITIES, model) : removeStoredValue(PreferencesKey.ACTIVITIES));
+		initialized.set(true);
+		set(model);
 	}
 
 	async function reset(): Promise<void> {
-		await removeStoredValue(PreferencesKey.ACTIVITIES);
-		set(undefined);
+		_set();
 	}
 
 	async function change(organizationId: number): Promise<void> {
 		const body = await organizationResource.getActivities(organizationId);
-		if (StatusCheck.isOK(body.status)) {
-			const items = body.data.map((activity) => ({
-				id: activity.id,
-				location: activity.location,
-				name: activity.name
-			}));
-			await _set({ items });
-		}
+		await _set(body.data);
 	}
 
 	return {
 		change,
 		init,
+		initialized,
 		reset,
 		set: _set,
 		subscribe

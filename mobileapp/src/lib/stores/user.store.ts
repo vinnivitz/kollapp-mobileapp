@@ -9,33 +9,34 @@ import { getStoredValue, removeStoredValue, StatusCheck, storeValue } from '$lib
 
 function createStore(): UserStore {
 	const { set, subscribe } = writable<undefined | UserModel>();
+	const initialized = writable(false);
 
 	async function init(): Promise<void> {
 		const body = await userResource.getByAuthentication();
 
 		if (StatusCheck.isOK(body.status)) {
 			_set(body.data);
-		} else if (!StatusCheck.isUnauthorized(body.status)) {
-			const model = await getStoredValue<undefined | UserModel>(PreferencesKey.USER);
-
-			if (model) {
-				set({ ...model, initialized: true });
-			}
+		} else if (StatusCheck.isUnauthorized(body.status)) {
+			_set();
+		} else {
+			const model = await getStoredValue<UserModel>(PreferencesKey.USER);
+			_set(model);
 		}
 	}
 
-	async function _set(model: UserModel): Promise<void> {
-		await storeValue(PreferencesKey.USER, model);
-		set({ ...model, initialized: true });
+	async function _set(model?: UserModel): Promise<void> {
+		await (model ? storeValue(PreferencesKey.USER, model) : removeStoredValue(PreferencesKey.USER));
+		initialized.set(true);
+		set(model);
 	}
 
 	async function reset(): Promise<void> {
-		await removeStoredValue(PreferencesKey.USER);
-		set(undefined);
+		_set();
 	}
 
 	return {
 		init,
+		initialized,
 		reset,
 		set: _set,
 		subscribe

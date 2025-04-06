@@ -3,7 +3,7 @@
 	"version": "1.0.0",
 	"scripts": {
 		"dev": "cross-env NODE_ENV=development vite dev",
-		"build": "cross-env NODE_ENV=production && npm run index-searchables && vite build",
+		"build": "npm run index-searchables && cross-env NODE_ENV=production vite build",
 		"preview": "cross-env NODE_ENV=production vite preview",
 		"check": "cross-env NODE_ENV=development svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"format": "prettier --write . && eslint . --fix",
@@ -14,7 +14,7 @@
 		"test:e2e": "playwright test",
 		"test": "npm run test:unit -- --run && npm run test:e2e",
 		"typedoc": "typedoc & live-server ./docs --watch --silent --no-browser --port=1234 & chokidar 'src/lib' -c 'typedoc' --silent",
-		"build-android": "npm run build && dotenv cross-env-shell 'cap sync && cap open android'",
+		"build-android": "cross-env VITE_API_URL=https://api.kollapp.org/api npm run build && dotenv cross-env-shell 'cap sync && cap open android'",
 		"visualize": "mkdir -p visualize && madge --extensions ts,svelte --image visualize/dependency-graph.png src",
 		"index-searchables": "tsx ./src/lib/utility/index-searchables.ts"
 	},

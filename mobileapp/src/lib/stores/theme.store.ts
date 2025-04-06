@@ -33,12 +33,10 @@ function createStore(): ThemeStore {
 	function setClass(value: Theme): void {
 		if (value === Theme.SYSTEM) {
 			value = getPreferedColorScheme();
-			setClass(value);
-			return;
+			return setClass(value);
 		}
-
-		document.body.classList.remove(...Object.values(Theme));
 		document.body.classList.add(value);
+		document.body.classList.remove(...Object.values(Theme).filter((theme) => theme !== value));
 	}
 
 	return {

@@ -11,49 +11,50 @@ import { getStoredValue, removeStoredValue, StatusCheck, storeValue } from '$lib
 
 function createStore(): OrganizationStore {
 	const { set, subscribe } = writable<OrganizationModel | undefined>();
+	const initialized = writable(false);
 
 	async function init(): Promise<void> {
-		const storedOrganizationId = await getStoredValue<number>(PreferencesKey.SELECTED_ORGANIZATION_ID);
-		if (storedOrganizationId) {
-			return change(storedOrganizationId);
-		}
-
-		const response = await organizationResource.getIds();
-		if (StatusCheck.isOK(response.status) && response.data.length > 0) {
-			return response.data[0] ? change(response.data[0]) : set(undefined);
-		} else if (!StatusCheck.isUnauthorized(response.status)) {
-			const storedOrganization = await getStoredValue<OrganizationModel | undefined>(PreferencesKey.ORGANIZATION);
-			if (storedOrganization) {
-				set({ ...storedOrganization, initialized: true });
-				return activitiesStore.init(storedOrganization.id);
+		let selectedOrganizationId = await getStoredValue<number>(PreferencesKey.SELECTED_ORGANIZATION_ID);
+		if (!selectedOrganizationId) {
+			const response = await organizationResource.getIds();
+			if (StatusCheck.isOK(response.status) && response.data.length > 0) {
+				selectedOrganizationId = response.data[0] as number;
+			} else if (!StatusCheck.isUnauthorized(response.status)) {
+				const storedOrganization = await getStoredValue<OrganizationModel>(PreferencesKey.ORGANIZATION);
+				_set(storedOrganization);
+				selectedOrganizationId = storedOrganization?.id;
 			}
-			return set(undefined);
+		}
+		if (selectedOrganizationId) {
+			await storeValue(PreferencesKey.SELECTED_ORGANIZATION_ID, selectedOrganizationId);
+			change(selectedOrganizationId);
 		}
 	}
 
-	async function _set(model: OrganizationModel): Promise<void> {
-		await storeValue(PreferencesKey.ORGANIZATION, model);
-		set({ ...model, initialized: true });
+	async function _set(model?: OrganizationModel): Promise<void> {
+		await (model ? storeValue(PreferencesKey.ORGANIZATION, model) : removeStoredValue(PreferencesKey.ORGANIZATION));
+		initialized.set(true);
+		set(model);
 	}
 
 	async function reset(): Promise<void> {
-		await removeStoredValue(PreferencesKey.ORGANIZATION);
 		await removeStoredValue(PreferencesKey.SELECTED_ORGANIZATION_ID);
-		set(undefined);
+		_set();
 	}
 
 	async function change(id: number): Promise<void> {
 		const body = await organizationResource.getById(id);
 		if (StatusCheck.isOK(body.status)) {
-			await _set({ id: body.data.id, name: body.data.name });
+			await _set(body.data);
 			await storeValue(PreferencesKey.SELECTED_ORGANIZATION_ID, id);
-			await activitiesStore.init(id);
+			await activitiesStore.init();
 		}
 	}
 
 	return {
 		change,
 		init,
+		initialized,
 		reset,
 		set: _set,
 		subscribe

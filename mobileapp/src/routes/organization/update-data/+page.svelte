@@ -15,7 +15,7 @@
 	import { organizationStore } from '$lib/stores';
 	import { customForm, getValidationResult } from '$lib/utility';
 
-	const organizationModel = $derived<OrganizationModel | undefined>($organizationStore);
+	const organization = $derived<OrganizationModel | undefined>($organizationStore);
 	let actions: FormActions<UpdateOrganizationDto>;
 	let model: UpdateOrganizationDto;
 	let form = $state<Form<UpdateOrganizationDto>>();
@@ -29,9 +29,9 @@
 	};
 
 	$effect(() => {
-		if (organizationModel) {
+		if (organization) {
 			model = updateOrganizationSchema().cast({
-				name: organizationModel.name
+				name: organization.name
 			}) as UpdateOrganizationDto;
 
 			form = new Form(model, config);

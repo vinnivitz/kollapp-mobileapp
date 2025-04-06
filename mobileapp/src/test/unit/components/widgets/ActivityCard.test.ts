@@ -1,4 +1,4 @@
-import type { ActivityItem } from '$lib/models/models';
+import type { ActivityModel } from '$lib/models/models';
 
 import { fireEvent, render } from '@testing-library/svelte';
 import { format } from 'date-fns';
@@ -7,7 +7,7 @@ import { describe, expect, it, vi } from 'vitest';
 import ActivityCard from '$lib/components/widgets/ActivityCard.svelte';
 
 describe('ActivityCard', () => {
-	const activity: ActivityItem = {
+	const activity: ActivityModel = {
 		id: 1,
 		location: 'Test Location',
 		name: 'Test Activity'

@@ -8,26 +8,26 @@ import { getStoredValue, removeStoredValue, storeValue } from '$lib/utility';
 
 function createStore(): AuthenticationStore {
 	const { set, subscribe } = writable<AuthenticationModel | undefined>();
+	const initialized = writable(false);
 
 	async function init(): Promise<void> {
-		const model = await getStoredValue<AuthenticationModel | undefined>(PreferencesKey.AUTHENTICATION);
-		if (model) {
-			set(model);
-		}
+		const model = await getStoredValue<AuthenticationModel>(PreferencesKey.AUTHENTICATION);
+		_set(model);
 	}
 
-	async function _set(model: AuthenticationModel): Promise<void> {
-		await storeValue(PreferencesKey.AUTHENTICATION, model);
+	async function _set(model: AuthenticationModel | undefined): Promise<void> {
+		await (model ? storeValue(PreferencesKey.AUTHENTICATION, model) : removeStoredValue(PreferencesKey.AUTHENTICATION));
+		initialized.set(true);
 		set(model);
 	}
 
 	async function reset(): Promise<void> {
-		await removeStoredValue(PreferencesKey.AUTHENTICATION);
 		set(undefined);
 	}
 
 	return {
 		init,
+		initialized,
 		reset,
 		set: _set,
 		subscribe

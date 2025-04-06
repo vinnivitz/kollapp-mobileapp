@@ -1,7 +1,10 @@
 <script lang="ts">
+	import { onDestroy } from 'svelte';
+
 	import { goto } from '$app/navigation';
 
 	import { PageRoute } from '$lib/models/routing';
+	import { initializationStore } from '$lib/stores';
 	import { clickableElement, navigateBack } from '$lib/utility';
 
 	type Properties = {
@@ -10,6 +13,23 @@
 	};
 
 	let { showBackButton, title }: Properties = $props();
+
+	const loading = $derived(!$initializationStore);
+	let navigationDebounced = $state(false);
+	let navigationTimeout: ReturnType<typeof setTimeout>;
+
+	$effect(() => {
+		if (loading) {
+			navigationDebounced = false;
+			navigationTimeout = setTimeout(() => (navigationDebounced = true), 100);
+		}
+	});
+
+	onDestroy(() => {
+		if (navigationTimeout) {
+			clearTimeout(navigationTimeout);
+		}
+	});
 </script>
 
 <ion-header>
@@ -34,6 +54,9 @@
 			<ion-menu-button class="text-3xl"></ion-menu-button>
 		</ion-buttons>
 	</ion-toolbar>
+	{#if loading && navigationDebounced}
+		<ion-progress-bar type="indeterminate"></ion-progress-bar>
+	{/if}
 </ion-header>
 
 <style>
