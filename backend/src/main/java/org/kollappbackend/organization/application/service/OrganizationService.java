@@ -9,6 +9,8 @@ import java.util.List;
 public interface OrganizationService {
     List<Organization> getOrganizationsByLoggedInUser();
 
+    Organization getOrganizationById(long id);
+
     Organization createOrganization(Organization organization);
 
     Organization updateOrganization(Organization updatedOrganization, long organizationId);
