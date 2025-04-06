@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @PrimaryAdapter
 public class OrganizationController {
+
     @Autowired
     private OrganizationService organizationService;
 

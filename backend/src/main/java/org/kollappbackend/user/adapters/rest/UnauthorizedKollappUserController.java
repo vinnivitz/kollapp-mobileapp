@@ -27,6 +27,7 @@ import java.util.List;
 @Slf4j
 @PrimaryAdapter
 public class UnauthorizedKollappUserController {
+
     @Autowired
     private MessageSource messageSource;
 

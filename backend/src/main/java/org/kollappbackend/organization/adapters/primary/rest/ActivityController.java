@@ -15,6 +15,7 @@ import org.kollappbackend.organization.application.model.Activity;
 import org.kollappbackend.organization.application.service.ActivityService;
 import org.kollappbackend.user.application.model.RequiresManagerOrMemberRole;
 import org.kollappbackend.user.application.model.RequiresManagerRole;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,8 +34,13 @@ import java.util.List;
 @AllArgsConstructor
 public class ActivityController {
 
+    @Autowired
     private ActivityService activityService;
+
+    @Autowired
     private ActivityMapper activityMapper;
+
+    @Autowired
     private MessageSource messageSource;
 
     @GetMapping("/{organization-id}/activities")
