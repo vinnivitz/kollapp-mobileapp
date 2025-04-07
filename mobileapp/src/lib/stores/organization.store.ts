@@ -12,22 +12,27 @@ import { getStoredValue, removeStoredValue, StatusCheck, storeValue } from '$lib
 function createStore(): OrganizationStore {
 	const { set, subscribe } = writable<OrganizationModel | undefined>();
 	const initialized = writable(false);
+	const organizations = writable<OrganizationModel[]>([]);
 
 	async function init(): Promise<void> {
 		let selectedOrganizationId = await getStoredValue<number>(PreferencesKey.SELECTED_ORGANIZATION_ID);
-		if (!selectedOrganizationId) {
-			const response = await organizationResource.getIds();
-			if (StatusCheck.isOK(response.status) && response.data.length > 0) {
-				selectedOrganizationId = response.data[0] as number;
+		const response = await organizationResource.getAll();
+		if (StatusCheck.isOK(response.status)) {
+			organizations.set(response.data);
+			if (response.data.length > 0) {
+				selectedOrganizationId ??= response.data[0]?.id;
 			} else if (!StatusCheck.isUnauthorized(response.status)) {
 				const storedOrganization = await getStoredValue<OrganizationModel>(PreferencesKey.ORGANIZATION);
 				_set(storedOrganization);
-				selectedOrganizationId = storedOrganization?.id;
+				selectedOrganizationId ??= storedOrganization?.id;
 			}
 		}
 		if (selectedOrganizationId) {
 			await storeValue(PreferencesKey.SELECTED_ORGANIZATION_ID, selectedOrganizationId);
 			change(selectedOrganizationId);
+		} else {
+			await _set();
+			await activitiesStore.init();
 		}
 	}
 
@@ -55,6 +60,7 @@ function createStore(): OrganizationStore {
 		change,
 		init,
 		initialized,
+		organizations,
 		reset,
 		set: _set,
 		subscribe

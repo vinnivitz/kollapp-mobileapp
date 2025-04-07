@@ -14,7 +14,6 @@ export const ssr = false;
 
 export const load: LayoutLoad = async ({ url }) => {
 	handleRouting(url.pathname, await isAuthenticated());
-
 	if (!initialized) {
 		initialized = true;
 		handleAppEvents();

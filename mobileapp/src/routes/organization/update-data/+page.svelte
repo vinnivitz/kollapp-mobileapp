@@ -42,7 +42,7 @@
 		if (result.valid) {
 			const loader = await loadingController.create({});
 			await loader.present();
-			result = getValidationResult(await organizationResource.update(model));
+			result = getValidationResult(await organizationResource.update(organization!.id, model));
 			await loader.dismiss();
 			if (result.valid) {
 				actions.resetModel();

@@ -1,28 +1,39 @@
 <script lang="ts">
+	import type { UserRole } from '$lib/models/api';
 	import type { Snippet } from 'svelte';
 
 	import { type Colors } from '$lib/models/ui';
 
 	type Properties = {
+		accessible?: UserRole[];
 		children?: Snippet;
 		classProp?: string;
 		color?: Colors | undefined;
+		icon?: string;
+		id?: string;
+		searchable?: string;
 		subtitle?: string;
 		title?: string;
 		click?: () => Promise<void> | void;
 	};
 
-	let { children, classProp, click, color, subtitle, title }: Properties = $props();
+	let { accessible, children, classProp, click, color, icon, id, searchable, subtitle, title }: Properties = $props();
+
+	// workaround to avoid reference linting error
+	void searchable;
+	void accessible;
+	void id;
+	void icon;
 </script>
 
 {#if !!click}
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<ion-card {color} button={!!click} class={classProp} onclick={click}>
+	<ion-card {id} {color} button={!!click} class={classProp} onclick={click}>
 		{@render content()}
 	</ion-card>
 {:else}
-	<ion-card {color} button={!!click} class={classProp}>
+	<ion-card {id} {color} button={!!click} class={classProp}>
 		{@render content()}
 	</ion-card>
 {/if}

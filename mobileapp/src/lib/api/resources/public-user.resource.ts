@@ -10,8 +10,8 @@ const ENDPOINT = 'public/user';
  * @param model registration model
  * @returns {Promise<ResponseBody>} response body
  */
-export async function registerManager(model: RegisterDto): Promise<ResponseBody> {
-	return customFetch(`${ENDPOINT}/manager-signup`, {
+export async function register(model: RegisterDto): Promise<ResponseBody> {
+	return customFetch(`${ENDPOINT}/signup`, {
 		authorizationType: AuthorizationType.NONE,
 		body: JSON.stringify(model),
 		method: RequestMethod.POST
@@ -51,7 +51,7 @@ export async function resetPassword(model: ResetPasswordConfirmationDto, token: 
  * @returns {Promise<ResponseBody>}	response body
  */
 export async function resendConfirmation(model: ResetPasswordConfirmationDto): Promise<ResponseBody> {
-	return customFetch(`${ENDPOINT}/resend-confirmation`, {
+	return customFetch(`${ENDPOINT}/confirmation`, {
 		authorizationType: AuthorizationType.NONE,
 		body: JSON.stringify(model),
 		method: RequestMethod.POST

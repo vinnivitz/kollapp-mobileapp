@@ -1,15 +1,6 @@
 <script lang="ts">
 	import { loadingController } from 'ionic-svelte';
-	import {
-		keyOutline,
-		keySharp,
-		mailOpenOutline,
-		mailOutline,
-		peopleOutline,
-		personCircleOutline,
-		personOutline,
-		saveOutline
-	} from 'ionicons/icons';
+	import { keyOutline, keySharp, mailOpenOutline, mailOutline, personCircleOutline, saveOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
 
@@ -43,7 +34,7 @@
 			const loader = await loadingController.create({});
 			await loader.present();
 			delete model.confirmPassword;
-			validationResult = getValidationResult(await publicUserResource.registerManager(model));
+			validationResult = getValidationResult(await publicUserResource.register(model));
 			await loader.dismiss();
 			if (validationResult.valid) {
 				actions.resetModel();
@@ -69,8 +60,6 @@
 	</Card>
 	<Card title={$t('routes.auth.register.card.register-organization.title')}>
 		<form use:customForm={form}>
-			<InputItem name="name" label={$t('routes.auth.register.form.input.surname')} icon={personOutline} />
-			<InputItem name="surname" label={$t('routes.auth.register.form.input.name')} icon={peopleOutline} />
 			<InputItem name="username" label={$t('routes.auth.register.form.input.username')} icon={personCircleOutline} />
 			<InputItem name="email" type="email" label={$t('routes.auth.register.form.input.email')} icon={mailOutline} />
 			<InputItem

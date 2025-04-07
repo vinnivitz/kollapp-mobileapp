@@ -11,26 +11,21 @@ import { customFetch } from '$lib/utility';
 
 const ENDPOINT = 'organization';
 
-export async function getById(_id: number): Promise<ResponseBody<OrganizationDto>> {
-	void _id;
-	// workaround for the server response until the server is fixed
-	return customFetch(`${ENDPOINT}`, { silentOnSuccess: true });
+/**
+ * Retrieves the organization by id.
+ * @param id The organization id.
+ * @returns {Promise<ResponseBody<OrganizationDto>>} The organization.
+ */
+export async function getById(id: number): Promise<ResponseBody<OrganizationDto>> {
+	return customFetch(`${ENDPOINT}/${id}`, { silentOnSuccess: true });
 }
 
 /**
- * Retrieves the organization information.
- * @returns {Promise<ResponseBody<OrganizationDto>>} The organization information.
+ * Retrieves the organizations of the logged in user.
+ * @returns {Promise<ResponseBody<OrganizationDto[]>>} The organizations.
  */
-export async function getIds(): Promise<ResponseBody<number[]>> {
-	// workaround for the server response until the server is fixed
-	const response = await customFetch<OrganizationDto>(`${ENDPOINT}`, {
-		silentOnError: true,
-		silentOnSuccess: true
-	});
-	if (response.data) {
-		return { ...response, data: [response.data.id] } as ResponseBody<number[]>;
-	}
-	return response as unknown as ResponseBody<number[]>;
+export async function getAll(): Promise<ResponseBody<OrganizationDto[]>> {
+	return customFetch(`${ENDPOINT}`, { silentOnSuccess: true });
 }
 
 /**
@@ -50,8 +45,8 @@ export async function create(model: RegisterOrganizationDto): Promise<ResponseBo
  * @param model	The organization information.
  * @returns {Promise<ResponseBody>} The response body.
  */
-export async function update(model: UpdateOrganizationDto): Promise<ResponseBody> {
-	return customFetch(`${ENDPOINT}`, {
+export async function update(id: number, model: UpdateOrganizationDto): Promise<ResponseBody> {
+	return customFetch(`${ENDPOINT}/${id}`, {
 		body: JSON.stringify(model),
 		method: RequestMethod.PUT
 	});

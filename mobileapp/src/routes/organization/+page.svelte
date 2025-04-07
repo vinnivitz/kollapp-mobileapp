@@ -1,18 +1,23 @@
 <script lang="ts">
 	import type { OrganizationModel } from '$lib/models/models';
 
+	import { actionSheetController } from 'ionic-svelte';
 	import {
+		arrowDown,
 		buildOutline,
 		calendarOutline,
 		createOutline,
 		logOutOutline,
 		peopleOutline,
-		personAddOutline
+		personAddOutline,
+		swapHorizontalOutline
 	} from 'ionicons/icons';
+	import { derived as svelteDerived } from 'svelte/store';
 
 	import { goto } from '$app/navigation';
 
 	import Layout from '$lib/components/layout/Layout.svelte';
+	import Card from '$lib/components/widgets/Card.svelte';
 	import LabeledItem from '$lib/components/widgets/LabeledItem.svelte';
 	import { t } from '$lib/locales';
 	import { UserRole } from '$lib/models/api';
@@ -21,26 +26,56 @@
 	import { hasRole, showAlert } from '$lib/utility';
 
 	const organizationModel = $derived<OrganizationModel | undefined>($organizationStore);
+	const organizations = svelteDerived([organizationStore.organizations], ([$organizations]) => {
+		return $organizations;
+	});
+
+	async function onOrganizationSelect(): Promise<void> {
+		if ($organizations.length <= 1) {
+			return;
+		}
+		const actionSheet = await actionSheetController.create({
+			buttons: $organizations.map((organization) => ({
+				handler: () => {
+					organizationStore.change(organization.id);
+				},
+				text: organization.name
+			})),
+			header: $t('routes.organization.change-organization.action-sheet.title')
+		});
+
+		await actionSheet.present();
+	}
 </script>
 
 <Layout title={$t('routes.organization.title')} showBackButton>
-	<div class="m-0 truncate p-0"></div>
 	{#if organizationModel}
+		<Card
+			id={$t('routes.organization.change-organization.action-sheet.title')}
+			icon={swapHorizontalOutline}
+			click={onOrganizationSelect}
+			searchable={PageRoute.ORGANIZATION.ROOT}
+		>
+			<div class="flex items-center justify-center gap-4 text-2xl">
+				<ion-text color="dark">{organizationModel.name}</ion-text>
+				{#if $organizations.length > 1}
+					<ion-text color="dark" class="flex items-center justify-center">
+						<ion-icon icon={arrowDown}></ion-icon>
+					</ion-text>
+				{/if}
+			</div>
+		</Card>
 		<ion-list inset>
-			<ion-list-header
-				>{$t('routes.organization.list.current-collective.title', {
-					value: organizationModel.name
-				})}</ion-list-header
-			>
+			<ion-list-header>{$t('routes.organization.list.current-collective.title')}</ion-list-header>
 			<LabeledItem
 				label={$t('routes.organization.list.organization.activity.label')}
 				icon={calendarOutline}
 				click={() => goto(PageRoute.ORGANIZATION.ACTIVITY.ROOT)}
 			></LabeledItem>
-			{#if hasRole(UserRole.MANAGER)}
+			{#if hasRole(UserRole.ORGANIZATION_MANAGER)}
 				<LabeledItem
 					searchable={PageRoute.ORGANIZATION.UPDATE_DATA}
-					accessible={[UserRole.MANAGER]}
+					accessible={[UserRole.ORGANIZATION_MANAGER]}
 					click={() => goto(PageRoute.ORGANIZATION.UPDATE_DATA)}
 					icon={buildOutline}
 					label={$t('routes.organization.list.update-info.update-info')}
@@ -52,7 +87,7 @@
 				/>
 				<LabeledItem
 					searchable={PageRoute.ORGANIZATION.LEAVE}
-					accessible={[UserRole.MANAGER]}
+					accessible={[UserRole.ORGANIZATION_MANAGER]}
 					color="danger"
 					click={() => goto(PageRoute.ORGANIZATION.LEAVE)}
 					icon={logOutOutline}

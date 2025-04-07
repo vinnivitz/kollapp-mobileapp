@@ -178,6 +178,7 @@
 	{/if}
 
 	<Button
+		classProp="mt-4"
 		click={onCreateActivity}
 		label={$t('routes.organization.page.activity.button.create-event')}
 		expand="block"

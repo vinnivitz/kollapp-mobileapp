@@ -40,10 +40,10 @@ export function clickableElement<T>(
  * @param label label of the element to click
  */
 export function triggerClickByLabel(label: string): void {
-	[...document.querySelectorAll('ion-label')]
-		.find((element) => element.textContent === label)
-		?.closest('ion-item')
-		?.click();
+	const element =
+		[...document.querySelectorAll('ion-label')].find((element) => element.textContent === label)?.closest('ion-item') ??
+		[...document.querySelectorAll('ion-card')].find((element) => element.id === label);
+	element?.click();
 }
 
 /**

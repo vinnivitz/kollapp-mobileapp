@@ -381,7 +381,7 @@
 						"title": "Einem vorhandenen Kollektiv beitreten?"
 					},
 					"register-organization": {
-						"title": "Registriere ein neues Kollektiv!"
+						"title": "Registriere dich bei Kollapp"
 					}
 				}
 			},
@@ -469,7 +469,7 @@
 				},
 				"register": {},
 				"current-collective": {
-					"title": "{{value}}"
+					"title": "Kollektiv"
 				},
 				"general": {
 					"title": "Allgemein",
@@ -556,6 +556,11 @@
 					"button": {
 						"create-event": "Veranstaltung erstellen"
 					}
+				}
+			},
+			"change-organization": {
+				"action-sheet": {
+					"title": "Kollektiv wechseln"
 				}
 			}
 		},

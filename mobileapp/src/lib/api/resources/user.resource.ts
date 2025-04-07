@@ -11,7 +11,7 @@ const ENDPOINT = 'user';
  * @returns {Promise<ResponseBody>} response body
  */
 export async function getByAuthentication(): Promise<ResponseBody<UserDto>> {
-	return customFetch(ENDPOINT, { silentOnError: true, silentOnSuccess: true });
+	return customFetch(ENDPOINT, { silentOnSuccess: true });
 }
 
 /**

@@ -67,7 +67,7 @@ function findSearchableComponents(ast: AST.Root): void {
 }
 
 function recurse(node: ASTComponent): void {
-	if (node.type === 'Component' && node.name === 'LabeledItem') {
+	if (node.type === 'Component' && (node.name === 'LabeledItem' || node.name === 'Card')) {
 		for (const attribute of node.attributes) {
 			if (attribute.type === 'Attribute' && attribute.name === 'searchable') {
 				addSearchableItem(node);
@@ -116,7 +116,7 @@ function exploreChildNodes(node: ASTComponent): void {
 
 function addSearchableItem(node: ASTComponent): void {
 	const route = getAttributeValue(node, 'searchable');
-	const label = getAttributeValue(node, 'label');
+	const label = getAttributeValue(node, 'label') ?? getAttributeValue(node, 'id');
 	const icon = getAttributeValue(node, 'icon');
 	const accessible = getAttributeValue(node, 'accessible');
 
@@ -140,14 +140,14 @@ function getAttributeValue(node: ASTComponent, name: string): string | undefined
 	const attributeNode = (node as AST.Component).attributes.find(
 		(attribute) => attribute.type === 'Attribute' && attribute.name === name
 	) as AST.Attribute | undefined;
-
 	// If the attribute or its value doesn't exist, return undefined
 	const expressionTag = attributeNode?.value as AST.ExpressionTag | undefined;
+
 	if (!expressionTag?.expression) {
 		return;
 	}
 
-	let expression = expressionTag.expression as Expression;
+	let expression = expressionTag?.expression;
 	switch (expression.type) {
 		case 'Literal': {
 			return expression.value as string;

@@ -89,7 +89,7 @@
 						"content": "Contact the the collective admin for sending you an invitation email."
 					},
 					"register-organization": {
-						"title": "Register a new collective!"
+						"title": "Register to Kollapp"
 					}
 				}
 			},
@@ -268,7 +268,7 @@
 				"danger-zone": {},
 				"register": {},
 				"current-collective": {
-					"title": "{{value}}"
+					"title": "Collective"
 				},
 				"general": {
 					"title": "General",
@@ -359,6 +359,11 @@
 					"button": {
 						"create-event": "Create event"
 					}
+				}
+			},
+			"change-organization": {
+				"action-sheet": {
+					"title": "Change collective"
 				}
 			}
 		},

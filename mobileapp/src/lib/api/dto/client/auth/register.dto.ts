@@ -8,9 +8,7 @@ import { t } from '$lib/locales';
  */
 export type RegisterDto = {
 	email: string;
-	name: string;
 	password: string;
-	surname: string;
 	username: string;
 	confirmPassword?: string;
 };
@@ -31,24 +29,12 @@ export const registerSchema = (): ObjectSchema<AnyObject, RegisterDto> => {
 			.email($t('api.dto.register.schema.validation.email.email'))
 			.max(50, $t('api.dto.register.schema.validation.email.max'))
 			.required($t('api.dto.register.schema.validation.email.required')),
-		name: string()
-			.default('')
-			.trim()
-			.min(2, $t('api.dto.register.schema.validation.name.min'))
-			.max(255, $t('api.dto.register.schema.validation.name.max'))
-			.required($t('api.dto.register.schema.validation.name.required')),
 		password: string()
 			.default('')
 			.min(8, $t('api.dto.register.schema.validation.password.min'))
 			.max(255, $t('api.dto.register.schema.validation.password.max'))
 			.matches(/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, $t('api.dto.register.schema.validation.password.matches'))
 			.required($t('api.dto.register.schema.validation.password.required')),
-		surname: string()
-			.default('')
-			.trim()
-			.min(2, $t('api.dto.register.schema.validation.surname.min'))
-			.max(255, $t('api.dto.register.schema.validation.surname.max'))
-			.required($t('api.dto.register.schema.validation.surname.required')),
 		username: string()
 			.default('')
 			.trim()
