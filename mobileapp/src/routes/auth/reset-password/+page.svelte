@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { loadingController } from 'ionic-svelte';
-	import { mailOutline } from 'ionicons/icons';
+	import { mailOutline, refreshOutline } from 'ionicons/icons';
 
 	import { type ResetPasswordConfirmationDto, resetPasswordConfirmationSchema } from '$lib/api/dto/client/auth';
 	import { publicUserResource } from '$lib/api/resources';
@@ -45,6 +45,7 @@
 		<form use:customForm={form}>
 			<InputItem name="email" label={$t('routes.auth.reset-password.form.email')} icon={mailOutline} />
 			<Button
+				icon={refreshOutline}
 				classProp="mt-3"
 				expand="block"
 				type="submit"

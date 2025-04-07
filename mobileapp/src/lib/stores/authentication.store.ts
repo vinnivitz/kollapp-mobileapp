@@ -15,14 +15,14 @@ function createStore(): AuthenticationStore {
 		_set(model);
 	}
 
-	async function _set(model: AuthenticationModel | undefined): Promise<void> {
+	async function _set(model?: AuthenticationModel): Promise<void> {
 		await (model ? storeValue(PreferencesKey.AUTHENTICATION, model) : removeStoredValue(PreferencesKey.AUTHENTICATION));
 		initialized.set(true);
 		set(model);
 	}
 
 	async function reset(): Promise<void> {
-		set(undefined);
+		_set();
 	}
 
 	return {

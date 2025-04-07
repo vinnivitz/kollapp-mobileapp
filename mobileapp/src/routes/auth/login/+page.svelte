@@ -85,16 +85,16 @@
 		{#if emailNotConfirmed}
 			<Card click={() => goto(PageRoute.AUTH.RESEND_CONFIRMATION)} classProp="text-center">
 				{$t('routes.auth.login.resend-confirmation.text')}
-				<ion-text color="tertiary">{$t('routes.auth.login.resend-confirmation.link')}</ion-text>
+				<ion-text color="secondary">{$t('routes.auth.login.resend-confirmation.link')}</ion-text>
 			</Card>
 		{/if}
-		<Card click={() => goto(PageRoute.AUTH.REGISTER)} classProp="text-center">
+		<Card color="light" click={() => goto(PageRoute.AUTH.REGISTER)} classProp="text-center">
 			{$t('routes.auth.login.register.text')}
-			<ion-text color="tertiary">{$t('routes.auth.login.register.link')}</ion-text>
+			<ion-text color="secondary">{$t('routes.auth.login.register.link')}</ion-text>
 		</Card>
-		<Card click={() => goto(PageRoute.AUTH.RESET_PASSWORD)} classProp="text-center">
+		<Card color="light" click={() => goto(PageRoute.AUTH.RESET_PASSWORD)} classProp="text-center">
 			{$t('routes.auth.login.forgot-password.text')}
-			<ion-text color="tertiary">{$t('routes.auth.login.forgot-password.link')}</ion-text>
+			<ion-text color="secondary">{$t('routes.auth.login.forgot-password.link')}</ion-text>
 		</Card>
 	</Card>
 </Layout>

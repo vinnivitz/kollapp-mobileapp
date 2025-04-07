@@ -14,7 +14,7 @@
 		searchable?: string;
 		subtitle?: string;
 		title?: string;
-		click?: () => Promise<void> | void;
+		click?: () => void;
 	};
 
 	let { accessible, children, classProp, click, color, icon, id, searchable, subtitle, title }: Properties = $props();

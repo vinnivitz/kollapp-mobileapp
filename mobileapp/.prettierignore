@@ -12,6 +12,8 @@ vite.config.ts.timestamp-*
 /assets
 /icons
 /static
+/src/lib/locales/de.json
+/src/lib/locales/en.json
 
 # Ignore lock file
 pnpm-lock.yaml

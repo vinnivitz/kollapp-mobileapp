@@ -3,7 +3,6 @@
 
 	import { actionSheetController } from 'ionic-svelte';
 	import {
-		arrowDown,
 		buildOutline,
 		calendarOutline,
 		createOutline,
@@ -17,6 +16,7 @@
 	import { goto } from '$app/navigation';
 
 	import Layout from '$lib/components/layout/Layout.svelte';
+	import Button from '$lib/components/widgets/Button.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
 	import LabeledItem from '$lib/components/widgets/LabeledItem.svelte';
 	import { t } from '$lib/locales';
@@ -39,6 +39,7 @@
 				handler: () => {
 					organizationStore.change(organization.id);
 				},
+				role: organizationModel?.id === organization.id ? 'selected' : undefined,
 				text: organization.name
 			})),
 			header: $t('routes.organization.change-organization.action-sheet.title')
@@ -59,9 +60,7 @@
 			<div class="flex items-center justify-center gap-4 text-2xl">
 				<ion-text color="dark">{organizationModel.name}</ion-text>
 				{#if $organizations.length > 1}
-					<ion-text color="dark" class="flex items-center justify-center">
-						<ion-icon icon={arrowDown}></ion-icon>
-					</ion-text>
+					<Button icon={swapHorizontalOutline} click={() => {}}></Button>
 				{/if}
 			</div>
 		</Card>

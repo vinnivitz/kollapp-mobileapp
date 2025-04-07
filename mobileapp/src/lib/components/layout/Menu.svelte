@@ -51,7 +51,7 @@
 				class="pt-5"
 				color="light"
 				debounce={100}
-				placeholder={$t('routes.organization.page.activity.search.placeholder')}
+				placeholder={$t('components.layout.menu.searchbar.placeholder')}
 				on:ionInput={onSearch}
 				value={searchValue}
 			>

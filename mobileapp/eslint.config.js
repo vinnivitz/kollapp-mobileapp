@@ -144,7 +144,9 @@ export default ts.config(
 			'.env',
 			'vite.config.ts.*',
 			'static/*',
-			'coverage/'
+			'coverage/',
+			'src/lib/locales/de.json',
+			'src/lib/locales/en.json'
 		]
 	}
 );
