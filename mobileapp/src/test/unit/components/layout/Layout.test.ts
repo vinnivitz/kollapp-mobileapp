@@ -4,36 +4,36 @@ import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import Layout from '$lib/components/layout/Layout.svelte';
 
-function registerMocks(): void {
-	vi.mock('$lib/stores', () => ({
-		activitiesStore: {
-			initialized: false
-		},
-		organizationStore: {
-			initialized: false
-		},
-		userStore: {
-			initialized: false
-		}
-	}));
+let storesInitialized = true;
 
+const navigate = vi.fn();
+
+function registerMocks(): void {
 	vi.mock('$lib/components/layout/Header.svelte', () => ({
 		default: () => ({
-			$$render: () => `<div data-testid="header-stub">Header</div>`
+			$$render: () => `<div data-testid="header-stub"></div>`
 		})
 	}));
 
 	vi.mock('$lib/components/layout/Menu.svelte', () => ({
 		default: () => ({
-			$$render: () => `<div data-testid="menu-stub">Menu</div>`
+			$$render: () => `<div data-testid="menu-stub">Menu</div>`,
+			navigate
 		})
+	}));
+
+	vi.mock('$lib/stores', () => ({
+		initializationStore: {
+			subscribe: (run: (value: boolean) => void) => {
+				run(storesInitialized);
+				return () => {};
+			}
+		}
 	}));
 }
 
 describe('Layout Component', () => {
-	beforeAll(() => {
-		registerMocks();
-	});
+	beforeAll(() => registerMocks());
 
 	it('renders child content', () => {
 		const childText = 'Hello, world!';
@@ -82,5 +82,13 @@ describe('Layout Component', () => {
 		await fireEvent(refresherElement as HTMLIonRefresherElement, new CustomEvent('ionRefresh'));
 
 		expect(onRefresh).toHaveBeenCalledWith(refresherElement);
+	});
+
+	it('do not render content if stores are not initialized', () => {
+		storesInitialized = false;
+		const properties = { hideLayout: false, hideMenu: false, title: 'Test Title' };
+		const { container } = render(Layout, { props: properties });
+
+		expect(container.querySelector('ion-progress-bar')).toBeDefined();
 	});
 });

@@ -1,12 +1,26 @@
 import { fireEvent, render } from '@testing-library/svelte';
-import { describe, expect, test } from 'vitest';
+import { beforeAll, describe, expect, test, vi } from 'vitest';
 
 import { goto } from '$app/navigation';
 
 import Header from '$lib/components/layout/Header.svelte';
 import { PageRoute } from '$lib/models/routing';
 
+let storesInitialized = true;
+
+function registerMocks(): void {
+	vi.mock('$lib/stores', () => ({
+		initializationStore: {
+			subscribe: (run: (value: boolean) => void) => {
+				run(storesInitialized);
+				return () => {};
+			}
+		}
+	}));
+}
+
 describe('Header Component', () => {
+	beforeAll(() => registerMocks());
 	test('renders title correctly', () => {
 		const properties = { title: 'Test Header' };
 		const { container } = render(Header, { props: properties });
@@ -41,5 +55,12 @@ describe('Header Component', () => {
 		await fireEvent.click(logo as HTMLElement);
 
 		expect(goto).toHaveBeenCalledWith(PageRoute.HOME);
+	});
+	test('do not render content if stores are not initialized', () => {
+		storesInitialized = false;
+		const properties = { title: 'Test Title' };
+		const { container } = render(Header, { props: properties });
+
+		expect(container.querySelector('ion-content')).toBeNull();
 	});
 });
