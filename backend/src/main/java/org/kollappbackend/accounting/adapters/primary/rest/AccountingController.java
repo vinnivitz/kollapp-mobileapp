@@ -4,22 +4,29 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
 import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
+import org.kollappbackend.accounting.adapters.primary.rest.mapper.BudgetAccountMapper;
 import org.kollappbackend.accounting.adapters.primary.rest.mapper.PostingMapper;
+import org.kollappbackend.accounting.adapters.primary.rest.model.BudgetAccountTO;
 import org.kollappbackend.accounting.adapters.primary.rest.model.PostingTO;
+import org.kollappbackend.accounting.application.model.BudgetAccount;
 import org.kollappbackend.accounting.application.model.Posting;
 import org.kollappbackend.accounting.application.service.BudgetAccountService;
 import org.kollappbackend.core.adapters.primary.rest.model.DataResponseTO;
+import org.kollappbackend.core.adapters.primary.rest.model.MessageResponseTO;
 import org.kollappbackend.core.adapters.primary.rest.model.ResponseTO;
 import org.kollappbackend.user.application.model.RequiresManagerOrMemberRole;
+import org.kollappbackend.user.application.model.RequiresManagerRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @PrimaryAdapter
@@ -34,18 +41,70 @@ public class AccountingController {
     private PostingMapper postingMapper;
 
     @Autowired
+    private BudgetAccountMapper budgetAccountMapper;
+
+    @Autowired
     private MessageSource messageSource;
 
-    @GetMapping("/account/postings")
-    @Operation(summary = "Get all postings of a budget account.", security = {
+    @GetMapping("/account")
+    @Operation(summary = "Get the budget account by the organization id.", security = {
             @SecurityRequirement(name = "bearer-key")})
     @RequiresManagerOrMemberRole
-    public ResponseEntity<ResponseTO> getPostingsOfBudgetAccount(
+    public ResponseEntity<ResponseTO> getBudgetAccountByOrganizationId(
             @RequestParam("organization-id") long organizationId) {
-        List<Posting> postings = budgetAccountService.getPostingsOfBudgetAccountOfOrganizationId(organizationId);
-        List<PostingTO> postingTos = postings.stream().map(postingMapper::mapPostingToPostingTO).toList();
-        return ResponseEntity.ok(new DataResponseTO(postingTos, "success.activity.get", messageSource));
+        BudgetAccount budgetAccount = budgetAccountService.getBudgetAccountByOrganizationId(organizationId);
+        BudgetAccountTO budgetAccountTO = budgetAccountMapper.mapBudgetAccountToBudgetAccountTO(budgetAccount);
+        return ResponseEntity.ok(new DataResponseTO(budgetAccountTO, "success.budgetAccount.get",
+                messageSource));
     }
+
+    @PostMapping("/account/{account-id}/posting")
+    @Operation(summary = "Add a new posting to a budget account.", security = {
+            @SecurityRequirement(name = "bearer-key")})
+    @RequiresManagerRole
+    public ResponseEntity<ResponseTO> addPosting(@PathVariable("account-id") long accountId,
+                                                 @RequestBody PostingTO postingTO) {
+        Posting postingToBeAdded;
+        if (postingTO.getActivityId() == 0) {
+            postingToBeAdded = postingMapper.mapPostingTOToOrganizationPosting(postingTO);
+        } else {
+            postingToBeAdded = postingMapper.mapPostingTOToActivityPosting(postingTO);
+        }
+        Posting addedPosting = budgetAccountService.addPosting(postingToBeAdded, accountId);
+        PostingTO response = postingMapper.mapPostingToPostingTO(addedPosting);
+        return ResponseEntity.ok(new DataResponseTO(response, "success.posting.create", messageSource));
+    }
+
+    @PostMapping("/account/{account-id}/posting/{posting-id}")
+    @Operation(summary = "Edit an existing posting.", security = {
+            @SecurityRequirement(name = "bearer-key")})
+    @RequiresManagerRole
+    public ResponseEntity<ResponseTO> editPosting(@PathVariable("account-id") long accountId,
+                                                  @PathVariable("posting-id") long postingId,
+                                                  @RequestBody PostingTO postingTo) {
+        Posting postingToBeEdited;
+        if (postingTo.getActivityId() == 0) {
+            postingToBeEdited = postingMapper.mapPostingTOToOrganizationPosting(postingTo);
+        } else {
+            postingToBeEdited = postingMapper.mapPostingTOToActivityPosting(postingTo);
+        }
+        Posting editedPosting = budgetAccountService.editPosting(postingToBeEdited, postingId, accountId);
+        PostingTO response = postingMapper.mapPostingToPostingTO(editedPosting);
+        return ResponseEntity.ok(new DataResponseTO(response, "success.posting.edited", messageSource));
+    }
+
+    @DeleteMapping("/account/{account-id}/posting/{posting-id}")
+    @Operation(summary = "Delete an existing posting.", security = {
+            @SecurityRequirement(name = "bearer-key")})
+    @RequiresManagerRole
+    public ResponseEntity<MessageResponseTO> deletePosting(@PathVariable("account-id") long accountId,
+                                                           @PathVariable("posting-id") long postingId) {
+        budgetAccountService.deletePosting(accountId, postingId);
+        return ResponseEntity.ok(new MessageResponseTO("success.posting.deleted", messageSource));
+    }
+
+
+
 
 
 }

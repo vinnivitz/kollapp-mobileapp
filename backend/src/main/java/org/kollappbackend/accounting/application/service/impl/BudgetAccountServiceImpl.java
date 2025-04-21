@@ -1,5 +1,7 @@
 package org.kollappbackend.accounting.application.service.impl;
 
+import org.kollappbackend.accounting.application.exception.BudgetAccountDoesNotContainPostingException;
+import org.kollappbackend.accounting.application.exception.BudgetAccountDoesNotExistException;
 import org.kollappbackend.accounting.application.exception.NoPostingWithThisIdException;
 import org.kollappbackend.accounting.application.exception.OrganizationHasNoBudgetAccount;
 import org.kollappbackend.accounting.application.model.BudgetAccount;
@@ -9,8 +11,6 @@ import org.kollappbackend.accounting.application.repository.PostingRepository;
 import org.kollappbackend.accounting.application.service.BudgetAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class BudgetAccountServiceImpl implements BudgetAccountService {
@@ -25,33 +25,41 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
     }
 
     @Override
-    public Posting addPosting(Posting posting, long organizationId) {
-        BudgetAccount budgetAccount = getBudgetAccountByOrganizationId(organizationId);
+    public Posting addPosting(Posting posting, long budgetAccountId) {
+        BudgetAccount budgetAccount =
+                budgetAccountRepository.findById(budgetAccountId).orElseThrow(BudgetAccountDoesNotExistException::new);
         budgetAccount.addPosting(posting);
         posting.setBudgetAccount(budgetAccount);
         return postingRepository.save(posting);
     }
 
     @Override
-    public Posting editPosting(Posting updatedPosting, long postingId) {
+    public Posting editPosting(Posting postingToBeEdited, long postingId, long budgetAccountId) {
+        BudgetAccount budgetAccount = budgetAccountRepository.findById(budgetAccountId)
+                .orElseThrow(BudgetAccountDoesNotExistException::new);
         Posting posting = postingRepository.findById(postingId).orElseThrow(NoPostingWithThisIdException::new);
-        posting.setDate(updatedPosting.getDate());
-        posting.setPurpose(updatedPosting.getPurpose());
-        posting.setAmountInCents(updatedPosting.getAmountInCents());
+        if (!budgetAccount.containsPosting(posting)) {
+            throw new BudgetAccountDoesNotContainPostingException();
+        }
+        posting.setDate(postingToBeEdited.getDate());
+        posting.setPurpose(postingToBeEdited.getPurpose());
+        posting.setAmountInCents(postingToBeEdited.getAmountInCents());
         return posting;
     }
 
     @Override
-    public void deletePosting(long postingId) {
-        postingRepository.deleteById(postingId);
+    public void deletePosting(long budgetAccountId, long postingId) {
+        BudgetAccount budgetAccount = budgetAccountRepository.findById(budgetAccountId)
+                .orElseThrow(BudgetAccountDoesNotExistException::new);
+        Posting posting = postingRepository.findById(postingId).orElseThrow(NoPostingWithThisIdException::new);
+        if (budgetAccount.containsPosting(posting)) {
+            postingRepository.deleteById(postingId);
+        }
+        throw new BudgetAccountDoesNotContainPostingException();
     }
 
-    public List<Posting> getPostingsOfBudgetAccountOfOrganizationId(long organizationId) {
-        BudgetAccount budgetAccount = getBudgetAccountByOrganizationId(organizationId);
-        return budgetAccount.getPostings();
-    }
-
-    private BudgetAccount getBudgetAccountByOrganizationId(long organizationId) {
+    @Override
+    public BudgetAccount getBudgetAccountByOrganizationId(long organizationId) {
         return budgetAccountRepository
                 .findByOrganizationId(organizationId)
                 .orElseThrow(OrganizationHasNoBudgetAccount::new);

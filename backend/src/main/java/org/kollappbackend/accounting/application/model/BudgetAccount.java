@@ -28,14 +28,19 @@ public class BudgetAccount {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    private long organizationId;
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "budgetAccount", orphanRemoval = true)
     private List<Posting> postings;
 
-    public Posting addPosting(Posting posting) {
+    public void addPosting(Posting posting) {
         if (postings == null) {
             postings = new ArrayList<>();
         }
         postings.add(posting);
-        return posting;
+    }
+
+    public boolean containsPosting(Posting posting) {
+        return postings != null && postings.contains(posting);
     }
 }

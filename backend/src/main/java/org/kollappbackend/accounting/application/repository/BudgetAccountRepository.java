@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface BudgetAccountRepository {
     BudgetAccount save(BudgetAccount budgetAccount);
     Optional<BudgetAccount> findByOrganizationId(long organizationId);
+    Optional<BudgetAccount> findById(long id);
 }

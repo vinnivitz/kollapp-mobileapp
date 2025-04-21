@@ -1,12 +1,11 @@
 package org.kollappbackend.accounting.application.service;
 
+import org.kollappbackend.accounting.application.model.BudgetAccount;
 import org.kollappbackend.accounting.application.model.Posting;
 
-import java.util.List;
-
 public interface BudgetAccountService {
-    Posting addPosting(Posting posting, long organizationId);
-    Posting editPosting(Posting posting, long organizationId);
-    void deletePosting(long postingId);
-    List<Posting> getPostingsOfBudgetAccountOfOrganizationId(long organizationId);
+    Posting addPosting(Posting posting, long budgetAccountId);
+    Posting editPosting(Posting postingToBeEdited, long postingId, long budgetAccountId);
+    void deletePosting(long accountId, long postingId);
+    BudgetAccount getBudgetAccountByOrganizationId(long organizationId);
 }
