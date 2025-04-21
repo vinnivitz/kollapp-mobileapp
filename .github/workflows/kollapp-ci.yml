@@ -36,7 +36,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Maven Verify
-        run: mvn -B verify --file backend/pom.xml
+        run: mvn clean -B verify --file backend/pom.xml
 
       - name: Prepare Release
         run: |
