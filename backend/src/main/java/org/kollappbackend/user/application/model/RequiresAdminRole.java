@@ -8,6 +8,6 @@ import java.lang.annotation.RetentionPolicy;
 
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
-@PreAuthorize("hasRole(T(org.kollappbackend.user.application.model" + ".ERole).ROLE_ADMIN.name())")
+@PreAuthorize("hasRole(T(org.kollappbackend.user.application.model" + ".ERole).ROLE_KOLLAPP_ADMIN.name())")
 public @interface RequiresAdminRole {
 }

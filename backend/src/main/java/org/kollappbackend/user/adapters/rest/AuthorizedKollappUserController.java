@@ -63,8 +63,7 @@ public class AuthorizedKollappUserController {
     @RequiresManagerOrMemberRole
     public ResponseEntity<ResponseTO> updateUser(@Valid @RequestBody KollappUserUpdateRequestTO updateRequestTO) {
         KollappUser updatedUser =
-                kollappUserService.updateKollappUser(updateRequestTO.getUsername(), updateRequestTO.getEmail(),
-                        updateRequestTO.getSurname(), updateRequestTO.getName());
+                kollappUserService.updateKollappUser(updateRequestTO.getUsername(), updateRequestTO.getEmail());
         KollappUserTO updatedUserTO = kollappUserMapper.userToUserTO(updatedUser);
         return ResponseEntity.ok(new DataResponseTO(updatedUserTO, "success.user.update-data", messageSource));
     }

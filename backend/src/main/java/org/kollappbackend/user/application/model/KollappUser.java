@@ -17,6 +17,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -36,14 +37,6 @@ public class KollappUser {
 
     @NotBlank
     @Size(max = 50)
-    private String surname;
-
-    @NotBlank
-    @Size(max = 50)
-    private String name;
-
-    @NotBlank
-    @Size(max = 50)
     @Email
     private String email;
 
@@ -56,5 +49,12 @@ public class KollappUser {
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     private List<ERole> roles;
+
+    public void addRoleOrganizationManager() {
+        if (this.roles == null) {
+            this.roles = new ArrayList<>();
+        }
+        this.roles.add(ERole.ROLE_ORGANIZATION_MANAGER);
+    }
 
 }

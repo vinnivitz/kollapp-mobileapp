@@ -25,12 +25,4 @@ public class KollappUserUpdateRequestTO {
     @Email(message = "{validation.email.invalid}")
     @Size(max = 50, message = "{validation.email.maxlength}")
     private String email;
-
-    @NotBlank(message = "{validation.user.surename.required}")
-    @Size(max = 50, message = "{validation.user.surename.maxlength}")
-    private String surname;
-
-    @NotBlank(message = "{validation.user.name.required}")
-    @Size(max = 50, message = "{validation.user.name.maxlength}")
-    private String name;
 }

@@ -108,8 +108,7 @@ public class KollappUserServiceImpl implements KollappUserService {
     }
 
     @Override
-    public void register(String username, String email, String password, String name, String surname,
-                         List<ERole> roles) {
+    public void register(String username, String email, String password) {
         if (userRepo.existsByUsername(username)) {
             throw new UsernameExistsException(messageSource);
         }
@@ -118,16 +117,15 @@ public class KollappUserServiceImpl implements KollappUserService {
         }
         String encodedPassword = encoder.encode(password);
         KollappUser kollappUser =
-                KollappUser.builder().username(username).email(email).name(name).surname(surname).isActivated(false)
-                        .password(encodedPassword).roles(roles).build();
+                KollappUser.builder().username(username).email(email).isActivated(false)
+                        .password(encodedPassword).roles(List.of(ERole.ROLE_KOLLAPP_USER)).build();
         userRepo.save(kollappUser);
         String confirmationToken = jwtUtil.generateConfirmationToken(username);
         emailService.sendConfirmationMail(kollappUser.getEmail(), createConfirmationBaseUrl(confirmationToken));
     }
 
     @Override
-    public KollappUser updateKollappUser(@Nullable String username, @Nullable String email, @Nullable String surename,
-                                         @Nullable String name) {
+    public KollappUser updateKollappUser(@Nullable String username, @Nullable String email) {
         KollappUser kollappUser = getLoggedInKollappUser();
         if (username != null && !kollappUser.getUsername().equals(username)) {
             kollappUser.setUsername(username);
@@ -139,12 +137,6 @@ public class KollappUserServiceImpl implements KollappUserService {
             String confirmationBaseUrl = createConfirmationBaseUrl(confirmationToken);
             emailService.sendConfirmationMail(kollappUser.getEmail(), confirmationBaseUrl);
             kollappUser.setEmail(email);
-        }
-        if (surename != null) {
-            kollappUser.setSurname(surename);
-        }
-        if (name != null) {
-            kollappUser.setName(name);
         }
         return kollappUser;
     }

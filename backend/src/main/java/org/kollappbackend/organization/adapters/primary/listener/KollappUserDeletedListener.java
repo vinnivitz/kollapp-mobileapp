@@ -19,6 +19,6 @@ public class KollappUserDeletedListener implements ApplicationListener<KollappUs
     @Override
     public void onApplicationEvent(KollappUserDeletedEvent kollappUserDeletedEvent) {
         log.info("[Organization] Received domain event: UserDeletedEvent");
-        organizationService.deleteUserFromOrganization(kollappUserDeletedEvent.getUserId());
+        organizationService.deleteUserFromAllOrganizations(kollappUserDeletedEvent.getUserId());
     }
 }
