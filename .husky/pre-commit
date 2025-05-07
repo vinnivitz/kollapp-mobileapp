@@ -12,5 +12,5 @@ fi
 
 if echo "$STAGED_FILES" | grep -q '^webapp/'; then
   echo "Linting webapp failed. Aborting commit"
-  dart analyze webapp
+  npm run lint --prefix webapp
 fi
