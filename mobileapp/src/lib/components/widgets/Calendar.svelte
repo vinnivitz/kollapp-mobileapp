@@ -12,8 +12,8 @@
 		color?: Colors;
 		dismissText?: string;
 		showTitle?: boolean;
-		apply?: (value: string) => Promise<void> | void;
-		dismiss?: () => Promise<void> | void;
+		apply?: (value: string) => void;
+		dismiss?: () => void;
 	};
 
 	let {

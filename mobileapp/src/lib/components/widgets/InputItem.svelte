@@ -10,6 +10,7 @@
 		name: string;
 		card?: boolean;
 		color?: Colors;
+		disabled?: boolean;
 		helperText?: string;
 		icon?: string;
 		inputIcon?: string;
@@ -17,13 +18,14 @@
 		type?: InputType;
 		value?: null | number | string;
 		change?: (value: string) => void;
-		inputIconClick?: () => Promise<void> | void;
+		inputIconClick?: () => void;
 	};
 
 	let {
 		card,
 		change,
 		color,
+		disabled,
 		helperText,
 		icon,
 		inputIcon,
@@ -44,8 +46,9 @@
 		counter={!!maxlength}
 		{name}
 		{label}
-		{type}
+		type={type === 'date' ? 'text' : type}
 		{value}
+		{disabled}
 		helper-text={helperText}
 		on:ionInput={(event) => change?.(event.detail.value || '')}
 	>

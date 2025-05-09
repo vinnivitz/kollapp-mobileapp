@@ -48,11 +48,17 @@
     "route": "/organization"
   },
   {
+    "icon": "calendarOutline",
+    "id": 9,
+    "label": "routes.organization.list.organization.activity.label",
+    "route": "/organization/activity"
+  },
+  {
     "accessible": [
       "ROLE_ORGANIZATION_MANAGER"
     ],
     "icon": "buildOutline",
-    "id": 9,
+    "id": 10,
     "label": "routes.organization.list.update-info.update-info",
     "route": "/organization/update-data"
   },
@@ -61,19 +67,19 @@
       "ROLE_ORGANIZATION_MANAGER"
     ],
     "icon": "logOutOutline",
-    "id": 10,
+    "id": 11,
     "label": "routes.organization.list.organization.leave.label",
     "route": "/organization/leave"
   },
   {
     "icon": "createOutline",
-    "id": 11,
+    "id": 12,
     "label": "routes.organization.list.general.register.label",
     "route": "/organization/register"
   },
   {
     "icon": "personAddOutline",
-    "id": 12,
+    "id": 13,
     "label": "routes.organization.list.general.join.label",
     "route": "/organization/join"
   }

@@ -363,11 +363,19 @@
           "segments": {
             "pending": "Pending",
             "done": "Done",
-            "all": "All"
+            "all": "All",
+            "archived": "Archived",
+            "activities": "Events",
+            "calendar": "Calendar"
           },
           "no-activities-found": "No results for \"{{value}}\"",
           "button": {
             "create-event": "Create event"
+          },
+          "filters": {
+            "title": "Filters",
+            "pending": "Pending",
+            "archived": "Archived"
           }
         }
       },

@@ -23,4 +23,8 @@
 			margin: 0;
 		}
 	}
+
+	ion-button {
+		text-transform: none;
+	}
 }

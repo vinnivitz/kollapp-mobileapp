@@ -31,7 +31,7 @@ export type FormConfig<T> = {
 	parser?: { [K in keyof T]?: (value: T[K]) => Promise<T[K]> };
 	exposedActions?: (actions: FormActions<T>) => void;
 	onBlur?: (key: keyof T) => void;
-	onChange?: (key: keyof T, value: T[keyof T]) => Promise<void> | void;
+	onChange?: (key: keyof T, value: T[keyof T]) => void;
 	onSubmit?: (model: T, result: ValidationResult) => void;
 	onTouched?: () => void;
 };

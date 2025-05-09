@@ -560,11 +560,19 @@
           "segments": {
             "pending": "Anstehend",
             "done": "Erledigt",
-            "all": "Alle"
+            "all": "Alle",
+            "archived": "Archiviert",
+            "activities": "Veranstaltungen",
+            "calendar": "Kalender"
           },
           "no-activities-found": "Keine Ergebnisse für \"{{value}}\"",
           "button": {
             "create-event": "Veranstaltung erstellen"
+          },
+          "filters": {
+            "title": "Filter",
+            "pending": "Ausstehend",
+            "archived": "Archiviert"
           }
         }
       },

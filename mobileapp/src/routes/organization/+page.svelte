@@ -26,14 +26,13 @@
 	import { hasRole, showAlert } from '$lib/utility';
 
 	const organizationModel = $derived<OrganizationModel | undefined>($organizationStore);
-	const organizations = svelteDerived([organizationStore.organizations], ([$organizations]) => {
-		return $organizations;
-	});
+	const organizations = svelteDerived([organizationStore.organizations], ([$organizations]) => $organizations);
 
 	async function onOrganizationSelect(): Promise<void> {
 		if ($organizations.length <= 1) {
 			return;
 		}
+
 		const actionSheet = await actionSheetController.create({
 			buttons: $organizations.map((organization) => ({
 				handler: () => {
@@ -69,6 +68,7 @@
 			<LabeledItem
 				label={$t('routes.organization.list.organization.activity.label')}
 				icon={calendarOutline}
+				searchable={PageRoute.ORGANIZATION.ACTIVITY.ROOT}
 				click={() => goto(PageRoute.ORGANIZATION.ACTIVITY.ROOT)}
 			></LabeledItem>
 			{#if hasRole(UserRole.ORGANIZATION_MANAGER)}

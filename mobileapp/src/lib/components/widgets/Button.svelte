@@ -13,11 +13,8 @@
 		label?: string;
 		size?: 'default' | 'large' | 'small' | undefined;
 		type?: 'button' | 'reset' | 'submit';
-		click?: (event?: MouseEvent) => Promise<void> | void;
-	} & (
-		| { type: 'submit'; click?: never }
-		| { type?: 'button' | 'reset'; click: (event?: MouseEvent) => Promise<void> | void }
-	) &
+		click?: (event?: MouseEvent) => void;
+	} & ({ type: 'submit'; click?: never } | { type?: 'button' | 'reset'; click: (event?: MouseEvent) => void }) &
 		({ icon: string; label?: string } | { label: string; icon?: string });
 
 	let {

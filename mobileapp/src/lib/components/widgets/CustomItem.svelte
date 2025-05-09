@@ -9,8 +9,8 @@
 		iconEnd?: string;
 		iconStart?: string;
 		transparent?: boolean;
-		click?: () => Promise<void> | void;
-		iconClick?: () => Promise<void> | void;
+		click?: () => void;
+		iconClick?: () => void;
 	};
 
 	let {

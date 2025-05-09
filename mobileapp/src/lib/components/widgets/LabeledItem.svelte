@@ -12,10 +12,7 @@
 		icon?: string;
 		searchable?: string;
 		transparent?: boolean;
-	} & (
-		| { searchable: string; click: () => Promise<void> | void }
-		| { searchable?: string; click?: () => Promise<void> | void }
-	);
+	} & ({ searchable: string; click: () => void } | { searchable?: string; click?: () => void });
 
 	let { accessible, card, click, color = 'light', icon, label, searchable, transparent = false }: Properties = $props();
 

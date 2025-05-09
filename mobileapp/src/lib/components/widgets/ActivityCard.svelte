@@ -8,7 +8,7 @@
 
 	type Properties = {
 		value: ActivityModel;
-		edit?: (value: ActivityModel) => Promise<void> | void;
+		edit?: (value: ActivityModel) => void;
 	};
 
 	let { edit, value }: Properties = $props();
