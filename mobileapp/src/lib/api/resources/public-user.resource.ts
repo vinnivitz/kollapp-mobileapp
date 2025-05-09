@@ -1,4 +1,4 @@
-import type { RegisterDto, ResetPasswordConfirmationDto } from '$lib/api/dto/client/auth';
+import type { RegisterDto, ResetPasswordConfirmationDto, ResetPasswordDto } from '$lib/api/dto/client/auth';
 
 import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/models/api';
 import { customFetch } from '$lib/utility';
@@ -23,7 +23,7 @@ export async function register(model: RegisterDto): Promise<ResponseBody> {
  * @param model email model
  * @returns {Promise<ResponseBody>} response body
  */
-export async function forgotPassword(model: ResetPasswordConfirmationDto): Promise<ResponseBody> {
+export async function forgotPassword(model: ResetPasswordDto): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/forgot-password`, {
 		authorizationType: AuthorizationType.NONE,
 		body: JSON.stringify(model),

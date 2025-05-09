@@ -376,7 +376,8 @@
             "title": "Filters",
             "pending": "Pending",
             "archived": "Archived"
-          }
+          },
+          "no-activities": "No events found."
         }
       },
       "change-organization": {

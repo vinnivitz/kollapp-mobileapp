@@ -573,7 +573,8 @@
             "title": "Filter",
             "pending": "Ausstehend",
             "archived": "Archiviert"
-          }
+          },
+          "no-activities": "Keine Veranstaltungen gefunden."
         }
       },
       "change-organization": {

@@ -21,7 +21,7 @@ export const PageRoute = {
 	ORGANIZATION: {
 		ACTIVITY: {
 			CREATE: '/organization/activity/create',
-			ROOT: '/organization/activity'
+			ROOT: '/organization/activities'
 		},
 		JOIN: '/organization/join',
 		LEAVE: '/organization/leave',

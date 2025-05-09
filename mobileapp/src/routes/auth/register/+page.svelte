@@ -18,12 +18,10 @@
 
 	const model = registerSchema().cast({}) as RegisterDto;
 	let actions: FormActions<RegisterDto>;
-	let touched = $state(false);
 
 	const config: FormConfig<RegisterDto> = {
 		exposedActions: (exposedActions) => (actions = exposedActions),
 		onSubmit,
-		onTouched: () => (touched = true),
 		schema: registerSchema()
 	};
 
@@ -79,7 +77,6 @@
 				expand="block"
 				type="submit"
 				label={$t('routes.auth.register.form.submit')}
-				disabled={!touched}
 				icon={saveOutline}
 			/>
 		</form>

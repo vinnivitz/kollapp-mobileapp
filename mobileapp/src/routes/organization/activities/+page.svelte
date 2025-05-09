@@ -55,13 +55,7 @@
 
 	const activityItems = $derived($activitiesStore ?? []);
 
-	const activityFilters = $state<ActivityFilter[]>(
-		Object.values(ActivityFilterType).map((type) => ({
-			applied: false,
-			label: $t(`routes.organization.page.activity.filters.${type}`),
-			type
-		}))
-	);
+	const activityFilters = $state<ActivityFilter[]>(initialActivityFilter());
 
 	let activityView = $state(ActivityView.activities);
 
@@ -99,6 +93,14 @@
 	$effect(() => {
 		filteredActivities = activityItems;
 	});
+
+	function initialActivityFilter(): ActivityFilter[] {
+		return Object.values(ActivityFilterType).map((type) => ({
+			applied: type === ActivityFilterType.pending,
+			label: $t(`routes.organization.page.activity.filters.${type}`),
+			type
+		}));
+	}
 
 	async function onCreateSubmit(model: CreateActivityDto, result: ValidationResult): Promise<void> {
 		if (result.valid) {
@@ -192,80 +194,93 @@
 	showBackButton
 	scrollable={activityView === ActivityView.calendar}
 >
-	{#if activityView == ActivityView.activities}
-		{@render searchbar()}
-
-		<ion-fab class="fixed" vertical="bottom" horizontal="end">
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
-			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<!-- svelte-ignore event_directive_deprecated -->
-			<ion-fab-button color="secondary" on:click={onCreateActivity}>
-				<ion-icon icon={createOutline}></ion-icon>
-			</ion-fab-button>
-		</ion-fab>
-	{/if}
-
-	{#if activityItems.length > 0}
-		<!-- svelte-ignore event_directive_deprecated -->
-		<ion-segment
-			in:fade={{ delay: 150, duration: 100 }}
-			out:fade={{ delay: 0, duration: 100 }}
-			on:ionChange={(event) => (activityView = event.detail.value as ActivityView)}
-			value={activityView}
-			color="secondary"
-		>
-			<ion-segment-button value={ActivityView.activities}>
-				<ion-icon icon={flashOutline}></ion-icon>
-				<ion-label>{$t('routes.organization.page.activity.segments.activities')}</ion-label>
-			</ion-segment-button>
-			<ion-segment-button value={ActivityView.calendar}>
-				<ion-icon icon={calendarOutline}></ion-icon>
-				<ion-label>{$t('routes.organization.page.activity.segments.calendar')}</ion-label>
-			</ion-segment-button>
-		</ion-segment>
-		<ion-segment-view in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
-			<ion-segment-content>
-				{#if activityView === ActivityView.activities}
-					<div class="mx-2 flex items-center justify-between">
-						<div class="flex flex-wrap items-center gap-2">
-							{#each activityFilters as filter (filter.type)}
-								{#if filter.applied}
-									<!-- svelte-ignore a11y_click_events_have_key_events -->
-									<!-- svelte-ignore event_directive_deprecated -->
-									<!-- svelte-ignore a11y_no_static_element_interactions -->
-									<ion-chip outline class="flex" on:click={() => (filter.applied = false)}>
-										<ion-label>{filter.label}</ion-label>
-										<ion-icon icon={closeOutline}></ion-icon>
-									</ion-chip>
-								{/if}
-							{/each}
-						</div>
-						<Button icon={filterOutline} click={() => (showFilters = true)}></Button>
-					</div>
-
-					{#if filteredActivities.length > 0}
-						<ion-list in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
-							{#each filteredActivities as activity (activity.id)}
-								<ActivityCard value={activity} edit={() => onEditActivity(activity)} />
-							{/each}
-						</ion-list>
-					{:else}
-						<div
-							class="mt-4 text-center"
-							in:fade={{ delay: 150, duration: 100 }}
-							out:fade={{ delay: 0, duration: 100 }}
-						>
-							{$t('routes.organization.page.activity.no-activities-found', { value: searchActivityValue })}
-						</div>
-					{/if}
-				{:else if activityView === ActivityView.calendar}
-					<Calendar apply={onCreateActivity} applyText={$t('routes.organization.page.activity.calendar.done')}
-					></Calendar>
-				{/if}
-			</ion-segment-content>
-		</ion-segment-view>
-	{/if}
+	{@render activitySegmentsHeader()}
+	{@render activitySegmentView()}
 </Layout>
+
+{#snippet activitySegmentsHeader()}
+	<!-- svelte-ignore event_directive_deprecated -->
+	<ion-segment
+		in:fade={{ delay: 150, duration: 100 }}
+		out:fade={{ delay: 0, duration: 100 }}
+		on:ionChange={(event) => (activityView = event.detail.value as ActivityView)}
+		value={activityView}
+		color="secondary"
+	>
+		<ion-segment-button value={ActivityView.activities}>
+			<ion-icon icon={flashOutline}></ion-icon>
+			<ion-label>{$t('routes.organization.page.activity.segments.activities')}</ion-label>
+		</ion-segment-button>
+		<ion-segment-button value={ActivityView.calendar}>
+			<ion-icon icon={calendarOutline}></ion-icon>
+			<ion-label>{$t('routes.organization.page.activity.segments.calendar')}</ion-label>
+		</ion-segment-button>
+	</ion-segment>
+{/snippet}
+
+{#snippet activitySegmentView()}
+	<ion-segment-view in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
+		<ion-segment-content>
+			{#if activityView === ActivityView.activities}
+				{@render fabbutton()}
+
+				{@render searchbar()}
+
+				{@render activityFilter()}
+
+				{@render activityList()}
+			{:else if activityView === ActivityView.calendar}
+				<Calendar apply={onCreateActivity} applyText={$t('routes.organization.page.activity.calendar.done')}></Calendar>
+			{/if}
+		</ion-segment-content>
+	</ion-segment-view>
+{/snippet}
+
+{#snippet activityFilter()}
+	<div class="mx-2 flex items-center justify-between">
+		<div class="flex flex-wrap items-center gap-2">
+			{#each activityFilters as filter (filter.type)}
+				{#if filter.applied}
+					<!-- svelte-ignore a11y_click_events_have_key_events -->
+					<!-- svelte-ignore event_directive_deprecated -->
+					<!-- svelte-ignore a11y_no_static_element_interactions -->
+					<ion-chip outline class="flex" on:click={() => (filter.applied = false)}>
+						<ion-label>{filter.label}</ion-label>
+						<ion-icon icon={closeOutline}></ion-icon>
+					</ion-chip>
+				{/if}
+			{/each}
+		</div>
+		<Button icon={filterOutline} click={() => (showFilters = true)}></Button>
+	</div>
+{/snippet}
+
+{#snippet activityList()}
+	{#if activityItems.length === 0}
+		<div class="mt-4 text-center" in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
+			{$t('routes.organization.page.activity.no-activities')}
+		</div>
+	{:else}
+		{#if activityItems.length > 0}
+			<ion-list in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
+				{#each activityItems as activity (activity.id)}
+					<ActivityCard value={activity} edit={() => onEditActivity(activity)} />
+				{/each}
+			</ion-list>
+		{/if}
+		{#if filteredActivities.length > 0}
+			<ion-list in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
+				{#each filteredActivities as activity (activity.id)}
+					<ActivityCard value={activity} edit={() => onEditActivity(activity)} />
+				{/each}
+			</ion-list>
+		{:else}
+			<div class="mt-4 text-center" in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
+				{$t('routes.organization.page.activity.no-activities-found', { value: searchActivityValue })}
+			</div>
+		{/if}
+	{/if}
+{/snippet}
 
 {#snippet searchbar()}
 	<!-- svelte-ignore event_directive_deprecated -->
@@ -278,6 +293,17 @@
 		on:ionInput={onSearchEvents}
 		value={searchActivityValue}
 	></ion-searchbar>
+{/snippet}
+
+{#snippet fabbutton()}
+	<ion-fab class="fixed" vertical="bottom" horizontal="end">
+		<!-- svelte-ignore a11y_click_events_have_key_events -->
+		<!-- svelte-ignore a11y_no_static_element_interactions -->
+		<!-- svelte-ignore event_directive_deprecated -->
+		<ion-fab-button color="secondary" on:click={onCreateActivity}>
+			<ion-icon icon={createOutline}></ion-icon>
+		</ion-fab-button>
+	</ion-fab>
 {/snippet}
 
 <!-- svelte-ignore event_directive_deprecated -->
