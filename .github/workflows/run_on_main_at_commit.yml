@@ -29,3 +29,8 @@ jobs:
         run: |
           npm install --prefix mobileapp --frozen-lockfile
           npm run lint --prefix mobileapp && npm run build --prefix mobileapp
+      - name: Dump Docker container logs
+        if: failure()
+        run: |
+          docker ps -a
+          docker logs $(docker ps -q --filter ancestor=mysql) || true
