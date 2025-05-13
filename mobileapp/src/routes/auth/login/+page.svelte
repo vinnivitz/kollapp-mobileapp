@@ -66,35 +66,34 @@
 		<Welcome />
 	</div>
 	<Card>
-		<form use:customForm={form}>
-			<InputItem name="username" label={$t('routes.auth.login.form.input.username')} icon={personOutline} />
-			<InputItem
-				name="password"
-				type="password"
-				label={$t('routes.auth.login.form.input.password')}
-				icon={keyOutline}
-			/>
-			<Button
-				classProp="mt-3"
-				expand="block"
-				type="submit"
-				label={$t('routes.auth.login.form.submit')}
-				icon={logInOutline}
-			/>
-		</form>
-		{#if emailNotConfirmed}
-			<Card click={() => goto(PageRoute.AUTH.RESEND_CONFIRMATION)} classProp="text-center">
-				{$t('routes.auth.login.resend-confirmation.text')}
-				<ion-text color="secondary">{$t('routes.auth.login.resend-confirmation.link')}</ion-text>
-			</Card>
-		{/if}
-		<Card color="light" click={() => goto(PageRoute.AUTH.REGISTER)} classProp="text-center">
-			{$t('routes.auth.login.register.text')}
-			<ion-text color="secondary">{$t('routes.auth.login.register.link')}</ion-text>
-		</Card>
-		<Card color="light" click={() => goto(PageRoute.AUTH.RESET_PASSWORD)} classProp="text-center">
-			{$t('routes.auth.login.forgot-password.text')}
-			<ion-text color="secondary">{$t('routes.auth.login.forgot-password.link')}</ion-text>
-		</Card>
+		{@render loginForm()}
 	</Card>
 </Layout>
+
+{#snippet loginForm()}
+	<form use:customForm={form}>
+		<InputItem name="username" label={$t('routes.auth.login.form.input.username')} icon={personOutline} />
+		<InputItem name="password" type="password" label={$t('routes.auth.login.form.input.password')} icon={keyOutline} />
+		<Button
+			classProp="mt-3"
+			expand="block"
+			type="submit"
+			label={$t('routes.auth.login.form.submit')}
+			icon={logInOutline}
+		/>
+	</form>
+	{#if emailNotConfirmed}
+		<Card click={() => goto(PageRoute.AUTH.RESEND_CONFIRMATION)} classProp="text-center">
+			{$t('routes.auth.login.resend-confirmation.text')}
+			<ion-text color="secondary">{$t('routes.auth.login.resend-confirmation.link')}</ion-text>
+		</Card>
+	{/if}
+	<Card color="light" click={() => goto(PageRoute.AUTH.REGISTER)} classProp="text-center">
+		{$t('routes.auth.login.register.text')}
+		<ion-text color="secondary">{$t('routes.auth.login.register.link')}</ion-text>
+	</Card>
+	<Card color="light" click={() => goto(PageRoute.AUTH.RESET_PASSWORD)} classProp="text-center">
+		{$t('routes.auth.login.forgot-password.text')}
+		<ion-text color="secondary">{$t('routes.auth.login.forgot-password.link')}</ion-text>
+	</Card>
+{/snippet}

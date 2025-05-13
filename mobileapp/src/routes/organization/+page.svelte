@@ -50,51 +50,63 @@
 
 <Layout title={$t('routes.organization.title')} showBackButton>
 	{#if organizationModel}
-		<Card
-			id={$t('routes.organization.change-organization.action-sheet.title')}
-			icon={swapHorizontalOutline}
-			click={onOrganizationSelect}
-			searchable={PageRoute.ORGANIZATION.ROOT}
-		>
-			<div class="flex items-center justify-center gap-4 text-2xl">
-				<ion-text color="dark">{organizationModel.name}</ion-text>
-				{#if $organizations.length > 1}
-					<Button icon={swapHorizontalOutline} click={() => {}}></Button>
-				{/if}
-			</div>
-		</Card>
-		<ion-list inset>
-			<ion-list-header>{$t('routes.organization.list.current-collective.title')}</ion-list-header>
-			<LabeledItem
-				label={$t('routes.organization.list.organization.activity.label')}
-				icon={calendarOutline}
-				searchable={PageRoute.ORGANIZATION.ACTIVITY.ROOT}
-				click={() => goto(PageRoute.ORGANIZATION.ACTIVITY.ROOT)}
-			></LabeledItem>
-			{#if hasRole(UserRole.ORGANIZATION_MANAGER)}
-				<LabeledItem
-					searchable={PageRoute.ORGANIZATION.UPDATE_DATA}
-					accessible={[UserRole.ORGANIZATION_MANAGER]}
-					click={() => goto(PageRoute.ORGANIZATION.UPDATE_DATA)}
-					icon={buildOutline}
-					label={$t('routes.organization.list.update-info.update-info')}
-				/>
-				<LabeledItem
-					click={() => showAlert('Feature not implemented yet')}
-					icon={peopleOutline}
-					label={$t('routes.organization.list.organization.members')}
-				/>
-				<LabeledItem
-					searchable={PageRoute.ORGANIZATION.LEAVE}
-					accessible={[UserRole.ORGANIZATION_MANAGER]}
-					color="danger"
-					click={() => goto(PageRoute.ORGANIZATION.LEAVE)}
-					icon={logOutOutline}
-					label={$t('routes.organization.list.organization.leave.label')}
-				/>
-			{/if}
-		</ion-list>
+		{@render changeCollective(organizationModel)}
+		{@render collectiveList()}
 	{/if}
+	{@render generalList()}
+</Layout>
+
+{#snippet changeCollective(model: OrganizationModel)}
+	<Card
+		id={$t('routes.organization.change-organization.action-sheet.title')}
+		icon={swapHorizontalOutline}
+		click={onOrganizationSelect}
+		searchable={PageRoute.ORGANIZATION.ROOT}
+	>
+		<div class="flex items-center justify-center gap-4 text-2xl">
+			<ion-text color="dark">{model.name}</ion-text>
+			{#if $organizations.length > 1}
+				<Button icon={swapHorizontalOutline} click={() => {}}></Button>
+			{/if}
+		</div>
+	</Card>
+{/snippet}
+
+{#snippet collectiveList()}
+	<ion-list inset>
+		<ion-list-header>{$t('routes.organization.list.current-collective.title')}</ion-list-header>
+		<LabeledItem
+			label={$t('routes.organization.list.organization.activity.label')}
+			icon={calendarOutline}
+			searchable={PageRoute.ORGANIZATION.ACTIVITY.ROOT}
+			click={() => goto(PageRoute.ORGANIZATION.ACTIVITY.ROOT)}
+		></LabeledItem>
+		{#if hasRole(UserRole.ORGANIZATION_MANAGER)}
+			<LabeledItem
+				searchable={PageRoute.ORGANIZATION.UPDATE_DATA}
+				accessible={[UserRole.ORGANIZATION_MANAGER]}
+				click={() => goto(PageRoute.ORGANIZATION.UPDATE_DATA)}
+				icon={buildOutline}
+				label={$t('routes.organization.list.update-info.update-info')}
+			/>
+			<LabeledItem
+				click={() => showAlert('Feature not implemented yet')}
+				icon={peopleOutline}
+				label={$t('routes.organization.list.organization.members')}
+			/>
+			<LabeledItem
+				searchable={PageRoute.ORGANIZATION.LEAVE}
+				accessible={[UserRole.ORGANIZATION_MANAGER]}
+				color="danger"
+				click={() => goto(PageRoute.ORGANIZATION.LEAVE)}
+				icon={logOutOutline}
+				label={$t('routes.organization.list.organization.leave.label')}
+			/>
+		{/if}
+	</ion-list>
+{/snippet}
+
+{#snippet generalList()}
 	<ion-list inset>
 		<ion-list-header>{$t('routes.organization.list.general.title')}</ion-list-header>
 
@@ -111,4 +123,4 @@
 			label={$t('routes.organization.list.general.join.label')}
 		/>
 	</ion-list>
-</Layout>
+{/snippet}

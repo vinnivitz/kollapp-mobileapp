@@ -57,32 +57,36 @@
 		</div>
 	</Card>
 	<Card title={$t('routes.auth.register.card.register-organization.title')}>
-		<form use:customForm={form}>
-			<InputItem name="username" label={$t('routes.auth.register.form.input.username')} icon={personCircleOutline} />
-			<InputItem name="email" type="email" label={$t('routes.auth.register.form.input.email')} icon={mailOutline} />
-			<InputItem
-				name="password"
-				type="password"
-				label={$t('routes.auth.register.form.input.password')}
-				icon={keyOutline}
-			/>
-			<InputItem
-				name="confirmPassword"
-				type="password"
-				label={$t('routes.auth.register.form.input.confirm-password')}
-				icon={keySharp}
-			/>
-			<Button
-				classProp="mt-3"
-				expand="block"
-				type="submit"
-				label={$t('routes.auth.register.form.submit')}
-				icon={saveOutline}
-			/>
-		</form>
-		<Card click={() => goto(PageRoute.AUTH.LOGIN)} classProp="text-center">
-			{$t('routes.auth.register.login.text')}
-			<ion-text color="secondary">{$t('routes.auth.register.login.link')}</ion-text>
-		</Card>
+		{@render registerForm()}
 	</Card>
 </Layout>
+
+{#snippet registerForm()}
+	<form use:customForm={form}>
+		<InputItem name="username" label={$t('routes.auth.register.form.input.username')} icon={personCircleOutline} />
+		<InputItem name="email" type="email" label={$t('routes.auth.register.form.input.email')} icon={mailOutline} />
+		<InputItem
+			name="password"
+			type="password"
+			label={$t('routes.auth.register.form.input.password')}
+			icon={keyOutline}
+		/>
+		<InputItem
+			name="confirmPassword"
+			type="password"
+			label={$t('routes.auth.register.form.input.confirm-password')}
+			icon={keySharp}
+		/>
+		<Button
+			classProp="mt-3"
+			expand="block"
+			type="submit"
+			label={$t('routes.auth.register.form.submit')}
+			icon={saveOutline}
+		/>
+	</form>
+	<Card click={() => goto(PageRoute.AUTH.LOGIN)} classProp="text-center">
+		{$t('routes.auth.register.login.text')}
+		<ion-text color="secondary">{$t('routes.auth.register.login.link')}</ion-text>
+	</Card>
+{/snippet}

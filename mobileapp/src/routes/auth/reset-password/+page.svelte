@@ -2,6 +2,7 @@
 	import { loadingController } from 'ionic-svelte';
 	import { mailOutline, refreshOutline } from 'ionicons/icons';
 
+	import { type ResetPasswordDto, resetPasswordSchema } from '$lib/api/dto/client/auth';
 	import { publicUserResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';
@@ -10,7 +11,6 @@
 	import { t } from '$lib/locales';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
 	import { customForm, getValidationResult } from '$lib/utility';
-	import { resetPasswordSchema, type ResetPasswordDto } from '$lib/api/dto/client/auth';
 
 	const model = resetPasswordSchema().cast({}) as ResetPasswordDto;
 	let validationResult: ValidationResult;

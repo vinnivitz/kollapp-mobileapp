@@ -115,6 +115,11 @@
 </script>
 
 <LayoutComponent title={$t('routes.account.title')}>
+	{@render accountList()}
+	{@render applicationList()}
+</LayoutComponent>
+
+{#snippet accountList()}
 	<ion-list inset>
 		<ion-list-header>{$t('routes.account.list.account.title')}</ion-list-header>
 		<LabeledItem
@@ -137,6 +142,9 @@
 			label={$t('routes.account.list.account.button.delete-account')}
 		/>
 	</ion-list>
+{/snippet}
+
+{#snippet applicationList()}
 	<ion-list inset>
 		<ion-list-header>{$t('routes.account.list.application.title')}</ion-list-header>
 		<LabeledItem
@@ -164,4 +172,4 @@
 			label={$t('routes.account.app.list.restore.button')}
 		/>
 	</ion-list>
-</LayoutComponent>
+{/snippet}
