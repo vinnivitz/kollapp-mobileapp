@@ -260,25 +260,16 @@
 		<div class="mt-4 text-center" in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
 			{$t('routes.organization.page.activity.no-activities')}
 		</div>
+	{:else if filteredActivities.length > 0}
+		<ion-list in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
+			{#each filteredActivities as activity (activity.id)}
+				<ActivityCard value={activity} edit={() => onEditActivity(activity)} />
+			{/each}
+		</ion-list>
 	{:else}
-		{#if activityItems.length > 0}
-			<ion-list in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
-				{#each activityItems as activity (activity.id)}
-					<ActivityCard value={activity} edit={() => onEditActivity(activity)} />
-				{/each}
-			</ion-list>
-		{/if}
-		{#if filteredActivities.length > 0}
-			<ion-list in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
-				{#each filteredActivities as activity (activity.id)}
-					<ActivityCard value={activity} edit={() => onEditActivity(activity)} />
-				{/each}
-			</ion-list>
-		{:else}
-			<div class="mt-4 text-center" in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
-				{$t('routes.organization.page.activity.no-activities-found', { value: searchActivityValue })}
-			</div>
-		{/if}
+		<div class="mt-4 text-center" in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
+			{$t('routes.organization.page.activity.no-activities-found', { value: searchActivityValue })}
+		</div>
 	{/if}
 {/snippet}
 
