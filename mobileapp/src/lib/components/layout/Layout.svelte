@@ -58,7 +58,7 @@
 				label={$t('components.layout.menu.list.organization')}
 			/>
 			{#if dev}
-				<LabeledItem transparent icon={diamondOutline} click={() => navigate('showcase')} label="Showcase" />
+				<LabeledItem transparent icon={diamondOutline} click={() => navigate('/showcase')} label="Showcase" />
 			{/if}
 		</ion-list>
 	</Menu>

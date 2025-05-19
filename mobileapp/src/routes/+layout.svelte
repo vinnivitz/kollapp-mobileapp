@@ -1,6 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import 'ionic-svelte/components/all';
+	import 'leaflet/dist/leaflet.css';
 
 	import type { TabConfig } from '$lib/models/ui';
 
@@ -43,8 +44,8 @@
 		}
 	});
 
-	function initStores(): void {
-		userStore.init();
+	async function initStores(): Promise<void> {
+		await userStore.init();
 		organizationStore.init();
 	}
 

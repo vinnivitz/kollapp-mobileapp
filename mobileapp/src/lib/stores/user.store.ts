@@ -15,12 +15,12 @@ function createStore(): UserStore {
 		const body = await userResource.getByAuthentication();
 
 		if (StatusCheck.isOK(body.status)) {
-			_set(body.data);
+			await _set(body.data);
 		} else if (StatusCheck.isUnauthorized(body.status)) {
-			_set();
+			await _set();
 		} else {
 			const model = await getStoredValue<UserModel>(PreferencesKey.USER);
-			_set(model);
+			await _set(model);
 		}
 	}
 

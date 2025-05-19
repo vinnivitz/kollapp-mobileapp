@@ -12,7 +12,7 @@ function createStore(): AuthenticationStore {
 
 	async function init(): Promise<void> {
 		const model = await getStoredValue<AuthenticationModel>(PreferencesKey.AUTHENTICATION);
-		_set(model);
+		await _set(model);
 	}
 
 	async function _set(model?: AuthenticationModel): Promise<void> {

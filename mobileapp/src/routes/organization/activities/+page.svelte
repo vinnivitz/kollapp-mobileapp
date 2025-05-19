@@ -13,6 +13,7 @@
 		filterOutline,
 		flashOutline,
 		locationOutline,
+		mapOutline,
 		trashBinOutline
 	} from 'ionicons/icons';
 	import { fade } from 'svelte/transition';
@@ -31,6 +32,7 @@
 	import Card from '$lib/components/widgets/Card.svelte';
 	import CustomItem from '$lib/components/widgets/CustomItem.svelte';
 	import InputItem from '$lib/components/widgets/InputItem.svelte';
+	import LeafletMap from '$lib/components/widgets/LeafletMap.svelte';
 	import Modal from '$lib/components/widgets/Modal.svelte';
 	import { t } from '$lib/locales';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
@@ -65,12 +67,15 @@
 
 	let createModalOpen = $state(false);
 	let editModalOpen = $state(false);
+	let mapModalOpen = $state(false);
 
 	let searchActivityValue = $state('');
 	let filteredActivities = $state<ActivityModel[]>([]);
 
 	let selectedActivityId: number;
 	let selectedDate = $state(new Date().toISOString());
+	let selectedLocation = $state<string>('');
+	let cachedLocation = $state<string>('');
 
 	let createActions: FormActions<CreateActivityDto>;
 	let updateActions: FormActions<UpdateActivityDto>;
@@ -177,10 +182,12 @@
 
 	function onCancelCreateModal(): void {
 		createModalOpen = false;
+		selectedLocation = '';
 	}
 
 	function onCancelEditModal(): void {
 		editModalOpen = false;
+		selectedLocation = '';
 	}
 
 	function onSearchEvents(event: CustomEvent): void {
@@ -194,7 +201,9 @@
 	showBackButton
 	scrollable={activityView === ActivityView.calendar}
 >
-	{@render activitySegmentsHeader()}
+	<div class="mb-1">
+		{@render activitySegmentsHeader()}
+	</div>
 	{@render activitySegmentView()}
 </Layout>
 
@@ -230,7 +239,11 @@
 
 				{@render activityList()}
 			{:else if activityView === ActivityView.calendar}
-				<Calendar apply={onCreateActivity} applyText={$t('routes.organization.page.activity.calendar.done')}></Calendar>
+				<Calendar
+					apply={onCreateActivity}
+					applyText={$t('routes.organization.page.activity.calendar.done')}
+					dismissText=""
+				></Calendar>
 			{/if}
 		</ion-segment-content>
 	</ion-segment-view>
@@ -299,46 +312,39 @@
 
 <!-- svelte-ignore event_directive_deprecated -->
 <ion-popover class="extended" is-open={showSelectDateCalendar} on:didDismiss={() => (showSelectDateCalendar = false)}>
-	<div class="text-center">
-		{#if showSelectDateCalendar}
-			<Calendar
-				apply={(value) => {
-					selectedDate = value;
-				}}
-				dismiss={() => {
-					showSelectDateCalendar = false;
-				}}
-			></Calendar>
-		{/if}
-	</div>
+	{#if showSelectDateCalendar}
+		<div class="text-center">
+			<Calendar apply={(value) => (selectedDate = value)} dismiss={() => (showSelectDateCalendar = false)}></Calendar>
+		</div>
+	{/if}
 </ion-popover>
 
 <!-- svelte-ignore event_directive_deprecated -->
 <ion-popover is-open={showFilters} on:didDismiss={() => (showFilters = false)}>
-	<Card title={$t('routes.organization.page.activity.filters.title')} classProp="m-0">
-		<div class="flex flex-wrap items-center justify-center gap-2">
-			{#each activityFilters as filter (filter.type)}
-				<!-- svelte-ignore a11y_click_events_have_key_events -->
-				<!-- svelte-ignore event_directive_deprecated -->
-				<!-- svelte-ignore a11y_no_static_element_interactions -->
-				<ion-chip
-					color={filter.applied ? 'secondary' : 'medium'}
-					outline={!filter.applied}
-					class="flex"
-					on:click={() => (filter.applied = !filter.applied)}
-				>
-					{filter.label}
-				</ion-chip>
-			{/each}
-		</div>
-	</Card>
+	{#if showFilters}
+		<Card title={$t('routes.organization.page.activity.filters.title')} classProp="m-0">
+			<div class="flex flex-wrap items-center justify-center gap-2">
+				{#each activityFilters as filter (filter.type)}
+					<!-- svelte-ignore a11y_click_events_have_key_events -->
+					<!-- svelte-ignore event_directive_deprecated -->
+					<!-- svelte-ignore a11y_no_static_element_interactions -->
+					<ion-chip
+						color={filter.applied ? 'secondary' : 'medium'}
+						outline={!filter.applied}
+						class="flex"
+						on:click={() => (filter.applied = !filter.applied)}
+					>
+						{filter.label}
+					</ion-chip>
+				{/each}
+			</div>
+		</Card>
+	{/if}
 </ion-popover>
 
 <Modal
 	open={createModalOpen}
-	dismissed={() => {
-		createModalOpen = false;
-	}}
+	dismissed={() => (createModalOpen = false)}
 	cancel={onCancelCreateModal}
 	confirm={() => createActions.onSubmit()}
 	confirmLabel={$t('routes.organization.page.activity.create-modal.button.confirm')}
@@ -352,20 +358,25 @@
 					icon={documentOutline}
 				/>
 				<InputItem
+					value={selectedLocation}
 					name="location"
 					label={$t('routes.organization.page.activity.create-modal.card.input.location')}
 					icon={locationOutline}
+					inputIcon={mapOutline}
+					inputIconClick={() => (mapModalOpen = true)}
 				/>
-				<CustomItem iconStart={calendarClearOutline}>
+				<CustomItem
+					iconStart={calendarClearOutline}
+					iconEnd={calendarOutline}
+					iconClick={() => (showSelectDateCalendar = true)}
+				>
 					<Button
 						classProp="ms-[-8px]"
 						fill="clear"
 						color="dark"
 						size="default"
 						type="button"
-						click={() => {
-							showSelectDateCalendar = true;
-						}}
+						click={() => (showSelectDateCalendar = true)}
 						label={format(selectedDate, 'PPP')}
 					></Button>
 				</CustomItem>
@@ -374,11 +385,28 @@
 	{/if}
 </Modal>
 
+<Modal
+	open={mapModalOpen}
+	dismissed={() => (mapModalOpen = false)}
+	cancel={() => {
+		mapModalOpen = false;
+		cachedLocation = '';
+	}}
+	confirmLabel={$t('routes.organization.page.activity.map-modal.button.confirm')}
+	confirm={() => {
+		mapModalOpen = false;
+		selectedLocation = cachedLocation;
+	}}
+	cancelLabel={$t('routes.organization.page.activity.map-modal.button.cancel')}
+>
+	{#if mapModalOpen}
+		<LeafletMap height={91.5} selected={(location) => (cachedLocation = location)} classList="-m-4"></LeafletMap>
+	{/if}
+</Modal>
+
 {#key updateForm}
 	<Modal
-		dismissed={() => {
-			editModalOpen = false;
-		}}
+		dismissed={() => (editModalOpen = false)}
 		open={editModalOpen}
 		cancel={onCancelEditModal}
 		confirm={() => updateActions.onSubmit()}
@@ -394,19 +422,24 @@
 					/>
 					<InputItem
 						name="location"
-						label={$t('routes.organization.page.activity.create-modal.card.input.location')}
+						label={$t('routes.organization.page.activity.update-modal.card.input.location')}
 						icon={locationOutline}
+						inputIcon={mapOutline}
+						inputIconClick={() => (mapModalOpen = true)}
+						value={selectedLocation}
 					/>
-					<CustomItem iconStart={calendarClearOutline}>
+					<CustomItem
+						iconStart={calendarClearOutline}
+						iconEnd={calendarOutline}
+						iconClick={() => (showSelectDateCalendar = true)}
+					>
 						<Button
 							classProp="ms-[-8px]"
 							fill="clear"
 							color="dark"
 							size="default"
 							type="button"
-							click={() => {
-								showSelectDateCalendar = true;
-							}}
+							click={() => (showSelectDateCalendar = true)}
 							label={format(selectedDate, 'PPP')}
 						></Button>
 					</CustomItem>

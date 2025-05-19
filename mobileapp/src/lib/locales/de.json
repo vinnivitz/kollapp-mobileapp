@@ -192,6 +192,15 @@
         "dismiss-button": {
           "label": "Abbrechen"
         }
+      },
+      "map": {
+        "searchbar": {
+          "placeholder": "Standort suchen..."
+        },
+        "api": {
+          "error": "Standorte konnten nicht durchsucht werden",
+          "location-error": "Standort konnte nicht ermittelt werden"
+        }
       }
     },
     "layout": {
@@ -574,7 +583,20 @@
             "pending": "Ausstehend",
             "archived": "Archiviert"
           },
-          "no-activities": "Keine Veranstaltungen gefunden."
+          "no-activities": "Keine Veranstaltungen gefunden.",
+          "map-modal": {
+            "button": {
+              "confirm": "Auswählen",
+              "cancel": "Abbrechen"
+            }
+          },
+          "update-modal": {
+            "card": {
+              "input": {
+                "location": "Standort"
+              }
+            }
+          }
         }
       },
       "change-organization": {

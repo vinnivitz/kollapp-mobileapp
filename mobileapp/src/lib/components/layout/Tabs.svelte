@@ -25,9 +25,7 @@
 		}
 	});
 
-	onMount(async () => {
-		await controller.select(currentTabName);
-	});
+	onMount(async () => controller.select(currentTabName));
 
 	const onTabSelect = async (selectedTab: string): Promise<void> => {
 		await goto(selectedTab);
@@ -40,12 +38,12 @@
 
 	<ion-tab-bar slot="bottom">
 		{#each tabs as tab, index (tab.tab)}
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<ion-tab-button
 				tab={tab.tab}
 				role="tab"
 				tabindex={index}
 				class:tab-selected={tab.tab === currentTabName}
-				onkeydown={() => {}}
 				onclick={() => onTabSelect(tab.tab)}
 			>
 				<ion-label>{tab.label}</ion-label>

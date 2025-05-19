@@ -1,5 +1,7 @@
 export * from './activity.dto';
 export * from './authentication-token.dto';
+export * from './nominatim-address.dto';
+export * from './nominatim-item.dto';
 export * from './organization.dto';
 export * from './searchable-item.dto';
 export * from './token.dto';

@@ -35,9 +35,7 @@
 
 		const actionSheet = await actionSheetController.create({
 			buttons: $organizations.map((organization) => ({
-				handler: () => {
-					organizationStore.change(organization.id);
-				},
+				handler: () => organizationStore.change(organization.id),
 				role: organizationModel?.id === organization.id ? 'selected' : undefined,
 				text: organization.name
 			})),

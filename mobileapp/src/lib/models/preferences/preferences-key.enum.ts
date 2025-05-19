@@ -8,6 +8,7 @@ export enum PreferencesKey {
 	LOCALE = 'locale',
 	ONLINE = 'online',
 	ORGANIZATION = 'organization',
+	POSITION = 'position',
 	SELECTED_ORGANIZATION_ID = 'selected-organization-id',
 	THEME = 'theme',
 	USER = 'user'

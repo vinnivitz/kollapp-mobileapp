@@ -9,6 +9,7 @@
 	import CustomItem from '$lib/components/widgets/CustomItem.svelte';
 	import InputItem from '$lib/components/widgets/InputItem.svelte';
 	import LabeledItem from '$lib/components/widgets/LabeledItem.svelte';
+	import LeafletMap from '$lib/components/widgets/LeafletMap.svelte';
 	import Modal from '$lib/components/widgets/Modal.svelte';
 	import { Locale, locale } from '$lib/locales';
 	import { AlertType, Layout, Theme } from '$lib/models/ui';
@@ -68,9 +69,7 @@
 	</div>
 	<Card title="Buttons">
 		<Modal
-			dismissed={() => {
-				modalOpen = false;
-			}}
+			dismissed={() => (modalOpen = false)}
 			open={modalOpen}
 			cancel={() => {
 				modalOpen = false;
@@ -84,66 +83,44 @@
 			This is a modal.
 		</Modal>
 		<div class="flex flex-wrap items-center justify-center">
-			<Button
-				label="Default"
-				icon={addOutline}
-				click={() => {
-					showAlert('Button clicked', { type: AlertType.SUCCESS });
-				}}
+			<Button label="Default" icon={addOutline} click={() => showAlert('Button clicked', { type: AlertType.SUCCESS })}
 			></Button>
 			<Button
 				label="Outline"
 				fill="outline"
 				icon={addOutline}
-				click={() => {
-					showAlert('Button clicked', { type: AlertType.SUCCESS });
-				}}
+				click={() => showAlert('Button clicked', { type: AlertType.SUCCESS })}
 			></Button>
 			<Button
 				label="Clear"
 				fill="clear"
 				icon={addOutline}
-				click={() => {
-					showAlert('Button clicked', { type: AlertType.SUCCESS });
-				}}
+				click={() => showAlert('Button clicked', { type: AlertType.SUCCESS })}
 			></Button>
-			<Button
-				icon={addOutline}
-				click={() => {
-					showAlert('Button clicked', { type: AlertType.SUCCESS });
-				}}
-			></Button>
+			<Button icon={addOutline} click={() => showAlert('Button clicked', { type: AlertType.SUCCESS })}></Button>
 			<Button
 				label="Disabled"
 				disabled
 				icon={addOutline}
-				click={() => {
-					showAlert('Button clicked', { type: AlertType.SUCCESS });
-				}}
+				click={() => showAlert('Button clicked', { type: AlertType.SUCCESS })}
 			></Button>
 			<Button
 				label="Icon right"
 				iconPosition="end"
 				icon={addOutline}
-				click={() => {
-					showAlert('Button clicked', { type: AlertType.SUCCESS });
-				}}
+				click={() => showAlert('Button clicked', { type: AlertType.SUCCESS })}
 			></Button>
 			<Button
 				label="Icon big"
 				iconSize="large"
 				icon={addOutline}
-				click={() => {
-					showAlert('Button clicked', { type: AlertType.SUCCESS });
-				}}
+				click={() => showAlert('Button clicked', { type: AlertType.SUCCESS })}
 			></Button>
 			<Button
 				label="Button large"
 				size="large"
 				icon={addOutline}
-				click={() => {
-					showAlert('Button clicked', { type: AlertType.SUCCESS });
-				}}
+				click={() => showAlert('Button clicked', { type: AlertType.SUCCESS })}
 			></Button>
 		</div>
 	</Card>
@@ -160,12 +137,7 @@
 		<CustomItem card>
 			<div class="flex w-full items-center justify-between gap-4">
 				<ion-label>Custom item</ion-label>
-				<Button
-					click={() => {
-						showAlert('Button clicked', { type: AlertType.SUCCESS });
-					}}
-					label="Click me"
-				></Button>
+				<Button click={() => showAlert('Button clicked', { type: AlertType.SUCCESS })} label="Click me"></Button>
 			</div>
 		</CustomItem>
 		<LabeledItem card label="Labeled item"></LabeledItem>
@@ -184,19 +156,15 @@
 			label="Input item with clickable icon"
 			name="value"
 			inputIcon={attachOutline}
-			inputIconClick={() => {
-				showAlert('Item clicked', { type: AlertType.SUCCESS });
-			}}
+			inputIconClick={() => showAlert('Item clicked', { type: AlertType.SUCCESS })}
 		></InputItem>
 	</Card>
 	<Card title="Modal">
 		<div class="text-center">
-			<Button
-				label="Open modal"
-				click={() => {
-					modalOpen = true;
-				}}
-			></Button>
+			<Button label="Open modal" click={() => (modalOpen = true)}></Button>
 		</div>
+	</Card>
+	<Card title="Map">
+		<LeafletMap></LeafletMap>
 	</Card>
 </LayoutComponent>

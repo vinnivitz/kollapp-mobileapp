@@ -5,6 +5,7 @@
 	type Properties = {
 		children: Snippet;
 		card?: boolean;
+		classList?: string;
 		color?: Colors | undefined;
 		iconEnd?: string;
 		iconStart?: string;
@@ -16,6 +17,7 @@
 	let {
 		card = false,
 		children,
+		classList,
 		click,
 		color = 'light',
 		iconClick,
@@ -29,13 +31,21 @@
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<ion-item data-card={card} button={!!click} {color} detail={!!click} data-transparent={transparent} onclick={click}>
+<ion-item
+	data-card={card}
+	button={!!click}
+	{color}
+	detail={!!click}
+	data-transparent={transparent}
+	onclick={click}
+	class={classList}
+>
 	{#if iconStart}
 		<ion-icon icon={iconStart} slot="start" color={iconColor}></ion-icon>
 	{/if}
 	{#if iconEnd}
-		<ion-button fill="clear" slot="end" onclick={iconClick}>
-			<ion-icon icon={iconEnd} slot="icon-only" size="large"></ion-icon>
+		<ion-button class="ms-0" fill="clear" slot="end" onclick={iconClick}>
+			<ion-icon icon={iconEnd} color="secondary" slot="icon-only" size="large"></ion-icon>
 		</ion-button>
 	{/if}
 	{@render children()}

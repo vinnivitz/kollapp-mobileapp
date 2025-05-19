@@ -146,7 +146,8 @@ export default ts.config(
 			'static/*',
 			'coverage/',
 			'src/lib/locales/de.json',
-			'src/lib/locales/en.json'
+			'src/lib/locales/en.json',
+			'coverage/'
 		]
 	}
 );

@@ -8,13 +8,24 @@
 		label: string;
 		accessible?: UserRole[];
 		card?: boolean;
+		classList?: string;
 		color?: Colors | undefined;
 		icon?: string;
 		searchable?: string;
 		transparent?: boolean;
 	} & ({ searchable: string; click: () => void } | { searchable?: string; click?: () => void });
 
-	let { accessible, card, click, color = 'light', icon, label, searchable, transparent = false }: Properties = $props();
+	let {
+		accessible,
+		card,
+		classList,
+		click,
+		color = 'light',
+		icon,
+		label,
+		searchable,
+		transparent = false
+	}: Properties = $props();
 
 	// workaround to avoid reference linting error
 	void searchable;
@@ -23,7 +34,7 @@
 	const labelColor = $derived(color === 'light' || color === 'white' ? 'dark' : 'white');
 </script>
 
-<CustomItem {click} {card} {color} {transparent} iconStart={icon}>
+<CustomItem {click} {card} {color} {transparent} iconStart={icon} {classList}>
 	{#if label}
 		<ion-label class="ms-4" color={labelColor}>{label}</ion-label>
 	{/if}

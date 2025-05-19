@@ -377,7 +377,20 @@
             "pending": "Pending",
             "archived": "Archived"
           },
-          "no-activities": "No events found."
+          "no-activities": "No events found.",
+          "map-modal": {
+            "button": {
+              "confirm": "Select",
+              "cancel": "Cancel"
+            }
+          },
+          "update-modal": {
+            "card": {
+              "input": {
+                "location": "Location"
+              }
+            }
+          }
         }
       },
       "change-organization": {
@@ -428,6 +441,15 @@
         },
         "dismiss-button": {
           "label": "Dismiss"
+        }
+      },
+      "map": {
+        "searchbar": {
+          "placeholder": "Search location"
+        },
+        "api": {
+          "error": "Locations could not be queried",
+          "location-error": "Location could not be determined"
         }
       }
     },

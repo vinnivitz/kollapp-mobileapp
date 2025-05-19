@@ -197,7 +197,7 @@ async function getNewAuthenticationToken(): Promise<string | undefined> {
 		if (StatusCheck.isOK(body.status)) {
 			const accessToken = body.data.token;
 			await authenticationStore.set({ accessToken, refreshToken });
-			return refreshToken;
+			return accessToken;
 		}
 	} else {
 		await authenticationStore.reset();
