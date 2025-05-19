@@ -5,13 +5,5 @@ import scrollbarHide from 'tailwind-scrollbar-hide';
 
 export default {
 	content: ['./src/**/*.{svelte,ts}'],
-	plugins: [
-		typography,
-		scrollbarHide,
-		({ addVariant }) => {
-			addVariant('light', '&:is(.light *)');
-			addVariant('dark', '&:is(.dark *)');
-			addVariant('black-and-white', '&:is(.black-and-white *)');
-		}
-	]
+	plugins: [typography, scrollbarHide]
 } satisfies Config;

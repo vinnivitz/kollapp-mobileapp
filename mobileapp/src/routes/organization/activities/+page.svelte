@@ -31,10 +31,13 @@
 	import Calendar from '$lib/components/widgets/Calendar.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
 	import CustomItem from '$lib/components/widgets/CustomItem.svelte';
+	import FabButton from '$lib/components/widgets/FabButton.svelte';
 	import InputItem from '$lib/components/widgets/InputItem.svelte';
 	import LeafletMap from '$lib/components/widgets/LeafletMap.svelte';
 	import Modal from '$lib/components/widgets/Modal.svelte';
+	import SegmentButton from '$lib/components/widgets/SegmentButton.svelte';
 	import { t } from '$lib/locales';
+	import { PageRoute } from '$lib/models/routing';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
 	import { activitiesStore, organizationStore } from '$lib/stores';
 	import { customForm, getValidationResult, showAlert } from '$lib/utility';
@@ -57,7 +60,7 @@
 
 	const activityItems = $derived($activitiesStore ?? []);
 
-	const activityFilters = $state<ActivityFilter[]>(initialActivityFilter());
+	const activityFilters = $derived<ActivityFilter[]>(initialActivityFilter());
 
 	let activityView = $state(ActivityView.activities);
 
@@ -70,7 +73,7 @@
 	let mapModalOpen = $state(false);
 
 	let searchActivityValue = $state('');
-	let filteredActivities = $state<ActivityModel[]>([]);
+	let filteredActivities = $derived<ActivityModel[]>([]);
 
 	let selectedActivityId: number;
 	let selectedDate = $state(new Date().toISOString());
@@ -216,14 +219,17 @@
 		value={activityView}
 		color="secondary"
 	>
-		<ion-segment-button value={ActivityView.activities}>
-			<ion-icon icon={flashOutline}></ion-icon>
-			<ion-label>{$t('routes.organization.page.activity.segments.activities')}</ion-label>
-		</ion-segment-button>
-		<ion-segment-button value={ActivityView.calendar}>
-			<ion-icon icon={calendarOutline}></ion-icon>
-			<ion-label>{$t('routes.organization.page.activity.segments.calendar')}</ion-label>
-		</ion-segment-button>
+		<SegmentButton
+			icon={flashOutline}
+			label={$t('routes.organization.page.activity.segments.activities')}
+			value={ActivityView.activities}
+		></SegmentButton>
+		<SegmentButton
+			icon={calendarOutline}
+			label={$t('routes.organization.page.activity.segments.calendar')}
+			value={ActivityView.calendar}
+			searchable={PageRoute.ORGANIZATION.ACTIVITIES}
+		></SegmentButton>
 	</ion-segment>
 {/snippet}
 
@@ -231,9 +237,23 @@
 	<ion-segment-view in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
 		<ion-segment-content>
 			{#if activityView === ActivityView.activities}
-				{@render fabbutton()}
+				<FabButton
+					id={$t('routes.organization.page.activity.create')}
+					click={onCreateActivity}
+					icon={createOutline}
+					searchable={PageRoute.ORGANIZATION.ACTIVITIES}
+				></FabButton>
 
-				{@render searchbar()}
+				<!-- svelte-ignore event_directive_deprecated -->
+				<ion-searchbar
+					class="mt-4"
+					color="light"
+					show-clear-button="always"
+					debounce={100}
+					placeholder={$t('routes.organization.page.activity.search.placeholder')}
+					on:ionInput={onSearchEvents}
+					value={searchActivityValue}
+				></ion-searchbar>
 
 				{@render activityFilter()}
 
@@ -284,30 +304,6 @@
 			{$t('routes.organization.page.activity.no-activities-found', { value: searchActivityValue })}
 		</div>
 	{/if}
-{/snippet}
-
-{#snippet searchbar()}
-	<!-- svelte-ignore event_directive_deprecated -->
-	<ion-searchbar
-		class="mt-4"
-		color="light"
-		show-clear-button="always"
-		debounce={100}
-		placeholder={$t('routes.organization.page.activity.search.placeholder')}
-		on:ionInput={onSearchEvents}
-		value={searchActivityValue}
-	></ion-searchbar>
-{/snippet}
-
-{#snippet fabbutton()}
-	<ion-fab class="fixed" vertical="bottom" horizontal="end">
-		<!-- svelte-ignore a11y_click_events_have_key_events -->
-		<!-- svelte-ignore a11y_no_static_element_interactions -->
-		<!-- svelte-ignore event_directive_deprecated -->
-		<ion-fab-button color="secondary" on:click={onCreateActivity}>
-			<ion-icon icon={createOutline}></ion-icon>
-		</ion-fab-button>
-	</ion-fab>
 {/snippet}
 
 <!-- svelte-ignore event_directive_deprecated -->
@@ -370,15 +366,18 @@
 					iconEnd={calendarOutline}
 					iconClick={() => (showSelectDateCalendar = true)}
 				>
-					<Button
-						classProp="ms-[-8px]"
-						fill="clear"
-						color="dark"
-						size="default"
-						type="button"
-						click={() => (showSelectDateCalendar = true)}
-						label={format(selectedDate, 'PPP')}
-					></Button>
+					<div class="flex flex-col">
+						<ion-note color="secondary" class="ms-4 pt-2 text-xs">Date</ion-note>
+						<Button
+							classProp="-ms-1"
+							fill="clear"
+							color="dark"
+							size="default"
+							type="button"
+							click={() => (showSelectDateCalendar = true)}
+							label={format(selectedDate, 'PPP')}
+						></Button>
+					</div>
 				</CustomItem>
 			</form>
 		</Card>

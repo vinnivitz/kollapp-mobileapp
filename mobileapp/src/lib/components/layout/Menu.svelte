@@ -90,8 +90,7 @@
 			/>
 			<hr class="my-3" />
 		{/if}
-		<div class="absolute right-0 bottom-2 left-0">
-			<hr class="my-2" />
+		<div class="fixed right-0 bottom-0 left-0 bg-[var(--ion-background-color)]">
 			<ion-note>
 				Made with <ion-text color="danger">&#10084;</ion-text> from Dresden.
 			</ion-note>

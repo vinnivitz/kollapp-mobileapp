@@ -76,8 +76,8 @@
 		<LabeledItem
 			label={$t('routes.organization.list.organization.activity.label')}
 			icon={calendarOutline}
-			searchable={PageRoute.ORGANIZATION.ACTIVITY.ROOT}
-			click={() => goto(PageRoute.ORGANIZATION.ACTIVITY.ROOT)}
+			searchable={PageRoute.ORGANIZATION.ACTIVITIES}
+			click={() => goto(PageRoute.ORGANIZATION.ACTIVITIES)}
 		></LabeledItem>
 		{#if hasRole(UserRole.ORGANIZATION_MANAGER)}
 			<LabeledItem

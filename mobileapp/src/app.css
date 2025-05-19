@@ -6,10 +6,14 @@
 
 @import './themes/light.css';
 @import './themes/dark.css';
-@import './themes/black-and-white.css';
+@import './themes/bw.css';
 
 @import './themes/common.css';
 @import './themes/colors.css';
+
+@custom-variant light (&:is(.light *));
+@custom-variant dark (&:is(.dark *));
+@custom-variant bw (&:is(.bw *));
 
 :root {
 	ion-item {

@@ -50,19 +50,12 @@
             "title": "Welcome to Kollapp!",
             "content": "The app for all the collectives out there."
           },
-          "dev": {
-            "title": "Local sign in",
-            "button": "Sign in locally"
-          }
+          "dev": {}
         },
         "model": {
           "reset-password": {
-            "card": {
-              "title": "Reset your password"
-            },
-            "modal": {
-              "confirm-label": "Reset password"
-            }
+            "card": {},
+            "modal": {}
           }
         }
       },
@@ -73,9 +66,7 @@
             "username": "Username",
             "email": "Email",
             "password": "Password",
-            "confirm-password": "Confirm password",
-            "surname": "First name",
-            "name": "Last name"
+            "confirm-password": "Confirm password"
           },
           "submit": "Register"
         },
@@ -209,9 +200,6 @@
       "layout": {
         "action-sheet": {
           "buttons": {
-            "classic": "Classic",
-            "modern": "Modern",
-            "playful": "Playful",
             "md": "Android (Material Design)",
             "ios": "iOS (Human Interface Guidelines)"
           },
@@ -224,7 +212,7 @@
             "light": "Light",
             "dark": "Dark",
             "system": "System",
-            "black-and-white": "Black and white"
+            "bw": "Black and white"
           },
           "title": "Change color theme"
         }
@@ -258,10 +246,7 @@
         }
       }
     },
-    "finances": {
-      "title": "Finances",
-      "subtitle": "This is on overview over the finances."
-    },
+    "finances": {},
     "organization": {
       "title": "Collective",
       "update-info": {
@@ -329,8 +314,7 @@
               "title": "Create a new event",
               "input": {
                 "name": "Name",
-                "location": "Location",
-                "date": "Date"
+                "location": "Location"
               }
             },
             "button": {
@@ -349,33 +333,22 @@
               }
             }
           },
-          "show-calendar-toggle": {
-            "label": "Show calendar"
-          },
+          "show-calendar-toggle": {},
           "calendar": {
             "done": "Create event",
-            "cancel": "Cancel",
             "title": "Selected date"
           },
           "search": {
             "placeholder": "Search events..."
           },
           "segments": {
-            "pending": "Pending",
-            "done": "Done",
-            "all": "All",
-            "archived": "Archived",
             "activities": "Events",
             "calendar": "Calendar"
           },
           "no-activities-found": "No results for \"{{value}}\"",
-          "button": {
-            "create-event": "Create event"
-          },
+          "button": {},
           "filters": {
-            "title": "Filters",
-            "pending": "Pending",
-            "archived": "Archived"
+            "title": "Filters"
           },
           "no-activities": "No events found.",
           "map-modal": {
@@ -390,7 +363,8 @@
                 "location": "Location"
               }
             }
-          }
+          },
+          "create": "Create event"
         }
       },
       "change-organization": {
@@ -433,9 +407,7 @@
         }
       },
       "calendar": {
-        "cancel-button": {
-          "label": "Cancel"
-        },
+        "cancel-button": {},
         "done-button": {
           "label": "Apply"
         },
@@ -525,10 +497,7 @@
       },
       "email": {
         "schema": {
-          "validation": {
-            "invalid": "Invalid email",
-            "required": "Email required"
-          }
+          "validation": {}
         }
       },
       "reset-password": {

@@ -39,11 +39,17 @@ export function clickableElement<T>(
  * Triggers a click event on an element with a specific label
  * @param label label of the element to click
  */
-export function triggerClickByLabel(label: string): void {
+export async function triggerClickByLabel(label: string): Promise<void> {
 	const element =
 		[...document.querySelectorAll('ion-label')].find((element) => element.textContent === label)?.closest('ion-item') ??
-		[...document.querySelectorAll('ion-card')].find((element) => element.id === label);
-	element?.click();
+		[...document.querySelectorAll('ion-card')].find((element) => element.id === label) ??
+		[...document.querySelectorAll('ion-fab')]
+			.find((element) => element.id === label)
+			?.querySelector('ion-fab-button') ??
+		[...document.querySelectorAll('ion-label')]
+			.find((element) => element.textContent === label)
+			?.closest('ion-segment-button');
+	setTimeout(() => element?.click(), 10);
 }
 
 /**

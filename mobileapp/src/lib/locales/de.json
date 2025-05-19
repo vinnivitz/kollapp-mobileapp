@@ -53,10 +53,7 @@
       },
       "email": {
         "schema": {
-          "validation": {
-            "invalid": "Ungültige E-Mail",
-            "required": "E-Mail erforderlich"
-          }
+          "validation": {}
         }
       },
       "reset-password": {
@@ -183,9 +180,7 @@
         }
       },
       "calendar": {
-        "cancel-button": {
-          "label": "Abbrechen"
-        },
+        "cancel-button": {},
         "done-button": {
           "label": "Anwenden"
         },
@@ -277,9 +272,6 @@
       "layout": {
         "action-sheet": {
           "buttons": {
-            "classic": "Klassisch",
-            "modern": "Modern",
-            "playful": "Verspielt",
             "md": "Android (Material Design)",
             "ios": "iOS (Human Interface Guidelines)"
           },
@@ -292,7 +284,7 @@
             "dark": "Dunkel",
             "light": "Hell",
             "system": "Systemeinstellung",
-            "black-and-white": "Schwarz und Weiß"
+            "bw": "Schwarz und Weiß"
           },
           "title": "Farbthema ändern"
         }
@@ -351,19 +343,12 @@
             "content": "Die App für alle Kollektive da draußen.",
             "title": "Willkommen bei Kollapp!"
           },
-          "dev": {
-            "title": "Entwickleroptionen",
-            "button": "Lokal anmelden"
-          }
+          "dev": {}
         },
         "model": {
           "reset-password": {
-            "card": {
-              "title": "Setzen dein Passwort zurück"
-            },
-            "modal": {
-              "confirm-label": "Passwort zurücksetzen"
-            }
+            "card": {},
+            "modal": {}
           }
         }
       },
@@ -373,9 +358,7 @@
             "confirm-password": "Passwort bestätigen",
             "email": "E-Mail",
             "password": "Passwort",
-            "username": "Benutzername",
-            "surname": "Vorname",
-            "name": "Nachname"
+            "username": "Benutzername"
           },
           "submit": "Registrieren"
         },
@@ -469,10 +452,7 @@
         }
       }
     },
-    "finances": {
-      "subtitle": "Hier geht es um einen Überblick über die Finanzen.",
-      "title": "Finanzen"
-    },
+    "finances": {},
     "organization": {
       "title": "Kollektiv",
       "update-info": {
@@ -533,7 +513,6 @@
           "create-modal": {
             "card": {
               "input": {
-                "date": "Datum",
                 "location": "Standort",
                 "name": "Name"
               },
@@ -555,33 +534,22 @@
               }
             }
           },
-          "show-calendar-toggle": {
-            "label": "Kalender anzeigen"
-          },
+          "show-calendar-toggle": {},
           "calendar": {
             "done": "Veranstaltung erstellen",
-            "cancel": "Abbrechen",
             "title": "Ausgewähltes Datum"
           },
           "search": {
             "placeholder": "Veranstaltungen suchen..."
           },
           "segments": {
-            "pending": "Anstehend",
-            "done": "Erledigt",
-            "all": "Alle",
-            "archived": "Archiviert",
             "activities": "Veranstaltungen",
             "calendar": "Kalender"
           },
           "no-activities-found": "Keine Ergebnisse für \"{{value}}\"",
-          "button": {
-            "create-event": "Veranstaltung erstellen"
-          },
+          "button": {},
           "filters": {
-            "title": "Filter",
-            "pending": "Ausstehend",
-            "archived": "Archiviert"
+            "title": "Filter"
           },
           "no-activities": "Keine Veranstaltungen gefunden.",
           "map-modal": {
@@ -596,7 +564,8 @@
                 "location": "Standort"
               }
             }
-          }
+          },
+          "create": "Veranstaltung erstellen"
         }
       },
       "change-organization": {

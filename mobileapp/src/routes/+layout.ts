@@ -51,7 +51,7 @@ async function handleAppEvents(): Promise<void> {
 	const originalConsoleError = console.error;
 
 	console.error = function (...arguments_) {
-		if (arguments_.length === 1 && arguments_[0] === 'tab with id: "undefined" does not exist') {
+		if (arguments_.length === 1 && `${arguments_[0]}`.includes('Tab with id: "undefined" does not exist')) {
 			return;
 		}
 

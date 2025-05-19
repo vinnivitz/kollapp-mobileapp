@@ -56,7 +56,7 @@ function scanSvelteFile(filePath: string): void {
 /**
  * Represents the subset of Svelte AST node types we care about.
  */
-type ASTComponent = AST.AwaitBlock | AST.Component | AST.Fragment | AST.IfBlock | AST.RegularElement;
+type ASTComponent = AST.AwaitBlock | AST.Component | AST.Fragment | AST.IfBlock | AST.RegularElement | AST.SnippetBlock;
 
 /**
  * Examines the parsed AST for `<LabeledItem searchable={...} label={...} iconSrc={...}>` components,
@@ -67,7 +67,10 @@ function findSearchableComponents(ast: AST.Root): void {
 }
 
 function recurse(node: ASTComponent): void {
-	if (node.type === 'Component' && (node.name === 'LabeledItem' || node.name === 'Card')) {
+	if (
+		node.type === 'Component' &&
+		(node.name === 'LabeledItem' || node.name === 'Card' || node.name === 'FabButton' || node.name === 'SegmentButton')
+	) {
 		for (const attribute of node.attributes) {
 			if (attribute.type === 'Attribute' && attribute.name === 'searchable') {
 				addSearchableItem(node);
@@ -80,6 +83,12 @@ function recurse(node: ASTComponent): void {
 
 function exploreChildNodes(node: ASTComponent): void {
 	switch (node.type) {
+		case 'SnippetBlock': {
+			for (const child of node.body.nodes) {
+				recurse(child as ASTComponent);
+			}
+			break;
+		}
 		case 'Fragment': {
 			for (const child of node.nodes) {
 				recurse(child as ASTComponent);

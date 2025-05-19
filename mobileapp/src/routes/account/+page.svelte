@@ -102,7 +102,7 @@
 				handler: () => themeStore.set(Theme.BLACK_AND_WHITE),
 				icon: contrastOutline,
 				role: currentTheme === Theme.BLACK_AND_WHITE ? 'selected' : undefined,
-				text: $t('routes.account.theme.action-sheet.buttons.black-and-white')
+				text: $t('routes.account.theme.action-sheet.buttons.bw')
 			}
 		]);
 	}

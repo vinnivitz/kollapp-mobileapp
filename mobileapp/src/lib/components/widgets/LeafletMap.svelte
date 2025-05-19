@@ -144,3 +144,9 @@
 	{/if}
 	<div class="z-0" id="map" style:height={`${height}vh`}></div>
 </div>
+
+<style>
+	ion-searchbar {
+		--border-radius: 25px;
+	}
+</style>

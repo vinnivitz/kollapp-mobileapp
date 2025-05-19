@@ -51,7 +51,7 @@
     "icon": "calendarOutline",
     "id": 9,
     "label": "routes.organization.list.organization.activity.label",
-    "route": "/organization/activity"
+    "route": "/organization/activities"
   },
   {
     "accessible": [
@@ -82,5 +82,17 @@
     "id": 13,
     "label": "routes.organization.list.general.join.label",
     "route": "/organization/join"
+  },
+  {
+    "icon": "calendarOutline",
+    "id": 14,
+    "label": "routes.organization.page.activity.segments.calendar",
+    "route": "/organization/activities"
+  },
+  {
+    "icon": "createOutline",
+    "id": 15,
+    "label": "routes.organization.page.activity.create",
+    "route": "/organization/activities"
   }
 ]

@@ -19,10 +19,7 @@ export const PageRoute = {
 	FINANCES: '/finances',
 	HOME: '/',
 	ORGANIZATION: {
-		ACTIVITY: {
-			CREATE: '/organization/activity/create',
-			ROOT: '/organization/activities'
-		},
+		ACTIVITIES: '/organization/activities',
 		JOIN: '/organization/join',
 		LEAVE: '/organization/leave',
 		REGISTER: '/organization/register',
