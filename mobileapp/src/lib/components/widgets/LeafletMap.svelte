@@ -13,18 +13,18 @@
 
 	type Properties = {
 		classList?: string;
-		height?: number;
 		position?: LatLng;
 		searchable?: boolean;
 		selected?: (name: string) => void;
 	};
 
-	let { classList, height = 70, position, searchable = false, selected }: Properties = $props();
+	let { classList, position, searchable = false, selected }: Properties = $props();
 
 	let map: Map | undefined;
 	let marker: Marker | undefined;
 	let searchbarOpen = $state(false);
 	let searchItems = $state<PositionItem[]>([]);
+	let searchbar = $state<HTMLIonSearchbarElement | undefined>();
 
 	onMount(() => initializeMap(position));
 
@@ -73,15 +73,26 @@
 	}
 
 	async function onSearch(query: null | string | undefined): Promise<void> {
-		if (query) {
-			const response = await osmResource.getLocationsByQuery(query);
-			searchItems = response.map((item) => ({
-				latlng: item.latlng as LatLng,
-				name: formatAddress(item)
-			}));
-		} else {
+		if (!query) {
 			searchItems = [];
+			return;
 		}
+		if (isCoordinate(query)) {
+			const coordinates = query.split(',').map((coordinate) => Number.parseFloat(coordinate.trim()));
+			const latlng = new LatLng(coordinates[0]!, coordinates[1]!);
+			await setMarker(latlng);
+			return;
+		}
+		const response = await osmResource.getLocationsByQuery(query);
+		searchItems = response.map((item) => ({
+			latlng: item.latlng as LatLng,
+			name: formatAddress(item)
+		}));
+	}
+
+	function isCoordinate(value: string): boolean {
+		// eslint-disable-next-line security/detect-unsafe-regex
+		return !!/^(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)/.test(value.trim());
 	}
 
 	function formatAddress(address: AddressModel): string {
@@ -103,6 +114,11 @@
 		searchbarOpen = false;
 		searchItems = [];
 	}
+
+	async function onOpenSearchbar(): Promise<void> {
+		searchbarOpen = true;
+		setTimeout(() => searchbar?.setFocus(), 10);
+	}
 </script>
 
 <!-- svelte-ignore event_directive_deprecated -->
@@ -112,6 +128,7 @@
 			<!-- svelte-ignore event_directive_deprecated -->
 			<div class="absolute top-1 right-1 z-10 w-5/6" use:clickOutside on:blur={closeSearchbar}>
 				<ion-searchbar
+					bind:this={searchbar}
 					debounce={250}
 					class="absolute transition-transform"
 					color="light"
@@ -122,7 +139,7 @@
 					{#each searchItems as item (item.latlng)}
 						<!-- svelte-ignore a11y_click_events_have_key_events -->
 						<!-- svelte-ignore a11y_no_static_element_interactions -->
-						<ion-item color="white" on:click={() => onSearchItemSelection(item.latlng)}>
+						<ion-item color="light" on:click={() => onSearchItemSelection(item.latlng)}>
 							<ion-label>{item.name}</ion-label>
 						</ion-item>
 					{/each}
@@ -132,21 +149,25 @@
 			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
 			<!-- svelte-ignore event_directive_deprecated -->
-			<ion-fab-button
-				size="small"
-				color="light"
-				class="absolute top-1 right-1 z-10"
-				on:click={() => (searchbarOpen = true)}
-			>
+			<ion-fab-button size="small" color="light" class="absolute top-1 right-1 z-10" on:click={onOpenSearchbar}>
 				<ion-icon icon={searchOutline}></ion-icon>
 			</ion-fab-button>
 		{/if}
 	{/if}
-	<div class="z-0" id="map" style:height={`${height}vh`}></div>
 </div>
+<div class="absolute top-0 right-0 bottom-0 left-0 z-0 w-full" id="map"></div>
 
 <style>
 	ion-searchbar {
 		--border-radius: 25px;
+	}
+
+	ion-list {
+		:first-child {
+			--border-radius: 25px 25px 0 0;
+		}
+		:last-child {
+			--border-radius: 0 0 25px 25px;
+		}
 	}
 </style>

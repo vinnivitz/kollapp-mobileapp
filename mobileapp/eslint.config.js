@@ -118,6 +118,7 @@ export default ts.config(
 				HTMLIonLoadingElement: 'readonly',
 				HTMLIonMenuElement: 'readonly',
 				HTMLIonRefresherElement: 'readonly',
+				HTMLIonSearchbarElement: 'readonly',
 				HTMLIonTabsElement: 'readonly',
 				NodeListOf: 'readonly'
 			}

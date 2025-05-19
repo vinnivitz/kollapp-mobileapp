@@ -397,7 +397,7 @@
 	cancelLabel={$t('routes.organization.page.activity.map-modal.button.cancel')}
 >
 	{#if mapModalOpen}
-		<LeafletMap height={91.5} selected={(location) => (cachedLocation = location)} classList="-m-4"></LeafletMap>
+		<LeafletMap selected={(location) => (cachedLocation = location)} classList="-m-4"></LeafletMap>
 	{/if}
 </Modal>
 
