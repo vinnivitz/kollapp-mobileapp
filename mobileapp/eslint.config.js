@@ -97,6 +97,7 @@ export default ts.config(
 			'sonarjs/slow-regex': 'off',
 			'sonarjs/void-use': 'off',
 			'svelte/no-unused-svelte-ignore': 'off',
+			'svelte/prefer-writable-derived': 'off',
 			'svelte/valid-compile': 'off',
 			'unicorn/filename-case': 'off'
 		},

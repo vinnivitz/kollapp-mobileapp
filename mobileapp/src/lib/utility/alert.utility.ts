@@ -18,7 +18,8 @@ export async function showAlert(message: string, config?: AlertConfig): Promise<
 		color: type,
 		duration: config?.duration ?? 3000,
 		icon: type === AlertType.ERROR ? alertCircleOutline : checkmarkCircleSharp,
-		message
+		message,
+		swipeGesture: 'vertical'
 	});
 
 	return toast.present();

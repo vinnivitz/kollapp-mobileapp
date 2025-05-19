@@ -60,7 +60,7 @@
 
 	const activityItems = $derived($activitiesStore ?? []);
 
-	const activityFilters = $derived<ActivityFilter[]>(initialActivityFilter());
+	const activityFilters = $state<ActivityFilter[]>(initialActivityFilter());
 
 	let activityView = $state(ActivityView.activities);
 
@@ -73,7 +73,7 @@
 	let mapModalOpen = $state(false);
 
 	let searchActivityValue = $state('');
-	let filteredActivities = $derived<ActivityModel[]>([]);
+	let filteredActivities = $state<ActivityModel[]>([]);
 
 	let selectedActivityId: number;
 	let selectedDate = $state(new Date().toISOString());
@@ -105,7 +105,7 @@
 	function initialActivityFilter(): ActivityFilter[] {
 		return Object.values(ActivityFilterType).map((type) => ({
 			applied: type === ActivityFilterType.pending,
-			label: $t(`routes.organization.page.activity.filters.${type}`),
+			label: $t(`routes.organization.page.activity.filters.type.${type}`),
 			type
 		}));
 	}
@@ -317,25 +317,23 @@
 
 <!-- svelte-ignore event_directive_deprecated -->
 <ion-popover is-open={showFilters} on:didDismiss={() => (showFilters = false)}>
-	{#if showFilters}
-		<Card title={$t('routes.organization.page.activity.filters.title')} classProp="m-0">
-			<div class="flex flex-wrap items-center justify-center gap-2">
-				{#each activityFilters as filter (filter.type)}
-					<!-- svelte-ignore a11y_click_events_have_key_events -->
-					<!-- svelte-ignore event_directive_deprecated -->
-					<!-- svelte-ignore a11y_no_static_element_interactions -->
-					<ion-chip
-						color={filter.applied ? 'secondary' : 'medium'}
-						outline={!filter.applied}
-						class="flex"
-						on:click={() => (filter.applied = !filter.applied)}
-					>
-						{filter.label}
-					</ion-chip>
-				{/each}
-			</div>
-		</Card>
-	{/if}
+	<Card title={$t('routes.organization.page.activity.filters.title')} classProp="m-0">
+		<div class="flex flex-wrap items-center justify-center gap-2">
+			{#each activityFilters as filter (filter.type)}
+				<!-- svelte-ignore a11y_click_events_have_key_events -->
+				<!-- svelte-ignore event_directive_deprecated -->
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
+				<ion-chip
+					color={filter.applied ? 'secondary' : 'medium'}
+					outline={!filter.applied}
+					class="flex"
+					on:click={() => (filter.applied = !filter.applied)}
+				>
+					{filter.label}
+				</ion-chip>
+			{/each}
+		</div>
+	</Card>
 </ion-popover>
 
 <Modal

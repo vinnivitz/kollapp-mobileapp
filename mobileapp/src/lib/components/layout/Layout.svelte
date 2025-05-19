@@ -10,7 +10,7 @@
 	import LabeledItem from '$lib/components/widgets/LabeledItem.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
-	import { initializationStore } from '$lib/stores';
+	import { initializationStore, organizationStore, userStore } from '$lib/stores';
 
 	type Properties = {
 		title: string;
@@ -19,7 +19,7 @@
 		hideMenu?: boolean;
 		scrollable?: boolean;
 		showBackButton?: boolean;
-		onRefresh?: (refresher: HTMLIonRefresherElement) => void;
+		onRefresh?: () => Promise<void>;
 	};
 
 	let {
@@ -39,6 +39,11 @@
 
 	async function navigate(route: string): Promise<void> {
 		menuComponent?.navigate(route);
+	}
+
+	async function doRefresh(): Promise<void> {
+		await (onRefresh ? onRefresh() : Promise.all([userStore.init(), organizationStore.init()]));
+		refresher?.complete();
 	}
 </script>
 
@@ -70,12 +75,10 @@
 	{/if}
 	{#if !loading}
 		<ion-content class="ion-padding" in:fade={{ delay: 0, duration: 200 }} class:no-overflow={!scrollable}>
-			{#if onRefresh}
-				<!-- svelte-ignore event_directive_deprecated -->
-				<ion-refresher bind:this={refresher} slot="fixed" on:ionRefresh={() => refresher && onRefresh?.(refresher)}>
-					<ion-refresher-content></ion-refresher-content>
-				</ion-refresher>
-			{/if}
+			<!-- svelte-ignore event_directive_deprecated -->
+			<ion-refresher bind:this={refresher} slot="fixed" on:ionRefresh={doRefresh}>
+				<ion-refresher-content></ion-refresher-content>
+			</ion-refresher>
 			{@render children?.()}
 		</ion-content>
 	{/if}
