@@ -5,10 +5,11 @@
 
 	import type { TabConfig } from '$lib/models/ui';
 
+	import { SplashScreen } from '@capacitor/splash-screen';
 	import { defineCustomElements } from '@ionic/pwa-elements/loader';
-	import { loadingController, setupIonicBase } from 'ionic-svelte';
+	import { setupIonicBase } from 'ionic-svelte';
 	import { accessibility, home, person } from 'ionicons/icons';
-	import { onDestroy, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 
 	import Tabs from '$lib/components/layout/Tabs.svelte';
 	import { initialized, t } from '$lib/locales';
@@ -17,8 +18,6 @@
 
 	let { children } = $props();
 
-	let loadingSpinner: HTMLIonLoadingElement | undefined;
-	let loadingTimeout: ReturnType<typeof setTimeout>;
 	let tabs = $state<TabConfig[] | undefined>();
 	let loaded = $state(false);
 
@@ -50,23 +49,9 @@
 	}
 
 	onMount(async () => {
-		loadingTimeout = setTimeout(async () => {
-			if (!loaded) {
-				loadingSpinner = await loadingController.create({});
-				await loadingSpinner.present();
-			}
-		}, 100);
 		await Promise.all([defineCustomElements(globalThis as unknown as Window), localeStore.init()]);
 		loaded = true;
-		if (loadingSpinner) {
-			await loadingSpinner.dismiss();
-		}
-	});
-
-	onDestroy(() => {
-		if (loadingTimeout) {
-			clearTimeout(loadingTimeout);
-		}
+		await SplashScreen.hide();
 	});
 </script>
 

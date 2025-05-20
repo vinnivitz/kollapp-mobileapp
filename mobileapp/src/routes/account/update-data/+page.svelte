@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { loadingController } from 'ionic-svelte';
-	import { mailOutline, peopleCircleOutline, personCircleOutline, personOutline, saveOutline } from 'ionicons/icons';
+	import { mailOutline, personOutline, saveOutline } from 'ionicons/icons';
 
 	import { type UpdateUserDataDto, updateUserDataSchema } from '$lib/api/dto/client/user';
 	import { userResource } from '$lib/api/resources';
@@ -11,7 +11,13 @@
 	import { t } from '$lib/locales';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
 	import { userStore } from '$lib/stores';
-	import { customForm, getValidationResult } from '$lib/utility';
+	import {
+		customForm,
+		getValidationResult,
+		isBiometricAvailable,
+		isBiometricEnabled,
+		updateUsernameBiometricCredentials
+	} from '$lib/utility';
 
 	let actions: FormActions<UpdateUserDataDto>;
 	let validationResult: ValidationResult;
@@ -40,6 +46,9 @@
 			if (validationResult.valid) {
 				await userStore.init();
 				touched = false;
+				if ((await isBiometricAvailable()) && (await isBiometricEnabled())) {
+					await updateUsernameBiometricCredentials(model.username);
+				}
 			} else {
 				actions.applyValidationFeedback(validationResult);
 			}
@@ -52,12 +61,6 @@
 	{#if form}
 		<Card title={$t('routes.account.update-data.card.title')}>
 			<form use:customForm={form}>
-				<InputItem name="name" label={$t('routes.account.update-data.card.form.name')} icon={personCircleOutline} />
-				<InputItem
-					name="surname"
-					label={$t('routes.account.update-data.card.form.surename')}
-					icon={peopleCircleOutline}
-				/>
 				<InputItem name="username" label={$t('routes.account.update-data.card.form.username')} icon={personOutline} />
 				<InputItem
 					name="email"

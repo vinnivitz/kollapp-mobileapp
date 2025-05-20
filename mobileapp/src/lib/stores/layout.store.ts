@@ -12,10 +12,10 @@ function createStore(): LayoutStore {
 	async function init(): Promise<void> {
 		const value = await getStoredValue<Layout>(PreferencesKey.LAYOUT);
 		if (value) {
-			_set(value);
+			await _set(value);
 			document.documentElement.setAttribute('mode', value);
 		} else {
-			_set(getDefaultLayout());
+			await _set(getDefaultLayout());
 		}
 	}
 	async function _set(value: Layout): Promise<void> {

@@ -360,7 +360,7 @@
 					inputIconClick={() => (mapModalOpen = true)}
 				/>
 				<CustomItem
-					iconStart={calendarClearOutline}
+					icon={calendarClearOutline}
 					iconEnd={calendarOutline}
 					iconClick={() => (showSelectDateCalendar = true)}
 				>
@@ -426,7 +426,7 @@
 						value={selectedLocation}
 					/>
 					<CustomItem
-						iconStart={calendarClearOutline}
+						icon={calendarClearOutline}
 						iconEnd={calendarOutline}
 						iconClick={() => (showSelectDateCalendar = true)}
 					>
@@ -451,10 +451,6 @@
 		{/if}
 	</Modal>
 {/key}
-
-<!-- <ion-modal>
-	<ion-datetime id="datetime-selector"></ion-datetime>
-</ion-modal> -->
 
 <style>
 	ion-popover.extended {

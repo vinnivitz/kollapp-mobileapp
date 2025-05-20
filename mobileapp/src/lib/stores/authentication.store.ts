@@ -13,16 +13,17 @@ function createStore(): AuthenticationStore {
 	async function init(): Promise<void> {
 		const model = await getStoredValue<AuthenticationModel>(PreferencesKey.AUTHENTICATION);
 		await _set(model);
+		initialized.set(true);
 	}
 
 	async function _set(model?: AuthenticationModel): Promise<void> {
 		await (model ? storeValue(PreferencesKey.AUTHENTICATION, model) : removeStoredValue(PreferencesKey.AUTHENTICATION));
-		initialized.set(true);
 		set(model);
 	}
 
 	async function reset(): Promise<void> {
-		_set();
+		initialized.set(false);
+		return _set();
 	}
 
 	return {

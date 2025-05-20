@@ -34,7 +34,7 @@
 	const labelColor = $derived(color === 'light' || color === 'white' ? 'dark' : 'white');
 </script>
 
-<CustomItem {click} {card} {color} {transparent} iconStart={icon} {classList}>
+<CustomItem {click} {card} {color} {transparent} {icon} {classList}>
 	{#if label}
 		<ion-label class="ms-4" color={labelColor}>{label}</ion-label>
 	{/if}

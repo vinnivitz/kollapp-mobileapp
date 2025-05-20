@@ -2,8 +2,10 @@
 	import type { AuthenticationModel } from '$lib/models/models';
 
 	import { loadingController } from 'ionic-svelte';
-	import { keyOutline, logInOutline, personOutline } from 'ionicons/icons';
+	import { fingerPrintOutline, keyOutline, logInOutline, personOutline } from 'ionicons/icons';
+	import { onMount } from 'svelte';
 
+	import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
 
 	import { type LoginDto, loginSchema } from '$lib/api/dto/client/auth';
@@ -15,10 +17,19 @@
 	import Welcome from '$lib/components/widgets/Welcome.svelte';
 	import { t } from '$lib/locales';
 	import { ValidationCode } from '$lib/models/api';
+	import { PreferencesKey } from '$lib/models/preferences';
 	import { PageRoute } from '$lib/models/routing';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
 	import { authenticationStore } from '$lib/stores';
-	import { customForm, getValidationResult, showAlert } from '$lib/utility';
+	import {
+		customForm,
+		getStoredValue,
+		getValidationResult,
+		isBiometricAvailable,
+		isBiometricEnabled,
+		requestBiometricAuthentication,
+		showAlert
+	} from '$lib/utility';
 
 	const model = loginSchema().cast({}) as LoginDto;
 	let actions: FormActions<LoginDto>;
@@ -31,6 +42,22 @@
 	};
 
 	const form = new Form(model, config);
+
+	onMount(() => performBiometricVerification());
+
+	async function performBiometricVerification(): Promise<void> {
+		if (dev || !(await isBiometricAvailable()) || !(await isBiometricEnabled()) || $authenticationStore) return;
+
+		const credentials = await requestBiometricAuthentication();
+		if (credentials) {
+			const model: LoginDto = {
+				password: credentials.password,
+				username: credentials.username
+			};
+			const result: ValidationResult = { valid: true };
+			await onSubmit(model, result);
+		}
+	}
 
 	async function onSubmit(model: LoginDto, result: ValidationResult): Promise<void> {
 		if (result.valid) {
@@ -88,6 +115,17 @@
 			<ion-text color="secondary">{$t('routes.auth.login.resend-confirmation.link')}</ion-text>
 		</Card>
 	{/if}
+	{#await getStoredValue(PreferencesKey.BIOMETRICS_ENABLED) then enabled}
+		{#if enabled}
+			<Button
+				fill="outline"
+				expand="block"
+				icon={fingerPrintOutline}
+				label={$t('routes.auth.login.biometrics')}
+				click={performBiometricVerification}
+			/>
+		{/if}
+	{/await}
 	<Card color="light" click={() => goto(PageRoute.AUTH.REGISTER)} classProp="text-center">
 		{$t('routes.auth.login.register.text')}
 		<ion-text color="secondary">{$t('routes.auth.login.register.link')}</ion-text>

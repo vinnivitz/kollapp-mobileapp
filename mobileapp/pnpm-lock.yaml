@@ -20,6 +20,12 @@ importers:
       '@capacitor/preferences':
         specifier: ^7.0.0
         version: 7.0.1(@capacitor/core@7.2.0)
+      '@capacitor/splash-screen':
+        specifier: ^7.0.1
+        version: 7.0.1(@capacitor/core@7.2.0)
+      '@capgo/capacitor-native-biometric':
+        specifier: ^7.1.7
+        version: 7.1.7(@capacitor/core@7.2.0)
       '@ionic/core':
         specifier: ^8.5.0
         version: 8.5.7
@@ -283,6 +289,16 @@ packages:
 
   '@capacitor/preferences@7.0.1':
     resolution: {integrity: sha512-XF9jOHzvoIBZLwZr/EX6aVaUO1d8Mx7TwBLQS33pYHOliCW5knT5KUkFOXNNYxh9qqODYesee9xuQIKNJpQBag==}
+    peerDependencies:
+      '@capacitor/core': '>=7.0.0'
+
+  '@capacitor/splash-screen@7.0.1':
+    resolution: {integrity: sha512-Nbqw9bEIe7uHj/HOT81mf4jT6uK1YykozpQw/uIKQDueMg6RJYaJK2/TMajIOohLk8fJF4TYIc1i9nGjNLnfGg==}
+    peerDependencies:
+      '@capacitor/core': '>=7.0.0'
+
+  '@capgo/capacitor-native-biometric@7.1.7':
+    resolution: {integrity: sha512-H0wvqYjuTWrf+ioy63ZGXtIDcoKDRvPlSD/gllWy9sRqFN0tb+AzgJxpoaoOsLYxPWNfxelJkjWlrUX1REtA2Q==}
     peerDependencies:
       '@capacitor/core': '>=7.0.0'
 
@@ -5384,6 +5400,14 @@ snapshots:
       '@capacitor/core': 7.2.0
 
   '@capacitor/preferences@7.0.1(@capacitor/core@7.2.0)':
+    dependencies:
+      '@capacitor/core': 7.2.0
+
+  '@capacitor/splash-screen@7.0.1(@capacitor/core@7.2.0)':
+    dependencies:
+      '@capacitor/core': 7.2.0
+
+  '@capgo/capacitor-native-biometric@7.1.7(@capacitor/core@7.2.0)':
     dependencies:
       '@capacitor/core': 7.2.0
 

@@ -38,7 +38,7 @@
 	}: Properties = $props();
 </script>
 
-<CustomItem {card} {color} iconStart={icon} iconEnd={inputIcon} iconClick={inputIconClick}>
+<CustomItem {card} {color} {icon} iconEnd={inputIcon} iconClick={inputIconClick}>
 	<!-- svelte-ignore event_directive_deprecated -->
 	<ion-input
 		label-placement="floating"

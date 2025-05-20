@@ -13,7 +13,13 @@
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
-	import { customForm, getValidationResult } from '$lib/utility';
+	import {
+		customForm,
+		getValidationResult,
+		isBiometricAvailable,
+		isBiometricEnabled,
+		updatePasswordBiometricCredentials
+	} from '$lib/utility';
 
 	const model = changePasswordSchema().cast({}) as ChangePasswordDto;
 	let validationResult: ValidationResult;
@@ -37,6 +43,9 @@
 			delete model.confirmNewPassword;
 			validationResult = getValidationResult(await userResource.changePassword(model));
 			if (validationResult.valid) {
+				if ((await isBiometricAvailable()) && (await isBiometricEnabled())) {
+					await updatePasswordBiometricCredentials(model.newPassword);
+				}
 				await goto(PageRoute.ACCOUNT.ROOT);
 			} else {
 				actions.applyValidationFeedback(validationResult);

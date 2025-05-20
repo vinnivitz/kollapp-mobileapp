@@ -19,15 +19,16 @@ function createStore(): ActivityStore {
 			const model = await getStoredValue<ActivityModel[]>(PreferencesKey.ACTIVITIES);
 			_set(model);
 		}
+		initialized.set(true);
 	}
 
 	async function _set(model?: ActivityModel[]): Promise<void> {
 		await (model ? storeValue(PreferencesKey.ACTIVITIES, model) : removeStoredValue(PreferencesKey.ACTIVITIES));
-		initialized.set(true);
 		set(model);
 	}
 
 	async function reset(): Promise<void> {
+		initialized.set(false);
 		_set();
 	}
 

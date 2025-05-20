@@ -3,7 +3,6 @@ import type { AuthenticationModel } from '$lib/models/models';
 import { get } from 'svelte/store';
 
 import { dev } from '$app/environment';
-import { goto } from '$app/navigation';
 
 import { authResource } from '$lib/api/resources';
 import environment from '$lib/environment';
@@ -19,7 +18,6 @@ import {
 	UserRole
 } from '$lib/models/api';
 import { PreferencesKey } from '$lib/models/preferences';
-import { PageRoute } from '$lib/models/routing';
 import { AlertType, type ValidationResult } from '$lib/models/ui';
 import { authenticationStore, connectionStore, localeStore, userStore } from '$lib/stores';
 import { getStoredValue, showAlert } from '$lib/utility';
@@ -135,7 +133,6 @@ export function hasRole(role: UserRole): boolean {
 
 async function handleAuthenticationError(): Promise<ResponseBody> {
 	await authResource.logout();
-	await goto(PageRoute.AUTH.LOGIN);
 	return createErrorResponse(StatusCode.UNAUTHORIZED, $t('api.unauthorized'), true);
 }
 

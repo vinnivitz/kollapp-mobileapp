@@ -4,8 +4,13 @@
 export const PageRoute = {
 	ACCOUNT: {
 		APP: '/account/app',
-		CHANGE_PASSWORD: '/account/change-password',
 		DELETE: '/account/delete',
+		PRIVACY_AND_SECURITY: {
+			BIOMETRICS: '/account/privacy-and-security/biometrics',
+			CHANGE_PASSWORD: '/account/privacy-and-security/change-password',
+			NOTIFICATIONS: '/account/privacy-and-security/notifications',
+			ROOT: '/account/privacy-and-security'
+		},
 		ROOT: '/account',
 		UPDATE_DATA: '/account/update-data'
 	},

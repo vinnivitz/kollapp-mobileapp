@@ -58,6 +58,14 @@ function scanSvelteFile(filePath: string): void {
  */
 type ASTComponent = AST.AwaitBlock | AST.Component | AST.Fragment | AST.IfBlock | AST.RegularElement | AST.SnippetBlock;
 
+enum NodeName {
+	CARD = 'Card',
+	CUSTOMITEM = 'CustomItem',
+	FABBUTTON = 'FabButton',
+	LABELEDITEM = 'LabeledItem',
+	SEGMENTBUTTON = 'SegmentButton'
+}
+
 /**
  * Examines the parsed AST for `<LabeledItem searchable={...} label={...} iconSrc={...}>` components,
  * and stores them in `searchableItems`.
@@ -67,10 +75,7 @@ function findSearchableComponents(ast: AST.Root): void {
 }
 
 function recurse(node: ASTComponent): void {
-	if (
-		node.type === 'Component' &&
-		(node.name === 'LabeledItem' || node.name === 'Card' || node.name === 'FabButton' || node.name === 'SegmentButton')
-	) {
+	if (node.type === 'Component' && Object.values(NodeName).includes(node.name as NodeName)) {
 		for (const attribute of node.attributes) {
 			if (attribute.type === 'Attribute' && attribute.name === 'searchable') {
 				addSearchableItem(node);

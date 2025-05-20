@@ -19,8 +19,7 @@ function createStore(): ConnectionStore {
 	async function init(): Promise<void> {
 		const status = await getStatus();
 		const isOnline = status?.connected ?? false;
-		await storeValue(PreferencesKey.ONLINE, isOnline);
-		set(isOnline);
+		await _set(isOnline);
 	}
 	async function _set(value: boolean): Promise<void> {
 		await storeValue(PreferencesKey.ONLINE, value);

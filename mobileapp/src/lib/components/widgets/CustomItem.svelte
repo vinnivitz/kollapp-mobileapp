@@ -7,8 +7,10 @@
 		card?: boolean;
 		classList?: string;
 		color?: Colors | undefined;
+		icon?: string;
 		iconEnd?: string;
-		iconStart?: string;
+		id?: string;
+		searchable?: string;
 		transparent?: boolean;
 		click?: () => void;
 		iconClick?: () => void;
@@ -20,11 +22,16 @@
 		classList,
 		click,
 		color = 'light',
+		icon,
 		iconClick,
 		iconEnd,
-		iconStart,
+		id,
+		searchable,
 		transparent = false
 	}: Properties = $props();
+
+	// workaround to avoid reference linting error
+	void searchable;
 
 	const iconColor = $derived(color === 'light' || color === 'white' ? 'medium' : 'white');
 </script>
@@ -32,6 +39,7 @@
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <ion-item
+	{id}
 	data-card={card}
 	button={!!click}
 	{color}
@@ -40,8 +48,8 @@
 	onclick={click}
 	class={classList}
 >
-	{#if iconStart}
-		<ion-icon icon={iconStart} slot="start" color={iconColor}></ion-icon>
+	{#if icon}
+		<ion-icon {icon} slot="start" color={iconColor}></ion-icon>
 	{/if}
 	{#if iconEnd}
 		<ion-button class="ms-0" fill="clear" slot="end" onclick={iconClick}>

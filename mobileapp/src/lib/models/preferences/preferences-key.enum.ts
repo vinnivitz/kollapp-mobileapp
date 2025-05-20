@@ -4,6 +4,7 @@
 export enum PreferencesKey {
 	ACTIVITIES = 'activities',
 	AUTHENTICATION = 'authentication',
+	BIOMETRICS_ENABLED = 'biometrics-enabled',
 	LAYOUT = 'layout',
 	LOCALE = 'locale',
 	ONLINE = 'online',

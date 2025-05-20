@@ -35,6 +35,9 @@
 /mobileapp/android
 /mobileapp/ios
 
+/mobileapp/src/lib/locales/de.json
+/mobileapp/src/lib/locales/en.json
+
 # Web App
 /webapp/.dart_tool/
 /webapp/.flutter-plugins

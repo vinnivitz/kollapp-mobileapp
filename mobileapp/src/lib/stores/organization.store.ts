@@ -23,27 +23,27 @@ function createStore(): OrganizationStore {
 				selectedOrganizationId ??= response.data[0]?.id;
 			} else if (!StatusCheck.isUnauthorized(response.status)) {
 				const storedOrganization = await getStoredValue<OrganizationModel>(PreferencesKey.ORGANIZATION);
-				_set(storedOrganization);
+				await _set(storedOrganization);
 				selectedOrganizationId ??= storedOrganization?.id;
 			}
 		}
 		if (selectedOrganizationId) {
 			await storeValue(PreferencesKey.SELECTED_ORGANIZATION_ID, selectedOrganizationId);
-			change(selectedOrganizationId);
+			await change(selectedOrganizationId);
 		} else {
 			await _set();
 			await activitiesStore.init();
 		}
+		initialized.set(true);
 	}
 
 	async function _set(model?: OrganizationModel): Promise<void> {
 		await (model ? storeValue(PreferencesKey.ORGANIZATION, model) : removeStoredValue(PreferencesKey.ORGANIZATION));
-		initialized.set(true);
 		set(model);
 	}
 
 	async function reset(): Promise<void> {
-		await removeStoredValue(PreferencesKey.SELECTED_ORGANIZATION_ID);
+		initialized.set(false);
 		_set();
 	}
 

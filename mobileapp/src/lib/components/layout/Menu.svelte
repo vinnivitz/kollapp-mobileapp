@@ -10,7 +10,7 @@
 	import Button from '$lib/components/widgets/Button.svelte';
 	import LabeledItem from '$lib/components/widgets/LabeledItem.svelte';
 	import { t } from '$lib/locales';
-	import { PageRoute, type PageRoutePaths } from '$lib/models/routing';
+	import { type PageRoutePaths } from '$lib/models/routing';
 	import { triggerClickByLabel } from '$lib/utility';
 
 	type Properties = {
@@ -34,7 +34,6 @@
 
 	async function logout(): Promise<void> {
 		await authResource.logout();
-		goto(PageRoute.AUTH.LOGIN);
 	}
 
 	async function onSearch(event: CustomEvent): Promise<void> {
@@ -101,5 +100,9 @@
 <style>
 	ion-searchbar {
 		padding: 0 4px;
+	}
+
+	ion-toolbar::part(container) {
+		min-height: 52px;
 	}
 </style>

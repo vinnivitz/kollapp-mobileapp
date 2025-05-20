@@ -8,8 +8,8 @@
 		colorWandOutline,
 		contrastOutline,
 		desktopOutline,
-		keyOutline,
 		languageOutline,
+		lockClosedOutline,
 		logoAndroid,
 		logoApple,
 		moonOutline,
@@ -129,10 +129,10 @@
 			label={$t('routes.account.list.account.button.update-data')}
 		/>
 		<LabeledItem
-			searchable={PageRoute.ACCOUNT.CHANGE_PASSWORD}
-			click={() => goto(PageRoute.ACCOUNT.CHANGE_PASSWORD)}
-			icon={keyOutline}
-			label={$t('routes.account.list.account.button.change-password')}
+			searchable={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.ROOT}
+			click={() => goto(PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.ROOT)}
+			icon={lockClosedOutline}
+			label={$t('routes.account.list.account.button.privacy-and-security')}
 		/>
 		<LabeledItem
 			searchable={PageRoute.ACCOUNT.DELETE}
