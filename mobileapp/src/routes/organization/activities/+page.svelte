@@ -55,9 +55,9 @@
 
 	type ActivityFilter = {
 		applied: boolean;
+		icon: string;
 		label: string;
 		type: ActivityFilterType;
-		icon: string;
 	};
 
 	const activityItems = $derived($activitiesStore ?? []);
@@ -65,15 +65,15 @@
 	const activityFilters = $state<ActivityFilter[]>([
 		{
 			applied: true,
+			icon: hourglassOutline,
 			label: $t('routes.organization.page.activity.filters.type.pending'),
-			type: ActivityFilterType.pending,
-			icon: hourglassOutline
+			type: ActivityFilterType.pending
 		},
 		{
 			applied: false,
+			icon: archiveOutline,
 			label: $t('routes.organization.page.activity.filters.type.archived'),
-			type: ActivityFilterType.archived,
-			icon: archiveOutline
+			type: ActivityFilterType.archived
 		}
 	]);
 

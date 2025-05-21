@@ -127,12 +127,12 @@
 		{@render search()}
 	{/if}
 </div>
-<div class="absolute bottom-0 left-0 right-0 top-0 z-0 w-full" id="map"></div>
+<div class="absolute top-0 right-0 bottom-0 left-0 z-0 w-full" id="map"></div>
 
 {#snippet search()}
 	{#if searchbarOpen}
 		<!-- svelte-ignore event_directive_deprecated -->
-		<div class="absolute right-1 top-1 z-10 w-5/6" use:clickOutside on:blur={closeSearchbar}>
+		<div class="absolute top-1 right-1 z-10 w-5/6" use:clickOutside on:blur={closeSearchbar}>
 			<ion-searchbar
 				bind:this={searchbar}
 				debounce={250}
@@ -141,7 +141,7 @@
 				placeholder={$t('components.widgets.map.searchbar.placeholder')}
 				on:ionInput={(event_) => onSearch(event_.target.value)}
 			></ion-searchbar>
-			<ion-list class="top-13 absolute left-3 right-3 mx-auto rounded-xl">
+			<ion-list class="absolute top-13 right-3 left-3 mx-auto rounded-xl">
 				{#each searchItems as item (item.latlng)}
 					<!-- svelte-ignore a11y_click_events_have_key_events -->
 					<!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -155,7 +155,7 @@
 		<!-- svelte-ignore a11y_click_events_have_key_events -->
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<!-- svelte-ignore event_directive_deprecated -->
-		<ion-fab-button size="small" color="light" class="absolute right-1 top-1 z-10" on:click={onOpenSearchbar}>
+		<ion-fab-button size="small" color="light" class="absolute top-1 right-1 z-10" on:click={onOpenSearchbar}>
 			<ion-icon icon={searchOutline}></ion-icon>
 		</ion-fab-button>
 	{/if}
