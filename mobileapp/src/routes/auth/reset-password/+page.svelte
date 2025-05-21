@@ -46,7 +46,7 @@
 			<InputItem name="email" label={$t('routes.auth.reset-password.form.email')} icon={mailOutline} />
 			<Button
 				icon={refreshOutline}
-				classProp="mt-3"
+				classList="mt-3"
 				expand="block"
 				type="submit"
 				label={$t('routes.auth.reset-password.form.buttons.send')}

@@ -106,7 +106,7 @@
 
 <Layout title={$t('routes.account.page.privacy-and-security.title')} showBackButton>
 	<ion-list inset>
-		<ion-list-header>Privacy</ion-list-header>
+		<ion-list-header>{ $t('routes.account.page.privacy-and-security.list.privacy') }</ion-list-header>
 		<LabeledItem
 			click={() => showAlert('Not implemented yet')}
 			icon={notificationsOutline}
@@ -114,7 +114,7 @@
 		/>
 	</ion-list>
 	<ion-list inset>
-		<ion-list-header>Security</ion-list-header>
+		<ion-list-header>{ $t('routes.account.page.privacy-and-security.list.security') }</ion-list-header>
 		<LabeledItem
 			searchable={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.CHANGE_PASSWORD}
 			click={() => goto(PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.CHANGE_PASSWORD)}
@@ -154,7 +154,7 @@
 				icon={keyOutline}
 			/>
 			<Button
-				classProp="mt-3"
+				classList="mt-3"
 				expand="block"
 				type="submit"
 				label={$t('routes.account.list.account.privacy-and-security.form.submit')}

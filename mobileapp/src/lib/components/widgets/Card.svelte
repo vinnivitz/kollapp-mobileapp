@@ -7,7 +7,7 @@
 	type Properties = {
 		accessible?: UserRole[];
 		children?: Snippet;
-		classProp?: string;
+		classList?: string;
 		color?: Colors | undefined;
 		icon?: string;
 		id?: string;
@@ -17,7 +17,7 @@
 		click?: () => void;
 	};
 
-	let { accessible, children, classProp, click, color, icon, id, searchable, subtitle, title }: Properties = $props();
+	let { accessible, children, classList, click, color, icon, id, searchable, subtitle, title }: Properties = $props();
 
 	// workaround to avoid reference linting error
 	void searchable;
@@ -29,11 +29,11 @@
 {#if !!click}
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<ion-card {id} {color} button={!!click} class={classProp} onclick={click}>
+	<ion-card {id} {color} button={!!click} class={classList} onclick={click}>
 		{@render content()}
 	</ion-card>
 {:else}
-	<ion-card {id} {color} button={!!click} class={classProp}>
+	<ion-card {id} {color} button={!!click} class={classList}>
 		{@render content()}
 	</ion-card>
 {/if}

@@ -27,7 +27,7 @@
 	<Card title={$t('routes.organization.page.leave.card.title')}>
 		<div class="text-center">
 			<Button
-				classProp="mt-3"
+				classList="mt-3"
 				color="danger"
 				expand="block"
 				label={$t('routes.organization.page.leave.card.button')}

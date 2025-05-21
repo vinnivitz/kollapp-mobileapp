@@ -12,6 +12,7 @@
 		documentOutline,
 		filterOutline,
 		flashOutline,
+		hourglassOutline,
 		locationOutline,
 		mapOutline,
 		trashBinOutline
@@ -56,11 +57,25 @@
 		applied: boolean;
 		label: string;
 		type: ActivityFilterType;
+		icon: string;
 	};
 
 	const activityItems = $derived($activitiesStore ?? []);
 
-	const activityFilters = $state<ActivityFilter[]>(initialActivityFilter());
+	const activityFilters = $state<ActivityFilter[]>([
+		{
+			applied: true,
+			label: $t('routes.organization.page.activity.filters.type.pending'),
+			type: ActivityFilterType.pending,
+			icon: hourglassOutline
+		},
+		{
+			applied: false,
+			label: $t('routes.organization.page.activity.filters.type.archived'),
+			type: ActivityFilterType.archived,
+			icon: archiveOutline
+		}
+	]);
 
 	let activityView = $state(ActivityView.activities);
 
@@ -101,14 +116,6 @@
 	$effect(() => {
 		filteredActivities = activityItems;
 	});
-
-	function initialActivityFilter(): ActivityFilter[] {
-		return Object.values(ActivityFilterType).map((type) => ({
-			applied: type === ActivityFilterType.pending,
-			label: $t(`routes.organization.page.activity.filters.type.${type}`),
-			type
-		}));
-	}
 
 	async function onCreateSubmit(model: CreateActivityDto, result: ValidationResult): Promise<void> {
 		if (result.valid) {
@@ -278,8 +285,9 @@
 					<!-- svelte-ignore event_directive_deprecated -->
 					<!-- svelte-ignore a11y_no_static_element_interactions -->
 					<ion-chip outline class="flex" on:click={() => (filter.applied = false)}>
-						<ion-label>{filter.label}</ion-label>
-						<ion-icon icon={closeOutline}></ion-icon>
+						<ion-icon icon={filter.icon} class="text-xs"></ion-icon>
+						<ion-label class="text-xs">{filter.label}</ion-label>
+						<ion-icon icon={closeOutline} class="text-xs"></ion-icon>
 					</ion-chip>
 				{/if}
 			{/each}
@@ -317,7 +325,7 @@
 
 <!-- svelte-ignore event_directive_deprecated -->
 <ion-popover is-open={showFilters} on:didDismiss={() => (showFilters = false)}>
-	<Card title={$t('routes.organization.page.activity.filters.title')} classProp="m-0">
+	<Card title={$t('routes.organization.page.activity.filters.title')} classList="m-0">
 		<div class="flex flex-wrap items-center justify-center gap-2">
 			{#each activityFilters as filter (filter.type)}
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -367,7 +375,7 @@
 					<div class="flex flex-col">
 						<ion-note color="secondary" class="ms-4 pt-2 text-xs">Date</ion-note>
 						<Button
-							classProp="-ms-1"
+							classList="-ms-1"
 							fill="clear"
 							color="dark"
 							size="default"
@@ -431,7 +439,7 @@
 						iconClick={() => (showSelectDateCalendar = true)}
 					>
 						<Button
-							classProp="ms-[-8px]"
+							classList="ms-[-8px]"
 							fill="clear"
 							color="dark"
 							size="default"

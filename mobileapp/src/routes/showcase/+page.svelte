@@ -130,7 +130,7 @@
 			<Calendar showTitle={false}></Calendar>
 		</div>
 	</Card>
-	<Card title="Activity card" classProp="bg-transparent">
+	<Card title="Activity card" classList="bg-transparent">
 		<ActivityCard value={{ id: 1, location: 'Activity location', name: 'Activity name' }}></ActivityCard>
 	</Card>
 	<Card title="Items">

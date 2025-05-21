@@ -71,7 +71,7 @@
 				icon={keySharp}
 			/>
 			<Button
-				classProp="mt-3"
+				classList="mt-3"
 				expand="block"
 				type="submit"
 				label={$t('routes.auth.reset-password.confirmation.form.submit')}

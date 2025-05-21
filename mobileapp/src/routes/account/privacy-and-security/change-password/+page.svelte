@@ -77,7 +77,7 @@
 				icon={keySharp}
 			/>
 			<Button
-				classProp="mt-3"
+				classList="mt-3"
 				expand="block"
 				type="submit"
 				label={$t('routes.account.change-password.form.submit')}

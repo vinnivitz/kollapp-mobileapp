@@ -267,7 +267,11 @@
       },
       "page": {
         "privacy-and-security": {
-          "title": "Privacy and security"
+          "title": "Privacy and security",
+          "list": {
+            "privacy": "Privacy",
+            "security": "Security"
+          }
         }
       }
     },

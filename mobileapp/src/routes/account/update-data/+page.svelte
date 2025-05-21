@@ -69,7 +69,7 @@
 					type="email"
 				/>
 				<Button
-					classProp="mt-3"
+					classList="mt-3"
 					expand="block"
 					type="submit"
 					disabled={!touched}

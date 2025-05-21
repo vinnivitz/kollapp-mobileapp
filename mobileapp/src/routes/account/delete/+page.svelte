@@ -15,7 +15,7 @@
 <Layout title={$t('routes.account.delete.title')} showBackButton>
 	<Card title={$t('routes.account.delete.card.title')}>
 		<Button
-			classProp="mt-3"
+			classList="mt-3"
 			expand="block"
 			color="danger"
 			click={leaveOrganization}

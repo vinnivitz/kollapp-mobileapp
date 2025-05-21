@@ -39,7 +39,7 @@
 			/>
 			<div class="text-center">
 				<Button
-					classProp="mt-3"
+					classList="mt-3"
 					expand="block"
 					type="submit"
 					label={$t('routes.organization.page.join.form.submit')}

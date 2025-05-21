@@ -2,7 +2,7 @@
 	import { type Colors } from '$lib/models/ui';
 
 	type Properties = {
-		classProp?: string;
+		classList?: string;
 		color?: Colors | undefined;
 		disabled?: boolean;
 		expand?: 'block' | 'full' | undefined;
@@ -18,7 +18,7 @@
 		({ icon: string; label?: string } | { label: string; icon?: string });
 
 	let {
-		classProp,
+		classList,
 		click,
 		color = 'secondary',
 		disabled,
@@ -40,7 +40,7 @@
 	{color}
 	{expand}
 	{fill}
-	class={classProp}
+	class={classList}
 	{size}
 	{type}
 	{disabled}
