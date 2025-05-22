@@ -98,11 +98,11 @@
 	function formatAddress(address: AddressModel): string {
 		if (address.street) {
 			return `${address.street}${address.number ? ' ' + address.number : ''}, ${address.zip} ${address.locality}`;
-		} else if (address.locality) {
-			return `${address.locality}${address.zip ? ', ' + address.zip : ''}`;
-		} else {
-			return '';
 		}
+		if (address.locality) {
+			return `${address.locality}${address.zip ? ', ' + address.zip : ''}`;
+		}
+		return '';
 	}
 
 	function onSearchItemSelection(latlng: LatLng): void {

@@ -24,8 +24,6 @@
 
 	const model = updateUserDataSchema().cast({
 		email: $userStore?.email,
-		name: $userStore?.name,
-		surname: $userStore?.surname,
 		username: $userStore?.username
 	}) as UpdateUserDataDto;
 	const config: FormConfig<UpdateUserDataDto> = {

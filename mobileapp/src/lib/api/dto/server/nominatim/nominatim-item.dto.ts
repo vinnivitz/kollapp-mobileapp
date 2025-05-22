@@ -1,4 +1,4 @@
-import type { NominatimAddressDto } from '.';
+import type { NominatimAddressDto } from '..';
 
 export type NominatimItemDto = {
 	address: NominatimAddressDto;

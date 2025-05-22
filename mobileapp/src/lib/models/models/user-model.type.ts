@@ -5,8 +5,6 @@ import type { UserRole } from '$lib/models/api';
  */
 export type UserModel = {
 	email: string;
-	name: string;
 	roles: UserRole[];
-	surname: string;
 	username: string;
 };
