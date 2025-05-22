@@ -5,6 +5,7 @@
 	import { type Colors } from '$lib/models/ui';
 
 	type Properties = {
+		contentHeight?: number;
 		accessible?: UserRole[];
 		children?: Snippet;
 		classList?: string;
@@ -17,7 +18,19 @@
 		click?: () => void;
 	};
 
-	let { accessible, children, classList, click, color, icon, id, searchable, subtitle, title }: Properties = $props();
+	let {
+		accessible,
+		children,
+		classList,
+		click,
+		color,
+		icon,
+		id,
+		searchable,
+		subtitle,
+		title,
+		contentHeight
+	}: Properties = $props();
 
 	// workaround to avoid reference linting error
 	void searchable;
@@ -48,7 +61,7 @@
 		</ion-card-header>
 	{/if}
 	{#if children}
-		<ion-card-content>
+		<ion-card-content class={`${contentHeight ? 'h-[' + contentHeight + 'vh]' : ''}`}>
 			{@render children()}
 		</ion-card-content>
 	{/if}
@@ -60,6 +73,10 @@
 
 		ion-card-title {
 			--color: var(--ion-color-dark);
+		}
+
+		.ion-card-content {
+			height: 400px;
 		}
 	}
 </style>

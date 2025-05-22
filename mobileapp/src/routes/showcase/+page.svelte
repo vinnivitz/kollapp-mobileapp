@@ -164,7 +164,7 @@
 			<Button label="Open modal" click={() => (modalOpen = true)}></Button>
 		</div>
 	</Card>
-	<Card title="Map">
+	<Card title="Map" classList="relative" contentHeight={70}>
 		<LeafletMap></LeafletMap>
 	</Card>
 </LayoutComponent>
