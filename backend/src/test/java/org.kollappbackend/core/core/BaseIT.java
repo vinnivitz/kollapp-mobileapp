@@ -14,7 +14,8 @@ public abstract class BaseIT {
     static final MySQLContainer<?> MY_SQL_CONTAINER;
 
     static {
-        MY_SQL_CONTAINER = new MySQLContainer<>("mysql:latest");
+        MY_SQL_CONTAINER = new MySQLContainer<>("mysql:8.4.4")
+                .withReuse(false);
         MY_SQL_CONTAINER.start();
     }
 

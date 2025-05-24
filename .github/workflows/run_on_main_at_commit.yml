@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   build:
@@ -19,7 +20,7 @@ jobs:
           cache: maven
       - name: Maven Verify
         run: |
-          mvn -f backend/pom.xml -B verify
+          mvn -f backend/pom.xml -B clean verify
       - name: Setup Node 22.9
         uses: actions/setup-node@v4
         with:
@@ -28,3 +29,8 @@ jobs:
         run: |
           npm install --prefix mobileapp --frozen-lockfile
           npm run lint --prefix mobileapp && npm run build --prefix mobileapp
+      - name: Dump Docker container logs
+        if: failure()
+        run: |
+          docker ps -a
+          docker logs $(docker ps -q --filter ancestor=mysql) || true
