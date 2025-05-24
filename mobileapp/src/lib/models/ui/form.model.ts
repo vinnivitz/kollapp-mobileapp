@@ -1,6 +1,6 @@
-import { ObjectSchema, type AnyObject } from 'yup';
-
 import type { ValidationResult } from '$lib/models/ui';
+
+import { type AnyObject, ObjectSchema } from 'yup';
 
 abstract class AbstractForm<T> {
 	abstract model: T;
@@ -13,9 +13,9 @@ abstract class AbstractForm<T> {
 export type FormActions<T = object> = {
 	applyValidationFeedback: (result: ValidationResult) => void;
 	applyValidationFeedbackByKey: (key: keyof T, result: ValidationResult) => void;
+	onSubmit: () => void;
 	onUpdate: (key: keyof T, value: T[keyof T]) => void;
 	resetModel: () => void;
-	onSubmit: () => void;
 };
 
 /**
@@ -23,17 +23,17 @@ export type FormActions<T = object> = {
  */
 export type FormConfig<T> = {
 	schema: ObjectSchema<AnyObject, T>;
-	onChange?: (key: keyof T, value: T[keyof T]) => void | Promise<void>;
-	onSubmit?: (model: T, result: ValidationResult) => void;
-	onTouched?: () => void;
-	onBlur?: (key: keyof T) => void;
-	exposedActions?: (actions: FormActions<T>) => void;
 	customValidators?: (
-		| ((model: T) => ValidationResult | Promise<ValidationResult>)
-		| (() => ValidationResult | Promise<ValidationResult>)
+		| (() => Promise<ValidationResult> | ValidationResult)
+		| ((model: T) => Promise<ValidationResult> | ValidationResult)
 	)[];
 	formatters?: { [K in keyof T]?: (value: T[K]) => T[K] };
 	parser?: { [K in keyof T]?: (value: T[K]) => Promise<T[K]> };
+	exposedActions?: (actions: FormActions<T>) => void;
+	onBlur?: (key: keyof T) => void;
+	onChange?: (key: keyof T, value: T[keyof T]) => void;
+	onSubmit?: (model: T, result: ValidationResult) => void;
+	onTouched?: () => void;
 };
 
 /**

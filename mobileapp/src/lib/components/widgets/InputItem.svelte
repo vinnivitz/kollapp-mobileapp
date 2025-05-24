@@ -1,46 +1,63 @@
 <script lang="ts">
-	import CustomItem from '$lib/components/widgets/CustomItem.svelte';
 	import type { Colors } from '$lib/models/ui';
 
-	let {
-		color,
-		iconSrc,
-		label,
-		name,
-		type = 'text',
-		value,
-		change
-	}: {
+	import CustomItem from '$lib/components/widgets/CustomItem.svelte';
+
+	type InputType = 'date' | 'email' | 'number' | 'password' | 'text';
+
+	type Properties = {
 		label: string;
 		name: string;
-		color?: Colors | undefined;
-		iconSrc?: string;
-		type?:
-			| 'number'
-			| 'search'
-			| 'text'
-			| 'tel'
-			| 'url'
-			| 'email'
-			| 'date'
-			| 'time'
-			| 'datetime-local'
-			| 'month'
-			| 'password'
-			| 'week'
-			| undefined;
-		value?: string | number | null | undefined;
+		card?: boolean;
+		color?: Colors;
+		disabled?: boolean;
+		helperText?: string;
+		icon?: string;
+		inputIcon?: string;
+		maxlength?: number;
+		type?: InputType;
+		value?: null | number | string;
 		change?: (value: string) => void;
-	} = $props();
+		inputIconClick?: () => void;
+	};
+
+	let {
+		card,
+		change,
+		color,
+		disabled,
+		helperText,
+		icon,
+		inputIcon,
+		inputIconClick,
+		label,
+		maxlength,
+		name,
+		type = 'text',
+		value
+	}: Properties = $props();
 </script>
 
-<CustomItem {color} {iconSrc}>
+<CustomItem {card} {color} {icon} iconEnd={inputIcon} iconClick={inputIconClick}>
 	<!-- svelte-ignore event_directive_deprecated -->
 	<ion-input
+		label-placement="floating"
+		{maxlength}
+		counter={!!maxlength}
 		{name}
 		{label}
-		{type}
+		type={type === 'date' ? 'text' : type}
 		{value}
+		{disabled}
+		helper-text={helperText}
 		on:ionInput={(event) => change?.(event.detail.value || '')}
-	></ion-input>
+	>
+	</ion-input>
 </CustomItem>
+
+<style>
+	ion-input {
+		--highlight-color-focused: var(--ion-color-secondary);
+		--color: var(--ion-color-dark);
+	}
+</style>

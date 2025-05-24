@@ -1,57 +1,50 @@
 <script lang="ts">
-	import { Layout } from '$lib/models/store';
-	import type { Colors } from '$lib/models/ui';
-	import { layoutStore } from '$lib/store';
+	import { type Colors } from '$lib/models/ui';
+
+	type Properties = {
+		classList?: string;
+		color?: Colors | undefined;
+		disabled?: boolean;
+		expand?: 'block' | 'full' | undefined;
+		fill?: 'clear' | 'default' | 'outline' | 'solid' | undefined;
+		icon?: string;
+		iconPosition?: 'end' | 'start';
+		iconSize?: 'large' | 'small' | undefined;
+		label?: string;
+		size?: 'default' | 'large' | 'small' | undefined;
+		type?: 'button' | 'reset' | 'submit';
+		click?: (event?: MouseEvent) => void;
+	} & ({ type: 'submit'; click?: never } | { type?: 'button' | 'reset'; click: (event?: MouseEvent) => void }) &
+		({ icon: string; label?: string } | { label: string; icon?: string });
 
 	let {
+		classList,
 		click,
-		label,
-		classProp,
 		color = 'secondary',
+		disabled,
 		expand,
 		fill,
-		size,
-		iconSrc,
-		iconSize = 'small',
+		icon,
 		iconPosition = 'start',
-		type,
-		disabled
-	}: {
-		click?: () => void | Promise<void>;
-		label: string;
-		color?: Colors | undefined;
-		expand?: 'full' | 'block' | undefined;
-		fill?: 'clear' | 'default' | 'outline' | 'solid' | undefined;
-		classProp?: string;
-		size?: 'default' | 'small' | 'large' | undefined;
-		iconSrc?: string;
-		iconSize?: 'small' | 'large' | undefined;
-		iconPosition?: 'start' | 'end';
-		type?: 'button' | 'submit' | 'reset';
-		disabled?: boolean;
-	} & (
-		| { type: 'submit'; click?: never }
-		| { type?: 'button' | 'reset'; click: () => void | Promise<void> }
-	) = $props();
+		iconSize,
+		label,
+		size,
+		type
+	}: Properties = $props();
 
-	const isMondernLayout = $derived($layoutStore === Layout.MODERN);
-	const isPlayfulLayout = $derived($layoutStore === Layout.PLAYFUL);
-	const shape = $derived(isPlayfulLayout ? 'round' : undefined);
 	const fontWeight = $derived(fill === 'outline' ? 'font-extrabold' : 'font-medium');
 </script>
 
+<!-- svelte-ignore a11y_click_events_have_key_events -->
 <ion-button
 	{color}
 	{expand}
 	{fill}
-	class={classProp}
-	class:squared={isMondernLayout}
+	class={classList}
 	{size}
-	{shape}
 	{type}
 	{disabled}
-	onclick={click}
-	onkeydown={(event) => event.key === 'Enter' && click?.()}
+	onclick={(event) => click?.(event)}
 	role="button"
 	tabindex="0"
 >
@@ -59,11 +52,15 @@
 </ion-button>
 
 {#snippet content()}
-	{#if iconSrc}
-		{#if iconPosition === 'start'}
-			{@render startIcon()}
+	{#if icon}
+		{#if label}
+			{#if iconPosition === 'start'}
+				{@render startIcon()}
+			{:else}
+				{@render endIcon()}
+			{/if}
 		{:else}
-			{@render endIcon()}
+			{@render iconOnly()}
 		{/if}
 	{/if}
 	{#if label}
@@ -74,15 +71,13 @@
 {/snippet}
 
 {#snippet startIcon()}
-	<ion-icon slot="start" icon={iconSrc} size={iconSize}></ion-icon>
+	<ion-icon slot="start" {icon} size={size === 'large' ? 'large' : iconSize}></ion-icon>
 {/snippet}
 
 {#snippet endIcon()}
-	<ion-icon slot="end" icon={iconSrc} size={iconSize}></ion-icon>
+	<ion-icon slot="end" {icon} size={size === 'large' ? 'large' : iconSize}></ion-icon>
 {/snippet}
 
-<style lang="postcss">
-	.squared {
-		--border-radius: 0;
-	}
-</style>
+{#snippet iconOnly()}
+	<ion-icon slot="icon-only" {icon} size={size === 'large' ? 'large' : iconSize}></ion-icon>
+{/snippet}

@@ -1,12 +1,12 @@
-import type { ValidationCode } from '$lib/api/models';
+import type { ValidationCode } from '$lib/models/api';
 
 /**
  * Validation model for form validation.
  */
 export type ValidationError = {
 	message: string;
-	field?: string;
 	code?: ValidationCode;
+	field?: string;
 };
 
 /**

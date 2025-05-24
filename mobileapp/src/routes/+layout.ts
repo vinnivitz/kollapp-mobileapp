@@ -1,20 +1,12 @@
+import type { LayoutLoad } from './$types';
+
 import { App, type URLOpenListenerEvent } from '@capacitor/app';
-import { get } from 'svelte/store';
 
 import { goto } from '$app/navigation';
 
-import type { LayoutLoad } from './$types';
-
-import { isAuthenticated } from '$lib/api/utils';
 import { PageRoute } from '$lib/models/routing';
-import {
-	authenticationStore,
-	connectionStore,
-	layoutStore,
-	organizationStore,
-	themeStore
-} from '$lib/store';
-import { navigateBack } from '$lib/utils';
+import { authenticationStore, connectionStore, layoutStore, themeStore } from '$lib/stores';
+import { isAuthenticated, navigateBack } from '$lib/utility';
 
 let initialized = false;
 
@@ -22,33 +14,25 @@ export const ssr = false;
 
 export const load: LayoutLoad = async ({ url }) => {
 	handleRouting(url.pathname, await isAuthenticated());
-
 	if (!initialized) {
 		initialized = true;
 		handleAppEvents();
-		initStores();
+		await initStores();
 	}
 };
 
 async function handleRouting(pathname: string, authenticated: boolean): Promise<void> {
 	const isAuthPath = pathname.startsWith('/auth');
 
-	if (!authenticated && !isAuthPath) {
+	if (authenticated && isAuthPath) {
+		goto(PageRoute.HOME);
+	} else if (!authenticated && !isAuthPath) {
 		goto(PageRoute.AUTH.LOGIN);
-	} else if (
-		authenticated &&
-		isAuthPath &&
-		!(pathname === PageRoute.AUTH.REGISTER_ORGANIZATION && !get(organizationStore))
-	) {
-		return goto(PageRoute.HOME);
 	}
 }
 
 async function initStores(): Promise<void> {
-	themeStore.init();
-	layoutStore.init();
-	connectionStore.init();
-	await authenticationStore.init();
+	await Promise.all([themeStore.init(), layoutStore.init(), connectionStore.init(), authenticationStore.init()]);
 }
 
 async function handleAppEvents(): Promise<void> {
@@ -67,7 +51,7 @@ async function handleAppEvents(): Promise<void> {
 	const originalConsoleError = console.error;
 
 	console.error = function (...arguments_) {
-		if (arguments_.length === 1 && arguments_[0] === 'tab with id: "undefined" does not exist') {
+		if (arguments_.length === 1 && `${arguments_[0]}`.includes('Tab with id: "undefined" does not exist')) {
 			return;
 		}
 

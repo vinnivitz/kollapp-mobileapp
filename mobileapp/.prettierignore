@@ -8,10 +8,13 @@ node_modules
 !.env.example
 vite.config.ts.timestamp-*
 /test-results
+/coverage
 /docs
 /assets
 /icons
 /static
+/src/lib/locales/de.json
+/src/lib/locales/en.json
 
 # Ignore lock file
 pnpm-lock.yaml

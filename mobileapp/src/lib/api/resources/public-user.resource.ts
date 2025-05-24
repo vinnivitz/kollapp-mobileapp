@@ -1,6 +1,7 @@
-import type { EmailDto, RegisterDto, ResetPasswordDto } from '$lib/api/dto/client';
-import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/api/models';
-import { customFetch } from '$lib/api/utils';
+import type { RegisterDto, ResetPasswordConfirmationDto, ResetPasswordDto } from '$lib/api/dto/client/auth';
+
+import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/models/api';
+import { customFetch } from '$lib/utility';
 
 const ENDPOINT = 'public/user';
 
@@ -9,12 +10,11 @@ const ENDPOINT = 'public/user';
  * @param model registration model
  * @returns {Promise<ResponseBody>} response body
  */
-export async function registerManager(model: RegisterDto): Promise<ResponseBody> {
-	return customFetch(`${ENDPOINT}/manager-signup`, {
-		method: RequestMethod.POST,
-		body: JSON.stringify(model),
+export async function register(model: RegisterDto): Promise<ResponseBody> {
+	return customFetch(`${ENDPOINT}/signup`, {
 		authorizationType: AuthorizationType.NONE,
-		silentOnSuccess: false
+		body: JSON.stringify(model),
+		method: RequestMethod.POST
 	});
 }
 
@@ -23,11 +23,11 @@ export async function registerManager(model: RegisterDto): Promise<ResponseBody>
  * @param model email model
  * @returns {Promise<ResponseBody>} response body
  */
-export async function forgotPassword(model: EmailDto): Promise<ResponseBody> {
+export async function forgotPassword(model: ResetPasswordDto): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/forgot-password`, {
-		method: RequestMethod.POST,
+		authorizationType: AuthorizationType.NONE,
 		body: JSON.stringify(model),
-		authorizationType: AuthorizationType.NONE
+		method: RequestMethod.POST
 	});
 }
 
@@ -36,12 +36,12 @@ export async function forgotPassword(model: EmailDto): Promise<ResponseBody> {
  * @param model password reset model
  * @returns {Promise<ResponseBody>} response body
  */
-export async function resetPassword(model: ResetPasswordDto, token: string): Promise<ResponseBody> {
+export async function resetPassword(model: ResetPasswordConfirmationDto, token: string): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/reset-password`, {
-		query: { token },
-		method: RequestMethod.POST,
+		authorizationType: AuthorizationType.NONE,
 		body: JSON.stringify(model),
-		authorizationType: AuthorizationType.NONE
+		method: RequestMethod.POST,
+		query: { token }
 	});
 }
 
@@ -50,10 +50,10 @@ export async function resetPassword(model: ResetPasswordDto, token: string): Pro
  * @param model email model
  * @returns {Promise<ResponseBody>}	response body
  */
-export async function resendConfirmation(model: EmailDto): Promise<ResponseBody> {
-	return customFetch(`${ENDPOINT}/resend-confirmation`, {
-		method: RequestMethod.POST,
+export async function resendConfirmation(model: ResetPasswordConfirmationDto): Promise<ResponseBody> {
+	return customFetch(`${ENDPOINT}/confirmation`, {
+		authorizationType: AuthorizationType.NONE,
 		body: JSON.stringify(model),
-		authorizationType: AuthorizationType.NONE
+		method: RequestMethod.POST
 	});
 }

@@ -28,7 +28,7 @@ jobs:
       - name: NPM Build
         run: |
           npm install --prefix mobileapp --frozen-lockfile
-          npm run lint --prefix mobileapp && npm run build --prefix mobileapp
+          npm run lint --prefix mobileapp && npm run test && npm run build --prefix mobileapp
       - name: Dump Docker container logs
         if: failure()
         run: |

@@ -1,9 +1,10 @@
 import js from '@eslint/js';
 import prettier from 'eslint-config-prettier';
 import importPlugin from 'eslint-plugin-import';
+import perfectionistPlugin from 'eslint-plugin-perfectionist';
 import securityPlugin from 'eslint-plugin-security';
+import sonarjsPlugin from 'eslint-plugin-sonarjs';
 import sveltePlugin from 'eslint-plugin-svelte';
-import tailwindcssPlugin from 'eslint-plugin-tailwindcss';
 import unicornPlugin from 'eslint-plugin-unicorn';
 import globals from 'globals';
 import ts from 'typescript-eslint';
@@ -15,43 +16,95 @@ export default ts.config(
 	prettier,
 	sveltePlugin.configs['flat/prettier'],
 	securityPlugin.configs.recommended,
-	tailwindcssPlugin.configs['flat/recommended'],
-	unicornPlugin.configs['flat/recommended'],
+	unicornPlugin.configs.recommended,
+	sonarjsPlugin.configs.recommended,
 	{
 		plugins: {
-			import: importPlugin
+			import: importPlugin,
+			perfectionist: perfectionistPlugin
+		},
+		rules: {
+			'@typescript-eslint/explicit-function-return-type': [
+				'error',
+				{
+					allowExpressions: true,
+					allowTypedFunctionExpressions: true
+				}
+			],
+			'@typescript-eslint/no-unused-vars': [
+				'error',
+				{
+					argsIgnorePattern: '^_'
+				}
+			],
+			'import/no-duplicates': 'error',
+			'import/order': [
+				'error',
+				{
+					alphabetize: {
+						caseInsensitive: true,
+						order: 'asc'
+					},
+
+					groups: ['type', 'builtin', 'external', 'internal', ['parent', 'sibling'], 'index'],
+
+					'newlines-between': 'always',
+					pathGroups: [
+						{
+							group: 'internal',
+							pattern: '$app/**',
+							position: 'after'
+						}
+					],
+
+					pathGroupsExcludedImportTypes: ['builtin']
+				}
+			],
+			'no-restricted-imports': [
+				'error',
+				{
+					patterns: [
+						{
+							group: [
+								'$lib/models/models/*',
+								'$lib/models/ui/*',
+								'$lib/models/routing/*',
+								'$lib/models/api/*',
+								'$lib/models/preferences/*',
+								'$lib/models/stores/*',
+								'$lib/utils/*',
+								'$lib/stores/*'
+							],
+							message: 'Please import from the index file.'
+						}
+					]
+				}
+			],
+			'perfectionist/sort-array-includes': 'error',
+			'perfectionist/sort-enums': 'error',
+			'perfectionist/sort-exports': 'error',
+			'perfectionist/sort-named-exports': 'error',
+			'perfectionist/sort-named-imports': 'error',
+			'perfectionist/sort-object-types': [
+				'error',
+				{ groups: ['required-property', 'optional-property', 'required-method', 'optional-method'] }
+			],
+			'perfectionist/sort-objects': 'error',
+			'perfectionist/sort-union-types': 'error',
+			'security/detect-non-literal-fs-filename': 'off',
+			'sonarjs/no-unused-collection': 'off',
+			'sonarjs/no-use-of-empty-return-value': 'off',
+			'sonarjs/slow-regex': 'off',
+			'sonarjs/void-use': 'off',
+			'svelte/no-unused-svelte-ignore': 'off',
+			'svelte/prefer-writable-derived': 'off',
+			'svelte/valid-compile': 'off',
+			'unicorn/filename-case': 'off'
 		},
 		settings: {
 			'import/parsers': {
 				'@typescript-eslint/parser': ['.ts', '.svelte']
 			}
-		},
-		rules: {
-			'import/order': [
-				'error',
-				{
-					groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
-
-					pathGroups: [
-						{
-							pattern: '$app/**',
-							group: 'internal',
-							position: 'after'
-						}
-					],
-
-					pathGroupsExcludedImportTypes: ['builtin'],
-					'newlines-between': 'always',
-
-					alphabetize: {
-						order: 'asc',
-						caseInsensitive: true
-					}
-				}
-			],
-			'unicorn/filename-case': 'off',
-			'svelte/no-unused-svelte-ignore': 'off',
-			'security/detect-non-literal-fs-filename': 'off'
 		}
 	},
 	{
@@ -59,10 +112,16 @@ export default ts.config(
 			globals: {
 				...globals.browser,
 				...globals.node,
-				HTMLIonTabsElement: 'readonly',
-				HTMLIonRefresherElement: 'readonly',
+				HTMLIonCardElement: 'readonly',
+				HTMLIonCardTitleElement: 'readonly',
+				HTMLIonDatetimeElement: 'readonly',
 				HTMLIonLoadingElement: 'readonly',
-				HTMLIonMenuElement: 'readonly'
+				HTMLIonMenuElement: 'readonly',
+				HTMLIonRefresherElement: 'readonly',
+				HTMLIonSearchbarElement: 'readonly',
+				HTMLIonTabsElement: 'readonly',
+				HTMLIonToggleElement: 'readonly',
+				NodeListOf: 'readonly'
 			}
 		}
 	},
@@ -87,7 +146,11 @@ export default ts.config(
 			'test-results/',
 			'.env',
 			'vite.config.ts.*',
-			'static/'
+			'static/*',
+			'coverage/',
+			'src/lib/locales/de.json',
+			'src/lib/locales/en.json',
+			'coverage/'
 		]
 	}
 );

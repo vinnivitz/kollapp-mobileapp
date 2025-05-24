@@ -1,70 +1,91 @@
 <script lang="ts">
-	import { onDestroy, type Snippet } from 'svelte';
+	import { accessibilityOutline, diamondOutline, personOutline } from 'ionicons/icons';
+	import { type Snippet } from 'svelte';
 	import { fade } from 'svelte/transition';
 
-	import { navigating } from '$app/stores';
+	import { dev } from '$app/environment';
 
-	import Header from './Header.svelte';
-	import Menu from './Menu.svelte';
+	import Header from '$lib/components/layout/Header.svelte';
+	import Menu from '$lib/components/layout/Menu.svelte';
+	import LabeledItem from '$lib/components/widgets/LabeledItem.svelte';
+	import { t } from '$lib/locales';
+	import { PageRoute } from '$lib/models/routing';
+	import { initializationStore, organizationStore, userStore } from '$lib/stores';
 
-	let {
-		title,
-		children,
-		showBackButton = false,
-		onRefresh,
-		loading = false,
-		hideLayout = false,
-		hideMenu = false
-	}: {
+	type Properties = {
 		title: string;
 		children?: Snippet;
-		showBackButton?: boolean;
-		onRefresh?: (refresher: HTMLIonRefresherElement) => void;
-		loading?: boolean;
 		hideLayout?: boolean;
 		hideMenu?: boolean;
-	} = $props();
+		scrollable?: boolean;
+		showBackButton?: boolean;
+		onRefresh?: () => Promise<void>;
+	};
 
-	let navigationDebounced = $state(false);
-	let navigationTimeout: ReturnType<typeof setTimeout>;
+	let {
+		children,
+		hideLayout = false,
+		hideMenu = false,
+		onRefresh,
+		scrollable = true,
+		showBackButton = false,
+		title
+	}: Properties = $props();
+
+	const loading = $derived(!$initializationStore);
+
 	let refresher = $state<HTMLIonRefresherElement | undefined>();
+	let menuComponent = $state<ReturnType<typeof Menu>>();
 
-	$effect(() => {
-		if ($navigating || loading) {
-			navigationDebounced = false;
-			navigationTimeout = setTimeout(() => (navigationDebounced = true), 100);
-		}
-	});
+	async function navigate(route: string): Promise<void> {
+		menuComponent?.navigate(route);
+	}
 
-	onDestroy(() => {
-		if (navigationTimeout) {
-			clearTimeout(navigationTimeout);
-		}
-	});
+	async function doRefresh(): Promise<void> {
+		await (onRefresh ? onRefresh() : Promise.all([userStore.init(), organizationStore.init()]));
+		refresher?.complete();
+	}
 </script>
 
 {#if !hideLayout && !hideMenu}
-	<Menu></Menu>
+	<Menu bind:this={menuComponent}>
+		<ion-list>
+			<LabeledItem
+				transparent
+				click={() => navigate(PageRoute.ACCOUNT.ROOT)}
+				icon={personOutline}
+				label={$t('components.layout.header.button.account')}
+			/>
+			<LabeledItem
+				transparent
+				click={() => navigate(PageRoute.ORGANIZATION.ROOT)}
+				icon={accessibilityOutline}
+				label={$t('components.layout.menu.list.organization')}
+			/>
+			{#if dev}
+				<LabeledItem transparent icon={diamondOutline} click={() => navigate('/showcase')} label="Showcase" />
+			{/if}
+		</ion-list>
+	</Menu>
 {/if}
 
 <div class="ion-page" id="menu">
 	{#if !hideLayout}
 		<Header {title} {showBackButton}></Header>
 	{/if}
-	{#if ($navigating || loading) && navigationDebounced}
-		<ion-progress-bar type="indeterminate"></ion-progress-bar>
-	{/if}
-	<ion-content class="ion-padding" in:fade={{ duration: 200, delay: 0 }}>
-		{#if onRefresh}
+	{#if !loading}
+		<ion-content class="ion-padding" in:fade={{ delay: 0, duration: 200 }} class:no-overflow={!scrollable}>
 			<!-- svelte-ignore event_directive_deprecated -->
-			<ion-refresher
-				bind:this={refresher}
-				slot="fixed"
-				on:ionRefresh={() => refresher && onRefresh?.(refresher)}
-			>
+			<ion-refresher bind:this={refresher} slot="fixed" on:ionRefresh={doRefresh}>
 				<ion-refresher-content></ion-refresher-content>
 			</ion-refresher>
-		{/if}
-		{@render children?.()}
-	</ion-content>
+			{@render children?.()}
+		</ion-content>
+	{/if}
 </div>
+
+<style>
+	ion-content.no-overflow {
+		--overflow: hidden;
+	}
+</style>

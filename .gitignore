@@ -3,12 +3,21 @@
 .vscode
 *.iml
 
+# Env
+.env
+.env.*
+!.env.example
+!.env.test
+
+# Backend
 /backend/**/target
+/backend/db
 
-/mobileapp/test-results
+# Mobile App
 /mobileapp/node_modules
+/mobileapp/test-results
+/mobileapp/coverage
 
-# Output
 /mobileapp/.output
 /mobileapp/.vercel
 /mobileapp/.svelte-kit
@@ -17,30 +26,19 @@
 /mobileapp/docs
 /mobileapp/visualize
 
-# OS
 /mobileapp/.DS_Store
 /mobileapp/Thumbs.db
 
-# Env
-.env
-.env.*
-!.env.example
-!.env.test
-
-# Vite
 /mobileapp/vite.config.js.timestamp-*
 /mobileapp/vite.config.ts.timestamp-*
 
-/mobileapp/*storybook.log
-
-# android and ios
 /mobileapp/android
 /mobileapp/ios
 
-# database
-/backend/db
+/mobileapp/src/lib/locales/de.json
+/mobileapp/src/lib/locales/en.json
 
-# Flutter
+# Web App
 /webapp/.dart_tool/
 /webapp/.flutter-plugins
 /webapp/.flutter-plugins-dependencies

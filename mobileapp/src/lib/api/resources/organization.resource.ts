@@ -1,16 +1,31 @@
-import type { RegisterOrganizationDto, UpdateOrganizationDto } from '$lib/api/dto/client';
-import type { OrganizationDto } from '$lib/api/dto/server';
-import { RequestMethod, type ResponseBody } from '$lib/api/models';
-import { customFetch } from '$lib/api/utils';
+import type {
+	CreateActivityDto,
+	RegisterOrganizationDto,
+	UpdateActivityDto,
+	UpdateOrganizationDto
+} from '$lib/api/dto/client/organization';
+import type { ActivityDto, OrganizationDto } from '$lib/api/dto/server';
+
+import { RequestMethod, type ResponseBody } from '$lib/models/api';
+import { customFetch } from '$lib/utility';
 
 const ENDPOINT = 'organization';
 
 /**
- * Retrieves the organization information.
- * @returns {Promise<ResponseBody<OrganizationDto>>} The organization information.
+ * Retrieves the organization by id.
+ * @param id The organization id.
+ * @returns {Promise<ResponseBody<OrganizationDto>>} The organization.
  */
-export function getOrganization(): Promise<ResponseBody<OrganizationDto>> {
-	return customFetch(`${ENDPOINT}`, { silentOnError: true });
+export async function getById(id: number): Promise<ResponseBody<OrganizationDto>> {
+	return customFetch(`${ENDPOINT}/${id}`, { silentOnSuccess: true });
+}
+
+/**
+ * Retrieves the organizations of the logged in user.
+ * @returns {Promise<ResponseBody<OrganizationDto[]>>} The organizations.
+ */
+export async function getAll(): Promise<ResponseBody<OrganizationDto[]>> {
+	return customFetch(`${ENDPOINT}`, { silentOnSuccess: true });
 }
 
 /**
@@ -18,10 +33,10 @@ export function getOrganization(): Promise<ResponseBody<OrganizationDto>> {
  * @param model The organization information.
  * @returns {Promise<ResponseBody>} The response body.
  */
-export function createOrganization(model: RegisterOrganizationDto): Promise<ResponseBody> {
+export async function create(model: RegisterOrganizationDto): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}`, {
-		method: RequestMethod.POST,
-		body: JSON.stringify(model)
+		body: JSON.stringify(model),
+		method: RequestMethod.POST
 	});
 }
 
@@ -30,21 +45,82 @@ export function createOrganization(model: RegisterOrganizationDto): Promise<Resp
  * @param model	The organization information.
  * @returns {Promise<ResponseBody>} The response body.
  */
-export function updateOrganization(model: UpdateOrganizationDto): Promise<ResponseBody> {
-	return customFetch(`${ENDPOINT}`, {
-		method: RequestMethod.PUT,
+export async function update(id: number, model: UpdateOrganizationDto): Promise<ResponseBody> {
+	return customFetch(`${ENDPOINT}/${id}`, {
 		body: JSON.stringify(model),
-		silentOnSuccess: false
+		method: RequestMethod.PUT
 	});
 }
 
 /**
- * Deletes the organization.
+ * Deletes user from the organization.
  * @returns {Promise<ResponseBody>} The response body.
  */
-export function deleteOrganization(): Promise<ResponseBody> {
+export async function leaveOrganization(): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}`, {
-		method: RequestMethod.DELETE,
-		silentOnSuccess: false
+		method: RequestMethod.DELETE
+	});
+}
+
+/**
+ * Removes user from the organization.
+ * @param userId The user id.
+ * @returns {Promise<ResponseBody>} The response body.
+ */
+export async function removeUserFromOrganization(userId: number): Promise<ResponseBody> {
+	return customFetch(`${ENDPOINT}/person/${userId}`, {
+		method: RequestMethod.DELETE
+	});
+}
+
+/**
+ * Retrieves the organization activities.
+ * @param organizationId The organization id.
+ * @returns {Promise<ResponseBody<ActivityDto[]>>} The organization activities.
+ */
+export async function getActivities(organizationId: number): Promise<ResponseBody<ActivityDto[]>> {
+	return customFetch(`${ENDPOINT}/${organizationId}/activities`, { silentOnSuccess: true });
+}
+
+/**
+ * Creates a new activity for the given organization.
+ * @param organizationId id of the organization
+ * @param model activity model
+ * @returns {Promise<ResponseBody>} response body
+ */
+export async function createActivity(organizationId: number, model: CreateActivityDto): Promise<ResponseBody> {
+	return customFetch(`${ENDPOINT}/${organizationId}/activity`, {
+		body: JSON.stringify(model),
+		method: RequestMethod.POST
+	});
+}
+
+/**
+ * Updates the activity of the given organization.
+ * @param organizationId id of the organization
+ * @param activityId id of the activity
+ * @param model activity model
+ * @returns {Promise<ResponseBody>} response body
+ */
+export async function updateActivity(
+	organizationId: number,
+	activityId: number,
+	model: UpdateActivityDto
+): Promise<ResponseBody> {
+	return customFetch(`${ENDPOINT}/${organizationId}/activity/${activityId}`, {
+		body: JSON.stringify(model),
+		method: RequestMethod.POST
+	});
+}
+
+/**
+ * Deletes the activity of the given organization.
+ * @param organizationId id of the organization
+ * @param activityId id of the activity
+ * @returns {Promise<ResponseBody>} response body
+ */
+export async function deleteActivity(organizationId: number, activityId: number): Promise<ResponseBody> {
+	return customFetch(`${ENDPOINT}/${organizationId}/activity/${activityId}`, {
+		method: RequestMethod.DELETE
 	});
 }

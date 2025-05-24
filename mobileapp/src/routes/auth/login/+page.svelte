@@ -1,74 +1,90 @@
 <script lang="ts">
-	import { loadingController } from 'ionic-svelte';
-	import { keyOutline, logInOutline, personOutline } from 'ionicons/icons';
+	import type { AuthenticationModel } from '$lib/models/models';
 
+	import { loadingController } from 'ionic-svelte';
+	import { fingerPrintOutline, keyOutline, logInOutline, personOutline } from 'ionicons/icons';
+	import { onMount } from 'svelte';
+
+	import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
 
-	import { apiResources } from '$lib/api';
-	import { loginSchema, type LoginDto } from '$lib/api/dto/client';
-	import { ValidationCode } from '$lib/api/models';
-	import { getValidationResult } from '$lib/api/utils';
+	import { type LoginDto, loginSchema } from '$lib/api/dto/client/auth';
+	import { authResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/Button.svelte';
 	import Card from '$lib/components/widgets/Card.svelte';
 	import InputItem from '$lib/components/widgets/InputItem.svelte';
 	import Welcome from '$lib/components/widgets/Welcome.svelte';
-	import environment from '$lib/environment';
 	import { t } from '$lib/locales';
+	import { ValidationCode } from '$lib/models/api';
 	import { PreferencesKey } from '$lib/models/preferences';
 	import { PageRoute } from '$lib/models/routing';
-	import type { AuthenticationModel } from '$lib/models/store';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
-	import { authenticationStore } from '$lib/store';
-	import { customForm, showAlert, storeValue } from '$lib/utils';
+	import { authenticationStore } from '$lib/stores';
+	import {
+		customForm,
+		getStoredValue,
+		getValidationResult,
+		isBiometricAvailable,
+		isBiometricEnabled,
+		requestBiometricAuthentication,
+		showAlert
+	} from '$lib/utility';
 
 	const model = loginSchema().cast({}) as LoginDto;
-	let validationResult: ValidationResult;
 	let actions: FormActions<LoginDto>;
 	let emailNotConfirmed = $state(false);
 
 	const config: FormConfig<LoginDto> = {
-		schema: loginSchema(),
+		exposedActions: (exposedActions) => (actions = exposedActions),
 		onSubmit,
-		exposedActions: (exposedActions) => (actions = exposedActions)
+		schema: loginSchema()
 	};
 
 	const form = new Form(model, config);
 
+	onMount(() => performBiometricVerification());
+
+	async function performBiometricVerification(): Promise<void> {
+		if (dev || !(await isBiometricAvailable()) || !(await isBiometricEnabled()) || $authenticationStore) return;
+
+		const credentials = await requestBiometricAuthentication();
+		if (credentials) {
+			const model: LoginDto = {
+				password: credentials.password,
+				username: credentials.username
+			};
+			const result: ValidationResult = { valid: true };
+			await onSubmit(model, result);
+		}
+	}
+
 	async function onSubmit(model: LoginDto, result: ValidationResult): Promise<void> {
-		validationResult = result;
-		if (validationResult.valid) {
+		if (result.valid) {
 			const loading = await loadingController.create({});
 			await loading.present();
-			const body = await apiResources.auth.login(model);
-			validationResult = getValidationResult(body);
-			if (validationResult.valid) {
-				await storeValue(PreferencesKey.LOCAL_USER, false);
+			const body = await authResource.login(model);
+			result = getValidationResult(body);
+			if (result.valid) {
 				const authenticationModel: AuthenticationModel = {
 					accessToken: body.data.accessToken,
 					refreshToken: body.data.refreshToken
 				};
 				await handleLogin(authenticationModel);
 			} else {
-				if (validationResult.errors?.[0].code === ValidationCode.EMAIL_NOT_CONFIRMED) {
+				if (result.errors?.[0]?.code === ValidationCode.EMAIL_NOT_CONFIRMED) {
 					emailNotConfirmed = true;
 					showAlert($t('routes.auth.login.alert.email-not-confirmed'));
 				}
-				actions.applyValidationFeedback(validationResult);
+				actions.applyValidationFeedback(result);
 			}
 			await loading.dismiss();
 		}
 	}
 
-	async function localSignin(): Promise<void> {
-		await storeValue(PreferencesKey.LOCAL_USER, true);
-		const model: AuthenticationModel = { accessToken: 'local', refreshToken: 'local' };
-		await handleLogin(model);
-	}
-
 	async function handleLogin(model: AuthenticationModel): Promise<void> {
 		await authenticationStore.set(model);
-		await goto(PageRoute.HOME);
+		return goto(PageRoute.HOME);
 	}
 </script>
 
@@ -77,46 +93,45 @@
 		<Welcome />
 	</div>
 	<Card>
-		<form use:customForm={form}>
-			<InputItem
-				name="username"
-				label={$t('routes.auth.login.form.input.username')}
-				iconSrc={personOutline}
-			/>
-			<InputItem
-				name="password"
-				type="password"
-				label={$t('routes.auth.login.form.input.password')}
-				iconSrc={keyOutline}
-			/>
-			<Button
-				classProp="mt-3"
-				expand="block"
-				type="submit"
-				label={$t('routes.auth.login.form.submit')}
-				iconSrc={logInOutline}
-			/>
-		</form>
-		{#if emailNotConfirmed}
-			<Card click={() => goto(PageRoute.AUTH.RESEND_CONFIRMATION)} classProp="text-center">
-				{$t('routes.auth.login.resend-confirmation.text')}
-				<ion-text color="tertiary">{$t('routes.auth.login.resend-confirmation.link')}</ion-text>
-			</Card>
-		{/if}
-		<Card click={() => goto(PageRoute.AUTH.REGISTER)} classProp="text-center">
-			{$t('routes.auth.login.register.text')}
-			<ion-text color="tertiary">{$t('routes.auth.login.register.link')}</ion-text>
-		</Card>
-		<Card click={() => goto(PageRoute.AUTH.RESET_PASSWORD)} classProp="text-center">
-			{$t('routes.auth.login.forgot-password.text')}
-			<ion-text color="tertiary">{$t('routes.auth.login.forgot-password.link')}</ion-text>
-		</Card>
+		{@render loginForm()}
 	</Card>
-	{#if environment.localUser}
-		<Card title={$t('routes.auth.login.card.dev.title')}>
-			<div class="text-center">
-				<Button click={localSignin} label={$t('routes.auth.login.card.dev.button')} />
-			</div>
+</Layout>
+
+{#snippet loginForm()}
+	<form use:customForm={form}>
+		<InputItem name="username" label={$t('routes.auth.login.form.input.username')} icon={personOutline} />
+		<InputItem name="password" type="password" label={$t('routes.auth.login.form.input.password')} icon={keyOutline} />
+		<Button
+			classList="mt-3"
+			expand="block"
+			type="submit"
+			label={$t('routes.auth.login.form.submit')}
+			icon={logInOutline}
+		/>
+	</form>
+	{#if emailNotConfirmed}
+		<Card click={() => goto(PageRoute.AUTH.RESEND_CONFIRMATION)} classList="text-center">
+			{$t('routes.auth.login.resend-confirmation.text')}
+			<ion-text color="secondary">{$t('routes.auth.login.resend-confirmation.link')}</ion-text>
 		</Card>
 	{/if}
-</Layout>
+	{#await getStoredValue(PreferencesKey.BIOMETRICS_ENABLED) then enabled}
+		{#if enabled}
+			<Button
+				fill="outline"
+				expand="block"
+				icon={fingerPrintOutline}
+				label={$t('routes.auth.login.biometrics')}
+				click={performBiometricVerification}
+			/>
+		{/if}
+	{/await}
+	<Card color="light" click={() => goto(PageRoute.AUTH.REGISTER)} classList="text-center">
+		{$t('routes.auth.login.register.text')}
+		<ion-text color="secondary">{$t('routes.auth.login.register.link')}</ion-text>
+	</Card>
+	<Card color="light" click={() => goto(PageRoute.AUTH.RESET_PASSWORD)} classList="text-center">
+		{$t('routes.auth.login.forgot-password.text')}
+		<ion-text color="secondary">{$t('routes.auth.login.forgot-password.link')}</ion-text>
+	</Card>
+{/snippet}

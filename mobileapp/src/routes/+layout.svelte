@@ -1,72 +1,57 @@
 <script lang="ts">
-	import '../app.pcss';
+	import '../app.css';
 	import 'ionic-svelte/components/all';
-	import { defineCustomElements } from '@ionic/pwa-elements/loader';
-	import { loadingController, setupIonicBase } from 'ionic-svelte';
-	import { home, cash, person } from 'ionicons/icons';
-	import { onDestroy, onMount } from 'svelte';
+	import 'leaflet/dist/leaflet.css';
 
-	import { goto } from '$app/navigation';
+	import type { TabConfig } from '$lib/models/ui';
+
+	import { SplashScreen } from '@capacitor/splash-screen';
+	import { defineCustomElements } from '@ionic/pwa-elements/loader';
+	import { setupIonicBase } from 'ionic-svelte';
+	import { accessibility, home, person } from 'ionicons/icons';
+	import { onMount } from 'svelte';
 
 	import Tabs from '$lib/components/layout/Tabs.svelte';
-	import { t } from '$lib/locales';
+	import { initialized, t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
-	import type { TabConfig } from '$lib/models/ui';
-	import { authenticationStore, localeStore, organizationStore, userStore } from '$lib/store';
+	import { authenticationStore, layoutStore, localeStore, organizationStore, userStore } from '$lib/stores';
 
 	let { children } = $props();
 
-	let loadingSpinner: HTMLIonLoadingElement | undefined;
-	let loadingTimeout: ReturnType<typeof setTimeout>;
 	let tabs = $state<TabConfig[] | undefined>();
 	let loaded = $state(false);
-	let isAuthenticated = $state(false);
-
-	$effect(() => {
-		if (loaded) {
-			if ($authenticationStore) {
-				userStore.init();
-				organizationStore.init().then(() => {
-					if (!$organizationStore) {
-						goto(PageRoute.AUTH.REGISTER_ORGANIZATION);
-					}
-				});
-				isAuthenticated = true;
-			} else {
-				isAuthenticated = false;
-			}
-		}
-	});
 
 	setupIonicBase();
 
-	onMount(async () => {
-		loadingTimeout = setTimeout(async () => {
-			if (!loaded) {
-				loadingSpinner = await loadingController.create({});
-				await loadingSpinner.present();
-			}
-		}, 100);
-		await Promise.all([defineCustomElements(globalThis as unknown as Window), localeStore.init()]);
-		tabs = [
-			{ label: $t('common.page-routes.home'), icon: home, tab: PageRoute.HOME },
-			{
-				label: $t('common.page-routes.finances'),
-				icon: cash,
-				tab: PageRoute.FINANCES
-			},
-			{ label: $t('common.page-routes.account'), icon: person, tab: PageRoute.ACCOUNT.ROOT }
-		];
-		loaded = true;
-		if (loadingSpinner) {
-			await loadingSpinner.dismiss();
+	$effect(() => {
+		if (loaded && $authenticationStore) {
+			initStores();
 		}
 	});
 
-	onDestroy(() => {
-		if (loadingTimeout) {
-			clearTimeout(loadingTimeout);
+	$effect(() => {
+		if (loaded && initialized) {
+			tabs = [
+				{ icon: home, label: $t('common.page-routes.home'), tab: PageRoute.HOME },
+				{
+					icon: accessibility,
+					label: $t('common.page-routes.organization'),
+					tab: PageRoute.ORGANIZATION.ROOT
+				},
+				{ icon: person, label: $t('common.page-routes.account'), tab: PageRoute.ACCOUNT.ROOT }
+			];
 		}
+	});
+
+	async function initStores(): Promise<void> {
+		await userStore.init();
+		organizationStore.init();
+	}
+
+	onMount(async () => {
+		await Promise.all([defineCustomElements(globalThis as unknown as Window), localeStore.init()]);
+		loaded = true;
+		await SplashScreen.hide();
 	});
 </script>
 
@@ -74,14 +59,16 @@
 	<title>Kollapp - Die Kollektiv App</title>
 </svelte:head>
 
-<ion-app>
-	{#if loaded}
-		{#if isAuthenticated && tabs}
-			<Tabs {tabs}>
+{#key $layoutStore}
+	<ion-app>
+		{#if loaded}
+			{#if $authenticationStore && tabs}
+				<Tabs {tabs}>
+					{@render children?.()}
+				</Tabs>
+			{:else}
 				{@render children?.()}
-			</Tabs>
-		{:else}
-			{@render children?.()}
+			{/if}
 		{/if}
-	{/if}
-</ion-app>
+	</ion-app>
+{/key}

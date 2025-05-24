@@ -1,35 +1,40 @@
 <script lang="ts">
-	import CustomItem from '$lib/components/widgets/CustomItem.svelte';
+	import type { UserRole } from '$lib/models/api';
 	import type { Colors } from '$lib/models/ui';
 
-	let {
-		label,
-		click,
-		detail = false,
-		color = 'light',
-		iconSrc,
-		transparent = false,
-		searchable
-	}: {
+	import CustomItem from '$lib/components/widgets/CustomItem.svelte';
+
+	type Properties = {
 		label: string;
-		detail?: boolean;
+		accessible?: UserRole[];
+		card?: boolean;
+		classList?: string;
 		color?: Colors | undefined;
-		iconSrc?: string;
-		transparent?: boolean;
-		button?: boolean;
+		icon?: string;
 		searchable?: string;
-	} & (
-		| { searchable: string; click: () => void | Promise<void> }
-		| { searchable?: string; click?: () => void | Promise<void> }
-	) = $props();
+		transparent?: boolean;
+	} & ({ searchable: string; click: () => void } | { searchable?: string; click?: () => void });
+
+	let {
+		accessible,
+		card,
+		classList,
+		click,
+		color = 'light',
+		icon,
+		label,
+		searchable,
+		transparent = false
+	}: Properties = $props();
 
 	// workaround to avoid reference linting error
 	void searchable;
+	void accessible;
 
 	const labelColor = $derived(color === 'light' || color === 'white' ? 'dark' : 'white');
 </script>
 
-<CustomItem button={!!click} {click} {color} {detail} {transparent} {iconSrc}>
+<CustomItem {click} {card} {color} {transparent} {icon} {classList}>
 	{#if label}
 		<ion-label class="ms-4" color={labelColor}>{label}</ion-label>
 	{/if}

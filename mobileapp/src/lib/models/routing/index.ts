@@ -1,1 +1,2 @@
-export * from './page-route.model';
+export * from './page-route-paths.type';
+export * from './page-route.type';

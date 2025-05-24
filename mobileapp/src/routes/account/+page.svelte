@@ -1,18 +1,18 @@
 <script lang="ts">
 	import type { ActionSheetButton } from '@ionic/core';
+
 	import { actionSheetController } from 'ionic-svelte';
 	import {
-		balloonOutline,
+		buildOutline,
 		colorPaletteOutline,
 		colorWandOutline,
 		contrastOutline,
 		desktopOutline,
-		diamondOutline,
-		gridOutline,
-		keyOutline,
 		languageOutline,
+		lockClosedOutline,
+		logoAndroid,
+		logoApple,
 		moonOutline,
-		personOutline,
 		refreshOutline,
 		sunnyOutline,
 		trashOutline
@@ -23,17 +23,16 @@
 
 	import LayoutComponent from '$lib/components/layout/Layout.svelte';
 	import LabeledItem from '$lib/components/widgets/LabeledItem.svelte';
-	import { t } from '$lib/locales';
+	import { Locale, t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
-	import { Layout, Locale, Theme } from '$lib/models/store';
-	import { localeStore, themeStore } from '$lib/store';
-	import { layoutStore } from '$lib/store/layout.store';
+	import { Layout, Theme } from '$lib/models/ui';
+	import { layoutStore, localeStore, themeStore } from '$lib/stores';
 
 	async function openActionSheet(header: string, buttons: ActionSheetButton[]): Promise<void> {
 		const actionsheet = await actionSheetController.create({
-			translucent: true,
+			buttons,
 			header,
-			buttons
+			translucent: true
 		});
 
 		await actionsheet.present();
@@ -44,16 +43,16 @@
 
 		await openActionSheet($t('routes.account.language.action-sheet.title'), [
 			{
-				text: $t('routes.account.language.action-sheet.buttons.german'),
 				handler: () => localeStore.set(Locale.DE),
 				icon: '/locale/de.svg',
-				role: currentLocale === Locale.DE ? 'selected' : undefined
+				role: currentLocale === Locale.DE ? 'selected' : undefined,
+				text: $t('routes.account.language.action-sheet.buttons.german')
 			},
 			{
-				text: $t('routes.account.language.action-sheet.buttons.english'),
 				handler: () => localeStore.set(Locale.EN),
 				icon: '/locale/gb.svg',
-				role: currentLocale === Locale.EN ? 'selected' : undefined
+				role: currentLocale === Locale.EN ? 'selected' : undefined,
+				text: $t('routes.account.language.action-sheet.buttons.english')
 			}
 		]);
 	}
@@ -63,22 +62,16 @@
 
 		await openActionSheet($t('routes.account.layout.action-sheet.title'), [
 			{
-				text: $t('routes.account.layout.action-sheet.buttons.classic'),
-				handler: () => layoutStore.set(Layout.CLASSIC),
-				icon: gridOutline,
-				role: currentLayout === Layout.CLASSIC ? 'selected' : undefined
+				handler: () => layoutStore.set(Layout.MD),
+				icon: logoAndroid,
+				role: currentLayout === Layout.MD ? 'selected' : undefined,
+				text: $t('routes.account.layout.action-sheet.buttons.md')
 			},
 			{
-				text: $t('routes.account.layout.action-sheet.buttons.modern'),
-				handler: () => layoutStore.set(Layout.MODERN),
-				icon: diamondOutline,
-				role: currentLayout === Layout.MODERN ? 'selected' : undefined
-			},
-			{
-				text: $t('routes.account.layout.action-sheet.buttons.playful'),
-				handler: () => layoutStore.set(Layout.PLAYFUL),
-				icon: balloonOutline,
-				role: currentLayout === Layout.PLAYFUL ? 'selected' : undefined
+				handler: () => layoutStore.set(Layout.IOS),
+				icon: logoApple,
+				role: currentLayout === Layout.IOS ? 'selected' : undefined,
+				text: $t('routes.account.layout.action-sheet.buttons.ios')
 			}
 		]);
 	}
@@ -88,28 +81,28 @@
 
 		await openActionSheet($t('routes.account.theme.action-sheet.title'), [
 			{
-				text: $t('routes.account.theme.action-sheet.buttons.system'),
 				handler: () => themeStore.set(Theme.SYSTEM),
 				icon: desktopOutline,
-				role: currentTheme === Theme.SYSTEM ? 'selected' : undefined
+				role: currentTheme === Theme.SYSTEM ? 'selected' : undefined,
+				text: $t('routes.account.theme.action-sheet.buttons.system')
 			},
 			{
-				text: $t('routes.account.theme.action-sheet.buttons.light'),
 				handler: () => themeStore.set(Theme.LIGHT),
 				icon: sunnyOutline,
-				role: currentTheme === Theme.LIGHT ? 'selected' : undefined
+				role: currentTheme === Theme.LIGHT ? 'selected' : undefined,
+				text: $t('routes.account.theme.action-sheet.buttons.light')
 			},
 			{
-				text: $t('routes.account.theme.action-sheet.buttons.dark'),
 				handler: () => themeStore.set(Theme.DARK),
 				icon: moonOutline,
-				role: currentTheme === Theme.DARK ? 'selected' : undefined
+				role: currentTheme === Theme.DARK ? 'selected' : undefined,
+				text: $t('routes.account.theme.action-sheet.buttons.dark')
 			},
 			{
-				text: $t('routes.account.theme.action-sheet.buttons.black-and-white'),
 				handler: () => themeStore.set(Theme.BLACK_AND_WHITE),
 				icon: contrastOutline,
-				role: currentTheme === Theme.BLACK_AND_WHITE ? 'selected' : undefined
+				role: currentTheme === Theme.BLACK_AND_WHITE ? 'selected' : undefined,
+				text: $t('routes.account.theme.action-sheet.buttons.bw')
 			}
 		]);
 	}
@@ -122,60 +115,61 @@
 </script>
 
 <LayoutComponent title={$t('routes.account.title')}>
+	{@render accountList()}
+	{@render applicationList()}
+</LayoutComponent>
+
+{#snippet accountList()}
 	<ion-list inset>
 		<ion-list-header>{$t('routes.account.list.account.title')}</ion-list-header>
 		<LabeledItem
 			searchable={PageRoute.ACCOUNT.UPDATE_DATA}
-			detail
 			click={() => goto(PageRoute.ACCOUNT.UPDATE_DATA)}
-			iconSrc={personOutline}
+			icon={buildOutline}
 			label={$t('routes.account.list.account.button.update-data')}
 		/>
 		<LabeledItem
-			searchable={PageRoute.ACCOUNT.CHANGE_PASSWORD}
-			detail
-			click={() => goto(PageRoute.ACCOUNT.CHANGE_PASSWORD)}
-			iconSrc={keyOutline}
-			label={$t('routes.account.list.account.button.change-password')}
+			searchable={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.ROOT}
+			click={() => goto(PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.ROOT)}
+			icon={lockClosedOutline}
+			label={$t('routes.account.list.account.button.privacy-and-security')}
 		/>
 		<LabeledItem
 			searchable={PageRoute.ACCOUNT.DELETE}
-			detail
 			color="danger"
 			click={() => goto(PageRoute.ACCOUNT.DELETE)}
-			iconSrc={trashOutline}
+			icon={trashOutline}
 			label={$t('routes.account.list.account.button.delete-account')}
 		/>
 	</ion-list>
+{/snippet}
+
+{#snippet applicationList()}
 	<ion-list inset>
 		<ion-list-header>{$t('routes.account.list.application.title')}</ion-list-header>
 		<LabeledItem
 			searchable={PageRoute.ACCOUNT.ROOT}
-			detail
 			click={openLocaleActionSheet}
-			iconSrc={languageOutline}
+			icon={languageOutline}
 			label={$t('routes.account.app.list.language.button')}
 		/>
 		<LabeledItem
 			searchable={PageRoute.ACCOUNT.ROOT}
-			detail
 			click={openColorThemeActionSheet}
-			iconSrc={colorPaletteOutline}
+			icon={colorPaletteOutline}
 			label={$t('routes.account.app.list.theme.button')}
 		/>
 		<LabeledItem
 			searchable={PageRoute.ACCOUNT.ROOT}
-			detail
 			click={openLayoutActionSheet}
-			iconSrc={colorWandOutline}
+			icon={colorWandOutline}
 			label={$t('routes.account.app.list.layout.button')}
 		/>
 		<LabeledItem
 			searchable={PageRoute.ACCOUNT.ROOT}
-			detail
 			click={restoreApplicationDefaults}
-			iconSrc={refreshOutline}
+			icon={refreshOutline}
 			label={$t('routes.account.app.list.restore.button')}
 		/>
 	</ion-list>
-</LayoutComponent>
+{/snippet}

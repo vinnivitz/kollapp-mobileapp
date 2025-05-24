@@ -2,14 +2,14 @@
  * Alert model for displaying messages.
  */
 export type AlertConfig = {
-	type?: AlertType;
 	duration?: number;
+	type?: AlertType;
 };
 
 /**
  * Enumeration of alert types based on ionic color names.
  */
 export enum AlertType {
-	INFO = 'success',
-	ERROR = 'danger'
+	ERROR = 'danger',
+	SUCCESS = 'success'
 }

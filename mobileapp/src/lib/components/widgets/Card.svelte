@@ -1,51 +1,39 @@
 <script lang="ts">
+	import type { UserRole } from '$lib/models/api';
 	import type { Snippet } from 'svelte';
 
-	import { Layout } from '$lib/models/store';
-	import type { Colors } from '$lib/models/ui';
-	import { layoutStore } from '$lib/store';
+	import { type Colors } from '$lib/models/ui';
 
-	let {
-		title,
-		subtitle,
-		children,
-		color,
-		classProp,
-		click
-	}: {
-		title?: string;
-		subtitle?: string;
+	type Properties = {
+		accessible?: UserRole[];
 		children?: Snippet;
+		classList?: string;
 		color?: Colors | undefined;
-		classProp?: string;
-		click?: () => void | Promise<void>;
-	} = $props();
+		icon?: string;
+		id?: string;
+		searchable?: string;
+		subtitle?: string;
+		title?: string;
+		click?: () => void;
+	};
 
-	const isModernLayout = $derived($layoutStore === Layout.MODERN);
-	const isPlayfulLayout = $derived($layoutStore === Layout.PLAYFUL);
+	let { accessible, children, classList, click, color, icon, id, searchable, subtitle, title }: Properties = $props();
+
+	// workaround to avoid reference linting error
+	void searchable;
+	void accessible;
+	void id;
+	void icon;
 </script>
 
 {#if !!click}
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<ion-card
-		{color}
-		button={!!click}
-		class={classProp}
-		class:rounded-3xl={isPlayfulLayout}
-		class:squared={isModernLayout}
-		onclick={click}
-	>
+	<ion-card {id} {color} button={!!click} class={classList} onclick={click}>
 		{@render content()}
 	</ion-card>
 {:else}
-	<ion-card
-		{color}
-		button={!!click}
-		class={classProp}
-		class:rounded-3xl={isPlayfulLayout}
-		class:squared={isModernLayout}
-	>
+	<ion-card {id} {color} button={!!click} class={classList}>
 		{@render content()}
 	</ion-card>
 {/if}
@@ -66,15 +54,12 @@
 	{/if}
 {/snippet}
 
-<style lang="postcss">
+<style>
 	ion-card {
-		--background: var(--ion-color-light);
+		--background: var(--ion-background-color-step-50);
 
 		ion-card-title {
 			--color: var(--ion-color-dark);
 		}
-	}
-	.squared {
-		border-radius: unset !important;
 	}
 </style>

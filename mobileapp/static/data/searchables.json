@@ -1,50 +1,110 @@
 [
   {
+    "icon": "buildOutline",
     "id": 1,
     "label": "routes.account.list.account.button.update-data",
-    "icon": "personOutline",
     "route": "/account/update-data"
   },
   {
+    "icon": "lockClosedOutline",
     "id": 2,
-    "label": "routes.account.list.account.button.change-password",
-    "icon": "keyOutline",
-    "route": "/account/change-password"
+    "label": "routes.account.list.account.button.privacy-and-security",
+    "route": "/account/privacy-and-security"
   },
   {
+    "icon": "trashOutline",
     "id": 3,
     "label": "routes.account.list.account.button.delete-account",
-    "icon": "trashOutline",
     "route": "/account/delete"
   },
   {
+    "icon": "languageOutline",
     "id": 4,
     "label": "routes.account.app.list.language.button",
-    "icon": "languageOutline",
     "route": "/account"
   },
   {
+    "icon": "colorPaletteOutline",
     "id": 5,
     "label": "routes.account.app.list.theme.button",
-    "icon": "colorPaletteOutline",
     "route": "/account"
   },
   {
+    "icon": "colorWandOutline",
     "id": 6,
     "label": "routes.account.app.list.layout.button",
-    "icon": "colorWandOutline",
     "route": "/account"
   },
   {
+    "icon": "refreshOutline",
     "id": 7,
     "label": "routes.account.app.list.restore.button",
-    "icon": "refreshOutline",
     "route": "/account"
   },
   {
+    "icon": "keyOutline",
     "id": 8,
+    "label": "routes.account.list.account.privacy-and-security.button.change-password",
+    "route": "/account/privacy-and-security/change-password"
+  },
+  {
+    "icon": "fingerPrintOutline",
+    "id": 9,
+    "label": "routes.account.list.account.privacy-and-security.button.biometrics",
+    "route": "/account/privacy-and-security"
+  },
+  {
+    "icon": "swapHorizontalOutline",
+    "id": 10,
+    "label": "routes.organization.change-organization.action-sheet.title",
+    "route": "/organization"
+  },
+  {
+    "icon": "calendarOutline",
+    "id": 11,
+    "label": "routes.organization.list.organization.activity.label",
+    "route": "/organization/activities"
+  },
+  {
+    "accessible": [
+      "ROLE_ORGANIZATION_MANAGER"
+    ],
+    "icon": "buildOutline",
+    "id": 12,
     "label": "routes.organization.list.update-info.update-info",
-    "icon": "accessibilityOutline",
     "route": "/organization/update-data"
+  },
+  {
+    "accessible": [
+      "ROLE_ORGANIZATION_MANAGER"
+    ],
+    "icon": "logOutOutline",
+    "id": 13,
+    "label": "routes.organization.list.organization.leave.label",
+    "route": "/organization/leave"
+  },
+  {
+    "icon": "createOutline",
+    "id": 14,
+    "label": "routes.organization.list.general.register.label",
+    "route": "/organization/register"
+  },
+  {
+    "icon": "personAddOutline",
+    "id": 15,
+    "label": "routes.organization.list.general.join.label",
+    "route": "/organization/join"
+  },
+  {
+    "icon": "calendarOutline",
+    "id": 16,
+    "label": "routes.organization.page.activity.segments.calendar",
+    "route": "/organization/activities"
+  },
+  {
+    "icon": "createOutline",
+    "id": 17,
+    "label": "routes.organization.page.activity.create",
+    "route": "/organization/activities"
   }
 ]

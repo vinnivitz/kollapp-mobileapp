@@ -1,8 +1,12 @@
-import type { LoginDto, TokenDto } from '$lib/api/dto/client';
-import type { UserTokenDto } from '$lib/api/dto/server';
-import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/api/models';
-import { customFetch } from '$lib/api/utils';
-import { authenticationStore, organizationStore, userStore } from '$lib/store';
+import type { LoginDto } from '$lib/api/dto/client/auth';
+import type { TokenDto, UserTokenDto } from '$lib/api/dto/server';
+
+import { goto } from '$app/navigation';
+
+import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/models/api';
+import { PageRoute } from '$lib/models/routing';
+import { activitiesStore, authenticationStore, organizationStore, userStore } from '$lib/stores';
+import { customFetch } from '$lib/utility';
 
 const ENDPOINT = 'public/auth';
 
@@ -13,10 +17,10 @@ const ENDPOINT = 'public/auth';
  */
 export async function login(model: LoginDto): Promise<ResponseBody<UserTokenDto>> {
 	return customFetch(`${ENDPOINT}/signin`, {
-		method: RequestMethod.POST,
-		body: JSON.stringify(model),
 		authorizationType: AuthorizationType.NONE,
-		silentOnError: true
+		body: JSON.stringify(model),
+		method: RequestMethod.POST,
+		silentOnSuccess: true
 	});
 }
 
@@ -27,9 +31,9 @@ export async function login(model: LoginDto): Promise<ResponseBody<UserTokenDto>
  */
 export async function refresh(token: string): Promise<ResponseBody<TokenDto>> {
 	return customFetch(`${ENDPOINT}/refresh`, {
-		query: { token },
 		authorizationType: AuthorizationType.NONE,
-		silentOnError: true
+		query: { token },
+		silentOnSuccess: true
 	});
 }
 
@@ -37,5 +41,7 @@ export async function refresh(token: string): Promise<ResponseBody<TokenDto>> {
  * Logs out the user by clearing authentication tokens and user information
  */
 export async function logout(): Promise<void> {
-	await Promise.all([authenticationStore.reset(), organizationStore.reset(), userStore.reset()]);
+	await authenticationStore.reset();
+	await goto(PageRoute.AUTH.LOGIN);
+	await Promise.all([organizationStore.reset(), userStore.reset(), activitiesStore.reset()]);
 }

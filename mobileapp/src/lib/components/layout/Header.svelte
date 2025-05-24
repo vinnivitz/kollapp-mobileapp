@@ -1,10 +1,35 @@
 <script lang="ts">
+	import { onDestroy } from 'svelte';
+
 	import { goto } from '$app/navigation';
 
 	import { PageRoute } from '$lib/models/routing';
-	import { clickableElement, navigateBack } from '$lib/utils';
+	import { initializationStore } from '$lib/stores';
+	import { clickableElement, navigateBack } from '$lib/utility';
 
-	let { title, showBackButton }: { title: string; showBackButton?: boolean } = $props();
+	type Properties = {
+		title: string;
+		showBackButton?: boolean;
+	};
+
+	let { showBackButton, title }: Properties = $props();
+
+	const loading = $derived(!$initializationStore);
+	let navigationDebounced = $state(false);
+	let navigationTimeout: ReturnType<typeof setTimeout>;
+
+	$effect(() => {
+		if (loading) {
+			navigationDebounced = false;
+			navigationTimeout = setTimeout(() => (navigationDebounced = true), 100);
+		}
+	});
+
+	onDestroy(() => {
+		if (navigationTimeout) {
+			clearTimeout(navigationTimeout);
+		}
+	});
 </script>
 
 <ion-header>
@@ -20,7 +45,7 @@
 						use:clickableElement={() => goto(PageRoute.HOME)}
 						src="/logo.png"
 						alt="Logo"
-						class="h-8 w-8 black-and-white:grayscale"
+						class="bw:grayscale h-8 w-8"
 					/>
 				{/if}
 			</ion-button>
@@ -29,9 +54,12 @@
 			<ion-menu-button class="text-3xl"></ion-menu-button>
 		</ion-buttons>
 	</ion-toolbar>
+	{#if loading && navigationDebounced}
+		<ion-progress-bar type="indeterminate"></ion-progress-bar>
+	{/if}
 </ion-header>
 
-<style lang="postcss">
+<style>
 	ion-toolbar {
 		--min-height: 3.25rem;
 	}
