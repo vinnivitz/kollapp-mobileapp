@@ -1,6 +1,5 @@
 package org.kollappbackend.user.adapters.rest;
 
-import lombok.extern.slf4j.Slf4j;
 import org.kollappbackend.core.adapters.primary.rest.model.ErrorResponseTO;
 import org.kollappbackend.core.adapters.primary.rest.model.ValidationFailureResponseTO;
 import org.kollappbackend.user.application.exception.EmailExistsException;
@@ -16,14 +15,11 @@ import org.kollappbackend.user.application.exception.UsernameNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-@Slf4j
-@Order(1)
 @ControllerAdvice(basePackages = {"org.kollappbackend.user"})
 public class UserExceptionHandler {
     @Autowired

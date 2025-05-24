@@ -2,6 +2,7 @@ package org.kollappbackend.accounting.adapters.primary.rest;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
 import org.kollappbackend.accounting.adapters.primary.rest.mapper.BudgetAccountMapper;
@@ -63,7 +64,7 @@ public class AccountingController {
             @SecurityRequirement(name = "bearer-key")})
     @RequiresManagerRole
     public ResponseEntity<ResponseTO> addPosting(@PathVariable("account-id") long accountId,
-                                                 @RequestBody PostingTO postingTO) {
+                                                 @RequestBody @Valid PostingTO postingTO) {
         Posting postingToBeAdded = mapPostingAccordingToActivityId(postingTO);
         Posting addedPosting = budgetAccountService.addPosting(postingToBeAdded, accountId);
         PostingTO response = postingMapper.mapPostingToPostingTO(addedPosting);
@@ -76,7 +77,7 @@ public class AccountingController {
     @RequiresManagerRole
     public ResponseEntity<ResponseTO> editPosting(@PathVariable("account-id") long accountId,
                                                   @PathVariable("posting-id") long postingId,
-                                                  @RequestBody PostingTO postingTo) {
+                                                  @RequestBody @Valid PostingTO postingTo) {
         Posting postingToBeEdited = mapPostingAccordingToActivityId(postingTo);
         Posting editedPosting = budgetAccountService.editPosting(postingToBeEdited, postingId, accountId);
         PostingTO response = postingMapper.mapPostingToPostingTO(editedPosting);

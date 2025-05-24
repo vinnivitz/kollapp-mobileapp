@@ -3,7 +3,7 @@ package org.kollappbackend.accounting.application.service.impl;
 import jakarta.transaction.Transactional;
 import org.kollappbackend.accounting.application.exception.BudgetAccountDoesNotContainPostingException;
 import org.kollappbackend.accounting.application.exception.BudgetAccountDoesNotExistException;
-import org.kollappbackend.accounting.application.exception.NoPostingWithThisIdException;
+import org.kollappbackend.accounting.application.exception.PostingDoesNotExistException;
 import org.kollappbackend.accounting.application.exception.OrganizationHasNoBudgetAccount;
 import org.kollappbackend.accounting.application.model.BudgetAccount;
 import org.kollappbackend.accounting.application.model.Posting;
@@ -39,7 +39,7 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
     public Posting editPosting(Posting postingToBeEdited, long postingId, long budgetAccountId) {
         BudgetAccount budgetAccount = budgetAccountRepository.findById(budgetAccountId)
                 .orElseThrow(BudgetAccountDoesNotExistException::new);
-        Posting posting = postingRepository.findById(postingId).orElseThrow(NoPostingWithThisIdException::new);
+        Posting posting = postingRepository.findById(postingId).orElseThrow(PostingDoesNotExistException::new);
         if (!budgetAccount.containsPosting(posting)) {
             throw new BudgetAccountDoesNotContainPostingException();
         }
@@ -53,7 +53,7 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
     public void deletePosting(long budgetAccountId, long postingId) {
         BudgetAccount budgetAccount = budgetAccountRepository.findById(budgetAccountId)
                 .orElseThrow(BudgetAccountDoesNotExistException::new);
-        Posting posting = postingRepository.findById(postingId).orElseThrow(NoPostingWithThisIdException::new);
+        Posting posting = postingRepository.findById(postingId).orElseThrow(PostingDoesNotExistException::new);
         if (!budgetAccount.containsPosting(posting)) {
             throw new BudgetAccountDoesNotContainPostingException();
         }

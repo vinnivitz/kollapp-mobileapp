@@ -7,7 +7,6 @@ import org.kollappbackend.core.adapters.primary.rest.model.ValidationFailureResp
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -21,7 +20,6 @@ import java.util.List;
 
 @Slf4j
 @ControllerAdvice
-@Order(2)
 public class GlobalExceptionHandler {
     @Autowired
     private MessageSource messageSource;
@@ -52,12 +50,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NoSuchMessageException.class)
     public ResponseEntity<ResponseTO> handleNoSuchMessage(NoSuchMessageException ex) {
         log.error(ex.getMessage());
-        return ResponseEntity.internalServerError().body(new ErrorResponseTO("error.generic", messageSource));
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ResponseTO> handleException(Exception exception) {
-        log.error(exception.getMessage() + "\n\n" + exception);
         return ResponseEntity.internalServerError().body(new ErrorResponseTO("error.generic", messageSource));
     }
 }
