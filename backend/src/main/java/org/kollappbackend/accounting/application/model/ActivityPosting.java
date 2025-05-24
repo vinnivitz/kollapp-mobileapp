@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ActivityPosting extends Posting {
     private long activityId;
+
     public ActivityPosting(PostingType type, long amountInCents, long activityId) {
         super(type, amountInCents);
         this.activityId = activityId;

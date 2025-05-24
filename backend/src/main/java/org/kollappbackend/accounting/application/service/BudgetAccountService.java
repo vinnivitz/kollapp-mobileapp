@@ -5,7 +5,10 @@ import org.kollappbackend.accounting.application.model.Posting;
 
 public interface BudgetAccountService {
     Posting addPosting(Posting posting, long budgetAccountId);
+
     Posting editPosting(Posting postingToBeEdited, long postingId, long budgetAccountId);
+
     void deletePosting(long accountId, long postingId);
+
     BudgetAccount getBudgetAccountByOrganizationId(long organizationId);
 }

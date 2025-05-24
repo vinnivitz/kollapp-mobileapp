@@ -9,6 +9,8 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface PostingMapper {
     PostingTO mapPostingToPostingTO(Posting posting);
+
     ActivityPosting mapPostingTOToActivityPosting(PostingTO postingTO);
+
     OrganizationPosting mapPostingTOToOrganizationPosting(PostingTO postingTO);
 }

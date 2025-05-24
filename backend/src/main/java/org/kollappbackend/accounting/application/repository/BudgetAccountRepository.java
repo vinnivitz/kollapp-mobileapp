@@ -10,6 +10,8 @@ import java.util.Optional;
 @Repository
 public interface BudgetAccountRepository {
     BudgetAccount save(BudgetAccount budgetAccount);
+
     Optional<BudgetAccount> findByOrganizationId(long organizationId);
+
     Optional<BudgetAccount> findById(long id);
 }

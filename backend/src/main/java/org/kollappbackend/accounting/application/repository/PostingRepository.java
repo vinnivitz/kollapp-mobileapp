@@ -10,6 +10,8 @@ import java.util.Optional;
 @Repository
 public interface PostingRepository {
     Optional<Posting> findById(long postingId);
+
     Posting save(Posting posting);
+
     void deleteById(long postingId);
 }
