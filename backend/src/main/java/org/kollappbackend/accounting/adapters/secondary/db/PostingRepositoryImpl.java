@@ -1,5 +1,6 @@
 package org.kollappbackend.accounting.adapters.secondary.db;
 
+import org.jmolecules.architecture.hexagonal.SecondaryAdapter;
 import org.kollappbackend.accounting.adapters.secondary.db.jpa.ActivityPostingJpaRepository;
 import org.kollappbackend.accounting.adapters.secondary.db.jpa.PostingJpaRepository;
 import org.kollappbackend.accounting.application.model.Posting;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
+@SecondaryAdapter
 public class PostingRepositoryImpl implements PostingRepository {
 
     @Autowired

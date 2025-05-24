@@ -1,5 +1,6 @@
 package org.kollappbackend.accounting.adapters.secondary.db;
 
+import org.jmolecules.architecture.hexagonal.SecondaryAdapter;
 import org.kollappbackend.accounting.adapters.secondary.db.jpa.BudgetAccountJpaRepository;
 import org.kollappbackend.accounting.application.model.BudgetAccount;
 import org.kollappbackend.accounting.application.repository.BudgetAccountRepository;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
+@SecondaryAdapter
 public class BudgetAccountRepositoryImpl implements BudgetAccountRepository {
 
     @Autowired

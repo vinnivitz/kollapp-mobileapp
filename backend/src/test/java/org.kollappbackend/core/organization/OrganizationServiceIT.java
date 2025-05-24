@@ -7,12 +7,14 @@ import org.kollappbackend.core.core.BaseIT;
 import org.kollappbackend.organization.application.model.Organization;
 import org.kollappbackend.organization.application.repository.OrganizationRepository;
 import org.kollappbackend.organization.application.service.OrganizationService;
+import org.kollappbackend.user.application.model.ERole;
 import org.kollappbackend.user.application.model.KollappUser;
 import org.kollappbackend.user.application.service.KollappUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,7 +37,14 @@ public class OrganizationServiceIT extends BaseIT {
 
     @BeforeEach
     public void beforeEach() {
-        KollappUser mockUser = KollappUser.builder().id(1L).username("erika").build();
+        List<ERole> userRoles = new ArrayList<>();
+        userRoles.add(ERole.ROLE_KOLLAPP_USER);
+        userRoles.add(ERole.ROLE_ORGANIZATION_MANAGER);
+        KollappUser mockUser = KollappUser.builder()
+                .id(1L)
+                .username("erika")
+                .roles(userRoles)
+                .build();
         when(kollappUserService.getLoggedInKollappUser()).thenReturn(mockUser);
     }
 
