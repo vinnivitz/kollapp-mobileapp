@@ -4,8 +4,10 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.kollappbackend.organization.application.exception.OrganizationNotFoundException;
 import org.kollappbackend.organization.application.model.Organization;
+import org.kollappbackend.organization.application.model.OrganizationCreatedEvent;
 import org.kollappbackend.organization.application.model.OrganizationManager;
 import org.kollappbackend.organization.application.model.PersonOfOrganization;
+import org.kollappbackend.organization.application.publisher.OrganizationPublisher;
 import org.kollappbackend.organization.application.repository.OrganizationRepository;
 import org.kollappbackend.organization.application.repository.PersonOfOrganizationRepository;
 import org.kollappbackend.organization.application.service.OrganizationService;
@@ -34,6 +36,9 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Autowired
     private KollappUserService kollappUserService;
 
+    @Autowired
+    private OrganizationPublisher organizationPublisher;
+
     @Override
     public Organization createOrganization(Organization organization) {
         KollappUser user = kollappUserService.getLoggedInKollappUser();
@@ -44,6 +49,8 @@ public class OrganizationServiceImpl implements OrganizationService {
         organizationManager.setOrganization(persistedOrganization);
         PersonOfOrganization persistedOrganizationManager = personOfOrganizationRepository.save(organizationManager);
         persistedOrganization.addPersonOfOrganization(persistedOrganizationManager);
+        OrganizationCreatedEvent organizationCreatedEvent = new OrganizationCreatedEvent(this, organization.getId());
+        organizationPublisher.publisherOrganizationCreatedEvent(organizationCreatedEvent);
         return persistedOrganization;
     }
 

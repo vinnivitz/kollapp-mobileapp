@@ -11,4 +11,6 @@ public interface BudgetAccountService {
     void deletePosting(long accountId, long postingId);
 
     BudgetAccount getBudgetAccountByOrganizationId(long organizationId);
+
+    void createBudgetAccount(Long organizationId);
 }

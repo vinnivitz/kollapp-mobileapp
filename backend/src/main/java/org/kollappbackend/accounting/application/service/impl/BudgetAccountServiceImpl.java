@@ -1,5 +1,6 @@
 package org.kollappbackend.accounting.application.service.impl;
 
+import jakarta.transaction.Transactional;
 import org.kollappbackend.accounting.application.exception.BudgetAccountDoesNotContainPostingException;
 import org.kollappbackend.accounting.application.exception.BudgetAccountDoesNotExistException;
 import org.kollappbackend.accounting.application.exception.NoPostingWithThisIdException;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@Transactional
 public class BudgetAccountServiceImpl implements BudgetAccountService {
     @Autowired
     private BudgetAccountRepository budgetAccountRepository;
@@ -52,10 +54,10 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
         BudgetAccount budgetAccount = budgetAccountRepository.findById(budgetAccountId)
                 .orElseThrow(BudgetAccountDoesNotExistException::new);
         Posting posting = postingRepository.findById(postingId).orElseThrow(NoPostingWithThisIdException::new);
-        if (budgetAccount.containsPosting(posting)) {
-            postingRepository.deleteById(postingId);
+        if (!budgetAccount.containsPosting(posting)) {
+            throw new BudgetAccountDoesNotContainPostingException();
         }
-        throw new BudgetAccountDoesNotContainPostingException();
+        budgetAccount.deletePosting(posting);
     }
 
     @Override
@@ -63,5 +65,11 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
         return budgetAccountRepository
                 .findByOrganizationId(organizationId)
                 .orElseThrow(OrganizationHasNoBudgetAccount::new);
+    }
+
+    @Override
+    public void createBudgetAccount(Long organizationId) {
+        BudgetAccount budgetAccount = BudgetAccount.builder().organizationId(organizationId).build();
+        budgetAccountRepository.save(budgetAccount);
     }
 }

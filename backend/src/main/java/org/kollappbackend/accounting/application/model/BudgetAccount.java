@@ -43,4 +43,8 @@ public class BudgetAccount {
     public boolean containsPosting(Posting posting) {
         return postings != null && postings.contains(posting);
     }
+
+    public void deletePosting(Posting posting) {
+        postings.remove(posting);
+    }
 }

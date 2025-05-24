@@ -64,12 +64,7 @@ public class AccountingController {
     @RequiresManagerRole
     public ResponseEntity<ResponseTO> addPosting(@PathVariable("account-id") long accountId,
                                                  @RequestBody PostingTO postingTO) {
-        Posting postingToBeAdded;
-        if (postingTO.getActivityId() == 0) {
-            postingToBeAdded = postingMapper.mapPostingTOToOrganizationPosting(postingTO);
-        } else {
-            postingToBeAdded = postingMapper.mapPostingTOToActivityPosting(postingTO);
-        }
+        Posting postingToBeAdded = mapPostingAccordingToActivityId(postingTO);
         Posting addedPosting = budgetAccountService.addPosting(postingToBeAdded, accountId);
         PostingTO response = postingMapper.mapPostingToPostingTO(addedPosting);
         return ResponseEntity.ok(new DataResponseTO(response, "success.posting.create", messageSource));
@@ -82,15 +77,10 @@ public class AccountingController {
     public ResponseEntity<ResponseTO> editPosting(@PathVariable("account-id") long accountId,
                                                   @PathVariable("posting-id") long postingId,
                                                   @RequestBody PostingTO postingTo) {
-        Posting postingToBeEdited;
-        if (postingTo.getActivityId() == 0) {
-            postingToBeEdited = postingMapper.mapPostingTOToOrganizationPosting(postingTo);
-        } else {
-            postingToBeEdited = postingMapper.mapPostingTOToActivityPosting(postingTo);
-        }
+        Posting postingToBeEdited = mapPostingAccordingToActivityId(postingTo);
         Posting editedPosting = budgetAccountService.editPosting(postingToBeEdited, postingId, accountId);
         PostingTO response = postingMapper.mapPostingToPostingTO(editedPosting);
-        return ResponseEntity.ok(new DataResponseTO(response, "success.posting.edited", messageSource));
+        return ResponseEntity.ok(new DataResponseTO(response, "success.posting.update", messageSource));
     }
 
     @DeleteMapping("/account/{account-id}/posting/{posting-id}")
@@ -100,8 +90,14 @@ public class AccountingController {
     public ResponseEntity<MessageResponseTO> deletePosting(@PathVariable("account-id") long accountId,
                                                            @PathVariable("posting-id") long postingId) {
         budgetAccountService.deletePosting(accountId, postingId);
-        return ResponseEntity.ok(new MessageResponseTO("success.posting.deleted", messageSource));
+        return ResponseEntity.ok(new MessageResponseTO("success.posting.delete", messageSource));
     }
 
+    private Posting mapPostingAccordingToActivityId(PostingTO postingTO) {
+        if (postingTO.getActivityId() == 0) {
+            return postingMapper.mapPostingTOToOrganizationPosting(postingTO);
+        }
+        return postingMapper.mapPostingTOToActivityPosting(postingTO);
+    }
 
 }
