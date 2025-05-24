@@ -2,11 +2,11 @@ package org.kollappbackend.organization.application.service.impl;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.kollappbackend.accounting.application.service.BudgetAccountService;
 import org.kollappbackend.organization.application.exception.OrganizationNotFoundException;
 import org.kollappbackend.organization.application.model.Organization;
 import org.kollappbackend.organization.application.model.OrganizationCreatedEvent;
 import org.kollappbackend.organization.application.model.OrganizationManager;
+import org.kollappbackend.organization.application.model.OrganizationDeletedEvent;
 import org.kollappbackend.organization.application.model.PersonOfOrganization;
 import org.kollappbackend.organization.application.publisher.OrganizationPublisher;
 import org.kollappbackend.organization.application.repository.OrganizationRepository;
@@ -40,8 +40,6 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Autowired
     private OrganizationPublisher organizationPublisher;
-    @Autowired
-    private BudgetAccountService budgetAccountService;
 
     @Override
     public Organization createOrganization(Organization organization) {
@@ -54,7 +52,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         PersonOfOrganization persistedOrganizationManager = personOfOrganizationRepository.save(organizationManager);
         persistedOrganization.addPersonOfOrganization(persistedOrganizationManager);
         OrganizationCreatedEvent organizationCreatedEvent = new OrganizationCreatedEvent(this, organization.getId());
-        organizationPublisher.publisherOrganizationCreatedEvent(organizationCreatedEvent);
+        organizationPublisher.publishOrganizationCreatedEvent(organizationCreatedEvent);
         return persistedOrganization;
     }
 
@@ -122,7 +120,8 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     private void deleteOrganization(KollappUser loggedInUser, Organization organization) {
         organizationRepository.deleteById(organization.getId());
-        budgetAccountService.deleteBudgetAccount(organization.getId());
+        OrganizationDeletedEvent organizationDeletedEvent = new OrganizationDeletedEvent(this, organization.getId());
+        organizationPublisher.publishOrganizationDeletedEvent(organizationDeletedEvent);
         List<PersonOfOrganization> rolesInOtherOrganizations = personOfOrganizationRepository
                 .findByUserId(loggedInUser.getId());
         boolean isStillManager = rolesInOtherOrganizations.stream()

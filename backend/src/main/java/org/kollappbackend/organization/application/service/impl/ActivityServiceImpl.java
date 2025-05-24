@@ -1,11 +1,12 @@
 package org.kollappbackend.organization.application.service.impl;
 
 import jakarta.transaction.Transactional;
-import org.kollappbackend.accounting.application.service.BudgetAccountService;
 import org.kollappbackend.organization.application.exception.ActivityNotFoundException;
 import org.kollappbackend.organization.application.exception.OrganizationNotFoundException;
 import org.kollappbackend.organization.application.model.Activity;
+import org.kollappbackend.organization.application.model.ActivityDeletedEvent;
 import org.kollappbackend.organization.application.model.Organization;
+import org.kollappbackend.organization.application.publisher.OrganizationPublisher;
 import org.kollappbackend.organization.application.repository.ActivityRepository;
 import org.kollappbackend.organization.application.repository.OrganizationRepository;
 import org.kollappbackend.organization.application.service.ActivityService;
@@ -26,7 +27,7 @@ public class ActivityServiceImpl implements ActivityService {
     @Autowired
     private MessageSource messageSource;
     @Autowired
-    private BudgetAccountService budgetAccountService;
+    private OrganizationPublisher organizationPublisher;
 
     @Override
     public List<Activity> getActivitiesOfOrganization(long organizationId) {
@@ -60,6 +61,7 @@ public class ActivityServiceImpl implements ActivityService {
                 organization.getActivities().stream().filter(activity1 -> activity1.getId() == activityId).findFirst()
                         .orElseThrow(() -> new ActivityNotFoundException(messageSource));
         organization.getActivities().remove(activity);
-        budgetAccountService.deletePostingsOfActivity(activityId);
+        ActivityDeletedEvent activityDeletedEvent = new ActivityDeletedEvent(this, activity.getId());
+        organizationPublisher.publishActivityDeletedEvent(activityDeletedEvent);
     }
 }
