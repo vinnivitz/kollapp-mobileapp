@@ -14,4 +14,6 @@ public interface BudgetAccountRepository {
     Optional<BudgetAccount> findByOrganizationId(long organizationId);
 
     Optional<BudgetAccount> findById(long id);
+
+    void deleteByOrganizationId(long organizationId);
 }

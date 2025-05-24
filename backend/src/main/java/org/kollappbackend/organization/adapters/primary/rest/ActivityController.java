@@ -65,7 +65,7 @@ public class ActivityController {
     }
 
     @DeleteMapping("/{organization-id}/activity/{activity-id}")
-    @Operation(summary = "Update activity of organization", security = {@SecurityRequirement(name = "bearer-key")})
+    @Operation(summary = "Delete activity of organization", security = {@SecurityRequirement(name = "bearer-key")})
     @RequiresManagerRole
     public ResponseEntity<MessageResponseTO> deleteActivityOfOrganization(
             @PathVariable("organization-id") long organizationId, @PathVariable("activity-id") long activityId) {

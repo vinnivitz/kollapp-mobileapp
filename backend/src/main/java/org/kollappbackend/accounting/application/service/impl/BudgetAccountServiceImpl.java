@@ -72,4 +72,14 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
         BudgetAccount budgetAccount = BudgetAccount.builder().organizationId(organizationId).build();
         budgetAccountRepository.save(budgetAccount);
     }
+
+    @Override
+    public void deleteBudgetAccount(long organizationId) {
+        budgetAccountRepository.deleteByOrganizationId(organizationId);
+    }
+
+    @Override
+    public void deletePostingsOfActivity(long activityId) {
+        postingRepository.deleteByActivityId(activityId);
+    }
 }

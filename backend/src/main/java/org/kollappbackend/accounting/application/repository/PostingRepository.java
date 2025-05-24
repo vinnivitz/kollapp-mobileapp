@@ -13,5 +13,5 @@ public interface PostingRepository {
 
     Posting save(Posting posting);
 
-    void deleteById(long postingId);
+    void deleteByActivityId(long activityId);
 }

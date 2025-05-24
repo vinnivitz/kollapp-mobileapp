@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface BudgetAccountJpaRepository extends JpaRepository<BudgetAccount, Long> {
     Optional<BudgetAccount> findByOrganizationId(long organizationId);
+    void deleteByOrganizationId(long organizationId);
 }

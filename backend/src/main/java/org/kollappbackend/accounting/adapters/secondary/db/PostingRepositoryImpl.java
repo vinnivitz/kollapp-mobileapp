@@ -1,5 +1,6 @@
 package org.kollappbackend.accounting.adapters.secondary.db;
 
+import org.kollappbackend.accounting.adapters.secondary.db.jpa.ActivityPostingJpaRepository;
 import org.kollappbackend.accounting.adapters.secondary.db.jpa.PostingJpaRepository;
 import org.kollappbackend.accounting.application.model.Posting;
 import org.kollappbackend.accounting.application.repository.PostingRepository;
@@ -14,6 +15,9 @@ public class PostingRepositoryImpl implements PostingRepository {
     @Autowired
     private PostingJpaRepository postingJpaRepository;
 
+    @Autowired
+    private ActivityPostingJpaRepository activityPostingJpaRepository;
+
     @Override
     public Optional<Posting> findById(long postingId) {
         return postingJpaRepository.findById(postingId);
@@ -25,7 +29,7 @@ public class PostingRepositoryImpl implements PostingRepository {
     }
 
     @Override
-    public void deleteById(long postingId) {
-        postingJpaRepository.deleteById(postingId);
+    public void deleteByActivityId(long activityId) {
+        activityPostingJpaRepository.deleteByActivityId(activityId);
     }
 }

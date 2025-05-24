@@ -28,4 +28,9 @@ public class BudgetAccountRepositoryImpl implements BudgetAccountRepository {
     public Optional<BudgetAccount> findById(long id) {
         return budgetAccountJpaRepository.findById(id);
     }
+
+    @Override
+    public void deleteByOrganizationId(long id) {
+        budgetAccountJpaRepository.deleteByOrganizationId(id);
+    }
 }

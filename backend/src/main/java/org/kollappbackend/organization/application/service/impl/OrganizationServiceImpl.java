@@ -2,6 +2,7 @@ package org.kollappbackend.organization.application.service.impl;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.kollappbackend.accounting.application.service.BudgetAccountService;
 import org.kollappbackend.organization.application.exception.OrganizationNotFoundException;
 import org.kollappbackend.organization.application.model.Organization;
 import org.kollappbackend.organization.application.model.OrganizationCreatedEvent;
@@ -11,6 +12,7 @@ import org.kollappbackend.organization.application.publisher.OrganizationPublish
 import org.kollappbackend.organization.application.repository.OrganizationRepository;
 import org.kollappbackend.organization.application.repository.PersonOfOrganizationRepository;
 import org.kollappbackend.organization.application.service.OrganizationService;
+import org.kollappbackend.user.application.model.ERole;
 import org.kollappbackend.user.application.model.KollappUser;
 import org.kollappbackend.user.application.service.KollappUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,8 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Autowired
     private OrganizationPublisher organizationPublisher;
+    @Autowired
+    private BudgetAccountService budgetAccountService;
 
     @Override
     public Organization createOrganization(Organization organization) {
@@ -93,7 +97,7 @@ public class OrganizationServiceImpl implements OrganizationService {
                 .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
         if (personOfOrganization instanceof OrganizationManager orgaManager && organization.hasOnlyOneManagerLeft()
                 && organization.hasManager(orgaManager)) {
-            organizationRepository.deleteById(organization.getId());
+            deleteOrganization(loggedInUser, organization);
         } else {
             organization.getPersonsOfOrganization().remove(personOfOrganization);
         }
@@ -115,6 +119,19 @@ public class OrganizationServiceImpl implements OrganizationService {
     private List<PersonOfOrganization> getPersonOfOrganizationsByUserId(long userId) {
         return personOfOrganizationRepository.findByUserId(userId);
     }
+
+    private void deleteOrganization(KollappUser loggedInUser, Organization organization) {
+        organizationRepository.deleteById(organization.getId());
+        budgetAccountService.deleteBudgetAccount(organization.getId());
+        List<PersonOfOrganization> rolesInOtherOrganizations = personOfOrganizationRepository
+                .findByUserId(loggedInUser.getId());
+        boolean isStillManager = rolesInOtherOrganizations.stream()
+                .anyMatch(p -> p instanceof OrganizationManager);
+        if (!isStillManager) {
+            loggedInUser.getRoles().remove(ERole.ROLE_ORGANIZATION_MANAGER);
+        }
+    }
+
 
 
 }
