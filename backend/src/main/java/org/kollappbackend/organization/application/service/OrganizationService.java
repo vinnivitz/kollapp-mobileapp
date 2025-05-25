@@ -28,4 +28,6 @@ public interface OrganizationService {
     void leaveOrganization(long organizationId);
 
     void updatePersonOfOrganizationsOfUser(long userId, String username);
+
+    Organization grantRoleToPersonOfOrganization(long organizationId, long personId, String role);
 }

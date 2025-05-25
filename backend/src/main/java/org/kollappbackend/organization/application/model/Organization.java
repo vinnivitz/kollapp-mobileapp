@@ -97,4 +97,10 @@ public class Organization {
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString();
     }
+
+    public void exchangePersonOfOrganization(PersonOfOrganization original, PersonOfOrganization updated) {
+        updated.setOrganization(this);
+        personsOfOrganization.remove(original);
+        personsOfOrganization.add(updated);
+    }
 }

@@ -12,6 +12,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 public class PersonOfOrganizationTO {
+    private long id;
     private String username;
     private String role;
+    private String status;
 }

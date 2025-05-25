@@ -39,8 +39,9 @@ public abstract class PersonOfOrganization {
     @Enumerated(EnumType.STRING)
     private PersonOfOrganizationStatus status;
 
-    public PersonOfOrganization(long userId, String username) {
+    public PersonOfOrganization(long userId, String username, PersonOfOrganizationStatus status) {
         this.userId = userId;
         this.username = username;
+        this.status = status;
     }
 }

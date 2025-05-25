@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.kollappbackend.core.config.properties.ApplicationProperties;
 import org.kollappbackend.organization.application.exception.InvalidInvitationCodeException;
 import org.kollappbackend.organization.application.exception.OrganizationNotFoundException;
+import org.kollappbackend.organization.application.exception.PersonNotRegisteredInOrganizationException;
+import org.kollappbackend.organization.application.exception.PersonOfOrganizationIsNotApprovedYet;
 import org.kollappbackend.organization.application.model.Organization;
 import org.kollappbackend.organization.application.model.OrganizationCreatedEvent;
 import org.kollappbackend.organization.application.model.OrganizationDeletedEvent;
@@ -12,6 +14,7 @@ import org.kollappbackend.organization.application.model.OrganizationInvitationC
 import org.kollappbackend.organization.application.model.OrganizationManager;
 import org.kollappbackend.organization.application.model.OrganizationMember;
 import org.kollappbackend.organization.application.model.PersonOfOrganization;
+import org.kollappbackend.organization.application.model.PersonOfOrganizationStatus;
 import org.kollappbackend.organization.application.publisher.OrganizationPublisher;
 import org.kollappbackend.organization.application.repository.OrganizationInvitationCodeRepository;
 import org.kollappbackend.organization.application.repository.OrganizationRepository;
@@ -62,7 +65,7 @@ public class OrganizationServiceImpl implements OrganizationService {
                 persistedOrganization.generateNewInvitationCode(applicationProperties.getOrganizationInvitationValidityDays());
         invitationCode.setOrganization(persistedOrganization);
         OrganizationManager organizationManager =
-                new OrganizationManager(user.getId(), user.getUsername());
+                new OrganizationManager(user.getId(), user.getUsername(), PersonOfOrganizationStatus.APPROVED);
         organizationManager.setOrganization(persistedOrganization);
         PersonOfOrganization persistedOrganizationManager = personOfOrganizationRepository.save(organizationManager);
         persistedOrganization.addPersonOfOrganization(persistedOrganizationManager);
@@ -107,7 +110,10 @@ public class OrganizationServiceImpl implements OrganizationService {
                 .findByInvitationCodeAndExpirationDateIsAfter(invitationCode, currentDatePlusOneDay)
                 .orElseThrow(() -> new InvalidInvitationCodeException(messageSource));
         Organization organization = organizationInvitationCode.getOrganization();
-        OrganizationMember newMember = new OrganizationMember(currentUser.getId(), currentUser.getUsername());
+        OrganizationMember newMember = new OrganizationMember(
+                currentUser.getId(),
+                currentUser.getUsername(),
+                PersonOfOrganizationStatus.PENDING);
         newMember.setOrganization(organization);
         organization.addPersonOfOrganization(newMember);
         return organization;
@@ -142,6 +148,38 @@ public class OrganizationServiceImpl implements OrganizationService {
     public void updatePersonOfOrganizationsOfUser(long userId, String username) {
         List<PersonOfOrganization> personsToBeUpdated = personOfOrganizationRepository.findByUserId(userId);
         personsToBeUpdated.forEach(person -> person.setUsername(username));
+    }
+
+    @Override
+    public Organization grantRoleToPersonOfOrganization(long organizationId, long personId, String role) {
+        Organization organization = organizationRepository.findById(organizationId)
+                .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
+        PersonOfOrganization personOfOrganization = personOfOrganizationRepository.findById(personId);
+        if (!organization.getPersonsOfOrganization().contains(personOfOrganization)) {
+            throw new PersonNotRegisteredInOrganizationException(messageSource);
+        }
+        if (personOfOrganization.getStatus().equals(PersonOfOrganizationStatus.PENDING)) {
+            throw new PersonOfOrganizationIsNotApprovedYet(messageSource);
+        }
+        if (role.equals("MANAGER")) {
+            if (personOfOrganization instanceof OrganizationManager) {
+                return organization;
+            } else {
+                OrganizationManager organizationManager = new OrganizationManager(personOfOrganization.getUserId(),
+                        personOfOrganization.getUsername(), personOfOrganization.getStatus());
+                organization.exchangePersonOfOrganization(personOfOrganization, organizationManager);
+            }
+        }
+        if (role.equals("MEMBER")) {
+            if (personOfOrganization instanceof OrganizationMember) {
+                return organization;
+            } else {
+                OrganizationMember organizationMember = new OrganizationMember(personOfOrganization.getUserId(),
+                        personOfOrganization.getUsername(), personOfOrganization.getStatus());
+                organization.exchangePersonOfOrganization(personOfOrganization, organizationMember);
+            }
+        }
+        return organization;
     }
 
     @Override
