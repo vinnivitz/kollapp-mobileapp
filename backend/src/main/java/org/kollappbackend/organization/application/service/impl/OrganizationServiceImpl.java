@@ -2,13 +2,18 @@ package org.kollappbackend.organization.application.service.impl;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.kollappbackend.core.config.properties.ApplicationProperties;
+import org.kollappbackend.organization.application.exception.InvalidInvitationCodeException;
 import org.kollappbackend.organization.application.exception.OrganizationNotFoundException;
 import org.kollappbackend.organization.application.model.Organization;
 import org.kollappbackend.organization.application.model.OrganizationCreatedEvent;
-import org.kollappbackend.organization.application.model.OrganizationManager;
 import org.kollappbackend.organization.application.model.OrganizationDeletedEvent;
+import org.kollappbackend.organization.application.model.OrganizationInvitationCode;
+import org.kollappbackend.organization.application.model.OrganizationManager;
+import org.kollappbackend.organization.application.model.OrganizationMember;
 import org.kollappbackend.organization.application.model.PersonOfOrganization;
 import org.kollappbackend.organization.application.publisher.OrganizationPublisher;
+import org.kollappbackend.organization.application.repository.OrganizationInvitationCodeRepository;
 import org.kollappbackend.organization.application.repository.OrganizationRepository;
 import org.kollappbackend.organization.application.repository.PersonOfOrganizationRepository;
 import org.kollappbackend.organization.application.service.OrganizationService;
@@ -19,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +39,9 @@ public class OrganizationServiceImpl implements OrganizationService {
     private PersonOfOrganizationRepository personOfOrganizationRepository;
 
     @Autowired
+    private OrganizationInvitationCodeRepository organizationInvitationCodeRepository;
+
+    @Autowired
     private MessageSource messageSource;
 
     @Autowired
@@ -41,13 +50,19 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Autowired
     private OrganizationPublisher organizationPublisher;
 
+    @Autowired
+    private ApplicationProperties applicationProperties;
+
     @Override
     public Organization createOrganization(Organization organization) {
         KollappUser user = kollappUserService.getLoggedInKollappUser();
         user.addRoleOrganizationManager();
         Organization persistedOrganization = organizationRepository.save(organization);
+        OrganizationInvitationCode invitationCode =
+                persistedOrganization.generateNewInvitationCode(applicationProperties.getOrganizationInvitationValidityDays());
+        invitationCode.setOrganization(persistedOrganization);
         OrganizationManager organizationManager =
-                new OrganizationManager(user.getId());
+                new OrganizationManager(user.getId(), user.getUsername());
         organizationManager.setOrganization(persistedOrganization);
         PersonOfOrganization persistedOrganizationManager = personOfOrganizationRepository.save(organizationManager);
         persistedOrganization.addPersonOfOrganization(persistedOrganizationManager);
@@ -77,6 +92,28 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
+    public Organization generateNewOrganizationInvitationCode(long organizationId) {
+        Organization organization = organizationRepository.findById(organizationId)
+                .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
+        organization.generateNewInvitationCode(applicationProperties.getOrganizationInvitationValidityDays());
+        return organization;
+    }
+
+    @Override
+    public Organization enterOrganizationByInvitationCode(String invitationCode) {
+        String currentDatePlusOneDay = LocalDate.now().minusDays(1).toString();
+        KollappUser currentUser = kollappUserService.getLoggedInKollappUser();
+        OrganizationInvitationCode organizationInvitationCode = organizationInvitationCodeRepository
+                .findByInvitationCodeAndExpirationDateIsAfter(invitationCode, currentDatePlusOneDay)
+                .orElseThrow(() -> new InvalidInvitationCodeException(messageSource));
+        Organization organization = organizationInvitationCode.getOrganization();
+        OrganizationMember newMember = new OrganizationMember(currentUser.getId(), currentUser.getUsername());
+        newMember.setOrganization(organization);
+        organization.addPersonOfOrganization(newMember);
+        return organization;
+    }
+
+    @Override
     public void deleteUserFromAllOrganizations(long userId) {
         List<PersonOfOrganization> personsToBeDeleted = personOfOrganizationRepository.findByUserId(userId);
         for (PersonOfOrganization personOfOrganization : personsToBeDeleted) {
@@ -102,6 +139,12 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
+    public void updatePersonOfOrganizationsOfUser(long userId, String username) {
+        List<PersonOfOrganization> personsToBeUpdated = personOfOrganizationRepository.findByUserId(userId);
+        personsToBeUpdated.forEach(person -> person.setUsername(username));
+    }
+
+    @Override
     public List<Organization> getOrganizationsByLoggedInUser() {
         KollappUser loggedInKollappUser = kollappUserService.getLoggedInKollappUser();
         List<PersonOfOrganization> personsOfOrganization =
@@ -112,6 +155,15 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public Organization getOrganizationById(long id) {
         return organizationRepository.findById(id).orElseThrow(() -> new OrganizationNotFoundException(messageSource));
+    }
+
+    @Override
+    public Organization getOrganizationByInvitationCode(String invitationCode) {
+        String localDateMinusOneDay = LocalDate.now().minusDays(1).toString();
+        OrganizationInvitationCode invCode = organizationInvitationCodeRepository
+                .findByInvitationCodeAndExpirationDateIsAfter(invitationCode, localDateMinusOneDay)
+                .orElseThrow(() -> new InvalidInvitationCodeException(messageSource));
+        return invCode.getOrganization();
     }
 
     private List<PersonOfOrganization> getPersonOfOrganizationsByUserId(long userId) {
@@ -130,7 +182,4 @@ public class OrganizationServiceImpl implements OrganizationService {
             loggedInUser.getRoles().remove(ERole.ROLE_ORGANIZATION_MANAGER);
         }
     }
-
-
-
 }

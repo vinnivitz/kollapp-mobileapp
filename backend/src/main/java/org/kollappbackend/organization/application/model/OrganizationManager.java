@@ -8,7 +8,8 @@ import lombok.NoArgsConstructor;
 @DiscriminatorValue("manager")
 @NoArgsConstructor
 public class OrganizationManager extends PersonOfOrganization {
-    public OrganizationManager(long userId) {
-        super(userId);
+    public OrganizationManager(long userId, String username) {
+        super(userId, username);
+        setStatus(PersonOfOrganizationStatus.APPROVED);
     }
 }
