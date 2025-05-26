@@ -5,11 +5,11 @@
 	import { type Colors } from '$lib/models/ui';
 
 	type Properties = {
-		contentHeight?: number;
 		accessible?: UserRole[];
 		children?: Snippet;
 		classList?: string;
 		color?: Colors | undefined;
+		contentHeight?: number;
 		icon?: string;
 		id?: string;
 		searchable?: string;
@@ -24,12 +24,12 @@
 		classList,
 		click,
 		color,
+		contentHeight,
 		icon,
 		id,
 		searchable,
 		subtitle,
-		title,
-		contentHeight
+		title
 	}: Properties = $props();
 
 	// workaround to avoid reference linting error

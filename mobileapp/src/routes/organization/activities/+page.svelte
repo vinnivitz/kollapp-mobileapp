@@ -204,6 +204,16 @@
 		searchActivityValue = event.detail.value ?? '';
 		filteredActivities = activityItems.filter((activity) => activity.name.toLowerCase().includes(searchActivityValue));
 	}
+
+	function onConfirmMap(): void {
+		mapModalOpen = false;
+		selectedLocation = cachedLocation;
+		if (createModalOpen) {
+			createActions.onUpdate('location', selectedLocation);
+		} else if (editModalOpen) {
+			updateActions.onUpdate('location', selectedLocation);
+		}
+	}
 </script>
 
 <Layout
@@ -360,12 +370,12 @@
 					icon={documentOutline}
 				/>
 				<InputItem
-					value={selectedLocation}
 					name="location"
 					label={$t('routes.organization.page.activity.create-modal.card.input.location')}
 					icon={locationOutline}
 					inputIcon={mapOutline}
 					inputIconClick={() => (mapModalOpen = true)}
+					value={selectedLocation}
 				/>
 				<CustomItem
 					icon={calendarClearOutline}
@@ -398,10 +408,7 @@
 		cachedLocation = '';
 	}}
 	confirmLabel={$t('routes.organization.page.activity.map-modal.button.confirm')}
-	confirm={() => {
-		mapModalOpen = false;
-		selectedLocation = cachedLocation;
-	}}
+	confirm={onConfirmMap}
 	cancelLabel={$t('routes.organization.page.activity.map-modal.button.cancel')}
 >
 	{#if mapModalOpen}
