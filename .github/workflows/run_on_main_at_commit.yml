@@ -29,7 +29,9 @@ jobs:
         run: |
           npm -g install pnpm 
           pnpm install --prefix mobileapp --frozen-lockfile
-          pnpm lint --prefix mobileapp && pnpm test --prefix mobileapp && pnpm build --prefix mobileapp
+          pnpm lint --prefix mobileapp
+          pnpm test --prefix mobileapp
+          pnpm build --prefix mobileapp
       - name: Dump Docker container logs
         if: failure()
         run: |
