@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="de">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<script src="https://cdn.tailwindcss.com"></script>
+		<style>
+			/* Diagonale Trennung via clip-path */
+			.hero-bg {
+				clip-path: polygon(0 20%, 100% 0, 100% 80%, 0% 100%);
+			}
+
+			html,
+			body {
+				scroll-behavior: smooth;
+			}
+
+			.snap-start {
+				scroll-snap-align: start;
+			}
+
+			.snap-y {
+				scroll-snap-type: y mandatory;
+			}
+		</style>
+		<title>Kollapp</title>
+	</head>
+
+	<body class="snap-y snap-mandatory overflow-y-scroll scroll-smooth">
+		<!-- HERO SECTION -->
+		<section class="relative h-screen snap-start">
+			<!-- Hintergrund mit zwei Farbflächen -->
+			<div class="hero-bg absolute inset-0 bg-green-500"></div>
+			<div class="clip-path-polygon absolute inset-0 bg-blue-600"></div>
+
+			<!-- Inhalt -->
+			<div class="relative z-10 flex h-full flex-col items-center justify-center px-4 text-white">
+				<h1 class="skew-x-[-10deg] transform animate-[fade-in_1s_ease-out] text-6xl font-extrabold uppercase">
+					Kollapp
+				</h1>
+				<nav class="mt-8 space-x-6 text-lg">
+					<a href="#about" class="hover:underline">About</a>
+					<a href="#credits" class="hover:underline">Credits</a>
+				</nav>
+			</div>
+		</section>
+
+		<!-- ABOUT SECTION -->
+		<section id="about" class="flex h-screen snap-start items-center justify-center bg-white px-4">
+			<div class="max-w-2xl text-center">
+				<h2 class="mb-4 animate-[slide-in-left_0.8s_ease-out] text-4xl font-bold">Über Kollapp</h2>
+				<p class="animate-[slide-in-right_0.8s_ease-out] text-lg leading-relaxed">
+					Wir sind deine Agentur für kreative Kooperationen. Unser Fokus liegt auf kollaborativen Lösungen, die...
+				</p>
+			</div>
+		</section>
+
+		<!-- CREDITS SECTION -->
+		<section id="credits" class="flex h-screen snap-start items-center justify-center bg-gray-100 px-4">
+			<div class="max-w-xl text-center">
+				<h2 class="mb-4 animate-[fade-in_1.2s_ease-out] text-3xl font-semibold">Credits</h2>
+				<ul class="list-inside list-disc space-y-2">
+					<li>Design: Anna Müller</li>
+					<li>Entwicklung: Max Schmidt</li>
+					<li>Sound: Creative Beats</li>
+				</ul>
+			</div>
+		</section>
+	</body>
+</html>
