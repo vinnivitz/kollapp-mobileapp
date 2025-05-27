@@ -13,9 +13,7 @@ jqassistant:
     exclude-constraints:
       - jmolecules-hexagonal:ApplicationCoreMustOnlyDependOnItself
     groups:
-      - jmolecules-hexagonal:Default
       - jmolecules-hexagonal:Strict
-      - jmolecules-ddd:Default
       - jmolecules-ddd:Strict
       - kollapp-report:Default
     execute-applied-concepts: false

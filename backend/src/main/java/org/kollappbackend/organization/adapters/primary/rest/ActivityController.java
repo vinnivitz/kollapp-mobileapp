@@ -13,19 +13,16 @@ import org.kollappbackend.organization.adapters.primary.rest.model.ActivityTO;
 import org.kollappbackend.organization.adapters.primary.rest.model.ActivityUpdateRequestTO;
 import org.kollappbackend.organization.application.model.Activity;
 import org.kollappbackend.organization.application.service.ActivityService;
-import org.kollappbackend.user.application.model.RequiresManagerOrMemberRole;
 import org.kollappbackend.user.application.model.RequiresManagerRole;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @PrimaryAdapter
@@ -33,20 +30,14 @@ import java.util.List;
 @AllArgsConstructor
 public class ActivityController {
 
+    @Autowired
     private ActivityService activityService;
-    private ActivityMapper activityMapper;
-    private MessageSource messageSource;
 
-    @GetMapping("/{organization-id}/activities")
-    @Operation(summary = "Get the activities of an organization", security = {
-            @SecurityRequirement(name = "bearer-key")})
-    @RequiresManagerOrMemberRole
-    public ResponseEntity<ResponseTO> getActivitiesOfOrganization(
-            @PathVariable("organization-id") long organizationId) {
-        List<Activity> activities = activityService.getActivitiesOfOrganization(organizationId);
-        List<ActivityTO> activityTOs = activities.stream().map(a -> activityMapper.activityToActivityTO(a)).toList();
-        return ResponseEntity.ok(new DataResponseTO(activityTOs, "success.activity.get", messageSource));
-    }
+    @Autowired
+    private ActivityMapper activityMapper;
+
+    @Autowired
+    private MessageSource messageSource;
 
     @PostMapping("/{organization-id}/activity")
     @Operation(summary = "Create new activity for organization", security = {@SecurityRequirement(name = "bearer-key")})
@@ -74,7 +65,7 @@ public class ActivityController {
     }
 
     @DeleteMapping("/{organization-id}/activity/{activity-id}")
-    @Operation(summary = "Update activity of organization", security = {@SecurityRequirement(name = "bearer-key")})
+    @Operation(summary = "Delete activity of organization", security = {@SecurityRequirement(name = "bearer-key")})
     @RequiresManagerRole
     public ResponseEntity<MessageResponseTO> deleteActivityOfOrganization(
             @PathVariable("organization-id") long organizationId, @PathVariable("activity-id") long activityId) {

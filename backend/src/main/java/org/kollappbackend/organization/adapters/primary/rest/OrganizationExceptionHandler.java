@@ -1,18 +1,14 @@
 package org.kollappbackend.organization.adapters.primary.rest;
 
-import lombok.extern.slf4j.Slf4j;
 import org.kollappbackend.core.adapters.primary.rest.model.ErrorResponseTO;
 import org.kollappbackend.core.adapters.primary.rest.model.ResponseTO;
 import org.kollappbackend.organization.application.exception.ActivityNotFoundException;
 import org.kollappbackend.organization.application.exception.OrganizationNotFoundException;
 import org.kollappbackend.organization.application.exception.PersonNotRegisteredInOrganizationException;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-@Order(1)
-@Slf4j
 @ControllerAdvice(basePackages = {"org.kollappbackend.organization"})
 public class OrganizationExceptionHandler {
     @ExceptionHandler(OrganizationNotFoundException.class)

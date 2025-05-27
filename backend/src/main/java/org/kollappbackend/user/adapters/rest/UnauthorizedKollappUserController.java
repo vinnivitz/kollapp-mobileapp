@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @PrimaryAdapter
 public class UnauthorizedKollappUserController {
+
     @Autowired
     private MessageSource messageSource;
 

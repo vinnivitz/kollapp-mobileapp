@@ -19,15 +19,18 @@
         <report type="plantuml-component-diagram"/>
     </concept>
 
-    <concept id="kollap:DefinedBoundedContextDependencies">
+    <concept id="kollapp:DefinedBoundedContextDependencies">
         <providesConcept refId="jmolecules-ddd:AllowedBoundedContextDependency"/>
         <description>Propagates the allowed Bounded Context dependencies</description>
         <cypher><![CDATA[
             WITH
                 [
                     {upstream: 'Core', downstream: 'Organization'},
+                    {upstream: 'Core', downstream: 'User'},
+                    {upstream: 'Core', downstream: 'Accounting'},
                     {upstream: 'User', downstream: 'Organization'},
-                    {upstream: 'Core', downstream: 'User'}
+                    {upstream: 'User', downstream: 'Accounting'},
+                    {upstream: 'Organization', downstream: 'Accounting'}
                 ] as allowedDependencies
             UNWIND
                 allowedDependencies as allowedDependency
