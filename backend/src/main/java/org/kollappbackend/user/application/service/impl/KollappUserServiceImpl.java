@@ -16,6 +16,7 @@ import org.kollappbackend.user.application.model.ERole;
 import org.kollappbackend.user.application.model.KollappUser;
 import org.kollappbackend.user.application.model.KollappUserDeletedEvent;
 import org.kollappbackend.user.application.model.KollappUserDetails;
+import org.kollappbackend.user.application.model.KollappUserUpdatedEvent;
 import org.kollappbackend.user.application.publisher.KollappUserPublisher;
 import org.kollappbackend.user.application.repository.KollappUserRepository;
 import org.kollappbackend.user.application.service.EmailService;
@@ -138,6 +139,11 @@ public class KollappUserServiceImpl implements KollappUserService {
             emailService.sendConfirmationMail(kollappUser.getEmail(), confirmationBaseUrl);
             kollappUser.setEmail(email);
         }
+        KollappUserUpdatedEvent updatedEvent = new KollappUserUpdatedEvent(
+                this,
+                kollappUser.getUsername(),
+                kollappUser.getId());
+        kollappUserPublisher.publishUserUpdatedEvent(updatedEvent);
         return kollappUser;
     }
 

@@ -7,14 +7,17 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Entity
 @Getter
@@ -30,8 +33,15 @@ public class Organization {
 
     private String name;
 
+    private String description;
+
+    private String place;
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "organization", orphanRemoval = true)
     private List<PersonOfOrganization> personsOfOrganization;
+
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "organization", orphanRemoval = true)
+    private OrganizationInvitationCode organizationInvitationCode;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "organization", orphanRemoval = true)
     private List<Activity> activities;
@@ -63,5 +73,34 @@ public class Organization {
 
     public boolean hasOnlyOneManagerLeft() {
         return getManagers().size() == 1;
+    }
+
+    public OrganizationInvitationCode generateNewInvitationCode(int validityDays) {
+        String code = generateInvitationCode();
+        String expirationDate = LocalDate.now().plusDays(validityDays).toString();
+        this.organizationInvitationCode = OrganizationInvitationCode.builder()
+                .code(code)
+                .expirationDate(expirationDate)
+                .build();
+        return organizationInvitationCode;
+    }
+
+    private String generateInvitationCode() {
+        int leftLimit = 48; // numeral '0'
+        int rightLimit = 122; // letter 'z'
+        int targetStringLength = 8;
+        Random random = new Random();
+
+        return random.ints(leftLimit, rightLimit + 1)
+                .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+                .limit(targetStringLength)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+    }
+
+    public void exchangePersonOfOrganization(PersonOfOrganization original, PersonOfOrganization updated) {
+        updated.setOrganization(this);
+        personsOfOrganization.remove(original);
+        personsOfOrganization.add(updated);
     }
 }

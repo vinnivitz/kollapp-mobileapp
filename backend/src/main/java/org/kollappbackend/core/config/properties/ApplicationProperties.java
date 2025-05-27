@@ -20,4 +20,5 @@ public class ApplicationProperties {
     private String version;
     private String port;
     private int staticCacheDays;
+    private int organizationInvitationValidityDays;
 }

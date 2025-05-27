@@ -6,23 +6,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class OrganizationTO {
+public class PersonOfOrganizationTO {
     private long id;
-
-    private String name;
-
-    private String place;
-
-    private String description;
-
-    private OrganizationInvitationCodeTO organizationInvitationCode;
-
-    private List<PersonOfOrganizationTO> personsOfOrganization;
+    private String username;
+    private String role;
+    private String status;
 }
