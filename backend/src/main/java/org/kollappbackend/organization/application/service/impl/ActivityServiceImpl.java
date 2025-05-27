@@ -1,27 +1,33 @@
 package org.kollappbackend.organization.application.service.impl;
 
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
 import org.kollappbackend.organization.application.exception.ActivityNotFoundException;
 import org.kollappbackend.organization.application.exception.OrganizationNotFoundException;
 import org.kollappbackend.organization.application.model.Activity;
+import org.kollappbackend.organization.application.model.ActivityDeletedEvent;
 import org.kollappbackend.organization.application.model.Organization;
+import org.kollappbackend.organization.application.publisher.OrganizationPublisher;
 import org.kollappbackend.organization.application.repository.ActivityRepository;
 import org.kollappbackend.organization.application.repository.OrganizationRepository;
 import org.kollappbackend.organization.application.service.ActivityService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@AllArgsConstructor
 @Service
 @Transactional
 public class ActivityServiceImpl implements ActivityService {
 
+    @Autowired
     private ActivityRepository activityRepository;
+    @Autowired
     private OrganizationRepository organizationRepository;
+    @Autowired
     private MessageSource messageSource;
+    @Autowired
+    private OrganizationPublisher organizationPublisher;
 
     @Override
     public List<Activity> getActivitiesOfOrganization(long organizationId) {
@@ -55,5 +61,7 @@ public class ActivityServiceImpl implements ActivityService {
                 organization.getActivities().stream().filter(activity1 -> activity1.getId() == activityId).findFirst()
                         .orElseThrow(() -> new ActivityNotFoundException(messageSource));
         organization.getActivities().remove(activity);
+        ActivityDeletedEvent activityDeletedEvent = new ActivityDeletedEvent(this, activity.getId());
+        organizationPublisher.publishActivityDeletedEvent(activityDeletedEvent);
     }
 }

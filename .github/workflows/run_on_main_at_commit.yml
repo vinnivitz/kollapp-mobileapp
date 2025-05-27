@@ -27,8 +27,11 @@ jobs:
           node-version: '22.9.0'
       - name: NPM Build
         run: |
-          npm install --prefix mobileapp --frozen-lockfile
-          npm run lint --prefix mobileapp && npm run test && npm run build --prefix mobileapp
+          npm -g install pnpm 
+          pnpm install --prefix mobileapp --frozen-lockfile
+          pnpm --prefix mobileapp validate
+          pnpm --prefix mobileapp test
+          pnpm --prefix mobileapp build
       - name: Dump Docker container logs
         if: failure()
         run: |

@@ -11,13 +11,23 @@ public interface OrganizationService {
 
     Organization getOrganizationById(long id);
 
+    Organization getOrganizationByInvitationCode(String invitationCode);
+
     Organization createOrganization(Organization organization);
 
     Organization updateOrganization(Organization updatedOrganization, long organizationId);
 
     Organization deleteUserFromOrganization(long personOfOrganizationId, long organizationId);
 
+    Organization generateNewOrganizationInvitationCode(long organizationId);
+
+    Organization enterOrganizationByInvitationCode(String invitationCode);
+
     void deleteUserFromAllOrganizations(long personOfOrganizationId);
 
     void leaveOrganization(long organizationId);
+
+    void updatePersonOfOrganizationsOfUser(long userId, String username);
+
+    Organization grantRoleToPersonOfOrganization(long organizationId, long personId, String role);
 }

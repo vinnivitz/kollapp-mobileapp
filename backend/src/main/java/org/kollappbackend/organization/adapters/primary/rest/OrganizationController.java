@@ -9,6 +9,7 @@ import org.kollappbackend.core.adapters.primary.rest.model.DataResponseTO;
 import org.kollappbackend.core.adapters.primary.rest.model.MessageResponseTO;
 import org.kollappbackend.core.adapters.primary.rest.model.ResponseTO;
 import org.kollappbackend.organization.adapters.primary.rest.mapper.OrganizationMapper;
+import org.kollappbackend.organization.adapters.primary.rest.model.OrganizationBaseTO;
 import org.kollappbackend.organization.adapters.primary.rest.model.OrganizationCreationRequestTO;
 import org.kollappbackend.organization.adapters.primary.rest.model.OrganizationTO;
 import org.kollappbackend.organization.adapters.primary.rest.model.OrganizationUpdateRequestTO;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -37,6 +39,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @PrimaryAdapter
 public class OrganizationController {
+
     @Autowired
     private OrganizationService organizationService;
 
@@ -66,6 +69,51 @@ public class OrganizationController {
         Organization organization = organizationService.getOrganizationById(organizationId);
         OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(organization);
         return ResponseEntity.ok(new DataResponseTO(organizationTO, "success.organization.get", messageSource));
+    }
+
+    @GetMapping("/invitation/{invitation-code}")
+    @Operation(summary = "Get the basic information of the organization by its invitation code", security = {
+            @SecurityRequirement(name = "bearer-key")})
+    @RequiresKollappUserRole
+    public ResponseEntity<ResponseTO> getOrganizationBaseInformationByInvitationCode(
+            @PathVariable("invitation-code") String invitationCode) {
+        Organization organization = organizationService.getOrganizationByInvitationCode(invitationCode);
+        OrganizationBaseTO organizationBaseTO = organizationMapper.organizationToOrganizationBaseTO(organization);
+        return ResponseEntity.ok(new DataResponseTO(organizationBaseTO, "success.organization.get", messageSource));
+    }
+
+    @PostMapping("/invitation/{invitation-code}")
+    @Operation(summary = "Enter an organization based on its invitation code.", security = {
+            @SecurityRequirement(name = "bearer-key")})
+    @RequiresKollappUserRole
+    public ResponseEntity<ResponseTO> enterOrganizationBasedOnInvitationCode(
+            @PathVariable("invitation-code") String invitationCode) {
+        Organization organization = organizationService.enterOrganizationByInvitationCode(invitationCode);
+        OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(organization);
+        return ResponseEntity.ok(new DataResponseTO(organizationTO, "success.organization.get", messageSource));
+    }
+
+    @PostMapping("/{organization-id}/person/{person-id}/grant-role")
+    @Operation(summary = "Grant a certain role to a person of an organization.", security = {
+            @SecurityRequirement(name = "bearer-key")})
+    @RequiresManagerRole
+    public ResponseEntity<ResponseTO> grantRoleToPersonOfOrganization(@PathVariable("organization-id") long organizationId,
+                                                                      @PathVariable("person-id") long personId,
+                                                                      @RequestParam("role") String role) {
+        Organization organization = organizationService.grantRoleToPersonOfOrganization(organizationId, personId, role);
+        OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(organization);
+        return ResponseEntity.ok(new DataResponseTO(organizationTO, "success.organization.get", messageSource));
+    }
+
+    @PostMapping("/{organization-id}/invitation-code")
+    @Operation(summary = "Renew the invitation code of the organization.", security = {
+            @SecurityRequirement(name = "bearer-key")})
+    @RequiresManagerRole
+    public ResponseEntity<ResponseTO> updateOrganizationInvitationCode(
+            @PathVariable("organization-id") long organizationId) {
+        Organization organization = organizationService.generateNewOrganizationInvitationCode(organizationId);
+        OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(organization);
+        return ResponseEntity.ok(new DataResponseTO(organizationTO, "success.organization.update", messageSource));
     }
 
     @PostMapping

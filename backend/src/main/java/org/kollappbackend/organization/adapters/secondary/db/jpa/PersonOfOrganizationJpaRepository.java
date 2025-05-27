@@ -11,5 +11,6 @@ import java.util.Optional;
 @Repository
 public interface PersonOfOrganizationJpaRepository extends JpaRepository<PersonOfOrganization, Long> {
     List<PersonOfOrganization> findByUserId(long userId);
+
     Optional<PersonOfOrganization> findByUserIdAndOrganization(long userId, Organization organization);
 }

@@ -17,19 +17,19 @@ describe('ItemComponent', () => {
 		expect(ionItem?.textContent).toContain(childText);
 	});
 
-	it('renders iconStart when provided and sets icon color to medium if item color is light', () => {
+	it('renders start icon when provided and sets icon color to medium if item color is light', () => {
 		const properties = {
 			children: createRawSnippet(() => ({
 				render: () => `<p>Test content</p>`
 			})),
 			color: 'light' as const,
-			iconStart: 'start-icon'
+			icon: 'start-icon'
 		};
 		const { container } = render(CustomItem, { props: properties });
 
 		const startIcon = container.querySelector('ion-icon[slot="start"]');
 		expect(startIcon).toBeDefined();
-		expect(startIcon?.getAttribute('icon')).toBe(properties.iconStart);
+		expect(startIcon?.getAttribute('icon')).toBe(properties.icon);
 		expect(startIcon?.getAttribute('color')).toBe('medium');
 	});
 
@@ -111,13 +111,13 @@ describe('ItemComponent', () => {
 				render: () => `<p>Test content</p>`
 			})),
 			color: 'light' as const,
-			iconStart: 'start-icon' as const
+			icon: 'start-icon' as const
 		};
 		const { container } = render(CustomItem, { props: properties });
 
 		const startIcon = container.querySelector('ion-icon[slot="start"]');
 		expect(startIcon).toBeDefined();
-		expect(startIcon?.getAttribute('icon')).toBe(properties.iconStart);
+		expect(startIcon?.getAttribute('icon')).toBe(properties.icon);
 		expect(startIcon?.getAttribute('color')).toBe('medium');
 
 		const properties2 = {
@@ -125,13 +125,13 @@ describe('ItemComponent', () => {
 				render: () => `<p>Test content</p>`
 			})),
 			color: 'white' as const,
-			iconStart: 'start-icon' as const
+			icon: 'start-icon' as const
 		};
 		const { container: container2 } = render(CustomItem, { props: properties2 });
 		const startIcon2 = container2.querySelector('ion-icon[slot="start"]');
 
 		expect(startIcon2).toBeDefined();
-		expect(startIcon2?.getAttribute('icon')).toBe(properties2.iconStart);
+		expect(startIcon2?.getAttribute('icon')).toBe(properties2.icon);
 		expect(startIcon2?.getAttribute('color')).toBe('medium');
 
 		const properties3 = {
@@ -139,13 +139,13 @@ describe('ItemComponent', () => {
 				render: () => `<p>Test content</p>`
 			})),
 			color: 'dark' as const,
-			iconStart: 'start-icon' as const
+			icon: 'start-icon' as const
 		};
 		const { container: container3 } = render(CustomItem, { props: properties3 });
 		const startIcon3 = container3.querySelector('ion-icon[slot="start"]');
 
 		expect(startIcon3).toBeDefined();
-		expect(startIcon3?.getAttribute('icon')).toBe(properties3.iconStart);
+		expect(startIcon3?.getAttribute('icon')).toBe(properties3.icon);
 		expect(startIcon3?.getAttribute('color')).toBe('white');
 	});
 });

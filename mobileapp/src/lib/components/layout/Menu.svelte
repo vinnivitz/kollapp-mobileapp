@@ -83,7 +83,7 @@
 			<Button
 				size="default"
 				fill="outline"
-				click={() => logout()}
+				click={logout}
 				icon={icons.logOutOutline}
 				label={$t('components.layout.header.button.logout')}
 			/>

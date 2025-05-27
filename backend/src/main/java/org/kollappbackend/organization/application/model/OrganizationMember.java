@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @DiscriminatorValue("member")
 @NoArgsConstructor
 public class OrganizationMember extends PersonOfOrganization {
-    public OrganizationMember(long userId) {
-        super(userId);
+    public OrganizationMember(long userId, String username, PersonOfOrganizationStatus status) {
+        super(userId, username, status);
     }
 }
