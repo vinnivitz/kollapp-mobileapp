@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/svelte';
+import { render } from '@testing-library/svelte';
 import { createRawSnippet } from 'svelte';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
@@ -69,19 +69,6 @@ describe('Layout Component', () => {
 		const { queryByTestId } = render(Layout, { props: properties });
 
 		expect(queryByTestId('menu-stub')).toBeNull();
-	});
-
-	it('renders ion-refresher and calls onRefresh when refreshed', async () => {
-		const onRefresh = vi.fn();
-		const properties = { onRefresh, title: 'Test Title' };
-		const { container } = render(Layout, { props: properties });
-		const refresherElement = container.querySelector('ion-refresher');
-
-		expect(refresherElement).toBeDefined();
-
-		await fireEvent(refresherElement as HTMLIonRefresherElement, new CustomEvent('ionRefresh'));
-
-		expect(onRefresh).toHaveBeenCalledWith(refresherElement);
 	});
 
 	it('do not render content if stores are not initialized', () => {

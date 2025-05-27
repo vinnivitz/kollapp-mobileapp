@@ -8,16 +8,19 @@ import { PageRoute } from '$lib/models/routing';
 import { authenticationStore, connectionStore, layoutStore, themeStore } from '$lib/stores';
 import { isAuthenticated, navigateBack } from '$lib/utility';
 
-let initialized = false;
-
 export const ssr = false;
 
+let initialized = false;
+
 export const load: LayoutLoad = async ({ url }) => {
-	handleRouting(url.pathname, await isAuthenticated());
+	const authenticated = await isAuthenticated();
+	handleRouting(url.pathname, authenticated);
 	if (!initialized) {
 		initialized = true;
 		handleAppEvents();
 		await initStores();
+	} else if (!authenticated) {
+		await authenticationStore.init();
 	}
 };
 

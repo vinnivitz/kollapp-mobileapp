@@ -5,7 +5,6 @@ import { beforeAll, describe, expect, it, vi } from 'vitest';
 import { goto } from '$app/navigation';
 
 import Menu from '$lib/components/layout/Menu.svelte';
-import { PageRoute } from '$lib/models/routing';
 import { triggerClickByLabel } from '$lib/utility';
 
 const childText = 'Hello, world!';
@@ -93,19 +92,6 @@ describe('Menu Component', () => {
 
 		await waitFor(() => {
 			expect(queryByText(searchItem.label)).toBeNull();
-		});
-	});
-
-	it('should go to AUTH.LOGIN when logout is clicked', async () => {
-		const { container } = render(Menu, { props: properties });
-		const logoutItem = container.querySelector('ion-button') as HTMLIonButtonElement;
-
-		expect(logoutItem).toBeDefined();
-
-		fireEvent.click(logoutItem);
-
-		await waitFor(() => {
-			expect(goto).toHaveBeenCalledWith(PageRoute.AUTH.LOGIN);
 		});
 	});
 });

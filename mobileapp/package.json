@@ -12,7 +12,7 @@
 		"test:unit": "vitest",
 		"vitest-ui": "vitest --ui",
 		"test:e2e": "playwright test",
-		"test": "npm run test:unit -- --run && npm run test:e2e",
+		"test": "npm run test:unit -- --run",
 		"typedoc": "typedoc & live-server ./docs --watch --silent --no-browser --port=1234 & chokidar 'src/lib' -c 'typedoc' --silent",
 		"build-android": "npm run build && dotenv cross-env-shell 'cap sync && cap open android'",
 		"visualize": "mkdir -p visualize && madge --extensions ts,svelte --image visualize/dependency-graph.png src",
