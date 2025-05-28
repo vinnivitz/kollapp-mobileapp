@@ -23,7 +23,7 @@
 	import { UserRole } from '$lib/models/api';
 	import { PageRoute } from '$lib/models/routing';
 	import { organizationStore } from '$lib/stores';
-	import { hasRole, showAlert } from '$lib/utility';
+	import { hasRole } from '$lib/utility';
 
 	const organizationModel = $derived<OrganizationModel | undefined>($organizationStore);
 	const organizations = svelteDerived([organizationStore.organizations], ([$organizations]) => $organizations);
@@ -88,7 +88,8 @@
 				label={$t('routes.organization.list.update-info.update-info')}
 			/>
 			<LabeledItem
-				click={() => showAlert('Feature not implemented yet')}
+				searchable={PageRoute.ORGANIZATION.MEMBERS}
+				click={() => goto(PageRoute.ORGANIZATION.MEMBERS)}
 				icon={peopleOutline}
 				label={$t('routes.organization.list.organization.members')}
 			/>

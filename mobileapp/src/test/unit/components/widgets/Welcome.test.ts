@@ -10,8 +10,8 @@ describe('Welcome Component', () => {
 		const ionText = container.querySelector('ion-text');
 		const ionNote = container.querySelector('ion-note');
 
-		expect(ionImg).toBeDefined();
-		expect(ionText).toBeDefined();
-		expect(ionNote).toBeDefined();
+		expect(ionImg).toBeTruthy();
+		expect(ionText).toBeTruthy();
+		expect(ionNote).toBeTruthy();
 	});
 });

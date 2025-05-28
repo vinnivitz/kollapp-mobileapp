@@ -38,7 +38,7 @@ describe('Tabs Component', () => {
 
 		const ionTabs = container.querySelector('ion-tabs') as HTMLIonTabsElement;
 
-		expect(ionTabs).toBeDefined();
+		expect(ionTabs).toBeTruthy();
 		expect(ionTabs.textContent).toContain(childContent);
 	});
 

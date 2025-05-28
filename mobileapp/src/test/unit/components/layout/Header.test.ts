@@ -37,7 +37,7 @@ describe('Header Component', () => {
 		expect(ionTitle?.textContent).toBe(properties.title);
 
 		const backButton = container.querySelector('ion-back-button');
-		expect(backButton).toBeDefined();
+		expect(backButton).toBeTruthy();
 	});
 
 	test('renders logo when showBackButton is false and clicking logo navigates home', async () => {

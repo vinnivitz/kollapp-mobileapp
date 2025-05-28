@@ -32,7 +32,7 @@ describe('ModalComponent', () => {
 		const { getByText } = render(ModalComponent, { props: properties });
 		const cancelButton = getByText(properties.cancelLabel);
 
-		expect(cancelButton).toBeDefined();
+		expect(cancelButton).toBeTruthy();
 
 		await fireEvent.click(cancelButton);
 
@@ -52,7 +52,7 @@ describe('ModalComponent', () => {
 		const { getByText } = render(ModalComponent, { props: properties });
 
 		const confirmButton = getByText(properties.confirmLabel);
-		expect(confirmButton).toBeDefined();
+		expect(confirmButton).toBeTruthy();
 
 		await fireEvent.click(confirmButton);
 

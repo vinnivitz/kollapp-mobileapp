@@ -12,7 +12,7 @@ describe('LabeledItem Component', () => {
 		const { container } = render(LabeledItem, { props: properties });
 		const ionLabel = container.querySelector('ion-label');
 
-		expect(ionLabel).toBeDefined();
+		expect(ionLabel).toBeTruthy();
 		expect(ionLabel?.getAttribute('color')).toBe('dark');
 		expect(ionLabel?.textContent).toBe(properties.label);
 	});
@@ -25,7 +25,7 @@ describe('LabeledItem Component', () => {
 		const { container } = render(LabeledItem, { props: properties });
 		const ionLabel = container.querySelector('ion-label');
 
-		expect(ionLabel).toBeDefined();
+		expect(ionLabel).toBeTruthy();
 		expect(ionLabel?.getAttribute('color')).toBe('white');
 		expect(ionLabel?.textContent).toBe(properties.label);
 	});

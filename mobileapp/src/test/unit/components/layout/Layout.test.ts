@@ -1,4 +1,4 @@
-import { render } from '@testing-library/svelte';
+import { fireEvent, render } from '@testing-library/svelte';
 import { createRawSnippet } from 'svelte';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
@@ -76,6 +76,20 @@ describe('Layout Component', () => {
 		const properties = { hideLayout: false, hideMenu: false, title: 'Test Title' };
 		const { container } = render(Layout, { props: properties });
 
-		expect(container.querySelector('ion-progress-bar')).toBeDefined();
+		expect(container.querySelector('ion-content')).toBeFalsy();
+	});
+
+	it('renders ion-refresher and calls onRefresh when refreshed', async () => {
+		storesInitialized = true;
+		const onRefresh = vi.fn();
+		const properties = { onRefresh, title: 'Test Title' };
+		const { container } = render(Layout, { props: properties });
+		const refresherElement = container.querySelector('ion-refresher') as HTMLIonRefresherElement;
+
+		expect(refresherElement).toBeTruthy();
+
+		await fireEvent(refresherElement, new CustomEvent('ionRefresh'));
+
+		expect(onRefresh).toHaveBeenCalled();
 	});
 });

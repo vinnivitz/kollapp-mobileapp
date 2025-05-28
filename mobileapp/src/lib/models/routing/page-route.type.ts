@@ -27,6 +27,7 @@ export const PageRoute = {
 		ACTIVITIES: '/organization/activities',
 		JOIN: '/organization/join',
 		LEAVE: '/organization/leave',
+		MEMBERS: '/organization/members',
 		REGISTER: '/organization/register',
 		ROOT: '/organization',
 		UPDATE_DATA: '/organization/update-data'

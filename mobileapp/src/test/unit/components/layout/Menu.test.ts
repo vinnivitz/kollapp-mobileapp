@@ -4,6 +4,7 @@ import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { goto } from '$app/navigation';
 
+import { authResource } from '$lib/api/resources';
 import Menu from '$lib/components/layout/Menu.svelte';
 import { triggerClickByLabel } from '$lib/utility';
 
@@ -36,7 +37,7 @@ describe('Menu Component', () => {
 		const searchbar = container.querySelector('ion-searchbar');
 
 		expect(ionContent?.textContent).toContain(childText);
-		expect(searchbar).toBeDefined();
+		expect(searchbar).toBeTruthy();
 	});
 
 	it('should perform a search and navigate when a search result is clicked', async () => {
@@ -48,8 +49,8 @@ describe('Menu Component', () => {
 		ionMenu.close = vi.fn();
 
 		expect(ionContent?.textContent).toContain(childText);
-		expect(ionMenu).toBeDefined();
-		expect(searchbar).toBeDefined();
+		expect(ionMenu).toBeTruthy();
+		expect(searchbar).toBeTruthy();
 
 		await fireEvent(
 			searchbar as HTMLIonSearchbarElement,
@@ -79,8 +80,8 @@ describe('Menu Component', () => {
 		ionMenu.close = vi.fn();
 
 		expect(ionContent?.textContent).toContain(childText);
-		expect(ionMenu).toBeDefined();
-		expect(searchbar).toBeDefined();
+		expect(ionMenu).toBeTruthy();
+		expect(searchbar).toBeTruthy();
 
 		await fireEvent(searchbar as HTMLIonSearchbarElement, new CustomEvent('ionInput', { detail: { value: '' } }));
 
@@ -93,5 +94,13 @@ describe('Menu Component', () => {
 		await waitFor(() => {
 			expect(queryByText(searchItem.label)).toBeNull();
 		});
+	});
+
+	it('calls logout when clicking the logout button', async () => {
+		const { container } = render(Menu, { props: properties });
+		const logoutButton = container.querySelector('ion-button') as HTMLIonButtonElement;
+		expect(logoutButton).toBeTruthy();
+		await fireEvent.click(logoutButton);
+		await waitFor(() => expect(authResource.logout).toHaveBeenCalled());
 	});
 });

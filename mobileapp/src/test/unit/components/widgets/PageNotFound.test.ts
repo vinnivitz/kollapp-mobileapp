@@ -11,7 +11,7 @@ describe('PageNotFound Component', () => {
 		const { container } = render(PageNotFound);
 		const ionButton = container.querySelector('ion-button') as HTMLIonButtonElement;
 
-		expect(ionButton).toBeDefined();
+		expect(ionButton).toBeTruthy();
 
 		await fireEvent.click(ionButton);
 

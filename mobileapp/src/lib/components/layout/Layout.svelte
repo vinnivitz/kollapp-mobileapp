@@ -43,7 +43,7 @@
 
 	async function doRefresh(): Promise<void> {
 		await (onRefresh ? onRefresh() : Promise.all([userStore.init(), organizationStore.init()]));
-		refresher?.complete();
+		refresher?.complete?.();
 	}
 </script>
 
