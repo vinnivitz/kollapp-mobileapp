@@ -8,6 +8,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+    open-in-view: false
+  profiles:
+    active: ${BACKEND_PROFILE:default}
 
   mail:
     host: ${BACKEND_MAIL_HOST:localhost}
@@ -28,6 +31,9 @@ spring:
       charset: UTF-8
       enabled: true
       force: true
+logging:
+  level:
+    web: DEBUG
 
 server:
   port: ${BACKEND_PORT:8080}
