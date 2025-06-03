@@ -1,7 +1,7 @@
 import { render } from '@testing-library/svelte';
 import { describe, expect, it } from 'vitest';
 
-import SegmentButton from '$lib/components/widgets/SegmentButton.svelte'; // adjust the path as needed
+import SegmentButton from '$lib/components/widgets/ionic/SegmentButton.svelte'; // adjust the path as needed
 
 describe('SegmentButton', () => {
 	it('renders ion-segment-button with value and label', () => {

@@ -2,7 +2,7 @@ import { fireEvent, render } from '@testing-library/svelte';
 import { createRawSnippet } from 'svelte';
 import { describe, expect, it, vi } from 'vitest';
 
-import ModalComponent from '$lib/components/widgets/Modal.svelte';
+import ModalComponent from '$lib/components/widgets/ionic/Modal.svelte';
 
 describe('ModalComponent', () => {
 	it('renders children content when open', () => {

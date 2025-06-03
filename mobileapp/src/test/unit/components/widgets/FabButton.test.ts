@@ -1,7 +1,7 @@
 import { fireEvent, render } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 
-import FabButton from '$lib/components/widgets/FabButton.svelte';
+import FabButton from '$lib/components/widgets/ionic/FabButton.svelte';
 
 describe('FabButton', () => {
 	it('renders ion-fab with default vertical and horizontal alignment', () => {

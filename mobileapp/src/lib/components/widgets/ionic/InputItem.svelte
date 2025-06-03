@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Colors } from '$lib/models/ui';
 
-	import CustomItem from '$lib/components/widgets/CustomItem.svelte';
+	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
 
 	type InputType = 'date' | 'email' | 'number' | 'password' | 'text';
 

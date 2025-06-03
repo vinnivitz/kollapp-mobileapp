@@ -3,9 +3,9 @@
 	import { object, ObjectSchema } from 'yup';
 
 	import Layout from '$lib/components/layout/Layout.svelte';
-	import Button from '$lib/components/widgets/Button.svelte';
-	import Card from '$lib/components/widgets/Card.svelte';
-	import InputItem from '$lib/components/widgets/InputItem.svelte';
+	import Button from '$lib/components/widgets/ionic/Button.svelte';
+	import Card from '$lib/components/widgets/ionic/Card.svelte';
+	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import { t } from '$lib/locales';
 	import { Form, type FormConfig } from '$lib/models/ui';
 	import { customForm, showAlert } from '$lib/utility';

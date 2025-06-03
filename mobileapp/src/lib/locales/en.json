@@ -305,7 +305,7 @@
           }
         },
         "organization": {
-          "members": "Manage members",
+          "members": "Members",
           "leave": {
             "label": "Leave collective"
           },

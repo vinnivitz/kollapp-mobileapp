@@ -10,11 +10,11 @@
 	import { type LoginDto, type VerifyPasswordDto, verifyPasswordSchema } from '$lib/api/dto/client/auth';
 	import { authResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
-	import Button from '$lib/components/widgets/Button.svelte';
-	import Card from '$lib/components/widgets/Card.svelte';
-	import CustomItem from '$lib/components/widgets/CustomItem.svelte';
-	import InputItem from '$lib/components/widgets/InputItem.svelte';
-	import LabeledItem from '$lib/components/widgets/LabeledItem.svelte';
+	import Button from '$lib/components/widgets/ionic/Button.svelte';
+	import Card from '$lib/components/widgets/ionic/Card.svelte';
+	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
+	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
+	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
 	import { t } from '$lib/locales';
 	import { PreferencesKey } from '$lib/models/preferences';
 	import { PageRoute } from '$lib/models/routing';

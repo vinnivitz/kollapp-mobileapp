@@ -509,7 +509,7 @@
           }
         },
         "organization": {
-          "members": "Mitglieder verwalten",
+          "members": "Mitglieder",
           "leave": {
             "label": "Kollektiv verlassen"
           },

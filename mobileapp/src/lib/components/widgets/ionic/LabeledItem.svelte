@@ -2,7 +2,7 @@
 	import type { UserRole } from '$lib/models/api';
 	import type { Colors } from '$lib/models/ui';
 
-	import CustomItem from '$lib/components/widgets/CustomItem.svelte';
+	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
 
 	type Properties = {
 		label: string;

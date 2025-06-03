@@ -1,7 +1,7 @@
 import { fireEvent, render } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 
-import Button from '$lib/components/widgets/Button.svelte';
+import Button from '$lib/components/widgets/ionic/Button.svelte';
 
 describe('Button Component', () => {
 	it('renders label and start icon with "outline" fill (font-extrabold)', () => {

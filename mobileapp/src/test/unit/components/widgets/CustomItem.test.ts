@@ -2,7 +2,7 @@ import { fireEvent, render } from '@testing-library/svelte';
 import { createRawSnippet } from 'svelte';
 import { describe, expect, it, vi } from 'vitest';
 
-import CustomItem from '$lib/components/widgets/CustomItem.svelte';
+import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
 
 describe('ItemComponent', () => {
 	it('renders children content', () => {

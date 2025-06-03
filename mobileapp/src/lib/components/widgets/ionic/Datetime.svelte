@@ -11,7 +11,10 @@
 		applyText?: string;
 		color?: Colors;
 		dismissText?: string;
+		includeDate?: boolean;
+		includeTime?: boolean;
 		showTitle?: boolean;
+		value?: string;
 		apply?: (value: string) => void;
 		dismiss?: () => void;
 	};
@@ -22,7 +25,10 @@
 		color = 'secondary',
 		dismiss,
 		dismissText = $t('components.widgets.calendar.dismiss-button.label'),
-		showTitle = true
+		includeDate = true,
+		includeTime = false,
+		showTitle = true,
+		value = new Date().toISOString()
 	}: Properties = $props();
 
 	let calendar = $state<HTMLIonDatetimeElement>();
@@ -38,10 +44,17 @@
 		selectedDate = event.detail.value as string;
 		apply?.(selectedDate);
 	}
+
+	function getPresentation(): 'date-time' | 'date' | 'time' {
+		if (includeDate && includeTime) return 'date-time';
+		if (includeDate) return 'date';
+		return 'time';
+	}
 </script>
 
 <!-- svelte-ignore event_directive_deprecated -->
 <ion-datetime
+	{value}
 	show-default-buttons
 	cancel-text={dismissText}
 	done-text={applyText}
@@ -54,7 +67,7 @@
 	locale={$locale}
 	on:ionChange={onApply}
 	first-day-of-week={1}
-	presentation="date"
+	presentation={getPresentation()}
 >
 	{#if showTitle}
 		<span slot="title">{$t('routes.organization.page.activity.calendar.title')}</span>

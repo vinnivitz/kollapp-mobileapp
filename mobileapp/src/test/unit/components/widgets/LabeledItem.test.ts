@@ -1,7 +1,7 @@
 import { render } from '@testing-library/svelte';
 import { describe, expect, it } from 'vitest';
 
-import LabeledItem from '$lib/components/widgets/LabeledItem.svelte';
+import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
 
 describe('LabeledItem Component', () => {
 	it('renders the label inside an ion-label with the correct color for light backgrounds', () => {
