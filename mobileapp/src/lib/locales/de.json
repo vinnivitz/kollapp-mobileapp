@@ -26,16 +26,8 @@
               "min": "Der Benutzername muss mindestens 2 Zeichen lang sein",
               "required": "Benutzername ist erforderlich"
             },
-            "surname": {
-              "min": "Vorname muss mindestens ein Zeichen lang sein",
-              "max": "Der Nachname muss weniger als 50 Zeichen lang sein",
-              "required": "Nachname ist erforderlich"
-            },
-            "name": {
-              "max": "Der Name muss weniger als 50 Zeichen lang sein",
-              "min": "Der Name muss mindestens 1 Zeichen lang sein",
-              "required": "Name ist erforderlich"
-            }
+            "surname": {},
+            "name": {}
           }
         }
       },
@@ -101,6 +93,13 @@
               "max": "Der Name darf maximal 50 Zeichen lang sein",
               "min": "Der Name muss mindestens ein Charakter lang sein",
               "required": "Name ist erforderlich"
+            },
+            "place": {
+              "max": "Der Name des Ortes muss weniger als 50 Zeichen lang sein",
+              "required": "Name des Ortes ist erforderlich"
+            },
+            "description": {
+              "max": "Die Beschreibung muss weniger als 500 Zeichen lang sein"
             }
           }
         }
@@ -147,6 +146,23 @@
             "email": {
               "invalid": "Ungültige E -Mail",
               "required": "E -Mail ist erforderlich"
+            }
+          }
+        }
+      },
+      "update-organization": {
+        "schema": {
+          "validation": {
+            "place": {
+              "max": "Der Name des Ortes muss weniger als 50 Zeichen lang sein",
+              "required": "Name des Ortes ist erforderlich"
+            },
+            "description": {
+              "max": "Die Beschreibung muss weniger als 500 Zeichen lang sein"
+            },
+            "name": {
+              "required": "Name ist erforderlich",
+              "max": "Der Name muss weniger als 50 Zeichen lang sein"
             }
           }
         }
@@ -244,7 +260,6 @@
         },
         "account": {
           "button": {
-            "change-password": "Password ändern",
             "update-data": "Benutzerdaten aktualisieren",
             "delete-account": "Konto löschen",
             "privacy-and-security": "Privatsphäre und Sicherheit"
@@ -310,8 +325,6 @@
               "submit": "Aktualisieren"
             },
             "email": "E-Mail",
-            "name": "Name",
-            "surename": "Nachname",
             "username": "Benutzername"
           },
           "title": "Aktualisiere deine Daten"
@@ -408,11 +421,7 @@
           }
         },
         "biometrics": "Mit Biometrie anmelden",
-        "biometric": {
-          "title": "Bei Kollapp anmelden",
-          "subtitle": "Authentifizieren mit Biometrie",
-          "cancel": "Abbrechen"
-        }
+        "biometric": {}
       },
       "register": {
         "form": {
@@ -632,6 +641,17 @@
             }
           },
           "create": "Veranstaltung erstellen"
+        },
+        "register": {
+          "form": {
+            "place": "Ort",
+            "description": "Beschreibung"
+          }
+        },
+        "update-data": {
+          "form": {
+            "description": "Beschreibung"
+          }
         }
       },
       "change-organization": {

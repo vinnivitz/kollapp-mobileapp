@@ -82,7 +82,7 @@ export function clickOutside(node: Node): { destroy: () => void } {
 export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy(): void } {
 	const ionFormActions = writable<FormActions>();
 	let dirty = false;
-	const inputs = [...node.querySelectorAll('ion-input')];
+	const inputs = [...node.querySelectorAll('ion-input'), ...node.querySelectorAll('ion-textarea')];
 	const customInputs = [...node.querySelectorAll('[data-name]')] as HTMLElement[];
 	const keys = Object.keys(data.model as object);
 	const passwordIcons: HTMLIonIconElement[] = [];
@@ -103,7 +103,7 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 		input.value = (
 			formatter ? formatter(data.model[input.name as keyof T]) : data.model[input.name as keyof T]
 		) as string;
-		if (input.type === 'password') {
+		if (isIonInputElement(input) && input.type === 'password') {
 			input.clearOnEdit = false;
 			addPasswordIcon(input);
 		}
@@ -326,4 +326,8 @@ async function validate<T>(schema: ObjectSchema<AnyObject, T>, data: T): Promise
 		}
 		return { errors, valid: false };
 	}
+}
+
+function isIonInputElement(element: HTMLIonInputElement | HTMLIonTextareaElement): element is HTMLIonInputElement {
+	return 'type' in element;
 }

@@ -59,11 +59,7 @@
           }
         },
         "biometrics": "Log in with biometrics",
-        "biometric": {
-          "title": "Log in to Kollapp",
-          "subtitle": "Authenticate with biometrics",
-          "cancel": "Cancel"
-        }
+        "biometric": {}
       },
       "register": {
         "title": "Register",
@@ -157,7 +153,6 @@
         "account": {
           "title": "Account settings",
           "button": {
-            "change-password": "Change password",
             "update-data": "Update user data",
             "delete-account": "Delete account",
             "privacy-and-security": "Privacy and security"
@@ -247,8 +242,6 @@
         "card": {
           "title": "Update your data",
           "form": {
-            "surename": "Surename",
-            "name": "Name",
             "username": "Username",
             "email": "Email",
             "button": {
@@ -431,6 +424,22 @@
             }
           },
           "create": "Create event"
+        },
+        "register": {
+          "form": {
+            "place": "Place",
+            "description": "Description"
+          },
+          "modal": {
+            "map": {
+              "button": {}
+            }
+          }
+        },
+        "update-data": {
+          "form": {
+            "description": "Description"
+          }
         }
       },
       "change-organization": {
@@ -536,16 +545,8 @@
             "confirm-password": {
               "no-match": "Must match the password"
             },
-            "surname": {
-              "min": "Surname must be at least 1 character",
-              "max": "Surname must be less then 50 characters",
-              "required": "Surname ist required"
-            },
-            "name": {
-              "min": "Name must be at least 1 character",
-              "max": "Name must be less then 50 characters",
-              "required": "Name is required"
-            }
+            "surname": {},
+            "name": {}
           }
         }
       },
@@ -611,6 +612,13 @@
               "min": "Name must be at least one character long",
               "max": "Name must be less than 50 characters long",
               "required": "Name is required"
+            },
+            "description": {
+              "max": "Description must be less then 500 characters long"
+            },
+            "place": {
+              "max": "Name of place must be less then 50 characters long",
+              "required": "Name of place is required"
             }
           }
         }
@@ -657,6 +665,23 @@
             "email": {
               "invalid": "Invalid Email",
               "required": "Email is required"
+            }
+          }
+        }
+      },
+      "update-organization": {
+        "schema": {
+          "validation": {
+            "description": {
+              "max": "Description must be less then 500 characters long"
+            },
+            "name": {
+              "required": "Name is required",
+              "max": "Name must be less then 50 characters long"
+            },
+            "place": {
+              "max": "Name of place must be less then 50 characters long",
+              "required": "Name of place is required"
             }
           }
         }

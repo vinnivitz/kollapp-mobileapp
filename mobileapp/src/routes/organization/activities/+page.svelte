@@ -121,7 +121,9 @@
 	let updateForm = $state(new Form(updateActivitySchema().cast({}) as UpdateActivityDto, updateConfig));
 
 	$effect(() => {
-		filteredActivities = activityItems;
+		if (activityItems) {
+			filteredActivities = activityItems;
+		}
 	});
 
 	async function onCreateSubmit(model: CreateActivityDto, result: ValidationResult): Promise<void> {
@@ -314,7 +316,7 @@
 {/snippet}
 
 {#snippet activityList()}
-	{#if activityItems}
+	{#if activityItems && filteredActivities}
 		{#if activityItems.length === 0}
 			<div class="mt-4 text-center" in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
 				{$t('routes.organization.page.activity.no-activities')}

@@ -85,14 +85,7 @@
 			icon={peopleOutline}
 			label={$t('routes.organization.list.organization.members')}
 		/>
-		<LabeledItem
-			searchable={PageRoute.ORGANIZATION.LEAVE}
-			color="danger"
-			click={() => goto(PageRoute.ORGANIZATION.LEAVE)}
-			icon={logOutOutline}
-			label={$t('routes.organization.list.organization.leave.label')}
-		/>
-		{#if hasRole(UserRole.MANAGER)}
+		{#if !hasRole(UserRole.MANAGER)}
 			<LabeledItem
 				searchable={PageRoute.ORGANIZATION.UPDATE_DATA}
 				accessible={[UserRole.MANAGER]}
@@ -101,6 +94,13 @@
 				label={$t('routes.organization.list.update-info.update-info')}
 			/>
 		{/if}
+		<LabeledItem
+			searchable={PageRoute.ORGANIZATION.LEAVE}
+			color="danger"
+			click={() => goto(PageRoute.ORGANIZATION.LEAVE)}
+			icon={logOutOutline}
+			label={$t('routes.organization.list.organization.leave.label')}
+		/>
 	</ion-list>
 {/snippet}
 

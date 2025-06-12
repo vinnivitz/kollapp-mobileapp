@@ -78,19 +78,19 @@
     "route": "/organization/members"
   },
   {
-    "icon": "logOutOutline",
-    "id": 14,
-    "label": "routes.organization.list.organization.leave.label",
-    "route": "/organization/leave"
-  },
-  {
     "accessible": [
       "ROLE_MANAGER"
     ],
     "icon": "buildOutline",
-    "id": 15,
+    "id": 14,
     "label": "routes.organization.list.update-info.update-info",
     "route": "/organization/update-data"
+  },
+  {
+    "icon": "logOutOutline",
+    "id": 15,
+    "label": "routes.organization.list.organization.leave.label",
+    "route": "/organization/leave"
   },
   {
     "icon": "createOutline",
