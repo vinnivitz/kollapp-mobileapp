@@ -4,7 +4,7 @@ import { get } from 'svelte/store';
 
 import { dev } from '$app/environment';
 
-import { authResource } from '$lib/api/resources';
+import { authResource, errorLogResource } from '$lib/api/resources';
 import environment from '$lib/environment';
 import { Locale, t } from '$lib/locales';
 import {
@@ -205,8 +205,11 @@ async function createErrorResponse(status: number, message: string, silent: bool
 	if (!silent) {
 		showAlert(message);
 	}
+	const log = `status: ${status}, msg: ${message}`;
 	if (dev) {
-		console.warn(`status: ${status}, msg: ${message}`);
+		console.warn(log);
+	} else if (!StatusCheck.isUnauthorized(status)) {
+		errorLogResource.reportErrorLog(log);
 	}
 	return { data: {} as never, message, status };
 }

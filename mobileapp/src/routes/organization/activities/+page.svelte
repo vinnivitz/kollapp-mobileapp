@@ -197,7 +197,7 @@
 		await loader.dismiss();
 	}
 
-	function onCancelCreateModal(): void {
+	async function onCancelCreateModal(): Promise<void> {
 		createModalOpen = false;
 		selectedLocation = '';
 	}

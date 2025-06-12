@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { loadingController } from 'ionic-svelte';
-	import { fingerPrintOutline, keyOutline, notificationsOutline } from 'ionicons/icons';
+	import { fingerPrintOutline, keyOutline, notificationsOutline, receiptOutline } from 'ionicons/icons';
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
 
@@ -112,6 +112,12 @@
 			icon={notificationsOutline}
 			label={$t('routes.account.list.account.privacy-and-security.button.notifications')}
 		/>
+		<LabeledItem
+			label={$t('routes.account.page.privacy-and-security.security.list.legal')}
+			icon={receiptOutline}
+			searchable={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.LEGAL}
+			click={() => goto(PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.LEGAL)}
+		></LabeledItem>
 	</ion-list>
 	<ion-list inset>
 		<ion-list-header>{$t('routes.account.page.privacy-and-security.list.security')}</ion-list-header>
