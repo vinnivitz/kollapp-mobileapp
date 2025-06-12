@@ -3,7 +3,6 @@
     "home": {
       "title": "Kollapp",
       "card": {
-        "authenticated": {},
         "organization": {
           "button": "Go to collective",
           "register": "Register",
@@ -39,7 +38,7 @@
           "link": "Reset"
         },
         "resend-confirmation": {
-          "text": "Didn´t received the confirmation mail?",
+          "text": "Didn't received the confirmation mail?",
           "link": "Resend"
         },
         "alert": {
@@ -49,17 +48,9 @@
           "welcome": {
             "title": "Welcome to Kollapp!",
             "content": "The app for all the collectives out there."
-          },
-          "dev": {}
-        },
-        "model": {
-          "reset-password": {
-            "card": {},
-            "modal": {}
           }
         },
-        "biometrics": "Log in with biometrics",
-        "biometric": {}
+        "biometrics": "Log in with biometrics"
       },
       "register": {
         "title": "Register",
@@ -109,9 +100,6 @@
         },
         "confirmation": {
           "title": "Reset password",
-          "register": {
-            "form": {}
-          },
           "form": {
             "title": "Reset your password",
             "input": {
@@ -141,8 +129,7 @@
             "title": "Update your password"
           }
         }
-      },
-      "register-organization": {}
+      }
     },
     "account": {
       "title": "Account",
@@ -173,13 +160,7 @@
         }
       },
       "app": {
-        "language": {
-          "action-sheet": {
-            "buttons": {}
-          }
-        },
         "list": {
-          "appearence": {},
           "language": {
             "button": "Change language"
           },
@@ -230,11 +211,6 @@
             "bw": "Black and white"
           },
           "title": "Change color theme"
-        }
-      },
-      "account": {
-        "form": {
-          "button": {}
         }
       },
       "update-data": {
@@ -301,7 +277,6 @@
         }
       }
     },
-    "finances": {},
     "organization": {
       "title": "Collective",
       "update-info": {
@@ -315,8 +290,6 @@
         "update-info": {
           "update-info": "Update collective info"
         },
-        "danger-zone": {},
-        "register": {},
         "current-collective": {
           "title": "Collective"
         },
@@ -338,13 +311,7 @@
           "activity": {
             "label": "Manage events"
           }
-        },
-        "activity": {
-          "create": {}
         }
-      },
-      "delete": {
-        "card": {}
       },
       "page": {
         "join": {
@@ -388,7 +355,6 @@
               }
             }
           },
-          "show-calendar-toggle": {},
           "calendar": {
             "done": "Create event",
             "title": "Selected date"
@@ -401,7 +367,6 @@
             "calendar": "Calendar"
           },
           "no-activities-found": "No results for \"{{value}}\"",
-          "button": {},
           "filters": {
             "title": "Filters",
             "type": {
@@ -429,11 +394,6 @@
           "form": {
             "place": "Place",
             "description": "Description"
-          },
-          "modal": {
-            "map": {
-              "button": {}
-            }
           }
         },
         "update-data": {
@@ -482,7 +442,6 @@
         }
       },
       "calendar": {
-        "cancel-button": {},
         "done-button": {
           "label": "Apply"
         },
@@ -544,9 +503,7 @@
             },
             "confirm-password": {
               "no-match": "Must match the password"
-            },
-            "surname": {},
-            "name": {}
+            }
           }
         }
       },
@@ -562,15 +519,9 @@
           }
         }
       },
-      "email": {
-        "schema": {
-          "validation": {}
-        }
-      },
       "reset-password": {
         "schema": {
           "validation": {
-            "oldPassword": {},
             "newPassword": {
               "min": "The new password must be at least 8 characters",
               "max": "New password must be less then 255 characters",
