@@ -1,7 +1,7 @@
 import { fireEvent, render } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 
-import Calendar from '$lib/components/widgets/Calendar.svelte';
+import Calendar from '$lib/components/widgets/ionic/Datetime.svelte';
 
 describe('Calendar Component', () => {
 	it('renders with title when showTitle is true', () => {

@@ -14,7 +14,7 @@ let initialized = false;
 
 export const load: LayoutLoad = async ({ url }) => {
 	const authenticated = await isAuthenticated();
-	handleRouting(url.pathname, authenticated);
+	await handleRouting(url.pathname, authenticated);
 	if (!initialized) {
 		initialized = true;
 		handleAppEvents();
@@ -25,12 +25,12 @@ export const load: LayoutLoad = async ({ url }) => {
 };
 
 async function handleRouting(pathname: string, authenticated: boolean): Promise<void> {
-	const isAuthPath = pathname.startsWith('/auth');
+	const isAuthPath = pathname.startsWith(PageRoute.AUTH.ROOT);
 
 	if (authenticated && isAuthPath) {
-		goto(PageRoute.HOME);
+		return goto(PageRoute.HOME);
 	} else if (!authenticated && !isAuthPath) {
-		goto(PageRoute.AUTH.LOGIN);
+		return goto(PageRoute.AUTH.LOGIN);
 	}
 }
 

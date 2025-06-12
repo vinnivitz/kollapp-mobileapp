@@ -8,6 +8,7 @@
 		calendarClearOutline,
 		calendarOutline,
 		closeOutline,
+		codeOutline,
 		createOutline,
 		documentOutline,
 		filterOutline,
@@ -15,6 +16,7 @@
 		hourglassOutline,
 		locationOutline,
 		mapOutline,
+		timeOutline,
 		trashBinOutline
 	} from 'ionicons/icons';
 	import { fade } from 'svelte/transition';
@@ -28,15 +30,15 @@
 	import { organizationResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import ActivityCard from '$lib/components/widgets/ActivityCard.svelte';
-	import Button from '$lib/components/widgets/Button.svelte';
-	import Calendar from '$lib/components/widgets/Calendar.svelte';
-	import Card from '$lib/components/widgets/Card.svelte';
-	import CustomItem from '$lib/components/widgets/CustomItem.svelte';
-	import FabButton from '$lib/components/widgets/FabButton.svelte';
-	import InputItem from '$lib/components/widgets/InputItem.svelte';
+	import Button from '$lib/components/widgets/ionic/Button.svelte';
+	import Card from '$lib/components/widgets/ionic/Card.svelte';
+	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
+	import Datetime from '$lib/components/widgets/ionic/Datetime.svelte';
+	import FabButton from '$lib/components/widgets/ionic/FabButton.svelte';
+	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
+	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
+	import SegmentButton from '$lib/components/widgets/ionic/SegmentButton.svelte';
 	import LeafletMap from '$lib/components/widgets/LeafletMap.svelte';
-	import Modal from '$lib/components/widgets/Modal.svelte';
-	import SegmentButton from '$lib/components/widgets/SegmentButton.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
@@ -77,9 +79,13 @@
 		}
 	]);
 
+	let includeTime = $state(false);
+	let isDateRange = $state(false);
+
 	let activityView = $state(ActivityView.activities);
 
-	let showSelectDateCalendar = $state(false);
+	let showDateCalendar = $state(false);
+	let showTimePicker = $state(false);
 
 	let showFilters = $state(false);
 
@@ -92,8 +98,9 @@
 
 	let selectedActivityId: number;
 	let selectedDate = $state(new Date().toISOString());
-	let selectedLocation = $state<string>('');
-	let cachedLocation = $state<string>('');
+	let selectedTime = $state(new Date().toISOString());
+	let selectedLocation = $state('');
+	let cachedLocation = $state('');
 
 	let createActions: FormActions<CreateActivityDto>;
 	let updateActions: FormActions<UpdateActivityDto>;
@@ -114,7 +121,9 @@
 	let updateForm = $state(new Form(updateActivitySchema().cast({}) as UpdateActivityDto, updateConfig));
 
 	$effect(() => {
-		filteredActivities = activityItems;
+		if (activityItems) {
+			filteredActivities = activityItems;
+		}
 	});
 
 	async function onCreateSubmit(model: CreateActivityDto, result: ValidationResult): Promise<void> {
@@ -190,7 +199,7 @@
 		await loader.dismiss();
 	}
 
-	function onCancelCreateModal(): void {
+	async function onCancelCreateModal(): Promise<void> {
 		createModalOpen = false;
 		selectedLocation = '';
 	}
@@ -203,6 +212,16 @@
 	function onSearchEvents(event: CustomEvent): void {
 		searchActivityValue = event.detail.value ?? '';
 		filteredActivities = activityItems.filter((activity) => activity.name.toLowerCase().includes(searchActivityValue));
+	}
+
+	function onConfirmMap(): void {
+		mapModalOpen = false;
+		selectedLocation = cachedLocation;
+		if (createModalOpen) {
+			createActions.onUpdate('location', selectedLocation);
+		} else if (editModalOpen) {
+			updateActions.onUpdate('location', selectedLocation);
+		}
 	}
 </script>
 
@@ -266,11 +285,11 @@
 
 				{@render activityList()}
 			{:else if activityView === ActivityView.calendar}
-				<Calendar
+				<Datetime
 					apply={onCreateActivity}
 					applyText={$t('routes.organization.page.activity.calendar.done')}
 					dismissText=""
-				></Calendar>
+				></Datetime>
 			{/if}
 		</ion-segment-content>
 	</ion-segment-view>
@@ -297,28 +316,49 @@
 {/snippet}
 
 {#snippet activityList()}
-	{#if activityItems.length === 0}
-		<div class="mt-4 text-center" in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
-			{$t('routes.organization.page.activity.no-activities')}
-		</div>
-	{:else if filteredActivities.length > 0}
-		<ion-list in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
-			{#each filteredActivities as activity (activity.id)}
-				<ActivityCard value={activity} edit={() => onEditActivity(activity)} />
-			{/each}
-		</ion-list>
-	{:else}
-		<div class="mt-4 text-center" in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
-			{$t('routes.organization.page.activity.no-activities-found', { value: searchActivityValue })}
-		</div>
+	{#if activityItems && filteredActivities}
+		{#if activityItems.length === 0}
+			<div class="mt-4 text-center" in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
+				{$t('routes.organization.page.activity.no-activities')}
+			</div>
+		{:else if filteredActivities.length > 0}
+			<ion-list in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
+				{#each filteredActivities as activity (activity.id)}
+					<ActivityCard value={activity} edit={() => onEditActivity(activity)} />
+				{/each}
+			</ion-list>
+		{:else}
+			<div class="mt-4 text-center" in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
+				{$t('routes.organization.page.activity.no-activities-found', { value: searchActivityValue })}
+			</div>
+		{/if}
 	{/if}
 {/snippet}
 
 <!-- svelte-ignore event_directive_deprecated -->
-<ion-popover class="extended" is-open={showSelectDateCalendar} on:didDismiss={() => (showSelectDateCalendar = false)}>
-	{#if showSelectDateCalendar}
+<ion-popover class="extended" is-open={showDateCalendar} on:didDismiss={() => (showDateCalendar = false)}>
+	{#if showDateCalendar}
 		<div class="text-center">
-			<Calendar apply={(value) => (selectedDate = value)} dismiss={() => (showSelectDateCalendar = false)}></Calendar>
+			<Datetime
+				value={selectedDate}
+				apply={(value) => (selectedDate = value)}
+				dismiss={() => (showDateCalendar = false)}
+			></Datetime>
+		</div>
+	{/if}
+</ion-popover>
+
+<!-- svelte-ignore event_directive_deprecated -->
+<ion-popover class="extended" is-open={showTimePicker} on:didDismiss={() => (showTimePicker = false)}>
+	{#if showTimePicker}
+		<div class="text-center">
+			<Datetime
+				value={selectedTime}
+				apply={(value) => (selectedTime = value)}
+				dismiss={() => (showDateCalendar = false)}
+				includeTime
+				includeDate={false}
+			></Datetime>
 		</div>
 	{/if}
 </ion-popover>
@@ -360,30 +400,88 @@
 					icon={documentOutline}
 				/>
 				<InputItem
-					value={selectedLocation}
 					name="location"
 					label={$t('routes.organization.page.activity.create-modal.card.input.location')}
 					icon={locationOutline}
 					inputIcon={mapOutline}
 					inputIconClick={() => (mapModalOpen = true)}
+					value={selectedLocation}
 				/>
-				<CustomItem
-					icon={calendarClearOutline}
-					iconEnd={calendarOutline}
-					iconClick={() => (showSelectDateCalendar = true)}
-				>
+				<CustomItem icon={calendarClearOutline}>
 					<div class="flex flex-col">
 						<ion-note color="secondary" class="ms-4 pt-2 text-xs">Date</ion-note>
-						<Button
-							classList="-ms-1"
-							fill="clear"
-							color="dark"
-							size="default"
-							type="button"
-							click={() => (showSelectDateCalendar = true)}
-							label={format(selectedDate, 'PPP')}
-						></Button>
+						<div class="-ms-5 flex">
+							<Button
+								classList="p-0"
+								fill="clear"
+								color="dark"
+								size="default"
+								type="button"
+								click={() => (showDateCalendar = true)}
+								label={format(selectedDate, 'PPP')}
+							></Button>
+							{#if includeTime}
+								<Button
+									classList="p-0"
+									fill="clear"
+									color="dark"
+									size="default"
+									type="button"
+									click={() => (showTimePicker = true)}
+									label={format(selectedTime, 'p')}
+								></Button>
+							{/if}
+						</div>
 					</div>
+				</CustomItem>
+				{#if isDateRange}
+					<CustomItem icon={calendarClearOutline}>
+						<div class="flex flex-col">
+							<ion-note color="secondary" class="ms-4 pt-2 text-xs">Date</ion-note>
+							<div class="-ms-5 flex">
+								<Button
+									classList="p-0"
+									fill="clear"
+									color="dark"
+									size="default"
+									type="button"
+									click={() => (showDateCalendar = true)}
+									label={format(selectedDate, 'PPP')}
+								></Button>
+								{#if includeTime}
+									<Button
+										classList="p-0"
+										fill="clear"
+										color="dark"
+										size="default"
+										type="button"
+										click={() => (showTimePicker = true)}
+										label={format(selectedTime, 'p')}
+									></Button>
+								{/if}
+							</div>
+						</div>
+					</CustomItem>
+				{/if}
+				<CustomItem icon={codeOutline}>
+					<!-- svelte-ignore event_directive_deprecated -->
+					<ion-toggle
+						enable-on-off-labels
+						on:ionChange={() => (isDateRange = !isDateRange)}
+						checked={isDateRange}
+						class="ms-4"
+						justify="space-between">Include end date</ion-toggle
+					>
+				</CustomItem>
+				<CustomItem icon={timeOutline}>
+					<!-- svelte-ignore event_directive_deprecated -->
+					<ion-toggle
+						enable-on-off-labels
+						on:ionChange={() => (includeTime = !includeTime)}
+						checked={includeTime}
+						class="ms-4"
+						justify="space-between">Include time</ion-toggle
+					>
 				</CustomItem>
 			</form>
 		</Card>
@@ -398,10 +496,7 @@
 		cachedLocation = '';
 	}}
 	confirmLabel={$t('routes.organization.page.activity.map-modal.button.confirm')}
-	confirm={() => {
-		mapModalOpen = false;
-		selectedLocation = cachedLocation;
-	}}
+	confirm={onConfirmMap}
 	cancelLabel={$t('routes.organization.page.activity.map-modal.button.cancel')}
 >
 	{#if mapModalOpen}
@@ -433,18 +528,14 @@
 						inputIconClick={() => (mapModalOpen = true)}
 						value={selectedLocation}
 					/>
-					<CustomItem
-						icon={calendarClearOutline}
-						iconEnd={calendarOutline}
-						iconClick={() => (showSelectDateCalendar = true)}
-					>
+					<CustomItem icon={calendarClearOutline} iconEnd={calendarOutline} iconClick={() => (showDateCalendar = true)}>
 						<Button
 							classList="ms-[-8px]"
 							fill="clear"
 							color="dark"
 							size="default"
 							type="button"
-							click={() => (showSelectDateCalendar = true)}
+							click={() => (showDateCalendar = true)}
 							label={format(selectedDate, 'PPP')}
 						></Button>
 					</CustomItem>

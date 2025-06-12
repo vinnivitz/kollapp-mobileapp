@@ -15,6 +15,7 @@
 		"test": "npm run test:unit -- --run",
 		"typedoc": "typedoc & live-server ./docs --watch --silent --no-browser --port=1234 & chokidar 'src/lib' -c 'typedoc' --silent",
 		"build-android": "npm run build && dotenv cross-env-shell 'cap sync && cap open android'",
+		"build-web": "cross-env ADAPTER=node npm run build",
 		"visualize": "mkdir -p visualize && madge --extensions ts,svelte --image visualize/dependency-graph.png src",
 		"index-searchables": "tsx ./src/lib/utility/index-searchables.ts"
 	},
@@ -26,6 +27,7 @@
 		"@capacitor/core": "^7.1.0",
 		"@eslint/js": "^9.22.0",
 		"@playwright/test": "^1.51.0",
+		"@sveltejs/adapter-node": "^5.2.12",
 		"@sveltejs/adapter-static": "^3.0.8",
 		"@sveltejs/kit": "^2.19.2",
 		"@sveltejs/package": "^2.3.10",

@@ -2,7 +2,7 @@ import { fireEvent, render } from '@testing-library/svelte';
 import { createRawSnippet } from 'svelte';
 import { describe, expect, it, vi } from 'vitest';
 
-import CustomItem from '$lib/components/widgets/CustomItem.svelte';
+import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
 
 describe('ItemComponent', () => {
 	it('renders children content', () => {
@@ -28,7 +28,7 @@ describe('ItemComponent', () => {
 		const { container } = render(CustomItem, { props: properties });
 
 		const startIcon = container.querySelector('ion-icon[slot="start"]');
-		expect(startIcon).toBeDefined();
+		expect(startIcon).toBeTruthy();
 		expect(startIcon?.getAttribute('icon')).toBe(properties.icon);
 		expect(startIcon?.getAttribute('color')).toBe('medium');
 	});
@@ -44,8 +44,8 @@ describe('ItemComponent', () => {
 		const endButton = container.querySelector('ion-button[slot="end"]');
 		const endIcon = endButton?.querySelector('ion-icon[slot="icon-only"]');
 
-		expect(endButton).toBeDefined();
-		expect(endIcon).toBeDefined();
+		expect(endButton).toBeTruthy();
+		expect(endIcon).toBeTruthy();
 		expect(endIcon?.getAttribute('icon')).toBe(iconEnd);
 		expect(endIcon?.getAttribute('size')).toBe('large');
 	});
@@ -62,7 +62,7 @@ describe('ItemComponent', () => {
 		});
 		const ionItem = container.querySelector('ion-item');
 
-		expect(ionItem).toBeDefined();
+		expect(ionItem).toBeTruthy();
 		expect(ionItem?.getAttribute('data-card')).toBeTruthy();
 		expect(ionItem?.getAttribute('data-transparent')).toBeTruthy();
 	});
@@ -79,7 +79,7 @@ describe('ItemComponent', () => {
 		});
 		const ionItem = container.querySelector('ion-item') as HTMLIonItemElement;
 
-		expect(ionItem).toBeDefined();
+		expect(ionItem).toBeTruthy();
 
 		await fireEvent.click(ionItem);
 		expect(clickMock).toHaveBeenCalled();
@@ -99,7 +99,7 @@ describe('ItemComponent', () => {
 		});
 		const iconButton = container.querySelector('ion-button[slot="end"]') as HTMLIonButtonElement;
 
-		expect(iconButton).toBeDefined();
+		expect(iconButton).toBeTruthy();
 
 		await fireEvent.click(iconButton);
 		expect(iconClickMock).toHaveBeenCalled();
@@ -116,7 +116,7 @@ describe('ItemComponent', () => {
 		const { container } = render(CustomItem, { props: properties });
 
 		const startIcon = container.querySelector('ion-icon[slot="start"]');
-		expect(startIcon).toBeDefined();
+		expect(startIcon).toBeTruthy();
 		expect(startIcon?.getAttribute('icon')).toBe(properties.icon);
 		expect(startIcon?.getAttribute('color')).toBe('medium');
 
@@ -130,7 +130,7 @@ describe('ItemComponent', () => {
 		const { container: container2 } = render(CustomItem, { props: properties2 });
 		const startIcon2 = container2.querySelector('ion-icon[slot="start"]');
 
-		expect(startIcon2).toBeDefined();
+		expect(startIcon2).toBeTruthy();
 		expect(startIcon2?.getAttribute('icon')).toBe(properties2.icon);
 		expect(startIcon2?.getAttribute('color')).toBe('medium');
 
@@ -144,7 +144,7 @@ describe('ItemComponent', () => {
 		const { container: container3 } = render(CustomItem, { props: properties3 });
 		const startIcon3 = container3.querySelector('ion-icon[slot="start"]');
 
-		expect(startIcon3).toBeDefined();
+		expect(startIcon3).toBeTruthy();
 		expect(startIcon3?.getAttribute('icon')).toBe(properties3.icon);
 		expect(startIcon3?.getAttribute('color')).toBe('white');
 	});

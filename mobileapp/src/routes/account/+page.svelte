@@ -22,7 +22,7 @@
 	import { goto } from '$app/navigation';
 
 	import LayoutComponent from '$lib/components/layout/Layout.svelte';
-	import LabeledItem from '$lib/components/widgets/LabeledItem.svelte';
+	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
 	import { Locale, t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
 	import { Layout, Theme } from '$lib/models/ui';

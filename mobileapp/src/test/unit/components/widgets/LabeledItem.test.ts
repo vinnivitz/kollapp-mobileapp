@@ -1,7 +1,7 @@
 import { render } from '@testing-library/svelte';
 import { describe, expect, it } from 'vitest';
 
-import LabeledItem from '$lib/components/widgets/LabeledItem.svelte';
+import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
 
 describe('LabeledItem Component', () => {
 	it('renders the label inside an ion-label with the correct color for light backgrounds', () => {
@@ -12,7 +12,7 @@ describe('LabeledItem Component', () => {
 		const { container } = render(LabeledItem, { props: properties });
 		const ionLabel = container.querySelector('ion-label');
 
-		expect(ionLabel).toBeDefined();
+		expect(ionLabel).toBeTruthy();
 		expect(ionLabel?.getAttribute('color')).toBe('dark');
 		expect(ionLabel?.textContent).toBe(properties.label);
 	});
@@ -25,7 +25,7 @@ describe('LabeledItem Component', () => {
 		const { container } = render(LabeledItem, { props: properties });
 		const ionLabel = container.querySelector('ion-label');
 
-		expect(ionLabel).toBeDefined();
+		expect(ionLabel).toBeTruthy();
 		expect(ionLabel?.getAttribute('color')).toBe('white');
 		expect(ionLabel?.textContent).toBe(properties.label);
 	});

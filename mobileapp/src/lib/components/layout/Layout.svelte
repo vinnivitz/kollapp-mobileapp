@@ -7,7 +7,7 @@
 
 	import Header from '$lib/components/layout/Header.svelte';
 	import Menu from '$lib/components/layout/Menu.svelte';
-	import LabeledItem from '$lib/components/widgets/LabeledItem.svelte';
+	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
 	import { initializationStore, organizationStore, userStore } from '$lib/stores';
@@ -43,7 +43,7 @@
 
 	async function doRefresh(): Promise<void> {
 		await (onRefresh ? onRefresh() : Promise.all([userStore.init(), organizationStore.init()]));
-		refresher?.complete();
+		refresher?.complete?.();
 	}
 </script>
 

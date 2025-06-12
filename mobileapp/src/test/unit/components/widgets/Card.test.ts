@@ -2,7 +2,7 @@ import { fireEvent, render } from '@testing-library/svelte';
 import { createRawSnippet } from 'svelte';
 import { describe, expect, it, vi } from 'vitest';
 
-import Card from '$lib/components/widgets/Card.svelte';
+import Card from '$lib/components/widgets/ionic/Card.svelte';
 
 describe('CardComponent', () => {
 	const childContent = 'Child content';

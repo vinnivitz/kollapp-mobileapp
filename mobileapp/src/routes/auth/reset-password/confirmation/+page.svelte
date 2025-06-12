@@ -9,9 +9,9 @@
 	import { type ResetPasswordConfirmationDto, resetPasswordConfirmationSchema } from '$lib/api/dto/client/auth';
 	import { publicUserResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
-	import Button from '$lib/components/widgets/Button.svelte';
-	import Card from '$lib/components/widgets/Card.svelte';
-	import InputItem from '$lib/components/widgets/InputItem.svelte';
+	import Button from '$lib/components/widgets/ionic/Button.svelte';
+	import Card from '$lib/components/widgets/ionic/Card.svelte';
+	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';

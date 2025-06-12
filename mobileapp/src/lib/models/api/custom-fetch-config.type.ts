@@ -13,9 +13,9 @@ export type CustomFetchConfig =
 			silentOnSuccess?: boolean;
 	  }
 	| {
-			body: string;
 			method: RequestMethod.POST | RequestMethod.PUT;
 			authorizationType?: AuthorizationType;
+			body?: string;
 			query?: Record<string, string>;
 			silentOnError?: boolean;
 			silentOnSuccess?: boolean;

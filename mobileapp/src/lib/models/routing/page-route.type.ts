@@ -8,6 +8,7 @@ export const PageRoute = {
 		PRIVACY_AND_SECURITY: {
 			BIOMETRICS: '/account/privacy-and-security/biometrics',
 			CHANGE_PASSWORD: '/account/privacy-and-security/change-password',
+			LEGAL: '/account/privacy-and-security/legal',
 			NOTIFICATIONS: '/account/privacy-and-security/notifications',
 			ROOT: '/account/privacy-and-security'
 		},
@@ -19,7 +20,8 @@ export const PageRoute = {
 		REGISTER: '/auth/register',
 		REGISTER_ORGANIZATION: '/auth/register-organization',
 		RESEND_CONFIRMATION: '/auth/resend-confirmation',
-		RESET_PASSWORD: '/auth/reset-password'
+		RESET_PASSWORD: '/auth/reset-password',
+		ROOT: '/auth'
 	},
 	FINANCES: '/finances',
 	HOME: '/',
@@ -27,6 +29,7 @@ export const PageRoute = {
 		ACTIVITIES: '/organization/activities',
 		JOIN: '/organization/join',
 		LEAVE: '/organization/leave',
+		MEMBERS: '/organization/members',
 		REGISTER: '/organization/register',
 		ROOT: '/organization',
 		UPDATE_DATA: '/organization/update-data'

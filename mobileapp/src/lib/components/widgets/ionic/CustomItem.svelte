@@ -4,9 +4,12 @@
 
 	type Properties = {
 		children: Snippet;
+		bottomBorder?: boolean;
+		button?: boolean;
 		card?: boolean;
 		classList?: string;
 		color?: Colors | undefined;
+		disabled?: boolean;
 		icon?: string;
 		iconEnd?: string;
 		id?: string;
@@ -17,11 +20,14 @@
 	};
 
 	let {
+		bottomBorder = true,
+		button = false,
 		card = false,
 		children,
 		classList,
 		click,
 		color = 'light',
+		disabled = false,
 		icon,
 		iconClick,
 		iconEnd,
@@ -39,14 +45,17 @@
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <ion-item
+	{disabled}
 	{id}
 	data-card={card}
-	button={!!click}
+	button={!!click || button}
 	{color}
 	detail={!!click}
 	data-transparent={transparent}
 	onclick={click}
 	class={classList}
+	class:no-bottom-border={!bottomBorder}
+	style="--ion-color-shade: var(--border-color) !important;"
 >
 	{#if icon}
 		<ion-icon {icon} slot="start" color={iconColor}></ion-icon>
@@ -60,10 +69,9 @@
 </ion-item>
 
 <style>
-	ion-item::part(native) {
-		margin-bottom: 5px;
+	ion-item.no-bottom-border {
+		--inner-border-width: 0;
 	}
-
 	ion-item[data-card='true']::part(native) {
 		background-color: var(--ion-background-color-step-100);
 	}

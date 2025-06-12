@@ -10,6 +10,11 @@ import { showAlert } from '$lib/utility';
 
 const $t = get(t);
 
+/**
+ * Fetches locations based on a query string using the Nominatim API.
+ * @param query The query string to search for locations.
+ * @returns {Promise<AddressModel[]>} A promise that resolves to an array of AddressModel objects.
+ */
 export async function getLocationsByQuery(query: string): Promise<AddressModel[]> {
 	try {
 		const response = await fetch(
@@ -28,6 +33,11 @@ export async function getLocationsByQuery(query: string): Promise<AddressModel[]
 	}
 }
 
+/**
+ * Fetches the location details based on latitude and longitude using the Nominatim API.
+ * @param latlng The latitude and longitude coordinates.
+ * @returns {Promise<AddressModel | undefined>} A promise that resolves to an AddressModel object or undefined if not found.
+ */
 export async function getLocationByLatLng(latlng: LatLng): Promise<AddressModel | undefined> {
 	try {
 		const response = await fetch(

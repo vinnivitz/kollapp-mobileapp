@@ -16,14 +16,14 @@
 	import { goto } from '$app/navigation';
 
 	import Layout from '$lib/components/layout/Layout.svelte';
-	import Button from '$lib/components/widgets/Button.svelte';
-	import Card from '$lib/components/widgets/Card.svelte';
-	import LabeledItem from '$lib/components/widgets/LabeledItem.svelte';
+	import Button from '$lib/components/widgets/ionic/Button.svelte';
+	import Card from '$lib/components/widgets/ionic/Card.svelte';
+	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
 	import { t } from '$lib/locales';
 	import { UserRole } from '$lib/models/api';
 	import { PageRoute } from '$lib/models/routing';
 	import { organizationStore } from '$lib/stores';
-	import { hasRole, showAlert } from '$lib/utility';
+	import { hasRole } from '$lib/utility';
 
 	const organizationModel = $derived<OrganizationModel | undefined>($organizationStore);
 	const organizations = svelteDerived([organizationStore.organizations], ([$organizations]) => $organizations);
@@ -79,28 +79,28 @@
 			searchable={PageRoute.ORGANIZATION.ACTIVITIES}
 			click={() => goto(PageRoute.ORGANIZATION.ACTIVITIES)}
 		></LabeledItem>
-		{#if hasRole(UserRole.ORGANIZATION_MANAGER)}
+		<LabeledItem
+			searchable={PageRoute.ORGANIZATION.MEMBERS}
+			click={() => goto(PageRoute.ORGANIZATION.MEMBERS)}
+			icon={peopleOutline}
+			label={$t('routes.organization.list.organization.members')}
+		/>
+		{#if !hasRole(UserRole.MANAGER)}
 			<LabeledItem
 				searchable={PageRoute.ORGANIZATION.UPDATE_DATA}
-				accessible={[UserRole.ORGANIZATION_MANAGER]}
+				accessible={[UserRole.MANAGER]}
 				click={() => goto(PageRoute.ORGANIZATION.UPDATE_DATA)}
 				icon={buildOutline}
 				label={$t('routes.organization.list.update-info.update-info')}
 			/>
-			<LabeledItem
-				click={() => showAlert('Feature not implemented yet')}
-				icon={peopleOutline}
-				label={$t('routes.organization.list.organization.members')}
-			/>
-			<LabeledItem
-				searchable={PageRoute.ORGANIZATION.LEAVE}
-				accessible={[UserRole.ORGANIZATION_MANAGER]}
-				color="danger"
-				click={() => goto(PageRoute.ORGANIZATION.LEAVE)}
-				icon={logOutOutline}
-				label={$t('routes.organization.list.organization.leave.label')}
-			/>
 		{/if}
+		<LabeledItem
+			searchable={PageRoute.ORGANIZATION.LEAVE}
+			color="danger"
+			click={() => goto(PageRoute.ORGANIZATION.LEAVE)}
+			icon={logOutOutline}
+			label={$t('routes.organization.list.organization.leave.label')}
+		/>
 	</ion-list>
 {/snippet}
 

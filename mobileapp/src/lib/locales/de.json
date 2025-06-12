@@ -26,16 +26,8 @@
               "min": "Der Benutzername muss mindestens 2 Zeichen lang sein",
               "required": "Benutzername ist erforderlich"
             },
-            "surname": {
-              "min": "Vorname muss mindestens ein Zeichen lang sein",
-              "max": "Der Nachname muss weniger als 50 Zeichen lang sein",
-              "required": "Nachname ist erforderlich"
-            },
-            "name": {
-              "max": "Der Name muss weniger als 50 Zeichen lang sein",
-              "min": "Der Name muss mindestens 1 Zeichen lang sein",
-              "required": "Name ist erforderlich"
-            }
+            "surname": {},
+            "name": {}
           }
         }
       },
@@ -101,6 +93,13 @@
               "max": "Der Name darf maximal 50 Zeichen lang sein",
               "min": "Der Name muss mindestens ein Charakter lang sein",
               "required": "Name ist erforderlich"
+            },
+            "place": {
+              "max": "Der Name des Ortes muss weniger als 50 Zeichen lang sein",
+              "required": "Name des Ortes ist erforderlich"
+            },
+            "description": {
+              "max": "Die Beschreibung muss weniger als 500 Zeichen lang sein"
             }
           }
         }
@@ -147,6 +146,23 @@
             "email": {
               "invalid": "Ungültige E -Mail",
               "required": "E -Mail ist erforderlich"
+            }
+          }
+        }
+      },
+      "update-organization": {
+        "schema": {
+          "validation": {
+            "place": {
+              "max": "Der Name des Ortes muss weniger als 50 Zeichen lang sein",
+              "required": "Name des Ortes ist erforderlich"
+            },
+            "description": {
+              "max": "Die Beschreibung muss weniger als 500 Zeichen lang sein"
+            },
+            "name": {
+              "required": "Name ist erforderlich",
+              "max": "Der Name muss weniger als 50 Zeichen lang sein"
             }
           }
         }
@@ -244,7 +260,6 @@
         },
         "account": {
           "button": {
-            "change-password": "Password ändern",
             "update-data": "Benutzerdaten aktualisieren",
             "delete-account": "Konto löschen",
             "privacy-and-security": "Privatsphäre und Sicherheit"
@@ -310,8 +325,6 @@
               "submit": "Aktualisieren"
             },
             "email": "E-Mail",
-            "name": "Name",
-            "surename": "Nachname",
             "username": "Benutzername"
           },
           "title": "Aktualisiere deine Daten"
@@ -332,6 +345,39 @@
           "list": {
             "privacy": "Privatsphäre",
             "security": "Sicherheit"
+          },
+          "security": {
+            "list": {
+              "legal": "Rechtliches"
+            }
+          },
+          "page": {
+            "legal": {
+              "title": "Rechtliches",
+              "list": {
+                "disclaimer": {
+                  "content": {
+                    "content": {
+                      "title": "Haftung für Inhalte",
+                      "content": "Es ist im Allgemeinen möglich, unsere Website zu verwenden, ohne personenbezogene Daten bereitzustellen. \n(z. B. wenn die Kommunikation per E -Mail über Sicherheitslücken verfügen. \nUnaufgeforderte Werbung wird gesendet, wie zum Beispiel Spam -E -Mails."
+                    },
+                    "links": {
+                      "title": "Haftung für Links",
+                      "content": "Unser Angebot enthält Links zu externen Websites von Drittanbietern, auf die wir keinen Einfluss haben. \nDaher können wir keine Haftung für diesen externen Inhalt übernehmen. \nDer jeweilige Anbieter oder Betreiber der Seiten ist immer für den Inhalt der verknüpften Seiten verantwortlich. \nDie verknüpften Seiten wurden zum Zeitpunkt der Verknüpfung auf mögliche rechtliche Verstöße überprüft. \nDer illegale Inhalt war zum Zeitpunkt der Verknüpfung nicht erkennbar. \nEine dauerhafte Kontrolle des Inhalts der verknüpften Seiten ist jedoch ohne konkrete Hinweise auf einen Verstoß nicht angemessen. \nSobald wir uns über rechtliche Verstöße bewusst werden, werden wir solche Links sofort entfernen."
+                    },
+                    "copyright": {
+                      "title": "Copyright",
+                      "content": "Die von den Anwendungsbetreibern erstellten Inhalte und Arbeiten zu dieser Anwendung unterliegen dem deutschen Urheberrecht. \nDie Duplikation, Bearbeitung, Verteilung und jede Art von Ausbeutung außerhalb der Urheberrechtsgrenzen erfordern die schriftliche Zustimmung des jeweiligen Autors oder Schöpfers. \nDownloads und Kopien dieser Website sind nur für den privaten, nicht kommerziellen Gebrauch zulässig. \nSoweit der Inhalt dieser Anwendung nicht vom Bediener erstellt wurde, werden die Urheberrechte Dritter beobachtet. \nInsbesondere die Inhalte Dritter sind als solche gekennzeichnet. \nSollten Sie sich dennoch einer Urheberrechtsverletzung bewusst werden, bitten wir Sie, uns entsprechend zu informieren. \nSobald wir uns über rechtliche Verstöße bewusst werden, werden wir solche Inhalte sofort entfernen."
+                    }
+                  },
+                  "title": "Haftungsausschluss"
+                },
+                "privacy": {
+                  "title": "Privatsphäre",
+                  "content": "Unsere Anwendung kann normalerweise ohne personenbezogene Daten verwendet werden. \nInsofern personenbezogene Daten (z. B. Name, Adresse oder E-Mail-Adressen) in unserer Anwendung gesammelt werden, wird dies immer so weit wie möglich auf freiwilliger Basis durchgeführt. \nDiese Daten werden nicht ohne Ihre ausdrückliche Zustimmung an Dritte weitergegeben. \nWir möchten darauf hinweisen, dass die Datenübertragung im Internet (z. B. bei der Kommunikation per E-Mail) Sicherheitslücken haben kann. \nEin vollständiger Schutz der Daten gegen den Zugriff durch Dritte ist nicht möglich. \nDie Verwendung von Kontaktdaten, die im Rahmen der Aufdruckverpflichtung durch Dritte veröffentlicht wurden, um unerwünschte Werbe- und Informationsmaterialien zu senden, ist hiermit ausdrücklich verboten. \nDie Betreiber von Site behalten sich ausdrücklich das Recht vor, im Falle einer unerwünschten Werbung rechtliche Schritte wie Spam-E-Mails zu versenden."
+                }
+              }
+            }
           }
         }
       }
@@ -375,11 +421,7 @@
           }
         },
         "biometrics": "Mit Biometrie anmelden",
-        "biometric": {
-          "title": "Bei Kollapp anmelden",
-          "subtitle": "Authentifizieren mit Biometrie",
-          "cancel": "Abbrechen"
-        }
+        "biometric": {}
       },
       "register": {
         "form": {
@@ -509,7 +551,7 @@
           }
         },
         "organization": {
-          "members": "Mitglieder verwalten",
+          "members": "Mitglieder",
           "leave": {
             "label": "Kollektiv verlassen"
           },
@@ -545,7 +587,7 @@
                 "location": "Standort",
                 "name": "Name"
               },
-              "title": "Neue Veranstaltung erstellen"
+              "title": "Neue Veranstaltung"
             },
             "button": {
               "confirm": "Erstellen"
@@ -599,6 +641,17 @@
             }
           },
           "create": "Veranstaltung erstellen"
+        },
+        "register": {
+          "form": {
+            "place": "Ort",
+            "description": "Beschreibung"
+          }
+        },
+        "update-data": {
+          "form": {
+            "description": "Beschreibung"
+          }
         }
       },
       "change-organization": {

@@ -1,7 +1,7 @@
 import { fireEvent, render } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 
-import ItemInput from '$lib/components/widgets/InputItem.svelte';
+import ItemInput from '$lib/components/widgets/ionic/InputItem.svelte';
 
 describe('CustomItemInput Component', () => {
 	it('renders ion-input with correct attributes', () => {

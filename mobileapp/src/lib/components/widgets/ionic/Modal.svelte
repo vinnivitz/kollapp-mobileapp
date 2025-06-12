@@ -1,10 +1,13 @@
 <script lang="ts">
+	import { getPlatforms } from '@ionic/core';
+	import { modalController } from 'ionic-svelte';
 	import { saveOutline, trashBinOutline } from 'ionicons/icons';
-	import { type Snippet } from 'svelte';
+	import { onDestroy, type Snippet } from 'svelte';
 
 	import Button from './Button.svelte';
 
 	import { t } from '$lib/locales';
+	import { modalStore } from '$lib/stores';
 
 	type Properties = {
 		children: Snippet;
@@ -26,24 +29,37 @@
 		open = false
 	}: Properties = $props();
 
-	const observer = new MutationObserver(() => patchIonSelect());
-	observer.observe(document.body, { childList: true, subtree: true });
+	let modal: HTMLIonModalElement | undefined;
 
-	function patchIonSelect(): void {
-		for (const select of document.querySelectorAll('ion-select')) {
-			const shadowRoot = select.shadowRoot;
-			if (shadowRoot) {
-				const wrapper = shadowRoot.querySelector('.select-wrapper') as HTMLLabelElement;
-				if (wrapper) {
-					wrapper.style.justifyContent = 'center';
-				}
+	$effect(() => {
+		if (!modal) return;
+		if (open) {
+			modalStore.add(modal);
+		} else {
+			modalStore.remove(modal);
+		}
+	});
+
+	function isPlatformWeb(): boolean {
+		return getPlatforms().includes('mobileweb') || getPlatforms().includes('desktop');
+	}
+
+	onDestroy(async () => {
+		if (!isPlatformWeb()) return;
+		const controller = await modalController.getTop();
+		if (controller) {
+			try {
+				await controller.dismiss();
+			} catch {
+				return;
 			}
 		}
-	}
+	});
 </script>
 
 <!-- svelte-ignore event_directive_deprecated -->
 <ion-modal
+	bind:this={modal}
 	is-open={open}
 	on:didDismiss={() => {
 		open = false;

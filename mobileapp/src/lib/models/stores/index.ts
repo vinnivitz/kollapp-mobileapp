@@ -4,6 +4,8 @@ export * from './base-store.type';
 export * from './connection-store.type';
 export * from './layout-store.type';
 export * from './locale-store.type';
+export * from './modal-store.type';
 export * from './organization-store.type';
 export * from './theme-store.type';
 export * from './user-store.type';
+export * from './version-store.type';

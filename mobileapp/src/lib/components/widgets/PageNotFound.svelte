@@ -3,8 +3,8 @@
 
 	import { goto } from '$app/navigation';
 
-	import Button from '$lib/components/widgets/Button.svelte';
-	import Card from '$lib/components/widgets/Card.svelte';
+	import Button from '$lib/components/widgets/ionic/Button.svelte';
+	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
 </script>

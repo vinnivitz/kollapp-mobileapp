@@ -3,14 +3,14 @@
 
 	import LayoutComponent from '$lib/components/layout/Layout.svelte';
 	import ActivityCard from '$lib/components/widgets/ActivityCard.svelte';
-	import Button from '$lib/components/widgets/Button.svelte';
-	import Calendar from '$lib/components/widgets/Calendar.svelte';
-	import Card from '$lib/components/widgets/Card.svelte';
-	import CustomItem from '$lib/components/widgets/CustomItem.svelte';
-	import InputItem from '$lib/components/widgets/InputItem.svelte';
-	import LabeledItem from '$lib/components/widgets/LabeledItem.svelte';
+	import Button from '$lib/components/widgets/ionic/Button.svelte';
+	import Card from '$lib/components/widgets/ionic/Card.svelte';
+	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
+	import Calendar from '$lib/components/widgets/ionic/Datetime.svelte';
+	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
+	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
+	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
 	import LeafletMap from '$lib/components/widgets/LeafletMap.svelte';
-	import Modal from '$lib/components/widgets/Modal.svelte';
 	import { Locale, locale } from '$lib/locales';
 	import { AlertType, Layout, Theme } from '$lib/models/ui';
 	import { layoutStore, localeStore, themeStore } from '$lib/stores';
@@ -165,6 +165,6 @@
 		</div>
 	</Card>
 	<Card title="Map">
-		<LeafletMap></LeafletMap>
+		<LeafletMap classList="h-[70vh]"></LeafletMap>
 	</Card>
 </LayoutComponent>

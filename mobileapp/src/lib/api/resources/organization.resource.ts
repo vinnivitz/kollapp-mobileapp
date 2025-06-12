@@ -6,7 +6,7 @@ import type {
 } from '$lib/api/dto/client/organization';
 import type { ActivityDto, OrganizationDto } from '$lib/api/dto/server';
 
-import { RequestMethod, type ResponseBody } from '$lib/models/api';
+import { RequestMethod, type ResponseBody, UserRole } from '$lib/models/api';
 import { customFetch } from '$lib/utility';
 
 const ENDPOINT = 'organization';
@@ -122,5 +122,11 @@ export async function updateActivity(
 export async function deleteActivity(organizationId: number, activityId: number): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/${organizationId}/activity/${activityId}`, {
 		method: RequestMethod.DELETE
+	});
+}
+
+export async function grantUserRole(userId: number, organizationId: number, role: UserRole): Promise<ResponseBody> {
+	return customFetch(`${ENDPOINT}/${organizationId}/person/${userId}/grant-role?role=${role}`, {
+		method: RequestMethod.POST
 	});
 }

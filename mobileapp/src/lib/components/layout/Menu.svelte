@@ -7,8 +7,8 @@
 	import { goto } from '$app/navigation';
 
 	import { authResource, searchableResource } from '$lib/api/resources';
-	import Button from '$lib/components/widgets/Button.svelte';
-	import LabeledItem from '$lib/components/widgets/LabeledItem.svelte';
+	import Button from '$lib/components/widgets/ionic/Button.svelte';
+	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
 	import { t } from '$lib/locales';
 	import { type PageRoutePaths } from '$lib/models/routing';
 	import { triggerClickByLabel } from '$lib/utility';

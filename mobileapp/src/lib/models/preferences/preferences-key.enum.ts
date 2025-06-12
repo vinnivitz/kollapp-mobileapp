@@ -3,6 +3,7 @@
  */
 export enum PreferencesKey {
 	ACTIVITIES = 'activities',
+	API_VERSION = 'app-version',
 	AUTHENTICATION = 'authentication',
 	BIOMETRICS_ENABLED = 'biometrics-enabled',
 	LAYOUT = 'layout',

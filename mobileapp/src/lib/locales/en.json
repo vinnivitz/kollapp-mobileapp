@@ -59,11 +59,7 @@
           }
         },
         "biometrics": "Log in with biometrics",
-        "biometric": {
-          "title": "Log in to Kollapp",
-          "subtitle": "Authenticate with biometrics",
-          "cancel": "Cancel"
-        }
+        "biometric": {}
       },
       "register": {
         "title": "Register",
@@ -157,7 +153,6 @@
         "account": {
           "title": "Account settings",
           "button": {
-            "change-password": "Change password",
             "update-data": "Update user data",
             "delete-account": "Delete account",
             "privacy-and-security": "Privacy and security"
@@ -247,8 +242,6 @@
         "card": {
           "title": "Update your data",
           "form": {
-            "surename": "Surename",
-            "name": "Name",
             "username": "Username",
             "email": "Email",
             "button": {
@@ -271,6 +264,39 @@
           "list": {
             "privacy": "Privacy",
             "security": "Security"
+          },
+          "security": {
+            "list": {
+              "legal": "Legal"
+            }
+          },
+          "page": {
+            "legal": {
+              "title": "Legal",
+              "list": {
+                "disclaimer": {
+                  "title": "Disclaimer",
+                  "content": {
+                    "content": {
+                      "title": "Liability for content",
+                      "content": "It is generally possible to use our website without providing any personal data.\\n\\n\\nAs far as personal data (e.g. name, address or e-mail addresses) is collected on our pages, this is always done on a voluntary basis, as far as possible.\\n\\n\\nThis data will not be passed on to third parties without your express consent.\\n\\n\\nWe would like to point out that data transmission over the Internet (e.g. when communicating via email) can have security gaps.\\n\\n\\nComplete protection of data from access by third parties is not possible.\\n\\n\\nThe use of contact details published as part of the imprint obligation by third parties to send unsolicited advertising and information materials is hereby expressly prohibited.\\n\\n\\nThe site operators expressly reserve the right to take legal action in the event of unsolicited advertising being sent, such as spam emails."
+                    },
+                    "links": {
+                      "title": "Liability for links",
+                      "content": "Our offer contains links to external third-party websites, the content of which we have no influence on. Therefore we cannot assume any liability for this external content. The respective provider or operator of the pages is always responsible for the content of the linked pages. The linked pages were checked for possible legal violations at the time of linking. Illegal content was not recognizable at the time of linking. However, a permanent control of the content of the linked pages is not reasonable without concrete evidence of an infringement. As soon as we become aware of legal violations, we will remove such links immediately."
+                    },
+                    "copyright": {
+                      "title": "Copyright",
+                      "content": "The content and works on these application created by the application operators are subject to German copyright law. The duplication, editing, distribution and any kind of exploitation outside the limits of copyright require the written consent of the respective author or creator. Downloads and copies of this site are only permitted for private, non-commercial use. Insofar as the content on this application was not created by the operator, the copyrights of third parties are observed. In particular contents of third parties are marked as such. Should you nevertheless become aware of a copyright infringement, we ask that you inform us accordingly. As soon as we become aware of legal violations, we will remove such content immediately."
+                    }
+                  }
+                },
+                "privacy": {
+                  "title": "Privacy",
+                  "content": "Our application can usually be used without providing any personal data. Insofar as personal data (e.g. name, address or e-mail addresses) is collected on our application, this is always done on a voluntary basis as far as possible. This data will not be passed on to third parties without your express consent. We would like to point out that data transmission on the Internet (e.g. when communicating by e-mail) can have security gaps. A complete protection of the data against access by third parties is not possible. The use of contact data published as part of the imprint obligation by third parties for the purpose of sending unsolicited advertising and information material is hereby expressly prohibited. The site operators expressly reserve the right to take legal action in the event of unsolicited advertising being sent, such as spam e-mails."
+                }
+              }
+            }
           }
         }
       }
@@ -305,7 +331,7 @@
           }
         },
         "organization": {
-          "members": "Manage members",
+          "members": "Members",
           "leave": {
             "label": "Leave collective"
           },
@@ -340,7 +366,7 @@
           "title": "Events",
           "create-modal": {
             "card": {
-              "title": "Create a new event",
+              "title": "New event",
               "input": {
                 "name": "Name",
                 "location": "Location"
@@ -398,6 +424,22 @@
             }
           },
           "create": "Create event"
+        },
+        "register": {
+          "form": {
+            "place": "Place",
+            "description": "Description"
+          },
+          "modal": {
+            "map": {
+              "button": {}
+            }
+          }
+        },
+        "update-data": {
+          "form": {
+            "description": "Description"
+          }
         }
       },
       "change-organization": {
@@ -503,16 +545,8 @@
             "confirm-password": {
               "no-match": "Must match the password"
             },
-            "surname": {
-              "min": "Surname must be at least 1 character",
-              "max": "Surname must be less then 50 characters",
-              "required": "Surname ist required"
-            },
-            "name": {
-              "min": "Name must be at least 1 character",
-              "max": "Name must be less then 50 characters",
-              "required": "Name is required"
-            }
+            "surname": {},
+            "name": {}
           }
         }
       },
@@ -578,6 +612,13 @@
               "min": "Name must be at least one character long",
               "max": "Name must be less than 50 characters long",
               "required": "Name is required"
+            },
+            "description": {
+              "max": "Description must be less then 500 characters long"
+            },
+            "place": {
+              "max": "Name of place must be less then 50 characters long",
+              "required": "Name of place is required"
             }
           }
         }
@@ -624,6 +665,23 @@
             "email": {
               "invalid": "Invalid Email",
               "required": "Email is required"
+            }
+          }
+        }
+      },
+      "update-organization": {
+        "schema": {
+          "validation": {
+            "description": {
+              "max": "Description must be less then 500 characters long"
+            },
+            "name": {
+              "required": "Name is required",
+              "max": "Name must be less then 50 characters long"
+            },
+            "place": {
+              "max": "Name of place must be less then 50 characters long",
+              "required": "Name of place is required"
             }
           }
         }
