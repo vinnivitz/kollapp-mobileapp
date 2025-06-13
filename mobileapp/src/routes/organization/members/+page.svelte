@@ -3,6 +3,7 @@
 
 	import { Clipboard } from '@capacitor/clipboard';
 	import { Share } from '@capacitor/share';
+	import { formatDistanceToNow } from 'date-fns';
 	import { actionSheetController } from 'ionic-svelte';
 	import {
 		clipboardOutline,
@@ -25,15 +26,21 @@
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
 	import FabButton from '$lib/components/widgets/ionic/FabButton.svelte';
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
+	import { t } from '$lib/locales';
 	import { UserRole } from '$lib/models/api';
 	import { AlertType } from '$lib/models/ui';
-	import { organizationStore, userStore } from '$lib/stores';
-	import { clickOutside, showAlert, StatusCheck } from '$lib/utility';
+	import { localeStore, organizationStore, userStore } from '$lib/stores';
+	import { clickOutside, getDateFnsLocale, showAlert, StatusCheck } from '$lib/utility';
 
 	let memberList = <HTMLIonListElement | undefined>$state();
 	let invitationCodeModalOpen = $state(false);
 
 	const userId = $derived($userStore?.id);
+
+	const invitationCodeExpiration = $derived(
+		new Date($organizationStore?.organizationInvitationCode.expirationDate ?? new Date())
+	);
+	const inviationCode = $derived($organizationStore?.organizationInvitationCode.code ?? '');
 
 	const members = $derived(
 		($organizationStore?.personsOfOrganization ?? [])
@@ -131,7 +138,7 @@
 	}
 </script>
 
-<Layout title="Manage members" showBackButton>
+<Layout title={$t('routes.organization.page.members.title')} showBackButton>
 	{#if !$userStore?.roles.includes(UserRole.MANAGER)}
 		<FabButton icon={personAddOutline} click={() => (invitationCodeModalOpen = true)}></FabButton>
 	{/if}
@@ -192,9 +199,23 @@
 	<Card title="Invitation Code">
 		<div class="flex flex-col">
 			<div class="mx-12 rounded border border-[var(--ion-color-primary)] p-2 text-center font-extrabold">
-				<ion-note color="primary" class="text-2xl"
-					>{$organizationStore?.organizationInvitationCode.code.toUpperCase()}</ion-note
-				>
+				<ion-note color="primary" class="text-2xl">
+					{inviationCode.toUpperCase()}
+				</ion-note>
+			</div>
+			<div class="text-center">
+				{#if invitationCodeExpiration.getTime() <= Date.now()}
+					<ion-note color="danger">
+						{$t('routes.organization.page.members.modal.invitation-code.is-expired')}
+					</ion-note>
+				{:else}
+					{$t('routes.organization.page.members.modal.invitation-code.expires-in')}
+					{formatDistanceToNow(invitationCodeExpiration, {
+						addSuffix: true,
+						includeSeconds: true,
+						locale: getDateFnsLocale($localeStore)
+					})}
+				{/if}
 			</div>
 			<div class="mx-14 mt-2 flex items-center justify-between gap-2">
 				<Button shape="round" icon={shareOutline} click={onShare}></Button>

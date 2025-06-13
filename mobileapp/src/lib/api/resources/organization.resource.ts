@@ -149,3 +149,7 @@ export async function renewInvitationCode(organizationId: number): Promise<Respo
 		silentOnSuccess: true
 	});
 }
+
+export async function getOrganizationByInvitationCode(code: string): Promise<ResponseBody<OrganizationDto>> {
+	return customFetch(`${ENDPOINT}/invitation-code/${code}`, { silentOnSuccess: true });
+}

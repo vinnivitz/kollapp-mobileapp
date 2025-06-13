@@ -11,7 +11,7 @@
 	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
 	import LeafletMap from '$lib/components/widgets/LeafletMap.svelte';
-	import { Locale, locale } from '$lib/locales';
+	import { Locale } from '$lib/locales';
 	import { AlertType, Layout, Theme } from '$lib/models/ui';
 	import { layoutStore, localeStore, themeStore } from '$lib/stores';
 	import { showAlert } from '$lib/utility';
@@ -57,7 +57,13 @@
 			<ion-select-option value={Layout.MD}>Android</ion-select-option>
 			<ion-select-option value={Layout.IOS}>iOS</ion-select-option>
 		</ion-select>
-		<ion-select aria-label="Language" interface="popover" value={$locale} on:ionChange={onLocaleChange} fill="outline">
+		<ion-select
+			aria-label="Language"
+			interface="popover"
+			value={$localeStore}
+			on:ionChange={onLocaleChange}
+			fill="outline"
+		>
 			<ion-select-option value={Locale.DE}>German</ion-select-option>
 			<ion-select-option value={Locale.EN}>English</ion-select-option>
 		</ion-select>

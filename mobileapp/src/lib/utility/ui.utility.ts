@@ -1,10 +1,11 @@
 import type { ValidationError as CustomValidationError, Form, FormActions, ValidationResult } from '$lib/models/ui';
 
+import { type Locale as DateFnsLocale, de, enUS } from 'date-fns/locale';
 import { eye, eyeOff } from 'ionicons/icons';
 import { get, writable } from 'svelte/store';
 import { type AnyObject, ObjectSchema, ValidationError } from 'yup';
 
-import { t } from '$lib/locales';
+import { Locale, t } from '$lib/locales';
 
 const $t = get(t);
 
@@ -71,6 +72,25 @@ export function clickOutside(node: Node): { destroy: () => void } {
 			document.removeEventListener('click', handleClick, true);
 		}
 	};
+}
+
+/**
+ * Gets the date-fns locale for a given locale
+ * @param locale Locale to get the date-fns locale for
+ * @returns DateFnsLocale for the given locale
+ */
+export function getDateFnsLocale(locale: Locale | undefined): DateFnsLocale {
+	switch (locale) {
+		case Locale.DE: {
+			return de;
+		}
+		case Locale.EN: {
+			return enUS;
+		}
+		default: {
+			return enUS;
+		}
+	}
 }
 
 /**

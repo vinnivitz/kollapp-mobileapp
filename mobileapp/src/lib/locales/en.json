@@ -400,6 +400,15 @@
           "form": {
             "description": "Description"
           }
+        },
+        "members": {
+          "modal": {
+            "invitation-code": {
+              "expires-in": "Expires",
+              "is-expired": "Code is expired. Please renew."
+            }
+          },
+          "title": "Manage members"
         }
       },
       "change-organization": {

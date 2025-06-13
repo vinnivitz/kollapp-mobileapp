@@ -4,7 +4,8 @@
 
 	import { addYears } from 'date-fns';
 
-	import { locale, t } from '$lib/locales';
+	import { t } from '$lib/locales';
+	import { localeStore } from '$lib/stores';
 	import { clickOutside } from '$lib/utility';
 
 	type Properties = {
@@ -64,7 +65,7 @@
 	size="cover"
 	max={addYears(new Date(), 10).toISOString()}
 	bind:this={calendar}
-	locale={$locale}
+	locale={$localeStore}
 	on:ionChange={onApply}
 	first-day-of-week={1}
 	presentation={getPresentation()}
