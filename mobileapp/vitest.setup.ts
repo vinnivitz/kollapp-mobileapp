@@ -37,6 +37,21 @@ vi.mock('$lib/locales', () => ({
 	}
 }));
 
+vi.mock('$lib/stores', () => ({
+	localeStore: {
+		subscribe: (run: (value: (key: string) => string) => void) => {
+			run((key: string) => key);
+			return () => {};
+		}
+	},
+	modalStore: {
+		subscribe: (run: () => void) => {
+			run();
+			return () => {};
+		}
+	}
+}));
+
 if (!globalThis.matchMedia) {
 	globalThis.matchMedia = () => ({
 		addEventListener: () => {},

@@ -1,11 +1,11 @@
 import { fireEvent, render } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 
-import Calendar from '$lib/components/widgets/ionic/Datetime.svelte';
+import Datetime from '$lib/components/widgets/ionic/Datetime.svelte';
 
-describe('Calendar Component', () => {
+describe('Datetime Component', () => {
 	it('renders with title when showTitle is true', () => {
-		const { container } = render(Calendar, {
+		const { container } = render(Datetime, {
 			props: { showTitle: true }
 		});
 
@@ -18,7 +18,7 @@ describe('Calendar Component', () => {
 
 	it('calls dismiss callback on blur (onDismiss)', async () => {
 		const dismissMock = vi.fn();
-		const { container } = render(Calendar, {
+		const { container } = render(Datetime, {
 			props: { dismiss: dismissMock }
 		});
 
@@ -33,7 +33,7 @@ describe('Calendar Component', () => {
 
 	it('calls apply callback on ionChange event (onApply)', async () => {
 		const applyMock = vi.fn();
-		const { container } = render(Calendar, {
+		const { container } = render(Datetime, {
 			props: { apply: applyMock }
 		});
 		const ionDatetime = container.querySelector('ion-datetime') as HTMLIonDatetimeElement;

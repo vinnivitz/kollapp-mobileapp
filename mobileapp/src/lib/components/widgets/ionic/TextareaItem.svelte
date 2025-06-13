@@ -4,12 +4,12 @@
 	import CustomItem from './CustomItem.svelte';
 
 	type Properties = {
-		icon: string;
 		label: string;
 		name: string;
 		color?: Colors;
 		cols?: number;
 		disabled?: boolean;
+		icon?: string;
 		iconEnd?: string;
 		maxlength?: number;
 		placeholder?: string;
@@ -18,6 +18,7 @@
 		inputIconClick?: () => void;
 	};
 	let {
+		change,
 		color,
 		cols = 3,
 		disabled = false,
@@ -33,6 +34,7 @@
 </script>
 
 <CustomItem {color} {icon} {iconEnd} iconClick={inputIconClick}>
+	<!-- svelte-ignore event_directive_deprecated -->
 	<ion-textarea
 		{name}
 		{label}
@@ -45,6 +47,7 @@
 		color="secondary"
 		{cols}
 		{value}
+		on:ionInput={(event) => change?.(event.detail.value || '')}
 	></ion-textarea>
 </CustomItem>
 
