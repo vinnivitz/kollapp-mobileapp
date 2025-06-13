@@ -66,14 +66,16 @@ export default ts.config(
 					patterns: [
 						{
 							group: [
-								'$lib/models/models/*',
-								'$lib/models/ui/*',
-								'$lib/models/routing/*',
 								'$lib/models/api/*',
+								'$lib/models/models/*',
+								'$lib/models/osm/*',
 								'$lib/models/preferences/*',
+								'$lib/models/routing/*',
 								'$lib/models/stores/*',
-								'$lib/utils/*',
-								'$lib/stores/*'
+								'$lib/models/ui/*',
+								'$lib/utility/*',
+								'$lib/stores/*',
+								'$lib/locales/*'
 							],
 							message: 'Please import from the index file.'
 						}

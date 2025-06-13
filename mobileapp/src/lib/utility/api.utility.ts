@@ -1,10 +1,12 @@
 import type { AuthenticationModel } from '$lib/models/models';
 
+import { format } from 'date-fns';
+import { alertController } from 'ionic-svelte';
 import { get } from 'svelte/store';
 
 import { dev } from '$app/environment';
 
-import { authResource, errorLogResource } from '$lib/api/resources';
+import { authResource, serverMetaResource } from '$lib/api/resources';
 import environment from '$lib/environment';
 import { Locale, t } from '$lib/locales';
 import {
@@ -20,7 +22,7 @@ import {
 import { PreferencesKey } from '$lib/models/preferences';
 import { AlertType, type ValidationResult } from '$lib/models/ui';
 import { authenticationStore, connectionStore, localeStore, userStore } from '$lib/stores';
-import { getStoredValue, showAlert } from '$lib/utility';
+import { getStoredValue, removeStoredValue, showAlert, storeValue } from '$lib/utility';
 
 const $t = get(t);
 
@@ -131,6 +133,33 @@ export function hasRole(role: UserRole): boolean {
 	return !!get(userStore)?.roles.includes(role);
 }
 
+/**
+ * Checks if there is an active maintenance schedule.
+ * If there is, it shows an alert with the schedule time.
+ * If the schedule is in the past or not set, it removes the stored value.
+ * @returns {Promise<void>}
+ */
+export async function checkMaintenance(): Promise<void> {
+	const response = await serverMetaResource.getMaintenanceInfo();
+	if (StatusCheck.isOK(response.status)) {
+		const schedule = new Date(response.data.scheduled);
+		if (!response.data.scheduled || schedule <= new Date()) {
+			removeStoredValue(PreferencesKey.MAINTENANCE_SCHEDULE);
+		} else {
+			const storedSchedule = await getStoredValue<Date>(PreferencesKey.MAINTENANCE_SCHEDULE);
+			if (!storedSchedule || schedule !== storedSchedule) {
+				const alert = await alertController.create({
+					buttons: ['Ok'],
+					header: $t('stores.maintenance.header'),
+					message: $t('stores.maintenance.alert', { value: format(schedule, 'PPP p') })
+				});
+				await alert.present();
+				storeValue(PreferencesKey.MAINTENANCE_SCHEDULE, schedule);
+			}
+		}
+	}
+}
+
 async function handleAuthenticationError(): Promise<ResponseBody> {
 	await authResource.logout();
 	return createErrorResponse(StatusCode.UNAUTHORIZED, $t('api.unauthorized'), true);
@@ -209,7 +238,7 @@ async function createErrorResponse(status: number, message: string, silent: bool
 	if (dev) {
 		console.warn(log);
 	} else if (!StatusCheck.isUnauthorized(status)) {
-		errorLogResource.reportErrorLog(log);
+		serverMetaResource.reportErrorLog(log);
 	}
 	return { data: {} as never, message, status };
 }

@@ -658,5 +658,11 @@
       "subtitle": " Mit Biometrie authentifizieren",
       "title": "Bei Kollapp anmelden"
     }
+  },
+  "stores": {
+    "maintenance": {
+      "alert": "Die App ist am {{value}} eventuell für einige Minuten nicht verfügbar.",
+      "header": "Wartungsarbeiten"
+    }
   }
 }

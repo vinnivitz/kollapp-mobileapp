@@ -1,6 +1,7 @@
 export * from './auth/authentication-token.dto';
 export * from './auth/token.dto';
 export * from './auth/user-token.dto';
+export * from './maintenance-info.dto';
 export * from './nominatim/nominatim-address.dto';
 export * from './nominatim/nominatim-item.dto';
 export * from './organization/activity.dto';

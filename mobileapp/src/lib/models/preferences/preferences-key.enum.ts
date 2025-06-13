@@ -8,6 +8,7 @@ export enum PreferencesKey {
 	BIOMETRICS_ENABLED = 'biometrics-enabled',
 	LAYOUT = 'layout',
 	LOCALE = 'locale',
+	MAINTENANCE_SCHEDULE = 'maintenance-schedule',
 	ONLINE = 'online',
 	ORGANIZATION = 'organization',
 	POSITION = 'position',

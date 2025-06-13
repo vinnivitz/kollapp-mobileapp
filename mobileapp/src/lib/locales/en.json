@@ -661,5 +661,11 @@
       "subtitle": "Authenticate with biometrics",
       "title": "Log in to Kollapp"
     }
+  },
+  "stores": {
+    "maintenance": {
+      "alert": "The app will probably be unavailable on {{value}} for some minutes.",
+      "header": "Maintenance"
+    }
   }
 }
