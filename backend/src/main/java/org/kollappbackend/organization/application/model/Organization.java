@@ -78,10 +78,16 @@ public class Organization {
     public OrganizationInvitationCode generateNewInvitationCode(int validityDays) {
         String code = generateInvitationCode();
         String expirationDate = LocalDate.now().plusDays(validityDays).toString();
-        this.organizationInvitationCode = OrganizationInvitationCode.builder()
-                .code(code)
-                .expirationDate(expirationDate)
-                .build();
+        if (getOrganizationInvitationCode() == null) {
+            organizationInvitationCode = OrganizationInvitationCode.builder()
+                    .code(code)
+                    .expirationDate(expirationDate)
+                    .organization(this)
+                    .build();
+        } else {
+            organizationInvitationCode.setCode(code);
+            organizationInvitationCode.setExpirationDate(expirationDate);
+        }
         return organizationInvitationCode;
     }
 
