@@ -6,7 +6,7 @@ import org.kollappbackend.core.config.properties.ApplicationProperties;
 import org.kollappbackend.organization.application.exception.InvalidInvitationCodeException;
 import org.kollappbackend.organization.application.exception.OrganizationNotFoundException;
 import org.kollappbackend.organization.application.exception.PersonNotRegisteredInOrganizationException;
-import org.kollappbackend.organization.application.exception.PersonOfOrganizationIsNotApprovedYet;
+import org.kollappbackend.organization.application.exception.PersonOfOrganizationIsNotApprovedYetException;
 import org.kollappbackend.organization.application.model.Organization;
 import org.kollappbackend.organization.application.model.OrganizationCreatedEvent;
 import org.kollappbackend.organization.application.model.OrganizationDeletedEvent;
@@ -89,7 +89,8 @@ public class OrganizationServiceImpl implements OrganizationService {
     public Organization deleteUserFromOrganization(long personOfOrganizationId, long organizationId) {
         Organization organization = organizationRepository
                 .findById(organizationId).orElseThrow(() -> new OrganizationNotFoundException(messageSource));
-        PersonOfOrganization personToBeDeleted = personOfOrganizationRepository.findById(personOfOrganizationId);
+        PersonOfOrganization personToBeDeleted = personOfOrganizationRepository.findById(personOfOrganizationId)
+                .orElseThrow(() -> new PersonNotRegisteredInOrganizationException(messageSource));
         organization.getPersonsOfOrganization().remove(personToBeDeleted);
         return organization;
     }
@@ -154,12 +155,13 @@ public class OrganizationServiceImpl implements OrganizationService {
     public Organization grantRoleToPersonOfOrganization(long organizationId, long personId, String role) {
         Organization organization = organizationRepository.findById(organizationId)
                 .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
-        PersonOfOrganization personOfOrganization = personOfOrganizationRepository.findById(personId);
+        PersonOfOrganization personOfOrganization = personOfOrganizationRepository.findById(personId)
+                .orElseThrow(() -> new PersonNotRegisteredInOrganizationException(messageSource));
         if (!organization.getPersonsOfOrganization().contains(personOfOrganization)) {
             throw new PersonNotRegisteredInOrganizationException(messageSource);
         }
         if (personOfOrganization.getStatus().equals(PersonOfOrganizationStatus.PENDING)) {
-            throw new PersonOfOrganizationIsNotApprovedYet(messageSource);
+            throw new PersonOfOrganizationIsNotApprovedYetException(messageSource);
         }
         if (role.equals("MANAGER")) {
             if (personOfOrganization instanceof OrganizationManager) {

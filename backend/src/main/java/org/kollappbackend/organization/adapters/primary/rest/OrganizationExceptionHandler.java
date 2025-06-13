@@ -6,11 +6,14 @@ import org.kollappbackend.organization.application.exception.ActivityNotFoundExc
 import org.kollappbackend.organization.application.exception.InvalidInvitationCodeException;
 import org.kollappbackend.organization.application.exception.OrganizationNotFoundException;
 import org.kollappbackend.organization.application.exception.PersonNotRegisteredInOrganizationException;
+import org.kollappbackend.organization.application.exception.PersonOfOrganizationIsNotApprovedYetException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestController;
 
 @ControllerAdvice(basePackages = {"org.kollappbackend.organization"})
+@RestController
 public class OrganizationExceptionHandler {
     @ExceptionHandler(OrganizationNotFoundException.class)
     public ResponseEntity<ResponseTO> handleOrganizationNotFound(OrganizationNotFoundException ex) {
@@ -30,6 +33,12 @@ public class OrganizationExceptionHandler {
 
     @ExceptionHandler(InvalidInvitationCodeException.class)
     public ResponseEntity<ResponseTO> handleInvalidInvitationCode(InvalidInvitationCodeException ex) {
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
+    }
+
+    @ExceptionHandler(PersonOfOrganizationIsNotApprovedYetException.class)
+    public ResponseEntity<ResponseTO> handlePersonOfOrganizationIsNotApprovedYet(
+            PersonOfOrganizationIsNotApprovedYetException ex) {
         return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
     }
 }

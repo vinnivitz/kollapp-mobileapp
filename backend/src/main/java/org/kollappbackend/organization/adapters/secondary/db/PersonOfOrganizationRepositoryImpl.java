@@ -2,7 +2,6 @@ package org.kollappbackend.organization.adapters.secondary.db;
 
 import org.jmolecules.architecture.hexagonal.SecondaryAdapter;
 import org.kollappbackend.organization.adapters.secondary.db.jpa.PersonOfOrganizationJpaRepository;
-import org.kollappbackend.organization.application.exception.PersonNotRegisteredInOrganizationException;
 import org.kollappbackend.organization.application.model.Organization;
 import org.kollappbackend.organization.application.model.PersonOfOrganization;
 import org.kollappbackend.organization.application.repository.PersonOfOrganizationRepository;
@@ -43,8 +42,7 @@ public class PersonOfOrganizationRepositoryImpl implements PersonOfOrganizationR
     }
 
     @Override
-    public PersonOfOrganization findById(long id) {
-        return personOfOrganizationJpaRepository.findById(id)
-                .orElseThrow(() -> new PersonNotRegisteredInOrganizationException(messageSource));
+    public Optional<PersonOfOrganization> findById(long id) {
+        return personOfOrganizationJpaRepository.findById(id);
     }
 }
