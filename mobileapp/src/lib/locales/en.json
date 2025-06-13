@@ -560,7 +560,6 @@
         "schema": {
           "validation": {
             "name": {
-              "min": "Name must be at least one character long",
               "max": "Name must be less than 50 characters long",
               "required": "Name is required"
             },
@@ -580,12 +579,10 @@
             "schema": {
               "validation": {
                 "name": {
-                  "min": "Name must be at leat one character long",
                   "max": "Name must be less then 50 characters long",
                   "required": "Name is required"
                 },
                 "location": {
-                  "min": "Name of location must be at least one character long",
                   "max": "Name of location must be less then 50 characters long",
                   "required": "Name of location is required"
                 }

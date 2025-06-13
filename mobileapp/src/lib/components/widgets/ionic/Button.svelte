@@ -11,6 +11,7 @@
 		iconPosition?: 'end' | 'start';
 		iconSize?: 'large' | 'small' | undefined;
 		label?: string;
+		shape?: 'round' | undefined;
 		size?: 'default' | 'large' | 'small' | undefined;
 		type?: 'button' | 'reset' | 'submit';
 		click?: (event?: MouseEvent) => void;
@@ -28,6 +29,7 @@
 		iconPosition = 'start',
 		iconSize,
 		label,
+		shape,
 		size,
 		type
 	}: Properties = $props();
@@ -37,6 +39,7 @@
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <ion-button
+	{shape}
 	{color}
 	{expand}
 	{fill}

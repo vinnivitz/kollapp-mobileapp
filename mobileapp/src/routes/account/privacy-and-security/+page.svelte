@@ -2,7 +2,6 @@
 	import { loadingController } from 'ionic-svelte';
 	import { fingerPrintOutline, keyOutline, notificationsOutline, receiptOutline } from 'ionicons/icons';
 	import { onMount } from 'svelte';
-	import { get } from 'svelte/store';
 
 	import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
@@ -62,7 +61,7 @@
 		if (result.valid) {
 			const loading = await loadingController.create({});
 			await loading.present();
-			const username = get(userStore)?.username;
+			const username = $userStore?.username;
 
 			if (!username) return;
 

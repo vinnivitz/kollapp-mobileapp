@@ -52,7 +52,6 @@
 			result = getValidationResult(await organizationResource.update(organization!.id, model));
 			await loader.dismiss();
 			if (result.valid) {
-				actions.resetModel();
 				touched = false;
 				organizationStore.init();
 			} else {

@@ -21,13 +21,11 @@ export const createActivitySchema = (): ObjectSchema<AnyObject, CreateActivityDt
 		location: string()
 			.default('')
 			.trim()
-			.min(1, $t('api.dto.client.organization.create-activity.schema.validation.location.min'))
 			.max(50, $t('api.dto.client.organization.create-activity.schema.validation.location.max'))
 			.required($t('api.dto.client.organization.create-activity.schema.validation.location.required')),
 		name: string()
 			.default('')
 			.trim()
-			.min(1, $t('api.dto.client.organization.create-activity.schema.validation.name.min'))
 			.max(50, $t('api.dto.client.organization.create-activity.schema.validation.name.max'))
 			.required($t('api.dto.client.organization.create-activity.schema.validation.name.required'))
 	});

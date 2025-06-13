@@ -1,27 +1,37 @@
 <script lang="ts">
 	import type { MemberModel } from '$lib/models/models';
 
+	import { Clipboard } from '@capacitor/clipboard';
+	import { Share } from '@capacitor/share';
 	import { actionSheetController } from 'ionic-svelte';
 	import {
+		clipboardOutline,
+		mailOutline,
 		medalOutline,
 		personAddOutline,
 		personCircleOutline,
 		personOutline,
+		refreshCircleOutline,
 		ribbonOutline,
+		shareOutline,
 		trashBinOutline
 	} from 'ionicons/icons';
-	import { get } from 'svelte/store';
 	import { fade } from 'svelte/transition';
 
 	import { organizationResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
+	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
+	import FabButton from '$lib/components/widgets/ionic/FabButton.svelte';
+	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
 	import { UserRole } from '$lib/models/api';
+	import { AlertType } from '$lib/models/ui';
 	import { organizationStore, userStore } from '$lib/stores';
-	import { clickOutside, showAlert } from '$lib/utility';
+	import { clickOutside, showAlert, StatusCheck } from '$lib/utility';
 
 	let memberList = <HTMLIonListElement | undefined>$state();
+	let invitationCodeModalOpen = $state(false);
 
 	const userId = $derived($userStore?.id);
 
@@ -34,7 +44,7 @@
 	const memberGroups = $derived(getGroupedMembers(members));
 
 	async function onSelectRole(member: MemberModel): Promise<void> {
-		const organizationId = get(organizationStore)?.id;
+		const organizationId = $organizationStore?.id;
 		const actionsheet = await actionSheetController.create({
 			buttons: [
 				{
@@ -55,11 +65,6 @@
 		});
 		await actionsheet.present();
 	}
-
-	$effect(() => {
-		console.log('members', members);
-		console.log('user', $userStore);
-	});
 
 	async function grantUserRole(userId: number, organizationId: number, role: UserRole): Promise<void> {
 		await organizationResource.grantUserRole(userId, organizationId, role);
@@ -89,9 +94,48 @@
 			}
 		};
 	}
+
+	async function onWriteToClipboard(): Promise<void> {
+		await Clipboard.write({
+			string: $organizationStore?.organizationInvitationCode.code
+		});
+	}
+
+	async function onShare(): Promise<void> {
+		const result = await Share.canShare();
+		if (result.value) {
+			const organizationName = $organizationStore?.name;
+			const organizationCode = $organizationStore?.organizationInvitationCode.code;
+			await Share.share({
+				text: `Join ${organizationName} using this invitation code: ${organizationCode}`,
+				title: `Invite to join ${organizationName} on Kollapp!`,
+				url: `kollapp://organization/join?code=${organizationCode}`
+			});
+		} else {
+			showAlert('Sharing is not supported on this device.');
+		}
+	}
+
+	async function onRenewCode(): Promise<void> {
+		const organizationId = $organizationStore?.id;
+		if (organizationId) {
+			const response = await organizationResource.renewInvitationCode(organizationId);
+			console.log('id', $organizationStore?.id);
+			if (StatusCheck.isOK(response.status)) {
+				await organizationStore.init();
+				await showAlert('Invitation code renewed successfully.', { type: AlertType.SUCCESS });
+			}
+		} else {
+			showAlert('Failed to renew invitation code. Please try again later.');
+		}
+	}
 </script>
 
 <Layout title="Manage members" showBackButton>
+	{#if !$userStore?.roles.includes(UserRole.MANAGER)}
+		<FabButton icon={personAddOutline} click={() => (invitationCodeModalOpen = true)}></FabButton>
+	{/if}
+
 	{#if members.length === 0}
 		<div class="mt-5 flex flex-col items-center justify-center gap-5">
 			<ion-note>No other members found.</ion-note>
@@ -143,3 +187,27 @@
 		</ion-item-options>
 	</ion-item-sliding>
 {/snippet}
+
+<Modal open={invitationCodeModalOpen} cancel={() => (invitationCodeModalOpen = false)}>
+	<Card title="Invitation Code">
+		<div class="flex flex-col">
+			<div class="mx-12 rounded border border-[var(--ion-color-primary)] p-2 text-center font-extrabold">
+				<ion-note color="primary" class="text-2xl"
+					>{$organizationStore?.organizationInvitationCode.code.toUpperCase()}</ion-note
+				>
+			</div>
+			<div class="mx-14 mt-2 flex items-center justify-between gap-2">
+				<Button shape="round" icon={shareOutline} click={onShare}></Button>
+				<Button shape="round" icon={clipboardOutline} click={onWriteToClipboard}></Button>
+				<Button shape="round" icon={mailOutline} click={() => {}}></Button>
+			</div>
+			<Button
+				icon={refreshCircleOutline}
+				fill="outline"
+				classList="mx-8 mt-5"
+				label="Renew invitation code"
+				click={onRenewCode}
+			></Button>
+		</div>
+	</Card>
+</Modal>

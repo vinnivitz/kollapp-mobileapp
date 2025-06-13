@@ -16,7 +16,6 @@
 	import { goto } from '$app/navigation';
 
 	import Layout from '$lib/components/layout/Layout.svelte';
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
 	import { t } from '$lib/locales';
@@ -63,9 +62,7 @@
 	>
 		<div class="flex items-center justify-center gap-4 text-2xl">
 			<ion-text color="dark">{model.name}</ion-text>
-			{#if $organizations.length > 1}
-				<Button icon={swapHorizontalOutline} click={() => {}}></Button>
-			{/if}
+			<ion-icon color="secondary" icon={swapHorizontalOutline}></ion-icon>
 		</div>
 	</Card>
 {/snippet}
@@ -96,7 +93,6 @@
 		{/if}
 		<LabeledItem
 			searchable={PageRoute.ORGANIZATION.LEAVE}
-			color="danger"
 			click={() => goto(PageRoute.ORGANIZATION.LEAVE)}
 			icon={logOutOutline}
 			label={$t('routes.organization.list.organization.leave.label')}

@@ -38,11 +38,13 @@
 		if (result.valid) {
 			const loader = await loadingController.create({});
 			await loader.present();
-			result = getValidationResult(await organizationResource.create(model));
+			const response = await organizationResource.create(model);
+			result = getValidationResult(response);
 			await loader.dismiss();
 			if (result.valid) {
 				actions.resetModel();
 				await organizationStore.init();
+				await organizationStore.change(response.data.id);
 				goto(PageRoute.ORGANIZATION.ROOT);
 			} else {
 				actions.applyValidationFeedback(result);

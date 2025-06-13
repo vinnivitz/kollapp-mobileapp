@@ -17,7 +17,6 @@
 		sunnyOutline,
 		trashOutline
 	} from 'ionicons/icons';
-	import { get } from 'svelte/store';
 
 	import { goto } from '$app/navigation';
 
@@ -39,69 +38,63 @@
 	}
 
 	async function openLocaleActionSheet(): Promise<void> {
-		const currentLocale = get(localeStore);
-
 		await openActionSheet($t('routes.account.language.action-sheet.title'), [
 			{
 				handler: () => localeStore.set(Locale.DE),
 				icon: '/locale/de.svg',
-				role: currentLocale === Locale.DE ? 'selected' : undefined,
+				role: $localeStore === Locale.DE ? 'selected' : undefined,
 				text: $t('routes.account.language.action-sheet.buttons.german')
 			},
 			{
 				handler: () => localeStore.set(Locale.EN),
 				icon: '/locale/gb.svg',
-				role: currentLocale === Locale.EN ? 'selected' : undefined,
+				role: $localeStore === Locale.EN ? 'selected' : undefined,
 				text: $t('routes.account.language.action-sheet.buttons.english')
 			}
 		]);
 	}
 
 	async function openLayoutActionSheet(): Promise<void> {
-		const currentLayout = get(layoutStore);
-
 		await openActionSheet($t('routes.account.layout.action-sheet.title'), [
 			{
 				handler: () => layoutStore.set(Layout.MD),
 				icon: logoAndroid,
-				role: currentLayout === Layout.MD ? 'selected' : undefined,
+				role: $layoutStore === Layout.MD ? 'selected' : undefined,
 				text: $t('routes.account.layout.action-sheet.buttons.md')
 			},
 			{
 				handler: () => layoutStore.set(Layout.IOS),
 				icon: logoApple,
-				role: currentLayout === Layout.IOS ? 'selected' : undefined,
+				role: $layoutStore === Layout.IOS ? 'selected' : undefined,
 				text: $t('routes.account.layout.action-sheet.buttons.ios')
 			}
 		]);
 	}
 
 	async function openColorThemeActionSheet(): Promise<void> {
-		const currentTheme = get(themeStore);
-
 		await openActionSheet($t('routes.account.theme.action-sheet.title'), [
 			{
 				handler: () => themeStore.set(Theme.SYSTEM),
 				icon: desktopOutline,
-				role: currentTheme === Theme.SYSTEM ? 'selected' : undefined,
+				role: $themeStore === Theme.SYSTEM ? 'selected' : undefined,
 				text: $t('routes.account.theme.action-sheet.buttons.system')
 			},
 			{
 				handler: () => themeStore.set(Theme.LIGHT),
 				icon: sunnyOutline,
-				role: currentTheme === Theme.LIGHT ? 'selected' : undefined,
+				role: $themeStore === Theme.LIGHT ? 'selected' : undefined,
 				text: $t('routes.account.theme.action-sheet.buttons.light')
 			},
 			{
 				handler: () => themeStore.set(Theme.DARK),
 				icon: moonOutline,
-				role: currentTheme === Theme.DARK ? 'selected' : undefined,
+				role: $themeStore === Theme.DARK ? 'selected' : undefined,
 				text: $t('routes.account.theme.action-sheet.buttons.dark')
 			},
 			{
 				handler: () => themeStore.set(Theme.BLACK_AND_WHITE),
 				icon: contrastOutline,
-				role: currentTheme === Theme.BLACK_AND_WHITE ? 'selected' : undefined,
+				role: $themeStore === Theme.BLACK_AND_WHITE ? 'selected' : undefined,
 				text: $t('routes.account.theme.action-sheet.buttons.bw')
 			}
 		]);
@@ -136,7 +129,6 @@
 		/>
 		<LabeledItem
 			searchable={PageRoute.ACCOUNT.DELETE}
-			color="danger"
 			click={() => goto(PageRoute.ACCOUNT.DELETE)}
 			icon={trashOutline}
 			label={$t('routes.account.list.account.button.delete-account')}

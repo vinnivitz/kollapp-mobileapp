@@ -9,14 +9,18 @@
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import { t } from '$lib/locales';
+	import { PreferencesKey } from '$lib/models/preferences';
 	import { PageRoute } from '$lib/models/routing';
 	import { organizationStore } from '$lib/stores';
+	import { removeStoredValue } from '$lib/utility';
 
 	async function leaveOrganization(): Promise<void> {
 		const loader = await loadingController.create({});
 		await loader.present();
-		await organizationResource.leaveOrganization();
-		await organizationStore.reset();
+		await Promise.all([
+			organizationResource.leaveOrganization(),
+			removeStoredValue(PreferencesKey.SELECTED_ORGANIZATION_ID)
+		]);
 		await organizationStore.init();
 		await loader.dismiss();
 		goto(PageRoute.ORGANIZATION.ROOT);

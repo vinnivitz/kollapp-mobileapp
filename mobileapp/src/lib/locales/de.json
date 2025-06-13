@@ -83,7 +83,6 @@
 					"validation": {
 						"name": {
 							"max": "Der Name darf maximal 50 Zeichen lang sein",
-							"min": "Der Name muss mindestens ein Charakter lang sein",
 							"required": "Name ist erforderlich"
 						},
 						"place": {
@@ -103,12 +102,10 @@
 							"validation": {
 								"location": {
 									"max": "Der Name des Standorts muss weniger als 50 Zeichen lang sein",
-									"min": "Name des Ortes muss mindestens ein Charakter lang sein",
 									"required": "Name des Standorts ist erforderlich"
 								},
 								"name": {
 									"max": "Der Name muss weniger als 50 Zeichen lang sein",
-									"min": "Name muss bei Lat One Charakter lang sein",
 									"required": "Name ist erforderlich"
 								}
 							}
@@ -119,12 +116,10 @@
 							"validation": {
 								"location": {
 									"max": "Der Name des Standorts muss weniger als 50 Zeichen lang sein",
-									"min": "Name des Ortes muss mindestens ein Charakter lang sein",
 									"required": "Name des Standorts ist erforderlich"
 								},
 								"name": {
 									"max": "Der Name muss weniger als 50 Zeichen lang sein",
-									"min": "Name muss mindestens ein Charakter lang sein",
 									"required": "Name ist erforderlich"
 								}
 							}

@@ -11,6 +11,9 @@ importers:
       '@capacitor/app':
         specifier: ^7.0.0
         version: 7.0.1(@capacitor/core@7.2.0)
+      '@capacitor/clipboard':
+        specifier: ^7.0.1
+        version: 7.0.1(@capacitor/core@7.2.0)
       '@capacitor/device':
         specifier: ^7.0.0
         version: 7.0.1(@capacitor/core@7.2.0)
@@ -19,6 +22,9 @@ importers:
         version: 7.0.1(@capacitor/core@7.2.0)
       '@capacitor/preferences':
         specifier: ^7.0.0
+        version: 7.0.1(@capacitor/core@7.2.0)
+      '@capacitor/share':
+        specifier: ^7.0.1
         version: 7.0.1(@capacitor/core@7.2.0)
       '@capacitor/splash-screen':
         specifier: ^7.0.1
@@ -277,6 +283,11 @@ packages:
     engines: {node: '>=20.0.0'}
     hasBin: true
 
+  '@capacitor/clipboard@7.0.1':
+    resolution: {integrity: sha512-n4XEHma7apLOYvyeaR9S5u3uGzDYG7WeQxmtZlwP01HneIzMnusVgw4Im6I+pMBcoUN9TfVdf6eqKph97B1bAw==}
+    peerDependencies:
+      '@capacitor/core': '>=7.0.0'
+
   '@capacitor/core@7.2.0':
     resolution: {integrity: sha512-2zCnA6RJeZ9ec4470o8QMZEQTWpekw9FNoqm5TLc10jeCrhvHVI8MPgxdZVc3mOdFlyieYu4AS1fNxSqbS57Pw==}
 
@@ -292,6 +303,11 @@ packages:
 
   '@capacitor/preferences@7.0.1':
     resolution: {integrity: sha512-XF9jOHzvoIBZLwZr/EX6aVaUO1d8Mx7TwBLQS33pYHOliCW5knT5KUkFOXNNYxh9qqODYesee9xuQIKNJpQBag==}
+    peerDependencies:
+      '@capacitor/core': '>=7.0.0'
+
+  '@capacitor/share@7.0.1':
+    resolution: {integrity: sha512-7GAtWrb2inEWohC8E7mx38qAX6D9yqPDDnUtJaZ8JRpo15jjFRS40Cx388M8h4NlBWjV5NU3qf1sHXnyOBSJ5g==}
     peerDependencies:
       '@capacitor/core': '>=7.0.0'
 
@@ -5440,6 +5456,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@capacitor/clipboard@7.0.1(@capacitor/core@7.2.0)':
+    dependencies:
+      '@capacitor/core': 7.2.0
+
   '@capacitor/core@7.2.0':
     dependencies:
       tslib: 2.8.1
@@ -5453,6 +5473,10 @@ snapshots:
       '@capacitor/core': 7.2.0
 
   '@capacitor/preferences@7.0.1(@capacitor/core@7.2.0)':
+    dependencies:
+      '@capacitor/core': 7.2.0
+
+  '@capacitor/share@7.0.1(@capacitor/core@7.2.0)':
     dependencies:
       '@capacitor/core': 7.2.0
 

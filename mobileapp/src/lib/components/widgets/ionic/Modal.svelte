@@ -79,9 +79,11 @@
 					icon={trashBinOutline}
 				/>
 			</ion-buttons>
-			<ion-buttons slot="end">
-				<Button label={confirmLabel} color="white" click={() => confirm?.()} icon={saveOutline} />
-			</ion-buttons>
+			{#if !!confirm}
+				<ion-buttons slot="end">
+					<Button label={confirmLabel} color="white" click={() => confirm?.()} icon={saveOutline} />
+				</ion-buttons>
+			{/if}
 		</ion-toolbar>
 	</ion-header>
 	<ion-content class="ion-padding">

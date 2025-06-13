@@ -27,7 +27,6 @@ export const registerOrganizationSchema = (): ObjectSchema<AnyObject, RegisterOr
 		name: string()
 			.default('')
 			.trim()
-			.min(1, $t('api.dto.register-organization.schema.validation.name.min'))
 			.max(50, $t('api.dto.register-organization.schema.validation.name.max'))
 			.required($t('api.dto.register-organization.schema.validation.name.required')),
 		place: string()

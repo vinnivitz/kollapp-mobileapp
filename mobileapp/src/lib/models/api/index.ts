@@ -6,4 +6,5 @@ export * from './request-method.enum';
 export * from './response-body.type';
 export * from './status-code.enum';
 export * from './user-role.enum';
+export * from './user-status.enum';
 export * from './validation-code.enum';
