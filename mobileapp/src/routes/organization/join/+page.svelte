@@ -8,7 +8,7 @@
 	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import { t } from '$lib/locales';
 	import { Form, type FormConfig } from '$lib/models/ui';
-	import { customForm, showAlert } from '$lib/utility';
+	import { customForm, featureNotImplementedAlert } from '$lib/utility';
 
 	const config: FormConfig<object> = {
 		onSubmit,
@@ -18,11 +18,11 @@
 	const form = new Form(object, config);
 
 	async function onSubmit(): Promise<void> {
-		return showAlert('Feature not implemented yet');
+		return featureNotImplementedAlert();
 	}
 
 	async function onCodeScan(): Promise<void> {
-		return showAlert('Feature not implemented yet');
+		return featureNotImplementedAlert();
 	}
 </script>
 

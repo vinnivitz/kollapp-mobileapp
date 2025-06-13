@@ -24,8 +24,7 @@ export async function getLocationsByQuery(query: string): Promise<AddressModel[]
 			const result = (await response.json()) as NominatimItemDto[];
 			return result.map((item) => getAddress(item)).filter((item) => !isEmptyAddress(item));
 		} else {
-			showAlert($t('components.widgets.map.api.error'), { type: AlertType.ERROR });
-			return [];
+			throw new Error('Failed to fetch locations');
 		}
 	} catch {
 		showAlert($t('components.widgets.map.api.error'), { type: AlertType.ERROR });

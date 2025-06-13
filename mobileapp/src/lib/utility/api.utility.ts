@@ -6,7 +6,7 @@ import { get } from 'svelte/store';
 
 import { dev } from '$app/environment';
 
-import { authResource, serverMetaResource } from '$lib/api/resources';
+import { authResource, metaResource } from '$lib/api/resources';
 import environment from '$lib/environment';
 import { Locale, t } from '$lib/locales';
 import {
@@ -140,7 +140,7 @@ export function hasRole(role: UserRole): boolean {
  * @returns {Promise<void>}
  */
 export async function checkMaintenance(): Promise<void> {
-	const response = await serverMetaResource.getMaintenanceInfo();
+	const response = await metaResource.getMaintenanceInfo();
 	if (StatusCheck.isOK(response.status)) {
 		const schedule = new Date(response.data.scheduled);
 		if (!response.data.scheduled || schedule <= new Date()) {
@@ -238,7 +238,7 @@ async function createErrorResponse(status: number, message: string, silent: bool
 	if (dev) {
 		console.warn(log);
 	} else if (!StatusCheck.isUnauthorized(status)) {
-		serverMetaResource.reportErrorLog(log);
+		metaResource.reportErrorLog(log);
 	}
 	return { data: {} as never, message, status };
 }

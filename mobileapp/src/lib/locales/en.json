@@ -336,7 +336,10 @@
               "title": "New event",
               "input": {
                 "name": "Name",
-                "location": "Location"
+                "location": "Location",
+                "date": "Date",
+                "start-date": "Start date",
+                "end-date": "End date"
               }
             },
             "button": {
@@ -653,7 +656,8 @@
   },
   "utils": {
     "alert": {
-      "button": "Close"
+      "button": "Close",
+      "feature-not-implemented": "Feature not implemented yet."
     },
     "biometrics": {
       "not-available": "Biometrics not available",

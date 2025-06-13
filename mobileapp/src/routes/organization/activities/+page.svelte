@@ -43,7 +43,7 @@
 	import { PageRoute } from '$lib/models/routing';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
 	import { activitiesStore, organizationStore } from '$lib/stores';
-	import { customForm, getValidationResult, showAlert } from '$lib/utility';
+	import { customForm, featureNotImplementedAlert, getValidationResult, showAlert } from '$lib/utility';
 
 	enum ActivityView {
 		activities = 'activities',
@@ -180,7 +180,7 @@
 	}
 
 	function onArchiveEvent(): Promise<void> {
-		return showAlert('Feature not implemented yet.');
+		return featureNotImplementedAlert();
 	}
 
 	async function onDeleteActivity(): Promise<void> {
@@ -409,7 +409,9 @@
 				/>
 				<CustomItem icon={calendarClearOutline}>
 					<div class="flex flex-col">
-						<ion-note color="secondary" class="ms-4 pt-2 text-xs">Date</ion-note>
+						<ion-text color="secondary" class="ms-4 pt-2 text-xs"
+							>{$t('routes.organization.page.activity.create-modal.card.input.start-date')}</ion-text
+						>
 						<div class="-ms-5 flex">
 							<Button
 								classList="p-0"
@@ -437,7 +439,9 @@
 				{#if isDateRange}
 					<CustomItem icon={calendarClearOutline}>
 						<div class="flex flex-col">
-							<ion-note color="secondary" class="ms-4 pt-2 text-xs">Date</ion-note>
+							<ion-text color="secondary" class="ms-4 pt-2 text-xs">
+								{$t('routes.organization.page.activity.create-modal.card.input.end-date')}</ion-text
+							>
 							<div class="-ms-5 flex">
 								<Button
 									classList="p-0"

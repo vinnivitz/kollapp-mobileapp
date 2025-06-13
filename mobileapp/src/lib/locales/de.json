@@ -209,7 +209,7 @@
       },
       "menu": {
         "searchbar": {
-          "placeholder": "Durchsuche die App...",
+          "placeholder": "App durchsuchen...",
           "title": {
             "found": "Suchergebnisse für \"{{value}}\"",
             "not-found": "Keine Ergebnisse für \"{{value}}\" gefunden \""
@@ -556,7 +556,10 @@
             "card": {
               "input": {
                 "location": "Standort",
-                "name": "Name"
+                "name": "Name",
+                "date": "Datum",
+                "start-date": "Startdatum",
+                "end-date": "Enddatum"
               },
               "title": "Neue Veranstaltung"
             },
@@ -650,7 +653,8 @@
   },
   "utils": {
     "alert": {
-      "button": "Schließen"
+      "button": "Schließen",
+      "feature-not-implemented": "Feature noch nicht implementiert."
     },
     "biometrics": {
       "not-available": "Biometrie nicht verfügbar",

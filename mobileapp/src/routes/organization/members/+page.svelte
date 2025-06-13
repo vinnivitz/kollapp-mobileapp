@@ -30,7 +30,7 @@
 	import { UserRole } from '$lib/models/api';
 	import { AlertType } from '$lib/models/ui';
 	import { localeStore, organizationStore, userStore } from '$lib/stores';
-	import { clickOutside, getDateFnsLocale, showAlert, StatusCheck } from '$lib/utility';
+	import { clickOutside, featureNotImplementedAlert, getDateFnsLocale, showAlert, StatusCheck } from '$lib/utility';
 
 	let memberList = <HTMLIonListElement | undefined>$state();
 	let invitationCodeModalOpen = $state(false);
@@ -146,7 +146,7 @@
 	{#if members.length === 0}
 		<div class="mt-5 flex flex-col items-center justify-center gap-5">
 			<ion-note>No other members found.</ion-note>
-			<Button icon={personAddOutline} label="Invite person" click={() => showAlert('Feature not implemented yet.')} />
+			<Button icon={personAddOutline} label="Invite person" click={() => featureNotImplementedAlert()} />
 		</div>
 	{:else}
 		<!-- svelte-ignore event_directive_deprecated -->
@@ -203,18 +203,20 @@
 					{inviationCode.toUpperCase()}
 				</ion-note>
 			</div>
-			<div class="text-center">
+			<div class="mt-2 text-center">
 				{#if invitationCodeExpiration.getTime() <= Date.now()}
 					<ion-note color="danger">
 						{$t('routes.organization.page.members.modal.invitation-code.is-expired')}
 					</ion-note>
 				{:else}
-					{$t('routes.organization.page.members.modal.invitation-code.expires-in')}
-					{formatDistanceToNow(invitationCodeExpiration, {
-						addSuffix: true,
-						includeSeconds: true,
-						locale: getDateFnsLocale($localeStore)
-					})}
+					<ion-note>
+						{$t('routes.organization.page.members.modal.invitation-code.expires-in')}
+						{formatDistanceToNow(invitationCodeExpiration, {
+							addSuffix: true,
+							includeSeconds: true,
+							locale: getDateFnsLocale($localeStore)
+						})}
+					</ion-note>
 				{/if}
 			</div>
 			<div class="mx-14 mt-2 flex items-center justify-between gap-2">

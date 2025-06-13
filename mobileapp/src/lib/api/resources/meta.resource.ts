@@ -1,7 +1,8 @@
 import type { MaintenanceInfoDto } from '$lib/api/dto/server';
+import type { ReleaseNotesModel } from '$lib/models/models';
 
 import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/models/api';
-import { customFetch } from '$lib/utility';
+import { customFetch, showAlert } from '$lib/utility';
 
 const ENDPOINT = 'server-meta';
 
@@ -37,4 +38,24 @@ export async function getMaintenanceInfo(): Promise<ResponseBody<MaintenanceInfo
 		authorizationType: AuthorizationType.NONE,
 		method: RequestMethod.GET
 	});
+}
+
+/**
+ * Fetches the release notes from the server.
+ * @returns {Promise<ReleaseNotesModel[]>} The release notes from the server.
+ */
+export async function getReleaseNotes(): Promise<ReleaseNotesModel[]> {
+	try {
+		const response = await fetch('/data/release-notes.json');
+
+		if (response.ok) {
+			const data = await response.json();
+			return data;
+		} else {
+			throw new Error('Failed to fetch release notes');
+		}
+	} catch {
+		showAlert('Failed to fetch release notes');
+		return [];
+	}
 }

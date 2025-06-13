@@ -1,6 +1,12 @@
 <script lang="ts">
 	import { loadingController } from 'ionic-svelte';
-	import { fingerPrintOutline, keyOutline, notificationsOutline, receiptOutline } from 'ionicons/icons';
+	import {
+		constructOutline,
+		fingerPrintOutline,
+		keyOutline,
+		notificationsOutline,
+		receiptOutline
+	} from 'ionicons/icons';
 	import { onMount } from 'svelte';
 
 	import { dev } from '$app/environment';
@@ -22,10 +28,10 @@
 	import {
 		customForm,
 		deleteBiometricCredentials,
+		featureNotImplementedAlert,
 		getStoredValue,
 		getValidationResult,
 		isBiometricAvailable,
-		showAlert,
 		storeBiometricCredentials
 	} from '$lib/utility';
 
@@ -107,7 +113,7 @@
 	<ion-list inset>
 		<ion-list-header>{$t('routes.account.page.privacy-and-security.list.privacy')}</ion-list-header>
 		<LabeledItem
-			click={() => showAlert('Not implemented yet')}
+			click={() => featureNotImplementedAlert()}
 			icon={notificationsOutline}
 			label={$t('routes.account.list.account.privacy-and-security.button.notifications')}
 		/>
@@ -116,6 +122,12 @@
 			icon={receiptOutline}
 			searchable={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.LEGAL}
 			click={() => goto(PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.LEGAL)}
+		></LabeledItem>
+		<LabeledItem
+			label="App version"
+			icon={constructOutline}
+			click={() => goto(PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.APP_VERSION)}
+			searchable={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.APP_VERSION}
 		></LabeledItem>
 	</ion-list>
 	<ion-list inset>

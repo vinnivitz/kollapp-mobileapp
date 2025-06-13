@@ -34,3 +34,12 @@ export async function showAlert(message: string, config?: AlertConfig): Promise<
 
 	return toast.present();
 }
+
+/**
+ * Shows an alert when a feature is not implemented
+ * @returns {Promise<void>} A promise that resolves when the alert is shown
+ */
+export async function featureNotImplementedAlert(): Promise<void> {
+	const message = $t('utils.alert.feature-not-implemented');
+	await showAlert(message);
+}

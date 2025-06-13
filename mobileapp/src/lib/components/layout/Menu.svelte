@@ -3,6 +3,7 @@
 	import type { Snippet } from 'svelte';
 
 	import * as icons from 'ionicons/icons';
+	import { notificationsOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
 
@@ -11,7 +12,7 @@
 	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
 	import { t } from '$lib/locales';
 	import { type PageRoutePaths } from '$lib/models/routing';
-	import { triggerClickByLabel } from '$lib/utility';
+	import { featureNotImplementedAlert, triggerClickByLabel } from '$lib/utility';
 
 	type Properties = {
 		children: Snippet;
@@ -45,16 +46,27 @@
 <ion-menu side="end" content-id="menu" bind:this={menuController}>
 	<ion-header>
 		<ion-toolbar>
-			<!-- svelte-ignore event_directive_deprecated -->
-			<ion-searchbar
-				class="pt-5"
-				color="light"
-				debounce={100}
-				placeholder={$t('components.layout.menu.searchbar.placeholder')}
-				on:ionInput={onSearch}
-				value={searchValue}
-			>
-			</ion-searchbar>
+			<div class="flex">
+				<!-- svelte-ignore event_directive_deprecated -->
+				<ion-searchbar
+					class="pt-5"
+					color="light"
+					debounce={100}
+					placeholder={$t('components.layout.menu.searchbar.placeholder')}
+					on:ionInput={onSearch}
+					value={searchValue}
+				>
+				</ion-searchbar>
+				<Button
+					badge="2"
+					fill="clear"
+					size="large"
+					classList="m-0"
+					color="light"
+					icon={notificationsOutline}
+					click={() => featureNotImplementedAlert()}
+				></Button>
+			</div>
 		</ion-toolbar>
 	</ion-header>
 	<ion-content class="ion-padding relative text-center">

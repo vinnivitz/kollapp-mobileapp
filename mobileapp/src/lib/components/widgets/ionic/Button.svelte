@@ -2,6 +2,8 @@
 	import { type Colors } from '$lib/models/ui';
 
 	type Properties = {
+		badge?: string;
+		badgeColor?: Colors;
 		classList?: string;
 		color?: Colors | undefined;
 		disabled?: boolean;
@@ -19,6 +21,8 @@
 		({ icon: string; label?: string } | { label: string; icon?: string });
 
 	let {
+		badge,
+		badgeColor = 'danger',
 		classList,
 		click,
 		color = 'secondary',
@@ -71,6 +75,9 @@
 			{label}
 		</ion-text>
 	{/if}
+	{#if badge}
+		{@render badgeIcon()}
+	{/if}
 {/snippet}
 
 {#snippet startIcon()}
@@ -83,4 +90,12 @@
 
 {#snippet iconOnly()}
 	<ion-icon slot="icon-only" {icon} size={size === 'large' ? 'large' : iconSize}></ion-icon>
+{/snippet}
+
+{#snippet badgeIcon()}
+	<div class="absolute top-1 right-1">
+		<ion-badge color={badgeColor}>
+			{badge}
+		</ion-badge>
+	</div>
 {/snippet}

@@ -6,6 +6,7 @@ export const PageRoute = {
 		APP: '/account/app',
 		DELETE: '/account/delete',
 		PRIVACY_AND_SECURITY: {
+			APP_VERSION: '/account/privacy-and-security/app-version',
 			BIOMETRICS: '/account/privacy-and-security/biometrics',
 			CHANGE_PASSWORD: '/account/privacy-and-security/change-password',
 			LEGAL: '/account/privacy-and-security/legal',
