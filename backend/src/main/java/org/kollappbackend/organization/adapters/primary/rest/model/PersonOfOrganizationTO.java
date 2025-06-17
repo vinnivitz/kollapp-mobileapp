@@ -13,6 +13,7 @@ import lombok.Setter;
 @Builder
 public class PersonOfOrganizationTO {
     private long id;
+    private long userId;
     private String username;
     private String role;
     private String status;
