@@ -2,7 +2,16 @@
 	import type { AuthenticationModel } from '$lib/models/models';
 
 	import { loadingController } from 'ionic-svelte';
-	import { fingerPrintOutline, keyOutline, logInOutline, personOutline } from 'ionicons/icons';
+	import {
+		fingerPrintOutline,
+		keyOutline,
+		logInOutline,
+		logoApple,
+		logoGithub,
+		logoGoogle,
+		logoSlack,
+		personOutline
+	} from 'ionicons/icons';
 	import { onMount } from 'svelte';
 
 	import { dev } from '$app/environment';
@@ -23,6 +32,7 @@
 	import { authenticationStore } from '$lib/stores';
 	import {
 		customForm,
+		featureNotImplementedAlert,
 		getStoredValue,
 		getValidationResult,
 		isBiometricAvailable,
@@ -126,6 +136,16 @@
 			/>
 		{/if}
 	{/await}
+	{#if dev}
+		<div class="mx-3 flex justify-between gap-2">
+			<Button color="tertiary" size="large" fill="outline" icon={logoGoogle} click={featureNotImplementedAlert}
+			></Button>
+			<Button color="tertiary" size="large" fill="outline" icon={logoApple} click={featureNotImplementedAlert}></Button>
+			<Button color="tertiary" size="large" fill="outline" icon={logoSlack} click={featureNotImplementedAlert}></Button>
+			<Button color="tertiary" size="large" fill="outline" icon={logoGithub} click={featureNotImplementedAlert}
+			></Button>
+		</div>
+	{/if}
 	<Card color="light" click={() => goto(PageRoute.AUTH.REGISTER)} classList="text-center">
 		{$t('routes.auth.login.register.text')}
 		<ion-text color="secondary">{$t('routes.auth.login.register.link')}</ion-text>

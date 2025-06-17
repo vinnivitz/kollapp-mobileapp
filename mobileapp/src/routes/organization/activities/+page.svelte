@@ -407,6 +407,26 @@
 					inputIconClick={() => (mapModalOpen = true)}
 					value={selectedLocation}
 				/>
+				<CustomItem icon={timeOutline}>
+					<!-- svelte-ignore event_directive_deprecated -->
+					<ion-toggle
+						enable-on-off-labels
+						on:ionChange={() => (includeTime = !includeTime)}
+						checked={includeTime}
+						class="ms-4"
+						justify="space-between">Include time</ion-toggle
+					>
+				</CustomItem>
+				<CustomItem icon={codeOutline}>
+					<!-- svelte-ignore event_directive_deprecated -->
+					<ion-toggle
+						enable-on-off-labels
+						on:ionChange={() => (isDateRange = !isDateRange)}
+						checked={isDateRange}
+						class="ms-4"
+						justify="space-between">Include end date</ion-toggle
+					>
+				</CustomItem>
 				<CustomItem icon={calendarClearOutline}>
 					<div class="flex flex-col">
 						<ion-text color="secondary" class="ms-4 pt-2 text-xs"
@@ -467,26 +487,6 @@
 						</div>
 					</CustomItem>
 				{/if}
-				<CustomItem icon={codeOutline}>
-					<!-- svelte-ignore event_directive_deprecated -->
-					<ion-toggle
-						enable-on-off-labels
-						on:ionChange={() => (isDateRange = !isDateRange)}
-						checked={isDateRange}
-						class="ms-4"
-						justify="space-between">Include end date</ion-toggle
-					>
-				</CustomItem>
-				<CustomItem icon={timeOutline}>
-					<!-- svelte-ignore event_directive_deprecated -->
-					<ion-toggle
-						enable-on-off-labels
-						on:ionChange={() => (includeTime = !includeTime)}
-						checked={includeTime}
-						class="ms-4"
-						justify="space-between">Include time</ion-toggle
-					>
-				</CustomItem>
 			</form>
 		</Card>
 	{/if}

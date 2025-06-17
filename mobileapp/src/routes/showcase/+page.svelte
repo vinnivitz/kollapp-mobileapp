@@ -89,8 +89,11 @@
 			This is a modal.
 		</Modal>
 		<div class="flex flex-wrap items-center justify-center">
-			<Button label="Default" icon={addOutline} click={() => showAlert('Button clicked', { type: AlertType.SUCCESS })}
-			></Button>
+			<Button
+				label="Default"
+				icon={addOutline}
+				click={() => showAlert('Button clicked', { type: AlertType.SUCCESS })}
+			/>
 			<Button
 				label="Outline"
 				fill="outline"
@@ -132,8 +135,8 @@
 	</Card>
 	<Card title="Calendar">
 		<div class="flex flex-col gap-4">
-			<Calendar apply={() => showAlert('Date selected', { type: AlertType.SUCCESS })}></Calendar>
-			<Calendar showTitle={false}></Calendar>
+			<Calendar apply={() => showAlert('Date selected', { type: AlertType.SUCCESS })} />
+			<Calendar showTitle={false} />
 		</div>
 	</Card>
 	<Card title="Activity card" classList="bg-transparent">

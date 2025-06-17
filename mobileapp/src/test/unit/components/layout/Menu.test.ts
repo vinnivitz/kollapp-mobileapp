@@ -27,6 +27,7 @@ describe('Menu Component', () => {
 		}));
 
 		vi.mock('$lib/utility', () => ({
+			featureNotImplementedAlert: vi.fn(),
 			triggerClickByLabel: vi.fn()
 		}));
 	});
@@ -98,7 +99,7 @@ describe('Menu Component', () => {
 
 	it('calls logout when clicking the logout button', async () => {
 		const { container } = render(Menu, { props: properties });
-		const logoutButton = container.querySelector('ion-button') as HTMLIonButtonElement;
+		const logoutButton = container.querySelectorAll('ion-button').item(1) as HTMLIonButtonElement;
 		expect(logoutButton).toBeTruthy();
 		await fireEvent.click(logoutButton);
 		await waitFor(() => expect(authResource.logout).toHaveBeenCalled());

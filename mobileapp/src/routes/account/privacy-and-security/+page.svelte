@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { loadingController } from 'ionic-svelte';
 	import {
+		bugOutline,
 		constructOutline,
 		fingerPrintOutline,
 		keyOutline,
@@ -122,13 +123,14 @@
 			icon={receiptOutline}
 			searchable={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.LEGAL}
 			click={() => goto(PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.LEGAL)}
-		></LabeledItem>
+		/>
 		<LabeledItem
 			label="App version"
 			icon={constructOutline}
 			click={() => goto(PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.APP_VERSION)}
 			searchable={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.APP_VERSION}
-		></LabeledItem>
+		/>
+		<LabeledItem label="Report bug" icon={bugOutline} click={() => featureNotImplementedAlert()} />
 	</ion-list>
 	<ion-list inset>
 		<ion-list-header>{$t('routes.account.page.privacy-and-security.list.security')}</ion-list-header>

@@ -16,6 +16,9 @@
         },
         "join-organization": {
           "title": "Join a collective"
+        },
+        "notifications": {
+          "no-notes": "No new notifications."
         }
       }
     },
@@ -79,8 +82,8 @@
         },
         "card": {
           "join-organization": {
-            "title": "Join an existing Collective?",
-            "content": "Contact the the collective admin for sending you an invitation email."
+            "title": "Join a Collective?",
+            "content": "Contact the the collective admin for giving you the code for joining the collective or sending you an invitation email."
           },
           "register-organization": {
             "title": "Register to Kollapp"

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { accessibilityOutline } from 'ionicons/icons';
+	import { accessibilityOutline, personOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
 
@@ -13,39 +13,38 @@
 
 <Layout title={$t('routes.home.title')}>
 	{#if $initializationStore}
-		<Card title={$t('routes.home.card.user.title', { value: $userStore?.username })} />
+		<Card title={$t('routes.home.card.user.title', { value: $userStore?.username })} classList="text-center">
+			<Button fill="outline" label="Go to account" icon={personOutline} click={() => goto(PageRoute.ACCOUNT.ROOT)} />
+		</Card>
 
 		{#if $organizationStore}
-			<Card title={$organizationStore.name}>
-				<div class="text-center">
-					<Button
-						click={() => goto(PageRoute.ORGANIZATION.ROOT)}
-						fill="outline"
-						icon={accessibilityOutline}
-						label={$t('routes.home.card.organization.button')}
-					/>
-				</div>
+			<Card title={$organizationStore.name} classList="text-center">
+				<Button
+					click={() => goto(PageRoute.ORGANIZATION.ROOT)}
+					fill="outline"
+					icon={accessibilityOutline}
+					label={$t('routes.home.card.organization.button')}
+				/>
+			</Card>
+			<Card title="Notifications" classList="text-center">
+				<ion-text>{$t('routes.home.card.notifications.no-notes')}</ion-text>
 			</Card>
 		{:else}
-			<Card title={$t('routes.home.card.register-organization.title')}>
-				<div class="text-center">
-					<Button
-						click={() => goto(PageRoute.ORGANIZATION.REGISTER)}
-						fill="outline"
-						icon={accessibilityOutline}
-						label={$t('routes.home.card.organization.register')}
-					/>
-				</div>
+			<Card title={$t('routes.home.card.register-organization.title')} classList="text-center">
+				<Button
+					click={() => goto(PageRoute.ORGANIZATION.REGISTER)}
+					fill="outline"
+					icon={accessibilityOutline}
+					label={$t('routes.home.card.organization.register')}
+				/>
 			</Card>
-			<Card title={$t('routes.home.card.join-organization.title')}>
-				<div class="text-center">
-					<Button
-						click={() => goto(PageRoute.ORGANIZATION.JOIN)}
-						fill="outline"
-						icon={accessibilityOutline}
-						label={$t('routes.home.card.organization.join')}
-					/>
-				</div>
+			<Card title={$t('routes.home.card.join-organization.title')} classList="text-center">
+				<Button
+					click={() => goto(PageRoute.ORGANIZATION.JOIN)}
+					fill="outline"
+					icon={accessibilityOutline}
+					label={$t('routes.home.card.organization.join')}
+				/>
 			</Card>
 		{/if}
 	{/if}

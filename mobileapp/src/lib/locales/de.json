@@ -428,8 +428,8 @@
         },
         "card": {
           "join-organization": {
-            "content": "Wende dich an den Kollektiv-Administrator, welcher dir  eine Einladungs-Mail zusendet.",
-            "title": "Einem vorhandenen Kollektiv beitreten?"
+            "content": "Frag den Kollektiv-Admin nach dem Code um dem Kollektiv beizutreten oder bitte ihn/sie, dir eine Einladungsmail zu schicken.",
+            "title": "Einem Kollektiv beitreten?"
           },
           "register-organization": {
             "title": "Registriere dich bei Kollapp"
@@ -496,6 +496,9 @@
         },
         "join-organization": {
           "title": "Schließe dich einem Kollektiv an"
+        },
+        "notifications": {
+          "no-notes": "Keine neuen Benachrichtigungen."
         }
       }
     },

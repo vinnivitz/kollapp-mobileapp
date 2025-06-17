@@ -121,7 +121,8 @@ export function getValidationResult<T>(body: ResponseBody<T>): ValidationResult 
  */
 export const StatusCheck = {
 	isOK: (status: number): boolean => status >= 200 && status < 300,
-	isUnauthorized: (status: number): boolean => status === StatusCode.UNAUTHORIZED
+	isUnauthorized: (status: number): boolean => status === StatusCode.UNAUTHORIZED,
+	serverNotReachable: (status: number): boolean => status === StatusCode.SERVICE_UNAVAILABLE
 };
 
 /**

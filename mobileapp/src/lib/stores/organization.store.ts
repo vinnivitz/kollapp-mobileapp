@@ -26,6 +26,12 @@ function createStore(): OrganizationStore {
 				await _set(storedOrganization);
 				selectedOrganizationId ??= storedOrganization?.id;
 			}
+		} else if (StatusCheck.serverNotReachable(response.status)) {
+			const storedOrganization = await getStoredValue<OrganizationModel>(PreferencesKey.ORGANIZATION);
+			if (storedOrganization) {
+				organizations.set([storedOrganization]);
+				selectedOrganizationId ??= storedOrganization.id;
+			}
 		}
 		if (selectedOrganizationId) {
 			await storeValue(PreferencesKey.SELECTED_ORGANIZATION_ID, selectedOrganizationId);
