@@ -25,4 +25,6 @@ public class OrganizationTO {
     private OrganizationInvitationCodeTO organizationInvitationCode;
 
     private List<PersonOfOrganizationTO> personsOfOrganization;
+
+    private List<ActivityTO> activities;
 }
