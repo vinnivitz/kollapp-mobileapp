@@ -19,5 +19,5 @@ public interface PersonOfOrganizationRepository {
 
     void deleteById(long id);
 
-    PersonOfOrganization findById(long id);
+    Optional<PersonOfOrganization> findById(long id);
 }
