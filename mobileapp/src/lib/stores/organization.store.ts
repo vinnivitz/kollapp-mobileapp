@@ -3,8 +3,6 @@ import type { OrganizationStore } from '$lib/models/stores';
 
 import { writable } from 'svelte/store';
 
-import { activitiesStore } from './activity.store';
-
 import { organizationResource } from '$lib/api/resources';
 import { PreferencesKey } from '$lib/models/preferences';
 import { getStoredValue, removeStoredValue, StatusCheck, storeValue } from '$lib/utility';
@@ -26,25 +24,29 @@ function createStore(): OrganizationStore {
 				await _set(storedOrganization);
 				selectedOrganizationId ??= storedOrganization?.id;
 			}
+			if (selectedOrganizationId) {
+				await storeValue(PreferencesKey.SELECTED_ORGANIZATION_ID, selectedOrganizationId);
+				await update(selectedOrganizationId);
+			} else {
+				await _set();
+			}
 		} else if (StatusCheck.serverNotReachable(response.status)) {
 			const storedOrganization = await getStoredValue<OrganizationModel>(PreferencesKey.ORGANIZATION);
 			if (storedOrganization) {
 				organizations.set([storedOrganization]);
-				selectedOrganizationId ??= storedOrganization.id;
+				_set(storedOrganization);
 			}
-		}
-		if (selectedOrganizationId) {
-			await storeValue(PreferencesKey.SELECTED_ORGANIZATION_ID, selectedOrganizationId);
-			await change(selectedOrganizationId);
-		} else {
-			await _set();
-			await activitiesStore.init();
 		}
 		initialized.set(true);
 	}
 
 	async function _set(model?: OrganizationModel): Promise<void> {
-		await (model ? storeValue(PreferencesKey.ORGANIZATION, model) : removeStoredValue(PreferencesKey.ORGANIZATION));
+		await (model
+			? storeValue(PreferencesKey.ORGANIZATION, model)
+			: Promise.all([
+					removeStoredValue(PreferencesKey.SELECTED_ORGANIZATION_ID),
+					removeStoredValue(PreferencesKey.ORGANIZATION)
+				]));
 		set(model);
 	}
 
@@ -53,23 +55,22 @@ function createStore(): OrganizationStore {
 		_set();
 	}
 
-	async function change(id: number): Promise<void> {
+	async function update(id: number): Promise<void> {
 		const body = await organizationResource.getById(id);
 		if (StatusCheck.isOK(body.status)) {
 			await _set(body.data);
 			await storeValue(PreferencesKey.SELECTED_ORGANIZATION_ID, id);
-			await activitiesStore.init();
 		}
 	}
 
 	return {
-		change,
 		init,
 		initialized,
 		organizations,
 		reset,
 		set: _set,
-		subscribe
+		subscribe,
+		update
 	};
 }
 

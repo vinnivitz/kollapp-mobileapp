@@ -5,7 +5,7 @@
 
 	import { PageRoute } from '$lib/models/routing';
 	import { initializationStore } from '$lib/stores';
-	import { clickableElement, navigateBack } from '$lib/utility';
+	import { navigateBack } from '$lib/utility';
 
 	type Properties = {
 		title: string;
@@ -30,6 +30,10 @@
 			clearTimeout(navigationTimeout);
 		}
 	});
+
+	async function navigate(): Promise<void> {
+		return showBackButton ? navigateBack() : goto(PageRoute.HOME);
+	}
 </script>
 
 <ion-header>
@@ -37,16 +41,13 @@
 		<ion-title>{title}</ion-title>
 
 		<ion-buttons slot="start">
-			<ion-button>
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<ion-button onclick={navigate}>
 				{#if showBackButton}
-					<ion-back-button default-href="/" use:clickableElement={navigateBack}> </ion-back-button>
+					<ion-back-button default-href="/"> </ion-back-button>
 				{:else}
-					<img
-						use:clickableElement={() => goto(PageRoute.HOME)}
-						src="/logo.png"
-						alt="Logo"
-						class="bw:grayscale h-8 w-8"
-					/>
+					<img src="/logo.png" alt="Logo" class="bw:grayscale h-8 w-8" />
 				{/if}
 			</ion-button>
 		</ion-buttons>

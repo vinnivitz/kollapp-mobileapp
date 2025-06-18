@@ -44,7 +44,7 @@
 			if (result.valid) {
 				actions.resetModel();
 				await organizationStore.init();
-				await organizationStore.change(response.data.id);
+				await organizationStore.update(response.data.id);
 				goto(PageRoute.ORGANIZATION.ROOT);
 			} else {
 				actions.applyValidationFeedback(result);

@@ -60,16 +60,16 @@
     "route": "/account/privacy-and-security"
   },
   {
-    "icon": "swapHorizontalOutline",
-    "id": 11,
-    "label": "routes.organization.change-organization.action-sheet.title",
-    "route": "/organization"
-  },
-  {
     "icon": "calendarOutline",
-    "id": 12,
+    "id": 11,
     "label": "routes.organization.list.organization.activity.label",
     "route": "/organization/activities"
+  },
+  {
+    "icon": "swapHorizontalOutline",
+    "id": 12,
+    "label": "routes.organization.change-organization.action-sheet.title",
+    "route": "/organization"
   },
   {
     "icon": "peopleOutline",

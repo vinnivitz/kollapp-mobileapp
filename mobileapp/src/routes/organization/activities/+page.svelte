@@ -42,7 +42,7 @@
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
-	import { activitiesStore, organizationStore } from '$lib/stores';
+	import { organizationStore } from '$lib/stores';
 	import { customForm, featureNotImplementedAlert, getValidationResult, showAlert } from '$lib/utility';
 
 	enum ActivityView {
@@ -62,7 +62,7 @@
 		type: ActivityFilterType;
 	};
 
-	const activityItems = $derived($activitiesStore ?? []);
+	const activityItems = $derived($organizationStore?.activities ?? []);
 
 	const activityFilters = $state<ActivityFilter[]>([
 		{
@@ -136,7 +136,7 @@
 				if (result.valid) {
 					createActions.resetModel();
 					createModalOpen = false;
-					await activitiesStore.init();
+					await organizationStore.update(organizationId);
 				} else {
 					createActions.applyValidationFeedback(result);
 				}
@@ -190,7 +190,7 @@
 		if (organizationId) {
 			const result = getValidationResult(await organizationResource.deleteActivity(organizationId, selectedActivityId));
 			if (result.valid) {
-				await activitiesStore.init();
+				await organizationStore.update(organizationId);
 				editModalOpen = false;
 			}
 		} else {
@@ -554,9 +554,3 @@
 		{/if}
 	</Modal>
 {/key}
-
-<style>
-	ion-popover.extended {
-		--width: 95%;
-	}
-</style>

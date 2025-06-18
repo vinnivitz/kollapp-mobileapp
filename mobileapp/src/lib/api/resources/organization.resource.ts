@@ -56,8 +56,8 @@ export async function update(id: number, model: UpdateOrganizationDto): Promise<
  * Deletes user from the organization.
  * @returns {Promise<ResponseBody>} The response body.
  */
-export async function leaveOrganization(): Promise<ResponseBody> {
-	return customFetch(`${ENDPOINT}`, {
+export async function leaveOrganization(organizationId: number): Promise<ResponseBody> {
+	return customFetch(`${ENDPOINT}/${organizationId}`, {
 		method: RequestMethod.DELETE
 	});
 }
@@ -145,11 +145,26 @@ export async function grantUserRole(userId: number, organizationId: number, role
  */
 export async function renewInvitationCode(organizationId: number): Promise<ResponseBody<string>> {
 	return customFetch(`${ENDPOINT}/${organizationId}/invitation-code`, {
-		method: RequestMethod.POST,
-		silentOnSuccess: true
+		method: RequestMethod.POST
 	});
 }
 
+/**
+ * Retrieves the organization by invitation code.
+ * @param code The invitation code.
+ * @returns {Promise<ResponseBody<OrganizationDto>>} The organization.
+ */
 export async function getOrganizationByInvitationCode(code: string): Promise<ResponseBody<OrganizationDto>> {
-	return customFetch(`${ENDPOINT}/invitation-code/${code}`, { silentOnSuccess: true });
+	return customFetch(`${ENDPOINT}/invitation/${code}`, { silentOnSuccess: true });
+}
+
+/**
+ * Joins an organization by invitation code.
+ * @param code The invitation code.
+ * @returns {Promise<ResponseBody<OrganizationDto>>} The organization.
+ */
+export async function joinOrganizationByInvitationCode(code: string): Promise<ResponseBody<OrganizationDto>> {
+	return customFetch(`${ENDPOINT}/invitation/${code}`, {
+		method: RequestMethod.POST
+	});
 }

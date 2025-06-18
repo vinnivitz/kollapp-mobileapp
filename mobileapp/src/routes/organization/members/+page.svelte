@@ -3,6 +3,7 @@
 
 	import { Clipboard } from '@capacitor/clipboard';
 	import { Share } from '@capacitor/share';
+	import QRCode from '@svelte-put/qr/svg/QR.svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { actionSheetController } from 'ionic-svelte';
 	import {
@@ -12,6 +13,7 @@
 		personAddOutline,
 		personCircleOutline,
 		personOutline,
+		qrCode,
 		refreshCircleOutline,
 		ribbonOutline,
 		shareOutline,
@@ -34,6 +36,7 @@
 
 	let memberList = <HTMLIonListElement | undefined>$state();
 	let invitationCodeModalOpen = $state(false);
+	let qrModalOpen = $state(false);
 
 	const userId = $derived($userStore?.id);
 
@@ -45,7 +48,7 @@
 	const members = $derived(
 		($organizationStore?.personsOfOrganization ?? [])
 			.sort((a, b) => a.username.localeCompare(b.username))
-			.filter((member) => member.id !== userId)
+			.filter((member) => member.userId !== userId)
 	);
 
 	const memberGroups = $derived(getGroupedMembers(members));
@@ -58,16 +61,16 @@
 					handler: () => grantUserRole(member.id, organizationId!, UserRole.MANAGER),
 					icon: medalOutline,
 					role: member.role === UserRole.MANAGER ? 'selected' : undefined,
-					text: 'Manager'
+					text: $t('routes.organization.page.members.select-user-role.role.manager')
 				},
 				{
 					handler: () => grantUserRole(member.id, organizationId!, UserRole.USER),
 					icon: personOutline,
 					role: member.role === UserRole.USER ? 'selected' : undefined,
-					text: 'User'
+					text: $t('routes.organization.page.members.select-user-role.role.user')
 				}
 			],
-			header: 'Select user role',
+			header: $t('routes.organization.page.members.select-user-role.header'),
 			translucent: true
 		});
 		await actionsheet.present();
@@ -106,6 +109,7 @@
 		await Clipboard.write({
 			string: $organizationStore?.organizationInvitationCode.code
 		});
+		await showAlert($t('routes.organization.page.members.share.success'), { type: AlertType.SUCCESS });
 	}
 
 	async function onShare(): Promise<void> {
@@ -116,10 +120,10 @@
 			await Share.share({
 				text: `Join ${organizationName} using this invitation code: ${organizationCode}`,
 				title: `Invite to join ${organizationName} on Kollapp!`,
-				url: `kollapp://organization/join?code=${organizationCode}`
+				url: `https://api.kollapp.org/api/organization/invitation/${organizationCode}`
 			});
 		} else {
-			showAlert('Sharing is not supported on this device.');
+			showAlert($t('routes.organization.page.members.share.not-supported'));
 		}
 	}
 
@@ -127,14 +131,16 @@
 		const organizationId = $organizationStore?.id;
 		if (organizationId) {
 			const response = await organizationResource.renewInvitationCode(organizationId);
-			console.log('id', $organizationStore?.id);
 			if (StatusCheck.isOK(response.status)) {
-				await organizationStore.init();
-				await showAlert('Invitation code renewed successfully.', { type: AlertType.SUCCESS });
+				await organizationStore.update(organizationId);
 			}
 		} else {
-			showAlert('Failed to renew invitation code. Please try again later.');
+			await showAlert('Failed to renew invitation code. Please try again later.');
 		}
+	}
+
+	async function showQRCode(): Promise<void> {
+		qrModalOpen = true;
 	}
 </script>
 
@@ -146,7 +152,7 @@
 	{#if members.length === 0}
 		<div class="mt-5 flex flex-col items-center justify-center gap-5">
 			<ion-note>No other members found.</ion-note>
-			<Button icon={personAddOutline} label="Invite person" click={() => featureNotImplementedAlert()} />
+			<Button icon={personAddOutline} label="Invite person" click={() => (invitationCodeModalOpen = true)} />
 		</div>
 	{:else}
 		<!-- svelte-ignore event_directive_deprecated -->
@@ -199,7 +205,7 @@
 	<Card title="Invitation Code">
 		<div class="flex flex-col">
 			<div class="mx-12 rounded border border-[var(--ion-color-primary)] p-2 text-center font-extrabold">
-				<ion-note color="primary" class="text-2xl">
+				<ion-note color="tertiary" class="text-2xl">
 					{inviationCode.toUpperCase()}
 				</ion-note>
 			</div>
@@ -222,7 +228,8 @@
 			<div class="mx-14 mt-2 flex items-center justify-between gap-2">
 				<Button shape="round" icon={shareOutline} click={onShare}></Button>
 				<Button shape="round" icon={clipboardOutline} click={onWriteToClipboard}></Button>
-				<Button shape="round" icon={mailOutline} click={() => {}}></Button>
+				<Button shape="round" icon={mailOutline} click={featureNotImplementedAlert}></Button>
+				<Button shape="round" icon={qrCode} click={showQRCode}></Button>
 			</div>
 			<Button
 				icon={refreshCircleOutline}
@@ -234,3 +241,8 @@
 		</div>
 	</Card>
 </Modal>
+
+<!-- svelte-ignore event_directive_deprecated -->
+<ion-popover class="extended" is-open={qrModalOpen} on:didDismiss={() => (qrModalOpen = false)}>
+	<QRCode data={$organizationStore?.organizationInvitationCode.code ?? ''} shape="circle" />
+</ion-popover>

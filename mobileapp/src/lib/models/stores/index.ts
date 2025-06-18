@@ -1,4 +1,3 @@
-export * from './activity-store.type';
 export * from './authentication-store.type';
 export * from './base-store.type';
 export * from './connection-store.type';

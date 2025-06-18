@@ -34,7 +34,16 @@ export async function changePassword(model: ChangePasswordDto): Promise<Response
 export async function update(model: UpdateUserDataDto): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/update-information`, {
 		body: JSON.stringify(model),
-		method: RequestMethod.POST,
-		silentOnSuccess: false
+		method: RequestMethod.POST
+	});
+}
+
+/**
+ * Deletes the account of the authenticated user
+ * @returns {Promise<ResponseBody>} response body
+ */
+export async function deleteAccount(): Promise<ResponseBody> {
+	return customFetch(`${ENDPOINT}/delete`, {
+		method: RequestMethod.DELETE
 	});
 }

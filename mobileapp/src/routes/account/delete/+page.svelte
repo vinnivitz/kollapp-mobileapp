@@ -1,14 +1,21 @@
 <script lang="ts">
 	import { trashOutline } from 'ionicons/icons';
 
-	import { organizationResource } from '$lib/api/resources';
+	import { authResource, userResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import { t } from '$lib/locales';
+	import { StatusCheck } from '$lib/utility';
+	import { goto } from '$app/navigation';
+	import { PageRoute } from '$lib/models/routing';
 
-	async function leaveOrganization(): Promise<void> {
-		await organizationResource.leaveOrganization();
+	async function onDeleteAccount(): Promise<void> {
+		const response = await userResource.deleteAccount();
+		if (StatusCheck.isOK(response.status)) {
+			await authResource.logout();
+			goto(PageRoute.AUTH.LOGIN);
+		}
 	}
 </script>
 
@@ -18,7 +25,7 @@
 			classList="mt-3"
 			expand="block"
 			color="danger"
-			click={leaveOrganization}
+			click={onDeleteAccount}
 			icon={trashOutline}
 			label={$t('routes.account.delete.card.button')}
 		/>

@@ -542,7 +542,8 @@
           "title": "Kollektiv beitreten",
           "form": {
             "code": "Code",
-            "submit": "Beitreten"
+            "submit": "Beitreten",
+            "title": "Code eingeben"
           }
         },
         "leave": {
@@ -560,7 +561,6 @@
               "input": {
                 "location": "Standort",
                 "name": "Name",
-                "date": "Datum",
                 "start-date": "Startdatum",
                 "end-date": "Enddatum"
               },
@@ -635,21 +635,23 @@
               "expires-in": "Läuft ab",
               "is-expired": "Code ist abgelaufen. \nBitte erneuern."
             }
+          },
+          "select-user-role": {
+            "header": "Nutzerrolle wählen",
+            "role": {
+              "manager": "Manager",
+              "user": "Mitglied"
+            }
+          },
+          "share": {
+            "not-supported": "Das Teilen wird auf diesem Gerät nicht unterstützt.",
+            "success": "Einladungscode in die Zwischenablage kopiert"
           }
         }
       },
       "change-organization": {
         "action-sheet": {
           "title": "Kollektiv wechseln"
-        }
-      }
-    },
-    "orgnization": {
-      "page": {
-        "join": {
-          "form": {
-            "title": "Code eingeben"
-          }
         }
       }
     }

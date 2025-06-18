@@ -1,4 +1,3 @@
-export * from './activity.store';
 export * from './authentication.store';
 export * from './connection.store';
 export * from './initialization.store';

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { loadingController } from 'ionic-svelte';
-	import { trashOutline } from 'ionicons/icons';
+	import { alertController, loadingController } from 'ionic-svelte';
+	import { ribbonOutline, trashOutline, warningOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
 
@@ -9,19 +9,43 @@
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import { t } from '$lib/locales';
+	import { UserRole } from '$lib/models/api';
 	import { PreferencesKey } from '$lib/models/preferences';
 	import { PageRoute } from '$lib/models/routing';
 	import { organizationStore } from '$lib/stores';
-	import { removeStoredValue } from '$lib/utility';
+	import { removeStoredValue, showAlert } from '$lib/utility';
+
+	const isLastManager = $derived(
+		$organizationStore?.personsOfOrganization.filter((member) => member.role === UserRole.MANAGER).length === 1
+	);
+
+	const isLastMember = $derived($organizationStore?.personsOfOrganization.length === 1);
+
+	async function onLeaveOrganization(): Promise<void> {
+		const alert = await alertController.create({
+			buttons: [
+				{ role: 'cancel', text: 'Cancel' },
+				{ handler: async () => await leaveOrganization(), text: 'Leave' }
+			],
+			header: `Are you sure?`,
+			message: `This action cannot be undone.`
+		});
+		await alert.present();
+	}
 
 	async function leaveOrganization(): Promise<void> {
 		const loader = await loadingController.create({});
 		await loader.present();
-		await Promise.all([
-			organizationResource.leaveOrganization(),
-			removeStoredValue(PreferencesKey.SELECTED_ORGANIZATION_ID)
-		]);
-		await organizationStore.init();
+		const organizationId = $organizationStore?.id;
+		if (organizationId) {
+			await Promise.all([
+				organizationResource.leaveOrganization(organizationId),
+				removeStoredValue(PreferencesKey.SELECTED_ORGANIZATION_ID)
+			]);
+			await organizationStore.init();
+		} else {
+			await showAlert('Could not leave organization. Try again later.');
+		}
 		await loader.dismiss();
 		goto(PageRoute.ORGANIZATION.ROOT);
 	}
@@ -36,9 +60,28 @@
 				expand="block"
 				label={$t('routes.organization.page.leave.card.button')}
 				icon={trashOutline}
-				click={leaveOrganization}
+				click={onLeaveOrganization}
 			/>
 			<ion-text>{$t('routes.organization.page.leave.card.note')}</ion-text>
 		</div>
+		{#if isLastManager}
+			<Card color="warning" classList="font-bold">
+				<div class="flex items-center justify-center gap-2">
+					<ion-avatar class="flex items-center justify-center">
+						<ion-icon icon={warningOutline} size="large"></ion-icon>
+					</ion-avatar>
+					<ion-text>You are the last manager of this organization. Leaving will delete the organization. </ion-text>
+				</div>
+			</Card>
+			{#if !isLastMember}
+				<Button
+					icon={ribbonOutline}
+					classList="mx-3"
+					fill="outline"
+					label="Grant manager role to another member"
+					click={() => goto(PageRoute.ORGANIZATION.MEMBERS)}
+				/>
+			{/if}
+		{/if}
 	</Card>
 </Layout>

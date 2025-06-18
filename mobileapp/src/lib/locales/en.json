@@ -321,7 +321,8 @@
           "title": "Join a collective",
           "form": {
             "code": "Code",
-            "submit": "Join"
+            "submit": "Join",
+            "title": "Enter code"
           }
         },
         "leave": {
@@ -340,7 +341,6 @@
               "input": {
                 "name": "Name",
                 "location": "Location",
-                "date": "Date",
                 "start-date": "Start date",
                 "end-date": "End date"
               }
@@ -414,21 +414,23 @@
               "is-expired": "Code is expired. Please renew."
             }
           },
-          "title": "Manage members"
+          "title": "Manage members",
+          "select-user-role": {
+            "header": "Select user role",
+            "role": {
+              "manager": "Manager",
+              "user": "Member"
+            }
+          },
+          "share": {
+            "not-supported": "Sharing is not supported on this device.",
+            "success": "Invitation code wrote to clipboard"
+          }
         }
       },
       "change-organization": {
         "action-sheet": {
           "title": "Change collective"
-        }
-      }
-    },
-    "orgnization": {
-      "page": {
-        "join": {
-          "form": {
-            "title": "Enter the code"
-          }
         }
       }
     }

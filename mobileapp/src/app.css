@@ -35,6 +35,10 @@
 	ion-toast {
 		--button-color: var(--ion-color-white);
 	}
+
+	ion-popover.extended {
+		--width: 95%;
+	}
 }
 
 body {
