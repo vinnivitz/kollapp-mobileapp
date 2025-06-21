@@ -4,6 +4,7 @@
 	import { Clipboard } from '@capacitor/clipboard';
 	import { Share } from '@capacitor/share';
 	import QRCode from '@svelte-put/qr/svg/QR.svelte';
+	import { EmailComposer } from 'capacitor-email-composer';
 	import { formatDistanceToNow } from 'date-fns';
 	import { actionSheetController } from 'ionic-svelte';
 	import {
@@ -32,7 +33,7 @@
 	import { UserRole } from '$lib/models/api';
 	import { AlertType } from '$lib/models/ui';
 	import { localeStore, organizationStore, userStore } from '$lib/stores';
-	import { clickOutside, featureNotImplementedAlert, getDateFnsLocale, showAlert, StatusCheck } from '$lib/utility';
+	import { clickOutside, getDateFnsLocale, showAlert, StatusCheck } from '$lib/utility';
 
 	let memberList = <HTMLIonListElement | undefined>$state();
 	let invitationCodeModalOpen = $state(false);
@@ -142,6 +143,20 @@
 	async function showQRCode(): Promise<void> {
 		qrModalOpen = true;
 	}
+
+	async function onSendMail(): Promise<void> {
+		try {
+			const hasAccountResult = await EmailComposer.hasAccount();
+			await (hasAccountResult.hasAccount
+				? EmailComposer.open({
+						body: `Use this invitation code to join: ${$organizationStore?.organizationInvitationCode.code}`,
+						subject: `Join ${$organizationStore?.name} on Kollapp!`
+					})
+				: showAlert('Default email app is not configured.'));
+		} catch {
+			await showAlert('Sending email is not supported on this device.');
+		}
+	}
 </script>
 
 <Layout title={$t('routes.organization.page.members.title')} showBackButton>
@@ -228,7 +243,7 @@
 			<div class="mx-14 mt-2 flex items-center justify-between gap-2">
 				<Button shape="round" icon={shareOutline} click={onShare}></Button>
 				<Button shape="round" icon={clipboardOutline} click={onWriteToClipboard}></Button>
-				<Button shape="round" icon={mailOutline} click={featureNotImplementedAlert}></Button>
+				<Button shape="round" icon={mailOutline} click={onSendMail}></Button>
 				<Button shape="round" icon={qrCode} click={showQRCode}></Button>
 			</div>
 			<Button

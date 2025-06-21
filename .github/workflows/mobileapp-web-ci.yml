@@ -1,4 +1,4 @@
-name: Deploy mobileapp Docker Image
+name: Deploy mobileapp web Docker Image
 env:
   ACTIONS_STEP_DEBUG: true
 on:

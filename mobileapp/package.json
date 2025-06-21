@@ -89,6 +89,7 @@
 		"@tailwindcss/typography": "^0.5.16",
 		"@tailwindcss/vite": "^4.0.14",
 		"@types/d3": "^7.4.3",
+		"capacitor-email-composer": "^7.0.0",
 		"d3": "^7.9.0",
 		"date-fns": "^4.1.0",
 		"ionic-svelte": "^0.5.85",

@@ -1,14 +1,15 @@
 <script lang="ts">
 	import { trashOutline } from 'ionicons/icons';
 
+	import { goto } from '$app/navigation';
+
 	import { authResource, userResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import { t } from '$lib/locales';
-	import { StatusCheck } from '$lib/utility';
-	import { goto } from '$app/navigation';
 	import { PageRoute } from '$lib/models/routing';
+	import { StatusCheck } from '$lib/utility';
 
 	async function onDeleteAccount(): Promise<void> {
 		const response = await userResource.deleteAccount();

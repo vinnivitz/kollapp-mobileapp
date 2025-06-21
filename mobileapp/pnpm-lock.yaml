@@ -56,6 +56,9 @@ importers:
       '@types/d3':
         specifier: ^7.4.3
         version: 7.4.3
+      capacitor-email-composer:
+        specifier: ^7.0.0
+        version: 7.0.0(@capacitor/core@7.2.0)
       d3:
         specifier: ^7.9.0
         version: 7.9.0
@@ -1743,6 +1746,11 @@ packages:
 
   caniuse-lite@1.0.30001718:
     resolution: {integrity: sha512-AflseV1ahcSunK53NfEs9gFWgOEmzr0f+kaMFA4xiLZlr9Hzt7HxcSpIFcnNCUkz6R6dWKa54rUz3HUmI3nVcw==}
+
+  capacitor-email-composer@7.0.0:
+    resolution: {integrity: sha512-U4R6zqgVmEv7AV+pAi7XixNvJEsuzYAKlUKAx+++sf4/4Z3osAMz3N+8xXAyBQzhG/spZQBlFcTtXoNmv4TpWA==}
+    peerDependencies:
+      '@capacitor/core': '>=7.0.0'
 
   chai@5.2.0:
     resolution: {integrity: sha512-mCuXncKXk5iCLhfhwTc0izo0gtEmpz5CtG2y8GiOINBlMVS6v8TMRc5TaLWKS6692m9+dVVfzgeVxR5UxWHTYw==}
@@ -7223,6 +7231,10 @@ snapshots:
   camelcase@5.3.1: {}
 
   caniuse-lite@1.0.30001718: {}
+
+  capacitor-email-composer@7.0.0(@capacitor/core@7.2.0):
+    dependencies:
+      '@capacitor/core': 7.2.0
 
   chai@5.2.0:
     dependencies:
