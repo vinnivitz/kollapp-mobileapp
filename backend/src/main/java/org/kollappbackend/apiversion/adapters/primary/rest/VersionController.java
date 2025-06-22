@@ -28,7 +28,7 @@ public class VersionController {
     private MessageSource messageSource;
 
     @GetMapping()
-    @Operation(summary = "Get the logged in user")
+    @Operation(summary = "Get the api version")
     public ResponseEntity<ResponseTO> getVersion() {
         ApiVersionTO apiVersionTO = new ApiVersionTO(applicationProperties.getVersion());
         return ResponseEntity.ok(new DataResponseTO(apiVersionTO, "success.apiversion.get", messageSource));
