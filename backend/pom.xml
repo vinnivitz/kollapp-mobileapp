@@ -10,7 +10,7 @@
     </parent>
     <groupId>org.kollapp</groupId>
     <artifactId>backend</artifactId>
-    <version>0.6.0-SNAPSHOT</version>
+    <version>0.6.1-SNAPSHOT</version>
     <description>Kollapp backend</description>
     <packaging>jar</packaging>
     <properties>
