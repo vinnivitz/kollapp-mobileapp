@@ -13,20 +13,18 @@
 		children: Snippet;
 		cancelLabel?: string;
 		confirmLabel?: string;
-		open?: boolean;
-		cancel?: () => void;
+		isOpen?: boolean;
 		confirm?: () => void;
 		dismissed?: () => void;
 	};
 
 	let {
-		cancel,
 		cancelLabel = $t('components.widgets.modal.button.cancel'),
 		children,
 		confirm,
 		confirmLabel = $t('components.widgets.modal.button.confirm'),
 		dismissed,
-		open = false
+		isOpen: open = false
 	}: Properties = $props();
 
 	let modal: HTMLIonModalElement | undefined;
@@ -74,7 +72,7 @@
 					color="white"
 					click={() => {
 						open = false;
-						cancel?.();
+						dismissed?.();
 					}}
 					icon={trashBinOutline}
 				/>

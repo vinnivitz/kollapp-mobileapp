@@ -46,10 +46,11 @@
 
 <Layout title={$t('routes.organization.title')} showBackButton>
 	{#if $organizationStore}
-		{@render changeCollective($organizationStore)}
 		{#if $organizationStore.activities.length > 0}
-			{@render upcomingEvent($organizationStore.activities)}
+			{@render changeCollective($organizationStore)}
 		{/if}
+
+		{@render upcomingEvent($organizationStore.activities)}
 		{@render eventsList()}
 		{@render collectiveList()}
 	{/if}
@@ -57,7 +58,11 @@
 </Layout>
 
 {#snippet upcomingEvent(activities: ActivityModel[])}
-	<Card title="Upcoming event" classList="mt-5" click={() => goto(PageRoute.ORGANIZATION.ACTIVITIES)}>
+	<Card
+		title="Upcoming event"
+		classList="mt-5"
+		click={() => activities[0]?.id && goto(PageRoute.ORGANIZATION.ACTIVITIES.DETAIL(activities[0].id))}
+	>
 		<div class="flex flex-wrap items-center justify-center gap-5">
 			<div class="flex items-center gap-2">
 				<ion-icon icon={flashOutline}></ion-icon>
@@ -84,8 +89,8 @@
 			bottomBorder={false}
 			label={$t('routes.organization.list.organization.activity.label')}
 			icon={calendarOutline}
-			searchable={PageRoute.ORGANIZATION.ACTIVITIES}
-			click={() => goto(PageRoute.ORGANIZATION.ACTIVITIES)}
+			searchable={PageRoute.ORGANIZATION.ACTIVITIES.ROOT}
+			click={() => goto(PageRoute.ORGANIZATION.ACTIVITIES.ROOT)}
 		></LabeledItem>
 	</ion-list>
 {/snippet}

@@ -9,17 +9,18 @@
 
 	type Properties = {
 		title: string;
+		loading?: boolean;
 		showBackButton?: boolean;
 	};
 
-	let { showBackButton, title }: Properties = $props();
+	let { loading, showBackButton, title }: Properties = $props();
 
-	const loading = $derived(!$initializationStore);
+	const _loading = $derived(!$initializationStore);
 	let navigationDebounced = $state(false);
 	let navigationTimeout: ReturnType<typeof setTimeout>;
 
 	$effect(() => {
-		if (loading) {
+		if (_loading) {
 			navigationDebounced = false;
 			navigationTimeout = setTimeout(() => (navigationDebounced = true), 100);
 		}
@@ -55,7 +56,7 @@
 			<ion-menu-button class="text-3xl"></ion-menu-button>
 		</ion-buttons>
 	</ion-toolbar>
-	{#if loading && navigationDebounced}
+	{#if (_loading && navigationDebounced) || loading}
 		<ion-progress-bar type="indeterminate"></ion-progress-bar>
 	{/if}
 </ion-header>

@@ -45,7 +45,7 @@ export async function triggerClickByLabel(label: string): Promise<void> {
 		[...document.querySelectorAll('ion-label')].find((element) => element.textContent === label)?.closest('ion-item') ??
 		[...document.querySelectorAll('ion-card')].find((element) => element.id === label) ??
 		[...document.querySelectorAll('ion-fab')]
-			.find((element) => element.id === label)
+			.find((element) => element.ariaLabel === label)
 			?.querySelector('ion-fab-button') ??
 		[...document.querySelectorAll('ion-label')]
 			.find((element) => element.textContent === label)
@@ -103,9 +103,14 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 	const ionFormActions = writable<FormActions>();
 	let dirty = false;
 	const inputs = [...node.querySelectorAll('ion-input'), ...node.querySelectorAll('ion-textarea')];
+	const fields: Record<string, HTMLIonInputElement | HTMLIonTextareaElement> = {};
+	for (const input of inputs) {
+		fields[input.name] = input;
+	}
 	const customInputs = [...node.querySelectorAll('[data-name]')] as HTMLElement[];
 	const keys = Object.keys(data.model as object);
 	const passwordIcons: HTMLIonIconElement[] = [];
+	const teardowns: Array<() => void> = [];
 
 	if (data.config.exposedActions) {
 		data.config.exposedActions({
@@ -115,6 +120,19 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 			onUpdate,
 			resetModel
 		});
+	}
+
+	if (data.config.keyEventHandlers) {
+		for (const key of Object.keys(data.config.keyEventHandlers) as Array<keyof T>) {
+			// eslint-disable-next-line security/detect-object-injection
+			const handler = data.config.keyEventHandlers[key];
+			const input = fields[key as string];
+			if (handler && input) {
+				addListener(input, 'keydown', (_event) => {
+					handler(_event as KeyboardEvent, onUpdate.bind(undefined, key));
+				});
+			}
+		}
 	}
 
 	for (const input of inputs) {
@@ -129,21 +147,19 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 		}
 	}
 
-	node.addEventListener('ionInput', async (event) => {
+	addListener(node, 'ionInput', async (event) => {
 		const input = event.target as HTMLInputElement;
 		if (input && keys.includes(input.name)) {
 			await onChange(event);
 		}
 	});
 
-	node.addEventListener('ionBlur', async (event) => {
-		if (data.config?.onBlur) {
-			data.config.onBlur((event.target as HTMLInputElement).name as keyof T);
-		}
-	});
+	addListener(node, 'ionBlur', async (event) =>
+		data.config.onBlur?.((event.target as HTMLInputElement).name as keyof T)
+	);
 
 	node.noValidate = true;
-	node.addEventListener('submit', onSubmit);
+	addListener(node, 'submit', onSubmit);
 
 	function addPasswordIcon(input: HTMLIonInputElement): void {
 		const icon = document.createElement('ion-icon') as HTMLIonIconElement;
@@ -199,7 +215,7 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 	async function onUpdate(key: keyof T, value: T[keyof T]): Promise<void> {
 		const formatter = data.config.formatters?.[key as keyof T];
 		if (formatter) {
-			const input = inputs.find((input) => input.name === key);
+			const input = fields[key as string];
 			if (input) {
 				input.value = formatter(value) as string;
 			}
@@ -226,7 +242,7 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 	}
 
 	function applyValidationFeedbackByKey(key: keyof T, result: ValidationResult): void {
-		const input = inputs.find((input) => input.name === key);
+		const input = fields[key as string];
 		const message = result.errors?.find((error) => error.field === key)?.message;
 
 		if (input) {
@@ -261,11 +277,12 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 
 	async function onChange(event: Event): Promise<void> {
 		const key = (event.target as HTMLInputElement).name as keyof T;
-		const value = (event.target as HTMLInputElement).value as T[keyof T];
+		const value = (event.target as HTMLInputElement).value;
 		const parser = data.config.parser?.[key as keyof T];
-		await (parser ? _onUpdate(key, await parser(value)) : _onUpdate(key, value as T[keyof T]));
+		const parsed = parser ? await parser(value) : value;
+		await onUpdate(key, parsed as T[keyof T]);
 		if (data.config.onChange) {
-			data.config.onChange(key, value);
+			data.config.onChange(key, value as T[keyof T]);
 		}
 	}
 
@@ -306,9 +323,19 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 		}
 	}
 
+	function addListener<T extends Event>(
+		element: HTMLElement,
+		event: string,
+		function_: (_event: T) => void,
+		options?: AddEventListenerOptions | boolean
+	): void {
+		element.addEventListener(event, function_ as EventListener, options);
+		teardowns.push(() => element.removeEventListener(event, function_ as EventListener, options));
+	}
+
 	function destroy(): void {
-		node.removeEventListener('ionInput', onChange);
-		node.removeEventListener('submit', onSubmit);
+		for (const function_ of teardowns) function_();
+		for (const icon of passwordIcons) icon.remove();
 		ionFormActions.set({
 			applyValidationFeedback: () => {},
 			applyValidationFeedbackByKey: () => {},
@@ -316,9 +343,6 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 			onUpdate: () => {},
 			resetModel: () => {}
 		});
-		for (const icon of passwordIcons) {
-			icon.remove();
-		}
 	}
 
 	return {

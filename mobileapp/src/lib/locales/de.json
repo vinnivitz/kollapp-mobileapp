@@ -116,11 +116,13 @@
               "validation": {
                 "location": {
                   "max": "Der Name des Standorts muss weniger als 50 Zeichen lang sein",
-                  "required": "Name des Standorts ist erforderlich"
+                  "required": "Name des Standorts ist erforderlich",
+                  "min": "Name des Ortes muss mindestens ein Charakter lang sein"
                 },
                 "name": {
                   "max": "Der Name muss weniger als 50 Zeichen lang sein",
-                  "required": "Name ist erforderlich"
+                  "required": "Name ist erforderlich",
+                  "min": "Der Name muss mindestens ein Charakter lang sein"
                 }
               }
             }
@@ -150,6 +152,32 @@
             "name": {
               "required": "Name ist erforderlich",
               "max": "Der Name muss weniger als 50 Zeichen lang sein"
+            }
+          }
+        }
+      },
+      "budget": {
+        "create-posting": {
+          "schema": {
+            "amount": {
+              "min": "Betrag muss ein positiver Wert sein",
+              "max": "Der Betrag muss niedriger sein als 100.000 €",
+              "required": "Betrag ist erforderlich"
+            },
+            "date": {
+              "required": "Datum ist erforderlich"
+            },
+            "purpose": {
+              "required": "Ein Zweck ist erforderlich",
+              "max": "Zweck muss weniger als 200 Zeichen betragen"
+            }
+          }
+        },
+        "update-posting": {
+          "schema": {
+            "amount": {
+              "min": "Betrag muss ein positiver Wert sein",
+              "max": "Der Betrag muss niedriger sein als 100.000 €"
             }
           }
         }
@@ -615,7 +643,41 @@
               }
             }
           },
-          "create": "Veranstaltung erstellen"
+          "create": "Veranstaltung erstellen",
+          "no-activity-id": "Veranstaltung nicht gefunden",
+          "detail": {
+            "add-posting-modal": {
+              "title": {
+                "expense": "Kosten hinzufügen",
+                "income": "Einkommen hinzufügen"
+              }
+            }
+          },
+          "page": {
+            "slug": {
+              "modal": {
+                "create-posting": {
+                  "form": {
+                    "income": "Einnahme",
+                    "expense": "Ausgabe",
+                    "date": "Datum"
+                  },
+                  "title": {
+                    "income": "Neue Einnahme",
+                    "expense": "Neue Ausgabe"
+                  }
+                }
+              }
+            }
+          },
+          "modal": {
+            "create-activity": {
+              "form": {
+                "include-time": "Zeit hinzufügen",
+                "include-end-date": "Enddatum hinzufügen"
+              }
+            }
+          }
         },
         "register": {
           "form": {

@@ -394,7 +394,41 @@
               }
             }
           },
-          "create": "Create event"
+          "create": "Create event",
+          "no-activity-id": "Event not found",
+          "detail": {
+            "add-posting-modal": {
+              "title": {
+                "income": "Add income",
+                "expense": "Add expense"
+              }
+            }
+          },
+          "page": {
+            "slug": {
+              "modal": {
+                "create-posting": {
+                  "form": {
+                    "income": "Income",
+                    "expense": "Expense",
+                    "date": "Date"
+                  },
+                  "title": {
+                    "income": "Add income",
+                    "expense": "Add expense"
+                  }
+                }
+              }
+            }
+          },
+          "modal": {
+            "create-activity": {
+              "form": {
+                "include-time": "Include time",
+                "include-end-date": "Include end date"
+              }
+            }
+          }
         },
         "register": {
           "form": {
@@ -647,6 +681,32 @@
             "place": {
               "max": "Name of place must be less then 50 characters long",
               "required": "Name of place is required"
+            }
+          }
+        }
+      },
+      "budget": {
+        "create-posting": {
+          "schema": {
+            "amount": {
+              "required": "Amount is required",
+              "min": "Amount must be a positive value",
+              "max": "Amount must be lower then 100.000€"
+            },
+            "date": {
+              "required": "Date is required"
+            },
+            "purpose": {
+              "required": "A purpose is required ",
+              "max": "Purpose must be less than 200 characters"
+            }
+          }
+        },
+        "update-posting": {
+          "schema": {
+            "amount": {
+              "min": "Amount must be a positive value",
+              "max": "Amount must be lower then 100.000€"
             }
           }
         }

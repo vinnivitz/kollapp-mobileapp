@@ -4,14 +4,14 @@ import type { ReleaseNotesModel } from '$lib/models/models';
 import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/models/api';
 import { customFetch, showAlert } from '$lib/utility';
 
-const ENDPOINT = 'server-meta';
+const ENDPOINT = '';
 
 /**
  * Fetches the API version from the server.
  * @returns {Promise<ResponseBody<string>>} The API version as a response body.
  */
 export async function getApiVersion(): Promise<ResponseBody<string>> {
-	return customFetch(`${ENDPOINT}/api-version`);
+	return customFetch(`${ENDPOINT}/public/version`);
 }
 
 /**

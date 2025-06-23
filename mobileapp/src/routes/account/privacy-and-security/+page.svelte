@@ -18,9 +18,9 @@
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
 	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
+	import ToggleItem from '$lib/components/widgets/ionic/ToggleItem.svelte';
 	import { t } from '$lib/locales';
 	import { PreferencesKey } from '$lib/models/preferences';
 	import { PageRoute } from '$lib/models/routing';
@@ -141,23 +141,14 @@
 			label={$t('routes.account.list.account.privacy-and-security.button.change-password')}
 		/>
 		{#await isBiometricAvailable() then isAvailable}
-			<CustomItem
+			<ToggleItem
 				icon={fingerPrintOutline}
-				id={$t('routes.account.list.account.privacy-and-security.button.biometrics')}
+				label={$t('routes.account.list.account.privacy-and-security.button.biometrics')}
 				searchable={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.ROOT}
-			>
-				<!-- svelte-ignore event_directive_deprecated -->
-				<ion-toggle
-					bind:this={toggle}
-					color="secondary"
-					enable-on-off-labels
-					class="ms-4"
-					disabled={!isAvailable}
-					on:ionChange={() => onToggleBiometrics()}
-				>
-					{$t('routes.account.list.account.privacy-and-security.button.biometrics')}
-				</ion-toggle>
-			</CustomItem>
+				change={() => onToggleBiometrics()}
+				disabled={!isAvailable}
+				element={toggle}
+			/>
 		{/await}
 	</ion-list>
 </Layout>

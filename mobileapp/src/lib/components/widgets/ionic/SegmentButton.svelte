@@ -4,7 +4,7 @@
 		label: string;
 		value: string;
 		id?: string;
-		searchable?: string;
+		searchable?: string | unknown;
 	};
 	let { icon, id, label, searchable, value }: Properties = $props();
 

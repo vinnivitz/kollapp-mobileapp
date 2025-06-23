@@ -17,6 +17,7 @@
 		children?: Snippet;
 		hideLayout?: boolean;
 		hideMenu?: boolean;
+		loading?: boolean;
 		scrollable?: boolean;
 		showBackButton?: boolean;
 		onRefresh?: () => Promise<void>;
@@ -24,15 +25,16 @@
 
 	let {
 		children,
-		hideLayout = false,
-		hideMenu = false,
+		hideLayout,
+		hideMenu,
+		loading = false,
 		onRefresh,
 		scrollable = true,
-		showBackButton = false,
+		showBackButton,
 		title
 	}: Properties = $props();
 
-	const loading = $derived(!$initializationStore);
+	const _loading = $derived(!$initializationStore);
 
 	let refresher = $state<HTMLIonRefresherElement | undefined>();
 	let menuComponent = $state<ReturnType<typeof Menu>>();
@@ -71,9 +73,9 @@
 
 <div class="ion-page" id="menu">
 	{#if !hideLayout}
-		<Header {title} {showBackButton}></Header>
+		<Header {title} {showBackButton} {loading}></Header>
 	{/if}
-	{#if !loading}
+	{#if !_loading && !loading}
 		<ion-content class="ion-padding" in:fade={{ delay: 0, duration: 200 }} class:no-overflow={!scrollable}>
 			<!-- svelte-ignore event_directive_deprecated -->
 			<ion-refresher bind:this={refresher} slot="fixed" on:ionRefresh={doRefresh}>

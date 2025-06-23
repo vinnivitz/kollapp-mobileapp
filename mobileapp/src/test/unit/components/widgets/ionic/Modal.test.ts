@@ -24,7 +24,7 @@ describe('ModalComponent', () => {
 				children: createRawSnippet(() => ({
 					render: () => `<p>${childContent}</p>`
 				})),
-				open: true
+				isOpen: true
 			}
 		});
 		const ionContent = container.querySelector('ion-content');

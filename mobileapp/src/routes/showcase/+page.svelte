@@ -2,7 +2,6 @@
 	import { addOutline, attachOutline, documentOutline, personOutline } from 'ionicons/icons';
 
 	import LayoutComponent from '$lib/components/layout/Layout.svelte';
-	import ActivityCard from '$lib/components/widgets/ActivityCard.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
@@ -75,11 +74,10 @@
 	</div>
 	<Card title="Buttons">
 		<Modal
-			dismissed={() => (modalOpen = false)}
-			open={modalOpen}
-			cancel={() => {
+			isOpen={modalOpen}
+			dismissed={() => {
 				modalOpen = false;
-				showAlert('Modal canceled');
+				showAlert('Modal dismissed');
 			}}
 			confirm={() => {
 				modalOpen = false;
@@ -138,9 +136,6 @@
 			<Calendar apply={() => showAlert('Date selected', { type: AlertType.SUCCESS })} />
 			<Calendar showTitle={false} />
 		</div>
-	</Card>
-	<Card title="Activity card" classList="bg-transparent">
-		<ActivityCard value={{ id: 1, location: 'Activity location', name: 'Activity name' }}></ActivityCard>
 	</Card>
 	<Card title="Items">
 		<CustomItem card>

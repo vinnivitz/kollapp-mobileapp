@@ -1,3 +1,4 @@
+export * as accountingResource from './accounting.resource';
 export * as authResource from './auth.resource';
 export * as versionResource from './meta.resource';
 export * as metaResource from './meta.resource';

@@ -26,7 +26,12 @@
 
 		{#if $organizationStore}
 			{#if $organizationStore.activities.length > 0}
-				<Card title="Upcoming event" click={() => goto(PageRoute.ORGANIZATION.ACTIVITIES)}>
+				<Card
+					title="Upcoming event"
+					click={() =>
+						$organizationStore.activities[0]?.id &&
+						goto(PageRoute.ORGANIZATION.ACTIVITIES.DETAIL($organizationStore.activities[0].id))}
+				>
 					<div class="mb-3 flex flex-wrap items-center justify-center gap-5">
 						<div class="flex items-center gap-2">
 							<ion-icon icon={flashOutline}></ion-icon>

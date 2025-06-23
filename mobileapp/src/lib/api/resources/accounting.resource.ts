@@ -1,4 +1,5 @@
 import type { CreateBudgetPostingDto } from '$lib/api/dto/client/budget';
+import type { BudgetAccountDto } from '../dto/server/budget';
 import type { BudgetPostingDto } from '../dto/server/budget/budget-posting.dto';
 
 import { RequestMethod, type ResponseBody } from '$lib/models/api';
@@ -24,11 +25,11 @@ export async function addBudgetPosting(
 
 /**
  * Retrieves all budget postings for the specified account.
- * @param accountId The ID of the account for which to retrieve budget postings, if 0 its organization postings.
- * @returns {Promise<ResponseBody<BudgetPostingDto[]>>} The response containing the list of budget postings.
+ * @param organizationId The ID of the organization for which to retrieve budget postings, if 0 its organization postings.
+ * @returns {Promise<ResponseBody<BudgetAccountDto>>} The response containing the list of budget postings.
  */
-export async function getBudgetPostings(accountId: number): Promise<ResponseBody<BudgetPostingDto[]>> {
-	return customFetch(`${ENDPOINT}/${accountId}/posting`, { silentOnSuccess: true });
+export async function getBudgetPostings(organizationId: number): Promise<ResponseBody<BudgetAccountDto>> {
+	return customFetch(`${ENDPOINT}?organization-id=${organizationId}`, { silentOnSuccess: true });
 }
 
 /**

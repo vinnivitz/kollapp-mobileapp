@@ -9,7 +9,8 @@ describe('FabButton', () => {
 		const { container } = render(FabButton, {
 			props: {
 				click: clickMock,
-				icon: 'add'
+				icon: 'add',
+				label: 'Add Item'
 			}
 		});
 
@@ -26,6 +27,7 @@ describe('FabButton', () => {
 				click: clickMock,
 				horizontal: 'center',
 				icon: 'add',
+				label: 'Add Item',
 				vertical: 'top'
 			}
 		});
@@ -40,7 +42,8 @@ describe('FabButton', () => {
 		const { container } = render(FabButton, {
 			props: {
 				click: clickMock,
-				icon: 'add'
+				icon: 'add',
+				label: 'Add Item'
 			}
 		});
 
@@ -58,7 +61,8 @@ describe('FabButton', () => {
 			props: {
 				click: clickMock,
 				color: 'danger',
-				icon: 'add'
+				icon: 'add',
+				label: 'Delete Item'
 			}
 		});
 
@@ -73,7 +77,8 @@ describe('FabButton', () => {
 			props: {
 				click: clickMock,
 				icon: 'add',
-				id: testId
+				id: testId,
+				label: 'Add Item'
 			}
 		});
 
@@ -86,7 +91,8 @@ describe('FabButton', () => {
 		const { container } = render(FabButton, {
 			props: {
 				click: clickMock,
-				icon: 'add'
+				icon: 'add',
+				label: 'Add Item'
 			}
 		});
 

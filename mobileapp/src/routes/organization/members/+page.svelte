@@ -161,7 +161,7 @@
 
 <Layout title={$t('routes.organization.page.members.title')} showBackButton>
 	{#if !$userStore?.roles.includes(UserRole.MANAGER)}
-		<FabButton icon={personAddOutline} click={() => (invitationCodeModalOpen = true)}></FabButton>
+		<FabButton label="Invite member" icon={personAddOutline} click={() => (invitationCodeModalOpen = true)}></FabButton>
 	{/if}
 
 	{#if members.length === 0}
@@ -216,7 +216,7 @@
 	</ion-item-sliding>
 {/snippet}
 
-<Modal open={invitationCodeModalOpen} cancel={() => (invitationCodeModalOpen = false)}>
+<Modal isOpen={invitationCodeModalOpen} dismissed={() => (invitationCodeModalOpen = false)}>
 	<Card title="Invitation Code">
 		<div class="flex flex-col">
 			<div class="mx-12 rounded border border-[var(--ion-color-primary)] p-2 text-center font-extrabold">

@@ -27,8 +27,11 @@ export type FormConfig<T> = {
 		| (() => Promise<ValidationResult> | ValidationResult)
 		| ((model: T) => Promise<ValidationResult> | ValidationResult)
 	)[];
-	formatters?: { [K in keyof T]?: (value: T[K]) => T[K] };
-	parser?: { [K in keyof T]?: (value: T[K]) => Promise<T[K]> };
+	formatters?: { [K in keyof T]?: (value: T[K]) => string };
+	keyEventHandlers?: {
+		[K in keyof T]?: (_event: KeyboardEvent, onUpdate: (value: T[K]) => void) => void;
+	};
+	parser?: { [K in keyof T]?: (value: string) => T[K] };
 	exposedActions?: (actions: FormActions<T>) => void;
 	onBlur?: (key: keyof T) => void;
 	onChange?: (key: keyof T, value: T[keyof T]) => void;

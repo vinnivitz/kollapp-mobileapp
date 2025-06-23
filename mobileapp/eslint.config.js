@@ -117,6 +117,7 @@ export default ts.config(
 				HTMLIonCardElement: 'readonly',
 				HTMLIonCardTitleElement: 'readonly',
 				HTMLIonDatetimeElement: 'readonly',
+				HTMLIonFabElement: 'readonly',
 				HTMLIonItemSlidingElement: 'readonly',
 				HTMLIonListElement: 'readonly',
 				HTMLIonLoadingElement: 'readonly',

@@ -15,6 +15,7 @@
 		icon?: string;
 		inputIcon?: string;
 		maxlength?: number;
+		pattern?: string;
 		type?: InputType;
 		value?: null | number | string;
 		change?: (value: string) => void;
@@ -33,6 +34,7 @@
 		label,
 		maxlength,
 		name,
+		pattern,
 		type = 'text',
 		value
 	}: Properties = $props();
@@ -41,6 +43,7 @@
 <CustomItem {card} {color} {icon} iconEnd={inputIcon} iconClick={inputIconClick}>
 	<!-- svelte-ignore event_directive_deprecated -->
 	<ion-input
+		{pattern}
 		label-placement="floating"
 		{maxlength}
 		counter={!!maxlength}

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { loadingController } from 'ionic-svelte';
-	import { accessibilityOutline, locationOutline, mapOutline, readerOutline, saveOutline } from 'ionicons/icons';
+	import { accessibilityOutline, readerOutline, saveOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
 
@@ -10,9 +10,8 @@
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
-	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
+	import LocationItem from '$lib/components/widgets/ionic/LocationItem.svelte';
 	import TextareaItem from '$lib/components/widgets/ionic/TextareaItem.svelte';
-	import LeafletMap from '$lib/components/widgets/LeafletMap.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
 	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
@@ -22,8 +21,6 @@
 	const model = registerOrganizationSchema().cast({}) as RegisterOrganizationDto;
 	let actions: FormActions<RegisterOrganizationDto>;
 	let touched = $state(false);
-	let mapModalOpen = $state(false);
-	let selectedLocation = $state('');
 
 	const config: FormConfig<RegisterOrganizationDto> = {
 		exposedActions: (exposedActions) => (actions = exposedActions),
@@ -35,6 +32,7 @@
 	const form = new Form(model, config);
 
 	async function onSubmit(model: RegisterOrganizationDto, result: ValidationResult): Promise<void> {
+		console.log('model', model);
 		if (result.valid) {
 			const loader = await loadingController.create({});
 			await loader.present();
@@ -51,16 +49,6 @@
 			}
 		}
 	}
-
-	function onCancelMapModal(): void {
-		mapModalOpen = false;
-		selectedLocation = '';
-	}
-
-	function onConfirmMap(): void {
-		mapModalOpen = false;
-		actions.onUpdate('place', selectedLocation);
-	}
 </script>
 
 <Layout title={$t('routes.auth.register.organization.title')} showBackButton>
@@ -76,14 +64,7 @@
 				icon={readerOutline}
 				label={$t('routes.organization.page.register.form.description')}
 			></TextareaItem>
-			<InputItem
-				name="place"
-				label={$t('routes.organization.page.register.form.place')}
-				icon={locationOutline}
-				inputIcon={mapOutline}
-				inputIconClick={() => (mapModalOpen = true)}
-				value={selectedLocation}
-			/>
+			<LocationItem name="place" label={$t('routes.organization.page.register.form.place')} />
 			<Button
 				classList="mt-3"
 				expand="block"
@@ -95,9 +76,3 @@
 		</form>
 	</Card>
 </Layout>
-
-<Modal open={mapModalOpen} confirm={onConfirmMap} dismissed={() => (mapModalOpen = false)} cancel={onCancelMapModal}>
-	{#if mapModalOpen}
-		<LeafletMap selected={(location) => (selectedLocation = location)} classList="-m-4"></LeafletMap>
-	{/if}
-</Modal>
