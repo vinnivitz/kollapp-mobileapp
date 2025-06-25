@@ -54,7 +54,7 @@
 {#snippet content()}
 	{#if title || subtitle}
 		<ion-card-header>
-			<ion-card-title class="text-center">{title}</ion-card-title>
+			<ion-card-title class="text-center text-2xl">{title}</ion-card-title>
 			{#if subtitle}
 				<ion-card-subtitle>{subtitle}</ion-card-subtitle>
 			{/if}

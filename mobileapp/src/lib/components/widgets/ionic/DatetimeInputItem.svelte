@@ -26,6 +26,7 @@
 	function onApply(value: string): void {
 		selectedValue = value;
 		showDatetimeModal = false;
+		value = includeDate ? format(value, 'yyyy-mm-dd') : format(value, 'hh:mm');
 		apply?.(value);
 	}
 
@@ -53,13 +54,13 @@
 
 <CustomItem icon={calendarClearOutline}>
 	<div class="flex flex-col">
-		<ion-text class="ms-4 pt-2 text-xs">
+		<ion-text class="ms-3 pt-2 text-xs">
 			{label}
 		</ion-text>
 		<div class="-ms-5 flex">
 			{#if type === DateTimePickerType.DATE || type === DateTimePickerType.DATETIME}
 				<Button
-					classList="p-0"
+					classList="m-0 ms-1"
 					fill="clear"
 					color="dark"
 					size="default"
@@ -70,7 +71,7 @@
 			{/if}
 			{#if type === DateTimePickerType.TIME || type === DateTimePickerType.DATETIME}
 				<Button
-					classList="p-0"
+					classList="m-0"
 					fill="clear"
 					color="dark"
 					size="default"
@@ -89,18 +90,3 @@
 		<Datetime value={selectedValue} apply={onApply} dismiss={onDismiss} {includeDate} {includeTime} />
 	</div>
 </ion-popover>
-
-<!-- svelte-ignore event_directive_deprecated
-<ion-popover class="extended" is-open={showTimePicker} on:didDismiss={() => (showTimePicker = false)}>
-	{#if showTimePicker}
-		<div class="text-center">
-			<Datetime
-				value={selectedTime}
-				apply={(value) => (selectedTime = value)}
-				dismiss={() => (showDateCalendar = false)}
-				includeTime
-				includeDate={false}
-			></Datetime>
-		</div>
-	{/if}
-</ion-popover> -->

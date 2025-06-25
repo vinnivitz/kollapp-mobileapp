@@ -24,7 +24,7 @@ describe('ModalComponent', () => {
 				children: createRawSnippet(() => ({
 					render: () => `<p>${childContent}</p>`
 				})),
-				isOpen: true
+				open: true
 			}
 		});
 		const ionContent = container.querySelector('ion-content');
@@ -32,13 +32,13 @@ describe('ModalComponent', () => {
 		expect(ionContent?.textContent).toContain(childContent);
 	});
 
-	it('calls cancel callback and closes modal on cancel button click', async () => {
+	it('calls dismissed callback and closes modal on cancel button click', async () => {
 		const properties = {
-			cancel: vi.fn(),
 			cancelLabel: 'Cancel Modal',
 			children: createRawSnippet(() => ({
 				render: () => `<p>Modal Content</p>`
 			})),
+			dismissed: vi.fn(),
 			open: true
 		};
 		const { getByText } = render(ModalComponent, { props: properties });
@@ -48,7 +48,7 @@ describe('ModalComponent', () => {
 
 		await fireEvent.click(cancelButton);
 
-		expect(properties.cancel).toHaveBeenCalled();
+		expect(properties.dismissed).toHaveBeenCalled();
 	});
 
 	it('calls confirm callback on confirm button click', async () => {

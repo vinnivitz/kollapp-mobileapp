@@ -216,7 +216,7 @@
 	</ion-item-sliding>
 {/snippet}
 
-<Modal isOpen={invitationCodeModalOpen} dismissed={() => (invitationCodeModalOpen = false)}>
+<Modal open={invitationCodeModalOpen} dismissed={() => (invitationCodeModalOpen = false)}>
 	<Card title="Invitation Code">
 		<div class="flex flex-col">
 			<div class="mx-12 rounded border border-[var(--ion-color-primary)] p-2 text-center font-extrabold">

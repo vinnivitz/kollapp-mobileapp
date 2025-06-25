@@ -1,4 +1,5 @@
 export * from './authentication.store';
+export * from './budget-postings.store';
 export * from './connection.store';
 export * from './initialization.store';
 export * from './layout.store';

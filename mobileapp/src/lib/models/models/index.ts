@@ -1,5 +1,6 @@
 export * from './activity-model.type';
 export * from './authentication-model.type';
+export * from './budget-posting-model.type';
 export * from './budget-posting-type.enum';
 export * from './member-model.type';
 export * from './organization-inivitation-code-model.type';

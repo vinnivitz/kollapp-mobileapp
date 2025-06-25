@@ -74,7 +74,7 @@
 	</div>
 	<Card title="Buttons">
 		<Modal
-			isOpen={modalOpen}
+			open={modalOpen}
 			dismissed={() => {
 				modalOpen = false;
 				showAlert('Modal dismissed');

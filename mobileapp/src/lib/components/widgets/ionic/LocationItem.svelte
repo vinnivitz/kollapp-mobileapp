@@ -17,32 +17,19 @@
 	let { label, name, selected, value }: Properties = $props();
 
 	let cachedLocation = $state('');
-	let mapModalOpen = $state(false);
+	let open = $state(false);
 
-	function onConfirmMap(): void {
-		value = cachedLocation;
-		mapModalOpen = false;
+	async function onConfirmMap(): Promise<void> {
 		selected?.(cachedLocation);
-	}
-
-	function onDismissMap(): void {
-		mapModalOpen = false;
-		cachedLocation = '';
+		value = cachedLocation;
+		open = false;
 	}
 </script>
 
-<InputItem
-	{name}
-	{label}
-	icon={locationOutline}
-	inputIcon={mapOutline}
-	inputIconClick={() => (mapModalOpen = true)}
-	{value}
-/>
+<InputItem {value} {name} {label} icon={locationOutline} inputIcon={mapOutline} inputIconClick={() => (open = true)} />
 
 <Modal
-	isOpen={mapModalOpen}
-	dismissed={onDismissMap}
+	{open}
 	confirmLabel={$t('routes.organization.page.activity.map-modal.button.confirm')}
 	confirm={onConfirmMap}
 	cancelLabel={$t('routes.organization.page.activity.map-modal.button.cancel')}

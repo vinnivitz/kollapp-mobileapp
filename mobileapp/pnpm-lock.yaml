@@ -14,6 +14,9 @@ importers:
       '@capacitor/barcode-scanner':
         specifier: ^2.0.3
         version: 2.0.3(@capacitor/core@7.2.0)
+      '@capacitor/browser':
+        specifier: ^7.0.1
+        version: 7.0.1(@capacitor/core@7.2.0)
       '@capacitor/clipboard':
         specifier: ^7.0.1
         version: 7.0.1(@capacitor/core@7.2.0)
@@ -38,6 +41,9 @@ importers:
       '@capgo/capacitor-native-biometric':
         specifier: ^7.1.7
         version: 7.1.7(@capacitor/core@7.2.0)
+      '@ebarooni/capacitor-calendar':
+        specifier: ^7.2.0
+        version: 7.2.0(@capacitor/core@7.2.0)
       '@ionic/core':
         specifier: ^8.5.0
         version: 8.5.7
@@ -296,6 +302,11 @@ packages:
     peerDependencies:
       '@capacitor/core': '>=7.0.0'
 
+  '@capacitor/browser@7.0.1':
+    resolution: {integrity: sha512-N6KEVLw2enTnourQzYJLvAkSds2Ed21zqsvHnSImrVDenzX8fUj032kMt4EdewmxfxiEwRa911BT1VOPBi0fEA==}
+    peerDependencies:
+      '@capacitor/core': '>=7.0.0'
+
   '@capacitor/cli@5.7.8':
     resolution: {integrity: sha512-qN8LDlREMhrYhOvVXahoJVNkP8LP55/YPRJrzTAFrMqlNJC18L3CzgWYIblFPnuwfbH/RxbfoZT/ydkwgVpMrw==}
     engines: {node: '>=16.0.0'}
@@ -384,6 +395,12 @@ packages:
   '@dependents/detective-less@5.0.1':
     resolution: {integrity: sha512-Y6+WUMsTFWE5jb20IFP4YGa5IrGY/+a/FbOSjDF/wz9gepU2hwCYSXRHP/vPwBvwcY3SVMASt4yXxbXNXigmZQ==}
     engines: {node: '>=18'}
+
+  '@ebarooni/capacitor-calendar@7.2.0':
+    resolution: {integrity: sha512-V5Qr4n7Aoc9BIcS7ap0dC6QKiAC2HFnV1QBa2gdu7hMSOlYCNMQ38ar7HoeQ6QJtWt8/n2nipczCtAv3XANpOg==}
+    engines: {node: '>=20.12.2'}
+    peerDependencies:
+      '@capacitor/core': '>=7.0.0'
 
   '@esbuild/aix-ppc64@0.25.4':
     resolution: {integrity: sha512-1VCICWypeQKhVbE9oW/sJaAmjLxhVqacdkvPLEjwlttjfwENRSClS8EjBz0KzRyFSCPDIkuXW34Je/vk7zdB7Q==}
@@ -5694,6 +5711,10 @@ snapshots:
       '@capacitor/core': 7.2.0
       html5-qrcode: 2.3.8
 
+  '@capacitor/browser@7.0.1(@capacitor/core@7.2.0)':
+    dependencies:
+      '@capacitor/core': 7.2.0
+
   '@capacitor/cli@5.7.8':
     dependencies:
       '@ionic/cli-framework-output': 2.2.8
@@ -5802,6 +5823,10 @@ snapshots:
     dependencies:
       gonzales-pe: 4.3.0
       node-source-walk: 7.0.1
+
+  '@ebarooni/capacitor-calendar@7.2.0(@capacitor/core@7.2.0)':
+    dependencies:
+      '@capacitor/core': 7.2.0
 
   '@esbuild/aix-ppc64@0.25.4':
     optional: true

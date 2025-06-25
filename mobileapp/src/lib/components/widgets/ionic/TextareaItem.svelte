@@ -7,7 +7,6 @@
 		label: string;
 		name: string;
 		color?: Colors;
-		cols?: number;
 		disabled?: boolean;
 		icon?: string;
 		iconEnd?: string;
@@ -20,7 +19,6 @@
 	let {
 		change,
 		color,
-		cols = 3,
 		disabled = false,
 		icon,
 		iconEnd,
@@ -45,7 +43,6 @@
 		{maxlength}
 		auto-grow
 		color="secondary"
-		{cols}
 		{value}
 		on:ionInput={(event) => change?.(event.detail.value || '')}
 	></ion-textarea>

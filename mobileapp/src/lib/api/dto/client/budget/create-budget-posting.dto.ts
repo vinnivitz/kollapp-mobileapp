@@ -24,11 +24,13 @@ export const createBudgetPostingSchema = (): ObjectSchema<AnyObject, CreateBudge
 			.min(1, $t('api.dto.budget.create-posting.schema.amount.min'))
 			.max(10_000_000, $t('api.dto.budget.create-posting.schema.amount.max'))
 			.required($t('api.dto.budget.create-posting.schema.amount.required')),
-		date: string().default(new Date().toISOString()).required($t('api.dto.budget.create-posting.schema.date.required')),
+		date: string()
+			.default(new Date().toISOString().split('T')[0])
+			.required($t('api.dto.budget.create-posting.schema.date.required')),
 		purpose: string()
 			.default('')
 			.trim()
-			.max($t('api.dto.budget.create-posting.schema.purpose.max'))
+			.max(200, $t('api.dto.budget.create-posting.schema.purpose.max'))
 			.required($t('api.dto.budget.create-posting.schema.purpose.required')),
 		type: string().oneOf(Object.values(BudgetPostingType)).default(BudgetPostingType.CREDIT)
 	});

@@ -24,6 +24,24 @@ export async function addBudgetPosting(
 }
 
 /**
+ * Updates an existing budget posting by its ID.
+ * @param accountId The ID of the account to which the budget posting belongs, if 0 its organization posting.
+ * @param postingId The ID of the budget posting to update.
+ * @param model The updated data for the budget posting.
+ * @returns {Promise<ResponseBody<BudgetPostingDto>>} The response containing the updated budget posting.
+ */
+export async function updateBudgetPosting(
+	accountId: number,
+	postingId: number,
+	model: CreateBudgetPostingDto
+): Promise<ResponseBody<BudgetPostingDto>> {
+	return customFetch(`${ENDPOINT}/${accountId}/posting/${postingId}`, {
+		body: JSON.stringify(model),
+		method: RequestMethod.POST
+	});
+}
+
+/**
  * Retrieves all budget postings for the specified account.
  * @param organizationId The ID of the organization for which to retrieve budget postings, if 0 its organization postings.
  * @returns {Promise<ResponseBody<BudgetAccountDto>>} The response containing the list of budget postings.

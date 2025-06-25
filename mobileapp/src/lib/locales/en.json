@@ -356,9 +356,7 @@
             },
             "card": {
               "title": "Edit event",
-              "more-actions": {
-                "title": "More actions"
-              }
+              "more-actions": {}
             }
           },
           "calendar": {
@@ -398,10 +396,7 @@
           "no-activity-id": "Event not found",
           "detail": {
             "add-posting-modal": {
-              "title": {
-                "income": "Add income",
-                "expense": "Add expense"
-              }
+              "title": {}
             }
           },
           "page": {
@@ -416,6 +411,15 @@
                   "title": {
                     "income": "Add income",
                     "expense": "Add expense"
+                  },
+                  "no-activity": "Activity not found."
+                }
+              },
+              "card": {
+                "summary": {
+                  "add-to-calendar": {
+                    "permission-denied": "Calendar access is denied by user",
+                    "error": "Calendar is not available"
                   }
                 }
               }

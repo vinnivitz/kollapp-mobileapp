@@ -14,7 +14,14 @@
 	import Tabs from '$lib/components/layout/Tabs.svelte';
 	import { initialized, t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
-	import { authenticationStore, layoutStore, localeStore, organizationStore, userStore } from '$lib/stores';
+	import {
+		authenticationStore,
+		budgetPostingsStore,
+		layoutStore,
+		localeStore,
+		organizationStore,
+		userStore
+	} from '$lib/stores';
 
 	let { children } = $props();
 
@@ -46,6 +53,7 @@
 	async function initStores(): Promise<void> {
 		await userStore.init();
 		organizationStore.init();
+		budgetPostingsStore.init();
 	}
 
 	onMount(async () => {

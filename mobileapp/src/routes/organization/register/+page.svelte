@@ -32,7 +32,6 @@
 	const form = new Form(model, config);
 
 	async function onSubmit(model: RegisterOrganizationDto, result: ValidationResult): Promise<void> {
-		console.log('model', model);
 		if (result.valid) {
 			const loader = await loadingController.create({});
 			await loader.present();

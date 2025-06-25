@@ -11,6 +11,7 @@
 		color?: Colors | undefined;
 		disabled?: boolean;
 		icon?: string;
+		iconColor?: Colors;
 		iconEnd?: string;
 		id?: string;
 		searchable?: string;
@@ -30,6 +31,7 @@
 		disabled = false,
 		icon,
 		iconClick,
+		iconColor,
 		iconEnd,
 		id,
 		searchable,
@@ -39,7 +41,7 @@
 	// workaround to avoid reference linting error
 	void searchable;
 
-	const iconColor = $derived(color === 'light' || color === 'white' ? 'medium' : 'white');
+	const _iconColor = $derived(iconColor ?? (color === 'light' || color === 'white' ? 'medium' : 'white'));
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -58,7 +60,7 @@
 	style="--ion-color-shade: var(--border-color) !important;"
 >
 	{#if icon}
-		<ion-icon {icon} slot="start" color={iconColor}></ion-icon>
+		<ion-icon {icon} slot="start" color={_iconColor}></ion-icon>
 	{/if}
 	{#if iconEnd}
 		<ion-button class="ms-0" fill="clear" slot="end" onclick={iconClick}>

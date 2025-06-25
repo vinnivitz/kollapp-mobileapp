@@ -16,11 +16,11 @@
 
 <Layout title={$t('routes.home.title')}>
 	{#if $initializationStore}
-		<Card
-			title={$t('routes.home.card.user.title', { value: $userStore?.username })}
-			classList="text-center"
-			click={() => goto(PageRoute.ACCOUNT.ROOT)}
-		>
+		<Card classList="text-center" click={() => goto(PageRoute.ACCOUNT.ROOT)}>
+			<ion-text class="text-2xl" color="dark"
+				>{$t('routes.home.card.user.title', { value: $userStore?.username })}</ion-text
+			>
+
 			<!-- <Button fill="outline" label="Go to account" icon={personOutline} click={() => goto(PageRoute.ACCOUNT.ROOT)} /> -->
 		</Card>
 

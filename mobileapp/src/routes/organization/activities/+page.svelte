@@ -81,10 +81,10 @@
 
 	let showFilters = $state(false);
 
-	let createModalOpen = $state(false);
+	let createActivityModalOpen = $state(false);
 
 	let searchActivityValue = $state('');
-	let filteredActivities = $state<ActivityModel[]>([]);
+	let filteredActivities = $state<ActivityModel[] | undefined>();
 
 	let createActions: FormActions<CreateActivityDto>;
 
@@ -104,7 +104,7 @@
 
 	function onCreateActivity(date: string): void {
 		void date;
-		createModalOpen = true;
+		createActivityModalOpen = true;
 	}
 
 	async function onCreateSubmit(model: CreateActivityDto, result: ValidationResult): Promise<void> {
@@ -115,8 +115,7 @@
 			if (organizationId) {
 				result = getValidationResult(await organizationResource.createActivity(organizationId, model));
 				if (result.valid) {
-					createActions.resetModel();
-					createModalOpen = false;
+					createActivityModalOpen = true;
 					await organizationStore.update(organizationId);
 				} else {
 					createActions.applyValidationFeedback(result);
@@ -126,6 +125,7 @@
 			}
 			await loader.dismiss();
 		}
+		createActivityModalOpen = false;
 	}
 
 	function onSearchEvents(event: CustomEvent): void {
@@ -223,7 +223,7 @@
 {/snippet}
 
 {#snippet activityList()}
-	{#if activityItems && filteredActivities}
+	{#if filteredActivities}
 		{#if activityItems.length === 0}
 			<div class="mt-4 text-center" in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
 				{$t('routes.organization.page.activity.no-activities')}
@@ -267,53 +267,48 @@
 	<Card title={$t('routes.organization.page.activity.filters.title')} classList="m-0">
 		<div class="flex flex-wrap items-center justify-center gap-2">
 			{#each activityFilters as filter (filter.type)}
-				<Chip clicked={() => (filter.applied = !filter.applied)} label={filter.label} selected={!filter.applied} />
+				<Chip clicked={() => (filter.applied = !filter.applied)} label={filter.label} selected={filter.applied} />
 			{/each}
 		</div>
 	</Card>
 </ion-popover>
 
 <Modal
-	isOpen={createModalOpen}
-	dismissed={() => (createModalOpen = false)}
+	open={createActivityModalOpen}
 	confirm={() => createActions.onSubmit()}
+	dismissed={() => (createActivityModalOpen = false)}
 	confirmLabel={$t('routes.organization.page.activity.create-modal.button.confirm')}
 >
-	{#if createModalOpen}
-		<Card title={$t('routes.organization.page.activity.create-modal.card.title')}>
-			<form use:customForm={createForm}>
-				<InputItem
-					name="name"
-					label={$t('routes.organization.page.activity.create-modal.card.input.name')}
-					icon={documentOutline}
-				/>
-				<LocationItem
-					name="location"
-					label={$t('routes.organization.page.activity.create-modal.card.input.location')}
-				/>
-				<ToggleItem
-					change={() => includeTime != includeTime}
-					label={$t('routes.organization.page.activity.modal.create-activity.form.include-time')}
-					icon={timeOutline}
-					value={includeTime}
-				/>
-				<ToggleItem
-					change={() => isDateRange != isDateRange}
-					value={isDateRange}
-					icon={codeOutline}
-					label={$t('routes.organization.page.activity.modal.create-activity.form.include-end-date')}
-				/>
+	<Card title={$t('routes.organization.page.activity.create-modal.card.title')}>
+		<form use:customForm={createForm}>
+			<InputItem
+				name="name"
+				label={$t('routes.organization.page.activity.create-modal.card.input.name')}
+				icon={documentOutline}
+			/>
+			<LocationItem name="location" label={$t('routes.organization.page.activity.create-modal.card.input.location')} />
+			<ToggleItem
+				change={() => (includeTime = !includeTime)}
+				label={$t('routes.organization.page.activity.modal.create-activity.form.include-time')}
+				icon={timeOutline}
+				value={includeTime}
+			/>
+			<ToggleItem
+				change={() => (isDateRange = !isDateRange)}
+				value={isDateRange}
+				icon={codeOutline}
+				label={$t('routes.organization.page.activity.modal.create-activity.form.include-end-date')}
+			/>
+			<DatetimeInputItem
+				label={$t('routes.organization.page.activity.create-modal.card.input.start-date')}
+				type={includeTime ? DateTimePickerType.DATETIME : DateTimePickerType.DATE}
+			/>
+			{#if isDateRange}
 				<DatetimeInputItem
-					label={$t('routes.organization.page.activity.create-modal.card.input.start-date')}
+					label={$t('routes.organization.page.activity.create-modal.card.input.end-date')}
 					type={includeTime ? DateTimePickerType.DATETIME : DateTimePickerType.DATE}
 				/>
-				{#if isDateRange}
-					<DatetimeInputItem
-						label={$t('routes.organization.page.activity.create-modal.card.input.end-date')}
-						type={includeTime ? DateTimePickerType.DATETIME : DateTimePickerType.DATE}
-					/>
-				{/if}
-			</form>
-		</Card>
-	{/if}
+			{/if}
+		</form>
+	</Card>
 </Modal>

@@ -8,5 +8,5 @@ import type { Writable } from 'svelte/store';
 export type OrganizationStore = BaseStore<OrganizationModel> & {
 	initialized: Writable<boolean>;
 	organizations: Writable<OrganizationModel[]>;
-	update: (id: number) => Promise<void>;
+	update: (organizationId: number) => Promise<void>;
 };

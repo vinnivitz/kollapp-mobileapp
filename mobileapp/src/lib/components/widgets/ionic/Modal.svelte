@@ -11,9 +11,9 @@
 
 	type Properties = {
 		children: Snippet;
+		open: boolean;
 		cancelLabel?: string;
 		confirmLabel?: string;
-		isOpen?: boolean;
 		confirm?: () => void;
 		dismissed?: () => void;
 	};
@@ -24,17 +24,17 @@
 		confirm,
 		confirmLabel = $t('components.widgets.modal.button.confirm'),
 		dismissed,
-		isOpen: open = false
+		open
 	}: Properties = $props();
 
-	let modal: HTMLIonModalElement | undefined;
+	let _modalController = $state<HTMLIonModalElement | undefined>();
 
 	$effect(() => {
-		if (!modal) return;
+		if (!_modalController) return;
 		if (open) {
-			modalStore.add(modal);
+			modalStore.add(_modalController);
 		} else {
-			modalStore.remove(modal);
+			modalStore.remove(_modalController);
 		}
 	});
 
@@ -42,12 +42,17 @@
 		return getPlatforms().includes('mobileweb') || getPlatforms().includes('desktop');
 	}
 
+	async function onDismiss(): Promise<void> {
+		open = false;
+		dismissed?.();
+	}
+
 	onDestroy(async () => {
 		if (!isPlatformWeb()) return;
 		const controller = await modalController.getTop();
-		if (controller) {
+		if (controller && controller === _modalController) {
 			try {
-				await controller.dismiss();
+				await _modalController.dismiss();
 			} catch {
 				return;
 			}
@@ -56,30 +61,15 @@
 </script>
 
 <!-- svelte-ignore event_directive_deprecated -->
-<ion-modal
-	bind:this={modal}
-	is-open={open}
-	on:didDismiss={() => {
-		open = false;
-		dismissed?.();
-	}}
->
+<ion-modal bind:this={_modalController} is-open={open} on:didDismiss={dismissed}>
 	<ion-header>
 		<ion-toolbar>
 			<ion-buttons slot="start">
-				<Button
-					label={cancelLabel}
-					color="white"
-					click={() => {
-						open = false;
-						dismissed?.();
-					}}
-					icon={trashBinOutline}
-				/>
+				<Button type="button" label={cancelLabel} color="white" click={onDismiss} icon={trashBinOutline} />
 			</ion-buttons>
 			{#if !!confirm}
 				<ion-buttons slot="end">
-					<Button label={confirmLabel} color="white" click={() => confirm?.()} icon={saveOutline} />
+					<Button type="button" label={confirmLabel} color="white" click={confirm} icon={saveOutline} />
 				</ion-buttons>
 			{/if}
 		</ion-toolbar>

@@ -240,7 +240,7 @@
           "placeholder": "App durchsuchen...",
           "title": {
             "found": "Suchergebnisse für \"{{value}}\"",
-            "not-found": "Keine Ergebnisse für \"{{value}}\" gefunden \""
+            "not-found": "Keine Ergebnisse für \"{{value}}\" gefunden"
           }
         },
         "list": {
@@ -605,9 +605,7 @@
             },
             "card": {
               "title": "Veranstaltung bearbeiten",
-              "more-actions": {
-                "title": "Weitere Aktionen"
-              }
+              "more-actions": {}
             }
           },
           "calendar": {
@@ -647,10 +645,7 @@
           "no-activity-id": "Veranstaltung nicht gefunden",
           "detail": {
             "add-posting-modal": {
-              "title": {
-                "expense": "Kosten hinzufügen",
-                "income": "Einkommen hinzufügen"
-              }
+              "title": {}
             }
           },
           "page": {
@@ -665,6 +660,15 @@
                   "title": {
                     "income": "Neue Einnahme",
                     "expense": "Neue Ausgabe"
+                  },
+                  "no-activity": "Aktivität nicht gefunden."
+                }
+              },
+              "card": {
+                "summary": {
+                  "add-to-calendar": {
+                    "permission-denied": "Kalenderzugriff vom Benutzer abgelehnt",
+                    "error": "Kalender ist nicht verfügbar"
                   }
                 }
               }

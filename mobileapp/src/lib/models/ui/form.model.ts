@@ -15,7 +15,7 @@ export type FormActions<T = object> = {
 	applyValidationFeedbackByKey: (key: keyof T, result: ValidationResult) => void;
 	onSubmit: () => void;
 	onUpdate: (key: keyof T, value: T[keyof T]) => void;
-	resetModel: () => void;
+	resetModel: (model?: T) => void;
 };
 
 /**
@@ -29,7 +29,7 @@ export type FormConfig<T> = {
 	)[];
 	formatters?: { [K in keyof T]?: (value: T[K]) => string };
 	keyEventHandlers?: {
-		[K in keyof T]?: (_event: KeyboardEvent, onUpdate: (value: T[K]) => void) => void;
+		[K in keyof T]?: (_event: KeyboardEvent, value: T[K], onUpdate: (value: T[K]) => void) => void;
 	};
 	parser?: { [K in keyof T]?: (value: string) => T[K] };
 	exposedActions?: (actions: FormActions<T>) => void;

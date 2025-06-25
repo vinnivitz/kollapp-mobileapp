@@ -126,8 +126,6 @@ function addSearchableItem(node: ASTComponent): void {
 	const icon = getAttributeValue(node, 'icon');
 	const accessible = getAttributeValue(node, 'accessible');
 
-	console.log('label', label);
-	console.log('route', route);
 	if (label && route) {
 		searchableItems.push({
 			accessible: (accessible ? accessible.split(',') : undefined) as UserRole[],

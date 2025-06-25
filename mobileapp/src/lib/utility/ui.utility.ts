@@ -6,6 +6,7 @@ import { get, writable } from 'svelte/store';
 import { type AnyObject, ObjectSchema, ValidationError } from 'yup';
 
 import { Locale, t } from '$lib/locales';
+import { localeStore } from '$lib/stores';
 
 const $t = get(t);
 
@@ -94,6 +95,66 @@ export function getDateFnsLocale(locale: Locale | undefined): DateFnsLocale {
 }
 
 /**
+ * Formatter for form based currency input in €
+ * @returns The formatter
+ */
+export function currencyFormatter(): (cents: number) => string {
+	const nf = new Intl.NumberFormat(get(localeStore), {
+		currency: 'EUR',
+		maximumFractionDigits: 2,
+		minimumFractionDigits: 2,
+		style: 'currency'
+	});
+
+	return (cents: number): string => nf.format(cents / 100);
+}
+
+/**
+ * Parser for form based currency input in €
+ * @returns The parser
+ */
+export function currencyParser(): (raw: string) => number {
+	return (raw: string): number => {
+		const digits = raw.replaceAll(/\D/g, '');
+		const padded = digits.padStart(3, '0');
+		const eurosPart = padded.slice(0, -2);
+		const centsPart = padded.slice(-2);
+		return Number.parseInt(eurosPart, 10) * 100 + Number.parseInt(centsPart, 10);
+	};
+}
+
+export function currencyKeyEventHandler() {
+	return (_event: KeyboardEvent, value: number, update: (value: number) => void): void => {
+		if (_event.key === 'Backspace') {
+			update(Math.floor(value / 10));
+		}
+	};
+}
+
+/**
+ * Debounces a function call
+ * @param fn function to debounce
+ * @param delay delay in milliseconds
+ * @returns debounced function
+ */
+export function debounce<F extends (...arguments_: unknown[]) => unknown>(
+	function_: F,
+	delay: number
+): (...arguments_: Parameters<F>) => void {
+	let timerId: NodeJS.Timeout | undefined;
+
+	return (...arguments_: Parameters<F>) => {
+		if (timerId !== undefined) {
+			clearTimeout(timerId);
+		}
+		timerId = setTimeout(() => {
+			function_(...arguments_);
+			timerId = undefined;
+		}, delay);
+	};
+}
+
+/**
  * Creates a custom form with validation and feedback
  * @param node form element
  * @param data form data
@@ -129,7 +190,8 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 			const input = fields[key as string];
 			if (handler && input) {
 				addListener(input, 'keydown', (_event) => {
-					handler(_event as KeyboardEvent, onUpdate.bind(undefined, key));
+					// eslint-disable-next-line security/detect-object-injection
+					handler(_event as KeyboardEvent, data.model[key], onUpdate.bind(undefined, key));
 				});
 			}
 		}
@@ -177,12 +239,12 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 		passwordIcons.push(icon);
 	}
 
-	function resetModel(clear = false): void {
-		data.model = (clear ? {} : data.config.schema.cast({})) as T;
+	function resetModel(model?: T): void {
+		data.model = model ?? (data.config.schema.cast({}) as T);
 		for (const input of inputs) {
 			input.classList.remove('ion-invalid');
 			input.errorText = '';
-			input.value = clear ? '' : (data.model[input.name as keyof T] as string);
+			input.value = data.model[input.name as keyof T] as string;
 		}
 		for (const input of customInputs) {
 			removeCustomValidationFeedback(input);

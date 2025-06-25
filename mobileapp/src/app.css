@@ -28,6 +28,12 @@
 		}
 	}
 
+	ion-item:has(ion-chip) {
+		:first-child {
+			padding-left: 4px;
+		}
+	}
+
 	ion-button {
 		text-transform: none;
 	}
