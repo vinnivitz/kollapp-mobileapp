@@ -2,22 +2,22 @@ import { get } from 'svelte/store';
 import { type AnyObject, number, object, type ObjectSchema, string } from 'yup';
 
 import { t } from '$lib/locales';
-import { BudgetPostingType } from '$lib/models/models';
+import { AccountPostingType } from '$lib/models/models';
 
 /**
- * Data Transfer Object for creating a budget posting.
+ * Data Transfer Object for creating a account posting.
  */
-export type CreateBudgetPostingDto = {
+export type CreateAccountPostingDto = {
 	activityId: number;
 	amountInCents: number;
 	date: string;
 	purpose: string;
-	type: BudgetPostingType;
+	type: AccountPostingType;
 };
 
-export const createBudgetPostingSchema = (): ObjectSchema<AnyObject, CreateBudgetPostingDto> => {
+export const createAccountPostingSchema = (): ObjectSchema<AnyObject, CreateAccountPostingDto> => {
 	const $t = get(t);
-	return object<CreateBudgetPostingDto>({
+	return object<CreateAccountPostingDto>({
 		activityId: string().default('').optional(),
 		amountInCents: number()
 			.default(0)
@@ -32,6 +32,6 @@ export const createBudgetPostingSchema = (): ObjectSchema<AnyObject, CreateBudge
 			.trim()
 			.max(200, $t('api.dto.budget.create-posting.schema.purpose.max'))
 			.required($t('api.dto.budget.create-posting.schema.purpose.required')),
-		type: string().oneOf(Object.values(BudgetPostingType)).default(BudgetPostingType.CREDIT)
+		type: string().oneOf(Object.values(AccountPostingType)).default(AccountPostingType.CREDIT)
 	});
 };

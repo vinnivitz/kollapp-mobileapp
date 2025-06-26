@@ -13,7 +13,7 @@
 	import { PreferencesKey } from '$lib/models/preferences';
 	import { PageRoute } from '$lib/models/routing';
 	import { organizationStore } from '$lib/stores';
-	import { removeStoredValue, showAlert } from '$lib/utility';
+	import { removeStoredValue } from '$lib/utility';
 
 	const isLastManager = $derived(
 		$organizationStore?.personsOfOrganization.filter((member) => member.role === UserRole.MANAGER).length === 1
@@ -43,8 +43,6 @@
 				removeStoredValue(PreferencesKey.SELECTED_ORGANIZATION_ID)
 			]);
 			await organizationStore.init();
-		} else {
-			await showAlert('Could not leave organization. Try again later.');
 		}
 		await loader.dismiss();
 		goto(PageRoute.ORGANIZATION.ROOT);

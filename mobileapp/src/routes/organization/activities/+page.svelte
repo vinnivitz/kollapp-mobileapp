@@ -209,12 +209,7 @@
 		<div class="flex flex-wrap items-center gap-2">
 			{#each activityFilters as filter (filter.type)}
 				{#if filter.applied}
-					<Chip
-						label={filter.label}
-						icon={filter.icon}
-						iconEnd={closeOutline}
-						clicked={() => (filter.applied = false)}
-					/>
+					<Chip label={filter.label} icon={filter.icon} iconEnd={closeOutline} click={() => (filter.applied = false)} />
 				{/if}
 			{/each}
 		</div>
@@ -267,7 +262,7 @@
 	<Card title={$t('routes.organization.page.activity.filters.title')} classList="m-0">
 		<div class="flex flex-wrap items-center justify-center gap-2">
 			{#each activityFilters as filter (filter.type)}
-				<Chip clicked={() => (filter.applied = !filter.applied)} label={filter.label} selected={filter.applied} />
+				<Chip click={() => (filter.applied = !filter.applied)} label={filter.label} selected={filter.applied} />
 			{/each}
 		</div>
 	</Card>

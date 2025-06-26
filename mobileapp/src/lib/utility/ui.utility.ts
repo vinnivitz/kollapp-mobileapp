@@ -126,6 +126,7 @@ export function currencyParser(): (raw: string) => number {
 export function currencyKeyEventHandler() {
 	return (_event: KeyboardEvent, value: number, update: (value: number) => void): void => {
 		if (_event.key === 'Backspace') {
+			_event.preventDefault();
 			update(Math.floor(value / 10));
 		}
 	};

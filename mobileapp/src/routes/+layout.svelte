@@ -15,8 +15,8 @@
 	import { initialized, t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
 	import {
+		accountPostingsStore,
 		authenticationStore,
-		budgetPostingsStore,
 		layoutStore,
 		localeStore,
 		organizationStore,
@@ -53,7 +53,7 @@
 	async function initStores(): Promise<void> {
 		await userStore.init();
 		organizationStore.init();
-		budgetPostingsStore.init();
+		accountPostingsStore.init();
 	}
 
 	onMount(async () => {

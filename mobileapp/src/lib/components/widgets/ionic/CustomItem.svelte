@@ -4,7 +4,6 @@
 
 	type Properties = {
 		children: Snippet;
-		bottomBorder?: boolean;
 		button?: boolean;
 		card?: boolean;
 		classList?: string;
@@ -21,7 +20,6 @@
 	};
 
 	let {
-		bottomBorder = true,
 		button = false,
 		card = false,
 		children,
@@ -56,7 +54,6 @@
 	data-transparent={transparent}
 	onclick={click}
 	class={classList}
-	class:no-bottom-border={!bottomBorder}
 	style="--ion-color-shade: var(--border-color) !important;"
 >
 	{#if icon}
@@ -71,9 +68,6 @@
 </ion-item>
 
 <style>
-	ion-item.no-bottom-border {
-		--inner-border-width: 0;
-	}
 	ion-item[data-card='true']::part(native) {
 		background-color: var(--ion-background-color-step-100);
 	}

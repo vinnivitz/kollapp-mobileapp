@@ -1,5 +1,5 @@
-import type { BudgetPostingModel } from '$lib/models/models';
-import type { BudgetPostingsStore } from '$lib/models/stores';
+import type { AccountPostingModel } from '$lib/models/models';
+import type { AccountPostingsStore } from '$lib/models/stores';
 
 import { writable } from 'svelte/store';
 
@@ -7,18 +7,18 @@ import { accountingResource } from '$lib/api/resources';
 import { PreferencesKey } from '$lib/models/preferences';
 import { getStoredValue, removeStoredValue, StatusCheck, storeValue } from '$lib/utility';
 
-function createStore(): BudgetPostingsStore {
-	const { set, subscribe } = writable<BudgetPostingModel[] | undefined>();
+function createStore(): AccountPostingsStore {
+	const { set, subscribe } = writable<AccountPostingModel[] | undefined>();
 	const initialized = writable(false);
 
 	async function init(): Promise<void> {
 		const organizationId = await getStoredValue<number>(PreferencesKey.SELECTED_ORGANIZATION_ID);
 		if (organizationId) {
-			const response = await accountingResource.getBudgetPostings(organizationId);
+			const response = await accountingResource.getAccountPostings(organizationId);
 			if (StatusCheck.isOK(response.status)) {
 				_set(response.data.postings);
 			} else if (StatusCheck.serverNotReachable(response.status)) {
-				const postings = await getStoredValue<BudgetPostingModel[]>(PreferencesKey.BUDGET_POSTINGS);
+				const postings = await getStoredValue<AccountPostingModel[]>(PreferencesKey.ACCOUNT_POSTINGS);
 				if (postings) {
 					_set(postings);
 				}
@@ -29,15 +29,15 @@ function createStore(): BudgetPostingsStore {
 		initialized.set(true);
 	}
 
-	async function _set(model?: BudgetPostingModel[]): Promise<void> {
+	async function _set(model?: AccountPostingModel[]): Promise<void> {
 		await (model
-			? storeValue(PreferencesKey.BUDGET_POSTINGS, model)
-			: removeStoredValue(PreferencesKey.BUDGET_POSTINGS));
+			? storeValue(PreferencesKey.ACCOUNT_POSTINGS, model)
+			: removeStoredValue(PreferencesKey.ACCOUNT_POSTINGS));
 		set(model);
 	}
 
 	async function update(organizationId: number): Promise<void> {
-		const response = await accountingResource.getBudgetPostings(organizationId);
+		const response = await accountingResource.getAccountPostings(organizationId);
 		if (StatusCheck.isOK(response.status)) {
 			await _set(response.data.postings);
 		}
@@ -59,6 +59,6 @@ function createStore(): BudgetPostingsStore {
 }
 
 /**
- * Store for handling the budget postings of the current .
+ * Store for handling the account postings of the current .
  */
-export const budgetPostingsStore = createStore();
+export const accountPostingsStore = createStore();

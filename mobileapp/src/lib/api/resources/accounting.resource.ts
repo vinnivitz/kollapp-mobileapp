@@ -1,6 +1,6 @@
-import type { CreateBudgetPostingDto } from '$lib/api/dto/client/budget';
-import type { BudgetAccountDto } from '../dto/server/budget';
-import type { BudgetPostingDto } from '../dto/server/budget/budget-posting.dto';
+import type { CreateAccountPostingDto } from '$lib/api/dto/client/accounting';
+import type { BudgetAccountDto } from '../dto/server/accounting';
+import type { AccountPostingDto } from '../dto/server/accounting/account-posting.dto';
 
 import { RequestMethod, type ResponseBody } from '$lib/models/api';
 import { customFetch } from '$lib/utility';
@@ -8,15 +8,15 @@ import { customFetch } from '$lib/utility';
 const ENDPOINT = 'budget/account';
 
 /**
- * Adds a new budget posting to the specified account.
- * @param accountId The ID of the account to which the budget posting will be added, if 0 its added as organization posting.
- * @param model The data for the new budget posting.
- * @returns {Promise<ResponseBody<BudgetPostingDto>>} The response containing the created budget posting.
+ * Adds a new account posting to the specified account.
+ * @param accountId The ID of the account to which the account posting will be added, if 0 its added as organization posting.
+ * @param model The data for the new account posting.
+ * @returns {Promise<ResponseBody<AccountPostingDto>>} The response containing the created account posting.
  */
-export async function addBudgetPosting(
+export async function addAccountPosting(
 	accountId: number,
-	model: CreateBudgetPostingDto
-): Promise<ResponseBody<BudgetPostingDto>> {
+	model: CreateAccountPostingDto
+): Promise<ResponseBody<AccountPostingDto>> {
 	return customFetch(`${ENDPOINT}/${accountId}/posting`, {
 		body: JSON.stringify(model),
 		method: RequestMethod.POST
@@ -24,17 +24,17 @@ export async function addBudgetPosting(
 }
 
 /**
- * Updates an existing budget posting by its ID.
- * @param accountId The ID of the account to which the budget posting belongs, if 0 its organization posting.
- * @param postingId The ID of the budget posting to update.
- * @param model The updated data for the budget posting.
- * @returns {Promise<ResponseBody<BudgetPostingDto>>} The response containing the updated budget posting.
+ * Updates an existing account posting by its ID.
+ * @param accountId The ID of the account to which the account posting belongs, if 0 its organization posting.
+ * @param postingId The ID of the account posting to update.
+ * @param model The updated data for the account posting.
+ * @returns {Promise<ResponseBody<AccountPostingDto>>} The response containing the updated account posting.
  */
-export async function updateBudgetPosting(
+export async function updateAccountPosting(
 	accountId: number,
 	postingId: number,
-	model: CreateBudgetPostingDto
-): Promise<ResponseBody<BudgetPostingDto>> {
+	model: CreateAccountPostingDto
+): Promise<ResponseBody<AccountPostingDto>> {
 	return customFetch(`${ENDPOINT}/${accountId}/posting/${postingId}`, {
 		body: JSON.stringify(model),
 		method: RequestMethod.POST
@@ -42,21 +42,21 @@ export async function updateBudgetPosting(
 }
 
 /**
- * Retrieves all budget postings for the specified account.
- * @param organizationId The ID of the organization for which to retrieve budget postings, if 0 its organization postings.
- * @returns {Promise<ResponseBody<BudgetAccountDto>>} The response containing the list of budget postings.
+ * Retrieves all account postings for the specified account.
+ * @param organizationId The ID of the organization for which to retrieve account postings, if 0 its organization postings.
+ * @returns {Promise<ResponseBody<AccountAccountDto>>} The response containing the list of account postings.
  */
-export async function getBudgetPostings(organizationId: number): Promise<ResponseBody<BudgetAccountDto>> {
+export async function getAccountPostings(organizationId: number): Promise<ResponseBody<BudgetAccountDto>> {
 	return customFetch(`${ENDPOINT}?organization-id=${organizationId}`, { silentOnSuccess: true });
 }
 
 /**
- * Deletes a budget posting by its ID.
- * @param accountId The ID of the account from which the budget posting will be deleted, if 0 its organization posting.
- * @param postingId The ID of the budget posting to delete.
+ * Deletes a account posting by its ID.
+ * @param accountId The ID of the account from which the account posting will be deleted, if 0 its organization posting.
+ * @param postingId The ID of the account posting to delete.
  * @returns {Promise<ResponseBody>} The response indicating the result of the deletion.
  */
-export async function deleteBudgetPosting(accountId: number, postingId: number): Promise<ResponseBody> {
+export async function deleteAccountPosting(accountId: number, postingId: number): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/${accountId}/posting/${postingId}`, {
 		method: RequestMethod.DELETE
 	});

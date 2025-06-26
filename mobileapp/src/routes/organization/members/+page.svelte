@@ -184,8 +184,8 @@
 						<ion-label>{letter}</ion-label>
 					</ion-item-divider>
 
-					{#each memberGroup as member, index (member.id)}
-						{@render memberItem(member, index === memberGroup.length - 1)}
+					{#each memberGroup as member (member.id)}
+						{@render memberItem(member)}
 					{/each}
 				</ion-item-group>
 			{/each}
@@ -193,12 +193,12 @@
 	{/if}
 </Layout>
 
-{#snippet memberItem(member: MemberModel, isLastItem: boolean)}
+{#snippet memberItem(member: MemberModel)}
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<!-- svelte-ignore event_directive_deprecated -->
 	<ion-item-sliding use:storeSliding={member.id}>
-		<CustomItem bottomBorder={!isLastItem} button click={() => slidingMap.get(member.id)?.open('end')}>
+		<CustomItem button click={() => slidingMap.get(member.id)?.open('end')}>
 			<ion-avatar class="mb-1">
 				<ion-icon icon={personCircleOutline} class="h-10 w-10" color="medium"></ion-icon>
 			</ion-avatar>

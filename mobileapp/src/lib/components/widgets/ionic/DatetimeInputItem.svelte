@@ -26,7 +26,7 @@
 	function onApply(value: string): void {
 		selectedValue = value;
 		showDatetimeModal = false;
-		value = includeDate ? format(value, 'yyyy-mm-dd') : format(value, 'hh:mm');
+		value = includeDate ? format(value, 'yyyy-MM-dd') : format(value, 'HH:mm');
 		apply?.(value);
 	}
 

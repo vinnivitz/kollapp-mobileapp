@@ -86,7 +86,6 @@
 	<ion-list inset class="mt-0 pt-0">
 		<ion-list-header>Events</ion-list-header>
 		<LabeledItem
-			bottomBorder={false}
 			label={$t('routes.organization.list.organization.activity.label')}
 			icon={calendarOutline}
 			searchable={PageRoute.ORGANIZATION.ACTIVITIES.ROOT}
