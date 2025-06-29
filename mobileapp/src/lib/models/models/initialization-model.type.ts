@@ -1,4 +1,6 @@
+import type { Readable } from 'svelte/store';
+
 export type InitializationModel = {
-	initialized: boolean;
-	updated: boolean;
+	loadedCache: Readable<boolean>;
+	loadedServer: Readable<boolean>;
 };

@@ -34,7 +34,9 @@
 		title
 	}: Properties = $props();
 
-	const _loading = $derived(!$initializationStore);
+	const loadedCache = $derived($initializationStore.loadedCache);
+	const loadedServer = $derived($initializationStore.loadedServer);
+	const loaded = $derived($loadedCache || $loadedServer);
 
 	let refresher = $state<HTMLIonRefresherElement | undefined>();
 	let menuComponent = $state<ReturnType<typeof Menu>>();
@@ -75,7 +77,7 @@
 	{#if !hideLayout}
 		<Header {title} {showBackButton} {loading}></Header>
 	{/if}
-	{#if !_loading && !loading}
+	{#if loaded && !loading}
 		<ion-content class="ion-padding" in:fade={{ delay: 0, duration: 200 }} class:no-overflow={!scrollable}>
 			<!-- svelte-ignore event_directive_deprecated -->
 			<ion-refresher bind:this={refresher} slot="fixed" on:ionRefresh={doRefresh}>
