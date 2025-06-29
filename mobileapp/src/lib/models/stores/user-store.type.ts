@@ -5,4 +5,4 @@ import type { Writable } from 'svelte/store';
 /**
  * Store for user information.
  */
-export type UserStore = BaseStore<UserModel> & { initialized: Writable<boolean> };
+export type UserStore = BaseStore<UserModel> & { loadedCache: Writable<boolean>; loadedServer: Writable<boolean> };

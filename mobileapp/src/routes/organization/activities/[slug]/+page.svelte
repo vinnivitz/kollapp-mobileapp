@@ -1,8 +1,9 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 
-	import { Browser } from '@capacitor/browser';
+	import { AppLauncher } from '@capacitor/app-launcher';
 	import { CalendarPermissionScope, CapacitorCalendar } from '@ebarooni/capacitor-calendar';
+	import { isPlatform } from '@ionic/core';
 	import { addDays, format, formatDistanceToNow } from 'date-fns';
 	import { alertController, loadingController } from 'ionic-svelte';
 	import {
@@ -92,7 +93,7 @@
 		{ color: 'primary', handler: onOpenUpdateActivityModal, icon: createOutline, label: 'Edit event' }
 	];
 
-	const loaded = $state(accountPostingsStore.initialized);
+	const loaded = $state(accountPostingsStore.loadedCache);
 
 	let createPostingFormActions: FormActions<CreateAccountPostingDto>;
 	let updatePostingFormActions: FormActions<CreateAccountPostingDto>;
@@ -327,13 +328,16 @@
 
 	async function onOpenLocation(_event?: MouseEvent): Promise<void> {
 		_event?.stopPropagation();
-		await Browser.open({ url: `geo:0,0?q=${encodeURIComponent(activity?.location ?? '')}` });
+		const url = isPlatform('ios')
+			? `maps://?q=${encodeURIComponent(activity?.location ?? '')}`
+			: `geo:0,0?q=${encodeURIComponent(activity?.location ?? '')}`;
+		await AppLauncher.openUrl({ url });
 	}
 
 	async function onAddToCalendar(_event?: MouseEvent): Promise<void> {
 		_event?.stopPropagation();
 		if (!(await requestCalendarPermission()) || !activity) return;
-		CapacitorCalendar.createEvent({
+		await CapacitorCalendar.createEventWithPrompt({
 			alerts: [30],
 			endDate: addDays(Date.now(), 1).getTime(),
 			isAllDay: false,
@@ -349,7 +353,11 @@
 			let permission = await CapacitorCalendar.checkPermission({ scope: CalendarPermissionScope.WRITE_CALENDAR });
 			if (permission.result === 'granted') {
 				return true;
-			} else if (permission.result === 'prompt') {
+			} else if (
+				permission.result === 'prompt' ||
+				permission.result === 'denied' ||
+				permission.result === 'prompt-with-rationale'
+			) {
 				permission = await CapacitorCalendar.requestFullCalendarAccess();
 				if (permission.result === 'granted') {
 					return true;
@@ -475,13 +483,13 @@
 				color="primary"
 				icon={cashOutline}
 				click={() => onOpenCreatePosting(AccountPostingType.DEBIT)}
-			></Button>
+			/>
 			<Button
 				label="Add expense"
 				color="tertiary"
 				icon={walletOutline}
 				click={() => onOpenCreatePosting(AccountPostingType.CREDIT)}
-			></Button>
+			/>
 		</div>
 		<Button
 			icon={listOutline}
@@ -489,7 +497,7 @@
 			fill="outline"
 			label="Transaction history"
 			click={() => (transactionHistoryModalOpen = true)}
-		></Button>
+		/>
 	</Card>
 {/snippet}
 
@@ -594,7 +602,6 @@
 <Modal open={transactionHistoryModalOpen} dismissed={() => (transactionHistoryModalOpen = false)}>
 	<!-- svelte-ignore event_directive_deprecated -->
 	<ion-list use:clickOutside on:blur={transactionsList?.closeSlidingItems} bind:this={transactionsList}>
-		<ion-list-header>Transactions</ion-list-header>
 		<!-- svelte-ignore event_directive_deprecated -->
 		<ion-searchbar
 			class="w-full"
@@ -610,14 +617,14 @@
 				selected={selectedPostingTypes.includes(AccountPostingType.DEBIT)}
 				icon={trendingUpOutline}
 				label="Income"
-			></Chip>
+			/>
 			<Chip
 				color="danger"
 				click={() => toggleAccountPostingTypeSelected(AccountPostingType.CREDIT)}
 				selected={selectedPostingTypes.includes(AccountPostingType.CREDIT)}
 				icon={trendingDownOutline}
 				label="Expense"
-			></Chip>
+			/>
 		</div>
 		{#if filteredPostings.length === 0}
 			<div class="mt-3 text-center">
@@ -625,51 +632,57 @@
 			</div>
 		{:else}
 			{#each filteredPostings as posting (posting.id)}
-				<ion-item-sliding use:storeSliding={posting.id}>
-					<CustomItem
-						click={() => slidingMap.get(posting.id)?.open('end')}
-						iconColor={posting.type === AccountPostingType.CREDIT ? 'danger' : 'success'}
-						icon={posting.type === AccountPostingType.CREDIT ? trendingDownOutline : trendingUpOutline}
-					>
-						<div class="mt-1 flex w-full flex-col justify-center">
-							<ion-text class="truncate">
-								{posting.purpose}
-							</ion-text>
-							<div class="flex w-full flex-wrap items-start justify-between text-sm">
-								<ion-text color="medium" class="flex items-center justify-center gap-2">
-									<ion-icon icon={personOutline}></ion-icon>
-									<div class="truncate">{$userStore?.username}</div>
-								</ion-text>
-								<ion-text color="medium" class="flex items-center justify-center gap-2">
-									<ion-icon icon={calendarClearOutline}></ion-icon>
-									<div>
-										{format(new Date(posting.date), 'PPP')}
-									</div>
-								</ion-text>
-								<ion-text color="medium" class="flex items-center justify-center gap-2">
-									<ion-icon icon={cashOutline}></ion-icon>
-									<div>
-										{posting.type === AccountPostingType.CREDIT ? '-' : '+'}{currencyFormatter()(posting.amountInCents)}
-									</div>
-								</ion-text>
-							</div>
-						</div>
-					</CustomItem>
-
-					<ion-item-options slot="end">
-						<!-- svelte-ignore a11y_click_events_have_key_events -->
-						<!-- svelte-ignore a11y_no_static_element_interactions -->
-						<ion-item-option color="tertiary" on:click={() => onOpenUpdatePostingModal(posting)}>
-							<ion-icon slot="icon-only" icon={createOutline}></ion-icon>
-						</ion-item-option>
-						<!-- svelte-ignore a11y_click_events_have_key_events -->
-						<!-- svelte-ignore a11y_no_static_element_interactions -->
-						<ion-item-option color="danger" expandable on:click={() => onDeletePosting(posting.id)}>
-							<ion-icon slot="icon-only" icon={trashBinOutline}></ion-icon>
-						</ion-item-option>
-					</ion-item-options>
-				</ion-item-sliding>
+				{@render transactionItem(posting)}
 			{/each}
 		{/if}
 	</ion-list>
 </Modal>
+
+{#snippet transactionItem(posting: AccountPostingModel)}
+	<ion-item-sliding use:storeSliding={posting.id}>
+		<CustomItem
+			click={() => slidingMap.get(posting.id)?.open('end')}
+			iconColor={posting.type === AccountPostingType.CREDIT ? 'danger' : 'success'}
+			icon={posting.type === AccountPostingType.CREDIT ? trendingDownOutline : trendingUpOutline}
+		>
+			<div class="mt-1 flex w-full flex-col justify-center">
+				<ion-text class="truncate">
+					{posting.purpose}
+				</ion-text>
+				<div class="flex w-full flex-wrap items-start justify-between text-sm">
+					<ion-text color="medium" class="flex items-center justify-center gap-2">
+						<ion-icon icon={personOutline}></ion-icon>
+						<div class="truncate">{$userStore?.username}</div>
+					</ion-text>
+					<ion-text color="medium" class="flex items-center justify-center gap-2">
+						<ion-icon icon={calendarClearOutline}></ion-icon>
+						<div>
+							{format(new Date(posting.date), 'PPP')}
+						</div>
+					</ion-text>
+					<ion-text color="medium" class="flex items-center justify-center gap-2">
+						<ion-icon icon={cashOutline}></ion-icon>
+						<div>
+							{posting.type === AccountPostingType.CREDIT ? '-' : '+'}{currencyFormatter()(posting.amountInCents)}
+						</div>
+					</ion-text>
+				</div>
+			</div>
+		</CustomItem>
+
+		<ion-item-options slot="end">
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<!-- svelte-ignore event_directive_deprecated -->
+			<ion-item-option color="tertiary" on:click={() => onOpenUpdatePostingModal(posting)}>
+				<ion-icon slot="icon-only" icon={createOutline}></ion-icon>
+			</ion-item-option>
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<!-- svelte-ignore event_directive_deprecated -->
+			<ion-item-option color="danger" expandable on:click={() => onDeletePosting(posting.id)}>
+				<ion-icon slot="icon-only" icon={trashBinOutline}></ion-icon>
+			</ion-item-option>
+		</ion-item-options>
+	</ion-item-sliding>
+{/snippet}

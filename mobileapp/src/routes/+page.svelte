@@ -1,4 +1,6 @@
 <script lang="ts">
+	import type { ActivityModel, OrganizationModel, UserModel } from '$lib/models/models';
+
 	import { addDays, formatDistanceToNow } from 'date-fns';
 	import { accessibilityOutline, calendarOutline, cashOutline, flashOutline, peopleOutline } from 'ionicons/icons';
 
@@ -10,97 +12,101 @@
 	import PieChart from '$lib/components/widgets/PieChart.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
-	import { initializationStore, localeStore, organizationStore, userStore } from '$lib/stores';
-	import { getDateFnsLocale } from '$lib/utility';
+	import { accountPostingsStore, localeStore, organizationStore, userStore } from '$lib/stores';
+	import { currencyFormatter, getDateFnsLocale } from '$lib/utility';
+
+	const activity = $derived($organizationStore?.activities && $organizationStore.activities[0]);
+
+	function onNavigateEvent(): void {
+		if ($organizationStore?.activities[0]?.id) {
+			goto(PageRoute.ORGANIZATION.ACTIVITIES.DETAIL($organizationStore.activities[0].id));
+		}
+	}
 </script>
 
 <Layout title={$t('routes.home.title')}>
-	{#if $initializationStore}
-		<Card classList="text-center" click={() => goto(PageRoute.ACCOUNT.ROOT)}>
-			<ion-text class="text-2xl" color="dark"
-				>{$t('routes.home.card.user.title', { value: $userStore?.username })}</ion-text
-			>
-
-			<!-- <Button fill="outline" label="Go to account" icon={personOutline} click={() => goto(PageRoute.ACCOUNT.ROOT)} /> -->
-		</Card>
-
+	{#if $userStore}
+		{@render accountCard($userStore)}
 		{#if $organizationStore}
-			{#if $organizationStore.activities.length > 0}
-				<Card
-					title="Upcoming event"
-					click={() =>
-						$organizationStore.activities[0]?.id &&
-						goto(PageRoute.ORGANIZATION.ACTIVITIES.DETAIL($organizationStore.activities[0].id))}
-				>
-					<div class="mb-3 flex flex-wrap items-center justify-center gap-5">
-						<div class="flex items-center gap-2">
-							<ion-icon icon={flashOutline}></ion-icon>
-							<ion-text>{$organizationStore.activities[0]?.name}</ion-text>
-						</div>
-						<div class="flex items-center gap-2">
-							<ion-icon icon={calendarOutline}></ion-icon>
-							<ion-text>
-								{formatDistanceToNow(addDays(new Date(), 5), {
-									addSuffix: true,
-									includeSeconds: true,
-									locale: getDateFnsLocale($localeStore)
-								})}
-							</ion-text>
-						</div>
-					</div>
-					<!-- <div class="text-center">
-						<Button
-							label="Go to event"
-							icon={calendarOutline}
-							fill="outline"
-							click={() => goto(PageRoute.ORGANIZATION.ACTIVITIES)}
-						></Button>
-					</div> -->
-				</Card>
+			{#if activity}
+				{@render upcomingEventCard(activity)}
 			{/if}
-			<Card title={$organizationStore.name} click={() => goto(PageRoute.ORGANIZATION.ROOT)}>
-				<div class="flex flex-wrap items-center justify-center gap-5">
-					<div class="flex items-center justify-center gap-2">
-						<ion-icon icon={peopleOutline}></ion-icon>
-						<ion-text>{$organizationStore.personsOfOrganization.length} members</ion-text>
-					</div>
-					<div class="flex items-center justify-center gap-2">
-						<ion-icon icon={cashOutline}></ion-icon>
-						<ion-text>150.34€</ion-text>
-					</div>
-				</div>
-				<div class="mt-3 text-center">
-					<PieChart></PieChart>
-				</div>
-				<!-- <div class="text-center">
-					<Button
-						click={() => goto(PageRoute.ORGANIZATION.ROOT)}
-						fill="outline"
-						icon={accessibilityOutline}
-						label={$t('routes.home.card.organization.button')}
-					/>
-				</div> -->
-			</Card>
-			<Card title="Notifications" classList="text-center">
-				<ion-text>{$t('routes.home.card.notifications.no-notes')}</ion-text>
-			</Card>
+			{@render organizationCard($organizationStore)}
+			{@render notificationCard()}
 		{:else}
-			<Card title={$t('routes.home.card.register-organization.title')} classList="text-center">
-				<Button
-					click={() => goto(PageRoute.ORGANIZATION.REGISTER)}
-					fill="outline"
-					icon={accessibilityOutline}
-					label={$t('routes.home.card.organization.register')}
-				/>
-			</Card>
-			<Card title={$t('routes.home.card.join-organization.title')} classList="text-center">
-				<Button
-					click={() => goto(PageRoute.ORGANIZATION.JOIN)}
-					fill="outline"
-					icon={accessibilityOutline}
-					label={$t('routes.home.card.organization.join')}
-				/>
-			</Card>
+			{@render noCollectiveCards()}
 		{/if}
 	{/if}
 </Layout>
+
+{#snippet accountCard(user: UserModel)}
+	<Card classList="text-center" click={() => goto(PageRoute.ACCOUNT.ROOT)}>
+		<ion-text class="text-2xl" color="dark">
+			{$t('routes.home.card.user.title', { value: user.username })}
+		</ion-text>
+	</Card>
+{/snippet}
+
+{#snippet upcomingEventCard(activity: ActivityModel)}
+	<Card title="Upcoming event" click={onNavigateEvent}>
+		<div class="mb-3 flex flex-wrap items-center justify-center gap-5">
+			<div class="flex items-center gap-2">
+				<ion-icon icon={flashOutline}></ion-icon>
+				<ion-text>{activity.name}</ion-text>
+			</div>
+			<div class="flex items-center gap-2">
+				<ion-icon icon={calendarOutline}></ion-icon>
+				<ion-text>
+					{formatDistanceToNow(addDays(new Date(), 5), {
+						addSuffix: true,
+						includeSeconds: true,
+						locale: getDateFnsLocale($localeStore)
+					})}
+				</ion-text>
+			</div>
+		</div>
+	</Card>
+{/snippet}
+
+{#snippet organizationCard(organization: OrganizationModel)}
+	<Card title={organization.name} click={() => goto(PageRoute.ORGANIZATION.ROOT)}>
+		<div class="flex flex-wrap items-center justify-center gap-5">
+			<div class="flex items-center justify-center gap-2">
+				<ion-icon icon={peopleOutline}></ion-icon>
+				<ion-text>{organization.personsOfOrganization.length} members</ion-text>
+			</div>
+			<div class="flex items-center justify-center gap-2">
+				<ion-icon icon={cashOutline}></ion-icon>
+				<ion-text>{currencyFormatter()(accountPostingsStore.getTotalBudget())}</ion-text>
+			</div>
+		</div>
+		<div class="mt-3 text-center">
+			<PieChart />
+		</div>
+	</Card>
+{/snippet}
+
+{#snippet notificationCard()}
+	<Card title="Notifications" classList="text-center">
+		<ion-text>{$t('routes.home.card.notifications.no-notes')}</ion-text>
+	</Card>
+{/snippet}
+
+{#snippet noCollectiveCards()}
+	<Card title={$t('routes.home.card.register-organization.title')} classList="text-center">
+		<Button
+			click={() => goto(PageRoute.ORGANIZATION.REGISTER)}
+			fill="outline"
+			icon={accessibilityOutline}
+			label={$t('routes.home.card.organization.register')}
+		/>
+	</Card>
+	<Card title={$t('routes.home.card.join-organization.title')} classList="text-center">
+		<Button
+			click={() => goto(PageRoute.ORGANIZATION.JOIN)}
+			fill="outline"
+			icon={accessibilityOutline}
+			label={$t('routes.home.card.organization.join')}
+		/>
+	</Card>
+{/snippet}

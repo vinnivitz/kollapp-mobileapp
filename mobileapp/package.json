@@ -14,7 +14,7 @@
 		"test:e2e": "playwright test",
 		"test": "npm run test:unit -- --run",
 		"typedoc": "typedoc & live-server ./docs --watch --silent --no-browser --port=1234 & chokidar 'src/lib' -c 'typedoc' --silent",
-		"build-android": "cross-env ADAPTER=static npm run build --prod && dotenv cross-env-shell 'cap sync && cap open android'",
+		"build-android": "cross-env ADAPTER=static npm run build --prod && dotenv cross-env-shell 'cap sync && cd android && ./gradlew assembleDebug'",
 		"build-web": "cross-env ADAPTER=node npm run build",
 		"visualize": "mkdir -p visualize && madge --extensions ts,svelte --image visualize/dependency-graph.png src",
 		"index-searchables": "tsx ./src/lib/utility/index-searchables.ts"
@@ -74,6 +74,7 @@
 	},
 	"dependencies": {
 		"@capacitor/app": "^7.0.0",
+		"@capacitor/app-launcher": "^7.0.1",
 		"@capacitor/barcode-scanner": "^2.0.3",
 		"@capacitor/browser": "^7.0.1",
 		"@capacitor/clipboard": "^7.0.1",

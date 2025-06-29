@@ -1,7 +1,7 @@
-import type { AccountPostingModel } from '$lib/models/models';
+import type { AccountPostingModel, OrganizationModel } from '$lib/models/models';
 import type { AccountPostingsStore } from '$lib/models/stores';
 
-import { writable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 
 import { accountingResource } from '$lib/api/resources';
 import { PreferencesKey } from '$lib/models/preferences';
@@ -9,24 +9,27 @@ import { getStoredValue, removeStoredValue, StatusCheck, storeValue } from '$lib
 
 function createStore(): AccountPostingsStore {
 	const { set, subscribe } = writable<AccountPostingModel[] | undefined>();
-	const initialized = writable(false);
+	const loadedCache = writable(false);
+	const loadedServer = writable(false);
 
 	async function init(): Promise<void> {
-		const organizationId = await getStoredValue<number>(PreferencesKey.SELECTED_ORGANIZATION_ID);
+		const storedPostings = await getStoredValue<AccountPostingModel[]>(PreferencesKey.ACCOUNT_POSTINGS);
+		if (storedPostings) {
+			await _set(storedPostings);
+			loadedCache.set(true);
+		}
+
+		const organization = await getStoredValue<OrganizationModel>(PreferencesKey.ORGANIZATION);
+		const organizationId = organization?.id;
 		if (organizationId) {
 			const response = await accountingResource.getAccountPostings(organizationId);
 			if (StatusCheck.isOK(response.status)) {
 				_set(response.data.postings);
-			} else if (StatusCheck.serverNotReachable(response.status)) {
-				const postings = await getStoredValue<AccountPostingModel[]>(PreferencesKey.ACCOUNT_POSTINGS);
-				if (postings) {
-					_set(postings);
-				}
 			}
 		} else {
 			_set();
 		}
-		initialized.set(true);
+		loadedServer.set(true);
 	}
 
 	async function _set(model?: AccountPostingModel[]): Promise<void> {
@@ -44,18 +47,26 @@ function createStore(): AccountPostingsStore {
 	}
 
 	async function reset(): Promise<void> {
-		initialized.set(false);
-		_set();
+		loadedCache.set(false);
+		loadedServer.set(false);
+		await _set();
 	}
 
 	return {
+		getTotalBudget,
 		init,
-		initialized,
+		loadedCache,
+		loadedServer,
 		reset,
 		set: _set,
 		subscribe,
 		update
 	};
+}
+
+function getTotalBudget(): number {
+	const postings = get(accountPostingsStore);
+	return postings ? postings.reduce((total, posting) => total + posting.amountInCents, 0) : 0;
 }
 
 /**

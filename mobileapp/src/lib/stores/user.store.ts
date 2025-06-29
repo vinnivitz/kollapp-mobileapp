@@ -9,20 +9,25 @@ import { getStoredValue, removeStoredValue, StatusCheck, storeValue } from '$lib
 
 function createStore(): UserStore {
 	const { set, subscribe } = writable<undefined | UserModel>();
-	const initialized = writable(false);
+	const loadedCache = writable(false);
+	const loadedServer = writable(false);
 
 	async function init(): Promise<void> {
-		const body = await userResource.getByAuthentication();
-
-		if (StatusCheck.isOK(body.status)) {
-			await _set(body.data);
-		} else if (StatusCheck.isUnauthorized(body.status)) {
-			await _set();
-		} else {
-			const model = await getStoredValue<UserModel>(PreferencesKey.USER);
-			await _set(model);
+		const storedUser = await getStoredValue<UserModel>(PreferencesKey.USER);
+		if (storedUser) {
+			await _set(storedUser);
+			loadedCache.set(true);
 		}
-		initialized.set(true);
+
+		const response = await userResource.getByAuthentication();
+
+		if (StatusCheck.isOK(response.status)) {
+			await _set(response.data);
+		} else if (StatusCheck.isUnauthorized(response.status)) {
+			await _set();
+		}
+
+		loadedServer.set(true);
 	}
 
 	async function _set(model?: UserModel): Promise<void> {
@@ -31,13 +36,15 @@ function createStore(): UserStore {
 	}
 
 	async function reset(): Promise<void> {
-		initialized.set(false);
+		loadedCache.set(false);
+		loadedServer.set(false);
 		await _set();
 	}
 
 	return {
 		init,
-		initialized,
+		loadedCache,
+		loadedServer,
 		reset,
 		set: _set,
 		subscribe

@@ -18,6 +18,8 @@ let toast: HTMLIonToastElement | undefined;
 export async function showAlert(message: string, config?: AlertConfig): Promise<void> {
 	const type = config?.type ?? AlertType.ERROR;
 
+	if (toast?.message === message && toast.color === type) return;
+
 	if (toast) {
 		await toast.dismiss();
 		toast = undefined;

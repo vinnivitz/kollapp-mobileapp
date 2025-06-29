@@ -41,8 +41,8 @@
 	import { customForm, getValidationResult, showAlert } from '$lib/utility';
 
 	enum ActivityView {
-		activities = 'activities',
-		calendar = 'calendar'
+		ACTIVITIES = 'activities',
+		CALENDAR = 'calendar'
 	}
 
 	enum ActivityFilterType {
@@ -77,7 +77,7 @@
 	let includeTime = $state(false);
 	let isDateRange = $state(false);
 
-	let activityView = $state(ActivityView.activities);
+	let activityView = $state(ActivityView.ACTIVITIES);
 
 	let showFilters = $state(false);
 
@@ -137,7 +137,7 @@
 <Layout
 	title={$t('routes.organization.page.activity.title')}
 	showBackButton
-	scrollable={activityView === ActivityView.calendar}
+	scrollable={activityView === ActivityView.CALENDAR}
 >
 	<div class="mb-1">
 		{@render activitySegmentsHeader()}
@@ -157,12 +157,12 @@
 		<SegmentButton
 			icon={flashOutline}
 			label={$t('routes.organization.page.activity.segments.activities')}
-			value={ActivityView.activities}
+			value={ActivityView.ACTIVITIES}
 		></SegmentButton>
 		<SegmentButton
 			icon={calendarOutline}
 			label={$t('routes.organization.page.activity.segments.calendar')}
-			value={ActivityView.calendar}
+			value={ActivityView.CALENDAR}
 			searchable={PageRoute.ORGANIZATION.ACTIVITIES}
 		></SegmentButton>
 	</ion-segment>
@@ -170,8 +170,8 @@
 
 {#snippet activitySegmentView()}
 	<ion-segment-view in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
-		<ion-segment-content>
-			{#if activityView === ActivityView.activities}
+		<ion-segment-content class={activityView === ActivityView.ACTIVITIES ? 'flex h-full flex-col pb-6' : ''}>
+			{#if activityView === ActivityView.ACTIVITIES}
 				<FabButton
 					label={$t('routes.organization.page.activity.create')}
 					click={() => onCreateActivity(new Date().toISOString())}
@@ -192,8 +192,10 @@
 
 				{@render activityFilter()}
 
-				{@render activityList()}
-			{:else if activityView === ActivityView.calendar}
+				<div class="scroll-viewport">
+					{@render activityList()}
+				</div>
+			{:else if activityView === ActivityView.CALENDAR}
 				<Datetime
 					apply={onCreateActivity}
 					applyText={$t('routes.organization.page.activity.calendar.done')}
@@ -244,11 +246,11 @@
 				{activity.name}
 			</div>
 			<div class="flex flex-wrap items-center gap-2">
-				<div class="flex items-center gap-2">
+				<div class="flex items-end justify-center gap-1">
 					<ion-icon icon={calendarOutline} color="medium" class="text-2xl"></ion-icon>
 					<ion-text color="medium">{format(new Date(), 'PPP')}</ion-text>
 				</div>
-				<div class="flex items-center gap-2">
+				<div class="flex items-end justify-center gap-1">
 					<ion-icon icon={locationOutline} color="medium" class="text-2xl"></ion-icon>
 					<ion-text color="medium" class="max-w-[60vw] truncate">{activity.location}</ion-text>
 				</div>
@@ -286,11 +288,11 @@
 				change={() => (includeTime = !includeTime)}
 				label={$t('routes.organization.page.activity.modal.create-activity.form.include-time')}
 				icon={timeOutline}
-				value={includeTime}
+				enabled={includeTime}
 			/>
 			<ToggleItem
 				change={() => (isDateRange = !isDateRange)}
-				value={isDateRange}
+				enabled={isDateRange}
 				icon={codeOutline}
 				label={$t('routes.organization.page.activity.modal.create-activity.form.include-end-date')}
 			/>

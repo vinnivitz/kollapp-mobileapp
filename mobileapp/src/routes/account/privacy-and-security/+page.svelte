@@ -37,8 +37,8 @@
 	} from '$lib/utility';
 
 	let showPasswordPrompt = $state(false);
-	let toggle = $state<HTMLIonToggleElement | undefined>();
 	let isPasswordConfirmed = $state(false);
+	let biometricsToggleActive = $state(false);
 
 	const model = verifyPasswordSchema().cast({}) as VerifyPasswordDto;
 	let actions: FormActions<VerifyPasswordDto>;
@@ -51,13 +51,13 @@
 
 	onMount(async () => {
 		if (dev) return;
-		setToggleValue(await isBiometricsEnabled());
+		biometricsToggleActive = await isBiometricsEnabled();
 	});
 
 	async function onToggleBiometrics(): Promise<void> {
 		if (await isBiometricsEnabled()) {
 			await deleteBiometricCredentials();
-			setToggleValue(false);
+			biometricsToggleActive = false;
 		} else {
 			showPasswordPrompt = true;
 			isPasswordConfirmed = false;
@@ -88,20 +88,14 @@
 		isPasswordConfirmed = true;
 		await storeBiometricCredentials(username, password);
 		onPasswordPromptDismiss();
-		setToggleValue(true);
+		biometricsToggleActive = true;
 	}
 
 	async function onPasswordPromptDismiss(): Promise<void> {
 		actions.resetModel();
 		showPasswordPrompt = false;
 		if (!isPasswordConfirmed) {
-			setToggleValue(false);
-		}
-	}
-
-	function setToggleValue(value: boolean): void {
-		if (toggle) {
-			toggle.checked = value;
+			biometricsToggleActive = false;
 		}
 	}
 
@@ -140,16 +134,18 @@
 			icon={keyOutline}
 			label={$t('routes.account.list.account.privacy-and-security.button.change-password')}
 		/>
-		{#await isBiometricAvailable() then isAvailable}
-			<ToggleItem
-				icon={fingerPrintOutline}
-				label={$t('routes.account.list.account.privacy-and-security.button.biometrics')}
-				searchable={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.ROOT}
-				change={() => onToggleBiometrics()}
-				disabled={!isAvailable}
-				element={toggle}
-			/>
-		{/await}
+		{#key biometricsToggleActive}
+			{#await isBiometricAvailable() then isAvailable}
+				<ToggleItem
+					icon={fingerPrintOutline}
+					label={$t('routes.account.list.account.privacy-and-security.button.biometrics')}
+					searchable={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.ROOT}
+					change={() => onToggleBiometrics()}
+					disabled={!isAvailable}
+					enabled={biometricsToggleActive}
+				/>
+			{/await}
+		{/key}
 	</ion-list>
 </Layout>
 

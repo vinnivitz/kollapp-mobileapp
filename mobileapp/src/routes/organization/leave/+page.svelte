@@ -10,10 +10,8 @@
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import { t } from '$lib/locales';
 	import { UserRole } from '$lib/models/api';
-	import { PreferencesKey } from '$lib/models/preferences';
 	import { PageRoute } from '$lib/models/routing';
 	import { organizationStore } from '$lib/stores';
-	import { removeStoredValue } from '$lib/utility';
 
 	const isLastManager = $derived(
 		$organizationStore?.personsOfOrganization.filter((member) => member.role === UserRole.MANAGER).length === 1
@@ -38,10 +36,7 @@
 		await loader.present();
 		const organizationId = $organizationStore?.id;
 		if (organizationId) {
-			await Promise.all([
-				organizationResource.leaveOrganization(organizationId),
-				removeStoredValue(PreferencesKey.SELECTED_ORGANIZATION_ID)
-			]);
+			await organizationResource.leaveOrganization(organizationId);
 			await organizationStore.init();
 		}
 		await loader.dismiss();

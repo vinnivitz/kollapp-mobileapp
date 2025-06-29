@@ -2,6 +2,7 @@ export * from './account-postings-store.type';
 export * from './authentication-store.type';
 export * from './base-store.type';
 export * from './connection-store.type';
+export * from './initialization-store.type';
 export * from './layout-store.type';
 export * from './locale-store.type';
 export * from './modal-store.type';
