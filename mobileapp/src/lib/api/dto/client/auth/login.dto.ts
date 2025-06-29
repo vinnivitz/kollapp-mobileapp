@@ -4,7 +4,7 @@ import { type AnyObject, object, ObjectSchema, string } from 'yup';
 import { t } from '$lib/locales';
 
 /**
- * Login DTO for sending user login information.
+ * Data Transfer Object for user login.
  */
 export type LoginDto = {
 	password: string;
@@ -12,8 +12,8 @@ export type LoginDto = {
 };
 
 /**
- * Login schema for user login.
- * @returns {ObjectSchema<AnyObject, LoginDto>} The schema for user login.
+ * Creates a schema for validating the `LoginDto`.
+ * @returns {ObjectSchema<AnyObject, LoginDto>} The schema for validating the `LoginDto`.
  */
 export const loginSchema = (): ObjectSchema<AnyObject, LoginDto> => {
 	const $t = get(t);

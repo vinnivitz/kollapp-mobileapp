@@ -4,7 +4,7 @@ import { type AnyObject, object, type ObjectSchema, string } from 'yup';
 import { t } from '$lib/locales';
 
 /**
- * DTO for updating organization information.
+ * Data Transfer Object for updating organization information.
  */
 export type UpdateOrganizationDto = {
 	name: string;
@@ -13,8 +13,8 @@ export type UpdateOrganizationDto = {
 };
 
 /**
- * Schema for validating organization information.
- * @returns {ObjectSchema<AnyObject, UpdateOrganizationDto>} The schema for validating organization information.
+ * Creates a schema for validating the `UpdateOrganizationDto`.
+ * @returns {ObjectSchema<AnyObject, UpdateOrganizationDto>} The schema for validating the `UpdateOrganizationDto`.
  */
 export const updateOrganizationSchema = (): ObjectSchema<AnyObject, UpdateOrganizationDto> => {
 	const $t = get(t);

@@ -4,15 +4,15 @@ import { type AnyObject, object, type ObjectSchema, string } from 'yup';
 import { t } from '$lib/locales';
 
 /**
- * Verify password DTO for enable biometrics.
+ * Data Transfer Object for verifying a user's password.
  */
 export type VerifyPasswordDto = {
 	password: string;
 };
 
 /**
- * Verify password schema for enable biometrics.
- * @returns {ObjectSchema<AnyObject, VerifyPasswordDto>} The schema for user password reset.
+ * Creates a schema for validating the `VerifyPasswordDto`.
+ * @returns {ObjectSchema<AnyObject, VerifyPasswordDto>} The schema for validating the `VerifyPasswordDto`.
  */
 export const verifyPasswordSchema = (): ObjectSchema<AnyObject, VerifyPasswordDto> => {
 	const $t = get(t);

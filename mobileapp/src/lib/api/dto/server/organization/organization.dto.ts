@@ -2,7 +2,7 @@ import type { UserRole, UserStatus } from '$lib/models/api';
 import type { ActivityDto } from './activity.dto';
 
 /**
- * Organization DTO for retrieving basic organization information.
+ * Data Transfer Object for organization information.
  */
 export type OrganizationDto = {
 	activities: ActivityDto[];

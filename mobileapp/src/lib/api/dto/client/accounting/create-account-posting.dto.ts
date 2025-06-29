@@ -15,6 +15,10 @@ export type CreateAccountPostingDto = {
 	type: AccountPostingType;
 };
 
+/**
+ * Creates a schema for validating the `CreateAccountPostingDto`.
+ * @returns {ObjectSchema<AnyObject, CreateAccountPostingDto>} The schema for validating the `CreateAccountPostingDto`.
+ */
 export const createAccountPostingSchema = (): ObjectSchema<AnyObject, CreateAccountPostingDto> => {
 	const $t = get(t);
 	return object<CreateAccountPostingDto>({

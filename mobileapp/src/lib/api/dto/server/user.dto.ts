@@ -1,7 +1,7 @@
 import type { UserRole } from '$lib/models/api';
 
 /**
- * User DTO for retrieving basic user information.
+ * Data Transfer Object for user information.
  */
 export type UserDto = {
 	email: string;

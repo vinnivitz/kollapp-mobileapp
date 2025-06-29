@@ -8,6 +8,11 @@ import { organizationStore, userStore } from '$lib/stores';
 
 const $t = get(t);
 
+/**
+ * Filters searchable items based on a search term.
+ * @param value The search term to filter searchable items.
+ * @returns {Promise<SearchableItemDto[]>} A promise that resolves to an array of searchable items that match the search term.
+ */
 export async function filter(value: string): Promise<SearchableItemDto[]> {
 	const response = await fetch('/data/searchables.json');
 	const items: SearchableItemDto[] = await response.json();

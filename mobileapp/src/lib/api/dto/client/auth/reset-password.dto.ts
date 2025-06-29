@@ -4,15 +4,15 @@ import { type AnyObject, object, ObjectSchema, string } from 'yup';
 import { t } from '$lib/locales';
 
 /**
- * Email DTO for sending email for verification.
+ * Data Transfer Object for resetting a user's password.
  */
 export type ResetPasswordDto = {
 	email: string;
 };
 
 /**
- * Email schema for email verification.
- * @returns {ObjectSchema<AnyObject, ResetPasswordDto>} The schema for email verification.
+ * Creates a schema for validating the `ResetPasswordDto`.
+ * @returns {ObjectSchema<AnyObject, ResetPasswordDto>} The schema for validating the `ResetPasswordDto`.
  */
 export const resetPasswordSchema = (): ObjectSchema<AnyObject, ResetPasswordDto> => {
 	const $t = get(t);

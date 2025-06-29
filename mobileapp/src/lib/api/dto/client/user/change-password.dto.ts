@@ -4,7 +4,7 @@ import { type AnyObject, object, ObjectSchema, ref, string } from 'yup';
 import { t } from '$lib/locales';
 
 /**
- * Change password DTO for sending user password change information.
+ * Data Transfer Object for changing user password.
  */
 export type ChangePasswordDto = {
 	currentPassword: string;
@@ -13,8 +13,8 @@ export type ChangePasswordDto = {
 };
 
 /**
- * Change password schema for changing user password.
- * @returns {ObjectSchema<AnyObject, ChangePasswordDto>} The schema for changing user password.
+ * Creates a schema for validating the `ChangePasswordDto`.
+ * @returns {ObjectSchema<AnyObject, ChangePasswordDto>} The schema for validating the `ChangePasswordDto`.
  */
 export const changePasswordSchema = (): ObjectSchema<AnyObject, ChangePasswordDto> => {
 	const $t = get(t);

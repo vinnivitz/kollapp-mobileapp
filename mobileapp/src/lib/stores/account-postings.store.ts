@@ -70,6 +70,6 @@ function getTotalBudget(): number {
 }
 
 /**
- * Store for handling the account postings of the current .
+ * Store for handling the account postings.
  */
 export const accountPostingsStore = createStore();

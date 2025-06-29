@@ -25,4 +25,7 @@ export enum Locale {
 	EN = 'en'
 }
 
+/**
+ * I18n instance for managing translations and locale.
+ */
 export const { initialized, loadTranslations, locale, t } = new I18n(config);

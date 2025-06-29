@@ -15,6 +15,10 @@ export type UpdateAccountPostingDto = {
 	type: AccountPostingType;
 };
 
+/**
+ * Creates a schema for validating the `UpdateAccountPostingDto`.
+ * @returns schema for validating the `UpdateAccountPostingDto`.
+ */
 export const updateAccountPostingSchema = (): ObjectSchema<AnyObject, UpdateAccountPostingDto> => {
 	const $t = get(t);
 	return object<UpdateAccountPostingDto>({

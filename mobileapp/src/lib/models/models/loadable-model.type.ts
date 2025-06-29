@@ -1,9 +1,9 @@
 import type { Readable } from 'svelte/store';
 
 /**
- * Model representing the initialization state of the application.
+ * Loadable model type that includes properties for tracking loading states.
  */
-export type InitializationModel = {
+export type LoadableModel = {
 	loadedCache: Readable<boolean>;
 	loadedServer: Readable<boolean>;
 };

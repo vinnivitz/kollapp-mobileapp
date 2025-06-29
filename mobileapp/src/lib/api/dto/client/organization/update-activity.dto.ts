@@ -4,7 +4,7 @@ import { type AnyObject, object, ObjectSchema, string } from 'yup';
 import { t } from '$lib/locales';
 
 /**
- * DTO for updating an activity.
+ * Data Transfer Object for updating an activity.
  */
 export type UpdateActivityDto = {
 	location: string;
@@ -12,8 +12,8 @@ export type UpdateActivityDto = {
 };
 
 /**
- * Schema for updating an activity.
- * @returns {ObjectSchema<AnyObject, UpdateActivityDto>} The schema for updating an activity.
+ * Creates a schema for validating the `UpdateActivityDto`.
+ * @returns {ObjectSchema<AnyObject, UpdateActivityDto>} The schema for validating the `UpdateActivityDto`.
  */
 export const updateActivitySchema = (): ObjectSchema<AnyObject, UpdateActivityDto> => {
 	const $t = get(t);

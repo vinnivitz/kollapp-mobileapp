@@ -41,7 +41,8 @@
 
 {#snippet accountCard(user: UserModel)}
 	<Card classList="text-center" click={() => goto(PageRoute.ACCOUNT.ROOT)}>
-		<ion-text class="text-2xl" color="dark">
+		<ion-text class="text-2xl" color="dark"
+			>members
 			{$t('routes.home.card.user.title', { value: user.username })}
 		</ion-text>
 	</Card>

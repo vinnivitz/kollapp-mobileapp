@@ -1,18 +1,18 @@
 import type { AccountPostingModel } from '$lib/models/models';
-import type { BaseStore } from '$lib/models/stores';
-import type { Writable } from 'svelte/store';
+import type { LoadableStore } from '$lib/models/stores';
 
 type Replace<T, K extends keyof T, V> = {
 	[P in keyof T]: P extends K ? V : T[P];
 };
 
+/**
+ * Store for account postings.
+ */
 export type AccountPostingsStore = Replace<
-	BaseStore<AccountPostingModel[]>,
+	LoadableStore<AccountPostingModel[]>,
 	'init',
 	(organizationId: number) => Promise<void>
 > & {
-	loadedCache: Writable<boolean>;
-	loadedServer: Writable<boolean>;
 	getTotalBudget: () => number;
 	update: (organizationId: number) => Promise<void>;
 };

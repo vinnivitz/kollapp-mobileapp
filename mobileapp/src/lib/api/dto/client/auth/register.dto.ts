@@ -4,7 +4,7 @@ import { type AnyObject, object, ObjectSchema, ref, string } from 'yup';
 import { t } from '$lib/locales';
 
 /**
- * Register DTO for sending user registration information.
+ * Data Transfer Object for user registration.
  */
 export type RegisterDto = {
 	email: string;
@@ -14,8 +14,8 @@ export type RegisterDto = {
 };
 
 /**
- * Register schema for user registration.
- * @returns {ObjectSchema<AnyObject, RegisterDto>} The schema for user registration.
+ * Creates a schema for validating the `RegisterDto`.
+ * @returns {ObjectSchema<AnyObject, RegisterDto>} The schema for validating the `RegisterDto`.
  */
 export const registerSchema = (): ObjectSchema<AnyObject, RegisterDto> => {
 	const $t = get(t);

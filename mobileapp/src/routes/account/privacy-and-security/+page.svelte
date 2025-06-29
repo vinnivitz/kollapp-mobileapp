@@ -18,9 +18,9 @@
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
+	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
 	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
-	import ToggleItem from '$lib/components/widgets/ionic/ToggleItem.svelte';
 	import { t } from '$lib/locales';
 	import { PreferencesKey } from '$lib/models/preferences';
 	import { PageRoute } from '$lib/models/routing';
@@ -38,7 +38,7 @@
 
 	let showPasswordPrompt = $state(false);
 	let isPasswordConfirmed = $state(false);
-	let biometricsToggleActive = $state(false);
+	let toggle = $state<HTMLIonToggleElement | undefined>();
 
 	const model = verifyPasswordSchema().cast({}) as VerifyPasswordDto;
 	let actions: FormActions<VerifyPasswordDto>;
@@ -51,13 +51,13 @@
 
 	onMount(async () => {
 		if (dev) return;
-		biometricsToggleActive = await isBiometricsEnabled();
+		setToggleValue(await isBiometricsEnabled());
 	});
 
 	async function onToggleBiometrics(): Promise<void> {
 		if (await isBiometricsEnabled()) {
 			await deleteBiometricCredentials();
-			biometricsToggleActive = false;
+			setToggleValue(false);
 		} else {
 			showPasswordPrompt = true;
 			isPasswordConfirmed = false;
@@ -88,14 +88,20 @@
 		isPasswordConfirmed = true;
 		await storeBiometricCredentials(username, password);
 		onPasswordPromptDismiss();
-		biometricsToggleActive = true;
+		setToggleValue(true);
 	}
 
 	async function onPasswordPromptDismiss(): Promise<void> {
 		actions.resetModel();
 		showPasswordPrompt = false;
 		if (!isPasswordConfirmed) {
-			biometricsToggleActive = false;
+			setToggleValue(false);
+		}
+	}
+
+	function setToggleValue(value: boolean): void {
+		if (toggle) {
+			toggle.checked = value;
 		}
 	}
 
@@ -134,18 +140,25 @@
 			icon={keyOutline}
 			label={$t('routes.account.list.account.privacy-and-security.button.change-password')}
 		/>
-		{#key biometricsToggleActive}
-			{#await isBiometricAvailable() then isAvailable}
-				<ToggleItem
-					icon={fingerPrintOutline}
-					label={$t('routes.account.list.account.privacy-and-security.button.biometrics')}
-					searchable={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.ROOT}
-					change={() => onToggleBiometrics()}
+		{#await isBiometricAvailable() then isAvailable}
+			<CustomItem
+				icon={fingerPrintOutline}
+				id={$t('routes.account.list.account.privacy-and-security.button.biometrics')}
+				searchable={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.ROOT}
+			>
+				<!-- svelte-ignore event_directive_deprecated -->
+				<ion-toggle
+					bind:this={toggle}
+					color="secondary"
+					enable-on-off-labels
+					class="ms-4"
 					disabled={!isAvailable}
-					enabled={biometricsToggleActive}
-				/>
-			{/await}
-		{/key}
+					on:ionChange={() => onToggleBiometrics()}
+				>
+					{$t('routes.account.list.account.privacy-and-security.button.biometrics')}
+				</ion-toggle>
+			</CustomItem>
+		{/await}
 	</ion-list>
 </Layout>
 

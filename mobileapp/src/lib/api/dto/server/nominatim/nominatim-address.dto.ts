@@ -1,3 +1,6 @@
+/**
+ * Data Transfer Object for Nominatim address information.
+ */
 export type NominatimAddressDto = {
 	city: string;
 	city_district: string;

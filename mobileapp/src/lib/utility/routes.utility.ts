@@ -29,14 +29,6 @@ export async function navigateBack(): Promise<void> {
 }
 
 /**
- * Gets the current path.
- * @returns {string} the current path
- */
-function getPath(): string {
-	return (browser && page?.route?.id) || PageRoute.HOME;
-}
-
-/**
  * Builds a specific route with optional parameters.
  * @param {string} route - The route to navigate to.
  * @param {Record<string, string | number>} [parameters] - Optional parameters to replace in the route.
@@ -44,4 +36,8 @@ function getPath(): string {
 export function buildRoute(route: PageRoutePaths, parameters: Record<string, number | string>): string {
 	// eslint-disable-next-line security/detect-object-injection
 	return route.replaceAll(/:([a-zA-Z]+)/g, (_, key) => `${parameters[key]}`);
+}
+
+function getPath(): string {
+	return (browser && page?.route?.id) || PageRoute.HOME;
 }

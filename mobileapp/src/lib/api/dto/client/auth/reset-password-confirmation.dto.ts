@@ -4,7 +4,7 @@ import { type AnyObject, object, type ObjectSchema, ref, string } from 'yup';
 import { t } from '$lib/locales';
 
 /**
- * Reset password DTO for sending user password for reset.
+ * Data Transfer Object for resetting a user's password.
  */
 export type ResetPasswordConfirmationDto = {
 	password: string;
@@ -12,8 +12,8 @@ export type ResetPasswordConfirmationDto = {
 };
 
 /**
- * Reset password schema for user password reset.
- * @returns {ObjectSchema<AnyObject, ResetPasswordConfirmationDto>} The schema for user password reset.
+ * Creates a schema for validating the `ResetPasswordConfirmationDto`.
+ * @returns {ObjectSchema<AnyObject, ResetPasswordConfirmationDto>} The schema for validating the `ResetPasswordConfirmationDto`.
  */
 export const resetPasswordConfirmationSchema = (): ObjectSchema<AnyObject, ResetPasswordConfirmationDto> => {
 	const $t = get(t);

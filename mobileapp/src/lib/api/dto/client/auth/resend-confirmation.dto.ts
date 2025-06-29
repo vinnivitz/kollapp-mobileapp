@@ -4,15 +4,15 @@ import { type AnyObject, object, ObjectSchema, string } from 'yup';
 import { t } from '$lib/locales';
 
 /**
- * Resend confirmation DTO for sending email for verification.
+ * Data Transfer Object for resending a confirmation email.
  */
 export type RensendConfirmationDto = {
 	email: string;
 };
 
 /**
- * Resend confirmation schema for email verification.
- * @returns {ObjectSchema<AnyObject, RensendConfirmationDto>} The schema for resend confirmation.
+ * Creates a schema for validating the `RensendConfirmationDto`.
+ * @returns {ObjectSchema<AnyObject, RensendConfirmationDto>} The schema for validating the `RensendConfirmationDto`.
  */
 export const resendConfirmationSchema = (): ObjectSchema<AnyObject, RensendConfirmationDto> => {
 	const $t = get(t);

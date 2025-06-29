@@ -1,5 +1,5 @@
 /**
- * Authentication token DTO for access and refresh tokens.
+ * Data Transfer Object for authentication tokens.
  */
 export type AuthenticationTokenDto = {
 	accessToken: string;
