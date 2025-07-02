@@ -1,12 +1,11 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 
-	import { loadingController } from 'ionic-svelte';
 	import { keyOutline, keySharp } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
 
-	import { type ResetPasswordConfirmationDto, resetPasswordConfirmationSchema } from '$lib/api/dto/client/auth';
+	import { resetPasswordConfirmationSchema } from '$lib/api/dto/client/auth';
 	import { publicUserResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
@@ -14,8 +13,8 @@
 	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
-	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
-	import { customForm, getValidationResult, showAlert } from '$lib/utility';
+	import { Form } from '$lib/models/ui';
+	import { customForm, showAlert } from '$lib/utility';
 
 	const { data }: { data: PageData } = $props();
 
@@ -26,33 +25,14 @@
 		}
 	});
 
-	const model = resetPasswordConfirmationSchema().cast({}) as ResetPasswordConfirmationDto;
-	let actions: FormActions<ResetPasswordConfirmationDto>;
-	let touched = $state(false);
-
-	const config: FormConfig<ResetPasswordConfirmationDto> = {
-		exposedActions: (exposedActions) => (actions = exposedActions),
-		onSubmit,
-		onTouched: () => (touched = true),
-		schema: resetPasswordConfirmationSchema()
-	};
-
-	const form = new Form(model, config);
-
-	async function onSubmit(model: ResetPasswordConfirmationDto, result: ValidationResult): Promise<void> {
-		if (result.valid) {
-			const loading = await loadingController.create({});
-			await loading.present();
+	const form = new Form({
+		completed: async () => goto(PageRoute.AUTH.LOGIN),
+		request: async (model) => {
 			delete model.confirmPassword;
-			result = getValidationResult(await publicUserResource.resetPassword(model, data.token!));
-			if (result.valid) {
-				await goto(PageRoute.AUTH.LOGIN);
-			} else {
-				actions.applyValidationFeedback(result);
-			}
-			await loading.dismiss();
-		}
-	}
+			return publicUserResource.resetPassword(model, data.token!);
+		},
+		schema: resetPasswordConfirmationSchema()
+	});
 </script>
 
 <Layout title={$t('routes.auth.reset-password.confirmation.title')} showBackButton>
@@ -75,7 +55,6 @@
 				expand="block"
 				type="submit"
 				label={$t('routes.auth.reset-password.confirmation.form.submit')}
-				disabled={!touched}
 			/>
 		</form>
 	</Card>

@@ -34,6 +34,8 @@ export async function showAlert(message: string, config?: AlertConfig): Promise<
 		swipeGesture: 'vertical'
 	});
 
+	toast.onDidDismiss().then(() => (toast = undefined));
+
 	return toast.present();
 }
 

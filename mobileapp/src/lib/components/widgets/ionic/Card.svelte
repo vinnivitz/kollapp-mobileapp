@@ -6,10 +6,10 @@
 
 	type Properties = {
 		accessible?: UserRole[];
+		border?: Colors;
 		children?: Snippet;
 		classList?: string;
 		color?: Colors | undefined;
-		contentHeight?: number;
 		icon?: string;
 		id?: string;
 		searchable?: string;
@@ -18,35 +18,37 @@
 		click?: () => void;
 	};
 
-	let {
-		accessible,
-		children,
-		classList,
-		click,
-		color,
-		contentHeight,
-		icon,
-		id,
-		searchable,
-		subtitle,
-		title
-	}: Properties = $props();
+	let { accessible, border, children, classList, click, color, icon, id, searchable, subtitle, title }: Properties =
+		$props();
 
 	// workaround to avoid reference linting error
 	void searchable;
 	void accessible;
 	void id;
 	void icon;
+
+	const _color: Colors = $derived(color ?? (border ? 'transparent' : 'light'));
 </script>
 
 {#if !!click}
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<ion-card {id} {color} button={!!click} class={classList} onclick={click}>
+	<ion-card
+		{id}
+		color={_color}
+		button={!!click}
+		class={border ? `border border-[var(--ion-color-${border})] ${classList} ` : classList}
+		onclick={click}
+	>
 		{@render content()}
 	</ion-card>
 {:else}
-	<ion-card {id} {color} button={!!click} class={classList}>
+	<ion-card
+		{id}
+		color={_color}
+		button={!!click}
+		class={border ? `border border-[var(--ion-color-${border})] ${classList} ` : classList}
+	>
 		{@render content()}
 	</ion-card>
 {/if}
@@ -61,7 +63,7 @@
 		</ion-card-header>
 	{/if}
 	{#if children}
-		<ion-card-content class={`${contentHeight ? 'h-[' + contentHeight + 'vh]' : ''}`}>
+		<ion-card-content>
 			{@render children()}
 		</ion-card-content>
 	{/if}
@@ -73,10 +75,6 @@
 
 		ion-card-title {
 			--color: var(--ion-color-dark);
-		}
-
-		.ion-card-content {
-			height: 400px;
 		}
 	}
 </style>

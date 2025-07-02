@@ -32,9 +32,6 @@
 /mobileapp/vite.config.js.timestamp-*
 /mobileapp/vite.config.ts.timestamp-*
 
-/mobileapp/android
-/mobileapp/ios
-
 /mobileapp/src/lib/locales/de.json
 /mobileapp/src/lib/locales/en.json
 

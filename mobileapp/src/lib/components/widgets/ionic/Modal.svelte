@@ -12,6 +12,7 @@
 	type Properties = {
 		children: Snippet;
 		open: boolean;
+		cancelIcon?: string;
 		cancelLabel?: string;
 		confirmLabel?: string;
 		confirm?: () => void;
@@ -19,6 +20,7 @@
 	};
 
 	let {
+		cancelIcon,
 		cancelLabel = $t('components.widgets.modal.button.cancel'),
 		children,
 		confirm,
@@ -65,7 +67,13 @@
 	<ion-header>
 		<ion-toolbar>
 			<ion-buttons slot="start">
-				<Button type="button" label={cancelLabel} color="white" click={onDismiss} icon={trashBinOutline} />
+				<Button
+					type="button"
+					label={cancelLabel}
+					color="white"
+					click={onDismiss}
+					icon={cancelIcon ?? trashBinOutline}
+				/>
 			</ion-buttons>
 			{#if !!confirm}
 				<ion-buttons slot="end">

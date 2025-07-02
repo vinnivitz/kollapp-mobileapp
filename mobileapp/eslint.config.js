@@ -31,6 +31,7 @@ export default ts.config(
 					allowTypedFunctionExpressions: true
 				}
 			],
+			'@typescript-eslint/no-non-null-asserted-optional-chain': 'off',
 			'@typescript-eslint/no-unused-vars': [
 				'error',
 				{
@@ -94,6 +95,7 @@ export default ts.config(
 			'perfectionist/sort-objects': 'error',
 			'perfectionist/sort-union-types': 'error',
 			'security/detect-non-literal-fs-filename': 'off',
+			'security/detect-object-injection': 'off',
 			'sonarjs/no-unused-collection': 'off',
 			'sonarjs/no-use-of-empty-return-value': 'off',
 			'sonarjs/slow-regex': 'off',

@@ -1,10 +1,9 @@
 <script lang="ts">
-	import { loadingController } from 'ionic-svelte';
 	import { keyOutline, keySharp, mailOpenOutline, mailOutline, personCircleOutline, saveOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
 
-	import { type RegisterDto, registerSchema } from '$lib/api/dto/client/auth';
+	import { registerSchema } from '$lib/api/dto/client/auth';
 	import { publicUserResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
@@ -13,35 +12,17 @@
 	import Welcome from '$lib/components/widgets/Welcome.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
-	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
-	import { customForm, getValidationResult } from '$lib/utility';
+	import { Form } from '$lib/models/ui';
+	import { customForm } from '$lib/utility';
 
-	const model = registerSchema().cast({}) as RegisterDto;
-	let actions: FormActions<RegisterDto>;
-
-	const config: FormConfig<RegisterDto> = {
-		exposedActions: (exposedActions) => (actions = exposedActions),
-		onSubmit,
-		schema: registerSchema()
-	};
-
-	const form = new Form(model, config);
-
-	async function onSubmit(model: RegisterDto, validationResult: ValidationResult): Promise<void> {
-		if (validationResult.valid) {
-			const loader = await loadingController.create({});
-			await loader.present();
+	const form = new Form({
+		completed: async () => goto(PageRoute.AUTH.LOGIN),
+		request: async (model) => {
 			delete model.confirmPassword;
-			validationResult = getValidationResult(await publicUserResource.register(model));
-			await loader.dismiss();
-			if (validationResult.valid) {
-				actions.resetModel();
-				goto(PageRoute.AUTH.LOGIN);
-			} else {
-				actions.applyValidationFeedback(validationResult);
-			}
-		}
-	}
+			return publicUserResource.register(model);
+		},
+		schema: registerSchema()
+	});
 </script>
 
 <Layout title={$t('routes.auth.register.title')} hideLayout>

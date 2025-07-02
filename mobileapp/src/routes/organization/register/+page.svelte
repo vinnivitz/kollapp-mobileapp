@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { loadingController } from 'ionic-svelte';
 	import { accessibilityOutline, readerOutline, saveOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
@@ -14,40 +13,19 @@
 	import TextareaItem from '$lib/components/widgets/ionic/TextareaItem.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
-	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
+	import { Form } from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';
-	import { customForm, getValidationResult } from '$lib/utility';
+	import { customForm } from '$lib/utility';
 
-	const model = registerOrganizationSchema().cast({}) as RegisterOrganizationDto;
-	let actions: FormActions<RegisterOrganizationDto>;
-	let touched = $state(false);
-
-	const config: FormConfig<RegisterOrganizationDto> = {
-		exposedActions: (exposedActions) => (actions = exposedActions),
-		onSubmit,
-		onTouched: () => (touched = true),
+	const form = new Form({
+		completed: async ({ response }) => {
+			await organizationStore.init();
+			await organizationStore.update(response.id);
+			goto(PageRoute.ORGANIZATION.ROOT);
+		},
+		request: async (model: RegisterOrganizationDto) => organizationResource.create(model),
 		schema: registerOrganizationSchema()
-	};
-
-	const form = new Form(model, config);
-
-	async function onSubmit(model: RegisterOrganizationDto, result: ValidationResult): Promise<void> {
-		if (result.valid) {
-			const loader = await loadingController.create({});
-			await loader.present();
-			const response = await organizationResource.create(model);
-			result = getValidationResult(response);
-			await loader.dismiss();
-			if (result.valid) {
-				actions.resetModel();
-				await organizationStore.init();
-				await organizationStore.update(response.data.id);
-				goto(PageRoute.ORGANIZATION.ROOT);
-			} else {
-				actions.applyValidationFeedback(result);
-			}
-		}
-	}
+	});
 </script>
 
 <Layout title={$t('routes.auth.register.organization.title')} showBackButton>
@@ -70,7 +48,6 @@
 				type="submit"
 				label={$t('routes.auth.register.organization.form.submit')}
 				icon={saveOutline}
-				disabled={!touched}
 			/>
 		</form>
 	</Card>

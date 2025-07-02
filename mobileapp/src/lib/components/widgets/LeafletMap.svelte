@@ -19,7 +19,6 @@
 	};
 
 	let { classList, position, searchable = true, selected }: Properties = $props();
-
 	let map: Map | undefined;
 	let marker: Marker | undefined;
 	let searchbarOpen = $state(false);
@@ -31,9 +30,9 @@
 	onDestroy(() => map?.remove());
 
 	async function initializeMap(position?: LatLng): Promise<void> {
-		if (map) return;
 		const coordinates = (await getStoredValue(PreferencesKey.POSITION)) || JSON.parse(environment.defaultPosition);
 		const latlng = new LatLng(coordinates[0], coordinates[1]);
+		if (document.querySelector('.leaflet-container')) return;
 		map = new Map('map', {
 			center: latlng,
 			doubleClickZoom: true,

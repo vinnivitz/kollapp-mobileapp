@@ -101,14 +101,14 @@ export async function isAuthenticated(): Promise<boolean> {
 /**
  * Processes the validation response, showing alerts as necessary.
  * @param body Fetch response.
- * @returns {ValidationResult} ValidationResult indicating validity and any errors.
+ * @returns {ValidationResult<T>} Validation result containing errors and validity status.
  */
-export function getValidationResult<T>(body: ResponseBody<T>): ValidationResult {
+export function getValidationResult<T>(body: ResponseBody<unknown>): ValidationResult<T> {
 	return {
 		errors: [
 			{
 				code: body.validationCode,
-				field: body.validationField,
+				field: body.validationField as keyof T,
 				message: body.message ?? $t('api.error')
 			}
 		],

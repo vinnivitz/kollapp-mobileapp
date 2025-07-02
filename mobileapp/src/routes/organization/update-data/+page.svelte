@@ -1,7 +1,4 @@
 <script lang="ts">
-	import type { OrganizationModel } from '$lib/models/models';
-
-	import { loadingController } from 'ionic-svelte';
 	import { accessibilityOutline, readerOutline, saveOutline } from 'ionicons/icons';
 
 	import { type UpdateOrganizationDto, updateOrganizationSchema } from '$lib/api/dto/client/organization';
@@ -13,49 +10,36 @@
 	import LocationItem from '$lib/components/widgets/ionic/LocationItem.svelte';
 	import TextareaItem from '$lib/components/widgets/ionic/TextareaItem.svelte';
 	import { t } from '$lib/locales';
-	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
+	import { Form, type FormActions } from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';
-	import { customForm, getValidationResult } from '$lib/utility';
+	import { customForm } from '$lib/utility';
 
-	const organization = $derived<OrganizationModel | undefined>($organizationStore);
-	let actions: FormActions<UpdateOrganizationDto>;
-	let model: UpdateOrganizationDto;
-	let form = $state<Form<UpdateOrganizationDto>>();
 	let touched = $state(false);
 
-	const config: FormConfig<UpdateOrganizationDto> = {
-		exposedActions: (exposedActions) => (actions = exposedActions),
-		onSubmit,
-		onTouched: () => (touched = true),
-		schema: updateOrganizationSchema()
-	};
+	let actions: FormActions<UpdateOrganizationDto>;
+
+	const form = $derived(
+		new Form({
+			completed: async () => {
+				await organizationStore.init();
+				touched = false;
+			},
+			exposedActions: (exposedActions) => (actions = exposedActions),
+			onTouched: () => (touched = true),
+			request: async (model) => organizationResource.update($organizationStore?.id!, model),
+			schema: updateOrganizationSchema()
+		})
+	);
 
 	$effect(() => {
-		if (organization) {
-			model = updateOrganizationSchema().cast({
-				description: organization.description,
-				name: organization.name,
-				place: organization.place
-			}) as UpdateOrganizationDto;
-
-			form = new Form(model, config);
+		if ($organizationStore) {
+			actions?.setModel({
+				description: $organizationStore.description,
+				name: $organizationStore.name,
+				place: $organizationStore.place
+			});
 		}
 	});
-
-	async function onSubmit(model: UpdateOrganizationDto, result: ValidationResult): Promise<void> {
-		if (result.valid) {
-			const loader = await loadingController.create({});
-			await loader.present();
-			result = getValidationResult(await organizationResource.update(organization!.id, model));
-			await loader.dismiss();
-			if (result.valid) {
-				touched = false;
-				organizationStore.init();
-			} else {
-				actions.applyValidationFeedback(result);
-			}
-		}
-	}
 </script>
 
 <Layout title={$t('routes.organization.update-info.title')} showBackButton>

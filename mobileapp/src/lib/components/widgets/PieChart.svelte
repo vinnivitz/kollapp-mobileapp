@@ -1,5 +1,5 @@
 <script lang="ts">
-	/* eslint-disable security/detect-object-injection, sonarjs/reduce-initial-value */
+	/* eslint-disable sonarjs/reduce-initial-value */
 	import { arc, interpolate, pie, select } from 'd3';
 	import { onMount } from 'svelte';
 

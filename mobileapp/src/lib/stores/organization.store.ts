@@ -15,12 +15,14 @@ function createStore(): OrganizationStore {
 	const organizations = writable<OrganizationModel[]>([]);
 
 	async function init(): Promise<void> {
+		let accountPostingsStoreInitialized = false;
 		const storedOrganization = await getStoredValue<OrganizationModel>(PreferencesKey.ORGANIZATION);
 		if (storedOrganization) {
 			organizations.set([storedOrganization]);
-			await _set(storedOrganization);
+			set(storedOrganization);
 
 			accountPostingsStore.init(storedOrganization.id);
+			accountPostingsStoreInitialized = true;
 			loadedCache.set(true);
 		}
 
@@ -32,9 +34,17 @@ function createStore(): OrganizationStore {
 
 			const organizationId = storedOrganization?.id ?? allOrganizations[0]?.id;
 
+			if (!accountPostingsStoreInitialized) {
+				await accountPostingsStore.init(organizationId);
+				accountPostingsStoreInitialized = true;
+			}
+
 			await (organizationId ? update(organizationId) : _set());
 		} else if (StatusCheck.isUnauthorized(response.status)) {
 			await _set();
+		}
+		if (!accountPostingsStoreInitialized) {
+			await accountPostingsStore.init();
 		}
 		loadedServer.set(true);
 	}

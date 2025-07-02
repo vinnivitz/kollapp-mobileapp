@@ -22,7 +22,7 @@ export type CreateAccountPostingDto = {
 export const createAccountPostingSchema = (): ObjectSchema<AnyObject, CreateAccountPostingDto> => {
 	const $t = get(t);
 	return object<CreateAccountPostingDto>({
-		activityId: string().default('').optional(),
+		activityId: string().default(''),
 		amountInCents: number()
 			.default(0)
 			.min(1, $t('api.dto.budget.create-posting.schema.amount.min'))

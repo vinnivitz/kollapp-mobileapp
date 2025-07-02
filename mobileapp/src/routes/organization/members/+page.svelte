@@ -9,6 +9,7 @@
 	import { actionSheetController } from 'ionic-svelte';
 	import {
 		clipboardOutline,
+		logOutOutline,
 		mailOutline,
 		medalOutline,
 		personAddOutline,
@@ -17,8 +18,7 @@
 		qrCode,
 		refreshCircleOutline,
 		ribbonOutline,
-		shareOutline,
-		trashBinOutline
+		shareOutline
 	} from 'ionicons/icons';
 	import { fade } from 'svelte/transition';
 
@@ -33,9 +33,8 @@
 	import { UserRole } from '$lib/models/api';
 	import { AlertType } from '$lib/models/ui';
 	import { localeStore, organizationStore, userStore } from '$lib/stores';
-	import { clickOutside, getDateFnsLocale, showAlert, StatusCheck } from '$lib/utility';
+	import { featureNotImplementedAlert, getDateFnsLocale, showAlert, StatusCheck } from '$lib/utility';
 
-	let memberList = <HTMLIonListElement | undefined>$state();
 	let invitationCodeModalOpen = $state(false);
 	let qrModalOpen = $state(false);
 
@@ -93,17 +92,6 @@
 		}
 
 		return [...result.entries()].sort(([a], [b]) => a.localeCompare(b));
-	}
-
-	let slidingMap: Map<number, HTMLIonItemSlidingElement> = new Map();
-
-	function storeSliding(node: HTMLIonItemSlidingElement, memberId: number): { destroy: () => void } {
-		slidingMap.set(memberId, node);
-		return {
-			destroy(): void {
-				slidingMap.delete(memberId);
-			}
-		};
 	}
 
 	async function onWriteToClipboard(): Promise<void> {
@@ -171,13 +159,7 @@
 		</div>
 	{:else}
 		<!-- svelte-ignore event_directive_deprecated -->
-		<ion-list
-			in:fade={{ delay: 150, duration: 100 }}
-			out:fade={{ delay: 0, duration: 100 }}
-			use:clickOutside
-			bind:this={memberList}
-			on:blur={memberList?.closeSlidingItems}
-		>
+		<ion-list in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
 			{#each memberGroups as [letter, memberGroup] (letter)}
 				<ion-item-group>
 					<ion-item-divider class="bg-transparent">
@@ -197,23 +179,17 @@
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<!-- svelte-ignore event_directive_deprecated -->
-	<ion-item-sliding use:storeSliding={member.id}>
-		<CustomItem button click={() => slidingMap.get(member.id)?.open('end')}>
-			<ion-avatar class="mb-1">
-				<ion-icon icon={personCircleOutline} class="h-10 w-10" color="medium"></ion-icon>
-			</ion-avatar>
-			<ion-label class="ms-6">{member.username}</ion-label>
-		</CustomItem>
-
-		<ion-item-options slot="end">
-			<ion-item-option color="tertiary" on:click={() => onSelectRole(member)}>
-				<ion-icon slot="icon-only" icon={ribbonOutline}></ion-icon>
-			</ion-item-option>
-			<ion-item-option color="danger" expandable>
-				<ion-icon slot="icon-only" icon={trashBinOutline}></ion-icon>
-			</ion-item-option>
-		</ion-item-options>
-	</ion-item-sliding>
+	<CustomItem
+		slidingOptions={[
+			{ color: 'tertiary', handler: () => onSelectRole(member), icon: ribbonOutline },
+			{ color: 'danger', handler: featureNotImplementedAlert, icon: logOutOutline }
+		]}
+	>
+		<ion-avatar class="mb-1">
+			<ion-icon icon={personCircleOutline} class="h-10 w-10" color="medium"></ion-icon>
+		</ion-avatar>
+		<ion-label class="ms-6">{member.username}</ion-label>
+	</CustomItem>
 {/snippet}
 
 <Modal open={invitationCodeModalOpen} dismissed={() => (invitationCodeModalOpen = false)}>

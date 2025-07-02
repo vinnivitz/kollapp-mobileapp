@@ -34,7 +34,6 @@ export async function navigateBack(): Promise<void> {
  * @param {Record<string, string | number>} [parameters] - Optional parameters to replace in the route.
  */
 export function buildRoute(route: PageRoutePaths, parameters: Record<string, number | string>): string {
-	// eslint-disable-next-line security/detect-object-injection
 	return route.replaceAll(/:([a-zA-Z]+)/g, (_, key) => `${parameters[key]}`);
 }
 

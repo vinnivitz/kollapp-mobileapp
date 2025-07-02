@@ -1,14 +1,18 @@
-import type { ValidationError as CustomValidationError, Form, FormActions, ValidationResult } from '$lib/models/ui';
-
 import { type Locale as DateFnsLocale, de, enUS } from 'date-fns/locale';
+import { loadingController } from 'ionic-svelte';
 import { eye, eyeOff } from 'ionicons/icons';
-import { get, writable } from 'svelte/store';
+import { get } from 'svelte/store';
 import { type AnyObject, ObjectSchema, ValidationError } from 'yup';
 
-import { Locale, t } from '$lib/locales';
+import { Locale } from '$lib/locales';
+import {
+	type ValidationError as CustomValidationError,
+	Form,
+	type FormActions,
+	type ValidationResult
+} from '$lib/models/ui';
 import { localeStore } from '$lib/stores';
-
-const $t = get(t);
+import { getValidationResult } from '$lib/utility';
 
 /**
  * Creates a clickable element with a ripple effect
@@ -156,13 +160,21 @@ export function debounce<F extends (...arguments_: unknown[]) => unknown>(
 }
 
 /**
+ * Gets an object from a schema with default values
+ * @param schema schema to get the object from
+ * @returns {ObjectSchema<AnyObject, T>} object with default values
+ */
+export function getObjectFromSchema<T>(schema: ObjectSchema<AnyObject, T>): T {
+	return schema.getDefault() as T;
+}
+
+/**
  * Creates a custom form with validation and feedback
  * @param node form element
  * @param data form data
  * @returns {destroy} function to remove the event listeners
  */
-export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy(): void } {
-	const ionFormActions = writable<FormActions>();
+export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { destroy(): void } {
 	let dirty = false;
 	const inputs = [...node.querySelectorAll('ion-input'), ...node.querySelectorAll('ion-textarea')];
 	const fields: Record<string, HTMLIonInputElement | HTMLIonTextareaElement> = {};
@@ -174,24 +186,22 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 	const passwordIcons: HTMLIonIconElement[] = [];
 	const teardowns: Array<() => void> = [];
 
-	if (data.config.exposedActions) {
-		data.config.exposedActions({
-			applyValidationFeedback,
-			applyValidationFeedbackByKey,
-			onSubmit,
-			onUpdate,
-			resetModel
-		});
-	}
+	const actions: FormActions<T> = {
+		applyValidationFeedback,
+		applyValidationFeedbackByKey,
+		onSubmit,
+		onUpdate,
+		setModel
+	};
+
+	data.config.exposedActions?.(actions);
 
 	if (data.config.keyEventHandlers) {
 		for (const key of Object.keys(data.config.keyEventHandlers) as Array<keyof T>) {
-			// eslint-disable-next-line security/detect-object-injection
 			const handler = data.config.keyEventHandlers[key];
 			const input = fields[key as string];
 			if (handler && input) {
 				addListener(input, 'keydown', (_event) => {
-					// eslint-disable-next-line security/detect-object-injection
 					handler(_event as KeyboardEvent, data.model[key], onUpdate.bind(undefined, key));
 				});
 			}
@@ -240,12 +250,15 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 		passwordIcons.push(icon);
 	}
 
-	function resetModel(model?: T): void {
+	function setModel(model?: T): void {
 		data.model = model ?? (data.config.schema.cast({}) as T);
 		for (const input of inputs) {
 			input.classList.remove('ion-invalid');
 			input.errorText = '';
-			input.value = data.model[input.name as keyof T] as string;
+			const key = input.name as keyof T;
+			input.value = data.config.formatters?.[key]
+				? data.config.formatters[key](data.model[key])
+				: (data.model[key] as string);
 		}
 		for (const input of customInputs) {
 			removeCustomValidationFeedback(input);
@@ -270,9 +283,7 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 	}
 
 	function onTouched(): void {
-		if (data.config.onTouched) {
-			data.config.onTouched();
-		}
+		data.config.onTouched?.();
 	}
 
 	async function onUpdate(key: keyof T, value: T[keyof T]): Promise<void> {
@@ -295,7 +306,7 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 		}
 	}
 
-	function applyValidationFeedback(result: ValidationResult): void {
+	function applyValidationFeedback(result: ValidationResult<T>): void {
 		for (const input of inputs) {
 			applyValidationFeedbackByKey(input.name as keyof T, result);
 		}
@@ -304,7 +315,7 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 		}
 	}
 
-	function applyValidationFeedbackByKey(key: keyof T, result: ValidationResult): void {
+	function applyValidationFeedbackByKey(key: keyof T, result: ValidationResult<T>): void {
 		const input = fields[key as string];
 		const message = result.errors?.find((error) => error.field === key)?.message;
 
@@ -327,7 +338,7 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 		}
 	}
 
-	async function runCustomValidators(validationResult: ValidationResult): Promise<ValidationResult> {
+	async function runCustomValidators(validationResult: ValidationResult<T>): Promise<ValidationResult<T>> {
 		for (const validator of data.config.customValidators || []) {
 			const result = await validator(data.model);
 			if (!result.valid) {
@@ -341,7 +352,7 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 	async function onChange(event: Event): Promise<void> {
 		const key = (event.target as HTMLInputElement).name as keyof T;
 		const value = (event.target as HTMLInputElement).value;
-		const parser = data.config.parser?.[key as keyof T];
+		const parser = data.config.parsers?.[key as keyof T];
 		const parsed = parser ? await parser(value) : value;
 		await onUpdate(key, parsed as T[keyof T]);
 		if (data.config.onChange) {
@@ -352,38 +363,44 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 	async function onSubmit(event?: Event): Promise<void> {
 		dirty = true;
 		event?.preventDefault();
-		let validationResult: ValidationResult = { valid: true };
-		if (data.config.schema) {
-			validationResult = await validate(data.config.schema, data.model);
-			if (data.config.customValidators) {
-				validationResult = await runCustomValidators(validationResult);
-			}
+		let validationResult = await validate(data.config.schema, data.model);
+		if (data.config.customValidators) {
+			validationResult = await runCustomValidators(validationResult);
+		}
+		if (!validationResult.valid) return applyValidationFeedback(validationResult);
+
+		const loading = await loadingController.create({});
+		await loading.present();
+		const response = await data.submit();
+		validationResult = getValidationResult(response);
+		if (validationResult.valid) {
+			data.config.completed?.({ actions, model: data.model, response: response.data });
+			console.log('set', getObjectFromSchema(data.config.schema));
+			setModel(getObjectFromSchema(data.config.schema));
+		} else {
+			data.config.failed?.(validationResult);
 			applyValidationFeedback(validationResult);
 		}
-		if (data.config.onSubmit) {
-			data.config.onSubmit(data.model, validationResult);
-		}
+		await loading.dismiss();
 	}
 
 	function applyCustomValidationFeedback(element: HTMLElement, message: string): void {
 		const item = element.closest('ion-item');
-		if (item) {
-			item.style.setProperty('--border-color', 'var(--highlight-color-invalid)');
-			const label = item.querySelector('ion-label');
-			if (label) {
-				label.style.setProperty('--color', 'var(--ion-color-danger)');
-			} else {
-				item.style.setProperty('--color', 'var(--ion-color-danger)');
-			}
-			const ionItem = document.createElement('ion-item');
-			ionItem.dataset.error = 'true';
-			ionItem.style.setProperty('--min-height', '0');
-			const div = document.createElement('ion-note');
-			div.style.setProperty('--color', 'var(--ion-color-danger)');
-			div.textContent = message;
-			ionItem.append(div);
-			item.after(ionItem);
+		item?.style.setProperty('--border-color', 'var(--highlight-color-invalid)');
+		const label = item?.querySelector('ion-label');
+		if (label) {
+			label.style.setProperty('--color', 'var(--ion-color-danger)');
+		} else {
+			item?.style.setProperty('--color', 'var(--ion-color-danger)');
 		}
+		const ionItem = document.createElement('ion-item');
+		ionItem.dataset.error = 'true';
+		ionItem.style.setProperty('--min-height', '0');
+		const div = document.createElement('ion-note');
+		div.style.setProperty('--color', 'var(--ion-color-danger)');
+		div.textContent = message;
+		ionItem.append(div);
+		item?.after(ionItem);
 	}
 
 	function addListener<T extends Event>(
@@ -397,15 +414,8 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 	}
 
 	function destroy(): void {
-		for (const function_ of teardowns) function_();
+		for (const teardown of teardowns) teardown();
 		for (const icon of passwordIcons) icon.remove();
-		ionFormActions.set({
-			applyValidationFeedback: () => {},
-			applyValidationFeedbackByKey: () => {},
-			onSubmit: () => {},
-			onUpdate: () => {},
-			resetModel: () => {}
-		});
 	}
 
 	return {
@@ -413,12 +423,12 @@ export function customForm<T>(node: HTMLFormElement, data: Form<T>): { destroy()
 	};
 }
 
-async function validate<T>(schema: ObjectSchema<AnyObject, T>, data: T): Promise<ValidationResult> {
+async function validate<T>(schema: ObjectSchema<AnyObject, T>, data: T): Promise<ValidationResult<T>> {
 	try {
 		await schema.validate(data, { abortEarly: false });
 		return { valid: true };
 	} catch (error) {
-		let errors: CustomValidationError[] = [{ field: 'error', message: $t('api.error') }];
+		let errors: CustomValidationError<T>[] = [];
 		if (error instanceof ValidationError) {
 			errors = error.inner
 				.map(
@@ -426,7 +436,7 @@ async function validate<T>(schema: ObjectSchema<AnyObject, T>, data: T): Promise
 						({
 							field: error_.path?.split('.')?.[0],
 							message: error_.message
-						}) as CustomValidationError
+						}) as CustomValidationError<T>
 				)
 				.toReversed()
 				.filter((item, index, array) => array.findIndex((t) => t.field === item.field) === index);

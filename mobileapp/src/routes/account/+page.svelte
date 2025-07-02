@@ -100,10 +100,8 @@
 		]);
 	}
 
-	function restoreApplicationDefaults(): void {
-		themeStore.reset();
-		layoutStore.reset();
-		localeStore.reset();
+	async function restoreApplicationDefaults(): Promise<void> {
+		await Promise.all([themeStore.reset(), layoutStore.reset(), localeStore.reset()]);
 	}
 </script>
 

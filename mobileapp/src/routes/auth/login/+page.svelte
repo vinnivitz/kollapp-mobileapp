@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { UserTokenDto } from '$lib/api/dto/server';
 	import type { AuthenticationModel } from '$lib/models/models';
 
 	import { loadingController } from 'ionic-svelte';
@@ -25,10 +26,9 @@
 	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import Welcome from '$lib/components/widgets/Welcome.svelte';
 	import { t } from '$lib/locales';
-	import { ValidationCode } from '$lib/models/api';
 	import { PreferencesKey } from '$lib/models/preferences';
 	import { PageRoute } from '$lib/models/routing';
-	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
+	import { Form } from '$lib/models/ui';
 	import { authenticationStore } from '$lib/stores';
 	import {
 		customForm,
@@ -38,20 +38,15 @@
 		isBiometricAvailable,
 		isBiometricEnabled,
 		requestBiometricAuthentication,
-		showAlert
+		showAlert,
+		storeValue
 	} from '$lib/utility';
 
-	const model = loginSchema().cast({}) as LoginDto;
-	let actions: FormActions<LoginDto>;
-	let emailNotConfirmed = $state(false);
-
-	const config: FormConfig<LoginDto> = {
-		exposedActions: (exposedActions) => (actions = exposedActions),
-		onSubmit,
+	const form = new Form({
+		completed: async ({ response }) => handleLogin(response),
+		request: async (model: LoginDto) => authResource.login(model),
 		schema: loginSchema()
-	};
-
-	const form = new Form(model, config);
+	});
 
 	onMount(() => performBiometricVerification());
 
@@ -59,42 +54,31 @@
 		if (dev || !(await isBiometricAvailable()) || !(await isBiometricEnabled()) || $authenticationStore) return;
 
 		const credentials = await requestBiometricAuthentication();
-		if (credentials) {
-			const model: LoginDto = {
-				password: credentials.password,
-				username: credentials.username
-			};
-			const result: ValidationResult = { valid: true };
-			await onSubmit(model, result);
-		}
-	}
+		if (!credentials) return;
 
-	async function onSubmit(model: LoginDto, result: ValidationResult): Promise<void> {
+		const loading = await loadingController.create({});
+		await loading.present();
+
+		const response = await authResource.login({
+			password: credentials.password,
+			username: credentials.username
+		} as LoginDto);
+		const result = getValidationResult<LoginDto>(response);
 		if (result.valid) {
-			const loading = await loadingController.create({});
-			await loading.present();
-			const body = await authResource.login(model);
-			result = getValidationResult(body);
-			if (result.valid) {
-				const authenticationModel: AuthenticationModel = {
-					accessToken: body.data.accessToken,
-					refreshToken: body.data.refreshToken
-				};
-				await handleLogin(authenticationModel);
-			} else {
-				if (result.errors?.[0]?.code === ValidationCode.EMAIL_NOT_CONFIRMED) {
-					emailNotConfirmed = true;
-					showAlert($t('routes.auth.login.alert.email-not-confirmed'));
-				}
-				actions.applyValidationFeedback(result);
-			}
-			await loading.dismiss();
+			await handleLogin(response.data);
+		} else {
+			await showAlert('Could not log in with biometrics. Wrong credentials provided.');
+			await storeValue(PreferencesKey.BIOMETRICS_ENABLED, false);
 		}
 	}
 
-	async function handleLogin(model: AuthenticationModel): Promise<void> {
-		await authenticationStore.set(model);
-		return goto(PageRoute.HOME);
+	async function handleLogin(model: UserTokenDto): Promise<void> {
+		const authenticationModel: AuthenticationModel = {
+			accessToken: model.accessToken,
+			refreshToken: model.refreshToken
+		};
+		await authenticationStore.set(authenticationModel);
+		goto(PageRoute.HOME);
 	}
 </script>
 
@@ -119,12 +103,6 @@
 			icon={logInOutline}
 		/>
 	</form>
-	{#if emailNotConfirmed}
-		<Card click={() => goto(PageRoute.AUTH.RESEND_CONFIRMATION)} classList="text-center">
-			{$t('routes.auth.login.resend-confirmation.text')}
-			<ion-text color="secondary">{$t('routes.auth.login.resend-confirmation.link')}</ion-text>
-		</Card>
-	{/if}
 	{#await getStoredValue(PreferencesKey.BIOMETRICS_ENABLED) then enabled}
 		{#if enabled}
 			<Button

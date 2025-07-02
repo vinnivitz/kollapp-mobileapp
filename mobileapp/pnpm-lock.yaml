@@ -35,6 +35,9 @@ importers:
       '@capacitor/preferences':
         specifier: ^7.0.0
         version: 7.0.1(@capacitor/core@7.2.0)
+      '@capacitor/push-notifications':
+        specifier: ^7.0.1
+        version: 7.0.1(@capacitor/core@7.2.0)
       '@capacitor/share':
         specifier: ^7.0.1
         version: 7.0.1(@capacitor/core@7.2.0)
@@ -350,6 +353,11 @@ packages:
 
   '@capacitor/preferences@7.0.1':
     resolution: {integrity: sha512-XF9jOHzvoIBZLwZr/EX6aVaUO1d8Mx7TwBLQS33pYHOliCW5knT5KUkFOXNNYxh9qqODYesee9xuQIKNJpQBag==}
+    peerDependencies:
+      '@capacitor/core': '>=7.0.0'
+
+  '@capacitor/push-notifications@7.0.1':
+    resolution: {integrity: sha512-nSHsMSrTHX5pOkX1Khse75/uvSx/JTcXG+9aT6a66CvzalH6MCs0ha8Jv+xu0k9xW8caO+qSUMjfj5Oy82Uxmw==}
     peerDependencies:
       '@capacitor/core': '>=7.0.0'
 
@@ -5792,6 +5800,10 @@ snapshots:
       '@capacitor/core': 7.2.0
 
   '@capacitor/preferences@7.0.1(@capacitor/core@7.2.0)':
+    dependencies:
+      '@capacitor/core': 7.2.0
+
+  '@capacitor/push-notifications@7.0.1(@capacitor/core@7.2.0)':
     dependencies:
       '@capacitor/core': 7.2.0
 

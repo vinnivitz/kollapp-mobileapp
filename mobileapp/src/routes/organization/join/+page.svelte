@@ -3,7 +3,6 @@
 	import { Haptics } from '@capacitor/haptics';
 	import { alertController } from 'ionic-svelte';
 	import { keyOutline, qrCodeOutline, saveOutline } from 'ionicons/icons';
-	import { object, ObjectSchema } from 'yup';
 
 	import { goto } from '$app/navigation';
 
@@ -14,20 +13,8 @@
 	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
-	import { Form, type FormConfig } from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';
-	import { customForm, featureNotImplementedAlert, showAlert, StatusCheck } from '$lib/utility';
-
-	const config: FormConfig<object> = {
-		onSubmit,
-		schema: new ObjectSchema()
-	};
-
-	const form = new Form(object, config);
-
-	async function onSubmit(): Promise<void> {
-		return featureNotImplementedAlert();
-	}
+	import { showAlert, StatusCheck } from '$lib/utility';
 
 	async function onCodeScan(): Promise<void> {
 		const result = await CapacitorBarcodeScanner.scanBarcode({ hint: CapacitorBarcodeScannerTypeHint.QR_CODE });
@@ -54,7 +41,7 @@
 
 <Layout title={$t('routes.organization.page.join.title')} showBackButton>
 	<Card title={$t('routes.organization.page.join.form.title')}>
-		<form use:customForm={form}>
+		<form>
 			<InputItem
 				name="code"
 				label={$t('routes.organization.page.join.form.code')}

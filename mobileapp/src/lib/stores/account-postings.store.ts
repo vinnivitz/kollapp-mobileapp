@@ -1,4 +1,4 @@
-import type { AccountPostingModel, OrganizationModel } from '$lib/models/models';
+import type { AccountPostingModel } from '$lib/models/models';
 import type { AccountPostingsStore } from '$lib/models/stores';
 
 import { get, writable } from 'svelte/store';
@@ -12,22 +12,22 @@ function createStore(): AccountPostingsStore {
 	const loadedCache = writable(false);
 	const loadedServer = writable(false);
 
-	async function init(): Promise<void> {
-		const storedPostings = await getStoredValue<AccountPostingModel[]>(PreferencesKey.ACCOUNT_POSTINGS);
-		if (storedPostings) {
-			await _set(storedPostings);
-			loadedCache.set(true);
-		}
-
-		const organization = await getStoredValue<OrganizationModel>(PreferencesKey.ORGANIZATION);
-		const organizationId = organization?.id;
+	async function init(organizationId: number | undefined): Promise<void> {
 		if (organizationId) {
+			const storedPostings = await getStoredValue<AccountPostingModel[]>(PreferencesKey.ACCOUNT_POSTINGS);
+			if (storedPostings) {
+				await _set(storedPostings);
+				loadedCache.set(true);
+			}
+
 			const response = await accountingResource.getAccountPostings(organizationId);
 			if (StatusCheck.isOK(response.status)) {
 				_set(response.data.postings);
+			} else {
+				_set();
 			}
 		} else {
-			_set();
+			await _set();
 		}
 		loadedServer.set(true);
 	}

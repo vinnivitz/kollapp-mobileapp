@@ -13,6 +13,7 @@
 		calendarOutline,
 		cardOutline,
 		cashOutline,
+		closeOutline,
 		createOutline,
 		documentOutline,
 		listOutline,
@@ -28,12 +29,7 @@
 
 	import { goto } from '$app/navigation';
 
-	import {
-		type CreateAccountPostingDto,
-		createAccountPostingSchema,
-		type UpdateAccountPostingDto,
-		updateAccountPostingSchema
-	} from '$lib/api/dto/client/accounting';
+	import { type CreateAccountPostingDto, createAccountPostingSchema } from '$lib/api/dto/client/accounting';
 	import { type UpdateActivityDto, updateActivitySchema } from '$lib/api/dto/client/organization';
 	import { accountingResource, organizationResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
@@ -49,16 +45,9 @@
 	import { t } from '$lib/locales';
 	import { type AccountPostingModel, AccountPostingType } from '$lib/models/models';
 	import { PageRoute } from '$lib/models/routing';
-	import {
-		type FabButtonButtons,
-		Form,
-		type FormActions,
-		type FormConfig,
-		type ValidationResult
-	} from '$lib/models/ui';
+	import { type FabButtonButtons, Form, type FormActions } from '$lib/models/ui';
 	import { accountPostingsStore, localeStore, organizationStore, userStore } from '$lib/stores';
 	import {
-		clickOutside,
 		currencyFormatter,
 		currencyKeyEventHandler,
 		currencyParser,
@@ -82,7 +71,7 @@
 
 	const accountBalance = $derived(calculateAccountBalance(postings ?? []));
 
-	const actionButtonButtons: FabButtonButtons[] = [
+	const activityEventButtons: FabButtonButtons[] = [
 		{
 			color: 'danger',
 			handler: onDeleteActivity,
@@ -95,11 +84,12 @@
 
 	const loaded = $state(accountPostingsStore.loadedCache);
 
-	let createPostingFormActions: FormActions<CreateAccountPostingDto>;
-	let updatePostingFormActions: FormActions<CreateAccountPostingDto>;
+	let createAccountPostingFormActions: FormActions<CreateAccountPostingDto>;
+	let updateAccountPostingFormActions: FormActions<CreateAccountPostingDto>;
 	let updateActivityFormActions: FormActions<UpdateActivityDto>;
-	let createPostingModalOpen = $state(false);
-	let updatePostingModalOpen = $state(false);
+
+	let createAccountPostingModalOpen = $state(false);
+	let updateAccountPostingModalOpen = $state(false);
 	let updateActivityModalOpen = $state(false);
 	let transactionHistoryModalOpen = $state(false);
 
@@ -111,44 +101,67 @@
 
 	let selectedPostingType = $state<AccountPostingType>(AccountPostingType.DEBIT);
 
-	let slidingMap: Map<number, HTMLIonItemSlidingElement> = new Map();
-	let transactionsList = $state<HTMLIonListElement | undefined>();
+	const createAccountPostingForm = $derived(
+		new Form({
+			completed: async () => {
+				await organizationStore.update($organizationStore?.id!);
+				createAccountPostingModalOpen = false;
+			},
+			exposedActions: (exposedActions) => (createAccountPostingFormActions = exposedActions),
+			formatters: { amountInCents: currencyFormatter() },
+			keyEventHandlers: { amountInCents: currencyKeyEventHandler() },
+			parsers: { amountInCents: currencyParser() },
+			request: async (model) => accountingResource.addAccountPosting($organizationStore?.id!, model),
+			schema: createAccountPostingSchema()
+		})
+	);
 
-	const createPostingFormConfig: FormConfig<CreateAccountPostingDto> = {
-		exposedActions: (exposedActions) => (createPostingFormActions = exposedActions),
+	$effect(() => {
+		if (activity && selectedPostingType) {
+			createAccountPostingFormActions.setModel(
+				createAccountPostingSchema().cast({
+					activityId: activity?.id,
+					type: selectedPostingType
+				}) as CreateAccountPostingDto
+			);
+		}
+	});
+
+	const updateAccountPostingForm = new Form({
+		completed: async () => {
+			await organizationStore.update($organizationStore?.id!);
+			updateAccountPostingModalOpen = false;
+		},
+		exposedActions: (exposedActions) => (updateAccountPostingFormActions = exposedActions),
 		formatters: { amountInCents: currencyFormatter() },
 		keyEventHandlers: { amountInCents: currencyKeyEventHandler() },
-		onSubmit: onCreateAccountPosting,
-		parser: { amountInCents: currencyParser() },
+		parsers: { amountInCents: currencyParser() },
+		request: async (model) =>
+			accountingResource.updateAccountPosting($organizationStore?.id!, selectedPosting?.id!, model),
 		schema: createAccountPostingSchema()
-	};
+	});
 
-	const updatePostingFormConfig: FormConfig<CreateAccountPostingDto> = {
-		exposedActions: (exposedActions) => (updatePostingFormActions = exposedActions),
-		formatters: { amountInCents: currencyFormatter() },
-		keyEventHandlers: { amountInCents: currencyKeyEventHandler() },
-		onSubmit: onUpdateAccountPosting,
-		parser: { amountInCents: currencyParser() },
-		schema: createAccountPostingSchema()
-	};
+	$effect(() => {
+		if (selectedPosting) {
+			updateAccountPostingFormActions.setModel(selectedPosting);
+		}
+	});
 
-	const updateActivityFormConfig: FormConfig<UpdateActivityDto> = {
-		exposedActions: (exposedActions) => (updateActivityFormActions = exposedActions),
-		onSubmit: onUpdateActivity,
-		schema: updateActivitySchema()
-	};
-
-	let createAccountPostingForm = $state(
-		new Form(createAccountPostingSchema().cast({}) as CreateAccountPostingDto, createPostingFormConfig)
+	const updateActivityForm = $derived(
+		new Form({
+			completed: async () => {
+				await organizationStore.update($organizationStore?.id!);
+				updateActivityModalOpen = false;
+			},
+			exposedActions: (exposedActions) => (updateActivityFormActions = exposedActions),
+			request: async (model) => organizationResource.updateActivity($organizationStore?.id!, activity?.id!, model),
+			schema: updateActivitySchema()
+		})
 	);
 
-	let updateAccountPostingForm = $state(
-		new Form(updateAccountPostingSchema().cast({}) as CreateAccountPostingDto, updatePostingFormConfig)
-	);
-
-	let updateActivityForm = $state(
-		new Form(updateActivitySchema().cast({}) as UpdateActivityDto, updateActivityFormConfig)
-	);
+	$effect(() => {
+		updateActivityFormActions.setModel(activity);
+	});
 
 	$effect(() => {
 		if (postings) {
@@ -161,78 +174,6 @@
 			goto(PageRoute.ORGANIZATION.ACTIVITIES.ROOT);
 		}
 	});
-
-	function storeSliding(node: HTMLIonItemSlidingElement, postingId: number): { destroy: () => void } {
-		slidingMap.set(postingId, node);
-		return {
-			destroy(): void {
-				slidingMap.delete(postingId);
-			}
-		};
-	}
-
-	async function onUpdateActivity(model: UpdateActivityDto, result: ValidationResult): Promise<void> {
-		if (result.valid) {
-			const loader = await loadingController.create({});
-			await loader.present();
-			const organizationId = $organizationStore?.id;
-			if (organizationId) {
-				if (activity?.id) {
-					result = getValidationResult(await organizationResource.updateActivity(organizationId, activity?.id, model));
-					if (result.valid) {
-						await organizationStore.update(organizationId);
-					} else {
-						updateActivityFormActions.applyValidationFeedback(result);
-					}
-				} else {
-					showAlert($t('routes.organization.page.activity.no-activity-id'));
-				}
-			} else {
-				showAlert($t('routes.organization.page.activity.no-organization-id'));
-			}
-			await loader.dismiss();
-		}
-		updateActivityModalOpen = false;
-	}
-
-	async function onCreateAccountPosting(model: CreateAccountPostingDto, result: ValidationResult): Promise<void> {
-		if (result.valid) {
-			const loader = await loadingController.create({});
-			await loader.present();
-			const organizationId = $organizationStore?.id;
-			if (organizationId) {
-				result = getValidationResult(await accountingResource.addAccountPosting(organizationId, model));
-				if (result.valid) {
-					createPostingFormActions.resetModel();
-					createPostingModalOpen = false;
-					await accountPostingsStore.update(organizationId);
-				}
-			}
-			await loader.dismiss();
-		}
-	}
-
-	async function onUpdateAccountPosting(model: UpdateAccountPostingDto, result: ValidationResult): Promise<void> {
-		if (result.valid) {
-			const loader = await loadingController.create({});
-			await loader.present();
-			const organizationId = $organizationStore?.id;
-			if (organizationId && selectedPosting?.id) {
-				result = getValidationResult(
-					await accountingResource.updateAccountPosting(organizationId, selectedPosting.id, model)
-				);
-				if (result.valid) {
-					updatePostingModalOpen = false;
-					await accountPostingsStore.update(organizationId);
-				} else {
-					updatePostingFormActions.applyValidationFeedback(result);
-				}
-			}
-			await loader.dismiss();
-		}
-		updatePostingModalOpen = false;
-		selectedPosting = undefined;
-	}
 
 	async function onDeleteActivity(): Promise<void> {
 		const alert = await alertController.create({
@@ -249,34 +190,20 @@
 	async function deleteActivity(): Promise<void> {
 		const loader = await loadingController.create({});
 		await loader.present();
-		const organizationId = $organizationStore?.id;
-		if (organizationId) {
-			if (activity?.id) {
-				const result = getValidationResult(await organizationResource.deleteActivity(organizationId, activity?.id));
-				if (result.valid) {
-					await organizationStore.update(organizationId);
-					updateActivityModalOpen = false;
-					goto(PageRoute.ORGANIZATION.ACTIVITIES.ROOT);
-				}
-			} else {
-				showAlert($t('routes.organization.page.activity.no-activity-id'));
-			}
-		} else {
-			showAlert($t('routes.organization.page.activity.no-organization-id'));
-		}
+		if (!($organizationStore?.id && activity?.id)) return showAlert('No organization or activity found');
+		await organizationResource.deleteActivity($organizationStore.id, activity?.id);
+		await organizationStore.update($organizationStore.id);
+		updateActivityModalOpen = false;
 		await loader.dismiss();
+		goto(PageRoute.ORGANIZATION.ACTIVITIES.ROOT);
 	}
 
 	async function onOpenUpdateActivityModal(): Promise<void> {
-		if (!activity) {
-			return showAlert($t('Activity could not be found.'));
-		}
-		updateActivityForm = new Form(activity, updateActivityFormConfig);
+		if (!activity) return showAlert('Activity not found');
 		updateActivityModalOpen = true;
 	}
 
 	function calculateAccountBalance(postings: AccountPostingModel[]): AccountBalance {
-		if (!activity?.id) return { balance: '0.00', income: '0.00', spent: '0.00' };
 		let totalIncome = 0,
 			totalExpense = 0;
 		for (const posting of postings) {
@@ -285,39 +212,15 @@
 		}
 		const balance = totalIncome - totalExpense;
 		return {
-			balance: toEuro(balance),
-			income: toEuro(totalIncome),
-			spent: toEuro(totalExpense)
+			balance: currencyFormatter()(balance),
+			income: currencyFormatter()(totalIncome),
+			spent: currencyFormatter()(totalExpense)
 		};
 	}
 
-	function toEuro(cents: number): string {
-		return (cents / 100).toFixed(2);
-	}
-
-	async function onOpenCreatePosting(type: AccountPostingType): Promise<void> {
+	async function onOpenCreateAccountPosting(type: AccountPostingType): Promise<void> {
 		selectedPostingType = type;
-		if (!activity) {
-			return showAlert($t('routes.organization.page.activity.page.slug.modal.create-posting.no-activity'));
-		}
-		createAccountPostingForm = new Form(
-			createAccountPostingSchema().cast({
-				activityId: activity.id,
-				type
-			}) as CreateAccountPostingDto,
-			createPostingFormConfig
-		);
-		createPostingModalOpen = true;
-	}
-
-	function onSetCreatePostingType(type: AccountPostingType): void {
-		selectedPostingType = type;
-		createPostingFormActions.onUpdate('type', type);
-	}
-
-	function onSetUpdatePostingType(type: AccountPostingType): void {
-		selectedPostingType = type;
-		updatePostingFormActions.onUpdate('type', type);
+		createAccountPostingModalOpen = true;
 	}
 
 	function getCreatePostingTitle(type: AccountPostingType): string {
@@ -419,31 +322,26 @@
 
 	function onOpenUpdatePostingModal(posting: AccountPostingModel): void {
 		selectedPosting = posting;
-		console.log('posting', posting);
-		updateAccountPostingForm = new Form(
-			updateAccountPostingSchema().cast(posting) as CreateAccountPostingDto,
-			updatePostingFormConfig
-		);
 		selectedPostingType = posting.type;
-		updatePostingModalOpen = true;
+		updateAccountPostingModalOpen = true;
 	}
 </script>
 
 <Layout title="Event Details" showBackButton loading={!$loaded}>
 	{@render eventSummary()}
-	{@render accountSummary()}
+	{@render activityAccountSummary()}
 	{@render actionButton()}
 </Layout>
 
 {#snippet eventSummary()}
 	<!-- svelte-ignore attribute_quoted -->
-	<Card title={activity?.name} classList="mb-5" click={onOpenUpdateActivityModal}>
-		<div class="flex flex-wrap items-center justify-center gap-5">
-			<div class="flex items-center gap-2">
+	<Card border="secondary" title={activity?.name} classList="mb-5" click={() => (updateActivityModalOpen = true)}>
+		<div class="flex flex-wrap items-center justify-center gap-3">
+			<div class="flex items-center gap-1">
 				<ion-icon icon={locationOutline}></ion-icon>
 				<ion-text>{activity?.location}</ion-text>
 			</div>
-			<div class="flex items-center gap-2">
+			<div class="flex items-center gap-1">
 				<ion-icon icon={calendarOutline}></ion-icon>
 				<ion-text>
 					{formatDistanceToNow(addDays(new Date(), 5), {
@@ -461,20 +359,21 @@
 	</Card>
 {/snippet}
 
-{#snippet accountSummary()}
+{#snippet activityAccountSummary()}
 	<Card>
 		<div class="flex flex-col items-center justify-center gap-2">
 			<div class="flex items-center justify-center gap-2">
 				<ion-icon icon={cardOutline}></ion-icon>
-				<ion-text class="text-lg font-bold">Account balance: {accountBalance?.balance} €</ion-text>
+				<ion-text class="text-lg font-bold">Event balance:</ion-text>
 			</div>
+			<ion-text class="text-xl font-bold">{accountBalance?.balance}</ion-text>
 			<div class="flex items-center justify-center gap-2">
 				<ion-icon icon={trendingUpOutline}></ion-icon>
-				<ion-text class="text-sm text-gray-500">Total incoming: {accountBalance?.income} €</ion-text>
+				<ion-text class="text-sm text-gray-500">Total incoming: {accountBalance?.income}</ion-text>
 			</div>
 			<div class="flex items-center justify-center gap-2">
 				<ion-icon icon={trendingDownOutline}></ion-icon>
-				<ion-text class="text-sm text-gray-500">Total expense: {accountBalance?.spent} €</ion-text>
+				<ion-text class="text-sm text-gray-500">Total expense: {accountBalance?.spent}</ion-text>
 			</div>
 		</div>
 		<div class="mt-3 flex items-center justify-center gap-2">
@@ -482,13 +381,13 @@
 				label="Add income"
 				color="primary"
 				icon={cashOutline}
-				click={() => onOpenCreatePosting(AccountPostingType.DEBIT)}
+				click={() => onOpenCreateAccountPosting(AccountPostingType.DEBIT)}
 			/>
 			<Button
 				label="Add expense"
 				color="tertiary"
 				icon={walletOutline}
-				click={() => onOpenCreatePosting(AccountPostingType.CREDIT)}
+				click={() => onOpenCreateAccountPosting(AccountPostingType.CREDIT)}
 			/>
 		</div>
 		<Button
@@ -502,187 +401,172 @@
 {/snippet}
 
 {#snippet actionButton()}
-	<FabButton label="Event actions" icon={addOutline} buttons={actionButtonButtons} />
+	<FabButton label="Event actions" icon={addOutline} buttons={activityEventButtons} />
 {/snippet}
 
 {#key updateActivityForm}
 	<Modal
 		dismissed={() => (updateActivityModalOpen = false)}
 		open={updateActivityModalOpen}
-		confirm={() => updateActivityFormActions.onSubmit()}
+		confirm={() => updateActivityFormActions?.onSubmit()}
 		confirmLabel={$t('routes.organization.page.activity.edit-modal.button.confirm')}
 	>
-		{#if updateActivityModalOpen}
-			<Card title={$t('routes.organization.page.activity.edit-modal.card.title')}>
-				<form use:customForm={updateActivityForm}>
-					<InputItem
-						name="name"
-						label={$t('routes.organization.page.activity.create-modal.card.input.name')}
-						icon={documentOutline}
-					/>
-					<LocationItem
-						label={$t('routes.organization.page.activity.update-modal.card.input.location')}
-						name="location"
-						selected={(value) => {
-							updateActivityFormActions.onUpdate('location', value);
-						}}
-					/>
-					<DatetimeInputItem label="Date" />
-				</form>
-			</Card>
-		{/if}
-	</Modal>
-{/key}
-
-{#key createAccountPostingForm}
-	<Modal
-		open={createPostingModalOpen}
-		confirm={() => createPostingFormActions.onSubmit()}
-		dismissed={() => (createPostingModalOpen = false)}
-	>
-		<Card title={getCreatePostingTitle(selectedPostingType)}>
-			<form use:customForm={createAccountPostingForm}>
-				<div class="mb-3 flex items-center justify-center gap-2">
-					<Chip
-						selected={selectedPostingType === AccountPostingType.DEBIT}
-						label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.income')}
-						click={() => onSetCreatePostingType(AccountPostingType.DEBIT)}
-					/>
-					<Chip
-						selected={selectedPostingType === AccountPostingType.CREDIT}
-						label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.expense')}
-						click={() => onSetCreatePostingType(AccountPostingType.CREDIT)}
-					/>
-				</div>
-				<InputItem name="purpose" label="Purpose" icon={documentOutline} />
-				<InputItem name="amountInCents" label="Amount" icon={cashOutline} />
-				<DatetimeInputItem
-					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.date')}
-					apply={(value) => {
-						console.log('value', value);
-						createPostingFormActions.onUpdate('date', value);
-					}}
+		<Card title={$t('routes.organization.page.activity.edit-modal.card.title')}>
+			<form use:customForm={updateActivityForm}>
+				<InputItem
+					name="name"
+					label={$t('routes.organization.page.activity.create-modal.card.input.name')}
+					icon={documentOutline}
 				/>
+				<LocationItem
+					label={$t('routes.organization.page.activity.update-modal.card.input.location')}
+					name="location"
+					selected={(value) => updateActivityFormActions?.onUpdate('location', value)}
+				/>
+				<DatetimeInputItem label="Date" />
 			</form>
 		</Card>
 	</Modal>
 {/key}
 
-{#key updateAccountPostingForm}
-	<Modal
-		open={updatePostingModalOpen}
-		confirm={() => updatePostingFormActions.onSubmit()}
-		dismissed={() => (updatePostingModalOpen = false)}
-	>
-		<Card title={selectedPosting?.purpose}>
-			<form use:customForm={updateAccountPostingForm}>
-				<div class="mb-3 flex items-center justify-center gap-2">
-					<Chip
-						selected={selectedPostingType === AccountPostingType.DEBIT}
-						label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.income')}
-						click={() => onSetUpdatePostingType(AccountPostingType.DEBIT)}
-					/>
-					<Chip
-						selected={selectedPostingType === AccountPostingType.CREDIT}
-						label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.expense')}
-						click={() => onSetUpdatePostingType(AccountPostingType.CREDIT)}
-					/>
-				</div>
-				<InputItem name="purpose" label="Purpose" icon={documentOutline} />
-				<InputItem name="amountInCents" label="Amount" icon={cashOutline} />
-				<DatetimeInputItem
-					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.date')}
-					apply={(value) => updatePostingFormActions.onUpdate('date', value)}
+<Modal
+	open={createAccountPostingModalOpen}
+	confirm={() => createAccountPostingFormActions.onSubmit()}
+	dismissed={() => (createAccountPostingModalOpen = false)}
+>
+	<Card title={getCreatePostingTitle(selectedPostingType)}>
+		<form use:customForm={createAccountPostingForm!}>
+			<div class="mb-3 flex items-center justify-center gap-2">
+				<Chip
+					selected={selectedPostingType === AccountPostingType.DEBIT}
+					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.income')}
+					click={() => (selectedPostingType = AccountPostingType.DEBIT)}
 				/>
-			</form>
-		</Card>
-	</Modal>
-{/key}
-
-<Modal open={transactionHistoryModalOpen} dismissed={() => (transactionHistoryModalOpen = false)}>
-	<!-- svelte-ignore event_directive_deprecated -->
-	<ion-list use:clickOutside on:blur={transactionsList?.closeSlidingItems} bind:this={transactionsList}>
-		<!-- svelte-ignore event_directive_deprecated -->
-		<ion-searchbar
-			class="w-full"
-			debounce={100}
-			placeholder="Search transactions..."
-			value={postingsSearchValue}
-			on:ionInput={onSearchPostings}
-		></ion-searchbar>
-		<div class="mb-2 flex items-center justify-center gap-2">
-			<Chip
-				color="success"
-				click={() => toggleAccountPostingTypeSelected(AccountPostingType.DEBIT)}
-				selected={selectedPostingTypes.includes(AccountPostingType.DEBIT)}
-				icon={trendingUpOutline}
-				label="Income"
-			/>
-			<Chip
-				color="danger"
-				click={() => toggleAccountPostingTypeSelected(AccountPostingType.CREDIT)}
-				selected={selectedPostingTypes.includes(AccountPostingType.CREDIT)}
-				icon={trendingDownOutline}
-				label="Expense"
-			/>
-		</div>
-		{#if filteredPostings.length === 0}
-			<div class="mt-3 text-center">
-				<ion-note>No transactions found.</ion-note>
+				<Chip
+					selected={selectedPostingType === AccountPostingType.CREDIT}
+					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.expense')}
+					click={() => (selectedPostingType = AccountPostingType.CREDIT)}
+				/>
 			</div>
-		{:else}
+			<InputItem name="purpose" label="Purpose" icon={documentOutline} />
+			<InputItem name="amountInCents" label="Amount" icon={cashOutline} />
+			<DatetimeInputItem
+				label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.date')}
+				apply={(value) => createAccountPostingFormActions.onUpdate('date', value)}
+			/>
+		</form>
+	</Card>
+</Modal>
+
+<Modal
+	open={updateAccountPostingModalOpen}
+	confirm={() => updateAccountPostingFormActions.onSubmit()}
+	dismissed={() => (updateAccountPostingModalOpen = false)}
+>
+	<Card title={selectedPosting?.purpose}>
+		<form use:customForm={updateAccountPostingForm}>
+			<div class="mb-3 flex items-center justify-center gap-2">
+				<Chip
+					selected={selectedPostingType === AccountPostingType.DEBIT}
+					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.income')}
+					click={() => (selectedPostingType = AccountPostingType.DEBIT)}
+				/>
+				<Chip
+					selected={selectedPostingType === AccountPostingType.CREDIT}
+					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.expense')}
+					click={() => (selectedPostingType = AccountPostingType.CREDIT)}
+				/>
+			</div>
+			<InputItem name="purpose" label="Purpose" icon={documentOutline} />
+			<InputItem name="amountInCents" label="Amount" icon={cashOutline} />
+			<DatetimeInputItem
+				label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.date')}
+				apply={(value) => updateAccountPostingFormActions.onUpdate('date', value)}
+			/>
+		</form>
+	</Card>
+</Modal>
+
+<Modal
+	open={transactionHistoryModalOpen}
+	cancelLabel="Close"
+	cancelIcon={closeOutline}
+	dismissed={() => (transactionHistoryModalOpen = false)}
+>
+	<!-- svelte-ignore event_directive_deprecated -->
+	<ion-searchbar
+		class="w-full"
+		debounce={100}
+		placeholder="Search transactions..."
+		value={postingsSearchValue}
+		on:ionInput={onSearchPostings}
+	></ion-searchbar>
+	<div class="mb-2 flex items-center justify-center gap-2">
+		<Chip
+			color="success"
+			click={() => toggleAccountPostingTypeSelected(AccountPostingType.DEBIT)}
+			selected={selectedPostingTypes.includes(AccountPostingType.DEBIT)}
+			icon={trendingUpOutline}
+			label="Income"
+		/>
+		<Chip
+			color="danger"
+			click={() => toggleAccountPostingTypeSelected(AccountPostingType.CREDIT)}
+			selected={selectedPostingTypes.includes(AccountPostingType.CREDIT)}
+			icon={trendingDownOutline}
+			label="Expense"
+		/>
+	</div>
+	{#if filteredPostings.length === 0}
+		<div class="mt-3 text-center">
+			<ion-note>No transactions found.</ion-note>
+		</div>
+	{:else}
+		<ion-list>
 			{#each filteredPostings as posting (posting.id)}
 				{@render transactionItem(posting)}
 			{/each}
-		{/if}
-	</ion-list>
+		</ion-list>
+	{/if}
 </Modal>
 
 {#snippet transactionItem(posting: AccountPostingModel)}
-	<ion-item-sliding use:storeSliding={posting.id}>
-		<CustomItem
-			click={() => slidingMap.get(posting.id)?.open('end')}
-			iconColor={posting.type === AccountPostingType.CREDIT ? 'danger' : 'success'}
-			icon={posting.type === AccountPostingType.CREDIT ? trendingDownOutline : trendingUpOutline}
-		>
-			<div class="mt-1 flex w-full flex-col justify-center">
-				<ion-text class="truncate">
-					{posting.purpose}
+	<CustomItem
+		slidingOptions={[
+			{
+				color: 'danger',
+				handler: () => onDeletePosting(posting.id),
+				icon: trashBinOutline
+			},
+			{
+				color: 'primary',
+				handler: () => onOpenUpdatePostingModal(posting),
+				icon: createOutline
+			}
+		]}
+		iconColor={posting.type === AccountPostingType.CREDIT ? 'danger' : 'success'}
+		icon={posting.type === AccountPostingType.CREDIT ? trendingDownOutline : trendingUpOutline}
+	>
+		<div class="mt-1 flex w-full flex-col justify-center">
+			<ion-text class="truncate">
+				{posting.purpose}
+			</ion-text>
+			<div class="flex w-full flex-wrap items-start justify-between text-sm">
+				<ion-text color="medium" class="flex items-center justify-center gap-2">
+					<ion-icon icon={personOutline}></ion-icon>
+					<div class="truncate">{$userStore?.username}</div>
 				</ion-text>
-				<div class="flex w-full flex-wrap items-start justify-between text-sm">
-					<ion-text color="medium" class="flex items-center justify-center gap-2">
-						<ion-icon icon={personOutline}></ion-icon>
-						<div class="truncate">{$userStore?.username}</div>
-					</ion-text>
-					<ion-text color="medium" class="flex items-center justify-center gap-2">
-						<ion-icon icon={calendarClearOutline}></ion-icon>
-						<div>
-							{format(new Date(posting.date), 'PPP')}
-						</div>
-					</ion-text>
-					<ion-text color="medium" class="flex items-center justify-center gap-2">
-						<ion-icon icon={cashOutline}></ion-icon>
-						<div>
-							{posting.type === AccountPostingType.CREDIT ? '-' : '+'}{currencyFormatter()(posting.amountInCents)}
-						</div>
-					</ion-text>
-				</div>
+				<ion-text color="medium" class="flex items-center justify-center gap-1">
+					<ion-icon icon={calendarClearOutline}></ion-icon>
+					<div>{format(new Date(posting.date), 'PPP')}</div>
+				</ion-text>
+				<ion-text color="medium" class="flex items-center justify-center gap-1">
+					<ion-icon icon={cashOutline}></ion-icon>
+					<div>
+						{posting.type === AccountPostingType.CREDIT ? '-' : '+'}{currencyFormatter()(posting.amountInCents)}
+					</div>
+				</ion-text>
 			</div>
-		</CustomItem>
-
-		<ion-item-options slot="end">
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
-			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<!-- svelte-ignore event_directive_deprecated -->
-			<ion-item-option color="tertiary" on:click={() => onOpenUpdatePostingModal(posting)}>
-				<ion-icon slot="icon-only" icon={createOutline}></ion-icon>
-			</ion-item-option>
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
-			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<!-- svelte-ignore event_directive_deprecated -->
-			<ion-item-option color="danger" expandable on:click={() => onDeletePosting(posting.id)}>
-				<ion-icon slot="icon-only" icon={trashBinOutline}></ion-icon>
-			</ion-item-option>
-		</ion-item-options>
-	</ion-item-sliding>
+		</div>
+	</CustomItem>
 {/snippet}

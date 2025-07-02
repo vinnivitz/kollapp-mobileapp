@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { loadingController } from 'ionic-svelte';
 	import { mailOutline, personOutline, saveOutline } from 'ionicons/icons';
 
 	import { type UpdateUserDataDto, updateUserDataSchema } from '$lib/api/dto/client/user';
@@ -9,72 +8,62 @@
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import { t } from '$lib/locales';
-	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
+	import { Form, type FormActions } from '$lib/models/ui';
 	import { userStore } from '$lib/stores';
 	import {
 		customForm,
-		getValidationResult,
 		isBiometricAvailable,
 		isBiometricEnabled,
 		updateUsernameBiometricCredentials
 	} from '$lib/utility';
 
-	let actions: FormActions<UpdateUserDataDto>;
-	let validationResult: ValidationResult;
-
-	const model = updateUserDataSchema().cast({
-		email: $userStore?.email,
-		username: $userStore?.username
-	}) as UpdateUserDataDto;
-	const config: FormConfig<UpdateUserDataDto> = {
-		exposedActions: (exposedActions) => (actions = exposedActions),
-		onSubmit,
-		onTouched: () => (touched = true),
-		schema: updateUserDataSchema()
-	};
-	const form = new Form(model, config);
 	let touched = $state(false);
 
-	async function onSubmit(model: UpdateUserDataDto, result: ValidationResult): Promise<void> {
-		validationResult = result;
-		if (validationResult.valid) {
-			const loading = await loadingController.create({});
-			await loading.present();
-			validationResult = getValidationResult(await userResource.update(model));
-			if (validationResult.valid) {
-				await userStore.init();
-				touched = false;
+	let actions: FormActions<UpdateUserDataDto>;
+
+	const form = $derived(
+		new Form({
+			completed: async ({ model }) => {
 				if ((await isBiometricAvailable()) && (await isBiometricEnabled())) {
 					await updateUsernameBiometricCredentials(model.username);
 				}
-			} else {
-				actions.applyValidationFeedback(validationResult);
-			}
-			await loading.dismiss();
+				await userStore.init();
+			},
+			exposedActions: (exposedActions) => (actions = exposedActions),
+			onTouched: () => (touched = true),
+			request: async (model: UpdateUserDataDto) => userResource.update(model),
+			schema: updateUserDataSchema()
+		})
+	);
+
+	$effect(() => {
+		if ($userStore) {
+			actions.setModel({
+				email: $userStore.email,
+				username: $userStore.username
+			});
 		}
-	}
+	});
 </script>
 
 <Layout title={$t('routes.account.update-data.title')} showBackButton>
-	{#if form}
-		<Card title={$t('routes.account.update-data.card.title')}>
-			<form use:customForm={form}>
-				<InputItem name="username" label={$t('routes.account.update-data.card.form.username')} icon={personOutline} />
-				<InputItem
-					name="email"
-					label={$t('routes.account.update-data.card.form.email')}
-					icon={mailOutline}
-					type="email"
-				/>
-				<Button
-					classList="mt-3"
-					expand="block"
-					type="submit"
-					disabled={!touched}
-					label={$t('routes.account.update-data.card.form.button.submit')}
-					icon={saveOutline}
-				/>
-			</form>
-		</Card>
-	{/if}
+	<Card title={$t('routes.account.update-data.card.title')}>
+		<form use:customForm={form}>
+			<InputItem name="username" label={$t('routes.account.update-data.card.form.username')} icon={personOutline} />
+			<InputItem
+				name="email"
+				label={$t('routes.account.update-data.card.form.email')}
+				icon={mailOutline}
+				type="email"
+			/>
+			<Button
+				classList="mt-3"
+				expand="block"
+				type="submit"
+				disabled={!touched}
+				label={$t('routes.account.update-data.card.form.button.submit')}
+				icon={saveOutline}
+			/>
+		</form>
+	</Card>
 </Layout>

@@ -1,56 +1,63 @@
 import type { ValidationResult } from '$lib/models/ui';
+import type { ResponseBody } from '../api';
 
 import { type AnyObject, ObjectSchema } from 'yup';
 
-abstract class AbstractForm<T> {
+import { getObjectFromSchema } from '$lib/utility';
+
+abstract class AbstractForm<T, R> {
 	abstract model: T;
-	abstract config: FormConfig<T>;
+	abstract config: FormConfig<T, R>;
 }
 
 /**
  * Actions that can be exposed from a custom form that is applied to a <form> element via Svelte Actions.
  */
 export type FormActions<T = object> = {
-	applyValidationFeedback: (result: ValidationResult) => void;
-	applyValidationFeedbackByKey: (key: keyof T, result: ValidationResult) => void;
+	applyValidationFeedback: (result: ValidationResult<T>) => void;
+	applyValidationFeedbackByKey: (key: keyof T, result: ValidationResult<T>) => void;
 	onSubmit: () => void;
 	onUpdate: (key: keyof T, value: T[keyof T]) => void;
-	resetModel: (model?: T) => void;
+	setModel: (model?: T) => void;
 };
 
 /**
  * Configuration for a custom form.
  */
-export type FormConfig<T> = {
+export type FormConfig<T, R> = {
 	schema: ObjectSchema<AnyObject, T>;
 	customValidators?: (
-		| (() => Promise<ValidationResult> | ValidationResult)
-		| ((model: T) => Promise<ValidationResult> | ValidationResult)
+		| (() => Promise<ValidationResult<T>> | ValidationResult<T>)
+		| ((model: T) => Promise<ValidationResult<T>> | ValidationResult<T>)
 	)[];
 	formatters?: { [K in keyof T]?: (value: T[K]) => string };
 	keyEventHandlers?: {
 		[K in keyof T]?: (_event: KeyboardEvent, value: T[K], onUpdate: (value: T[K]) => void) => void;
 	};
-	parser?: { [K in keyof T]?: (value: string) => T[K] };
+	parsers?: { [K in keyof T]?: (value: string) => T[K] };
+	request: (model: T) => Promise<ResponseBody<R>>;
+	completed?: (options: { actions: FormActions<T>; model: T; response: R }) => void;
 	exposedActions?: (actions: FormActions<T>) => void;
+	failed?: (result: ValidationResult<T>) => void;
 	onBlur?: (key: keyof T) => void;
 	onChange?: (key: keyof T, value: T[keyof T]) => void;
-	onSubmit?: (model: T, result: ValidationResult) => void;
 	onTouched?: () => void;
 };
 
 /**
  * Custom form class that can be used to create forms with validation and feedback.
  */
-export class Form<T> extends AbstractForm<T> {
+export class Form<T, R> extends AbstractForm<T, R> {
 	model: T;
-	config: FormConfig<T> = { schema: new ObjectSchema() };
+	config: FormConfig<T, R>;
 
-	constructor(model: T, config?: FormConfig<T>) {
+	constructor(config: FormConfig<T, R>) {
 		super();
-		this.model = model;
-		if (config) {
-			this.config = config;
-		}
+		this.config = config;
+		this.model = getObjectFromSchema(config.schema);
+	}
+
+	async submit(): Promise<ResponseBody<R>> {
+		return this.config.request(this.model);
 	}
 }

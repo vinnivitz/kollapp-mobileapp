@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { loadingController } from 'ionic-svelte';
 	import {
 		bugOutline,
 		constructOutline,
@@ -24,14 +23,13 @@
 	import { t } from '$lib/locales';
 	import { PreferencesKey } from '$lib/models/preferences';
 	import { PageRoute } from '$lib/models/routing';
-	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
+	import { Form, type FormActions } from '$lib/models/ui';
 	import { userStore } from '$lib/stores';
 	import {
 		customForm,
 		deleteBiometricCredentials,
 		featureNotImplementedAlert,
 		getStoredValue,
-		getValidationResult,
 		isBiometricAvailable,
 		storeBiometricCredentials
 	} from '$lib/utility';
@@ -40,14 +38,15 @@
 	let isPasswordConfirmed = $state(false);
 	let toggle = $state<HTMLIonToggleElement | undefined>();
 
-	const model = verifyPasswordSchema().cast({}) as VerifyPasswordDto;
 	let actions: FormActions<VerifyPasswordDto>;
-	const config: FormConfig<VerifyPasswordDto> = {
+
+	const form = new Form({
+		completed: async ({ model }) => onPasswordConfirmed($userStore?.username!, model.password),
 		exposedActions: (exposedActions) => (actions = exposedActions),
-		onSubmit,
+		request: async (model: VerifyPasswordDto) =>
+			authResource.login({ password: model.password, username: $userStore?.username! } as LoginDto),
 		schema: verifyPasswordSchema()
-	};
-	const form = new Form(model, config);
+	});
 
 	onMount(async () => {
 		if (dev) return;
@@ -64,26 +63,6 @@
 		}
 	}
 
-	async function onSubmit(model: VerifyPasswordDto, result: ValidationResult): Promise<void> {
-		if (result.valid) {
-			const loading = await loadingController.create({});
-			await loading.present();
-			const username = $userStore?.username;
-
-			if (!username) return;
-
-			const loginModel: LoginDto = { password: model.password, username };
-			const body = await authResource.login(loginModel);
-			result = getValidationResult(body);
-			if (result.valid) {
-				onPasswordConfirmed(username, model.password);
-			} else {
-				actions.applyValidationFeedback(result);
-			}
-			await loading.dismiss();
-		}
-	}
-
 	async function onPasswordConfirmed(username: string, password: string): Promise<void> {
 		isPasswordConfirmed = true;
 		await storeBiometricCredentials(username, password);
@@ -92,7 +71,7 @@
 	}
 
 	async function onPasswordPromptDismiss(): Promise<void> {
-		actions.resetModel();
+		actions.setModel();
 		showPasswordPrompt = false;
 		if (!isPasswordConfirmed) {
 			setToggleValue(false);

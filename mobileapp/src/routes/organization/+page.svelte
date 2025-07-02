@@ -44,13 +44,15 @@
 	}
 </script>
 
-<Layout title={$t('routes.organization.title')} showBackButton>
+<Layout title={$t('routes.organization.title')}>
 	{#if $organizationStore}
 		{#if $organizationStore.activities.length > 0}
 			{@render changeCollective($organizationStore)}
 		{/if}
-
-		{@render upcomingEvent($organizationStore.activities)}
+		{#if $organizationStore.activities.length > 0}
+			{@render upcomingEvent($organizationStore.activities)}
+		{/if}
+		{@render budgetCard()}
 		{@render eventsList()}
 		{@render collectiveList()}
 	{/if}
@@ -59,6 +61,7 @@
 
 {#snippet upcomingEvent(activities: ActivityModel[])}
 	<Card
+		border="secondary"
 		title="Upcoming event"
 		classList="mt-5"
 		click={() => activities[0]?.id && goto(PageRoute.ORGANIZATION.ACTIVITIES.DETAIL(activities[0].id))}
@@ -96,6 +99,7 @@
 
 {#snippet changeCollective(model: OrganizationModel)}
 	<Card
+		color="transparent"
 		id={$t('routes.organization.change-organization.action-sheet.title')}
 		icon={swapHorizontalOutline}
 		click={onOrganizationSelect}
@@ -154,4 +158,8 @@
 			label={$t('routes.organization.list.general.join.label')}
 		/>
 	</ion-list>
+{/snippet}
+
+{#snippet budgetCard()}
+	<Card border="primary" title="Budget"></Card>
 {/snippet}

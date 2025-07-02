@@ -11,7 +11,7 @@ type Replace<T, K extends keyof T, V> = {
 export type AccountPostingsStore = Replace<
 	LoadableStore<AccountPostingModel[]>,
 	'init',
-	(organizationId: number) => Promise<void>
+	(organizationId?: number) => Promise<void>
 > & {
 	getTotalBudget: () => number;
 	update: (organizationId: number) => Promise<void>;

@@ -3,6 +3,7 @@ export * from './colors.type';
 export * from './datetime.model';
 export * from './fab-button.model';
 export * from './form.model';
+export * from './item-sliding-option.model';
 export * from './layout.enum';
 export * from './tab-config.type';
 export * from './theme.enum';

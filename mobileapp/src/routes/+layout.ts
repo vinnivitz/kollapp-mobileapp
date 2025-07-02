@@ -6,7 +6,7 @@ import { goto } from '$app/navigation';
 
 import { PageRoute } from '$lib/models/routing';
 import { authenticationStore, connectionStore, layoutStore, themeStore } from '$lib/stores';
-import { isAuthenticated, navigateBack } from '$lib/utility';
+import { initPushNotifications, isAuthenticated, navigateBack } from '$lib/utility';
 
 export const ssr = false;
 
@@ -17,8 +17,9 @@ export const load: LayoutLoad = async ({ url }) => {
 	await handleRouting(url.pathname, authenticated);
 	if (!initialized) {
 		initialized = true;
-		handleAppEvents();
 		await initStores();
+		handleAppEvents();
+		initPushNotifications();
 	} else if (!authenticated) {
 		await authenticationStore.init();
 	}
