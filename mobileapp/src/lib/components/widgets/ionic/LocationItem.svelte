@@ -34,5 +34,7 @@
 	confirm={onConfirmMap}
 	cancelLabel={$t('routes.organization.page.activity.map-modal.button.cancel')}
 >
-	<LeafletMap selected={(location) => (cachedLocation = location)} classList="-m-4" />
+	{#if open}
+		<LeafletMap selected={(location) => (cachedLocation = location)} classList="-m-4" />
+	{/if}
 </Modal>

@@ -404,30 +404,28 @@
 	<FabButton label="Event actions" icon={addOutline} buttons={activityEventButtons} />
 {/snippet}
 
-{#key updateActivityForm}
-	<Modal
-		dismissed={() => (updateActivityModalOpen = false)}
-		open={updateActivityModalOpen}
-		confirm={() => updateActivityFormActions?.onSubmit()}
-		confirmLabel={$t('routes.organization.page.activity.edit-modal.button.confirm')}
-	>
-		<Card title={$t('routes.organization.page.activity.edit-modal.card.title')}>
-			<form use:customForm={updateActivityForm}>
-				<InputItem
-					name="name"
-					label={$t('routes.organization.page.activity.create-modal.card.input.name')}
-					icon={documentOutline}
-				/>
-				<LocationItem
-					label={$t('routes.organization.page.activity.update-modal.card.input.location')}
-					name="location"
-					selected={(value) => updateActivityFormActions?.onUpdate('location', value)}
-				/>
-				<DatetimeInputItem label="Date" />
-			</form>
-		</Card>
-	</Modal>
-{/key}
+<Modal
+	dismissed={() => (updateActivityModalOpen = false)}
+	open={updateActivityModalOpen}
+	confirm={() => updateActivityFormActions?.onSubmit()}
+	confirmLabel={$t('routes.organization.page.activity.edit-modal.button.confirm')}
+>
+	<Card title={$t('routes.organization.page.activity.edit-modal.card.title')}>
+		<form use:customForm={updateActivityForm}>
+			<InputItem
+				name="name"
+				label={$t('routes.organization.page.activity.create-modal.card.input.name')}
+				icon={documentOutline}
+			/>
+			<LocationItem
+				label={$t('routes.organization.page.activity.update-modal.card.input.location')}
+				name="location"
+				selected={(value) => updateActivityFormActions?.onUpdate('location', value)}
+			/>
+			<DatetimeInputItem label="Date" />
+		</form>
+	</Card>
+</Modal>
 
 <Modal
 	open={createAccountPostingModalOpen}

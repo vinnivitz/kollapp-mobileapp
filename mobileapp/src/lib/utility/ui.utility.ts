@@ -375,7 +375,6 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 		validationResult = getValidationResult(response);
 		if (validationResult.valid) {
 			data.config.completed?.({ actions, model: data.model, response: response.data });
-			console.log('set', getObjectFromSchema(data.config.schema));
 			setModel(getObjectFromSchema(data.config.schema));
 		} else {
 			data.config.failed?.(validationResult);
