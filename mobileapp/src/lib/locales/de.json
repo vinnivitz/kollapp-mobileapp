@@ -232,7 +232,8 @@
       "header": {
         "button": {
           "logout": "Logout",
-          "account": "Konto"
+          "account": "Konto",
+          "activities": "Veranstaltungen"
         }
       },
       "menu": {
@@ -563,6 +564,9 @@
           "activity": {
             "label": "Veranstaltungen verwalten"
           }
+        },
+        "activities": {
+          "create-activity": "Veranstaltung erstellen"
         }
       },
       "page": {

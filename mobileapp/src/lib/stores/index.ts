@@ -1,6 +1,7 @@
 export * from './account-postings.store';
 export * from './authentication.store';
 export * from './connection.store';
+export * from './global-popover.store';
 export * from './initialization.store';
 export * from './layout.store';
 export * from './locale.store';

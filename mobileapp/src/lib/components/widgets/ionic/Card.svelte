@@ -12,14 +12,27 @@
 		color?: Colors | undefined;
 		icon?: string;
 		id?: string;
+		readonly?: boolean;
 		searchable?: string;
 		subtitle?: string;
 		title?: string;
 		click?: () => void;
 	};
 
-	let { accessible, border, children, classList, click, color, icon, id, searchable, subtitle, title }: Properties =
-		$props();
+	let {
+		accessible,
+		border,
+		children,
+		classList,
+		click,
+		color,
+		icon,
+		id,
+		readonly,
+		searchable,
+		subtitle,
+		title
+	}: Properties = $props();
 
 	// workaround to avoid reference linting error
 	void searchable;
@@ -31,9 +44,11 @@
 </script>
 
 {#if !!click}
-	<!-- svelte-ignore a11y_click_events_have_key_events -->
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<ion-card
+		onkeydown={(_event) => _event.key === 'Enter' && click?.()}
+		role="button"
+		tabindex="0"
+		style={`pointer-events: ${readonly ? 'none' : 'auto'};`}
 		{id}
 		color={_color}
 		button={!!click}

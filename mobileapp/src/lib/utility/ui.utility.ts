@@ -20,10 +20,7 @@ import { getValidationResult } from '$lib/utility';
  * @param callback callback to execute on click
  * @returns {destroy} function to remove the event listener
  */
-export function clickableElement<T>(
-	node: HTMLElement,
-	callback: (value?: Event) => Promise<T> | T
-): { destroy(): void } {
+export function clickableElement(node: HTMLElement, callback: () => void): { destroy(): void } {
 	function onClick(): void {
 		callback();
 	}
@@ -102,7 +99,7 @@ export function getDateFnsLocale(locale: Locale | undefined): DateFnsLocale {
  * Formatter for form based currency input in €
  * @returns The formatter
  */
-export function currencyFormatter(): (cents: number) => string {
+export function currencyFormatter(cents: number): string {
 	const nf = new Intl.NumberFormat(get(localeStore), {
 		currency: 'EUR',
 		maximumFractionDigits: 2,
@@ -110,7 +107,7 @@ export function currencyFormatter(): (cents: number) => string {
 		style: 'currency'
 	});
 
-	return (cents: number): string => nf.format(cents / 100);
+	return nf.format(cents / 100);
 }
 
 /**
@@ -127,11 +124,33 @@ export function currencyParser(): (raw: string) => number {
 	};
 }
 
+/**
+ * Key event handler for currency input
+ * @returns The key event handler
+ */
 export function currencyKeyEventHandler() {
 	return (_event: KeyboardEvent, value: number, update: (value: number) => void): void => {
 		if (_event.key === 'Backspace') {
 			_event.preventDefault();
 			update(Math.floor(value / 10));
+		}
+	};
+}
+
+/**
+ * Appends an element to the body and returns a destroy function to remove it
+ * @param element element to append to the body
+ * @returns {destroy} function to remove the element from the body
+ */
+export function appendToBody(element: HTMLElement): { destroy(): void } | undefined {
+	if (document.body.contains(element)) return;
+	document.body.append(element);
+
+	return {
+		destroy(): void {
+			if (document.body.contains(element)) {
+				element.remove();
+			}
 		}
 	};
 }

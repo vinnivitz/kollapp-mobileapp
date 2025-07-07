@@ -108,7 +108,7 @@
 				createAccountPostingModalOpen = false;
 			},
 			exposedActions: (exposedActions) => (createAccountPostingFormActions = exposedActions),
-			formatters: { amountInCents: currencyFormatter() },
+			formatters: { amountInCents: currencyFormatter },
 			keyEventHandlers: { amountInCents: currencyKeyEventHandler() },
 			parsers: { amountInCents: currencyParser() },
 			request: async (model) => accountingResource.addAccountPosting($organizationStore?.id!, model),
@@ -133,7 +133,7 @@
 			updateAccountPostingModalOpen = false;
 		},
 		exposedActions: (exposedActions) => (updateAccountPostingFormActions = exposedActions),
-		formatters: { amountInCents: currencyFormatter() },
+		formatters: { amountInCents: currencyFormatter },
 		keyEventHandlers: { amountInCents: currencyKeyEventHandler() },
 		parsers: { amountInCents: currencyParser() },
 		request: async (model) =>
@@ -179,7 +179,7 @@
 		const alert = await alertController.create({
 			buttons: [
 				{ role: 'cancel', text: 'Cancel' },
-				{ handler: async () => await deleteActivity(), text: 'Delete event' }
+				{ handler: deleteActivity, text: 'Delete event' }
 			],
 			header: `Are you sure?`,
 			message: `This action cannot be undone.`
@@ -212,9 +212,9 @@
 		}
 		const balance = totalIncome - totalExpense;
 		return {
-			balance: currencyFormatter()(balance),
-			income: currencyFormatter()(totalIncome),
-			spent: currencyFormatter()(totalExpense)
+			balance: currencyFormatter(balance),
+			income: currencyFormatter(totalIncome),
+			spent: currencyFormatter(totalExpense)
 		};
 	}
 
@@ -450,7 +450,7 @@
 			<InputItem name="amountInCents" label="Amount" icon={cashOutline} />
 			<DatetimeInputItem
 				label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.date')}
-				apply={(value) => createAccountPostingFormActions.onUpdate('date', value)}
+				applied={(value) => createAccountPostingFormActions.onUpdate('date', value)}
 			/>
 		</form>
 	</Card>
@@ -479,7 +479,7 @@
 			<InputItem name="amountInCents" label="Amount" icon={cashOutline} />
 			<DatetimeInputItem
 				label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.date')}
-				apply={(value) => updateAccountPostingFormActions.onUpdate('date', value)}
+				applied={(value) => updateAccountPostingFormActions.onUpdate('date', value)}
 			/>
 		</form>
 	</Card>
@@ -561,7 +561,7 @@
 				<ion-text color="medium" class="flex items-center justify-center gap-1">
 					<ion-icon icon={cashOutline}></ion-icon>
 					<div>
-						{posting.type === AccountPostingType.CREDIT ? '-' : '+'}{currencyFormatter()(posting.amountInCents)}
+						{posting.type === AccountPostingType.CREDIT ? '-' : '+'}{currencyFormatter(posting.amountInCents)}
 					</div>
 				</ion-text>
 			</div>

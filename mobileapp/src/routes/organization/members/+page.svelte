@@ -31,12 +31,19 @@
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
 	import { t } from '$lib/locales';
 	import { UserRole } from '$lib/models/api';
-	import { AlertType } from '$lib/models/ui';
+	import { AlertType, type ItemSlidingOption } from '$lib/models/ui';
 	import { localeStore, organizationStore, userStore } from '$lib/stores';
 	import { featureNotImplementedAlert, getDateFnsLocale, showAlert, StatusCheck } from '$lib/utility';
 
 	let invitationCodeModalOpen = $state(false);
 	let qrModalOpen = $state(false);
+
+	function getSlidingOptions(member: MemberModel): ItemSlidingOption[] {
+		return [
+			{ color: 'tertiary', handler: () => onSelectRole(member), icon: ribbonOutline },
+			{ color: 'danger', handler: featureNotImplementedAlert, icon: logOutOutline }
+		];
+	}
 
 	const userId = $derived($userStore?.id);
 
@@ -158,7 +165,6 @@
 			<Button icon={personAddOutline} label="Invite person" click={() => (invitationCodeModalOpen = true)} />
 		</div>
 	{:else}
-		<!-- svelte-ignore event_directive_deprecated -->
 		<ion-list in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
 			{#each memberGroups as [letter, memberGroup] (letter)}
 				<ion-item-group>
@@ -176,15 +182,7 @@
 </Layout>
 
 {#snippet memberItem(member: MemberModel)}
-	<!-- svelte-ignore a11y_click_events_have_key_events -->
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<!-- svelte-ignore event_directive_deprecated -->
-	<CustomItem
-		slidingOptions={[
-			{ color: 'tertiary', handler: () => onSelectRole(member), icon: ribbonOutline },
-			{ color: 'danger', handler: featureNotImplementedAlert, icon: logOutOutline }
-		]}
-	>
+	<CustomItem slidingOptions={getSlidingOptions(member)}>
 		<ion-avatar class="mb-1">
 			<ion-icon icon={personCircleOutline} class="h-10 w-10" color="medium"></ion-icon>
 		</ion-avatar>

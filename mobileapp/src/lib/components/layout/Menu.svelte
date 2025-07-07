@@ -64,8 +64,8 @@
 					classList="m-0"
 					color="light"
 					icon={notificationsOutline}
-					click={() => featureNotImplementedAlert()}
-				></Button>
+					click={featureNotImplementedAlert}
+				/>
 			</div>
 		</ion-toolbar>
 	</ion-header>

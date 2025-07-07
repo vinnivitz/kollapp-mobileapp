@@ -111,7 +111,7 @@
 			/>
 			<Button
 				icon={cashOutline}
-				label={currencyFormatter()(accountPostingsStore.getTotalBudget())}
+				label={currencyFormatter(accountPostingsStore.getTotalBudget())}
 				size="small"
 				fill="clear"
 				color="dark"

@@ -44,19 +44,25 @@
 	use:clickOutside
 	on:blur={fabButtonElement?.close}
 >
-	<!-- svelte-ignore a11y_click_events_have_key_events -->
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<!-- svelte-ignore event_directive_deprecated -->
-	<ion-fab-button {color} on:click={click} translucent>
+	<ion-fab-button
+		role="button"
+		tabindex="0"
+		on:keydown={(_event) => _event.key === 'Enter' && click?.()}
+		{color}
+		on:click={click}
+		translucent
+	>
 		<ion-icon {icon}></ion-icon>
 	</ion-fab-button>
 	{#if buttons.length > 0}
 		<ion-fab-list side="top">
 			{#each buttons as button (button.label)}
-				<!-- svelte-ignore a11y_click_events_have_key_events -->
-				<!-- svelte-ignore a11y_no_static_element_interactions -->
 				<!-- svelte-ignore event_directive_deprecated -->
 				<ion-fab-button
+					role="button"
+					tabindex="0"
+					on:keydown={(_event) => _event.key === 'Enter' && button.handler()}
 					color={button.color ?? 'secondary'}
 					on:click={button.handler}
 					aria-label={button.label}

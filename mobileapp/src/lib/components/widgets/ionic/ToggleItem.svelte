@@ -4,14 +4,14 @@
 	type Properties = {
 		icon: string;
 		label: string;
+		checked?: boolean;
 		disabled?: boolean;
 		element?: HTMLIonToggleElement | undefined;
-		enabled?: boolean;
 		searchable?: string;
 		change: (value?: boolean) => void;
 	};
 
-	let { change, disabled, element, enabled, icon, label, searchable }: Properties = $props();
+	let { change, checked, disabled, element, icon, label, searchable }: Properties = $props();
 	void element;
 	void searchable;
 	void label;
@@ -24,7 +24,7 @@
 		bind:this={element}
 		enable-on-off-labels
 		on:ionChange={(value) => change(value.detail.checked)}
-		checked={enabled}
+		{checked}
 		class="ms-4"
 		justify="space-between">{label}</ion-toggle
 	>

@@ -24,13 +24,13 @@
 	};
 
 	let {
-		button = false,
-		card = false,
+		button,
+		card,
 		children,
 		classList,
 		click,
 		color = 'light',
-		disabled = false,
+		disabled,
 		icon,
 		iconClick,
 		iconColor,
@@ -39,7 +39,7 @@
 		note,
 		searchable,
 		slidingOptions,
-		transparent = false
+		transparent
 	}: Properties = $props();
 
 	// workaround to avoid reference linting error
@@ -67,13 +67,14 @@
 {/if}
 
 {#snippet item()}
-	<!-- svelte-ignore a11y_click_events_have_key_events -->
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<ion-item
+		onkeydown={(_event) => _event.key === 'Enter' && click?.()}
 		{disabled}
 		{id}
 		data-card={card}
 		button={!!click || button}
+		role="button"
+		tabindex="0"
 		{color}
 		detail={!!(click || slidingOptions)}
 		data-transparent={transparent}
@@ -88,7 +89,15 @@
 			<ion-note slot="end">{note}</ion-note>
 		{/if}
 		{#if iconEnd}
-			<ion-button class="ms-0" fill="clear" slot="end" onclick={iconClick}>
+			<ion-button
+				onkeydown={(_event) => _event.key === 'Enter' && click?.()}
+				role="button"
+				tabindex="0"
+				class="ms-0"
+				fill="clear"
+				slot="end"
+				onclick={iconClick}
+			>
 				<ion-icon icon={iconEnd} color="secondary" slot="icon-only" size="large"></ion-icon>
 			</ion-button>
 		{/if}

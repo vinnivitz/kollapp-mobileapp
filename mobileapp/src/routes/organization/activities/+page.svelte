@@ -156,7 +156,7 @@
 					label={$t('routes.organization.page.activity.create')}
 					click={() => onCreateActivity(new Date().toISOString())}
 					icon={createOutline}
-					searchable={PageRoute.ORGANIZATION.ACTIVITIES}
+					searchable={PageRoute.ORGANIZATION.ACTIVITIES.ROOT}
 				></FabButton>
 
 				<!-- svelte-ignore event_directive_deprecated -->
@@ -177,7 +177,7 @@
 				</div>
 			{:else if activityView === ActivityView.CALENDAR}
 				<Datetime
-					apply={onCreateActivity}
+					applied={onCreateActivity}
 					applyText={$t('routes.organization.page.activity.calendar.done')}
 					dismissText=""
 				></Datetime>
@@ -270,11 +270,11 @@
 					change={() => (includeTime = !includeTime)}
 					label={$t('routes.organization.page.activity.modal.create-activity.form.include-time')}
 					icon={timeOutline}
-					enabled={includeTime}
+					checked={includeTime}
 				/>
 				<ToggleItem
 					change={() => (isDateRange = !isDateRange)}
-					enabled={isDateRange}
+					checked={isDateRange}
 					icon={codeOutline}
 					label={$t('routes.organization.page.activity.modal.create-activity.form.include-end-date')}
 				/>

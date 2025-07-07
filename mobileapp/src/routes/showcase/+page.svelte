@@ -84,7 +84,7 @@
 				showAlert('Model confirmed', { type: AlertType.SUCCESS });
 			}}
 		>
-			This is a modal.
+			<ion-text>This is a modal.</ion-text>
 		</Modal>
 		<div class="flex flex-wrap items-center justify-center">
 			<Button
@@ -133,7 +133,7 @@
 	</Card>
 	<Card title="Calendar">
 		<div class="flex flex-col gap-4">
-			<Calendar apply={() => showAlert('Date selected', { type: AlertType.SUCCESS })} />
+			<Calendar applied={() => showAlert('Date selected', { type: AlertType.SUCCESS })} />
 			<Calendar showTitle={false} />
 		</div>
 	</Card>

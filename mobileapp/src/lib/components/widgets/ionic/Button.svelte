@@ -13,6 +13,9 @@
 		iconPosition?: 'end' | 'start';
 		iconSize?: 'large' | 'small' | undefined;
 		label?: string;
+		labelColor?: Colors;
+		readonly?: boolean;
+		searchable?: string;
 		shape?: 'round' | undefined;
 		size?: 'default' | 'large' | 'small' | undefined;
 		type?: 'button' | 'reset' | 'submit';
@@ -33,16 +36,23 @@
 		iconPosition = 'start',
 		iconSize,
 		label,
+		labelColor,
+		readonly,
+		searchable,
 		shape,
 		size,
 		type
 	}: Properties = $props();
 
+	// workaround to avoid reference linting error
+	void searchable;
+
 	const fontWeight = $derived(fill === 'outline' ? 'font-extrabold' : 'font-medium');
 </script>
 
-<!-- svelte-ignore a11y_click_events_have_key_events -->
 <ion-button
+	onkeydown={(_event) => _event.key === 'Enter' && click?.()}
+	style={`pointer-events: ${readonly ? 'none' : 'auto'};`}
 	{shape}
 	{color}
 	{expand}
@@ -71,7 +81,7 @@
 		{/if}
 	{/if}
 	{#if label}
-		<ion-text class={fontWeight}>
+		<ion-text color={labelColor} class={fontWeight}>
 			{label}
 		</ion-text>
 	{/if}
@@ -81,15 +91,15 @@
 {/snippet}
 
 {#snippet startIcon()}
-	<ion-icon slot="start" {icon} size={size === 'large' ? 'large' : iconSize}></ion-icon>
+	<ion-icon slot="start" color={labelColor} {icon} size={size === 'large' ? 'large' : iconSize}></ion-icon>
 {/snippet}
 
 {#snippet endIcon()}
-	<ion-icon slot="end" {icon} size={size === 'large' ? 'large' : iconSize}></ion-icon>
+	<ion-icon slot="end" color={labelColor} {icon} size={size === 'large' ? 'large' : iconSize}></ion-icon>
 {/snippet}
 
 {#snippet iconOnly()}
-	<ion-icon slot="icon-only" {icon} size={size === 'large' ? 'large' : iconSize}></ion-icon>
+	<ion-icon slot="icon-only" color={labelColor} {icon} size={size === 'large' ? 'large' : iconSize}></ion-icon>
 {/snippet}
 
 {#snippet badgeIcon()}

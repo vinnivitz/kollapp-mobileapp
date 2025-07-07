@@ -14,36 +14,41 @@
 		dismissText?: string;
 		includeDate?: boolean;
 		includeTime?: boolean;
+		max?: string;
+		min?: string;
+		showButtons?: boolean;
 		showTitle?: boolean;
 		value?: string;
-		apply?: (value: string) => void;
-		dismiss?: () => void;
+		applied?: (value: string) => void;
+		dismissed?: () => void;
 	};
 
 	let {
-		apply,
+		applied,
 		applyText = $t('components.widgets.calendar.done-button.label'),
 		color = 'secondary',
-		dismiss,
+		dismissed,
 		dismissText = $t('components.widgets.calendar.dismiss-button.label'),
 		includeDate = true,
 		includeTime = false,
+		max = addYears(new Date(), 10).toISOString(),
+		min,
+		showButtons = true,
 		showTitle = true,
 		value = new Date().toISOString()
 	}: Properties = $props();
 
 	let calendar = $state<HTMLIonDatetimeElement>();
-	let selectedDate = $state(new Date().toISOString());
 
 	function onDismiss(): void {
 		calendar?.reset();
-		dismiss?.();
+		dismissed?.();
 	}
 
 	async function onApply(event: CustomEvent<DatetimeChangeEventDetail>): Promise<void> {
 		calendar?.reset();
-		selectedDate = event.detail.value as string;
-		apply?.(selectedDate);
+		value = event.detail.value as string;
+		applied?.(value);
 	}
 
 	function getPresentation(): 'date-time' | 'date' | 'time' {
@@ -56,14 +61,15 @@
 <!-- svelte-ignore event_directive_deprecated -->
 <ion-datetime
 	{value}
-	show-default-buttons
+	{min}
+	{max}
+	show-default-buttons={showButtons}
 	cancel-text={dismissText}
 	done-text={applyText}
 	use:clickOutside
 	on:blur={onDismiss}
 	{color}
 	size="cover"
-	max={addYears(new Date(), 10).toISOString()}
 	bind:this={calendar}
 	locale={$localeStore}
 	on:ionChange={onApply}

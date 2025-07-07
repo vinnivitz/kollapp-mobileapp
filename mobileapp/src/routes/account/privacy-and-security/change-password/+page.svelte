@@ -38,7 +38,6 @@
 	});
 </script>
 
-completed
 <Layout title={$t('routes.auth.change-password.confirmation.title')} showBackButton>
 	<Card title={$t('routes.auth.change-password.confirmation.form.title')}>
 		<form use:customForm={form}>

@@ -4,34 +4,35 @@
 
 	import Button from './Button.svelte';
 	import CustomItem from './CustomItem.svelte';
-	import Datetime from './Datetime.svelte';
 
 	import { DateTimePickerType } from '$lib/models/ui';
+	import { globalPopoverStore } from '$lib/stores';
 
 	type Properties = {
 		label: string;
+		max?: string;
+		min?: string;
 		type?: DateTimePickerType;
 		value?: string;
-		apply?: (value: string) => void;
+		applied?: (value: string) => void;
 		dismiss?: () => void;
 	};
 
-	let { apply, dismiss, label, type = DateTimePickerType.DATE, value }: Properties = $props();
+	const { datetimeInputItem } = globalPopoverStore;
 
-	let showDatetimeModal = $state(false);
+	let { applied, dismiss, label, max, min, type = DateTimePickerType.DATE, value }: Properties = $props();
+
 	let selectedValue = $state(value ?? new Date().toISOString());
 	let includeDate = $state(true);
 	let includeTime = $state(false);
 
 	function onApply(value: string): void {
 		selectedValue = value;
-		showDatetimeModal = false;
-		value = includeDate ? format(value, 'yyyy-MM-dd') : format(value, 'HH:mm');
-		apply?.(value);
+		datetimeInputItem.update((item) => ({ ...item, value }));
+		applied?.(format(selectedValue, includeDate ? 'yyyy-MM-dd' : 'HH:mm'));
 	}
 
 	function onDismiss(): void {
-		showDatetimeModal = false;
 		dismiss?.();
 	}
 
@@ -48,7 +49,16 @@
 				break;
 			}
 		}
-		showDatetimeModal = true;
+		datetimeInputItem.set({
+			applied: onApply,
+			dismissed: onDismiss,
+			includeDate,
+			includeTime,
+			max,
+			min,
+			open: true,
+			value: selectedValue
+		});
 	}
 </script>
 
@@ -83,10 +93,3 @@
 		</div>
 	</div>
 </CustomItem>
-
-<!-- svelte-ignore event_directive_deprecated -->
-<ion-popover class="extended" is-open={showDatetimeModal} on:didDismiss={() => (showDatetimeModal = false)}>
-	<div class="text-center">
-		<Datetime value={selectedValue} apply={onApply} dismiss={onDismiss} {includeDate} {includeTime} />
-	</div>
-</ion-popover>

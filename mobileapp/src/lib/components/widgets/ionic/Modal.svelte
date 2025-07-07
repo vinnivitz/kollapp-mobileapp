@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { getPlatforms } from '@ionic/core';
 	import { modalController } from 'ionic-svelte';
-	import { saveOutline, trashBinOutline } from 'ionicons/icons';
+	import { closeOutline, saveOutline, trashBinOutline } from 'ionicons/icons';
 	import { onDestroy, type Snippet } from 'svelte';
 
 	import Button from './Button.svelte';
@@ -15,6 +15,7 @@
 		cancelIcon?: string;
 		cancelLabel?: string;
 		confirmLabel?: string;
+		informational?: boolean;
 		confirm?: () => void;
 		dismissed?: () => void;
 	};
@@ -26,6 +27,7 @@
 		confirm,
 		confirmLabel = $t('components.widgets.modal.button.confirm'),
 		dismissed,
+		informational,
 		open
 	}: Properties = $props();
 
@@ -66,20 +68,26 @@
 <ion-modal bind:this={_modalController} is-open={open} on:didDismiss={dismissed}>
 	<ion-header>
 		<ion-toolbar>
-			<ion-buttons slot="start">
-				<Button
-					type="button"
-					label={cancelLabel}
-					color="white"
-					click={onDismiss}
-					icon={cancelIcon ?? trashBinOutline}
-				/>
-			</ion-buttons>
-			{#if !!confirm}
-				<ion-buttons slot="end">
-					<Button type="button" label={confirmLabel} color="white" click={confirm} icon={saveOutline} />
+			{#if !informational}
+				<ion-buttons slot="start">
+					<Button
+						type="button"
+						label={cancelLabel}
+						color="white"
+						click={onDismiss}
+						icon={cancelIcon ?? trashBinOutline}
+					/>
 				</ion-buttons>
 			{/if}
+			<ion-buttons slot="end">
+				<Button
+					type="button"
+					label={informational ? '' : confirmLabel}
+					color="white"
+					click={() => (informational ? onDismiss() : confirm?.())}
+					icon={informational ? closeOutline : saveOutline}
+				/>
+			</ion-buttons>
 		</ion-toolbar>
 	</ion-header>
 	<ion-content class="ion-padding">

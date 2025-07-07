@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { accessibilityOutline, diamondOutline, personOutline } from 'ionicons/icons';
+	import { accessibilityOutline, diamondOutline, flashOutline, personOutline } from 'ionicons/icons';
 	import { type Snippet } from 'svelte';
 	import { fade } from 'svelte/transition';
 
@@ -59,6 +59,12 @@
 				click={() => navigate(PageRoute.ACCOUNT.ROOT)}
 				icon={personOutline}
 				label={$t('components.layout.header.button.account')}
+			/>
+			<LabeledItem
+				transparent
+				click={() => navigate(PageRoute.ORGANIZATION.ACTIVITIES.ROOT)}
+				icon={flashOutline}
+				label={$t('components.layout.header.button.activities')}
 			/>
 			<LabeledItem
 				transparent

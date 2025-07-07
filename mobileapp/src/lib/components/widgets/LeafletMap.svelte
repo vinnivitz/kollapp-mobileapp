@@ -18,6 +18,9 @@
 		selected?: (name: string) => void;
 	};
 
+	const TILE_LAYER_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+	const TILE_LAYER_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>';
+
 	let { classList, position, searchable = true, selected }: Properties = $props();
 	let map: Map | undefined;
 	let marker: Marker | undefined;
@@ -40,8 +43,8 @@
 			zoomControl: true
 		});
 		map.on('click', handleMapClick);
-		new TileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-			attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>',
+		new TileLayer(TILE_LAYER_URL, {
+			attribution: TILE_LAYER_ATTRIBUTION,
 			maxNativeZoom: 19,
 			maxZoom: 20
 		}).addTo(map);
@@ -120,7 +123,6 @@
 	}
 </script>
 
-<!-- svelte-ignore event_directive_deprecated -->
 <div class={`relative ${classList ?? ''}`}>
 	{#if searchable}
 		{@render search()}
@@ -132,6 +134,7 @@
 	{#if searchbarOpen}
 		<!-- svelte-ignore event_directive_deprecated -->
 		<div class="absolute top-1 right-1 z-10 w-5/6" use:clickOutside on:blur={closeSearchbar}>
+			<!-- svelte-ignore event_directive_deprecated -->
 			<ion-searchbar
 				bind:this={searchbar}
 				debounce={250}
@@ -142,19 +145,30 @@
 			></ion-searchbar>
 			<ion-list class="absolute top-13 right-3 left-3 mx-auto rounded-xl">
 				{#each searchItems as item (item.latlng)}
-					<!-- svelte-ignore a11y_click_events_have_key_events -->
-					<!-- svelte-ignore a11y_no_static_element_interactions -->
-					<ion-item color="light" on:click={() => onSearchItemSelection(item.latlng)}>
+					<!-- svelte-ignore event_directive_deprecated -->
+					<ion-item
+						role="button"
+						tabindex="0"
+						on:keydown={(_event) => _event.key === 'Enter' && onSearchItemSelection(item.latlng)}
+						color="light"
+						on:click={() => onSearchItemSelection(item.latlng)}
+					>
 						<ion-label>{item.name}</ion-label>
 					</ion-item>
 				{/each}
 			</ion-list>
 		</div>
 	{:else}
-		<!-- svelte-ignore a11y_click_events_have_key_events -->
-		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<!-- svelte-ignore event_directive_deprecated -->
-		<ion-fab-button size="small" color="light" class="absolute top-1 right-1 z-10" on:click={onOpenSearchbar}>
+		<ion-fab-button
+			role="button"
+			tabindex="0"
+			on:keydown={(_event) => _event.key === 'Enter' && onOpenSearchbar()}
+			size="small"
+			color="light"
+			class="absolute top-1 right-1 z-10"
+			on:click={onOpenSearchbar}
+		>
 			<ion-icon icon={searchOutline}></ion-icon>
 		</ion-fab-button>
 	{/if}

@@ -100,6 +100,7 @@ export default ts.config(
 			'sonarjs/no-use-of-empty-return-value': 'off',
 			'sonarjs/slow-regex': 'off',
 			'sonarjs/void-use': 'off',
+			'svelte/event-directive-deprecated': 'off',
 			'svelte/no-unused-svelte-ignore': 'off',
 			'svelte/prefer-writable-derived': 'off',
 			'svelte/valid-compile': 'off',

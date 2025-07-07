@@ -19,7 +19,7 @@ describe('Datetime Component', () => {
 	it('calls dismiss callback on blur (onDismiss)', async () => {
 		const dismissMock = vi.fn();
 		const { container } = render(Datetime, {
-			props: { dismiss: dismissMock }
+			props: { dismissed: dismissMock }
 		});
 
 		const ionDatetime = container.querySelector('ion-datetime') as HTMLIonDatetimeElement;
@@ -34,7 +34,7 @@ describe('Datetime Component', () => {
 	it('calls apply callback on ionChange event (onApply)', async () => {
 		const applyMock = vi.fn();
 		const { container } = render(Datetime, {
-			props: { apply: applyMock }
+			props: { applied: applyMock }
 		});
 		const ionDatetime = container.querySelector('ion-datetime') as HTMLIonDatetimeElement;
 		ionDatetime.reset = vi.fn();

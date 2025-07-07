@@ -12,6 +12,7 @@
 	import { onMount } from 'svelte';
 
 	import Tabs from '$lib/components/layout/Tabs.svelte';
+	import GlobalPopovers from '$lib/components/widgets/ionic/GlobalPopovers.svelte';
 	import { initialized, t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
 	import { authenticationStore, layoutStore, localeStore, organizationStore, userStore } from '$lib/stores';
@@ -69,6 +70,7 @@
 			{:else}
 				{@render children?.()}
 			{/if}
+			<GlobalPopovers />
 		{/if}
 	</ion-app>
 {/key}

@@ -314,6 +314,9 @@
           "activity": {
             "label": "Manage events"
           }
+        },
+        "activities": {
+          "create-activity": "Create event"
         }
       },
       "page": {
@@ -518,7 +521,8 @@
       "header": {
         "button": {
           "logout": "Log out",
-          "account": "Account"
+          "account": "Account",
+          "activities": "Events"
         }
       },
       "menu": {
