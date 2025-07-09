@@ -13,7 +13,6 @@
 		calendarOutline,
 		cardOutline,
 		cashOutline,
-		closeOutline,
 		createOutline,
 		documentOutline,
 		listOutline,
@@ -40,7 +39,7 @@
 	import DatetimeInputItem from '$lib/components/widgets/ionic/DatetimeInputItem.svelte';
 	import FabButton from '$lib/components/widgets/ionic/FabButton.svelte';
 	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
-	import LocationItem from '$lib/components/widgets/ionic/LocationItem.svelte';
+	import LocationInputItem from '$lib/components/widgets/ionic/LocationInputItem.svelte';
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
 	import { t } from '$lib/locales';
 	import { type AccountPostingModel, AccountPostingType } from '$lib/models/models';
@@ -149,7 +148,8 @@
 
 	const updateActivityForm = $derived(
 		new Form({
-			completed: async () => {
+			completed: async ({ model }) => {
+				console.log('model', model);
 				await organizationStore.update($organizationStore?.id!);
 				updateActivityModalOpen = false;
 			},
@@ -335,7 +335,7 @@
 
 {#snippet eventSummary()}
 	<!-- svelte-ignore attribute_quoted -->
-	<Card border="secondary" title={activity?.name} classList="mb-5" click={() => (updateActivityModalOpen = true)}>
+	<Card border="secondary" title={activity?.name} classList="mb-5" clicked={() => (updateActivityModalOpen = true)}>
 		<div class="flex flex-wrap items-center justify-center gap-3">
 			<div class="flex items-center gap-1">
 				<ion-icon icon={locationOutline}></ion-icon>
@@ -353,8 +353,8 @@
 			</div>
 		</div>
 		<div class="mt-2 flex items-center justify-center gap-2">
-			<Button icon={mapOutline} size="small" fill="clear" label="Open in map" click={onOpenLocation}></Button>
-			<Button icon={calendarOutline} size="small" fill="clear" label="Add to calendar" click={onAddToCalendar} />
+			<Button icon={mapOutline} size="small" fill="clear" label="Open in map" clicked={onOpenLocation}></Button>
+			<Button icon={calendarOutline} size="small" fill="clear" label="Add to calendar" clicked={onAddToCalendar} />
 		</div>
 	</Card>
 {/snippet}
@@ -381,13 +381,13 @@
 				label="Add income"
 				color="primary"
 				icon={cashOutline}
-				click={() => onOpenCreateAccountPosting(AccountPostingType.DEBIT)}
+				clicked={() => onOpenCreateAccountPosting(AccountPostingType.DEBIT)}
 			/>
 			<Button
 				label="Add expense"
 				color="tertiary"
 				icon={walletOutline}
-				click={() => onOpenCreateAccountPosting(AccountPostingType.CREDIT)}
+				clicked={() => onOpenCreateAccountPosting(AccountPostingType.CREDIT)}
 			/>
 		</div>
 		<Button
@@ -395,7 +395,7 @@
 			expand="block"
 			fill="outline"
 			label="Transaction history"
-			click={() => (transactionHistoryModalOpen = true)}
+			clicked={() => (transactionHistoryModalOpen = true)}
 		/>
 	</Card>
 {/snippet}
@@ -417,10 +417,9 @@
 				label={$t('routes.organization.page.activity.create-modal.card.input.name')}
 				icon={documentOutline}
 			/>
-			<LocationItem
+			<LocationInputItem
 				label={$t('routes.organization.page.activity.update-modal.card.input.location')}
 				name="location"
-				selected={(value) => updateActivityFormActions?.onUpdate('location', value)}
 			/>
 			<DatetimeInputItem label="Date" />
 		</form>
@@ -438,12 +437,12 @@
 				<Chip
 					selected={selectedPostingType === AccountPostingType.DEBIT}
 					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.income')}
-					click={() => (selectedPostingType = AccountPostingType.DEBIT)}
+					clicked={() => (selectedPostingType = AccountPostingType.DEBIT)}
 				/>
 				<Chip
 					selected={selectedPostingType === AccountPostingType.CREDIT}
 					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.expense')}
-					click={() => (selectedPostingType = AccountPostingType.CREDIT)}
+					clicked={() => (selectedPostingType = AccountPostingType.CREDIT)}
 				/>
 			</div>
 			<InputItem name="purpose" label="Purpose" icon={documentOutline} />
@@ -467,12 +466,12 @@
 				<Chip
 					selected={selectedPostingType === AccountPostingType.DEBIT}
 					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.income')}
-					click={() => (selectedPostingType = AccountPostingType.DEBIT)}
+					clicked={() => (selectedPostingType = AccountPostingType.DEBIT)}
 				/>
 				<Chip
 					selected={selectedPostingType === AccountPostingType.CREDIT}
 					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.expense')}
-					click={() => (selectedPostingType = AccountPostingType.CREDIT)}
+					clicked={() => (selectedPostingType = AccountPostingType.CREDIT)}
 				/>
 			</div>
 			<InputItem name="purpose" label="Purpose" icon={documentOutline} />
@@ -485,12 +484,7 @@
 	</Card>
 </Modal>
 
-<Modal
-	open={transactionHistoryModalOpen}
-	cancelLabel="Close"
-	cancelIcon={closeOutline}
-	dismissed={() => (transactionHistoryModalOpen = false)}
->
+<Modal open={transactionHistoryModalOpen} dismissed={() => (transactionHistoryModalOpen = false)} informational>
 	<!-- svelte-ignore event_directive_deprecated -->
 	<ion-searchbar
 		class="w-full"
@@ -502,14 +496,14 @@
 	<div class="mb-2 flex items-center justify-center gap-2">
 		<Chip
 			color="success"
-			click={() => toggleAccountPostingTypeSelected(AccountPostingType.DEBIT)}
+			clicked={() => toggleAccountPostingTypeSelected(AccountPostingType.DEBIT)}
 			selected={selectedPostingTypes.includes(AccountPostingType.DEBIT)}
 			icon={trendingUpOutline}
 			label="Income"
 		/>
 		<Chip
 			color="danger"
-			click={() => toggleAccountPostingTypeSelected(AccountPostingType.CREDIT)}
+			clicked={() => toggleAccountPostingTypeSelected(AccountPostingType.CREDIT)}
 			selected={selectedPostingTypes.includes(AccountPostingType.CREDIT)}
 			icon={trendingDownOutline}
 			label="Expense"

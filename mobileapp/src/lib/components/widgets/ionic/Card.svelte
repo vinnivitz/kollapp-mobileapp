@@ -16,7 +16,7 @@
 		searchable?: string;
 		subtitle?: string;
 		title?: string;
-		click?: () => void;
+		clicked?: () => void;
 	};
 
 	let {
@@ -24,8 +24,8 @@
 		border,
 		children,
 		classList,
-		click,
-		color,
+		clicked,
+		color = border ? 'transparent' : 'light',
 		icon,
 		id,
 		readonly,
@@ -39,31 +39,24 @@
 	void accessible;
 	void id;
 	void icon;
-
-	const _color: Colors = $derived(color ?? (border ? 'transparent' : 'light'));
 </script>
 
-{#if !!click}
+{#if !!clicked}
 	<ion-card
-		onkeydown={(_event) => _event.key === 'Enter' && click?.()}
+		onkeydown={(_event) => _event.key === 'Enter' && clicked?.()}
 		role="button"
 		tabindex="0"
 		style={`pointer-events: ${readonly ? 'none' : 'auto'};`}
 		{id}
-		color={_color}
-		button={!!click}
+		{color}
+		button
 		class={border ? `border border-[var(--ion-color-${border})] ${classList} ` : classList}
-		onclick={click}
+		onclick={clicked}
 	>
 		{@render content()}
 	</ion-card>
 {:else}
-	<ion-card
-		{id}
-		color={_color}
-		button={!!click}
-		class={border ? `border border-[var(--ion-color-${border})] ${classList} ` : classList}
-	>
+	<ion-card {id} {color} class={border ? `border border-[var(--ion-color-${border})] ${classList} ` : classList}>
 		{@render content()}
 	</ion-card>
 {/if}

@@ -2,12 +2,12 @@
 	import { addDays, format, formatDistanceToNow } from 'date-fns';
 	import { actionSheetController, alertController, loadingController } from 'ionic-svelte';
 	import {
+		albumsOutline,
 		buildOutline,
 		calendarClearOutline,
 		calendarOutline,
 		cardOutline,
 		cashOutline,
-		closeOutline,
 		createOutline,
 		documentOutline,
 		filterOutline,
@@ -47,7 +47,7 @@
 		type OrganizationModel
 	} from '$lib/models/models';
 	import { PageRoute } from '$lib/models/routing';
-	import { Form, type FormActions, type ItemSlidingOption } from '$lib/models/ui';
+	import { type FilterItem, Form, type FormActions, type ItemSlidingOption } from '$lib/models/ui';
 	import { accountPostingsStore, localeStore, organizationStore, userStore } from '$lib/stores';
 	import {
 		currencyFormatter,
@@ -66,9 +66,9 @@
 		spent: string;
 	};
 
-	type MemberFilter = {
-		selected: boolean;
-		username: string;
+	type ActivityFilterValue = {
+		id: number;
+		name: string;
 	};
 
 	const organizations = $derived(organizationStore.organizations);
@@ -95,15 +95,26 @@
 	let toFilterDate = $state(new Date().toISOString());
 
 	let filterMembersModalOpen = $state(false);
-	const members = $derived<MemberFilter[]>(
-		$organizationStore?.personsOfOrganization.map((member) => ({ selected: true, username: member.username })) ?? []
+	let filterActivitiesModalOpen = $state(false);
+	const memberFilterItems = $derived<FilterItem[]>(
+		$organizationStore?.personsOfOrganization.map((member) => ({ data: member.username, selected: true })) ?? []
 	);
-	let filteredMembers = $state<MemberFilter[]>([]);
-	const selectedMembers = $derived(getSelectedMembers(filteredMembers));
-	const membersToggleActive = $derived(
-		filteredMembers.length === filteredMembers.filter((member) => member.selected).length
+	const activityFilterItems = $derived<FilterItem<ActivityFilterValue>[]>(
+		$organizationStore?.activities.map((activity) => ({
+			data: { id: activity.id, name: activity.name },
+			selected: true
+		})) ?? []
 	);
-	let membersSearchValue = $state('');
+	let filteredMemberFilterItems = $state<FilterItem[]>([]);
+	let filteredActivityFilterItems = $state<FilterItem<ActivityFilterValue>[]>([]);
+	const displayedFilteredMembers = $derived(getDisplayedFilteredMembers(filteredMemberFilterItems));
+	const displayedFilteredActivities = $derived(getDisplayedFilteredActivities(filteredActivityFilterItems));
+	const allMemberFilterItemsToggleActive = $derived(
+		filteredMemberFilterItems.length === filteredMemberFilterItems.filter((member) => member.selected).length
+	);
+	const allActivityFilterItemsToggleActive = $derived(
+		filteredActivityFilterItems.length === filteredActivityFilterItems.filter((activity) => activity.selected).length
+	);
 
 	const createAccountPostingForm = new Form({
 		completed: async () => {
@@ -126,8 +137,14 @@
 	});
 
 	$effect(() => {
-		if (members) {
-			filteredMembers = members;
+		if (memberFilterItems) {
+			filteredMemberFilterItems = memberFilterItems;
+		}
+	});
+
+	$effect(() => {
+		if (activityFilterItems) {
+			filteredActivityFilterItems = activityFilterItems;
 		}
 	});
 
@@ -206,7 +223,15 @@
 			const matchesUsername = $userStore?.username.toLowerCase().includes(postingsSearchValue.toLowerCase());
 			const matchesDateRange =
 				new Date(posting.date) >= new Date(fromFilterDate) && new Date(posting.date) <= new Date(toFilterDate);
-			return matchesType && matchesDateRange && (matchesPurpose || matchesActivityName || matchesUsername);
+			const matchesActivities = filteredActivityFilterItems.some(
+				(activity) => activity.selected && activity.data.id === posting.activityId
+			);
+			return (
+				matchesActivities &&
+				matchesType &&
+				matchesDateRange &&
+				(matchesPurpose || matchesActivityName || matchesUsername)
+			);
 		});
 	}
 
@@ -302,23 +327,47 @@
 		filterPostings();
 	}
 
-	function getSelectedMembers(members: MemberFilter[]): string {
+	function getDisplayedFilteredActivities(activities: FilterItem<{ id: number; name: string }>[]): string {
+		const filtered = activities.filter((activity) => activity.selected);
+		if (filtered.length === activities.length) {
+			return 'All activities';
+		} else if (filtered.length === 0) {
+			return 'None selected';
+		}
+		return filtered.map((activity) => activity.data.name).join(', ');
+	}
+
+	function getDisplayedFilteredMembers(members: FilterItem[]): string {
 		const filtered = members.filter((member) => member.selected);
 		if (filtered.length === members.length) {
 			return 'All members';
 		} else if (filtered.length === 0) {
 			return 'None selected';
 		}
-		return filtered.map((member) => member.username).join(', ');
+		return filtered.map((member) => member.data).join(', ');
 	}
 
 	function onSearchMembers(event: CustomEvent): void {
-		membersSearchValue = event.detail.value;
-		filteredMembers = members.filter((member) => member.username.toLowerCase().includes(membersSearchValue));
+		const value = event.detail.value;
+		filteredMemberFilterItems = memberFilterItems.filter((member) => member.data.toLowerCase().includes(value));
 	}
 
-	function toggleMemberSelection(value?: boolean): void {
-		filteredMembers = filteredMembers.map((member) => ({ ...member, selected: value ?? false }));
+	function onSearchActivities(event: CustomEvent): void {
+		const value = event.detail.value;
+		filteredActivityFilterItems = activityFilterItems.filter((activity) =>
+			activity.data.name.toLowerCase().includes(value)
+		);
+	}
+
+	function toggleMemberFilterItemsSelection(value?: boolean): void {
+		filteredMemberFilterItems = filteredMemberFilterItems.map((member) => ({ ...member, selected: value ?? false }));
+	}
+
+	function toggleActivityFiterItemsSelection(value?: boolean): void {
+		filteredActivityFilterItems = filteredActivityFilterItems.map((activity) => ({
+			...activity,
+			selected: value ?? false
+		}));
 	}
 </script>
 
@@ -342,7 +391,7 @@
 		border="secondary"
 		title="Upcoming event"
 		classList="mt-5"
-		click={() => activities[0]?.id && goto(PageRoute.ORGANIZATION.ACTIVITIES.DETAIL(activities[0].id))}
+		clicked={() => activities[0]?.id && goto(PageRoute.ORGANIZATION.ACTIVITIES.DETAIL(activities[0].id))}
 	>
 		<div class="flex flex-wrap items-center justify-center gap-5">
 			<div class="flex items-center gap-2">
@@ -369,7 +418,7 @@
 		<LabeledItem
 			label={$t('routes.organization.list.activities.create-activity')}
 			icon={flashOutline}
-			click={async () => {
+			clicked={async () => {
 				await goto(PageRoute.ORGANIZATION.ACTIVITIES.ROOT);
 				triggerClickByLabel($t('routes.organization.page.activity.create'));
 			}}
@@ -378,7 +427,7 @@
 			label={$t('routes.organization.list.organization.activity.label')}
 			icon={calendarOutline}
 			searchable={PageRoute.ORGANIZATION.ACTIVITIES.ROOT}
-			click={() => goto(PageRoute.ORGANIZATION.ACTIVITIES.ROOT)}
+			clicked={() => goto(PageRoute.ORGANIZATION.ACTIVITIES.ROOT)}
 		/>
 	</ion-list>
 {/snippet}
@@ -388,7 +437,7 @@
 		color="transparent"
 		id={$t('routes.organization.change-organization.action-sheet.title')}
 		icon={swapHorizontalOutline}
-		click={onOrganizationSelect}
+		clicked={onOrganizationSelect}
 		searchable={PageRoute.ORGANIZATION.ROOT}
 		readonly={$organizations.length === 1}
 	>
@@ -406,7 +455,7 @@
 		<ion-list-header>{$t('routes.organization.list.current-collective.title')}</ion-list-header>
 		<LabeledItem
 			searchable={PageRoute.ORGANIZATION.MEMBERS}
-			click={() => goto(PageRoute.ORGANIZATION.MEMBERS)}
+			clicked={() => goto(PageRoute.ORGANIZATION.MEMBERS)}
 			icon={peopleOutline}
 			label={$t('routes.organization.list.organization.members')}
 		/>
@@ -414,14 +463,14 @@
 			<LabeledItem
 				searchable={PageRoute.ORGANIZATION.UPDATE_DATA}
 				accessible={[UserRole.MANAGER]}
-				click={() => goto(PageRoute.ORGANIZATION.UPDATE_DATA)}
+				clicked={() => goto(PageRoute.ORGANIZATION.UPDATE_DATA)}
 				icon={buildOutline}
 				label={$t('routes.organization.list.update-info.update-info')}
 			/>
 		{/if}
 		<LabeledItem
 			searchable={PageRoute.ORGANIZATION.LEAVE}
-			click={() => goto(PageRoute.ORGANIZATION.LEAVE)}
+			clicked={() => goto(PageRoute.ORGANIZATION.LEAVE)}
 			icon={logOutOutline}
 			label={$t('routes.organization.list.organization.leave.label')}
 		/>
@@ -434,13 +483,13 @@
 
 		<LabeledItem
 			searchable={PageRoute.ORGANIZATION.REGISTER}
-			click={() => goto(PageRoute.ORGANIZATION.REGISTER)}
+			clicked={() => goto(PageRoute.ORGANIZATION.REGISTER)}
 			icon={createOutline}
 			label={$t('routes.organization.list.general.register.label')}
 		/>
 		<LabeledItem
 			searchable={PageRoute.ORGANIZATION.JOIN}
-			click={() => goto(PageRoute.ORGANIZATION.JOIN)}
+			clicked={() => goto(PageRoute.ORGANIZATION.JOIN)}
 			icon={personAddOutline}
 			label={$t('routes.organization.list.general.join.label')}
 		/>
@@ -469,13 +518,13 @@
 				label="Add income"
 				color="primary"
 				icon={cashOutline}
-				click={() => onOpenCreateAccountPosting(AccountPostingType.DEBIT)}
+				clicked={() => onOpenCreateAccountPosting(AccountPostingType.DEBIT)}
 			/>
 			<Button
 				label="Add expense"
 				color="tertiary"
 				icon={walletOutline}
-				click={() => onOpenCreateAccountPosting(AccountPostingType.CREDIT)}
+				clicked={() => onOpenCreateAccountPosting(AccountPostingType.CREDIT)}
 			/>
 		</div>
 		<Button
@@ -484,7 +533,7 @@
 			expand="block"
 			fill="outline"
 			label="Transaction history"
-			click={() => (transactionHistoryModalOpen = true)}
+			clicked={() => (transactionHistoryModalOpen = true)}
 		/>
 	</Card>
 {/snippet}
@@ -500,12 +549,12 @@
 				<Chip
 					selected={selectedPostingType === AccountPostingType.DEBIT}
 					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.income')}
-					click={() => (selectedPostingType = AccountPostingType.DEBIT)}
+					clicked={() => (selectedPostingType = AccountPostingType.DEBIT)}
 				/>
 				<Chip
 					selected={selectedPostingType === AccountPostingType.CREDIT}
 					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.expense')}
-					click={() => (selectedPostingType = AccountPostingType.CREDIT)}
+					clicked={() => (selectedPostingType = AccountPostingType.CREDIT)}
 				/>
 			</div>
 			<InputItem name="purpose" label="Purpose" icon={documentOutline} />
@@ -529,12 +578,12 @@
 				<Chip
 					selected={selectedPostingType === AccountPostingType.DEBIT}
 					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.income')}
-					click={() => (selectedPostingType = AccountPostingType.DEBIT)}
+					clicked={() => (selectedPostingType = AccountPostingType.DEBIT)}
 				/>
 				<Chip
 					selected={selectedPostingType === AccountPostingType.CREDIT}
 					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.expense')}
-					click={() => (selectedPostingType = AccountPostingType.CREDIT)}
+					clicked={() => (selectedPostingType = AccountPostingType.CREDIT)}
 				/>
 			</div>
 			<InputItem name="purpose" label="Purpose" icon={documentOutline} />
@@ -547,12 +596,7 @@
 	</Card>
 </Modal>
 
-<Modal
-	open={transactionHistoryModalOpen}
-	cancelLabel="Close"
-	cancelIcon={closeOutline}
-	dismissed={() => (transactionHistoryModalOpen = false)}
->
+<Modal open={transactionHistoryModalOpen} dismissed={() => (transactionHistoryModalOpen = false)} informational>
 	<div class="flex items-center justify-center gap-2">
 		<!-- svelte-ignore event_directive_deprecated -->
 		<ion-searchbar
@@ -562,7 +606,7 @@
 			value={postingsSearchValue}
 			on:ionInput={onSearchPostings}
 		></ion-searchbar>
-		<Button icon={filterOutline} click={() => (filterOpen = true)} />
+		<Button icon={filterOutline} clicked={() => (filterOpen = true)} />
 	</div>
 	{#if filteredPostings.length === 0}
 		<div class="mt-3 text-center">
@@ -579,39 +623,51 @@
 
 {#key postings}
 	<!-- svelte-ignore event_directive_deprecated -->
-	<ion-popover is-open={filterOpen} on:didDismiss={() => (filterOpen = false)}>
+	<ion-popover class="extended" is-open={filterOpen} on:didDismiss={() => (filterOpen = false)}>
 		<Card title="Filters" classList="m-0">
 			<div class="flex items-center justify-center gap-2">
 				<Chip
-					click={() => toggleAccountPostingTypeSelected(AccountPostingType.DEBIT)}
+					clicked={() => toggleAccountPostingTypeSelected(AccountPostingType.DEBIT)}
 					color="success"
 					selected={selectedPostingTypes.includes(AccountPostingType.DEBIT)}
 					icon={trendingUpOutline}
 					label="Income"
 				/>
 				<Chip
-					click={() => toggleAccountPostingTypeSelected(AccountPostingType.CREDIT)}
+					clicked={() => toggleAccountPostingTypeSelected(AccountPostingType.CREDIT)}
 					color="danger"
 					selected={selectedPostingTypes.includes(AccountPostingType.CREDIT)}
 					icon={trendingDownOutline}
 					label="Expense"
 				/>
 			</div>
-			<DatetimeInputItem max={toFilterDate} label="From" value={fromFilterDate} applied={onApplyFromFilterDate} />
-			<DatetimeInputItem
-				min={fromFilterDate}
-				label="To"
-				value={toFilterDate}
-				applied={(value) => (toFilterDate = value)}
-			/>
-			<CustomItem icon={personOutline} click={() => (filterMembersModalOpen = true)}>
+			<CustomItem classList="flex" icon={calendarOutline}>
+				<DatetimeInputItem max={toFilterDate} label="From" value={fromFilterDate} applied={onApplyFromFilterDate} />
+				<DatetimeInputItem
+					min={fromFilterDate}
+					label="To"
+					value={toFilterDate}
+					applied={(value) => (toFilterDate = value)}
+				/>
+			</CustomItem>
+			<CustomItem icon={personOutline} clicked={() => (filterMembersModalOpen = true)}>
 				<div class="flex flex-col">
-					<ion-text class="ms-3 pt-2 text-xs">Select members</ion-text>
+					<ion-text class="ms-3 py-2 text-xs">Select members</ion-text>
 					<ion-text class="ms-4 truncate">
-						{selectedMembers}
+						{displayedFilteredMembers}
 					</ion-text>
 				</div>
 			</CustomItem>
+			{#if $organizationStore && $organizationStore.activities.length > 0}
+				<CustomItem icon={flashOutline} clicked={() => (filterActivitiesModalOpen = true)}>
+					<div class="flex flex-col">
+						<ion-text class="ms-3 py-2 text-xs">Select events</ion-text>
+						<ion-text class="ms-4 truncate">
+							{displayedFilteredActivities}
+						</ion-text>
+					</div>
+				</CustomItem>
+			{/if}
 		</Card>
 	</ion-popover>
 {/key}
@@ -659,19 +715,43 @@
 	<ion-searchbar class="w-full" debounce={100} placeholder="Search members..." on:ionInput={onSearchMembers}>
 	</ion-searchbar>
 	<ToggleItem
-		disabled={!!membersSearchValue}
-		checked={membersToggleActive}
+		disabled={memberFilterItems.length !== filteredMemberFilterItems.length}
+		checked={allMemberFilterItemsToggleActive}
 		label="All selected"
 		icon={peopleOutline}
-		change={toggleMemberSelection}
+		change={toggleMemberFilterItemsSelection}
 	/>
 	<ion-list>
-		{#each filteredMembers as member (member.username)}
+		{#each filteredMemberFilterItems as member (member.data)}
 			<CustomItem>
 				<ion-checkbox
-					value={member.username}
+					value={member.data}
 					checked={member.selected}
-					on:ionChange={() => (member.selected = !member.selected)}>{member.username}</ion-checkbox
+					on:ionChange={() => (member.selected = !member.selected)}>{member.data}</ion-checkbox
+				>
+			</CustomItem>
+		{/each}
+	</ion-list>
+</Modal>
+
+<Modal open={filterActivitiesModalOpen} dismissed={() => (filterActivitiesModalOpen = false)} informational>
+	<!-- svelte-ignore event_directive_deprecated -->
+	<ion-searchbar class="w-full" debounce={100} placeholder="Search activities..." on:ionInput={onSearchActivities}>
+	</ion-searchbar>
+	<ToggleItem
+		disabled={activityFilterItems.length !== filteredMemberFilterItems.length}
+		checked={allActivityFilterItemsToggleActive}
+		label="All selected"
+		icon={albumsOutline}
+		change={toggleActivityFiterItemsSelection}
+	/>
+	<ion-list>
+		{#each filteredActivityFilterItems as activity (activity.data.id)}
+			<CustomItem>
+				<ion-checkbox
+					value={activity.data.name}
+					checked={activity.selected}
+					on:ionChange={() => (activity.selected = !activity.selected)}>{activity.data.name}</ion-checkbox
 				>
 			</CustomItem>
 		{/each}

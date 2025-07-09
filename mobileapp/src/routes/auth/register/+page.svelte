@@ -66,7 +66,7 @@
 			icon={saveOutline}
 		/>
 	</form>
-	<Card click={() => goto(PageRoute.AUTH.LOGIN)} classList="text-center">
+	<Card clicked={() => goto(PageRoute.AUTH.LOGIN)} classList="text-center">
 		{$t('routes.auth.register.login.text')}
 		<ion-text color="secondary">{$t('routes.auth.register.login.link')}</ion-text>
 	</Card>

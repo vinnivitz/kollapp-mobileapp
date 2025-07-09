@@ -10,17 +10,27 @@
 
 	type Properties = {
 		label: string;
+		icon?: string;
 		max?: string;
 		min?: string;
 		type?: DateTimePickerType;
 		value?: string;
 		applied?: (value: string) => void;
-		dismiss?: () => void;
+		dismissed?: () => void;
 	};
 
 	const { datetimeInputItem } = globalPopoverStore;
 
-	let { applied, dismiss, label, max, min, type = DateTimePickerType.DATE, value }: Properties = $props();
+	let {
+		applied,
+		dismissed,
+		icon = calendarClearOutline,
+		label,
+		max,
+		min,
+		type = DateTimePickerType.DATE,
+		value
+	}: Properties = $props();
 
 	let selectedValue = $state(value ?? new Date().toISOString());
 	let includeDate = $state(true);
@@ -33,7 +43,7 @@
 	}
 
 	function onDismiss(): void {
-		dismiss?.();
+		dismissed?.();
 	}
 
 	function onOpenDatetimeModal(type: DateTimePickerType): void {
@@ -62,7 +72,7 @@
 	}
 </script>
 
-<CustomItem icon={calendarClearOutline}>
+<CustomItem {icon}>
 	<div class="flex flex-col">
 		<ion-text class="ms-3 pt-2 text-xs">
 			{label}
@@ -75,7 +85,7 @@
 					color="dark"
 					size="default"
 					type="button"
-					click={() => onOpenDatetimeModal(DateTimePickerType.DATE)}
+					clicked={() => onOpenDatetimeModal(DateTimePickerType.DATE)}
 					label={format(selectedValue, 'PPP')}
 				></Button>
 			{/if}
@@ -86,7 +96,7 @@
 					color="dark"
 					size="default"
 					type="button"
-					click={() => onOpenDatetimeModal(DateTimePickerType.TIME)}
+					clicked={() => onOpenDatetimeModal(DateTimePickerType.TIME)}
 					label={format(selectedValue, 'p')}
 				></Button>
 			{/if}

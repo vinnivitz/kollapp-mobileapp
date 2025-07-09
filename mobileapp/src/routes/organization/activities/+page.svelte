@@ -29,7 +29,7 @@
 	import DatetimeInputItem from '$lib/components/widgets/ionic/DatetimeInputItem.svelte';
 	import FabButton from '$lib/components/widgets/ionic/FabButton.svelte';
 	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
-	import LocationItem from '$lib/components/widgets/ionic/LocationItem.svelte';
+	import LocationInputItem from '$lib/components/widgets/ionic/LocationInputItem.svelte';
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
 	import SegmentButton from '$lib/components/widgets/ionic/SegmentButton.svelte';
 	import ToggleItem from '$lib/components/widgets/ionic/ToggleItem.svelte';
@@ -87,8 +87,9 @@
 
 	let createActions: FormActions<CreateActivityDto>;
 
-	const createForm = new Form({
-		completed: async () => {
+	const form = new Form({
+		completed: async ({ model }) => {
+			console.log('model', model);
 			await organizationStore.update($organizationStore?.id!);
 			createActivityModalOpen = false;
 		},
@@ -154,7 +155,7 @@
 			{#if activityView === ActivityView.ACTIVITIES}
 				<FabButton
 					label={$t('routes.organization.page.activity.create')}
-					click={() => onCreateActivity(new Date().toISOString())}
+					clicked={() => onCreateActivity(new Date().toISOString())}
 					icon={createOutline}
 					searchable={PageRoute.ORGANIZATION.ACTIVITIES.ROOT}
 				></FabButton>
@@ -191,11 +192,16 @@
 		<div class="flex flex-wrap items-center gap-2">
 			{#each activityFilters as filter (filter.type)}
 				{#if filter.applied}
-					<Chip label={filter.label} icon={filter.icon} iconEnd={closeOutline} click={() => (filter.applied = false)} />
+					<Chip
+						label={filter.label}
+						icon={filter.icon}
+						iconEnd={closeOutline}
+						clicked={() => (filter.applied = false)}
+					/>
 				{/if}
 			{/each}
 		</div>
-		<Button icon={filterOutline} click={() => (showFilters = true)}></Button>
+		<Button icon={filterOutline} clicked={() => (showFilters = true)}></Button>
 	</div>
 {/snippet}
 
@@ -220,7 +226,7 @@
 {/snippet}
 
 {#snippet activityCard(activity: ActivityModel)}
-	<Card color="light" click={() => goto(PageRoute.ORGANIZATION.ACTIVITIES.DETAIL(activity.id))}>
+	<Card color="light" clicked={() => goto(PageRoute.ORGANIZATION.ACTIVITIES.DETAIL(activity.id))}>
 		<div class="flex flex-col justify-center">
 			<ion-text class="truncate">{activity.name}</ion-text>
 			<div class="flex flex-wrap items-center gap-2">
@@ -242,7 +248,7 @@
 	<Card title={$t('routes.organization.page.activity.filters.title')} classList="m-0">
 		<div class="flex flex-wrap items-center justify-center gap-2">
 			{#each activityFilters as filter (filter.type)}
-				<Chip click={() => (filter.applied = !filter.applied)} label={filter.label} selected={filter.applied} />
+				<Chip clicked={() => (filter.applied = !filter.applied)} label={filter.label} selected={filter.applied} />
 			{/each}
 		</div>
 	</Card>
@@ -256,13 +262,13 @@
 >
 	{#if createActivityModalOpen}
 		<Card title={$t('routes.organization.page.activity.create-modal.card.title')}>
-			<form use:customForm={createForm}>
+			<form use:customForm={form}>
 				<InputItem
 					name="name"
 					label={$t('routes.organization.page.activity.create-modal.card.input.name')}
 					icon={documentOutline}
 				/>
-				<LocationItem
+				<LocationInputItem
 					name="location"
 					label={$t('routes.organization.page.activity.create-modal.card.input.location')}
 				/>

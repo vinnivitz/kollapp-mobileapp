@@ -12,12 +12,12 @@
 		id?: string;
 		searchable?: string | unknown;
 		vertical?: 'bottom' | 'center' | 'top';
-		click?: () => void;
+		clicked?: () => void;
 	};
 
 	let {
 		buttons = [],
-		click,
+		clicked,
 		color = 'secondary',
 		horizontal = 'end',
 		icon,
@@ -48,9 +48,9 @@
 	<ion-fab-button
 		role="button"
 		tabindex="0"
-		on:keydown={(_event) => _event.key === 'Enter' && click?.()}
+		on:keydown={(_event) => _event.key === 'Enter' && clicked?.()}
 		{color}
-		on:click={click}
+		on:click={clicked}
 		translucent
 	>
 		<ion-icon {icon}></ion-icon>

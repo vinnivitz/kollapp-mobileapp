@@ -13,13 +13,13 @@
 		icon?: string;
 		searchable?: string;
 		transparent?: boolean;
-	} & ({ searchable: string; click: () => void } | { searchable?: string; click?: () => void });
+	} & ({ searchable: string; clicked: () => void } | { searchable?: string; clicked?: () => void });
 
 	let {
 		accessible,
 		card,
 		classList,
-		click,
+		clicked,
 		color = 'light',
 		icon,
 		label,
@@ -34,7 +34,7 @@
 	const labelColor = $derived(color === 'light' || color === 'white' ? 'dark' : 'white');
 </script>
 
-<CustomItem {click} {card} {color} {transparent} {icon} {classList}>
+<CustomItem {clicked} {card} {color} {transparent} {icon} {classList}>
 	{#if label}
 		<ion-label class="ms-4" color={labelColor}>{label}</ion-label>
 	{/if}

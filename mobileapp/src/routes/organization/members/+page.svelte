@@ -156,13 +156,14 @@
 
 <Layout title={$t('routes.organization.page.members.title')} showBackButton>
 	{#if !$userStore?.roles.includes(UserRole.MANAGER)}
-		<FabButton label="Invite member" icon={personAddOutline} click={() => (invitationCodeModalOpen = true)}></FabButton>
+		<FabButton label="Invite member" icon={personAddOutline} clicked={() => (invitationCodeModalOpen = true)}
+		></FabButton>
 	{/if}
 
 	{#if members.length === 0}
 		<div class="mt-5 flex flex-col items-center justify-center gap-5">
 			<ion-note>No other members found.</ion-note>
-			<Button icon={personAddOutline} label="Invite person" click={() => (invitationCodeModalOpen = true)} />
+			<Button icon={personAddOutline} label="Invite person" clicked={() => (invitationCodeModalOpen = true)} />
 		</div>
 	{:else}
 		<ion-list in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
@@ -190,7 +191,7 @@
 	</CustomItem>
 {/snippet}
 
-<Modal open={invitationCodeModalOpen} dismissed={() => (invitationCodeModalOpen = false)}>
+<Modal open={invitationCodeModalOpen} informational dismissed={() => (invitationCodeModalOpen = false)}>
 	<Card title="Invitation Code">
 		<div class="flex flex-col">
 			<div class="mx-12 rounded border border-[var(--ion-color-primary)] p-2 text-center font-extrabold">
@@ -215,17 +216,17 @@
 				{/if}
 			</div>
 			<div class="mx-14 mt-2 flex items-center justify-between gap-2">
-				<Button shape="round" icon={shareOutline} click={onShare}></Button>
-				<Button shape="round" icon={clipboardOutline} click={onWriteToClipboard}></Button>
-				<Button shape="round" icon={mailOutline} click={onSendMail}></Button>
-				<Button shape="round" icon={qrCode} click={showQRCode}></Button>
+				<Button shape="round" icon={shareOutline} clicked={onShare}></Button>
+				<Button shape="round" icon={clipboardOutline} clicked={onWriteToClipboard}></Button>
+				<Button shape="round" icon={mailOutline} clicked={onSendMail}></Button>
+				<Button shape="round" icon={qrCode} clicked={showQRCode}></Button>
 			</div>
 			<Button
 				icon={refreshCircleOutline}
 				fill="outline"
 				classList="mx-8 mt-5"
 				label="Renew invitation code"
-				click={onRenewCode}
+				clicked={onRenewCode}
 			></Button>
 		</div>
 	</Card>

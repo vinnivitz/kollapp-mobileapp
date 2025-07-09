@@ -37,7 +37,7 @@
 			classList="mt-3"
 			expand="block"
 			color="danger"
-			click={onDeleteAccount}
+			clicked={onDeleteAccount}
 			icon={trashOutline}
 			label={$t('routes.account.delete.card.button')}
 		/>

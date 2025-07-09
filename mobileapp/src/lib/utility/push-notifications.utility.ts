@@ -13,8 +13,6 @@ export async function initPushNotifications(): Promise<void> {
 		const result = await PushNotifications.requestPermissions();
 		if (result.receive === 'granted') {
 			await PushNotifications.register();
-		} else {
-			showAlert('Push notification permission not granted');
 		}
 
 		PushNotifications.addListener('registration', (token: Token) => {

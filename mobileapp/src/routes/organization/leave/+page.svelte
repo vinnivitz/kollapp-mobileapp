@@ -53,7 +53,7 @@
 				expand="block"
 				label={$t('routes.organization.page.leave.card.button')}
 				icon={trashOutline}
-				click={onLeaveOrganization}
+				clicked={onLeaveOrganization}
 			/>
 			<ion-text>{$t('routes.organization.page.leave.card.note')}</ion-text>
 		</div>
@@ -72,7 +72,7 @@
 					classList="mx-3"
 					fill="outline"
 					label="Grant manager role to another member"
-					click={() => goto(PageRoute.ORGANIZATION.MEMBERS)}
+					clicked={() => goto(PageRoute.ORGANIZATION.MEMBERS)}
 				/>
 			{/if}
 		{/if}

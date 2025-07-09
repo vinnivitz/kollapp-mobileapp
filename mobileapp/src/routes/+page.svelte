@@ -50,7 +50,7 @@
 </Layout>
 
 {#snippet accountCard(user: UserModel)}
-	<Card color="transparent" classList="text-center" click={() => goto(PageRoute.ACCOUNT.ROOT)}>
+	<Card color="transparent" classList="text-center" clicked={() => goto(PageRoute.ACCOUNT.ROOT)}>
 		<div class="truncate">
 			<ion-text class="text-2xl" color="dark">
 				{$t('routes.home.card.user.title', { value: user.username })}
@@ -62,7 +62,7 @@
 			size="small"
 			icon={notificationsOffOutline}
 			label={$t('routes.home.card.notifications.no-notes')}
-			click={featureNotImplementedAlert}
+			clicked={featureNotImplementedAlert}
 		/>
 	</Card>
 {/snippet}
@@ -72,7 +72,7 @@
 		color="transparent"
 		classList="border border-[var(--ion-color-secondary)]"
 		title="Upcoming event"
-		click={onNavigateEvent}
+		clicked={onNavigateEvent}
 	>
 		<div class="mb-3 flex flex-wrap items-center justify-center gap-5">
 			<div class="flex items-center gap-2">
@@ -97,7 +97,7 @@
 	<Card
 		color="transparent"
 		title={organization.name}
-		click={() => goto(PageRoute.ORGANIZATION.ROOT)}
+		clicked={() => goto(PageRoute.ORGANIZATION.ROOT)}
 		classList="border border-[var(--ion-color-primary)]"
 	>
 		<div class="flex flex-wrap items-center justify-center">
@@ -107,7 +107,7 @@
 				color="dark"
 				icon={peopleOutline}
 				label={`${organization.personsOfOrganization.length} members`}
-				click={(_event) => navigate(_event, PageRoute.ORGANIZATION.MEMBERS)}
+				clicked={(_event) => navigate(_event, PageRoute.ORGANIZATION.MEMBERS)}
 			/>
 			<Button
 				icon={cashOutline}
@@ -115,7 +115,7 @@
 				size="small"
 				fill="clear"
 				color="dark"
-				click={(_event) => navigate(_event, PageRoute.ORGANIZATION.ROOT)}
+				clicked={(_event) => navigate(_event, PageRoute.ORGANIZATION.ROOT)}
 			/>
 			<Button
 				icon={flashOutline}
@@ -123,7 +123,7 @@
 				size="small"
 				fill="clear"
 				color="dark"
-				click={(_event) => navigate(_event, PageRoute.ORGANIZATION.ACTIVITIES.ROOT)}
+				clicked={(_event) => navigate(_event, PageRoute.ORGANIZATION.ACTIVITIES.ROOT)}
 			/>
 		</div>
 	</Card>
@@ -132,7 +132,7 @@
 {#snippet noCollectiveCards()}
 	<Card title={$t('routes.home.card.register-organization.title')} classList="text-center">
 		<Button
-			click={() => goto(PageRoute.ORGANIZATION.REGISTER)}
+			clicked={() => goto(PageRoute.ORGANIZATION.REGISTER)}
 			fill="outline"
 			icon={accessibilityOutline}
 			label={$t('routes.home.card.organization.register')}
@@ -140,7 +140,7 @@
 	</Card>
 	<Card title={$t('routes.home.card.join-organization.title')} classList="text-center">
 		<Button
-			click={() => goto(PageRoute.ORGANIZATION.JOIN)}
+			clicked={() => goto(PageRoute.ORGANIZATION.JOIN)}
 			fill="outline"
 			icon={accessibilityOutline}
 			label={$t('routes.home.card.organization.join')}

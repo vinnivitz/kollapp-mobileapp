@@ -23,7 +23,7 @@ function createStore(): AccountPostingsStore {
 			const response = await accountingResource.getAccountPostings(organizationId);
 			if (StatusCheck.isOK(response.status)) {
 				_set(response.data.postings);
-			} else {
+			} else if (StatusCheck.isUnauthorized(response.status)) {
 				_set();
 			}
 		} else {

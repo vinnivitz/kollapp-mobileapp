@@ -93,7 +93,7 @@
 	<ion-list inset>
 		<ion-list-header>{$t('routes.account.page.privacy-and-security.list.privacy')}</ion-list-header>
 		<LabeledItem
-			click={() => featureNotImplementedAlert()}
+			clicked={() => featureNotImplementedAlert()}
 			icon={notificationsOutline}
 			label={$t('routes.account.list.account.privacy-and-security.button.notifications')}
 		/>
@@ -101,21 +101,21 @@
 			label={$t('routes.account.page.privacy-and-security.security.list.legal')}
 			icon={receiptOutline}
 			searchable={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.LEGAL}
-			click={() => goto(PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.LEGAL)}
+			clicked={() => goto(PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.LEGAL)}
 		/>
 		<LabeledItem
 			label="App version"
 			icon={constructOutline}
-			click={() => goto(PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.APP_VERSION)}
+			clicked={() => goto(PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.APP_VERSION)}
 			searchable={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.APP_VERSION}
 		/>
-		<LabeledItem label="Report bug" icon={bugOutline} click={() => featureNotImplementedAlert()} />
+		<LabeledItem label="Report bug" icon={bugOutline} clicked={() => featureNotImplementedAlert()} />
 	</ion-list>
 	<ion-list inset>
 		<ion-list-header>{$t('routes.account.page.privacy-and-security.list.security')}</ion-list-header>
 		<LabeledItem
 			searchable={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.CHANGE_PASSWORD}
-			click={() => goto(PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.CHANGE_PASSWORD)}
+			clicked={() => goto(PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.CHANGE_PASSWORD)}
 			icon={keyOutline}
 			label={$t('routes.account.list.account.privacy-and-security.button.change-password')}
 		/>

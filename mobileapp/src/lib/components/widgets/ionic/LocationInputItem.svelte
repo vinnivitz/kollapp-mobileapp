@@ -10,23 +10,22 @@
 	type Properties = {
 		label: string;
 		name: string;
+		icon?: string;
 		value?: string;
-		selected?: (value: string) => void;
 	};
 
-	let { label, name, selected, value }: Properties = $props();
+	let { icon = locationOutline, label, name, value }: Properties = $props();
 
 	let cachedLocation = $state('');
 	let open = $state(false);
 
 	async function onConfirmMap(): Promise<void> {
-		selected?.(cachedLocation);
 		value = cachedLocation;
 		open = false;
 	}
 </script>
 
-<InputItem {value} {name} {label} icon={locationOutline} inputIcon={mapOutline} inputIconClick={() => (open = true)} />
+<InputItem {value} {name} {label} {icon} inputIcon={mapOutline} inputIconClick={() => (open = true)} />
 
 <Modal
 	{open}

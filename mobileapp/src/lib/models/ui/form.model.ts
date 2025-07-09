@@ -1,7 +1,6 @@
+import type { ResponseBody } from '$lib/models/api';
 import type { ValidationResult } from '$lib/models/ui';
-import type { ResponseBody } from '../api';
-
-import { type AnyObject, ObjectSchema } from 'yup';
+import type { AnyObject, ObjectSchema } from 'yup';
 
 import { getObjectFromSchema } from '$lib/utility';
 

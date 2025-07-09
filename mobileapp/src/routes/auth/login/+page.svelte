@@ -110,25 +110,27 @@
 				expand="block"
 				icon={fingerPrintOutline}
 				label={$t('routes.auth.login.biometrics')}
-				click={performBiometricVerification}
+				clicked={performBiometricVerification}
 			/>
 		{/if}
 	{/await}
 	{#if dev}
 		<div class="mx-3 flex justify-between gap-2">
-			<Button color="tertiary" size="large" fill="outline" icon={logoGoogle} click={featureNotImplementedAlert}
+			<Button color="tertiary" size="large" fill="outline" icon={logoGoogle} clicked={featureNotImplementedAlert}
 			></Button>
-			<Button color="tertiary" size="large" fill="outline" icon={logoApple} click={featureNotImplementedAlert}></Button>
-			<Button color="tertiary" size="large" fill="outline" icon={logoSlack} click={featureNotImplementedAlert}></Button>
-			<Button color="tertiary" size="large" fill="outline" icon={logoGithub} click={featureNotImplementedAlert}
+			<Button color="tertiary" size="large" fill="outline" icon={logoApple} clicked={featureNotImplementedAlert}
+			></Button>
+			<Button color="tertiary" size="large" fill="outline" icon={logoSlack} clicked={featureNotImplementedAlert}
+			></Button>
+			<Button color="tertiary" size="large" fill="outline" icon={logoGithub} clicked={featureNotImplementedAlert}
 			></Button>
 		</div>
 	{/if}
-	<Card color="light" click={() => goto(PageRoute.AUTH.REGISTER)} classList="text-center">
+	<Card color="light" clicked={() => goto(PageRoute.AUTH.REGISTER)} classList="text-center">
 		{$t('routes.auth.login.register.text')}
 		<ion-text color="secondary">{$t('routes.auth.login.register.link')}</ion-text>
 	</Card>
-	<Card color="light" click={() => goto(PageRoute.AUTH.RESET_PASSWORD)} classList="text-center">
+	<Card color="light" clicked={() => goto(PageRoute.AUTH.RESET_PASSWORD)} classList="text-center">
 		{$t('routes.auth.login.forgot-password.text')}
 		<ion-text color="secondary">{$t('routes.auth.login.forgot-password.link')}</ion-text>
 	</Card>

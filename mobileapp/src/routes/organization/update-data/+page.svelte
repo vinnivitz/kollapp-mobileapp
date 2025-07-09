@@ -7,7 +7,7 @@
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
-	import LocationItem from '$lib/components/widgets/ionic/LocationItem.svelte';
+	import LocationInputItem from '$lib/components/widgets/ionic/LocationInputItem.svelte';
 	import TextareaItem from '$lib/components/widgets/ionic/TextareaItem.svelte';
 	import { t } from '$lib/locales';
 	import { Form, type FormActions } from '$lib/models/ui';
@@ -56,7 +56,7 @@
 					label={$t('routes.organization.page.update-data.form.description')}
 					icon={readerOutline}
 				></TextareaItem>
-				<LocationItem name="place" label={$t('routes.organization.page.register.form.place')} />
+				<LocationInputItem name="place" label={$t('routes.organization.page.register.form.place')} />
 				<Button
 					classList="mt-3"
 					expand="block"

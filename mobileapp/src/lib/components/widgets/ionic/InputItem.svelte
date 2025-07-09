@@ -18,13 +18,13 @@
 		pattern?: string;
 		type?: InputType;
 		value?: null | number | string;
-		change?: (value: string) => void;
+		changed?: (value: string) => void;
 		inputIconClick?: () => void;
 	};
 
 	let {
 		card,
-		change,
+		changed,
 		color,
 		disabled,
 		helperText,
@@ -53,7 +53,7 @@
 		{value}
 		{disabled}
 		helper-text={helperText}
-		on:ionInput={(event) => change?.(event.detail.value || '')}
+		on:ionInput={(event) => changed?.(event.detail.value || '')}
 	>
 	</ion-input>
 </CustomItem>

@@ -56,24 +56,24 @@
 		<ion-list>
 			<LabeledItem
 				transparent
-				click={() => navigate(PageRoute.ACCOUNT.ROOT)}
+				clicked={() => navigate(PageRoute.ACCOUNT.ROOT)}
 				icon={personOutline}
 				label={$t('components.layout.header.button.account')}
 			/>
 			<LabeledItem
 				transparent
-				click={() => navigate(PageRoute.ORGANIZATION.ACTIVITIES.ROOT)}
+				clicked={() => navigate(PageRoute.ORGANIZATION.ACTIVITIES.ROOT)}
 				icon={flashOutline}
 				label={$t('components.layout.header.button.activities')}
 			/>
 			<LabeledItem
 				transparent
-				click={() => navigate(PageRoute.ORGANIZATION.ROOT)}
+				clicked={() => navigate(PageRoute.ORGANIZATION.ROOT)}
 				icon={accessibilityOutline}
 				label={$t('components.layout.menu.list.organization')}
 			/>
 			{#if dev}
-				<LabeledItem transparent icon={diamondOutline} click={() => navigate('/showcase')} label="Showcase" />
+				<LabeledItem transparent icon={diamondOutline} clicked={() => navigate('/showcase')} label="Showcase" />
 			{/if}
 		</ion-list>
 	</Menu>

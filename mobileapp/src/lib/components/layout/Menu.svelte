@@ -64,7 +64,7 @@
 					classList="m-0"
 					color="light"
 					icon={notificationsOutline}
-					click={featureNotImplementedAlert}
+					clicked={featureNotImplementedAlert}
 				/>
 			</div>
 		</ion-toolbar>
@@ -84,7 +84,7 @@
 						transparent
 						label={item.label}
 						icon={icons[item.icon as keyof typeof icons]}
-						click={() => navigate(item.route, item.label)}
+						clicked={() => navigate(item.route, item.label)}
 					/>
 				{/each}
 			</ion-list>
@@ -95,7 +95,7 @@
 			<Button
 				size="default"
 				fill="outline"
-				click={logout}
+				clicked={logout}
 				icon={icons.logOutOutline}
 				label={$t('components.layout.header.button.logout')}
 			/>

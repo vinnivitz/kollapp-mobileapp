@@ -8,10 +8,10 @@
 		icon?: string;
 		iconEnd?: string;
 		selected?: boolean;
-		click?: () => void;
+		clicked?: () => void;
 	};
 
-	let { classList, click, color = 'secondary', icon, iconEnd, label, selected }: Properties = $props();
+	let { classList, clicked, color = 'secondary', icon, iconEnd, label, selected }: Properties = $props();
 </script>
 
 <ion-chip
@@ -20,8 +20,8 @@
 	class={classList}
 	{color}
 	outline={!selected}
-	onclick={click}
-	onkeydown={(_event) => _event.key === 'Enter' && click?.()}
+	onclick={clicked}
+	onkeydown={(_event) => _event.key === 'Enter' && clicked?.()}
 >
 	<div class="flex items-center justify-between gap-2">
 		{#if icon}

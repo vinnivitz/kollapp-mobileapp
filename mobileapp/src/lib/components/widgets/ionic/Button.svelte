@@ -19,15 +19,15 @@
 		shape?: 'round' | undefined;
 		size?: 'default' | 'large' | 'small' | undefined;
 		type?: 'button' | 'reset' | 'submit';
-		click?: (event?: MouseEvent) => void;
-	} & ({ type: 'submit'; click?: never } | { type?: 'button' | 'reset'; click: (event?: MouseEvent) => void }) &
+		clicked?: (event?: MouseEvent) => void;
+	} & ({ type: 'submit'; clicked?: never } | { type?: 'button' | 'reset'; clicked: (event?: MouseEvent) => void }) &
 		({ icon: string; label?: string } | { label: string; icon?: string });
 
 	let {
 		badge,
 		badgeColor = 'danger',
 		classList,
-		click,
+		clicked,
 		color = 'secondary',
 		disabled,
 		expand,
@@ -51,7 +51,7 @@
 </script>
 
 <ion-button
-	onkeydown={(_event) => _event.key === 'Enter' && click?.()}
+	onkeydown={(_event) => _event.key === 'Enter' && clicked?.()}
 	style={`pointer-events: ${readonly ? 'none' : 'auto'};`}
 	{shape}
 	{color}
@@ -61,7 +61,7 @@
 	{size}
 	{type}
 	{disabled}
-	onclick={(event) => click?.(event)}
+	onclick={(event) => clicked?.(event)}
 	role="button"
 	tabindex="0"
 >

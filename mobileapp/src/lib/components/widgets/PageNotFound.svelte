@@ -16,7 +16,7 @@
 	<div class="text-center">
 		<Button
 			fill="solid"
-			click={async () => await goto(PageRoute.HOME)}
+			clicked={async () => await goto(PageRoute.HOME)}
 			label={$t('common.error-page.card.content.button')}
 		/>
 	</div>

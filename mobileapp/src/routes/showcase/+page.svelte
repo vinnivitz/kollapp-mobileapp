@@ -90,44 +90,44 @@
 			<Button
 				label="Default"
 				icon={addOutline}
-				click={() => showAlert('Button clicked', { type: AlertType.SUCCESS })}
+				clicked={() => showAlert('Button clicked', { type: AlertType.SUCCESS })}
 			/>
 			<Button
 				label="Outline"
 				fill="outline"
 				icon={addOutline}
-				click={() => showAlert('Button clicked', { type: AlertType.SUCCESS })}
+				clicked={() => showAlert('Button clicked', { type: AlertType.SUCCESS })}
 			></Button>
 			<Button
 				label="Clear"
 				fill="clear"
 				icon={addOutline}
-				click={() => showAlert('Button clicked', { type: AlertType.SUCCESS })}
+				clicked={() => showAlert('Button clicked', { type: AlertType.SUCCESS })}
 			></Button>
-			<Button icon={addOutline} click={() => showAlert('Button clicked', { type: AlertType.SUCCESS })}></Button>
+			<Button icon={addOutline} clicked={() => showAlert('Button clicked', { type: AlertType.SUCCESS })}></Button>
 			<Button
 				label="Disabled"
 				disabled
 				icon={addOutline}
-				click={() => showAlert('Button clicked', { type: AlertType.SUCCESS })}
+				clicked={() => showAlert('Button clicked', { type: AlertType.SUCCESS })}
 			></Button>
 			<Button
 				label="Icon right"
 				iconPosition="end"
 				icon={addOutline}
-				click={() => showAlert('Button clicked', { type: AlertType.SUCCESS })}
+				clicked={() => showAlert('Button clicked', { type: AlertType.SUCCESS })}
 			></Button>
 			<Button
 				label="Icon big"
 				iconSize="large"
 				icon={addOutline}
-				click={() => showAlert('Button clicked', { type: AlertType.SUCCESS })}
+				clicked={() => showAlert('Button clicked', { type: AlertType.SUCCESS })}
 			></Button>
 			<Button
 				label="Button large"
 				size="large"
 				icon={addOutline}
-				click={() => showAlert('Button clicked', { type: AlertType.SUCCESS })}
+				clicked={() => showAlert('Button clicked', { type: AlertType.SUCCESS })}
 			></Button>
 		</div>
 	</Card>
@@ -141,7 +141,7 @@
 		<CustomItem card>
 			<div class="flex w-full items-center justify-between gap-4">
 				<ion-label>Custom item</ion-label>
-				<Button click={() => showAlert('Button clicked', { type: AlertType.SUCCESS })} label="Click me"></Button>
+				<Button clicked={() => showAlert('Button clicked', { type: AlertType.SUCCESS })} label="Click me"></Button>
 			</div>
 		</CustomItem>
 		<LabeledItem card label="Labeled item"></LabeledItem>
@@ -149,7 +149,7 @@
 		<LabeledItem
 			card
 			label="Clickable labeled item"
-			click={() => showAlert('Item clicked', { type: AlertType.SUCCESS })}
+			clicked={() => showAlert('Item clicked', { type: AlertType.SUCCESS })}
 		></LabeledItem>
 		<LabeledItem card label="Labeled item with icon" icon={documentOutline}></LabeledItem>
 		<InputItem card label="Input item" name="value"></InputItem>
@@ -165,7 +165,7 @@
 	</Card>
 	<Card title="Modal">
 		<div class="text-center">
-			<Button label="Open modal" click={() => (modalOpen = true)}></Button>
+			<Button label="Open modal" clicked={() => (modalOpen = true)}></Button>
 		</div>
 	</Card>
 	<Card title="Map">

@@ -8,7 +8,7 @@ describe('FabButton', () => {
 		const clickMock = vi.fn();
 		const { container } = render(FabButton, {
 			props: {
-				click: clickMock,
+				clicked: clickMock,
 				icon: 'add',
 				label: 'Add Item'
 			}
@@ -24,7 +24,7 @@ describe('FabButton', () => {
 		const clickMock = vi.fn();
 		const { container } = render(FabButton, {
 			props: {
-				click: clickMock,
+				clicked: clickMock,
 				horizontal: 'center',
 				icon: 'add',
 				label: 'Add Item',
@@ -41,7 +41,7 @@ describe('FabButton', () => {
 		const clickMock = vi.fn();
 		const { container } = render(FabButton, {
 			props: {
-				click: clickMock,
+				clicked: clickMock,
 				icon: 'add',
 				label: 'Add Item'
 			}
@@ -59,7 +59,7 @@ describe('FabButton', () => {
 		const clickMock = vi.fn();
 		const { container } = render(FabButton, {
 			props: {
-				click: clickMock,
+				clicked: clickMock,
 				color: 'danger',
 				icon: 'add',
 				label: 'Delete Item'
@@ -75,7 +75,7 @@ describe('FabButton', () => {
 		const testId = 'my-fab';
 		const { container } = render(FabButton, {
 			props: {
-				click: clickMock,
+				clicked: clickMock,
 				icon: 'add',
 				id: testId,
 				label: 'Add Item'
@@ -90,7 +90,7 @@ describe('FabButton', () => {
 		const clickMock = vi.fn();
 		const { container } = render(FabButton, {
 			props: {
-				click: clickMock,
+				clicked: clickMock,
 				icon: 'add',
 				label: 'Add Item'
 			}

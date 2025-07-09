@@ -6,7 +6,6 @@
 
 	type Properties = {
 		children: Snippet;
-		button?: boolean;
 		card?: boolean;
 		classList?: string;
 		color?: Colors | undefined;
@@ -19,21 +18,20 @@
 		searchable?: string;
 		slidingOptions?: ItemSlidingOption[];
 		transparent?: boolean;
-		click?: () => void;
+		clicked?: () => void;
 		iconClick?: () => void;
 	};
 
 	let {
-		button,
 		card,
 		children,
 		classList,
-		click,
+		clicked,
 		color = 'light',
 		disabled,
 		icon,
 		iconClick,
-		iconColor,
+		iconColor = color === 'light' || color === 'white' ? 'medium' : 'white',
 		iconEnd,
 		id,
 		note,
@@ -45,7 +43,6 @@
 	// workaround to avoid reference linting error
 	void searchable;
 
-	const _iconColor = $derived(iconColor ?? (color === 'light' || color === 'white' ? 'medium' : 'white'));
 	let ionItemSlidingElement = $state<HTMLIonItemSlidingElement | undefined>();
 </script>
 
@@ -68,29 +65,29 @@
 
 {#snippet item()}
 	<ion-item
-		onkeydown={(_event) => _event.key === 'Enter' && click?.()}
+		onkeydown={(_event) => _event.key === 'Enter' && clicked?.()}
 		{disabled}
 		{id}
 		data-card={card}
-		button={!!click || button}
+		button={!!clicked}
 		role="button"
 		tabindex="0"
 		{color}
-		detail={!!(click || slidingOptions)}
+		detail={!!(clicked || slidingOptions)}
 		data-transparent={transparent}
-		onclick={() => (slidingOptions ? ionItemSlidingElement?.open('end') : click?.())}
+		onclick={() => (slidingOptions ? ionItemSlidingElement?.open('end') : clicked?.())}
 		class={classList}
 		style="--ion-color-shade: var(--border-color) !important;"
 	>
 		{#if icon}
-			<ion-icon {icon} slot="start" color={_iconColor}></ion-icon>
+			<ion-icon {icon} slot="start" color={iconColor}></ion-icon>
 		{/if}
 		{#if note}
 			<ion-note slot="end">{note}</ion-note>
 		{/if}
 		{#if iconEnd}
 			<ion-button
-				onkeydown={(_event) => _event.key === 'Enter' && click?.()}
+				onkeydown={(_event) => _event.key === 'Enter' && clicked?.()}
 				role="button"
 				tabindex="0"
 				class="ms-0"

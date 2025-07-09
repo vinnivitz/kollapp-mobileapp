@@ -1,6 +1,6 @@
 import type { Writable } from 'svelte/store';
 
-export type GlobalPopoverModal = {
+export type GlobalPopover = {
 	datetimeInputItem: Writable<{
 		includeDate?: boolean;
 		includeTime?: boolean;

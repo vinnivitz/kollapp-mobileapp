@@ -6,7 +6,7 @@ import Button from '$lib/components/widgets/ionic/Button.svelte';
 describe('Button Component', () => {
 	it('renders label and start icon with "outline" fill (font-extrabold)', () => {
 		const properties = {
-			click: vi.fn(),
+			clicked: vi.fn(),
 			fill: 'outline' as const,
 			icon: 'test-icon',
 			iconPosition: 'start' as const,
@@ -27,7 +27,7 @@ describe('Button Component', () => {
 
 	it('renders label and end icon when iconPosition is "end"', () => {
 		const properties = {
-			click: vi.fn(),
+			clicked: vi.fn(),
 			fill: 'default' as const,
 			icon: 'test-icon',
 			iconPosition: 'end' as const,
@@ -49,7 +49,7 @@ describe('Button Component', () => {
 
 	it('renders icon only when no label is provided', () => {
 		const properties = {
-			click: vi.fn(),
+			clicked: vi.fn(),
 			fill: 'solid' as const,
 			icon: 'icon-only-test',
 			size: 'large' as const
@@ -67,7 +67,7 @@ describe('Button Component', () => {
 	it('calls the click callback when button is clicked', async () => {
 		const clickMock = vi.fn();
 		const properties = {
-			click: clickMock,
+			clicked: clickMock,
 			label: 'Press Me'
 		};
 		const { container } = render(Button, { props: properties });
@@ -82,7 +82,7 @@ describe('Button Component', () => {
 
 	it('sets icon size to given size if not large', () => {
 		const properties = {
-			click: vi.fn(),
+			clicked: vi.fn(),
 			icon: 'icon-only-test',
 			iconSize: 'small' as const
 		};
@@ -93,7 +93,7 @@ describe('Button Component', () => {
 		expect(iconOnly?.getAttribute('size')).toBe(properties.iconSize);
 
 		const properties2 = {
-			click: vi.fn(),
+			clicked: vi.fn(),
 			icon: 'icon-only-test',
 			iconSize: 'small' as const,
 			label: 'Press Me'
@@ -105,7 +105,7 @@ describe('Button Component', () => {
 		expect(iconStart?.getAttribute('size')).toBe(properties.iconSize);
 
 		const properties3 = {
-			click: vi.fn(),
+			clicked: vi.fn(),
 			icon: 'icon-only-test',
 			iconPosition: 'end' as const,
 			iconSize: 'small' as const,

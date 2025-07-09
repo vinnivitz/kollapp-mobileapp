@@ -74,7 +74,7 @@ describe('ItemComponent', () => {
 				children: createRawSnippet(() => ({
 					render: () => `<p>Clickable content</p>`
 				})),
-				click: clickMock
+				clicked: clickMock
 			}
 		});
 		const ionItem = container.querySelector('ion-item') as HTMLIonItemElement;
