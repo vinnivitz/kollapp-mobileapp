@@ -20,7 +20,7 @@
 <Layout title={$t('routes.auth.reset-password.title')} showBackButton hideMenu>
 	<Card title={$t('routes.auth.reset-password.card.title')}>
 		<form use:customForm={form}>
-			<TextInputItem name="email" label={$t('routes.auth.reset-password.form.email')} icon={mailOutline} />
+			<TextInputItem name="email" inputmode="email" label={$t('routes.auth.reset-password.form.email')} icon={mailOutline} />
 			<Button
 				icon={refreshOutline}
 				classList="mt-3"

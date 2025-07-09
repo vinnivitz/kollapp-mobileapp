@@ -551,7 +551,7 @@
 				/>
 			</div>
 			<TextInputItem name="purpose" label="Purpose" icon={documentOutline} />
-			<TextInputItem name="amountInCents" label="Amount" icon={cashOutline} />
+			<TextInputItem name="amountInCents" inputmode="numeric" label="Amount" icon={cashOutline} />
 			<DatetimeInputItem
 				name="date"
 				label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.date')}
@@ -580,7 +580,7 @@
 				/>
 			</div>
 			<TextInputItem name="purpose" label="Purpose" icon={documentOutline} />
-			<TextInputItem name="amountInCents" label="Amount" icon={cashOutline} />
+			<TextInputItem name="amountInCents" inputmode="numeric" label="Amount" icon={cashOutline} />
 			<DatetimeInputItem
 				name="date"
 				label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.date')}

@@ -157,8 +157,7 @@
 
 <Layout title={$t('routes.organization.page.members.title')} showBackButton>
 	{#if !$userStore?.roles.includes(UserRole.MANAGER)}
-		<FabButton label="Invite member" icon={personAddOutline} clicked={() => (invitationCodeModalOpen = true)}
-		></FabButton>
+		<FabButton label="Invite member" icon={personAddOutline} clicked={() => (invitationCodeModalOpen = true)} />
 	{/if}
 
 	{#if members.length === 0}

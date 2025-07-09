@@ -471,7 +471,7 @@
 				/>
 			</div>
 			<TextInputItem name="purpose" label="Purpose" icon={documentOutline} />
-			<TextInputItem name="amountInCents" label="Amount" icon={cashOutline} />
+			<TextInputItem name="amountInCents" inputmode="numeric" label="Amount" icon={cashOutline} />
 			<DatetimeInputItem
 				label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.date')}
 				name="date"
