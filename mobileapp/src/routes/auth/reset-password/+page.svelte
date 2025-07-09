@@ -6,7 +6,7 @@
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
+	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import { t } from '$lib/locales';
 	import { Form } from '$lib/models/ui';
 	import { customForm } from '$lib/utility';
@@ -20,7 +20,7 @@
 <Layout title={$t('routes.auth.reset-password.title')} showBackButton hideMenu>
 	<Card title={$t('routes.auth.reset-password.card.title')}>
 		<form use:customForm={form}>
-			<InputItem name="email" label={$t('routes.auth.reset-password.form.email')} icon={mailOutline} />
+			<TextInputItem name="email" label={$t('routes.auth.reset-password.form.email')} icon={mailOutline} />
 			<Button
 				icon={refreshOutline}
 				classList="mt-3"

@@ -20,8 +20,7 @@
 				value={$datetimeInputItem.value}
 				applied={$datetimeInputItem.applied}
 				dismissed={$datetimeInputItem.dismissed}
-				includeDate={$datetimeInputItem.includeDate}
-				includeTime={$datetimeInputItem.includeTime}
+				type={$datetimeInputItem.type}
 				min={$datetimeInputItem.min}
 				max={$datetimeInputItem.max}
 			/>

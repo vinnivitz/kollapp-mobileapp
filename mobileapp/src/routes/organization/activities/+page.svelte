@@ -1,19 +1,18 @@
 <script lang="ts">
 	import type { ActivityModel } from '$lib/models/models';
 
+	import { TZDate } from '@date-fns/tz';
 	import { format } from 'date-fns';
 	import {
 		archiveOutline,
 		calendarOutline,
 		closeOutline,
-		codeOutline,
 		createOutline,
 		documentOutline,
 		filterOutline,
 		flashOutline,
 		hourglassOutline,
-		locationOutline,
-		timeOutline
+		locationOutline
 	} from 'ionicons/icons';
 	import { fade } from 'svelte/transition';
 
@@ -26,16 +25,14 @@
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import Chip from '$lib/components/widgets/ionic/Chip.svelte';
 	import Datetime from '$lib/components/widgets/ionic/Datetime.svelte';
-	import DatetimeInputItem from '$lib/components/widgets/ionic/DatetimeInputItem.svelte';
 	import FabButton from '$lib/components/widgets/ionic/FabButton.svelte';
-	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import LocationInputItem from '$lib/components/widgets/ionic/LocationInputItem.svelte';
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
 	import SegmentButton from '$lib/components/widgets/ionic/SegmentButton.svelte';
-	import ToggleItem from '$lib/components/widgets/ionic/ToggleItem.svelte';
+	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
-	import { DateTimePickerType, Form, type FormActions } from '$lib/models/ui';
+	import { Form, type FormActions } from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';
 	import { customForm } from '$lib/utility';
 
@@ -73,9 +70,6 @@
 		}
 	]);
 
-	let includeTime = $state(false);
-	let isDateRange = $state(false);
-
 	let activityView = $state(ActivityView.ACTIVITIES);
 
 	let showFilters = $state(false);
@@ -88,8 +82,7 @@
 	let createActions: FormActions<CreateActivityDto>;
 
 	const form = new Form({
-		completed: async ({ model }) => {
-			console.log('model', model);
+		completed: async () => {
 			await organizationStore.update($organizationStore?.id!);
 			createActivityModalOpen = false;
 		},
@@ -155,22 +148,23 @@
 			{#if activityView === ActivityView.ACTIVITIES}
 				<FabButton
 					label={$t('routes.organization.page.activity.create')}
-					clicked={() => onCreateActivity(new Date().toISOString())}
+					clicked={() => onCreateActivity(format(new TZDate(), 'yyyy-MM-dd'))}
 					icon={createOutline}
 					searchable={PageRoute.ORGANIZATION.ACTIVITIES.ROOT}
 				></FabButton>
 
-				<!-- svelte-ignore event_directive_deprecated -->
-				<ion-searchbar
-					class="mt-4"
-					color="light"
-					show-clear-button="always"
-					debounce={100}
-					placeholder={$t('routes.organization.page.activity.search.placeholder')}
-					on:ionInput={onSearchEvents}
-					value={searchActivityValue}
-				></ion-searchbar>
-
+				<div class="mt-4 flex items-center justify-between gap-2">
+					<!-- svelte-ignore event_directive_deprecated -->
+					<ion-searchbar
+						color="light"
+						show-clear-button="always"
+						debounce={100}
+						placeholder={$t('routes.organization.page.activity.search.placeholder')}
+						on:ionInput={onSearchEvents}
+						value={searchActivityValue}
+					></ion-searchbar>
+					<Button icon={filterOutline} clicked={() => (showFilters = true)}></Button>
+				</div>
 				{@render activityFilter()}
 
 				<div class="scroll-viewport">
@@ -188,20 +182,12 @@
 {/snippet}
 
 {#snippet activityFilter()}
-	<div class="mx-2 flex items-center justify-between">
-		<div class="flex flex-wrap items-center gap-2">
-			{#each activityFilters as filter (filter.type)}
-				{#if filter.applied}
-					<Chip
-						label={filter.label}
-						icon={filter.icon}
-						iconEnd={closeOutline}
-						clicked={() => (filter.applied = false)}
-					/>
-				{/if}
-			{/each}
-		</div>
-		<Button icon={filterOutline} clicked={() => (showFilters = true)}></Button>
+	<div class="flex flex-wrap items-center gap-2">
+		{#each activityFilters as filter (filter.type)}
+			{#if filter.applied}
+				<Chip label={filter.label} icon={filter.icon} iconEnd={closeOutline} clicked={() => (filter.applied = false)} />
+			{/if}
+		{/each}
 	</div>
 {/snippet}
 
@@ -232,7 +218,7 @@
 			<div class="flex flex-wrap items-center gap-2">
 				<div class="flex items-center justify-center gap-1">
 					<ion-icon icon={calendarOutline} color="medium"></ion-icon>
-					<ion-text color="medium" class="text-xs">{format(new Date(), 'PPP')}</ion-text>
+					<ion-text color="medium" class="text-xs">{format(new TZDate(), 'PPP')}</ion-text>
 				</div>
 				<div class="flex items-center justify-center gap-1">
 					<ion-icon icon={locationOutline} color="medium"></ion-icon>
@@ -263,7 +249,7 @@
 	{#if createActivityModalOpen}
 		<Card title={$t('routes.organization.page.activity.create-modal.card.title')}>
 			<form use:customForm={form}>
-				<InputItem
+				<TextInputItem
 					name="name"
 					label={$t('routes.organization.page.activity.create-modal.card.input.name')}
 					icon={documentOutline}
@@ -272,28 +258,6 @@
 					name="location"
 					label={$t('routes.organization.page.activity.create-modal.card.input.location')}
 				/>
-				<ToggleItem
-					change={() => (includeTime = !includeTime)}
-					label={$t('routes.organization.page.activity.modal.create-activity.form.include-time')}
-					icon={timeOutline}
-					checked={includeTime}
-				/>
-				<ToggleItem
-					change={() => (isDateRange = !isDateRange)}
-					checked={isDateRange}
-					icon={codeOutline}
-					label={$t('routes.organization.page.activity.modal.create-activity.form.include-end-date')}
-				/>
-				<DatetimeInputItem
-					label={$t('routes.organization.page.activity.create-modal.card.input.start-date')}
-					type={includeTime ? DateTimePickerType.DATETIME : DateTimePickerType.DATE}
-				/>
-				{#if isDateRange}
-					<DatetimeInputItem
-						label={$t('routes.organization.page.activity.create-modal.card.input.end-date')}
-						type={includeTime ? DateTimePickerType.DATETIME : DateTimePickerType.DATE}
-					/>
-				{/if}
 			</form>
 		</Card>
 	{/if}

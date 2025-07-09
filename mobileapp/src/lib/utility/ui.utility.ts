@@ -1,7 +1,6 @@
 import { type Locale as DateFnsLocale, de, enUS } from 'date-fns/locale';
 import { loadingController } from 'ionic-svelte';
 import { eye, eyeOff } from 'ionicons/icons';
-import { get } from 'svelte/store';
 import { type AnyObject, ObjectSchema, ValidationError } from 'yup';
 
 import { Locale } from '$lib/locales';
@@ -11,7 +10,6 @@ import {
 	type FormActions,
 	type ValidationResult
 } from '$lib/models/ui';
-import { localeStore } from '$lib/stores';
 import { getValidationResult } from '$lib/utility';
 
 /**
@@ -96,45 +94,14 @@ export function getDateFnsLocale(locale: Locale | undefined): DateFnsLocale {
 }
 
 /**
- * Formatter for form based currency input in €
- * @returns The formatter
- */
-export function currencyFormatter(cents: number): string {
-	const nf = new Intl.NumberFormat(get(localeStore), {
-		currency: 'EUR',
-		maximumFractionDigits: 2,
-		minimumFractionDigits: 2,
-		style: 'currency'
-	});
-
-	return nf.format(cents / 100);
-}
-
-/**
- * Parser for form based currency input in €
- * @returns The parser
- */
-export function currencyParser(): (raw: string) => number {
-	return (raw: string): number => {
-		const digits = raw.replaceAll(/\D/g, '');
-		const padded = digits.padStart(3, '0');
-		const eurosPart = padded.slice(0, -2);
-		const centsPart = padded.slice(-2);
-		return Number.parseInt(eurosPart, 10) * 100 + Number.parseInt(centsPart, 10);
-	};
-}
-
-/**
  * Key event handler for currency input
  * @returns The key event handler
  */
-export function currencyKeyEventHandler() {
-	return (_event: KeyboardEvent, value: number, update: (value: number) => void): void => {
-		if (_event.key === 'Backspace') {
-			_event.preventDefault();
-			update(Math.floor(value / 10));
-		}
-	};
+export function currencyKeyEventHandler(_event: KeyboardEvent, value: number, update: (value: number) => void): void {
+	if (_event.key === 'Backspace') {
+		_event.preventDefault();
+		update(Math.floor(value / 10));
+	}
 }
 
 /**
@@ -239,10 +206,10 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 		}
 	}
 
-	addListener(node, 'ionInput', async (event) => {
+	addListener(node, 'ionInput', (event) => {
 		const input = event.target as HTMLInputElement;
 		if (input && keys.includes(input.name)) {
-			await onChange(event);
+			onChange(event);
 		}
 	});
 
@@ -368,15 +335,13 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 		return validationResult;
 	}
 
-	async function onChange(event: Event): Promise<void> {
+	function onChange(event: Event): void {
 		const key = (event.target as HTMLInputElement).name as keyof T;
 		const value = (event.target as HTMLInputElement).value;
 		const parser = data.config.parsers?.[key as keyof T];
-		const parsed = parser ? await parser(value) : value;
-		await onUpdate(key, parsed as T[keyof T]);
-		if (data.config.onChange) {
-			data.config.onChange(key, value as T[keyof T]);
-		}
+		const parsed = parser ? parser(value) : value;
+		onUpdate(key, parsed as T[keyof T]);
+		data.config.onChange?.(key, parsed as T[keyof T]);
 	}
 
 	async function onSubmit(event?: Event): Promise<void> {

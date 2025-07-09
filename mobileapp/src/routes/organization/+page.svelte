@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { TZDate } from '@date-fns/tz';
 	import { addDays, format, formatDistanceToNow } from 'date-fns';
 	import { actionSheetController, alertController, loadingController } from 'ionic-svelte';
 	import {
@@ -34,9 +35,9 @@
 	import Chip from '$lib/components/widgets/ionic/Chip.svelte';
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
 	import DatetimeInputItem from '$lib/components/widgets/ionic/DatetimeInputItem.svelte';
-	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
+	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import ToggleItem from '$lib/components/widgets/ionic/ToggleItem.svelte';
 	import { t } from '$lib/locales';
 	import { UserRole } from '$lib/models/api';
@@ -50,13 +51,13 @@
 	import { type FilterItem, Form, type FormActions, type ItemSlidingOption } from '$lib/models/ui';
 	import { accountPostingsStore, localeStore, organizationStore, userStore } from '$lib/stores';
 	import {
-		currencyFormatter,
 		currencyKeyEventHandler,
-		currencyParser,
 		customForm,
+		formatter,
 		getDateFnsLocale,
 		getValidationResult,
 		hasRole,
+		parser,
 		triggerClickByLabel
 	} from '$lib/utility';
 
@@ -75,8 +76,8 @@
 	const postings = $derived($accountPostingsStore ?? []);
 	const accountBalance = $derived(calculateAccountBalance(postings ?? []));
 
-	let createAccountPostingFormActions: FormActions<CreateAccountPostingDto>;
-	let updateAccountPostingFormActions: FormActions<CreateAccountPostingDto>;
+	let createAccountPostingFormActions = $state<FormActions<CreateAccountPostingDto>>();
+	let updateAccountPostingFormActions = $state<FormActions<CreateAccountPostingDto>>();
 
 	let createAccountPostingModalOpen = $state(false);
 	let updateAccountPostingModalOpen = $state(false);
@@ -91,8 +92,8 @@
 
 	let filterOpen = $state(false);
 
-	let fromFilterDate = $state(new Date().toISOString());
-	let toFilterDate = $state(new Date().toISOString());
+	let fromFilterDate = $state(format(new TZDate(), 'yyyy-MM-dd'));
+	let toFilterDate = $state(format(new TZDate(), 'yyyy-MM-dd'));
 
 	let filterMembersModalOpen = $state(false);
 	let filterActivitiesModalOpen = $state(false);
@@ -122,9 +123,9 @@
 			createAccountPostingModalOpen = false;
 		},
 		exposedActions: (exposedActions) => (createAccountPostingFormActions = exposedActions),
-		formatters: { amountInCents: currencyFormatter },
-		keyEventHandlers: { amountInCents: currencyKeyEventHandler() },
-		parsers: { amountInCents: currencyParser() },
+		formatters: { amountInCents: formatter.currency, date: formatter.date },
+		keyEventHandlers: { amountInCents: currencyKeyEventHandler },
+		parsers: { amountInCents: parser.currency, date: parser.date },
 		request: async (model) => accountingResource.addAccountPosting($organizationStore?.id!, model),
 		schema: createAccountPostingSchema()
 	});
@@ -137,20 +138,16 @@
 	});
 
 	$effect(() => {
-		if (memberFilterItems) {
-			filteredMemberFilterItems = memberFilterItems;
-		}
+		if (memberFilterItems) filteredMemberFilterItems = memberFilterItems;
 	});
 
 	$effect(() => {
-		if (activityFilterItems) {
-			filteredActivityFilterItems = activityFilterItems;
-		}
+		if (activityFilterItems) filteredActivityFilterItems = activityFilterItems;
 	});
 
 	$effect(() => {
 		if (selectedPostingType) {
-			createAccountPostingFormActions.setModel(
+			createAccountPostingFormActions?.setModel(
 				createAccountPostingSchema().cast({
 					activityId: 0,
 					type: selectedPostingType
@@ -165,36 +162,32 @@
 			updateAccountPostingModalOpen = false;
 		},
 		exposedActions: (exposedActions) => (updateAccountPostingFormActions = exposedActions),
-		formatters: { amountInCents: currencyFormatter },
-		keyEventHandlers: { amountInCents: currencyKeyEventHandler() },
-		parsers: { amountInCents: currencyParser() },
+		formatters: { amountInCents: formatter.currency, date: formatter.date },
+		keyEventHandlers: { amountInCents: currencyKeyEventHandler },
+		parsers: { amountInCents: parser.currency, date: parser.date },
 		request: async (model) =>
 			accountingResource.updateAccountPosting($organizationStore?.id!, selectedPosting?.id!, model),
 		schema: createAccountPostingSchema()
 	});
 
 	$effect(() => {
-		if (selectedPosting) {
-			updateAccountPostingFormActions.setModel(selectedPosting);
-		}
+		if (selectedPosting) updateAccountPostingFormActions?.setModel(selectedPosting);
 	});
 
 	$effect(() => {
-		if (postings) {
-			filterPostings();
-		}
+		if (postings) filterPostings();
 	});
 
 	function getMinPostingDate(postings: AccountPostingModel[]): string {
 		return postings.length > 0
-			? new Date(Math.min(...postings.map((posting) => new Date(posting.date).getTime()))).toISOString()
-			: new Date().toISOString();
+			? new TZDate(Math.min(...postings.map((posting) => new TZDate(posting.date).getTime()))).toISOString()
+			: new TZDate().toISOString();
 	}
 
 	function getMaxPostingDate(postings: AccountPostingModel[]): string {
 		return postings.length > 0
-			? new Date(Math.max(...postings.map((posting) => new Date(posting.date).getTime()))).toISOString()
-			: new Date().toISOString();
+			? new TZDate(Math.max(...postings.map((posting) => new TZDate(posting.date).getTime()))).toISOString()
+			: new TZDate().toISOString();
 	}
 
 	function getTransactionItemSlidingOptions(posting: AccountPostingModel): ItemSlidingOption[] {
@@ -222,7 +215,7 @@
 				.includes(postingsSearchValue.toLowerCase());
 			const matchesUsername = $userStore?.username.toLowerCase().includes(postingsSearchValue.toLowerCase());
 			const matchesDateRange =
-				new Date(posting.date) >= new Date(fromFilterDate) && new Date(posting.date) <= new Date(toFilterDate);
+				new TZDate(posting.date) >= new TZDate(fromFilterDate) && new TZDate(posting.date) <= new TZDate(toFilterDate);
 			const matchesActivities = filteredActivityFilterItems.some(
 				(activity) => activity.selected && activity.data.id === posting.activityId
 			);
@@ -244,9 +237,9 @@
 		}
 		const balance = totalIncome - totalExpense;
 		return {
-			balance: currencyFormatter(balance),
-			income: currencyFormatter(totalIncome),
-			spent: currencyFormatter(totalExpense)
+			balance: formatter.currency(balance),
+			income: formatter.currency(totalIncome),
+			spent: formatter.currency(totalExpense)
 		};
 	}
 
@@ -540,7 +533,7 @@
 
 <Modal
 	open={createAccountPostingModalOpen}
-	confirm={() => createAccountPostingFormActions.onSubmit()}
+	confirm={createAccountPostingFormActions?.onSubmit}
 	dismissed={() => (createAccountPostingModalOpen = false)}
 >
 	<Card title={getCreatePostingTitle(selectedPostingType)}>
@@ -557,11 +550,11 @@
 					clicked={() => (selectedPostingType = AccountPostingType.CREDIT)}
 				/>
 			</div>
-			<InputItem name="purpose" label="Purpose" icon={documentOutline} />
-			<InputItem name="amountInCents" label="Amount" icon={cashOutline} />
+			<TextInputItem name="purpose" label="Purpose" icon={documentOutline} />
+			<TextInputItem name="amountInCents" label="Amount" icon={cashOutline} />
 			<DatetimeInputItem
+				name="date"
 				label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.date')}
-				applied={(value) => createAccountPostingFormActions.onUpdate('date', value)}
 			/>
 		</form>
 	</Card>
@@ -569,7 +562,7 @@
 
 <Modal
 	open={updateAccountPostingModalOpen}
-	confirm={() => updateAccountPostingFormActions.onSubmit()}
+	confirm={updateAccountPostingFormActions?.onSubmit}
 	dismissed={() => (updateAccountPostingModalOpen = false)}
 >
 	<Card title={selectedPosting?.purpose}>
@@ -586,11 +579,11 @@
 					clicked={() => (selectedPostingType = AccountPostingType.CREDIT)}
 				/>
 			</div>
-			<InputItem name="purpose" label="Purpose" icon={documentOutline} />
-			<InputItem name="amountInCents" label="Amount" icon={cashOutline} />
+			<TextInputItem name="purpose" label="Purpose" icon={documentOutline} />
+			<TextInputItem name="amountInCents" label="Amount" icon={cashOutline} />
 			<DatetimeInputItem
+				name="date"
 				label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.date')}
-				applied={(value) => updateAccountPostingFormActions.onUpdate('date', value)}
 			/>
 		</form>
 	</Card>
@@ -641,19 +634,17 @@
 					label="Expense"
 				/>
 			</div>
-			<CustomItem classList="flex" icon={calendarOutline}>
-				<DatetimeInputItem max={toFilterDate} label="From" value={fromFilterDate} applied={onApplyFromFilterDate} />
-				<DatetimeInputItem
-					min={fromFilterDate}
-					label="To"
-					value={toFilterDate}
-					applied={(value) => (toFilterDate = value)}
-				/>
-			</CustomItem>
+			<DatetimeInputItem max={toFilterDate} label="From" value={fromFilterDate} applied={onApplyFromFilterDate} />
+			<DatetimeInputItem
+				min={fromFilterDate}
+				label="To"
+				value={toFilterDate}
+				applied={(value) => (toFilterDate = value)}
+			/>
 			<CustomItem icon={personOutline} clicked={() => (filterMembersModalOpen = true)}>
 				<div class="flex flex-col">
-					<ion-text class="ms-3 py-2 text-xs">Select members</ion-text>
-					<ion-text class="ms-4 truncate">
+					<ion-text class="ms-3 pt-2 text-xs">Select members</ion-text>
+					<ion-text class="my-2 ms-4 truncate">
 						{displayedFilteredMembers}
 					</ion-text>
 				</div>
@@ -661,8 +652,8 @@
 			{#if $organizationStore && $organizationStore.activities.length > 0}
 				<CustomItem icon={flashOutline} clicked={() => (filterActivitiesModalOpen = true)}>
 					<div class="flex flex-col">
-						<ion-text class="ms-3 py-2 text-xs">Select events</ion-text>
-						<ion-text class="ms-4 truncate">
+						<ion-text class="ms-3 pt-2 text-xs">Select events</ion-text>
+						<ion-text class="my-2 ms-4 truncate">
 							{displayedFilteredActivities}
 						</ion-text>
 					</div>
@@ -702,7 +693,7 @@
 				<ion-text color="medium" class="flex items-center justify-center gap-1">
 					<ion-icon icon={cashOutline}></ion-icon>
 					<div>
-						{posting.type === AccountPostingType.CREDIT ? '-' : '+'}{currencyFormatter(posting.amountInCents)}
+						{posting.type === AccountPostingType.CREDIT ? '-' : '+'}{formatter.currency(posting.amountInCents)}
 					</div>
 				</ion-text>
 			</div>
@@ -739,7 +730,7 @@
 	<ion-searchbar class="w-full" debounce={100} placeholder="Search activities..." on:ionInput={onSearchActivities}>
 	</ion-searchbar>
 	<ToggleItem
-		disabled={activityFilterItems.length !== filteredMemberFilterItems.length}
+		disabled={activityFilterItems.length !== filteredActivityFilterItems.length}
 		checked={allActivityFilterItemsToggleActive}
 		label="All selected"
 		icon={albumsOutline}

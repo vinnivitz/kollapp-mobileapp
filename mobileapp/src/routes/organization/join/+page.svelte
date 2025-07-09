@@ -10,7 +10,7 @@
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
+	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
 	import { organizationStore } from '$lib/stores';
@@ -42,7 +42,7 @@
 <Layout title={$t('routes.organization.page.join.title')} showBackButton>
 	<Card title={$t('routes.organization.page.join.form.title')}>
 		<form>
-			<InputItem
+			<TextInputItem
 				name="code"
 				label={$t('routes.organization.page.join.form.code')}
 				helperText="Get it from a collective admin."

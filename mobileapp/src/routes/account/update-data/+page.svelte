@@ -6,7 +6,7 @@
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
+	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import { t } from '$lib/locales';
 	import { Form, type FormActions } from '$lib/models/ui';
 	import { userStore } from '$lib/stores';
@@ -49,9 +49,10 @@
 <Layout title={$t('routes.account.update-data.title')} showBackButton>
 	<Card title={$t('routes.account.update-data.card.title')}>
 		<form use:customForm={form}>
-			<InputItem name="username" label={$t('routes.account.update-data.card.form.username')} icon={personOutline} />
-			<InputItem
+			<TextInputItem name="username" label={$t('routes.account.update-data.card.form.username')} icon={personOutline} />
+			<TextInputItem
 				name="email"
+				inputmode="email"
 				label={$t('routes.account.update-data.card.form.email')}
 				icon={mailOutline}
 				type="email"

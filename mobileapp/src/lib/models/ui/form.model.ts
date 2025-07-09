@@ -34,6 +34,7 @@ export type FormConfig<T, R> = {
 		[K in keyof T]?: (_event: KeyboardEvent, value: T[K], onUpdate: (value: T[K]) => void) => void;
 	};
 	parsers?: { [K in keyof T]?: (value: string) => T[K] };
+	resetOnSubmit?: boolean;
 	request: (model: T) => Promise<ResponseBody<R>>;
 	completed?: (options: { actions: FormActions<T>; model: T; response: R }) => void;
 	exposedActions?: (actions: FormActions<T>) => void;

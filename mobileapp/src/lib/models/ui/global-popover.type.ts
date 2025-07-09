@@ -1,9 +1,9 @@
+import type { DateTimePickerType } from './datetime.model';
 import type { Writable } from 'svelte/store';
 
 export type GlobalPopover = {
 	datetimeInputItem: Writable<{
-		includeDate?: boolean;
-		includeTime?: boolean;
+		type: DateTimePickerType;
 		max?: string;
 		min?: string;
 		open?: boolean;

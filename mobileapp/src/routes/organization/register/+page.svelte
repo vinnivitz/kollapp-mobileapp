@@ -8,9 +8,9 @@
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import LocationInputItem from '$lib/components/widgets/ionic/LocationInputItem.svelte';
 	import TextareaItem from '$lib/components/widgets/ionic/TextareaItem.svelte';
+	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
 	import { Form } from '$lib/models/ui';
@@ -31,7 +31,7 @@
 <Layout title={$t('routes.auth.register.organization.title')} showBackButton>
 	<Card title={$t('routes.auth.register.organization.form.title')}>
 		<form use:customForm={form}>
-			<InputItem
+			<TextInputItem
 				name="name"
 				label={$t('routes.auth.register.organization.form.input.name')}
 				icon={accessibilityOutline}

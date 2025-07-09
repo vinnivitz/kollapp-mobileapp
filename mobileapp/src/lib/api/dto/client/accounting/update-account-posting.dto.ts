@@ -1,3 +1,5 @@
+import { TZDate } from '@date-fns/tz';
+import { format } from 'date-fns';
 import { get } from 'svelte/store';
 import { type AnyObject, number, object, ObjectSchema, string } from 'yup';
 
@@ -28,7 +30,9 @@ export const updateAccountPostingSchema = (): ObjectSchema<AnyObject, UpdateAcco
 			.min(1, $t('api.dto.budget.update-posting.schema.amount.min'))
 			.max(10_000_000, $t('api.dto.budget.update-posting.schema.amount.max'))
 			.required($t('api.dto.budget.create-posting.schema.amount.required')),
-		date: string().default(new Date().toISOString()).required($t('api.dto.budget.create-posting.schema.date.required')),
+		date: string()
+			.default(format(new TZDate(), 'yyyy-MM-dd'))
+			.required($t('api.dto.budget.create-posting.schema.date.required')),
 		purpose: string().default('').required($t('api.dto.budget.create-posting.schema.purpose.required')),
 		type: string().oneOf(Object.values(AccountPostingType)).default(AccountPostingType.CREDIT)
 	});

@@ -1,3 +1,5 @@
+import { TZDate } from '@date-fns/tz';
+import { format } from 'date-fns';
 import { get } from 'svelte/store';
 import { type AnyObject, number, object, type ObjectSchema, string } from 'yup';
 
@@ -29,7 +31,7 @@ export const createAccountPostingSchema = (): ObjectSchema<AnyObject, CreateAcco
 			.max(10_000_000, $t('api.dto.budget.create-posting.schema.amount.max'))
 			.required($t('api.dto.budget.create-posting.schema.amount.required')),
 		date: string()
-			.default(new Date().toISOString().split('T')[0])
+			.default(format(new TZDate(), 'yyyy-MM-dd'))
 			.required($t('api.dto.budget.create-posting.schema.date.required')),
 		purpose: string()
 			.default('')

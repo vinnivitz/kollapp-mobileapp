@@ -47,6 +47,9 @@ importers:
       '@capgo/capacitor-native-biometric':
         specifier: ^7.1.7
         version: 7.1.7(@capacitor/core@7.2.0)
+      '@date-fns/tz':
+        specifier: ^1.2.0
+        version: 1.2.0
       '@ebarooni/capacitor-calendar':
         specifier: ^7.2.0
         version: 7.2.0(@capacitor/core@7.2.0)
@@ -407,6 +410,9 @@ packages:
   '@csstools/css-tokenizer@3.0.3':
     resolution: {integrity: sha512-UJnjoFsmxfKUdNYdWgOB0mWUypuLvAfQPH1+pyvRJs6euowbFkFC6P13w1l8mJyi3vxYMxc9kld5jZEGRQs6bw==}
     engines: {node: '>=18'}
+
+  '@date-fns/tz@1.2.0':
+    resolution: {integrity: sha512-LBrd7MiJZ9McsOgxqWX7AaxrDjcFVjWH/tIKJd7pnR7McaslGYOP1QmmiBXdJH/H/yLCT+rcQ7FaPBUxRGUtrg==}
 
   '@dependents/detective-less@5.0.1':
     resolution: {integrity: sha512-Y6+WUMsTFWE5jb20IFP4YGa5IrGY/+a/FbOSjDF/wz9gepU2hwCYSXRHP/vPwBvwcY3SVMASt4yXxbXNXigmZQ==}
@@ -5842,6 +5848,8 @@ snapshots:
       '@csstools/css-tokenizer': 3.0.3
 
   '@csstools/css-tokenizer@3.0.3': {}
+
+  '@date-fns/tz@1.2.0': {}
 
   '@dependents/detective-less@5.0.1':
     dependencies:

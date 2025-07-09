@@ -6,9 +6,9 @@
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
 	import Calendar from '$lib/components/widgets/ionic/Datetime.svelte';
-	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
+	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import LeafletMap from '$lib/components/widgets/LeafletMap.svelte';
 	import { Locale } from '$lib/locales';
 	import { AlertType, Layout, Theme } from '$lib/models/ui';
@@ -152,16 +152,16 @@
 			clicked={() => showAlert('Item clicked', { type: AlertType.SUCCESS })}
 		></LabeledItem>
 		<LabeledItem card label="Labeled item with icon" icon={documentOutline}></LabeledItem>
-		<InputItem card label="Input item" name="value"></InputItem>
-		<InputItem card label="Input item" name="value" helperText="With helper text"></InputItem>
-		<InputItem card label="Input item with icon" name="value" icon={personOutline}></InputItem>
-		<InputItem
+		<TextInputItem card label="Input item" name="value"></TextInputItem>
+		<TextInputItem card label="Input item" name="value" helperText="With helper text"></TextInputItem>
+		<TextInputItem card label="Input item with icon" name="value" icon={personOutline}></TextInputItem>
+		<TextInputItem
 			card
 			label="Input item with clickable icon"
 			name="value"
 			inputIcon={attachOutline}
 			inputIconClick={() => showAlert('Item clicked', { type: AlertType.SUCCESS })}
-		></InputItem>
+		></TextInputItem>
 	</Card>
 	<Card title="Modal">
 		<div class="text-center">

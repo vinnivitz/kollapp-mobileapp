@@ -1,66 +1,30 @@
 <script lang="ts">
 	import type { Colors } from '$lib/models/ui';
+	import type { Snippet } from 'svelte';
 
-	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
-
-	type InputType = 'date' | 'email' | 'number' | 'password' | 'text';
+	import CustomItem from './CustomItem.svelte';
 
 	type Properties = {
+		children: Snippet;
+		icon: string;
 		label: string;
-		name: string;
-		card?: boolean;
+		classList?: string;
 		color?: Colors;
 		disabled?: boolean;
-		helperText?: string;
-		icon?: string;
-		inputIcon?: string;
-		maxlength?: number;
-		pattern?: string;
-		type?: InputType;
-		value?: null | number | string;
-		changed?: (value: string) => void;
-		inputIconClick?: () => void;
+		name?: string;
+		clicked: () => void;
 	};
 
-	let {
-		card,
-		changed,
-		color,
-		disabled,
-		helperText,
-		icon,
-		inputIcon,
-		inputIconClick,
-		label,
-		maxlength,
-		name,
-		pattern,
-		type = 'text',
-		value
-	}: Properties = $props();
+	let { children, classList, clicked, color, disabled, icon, label }: Properties = $props();
 </script>
 
-<CustomItem {card} {color} {icon} iconEnd={inputIcon} iconClick={inputIconClick}>
-	<!-- svelte-ignore event_directive_deprecated -->
-	<ion-input
-		{pattern}
-		label-placement="floating"
-		{maxlength}
-		counter={!!maxlength}
-		{name}
-		{label}
-		type={type === 'date' ? 'text' : type}
-		{value}
-		{disabled}
-		helper-text={helperText}
-		on:ionInput={(event) => changed?.(event.detail.value || '')}
-	>
-	</ion-input>
+<CustomItem {icon} {clicked} {classList} {color} {disabled}>
+	<div class="flex flex-col">
+		<ion-text class="ms-3 pt-2 text-xs">
+			{label}
+		</ion-text>
+		<div class="my-2 ms-4">
+			{@render children()}
+		</div>
+	</div>
 </CustomItem>
-
-<style>
-	ion-input {
-		--highlight-color-focused: var(--ion-color-secondary);
-		--color: var(--ion-color-dark);
-	}
-</style>

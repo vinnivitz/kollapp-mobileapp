@@ -2,6 +2,7 @@
 	import type { PageData } from './$types';
 
 	import { AppLauncher } from '@capacitor/app-launcher';
+	import { TZDate } from '@date-fns/tz';
 	import { CalendarPermissionScope, CapacitorCalendar } from '@ebarooni/capacitor-calendar';
 	import { isPlatform } from '@ionic/core';
 	import { addDays, format, formatDistanceToNow } from 'date-fns';
@@ -38,22 +39,22 @@
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
 	import DatetimeInputItem from '$lib/components/widgets/ionic/DatetimeInputItem.svelte';
 	import FabButton from '$lib/components/widgets/ionic/FabButton.svelte';
-	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import LocationInputItem from '$lib/components/widgets/ionic/LocationInputItem.svelte';
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
+	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import { t } from '$lib/locales';
 	import { type AccountPostingModel, AccountPostingType } from '$lib/models/models';
 	import { PageRoute } from '$lib/models/routing';
 	import { type FabButtonButtons, Form, type FormActions } from '$lib/models/ui';
 	import { accountPostingsStore, localeStore, organizationStore, userStore } from '$lib/stores';
 	import {
-		currencyFormatter,
 		currencyKeyEventHandler,
-		currencyParser,
 		customForm,
 		featureNotImplementedAlert,
+		formatter,
 		getDateFnsLocale,
 		getValidationResult,
+		parser,
 		showAlert
 	} from '$lib/utility';
 
@@ -100,20 +101,18 @@
 
 	let selectedPostingType = $state<AccountPostingType>(AccountPostingType.DEBIT);
 
-	const createAccountPostingForm = $derived(
-		new Form({
-			completed: async () => {
-				await organizationStore.update($organizationStore?.id!);
-				createAccountPostingModalOpen = false;
-			},
-			exposedActions: (exposedActions) => (createAccountPostingFormActions = exposedActions),
-			formatters: { amountInCents: currencyFormatter },
-			keyEventHandlers: { amountInCents: currencyKeyEventHandler() },
-			parsers: { amountInCents: currencyParser() },
-			request: async (model) => accountingResource.addAccountPosting($organizationStore?.id!, model),
-			schema: createAccountPostingSchema()
-		})
-	);
+	const createAccountPostingForm = new Form({
+		completed: async () => {
+			await organizationStore.update($organizationStore?.id!);
+			createAccountPostingModalOpen = false;
+		},
+		exposedActions: (exposedActions) => (createAccountPostingFormActions = exposedActions),
+		formatters: { amountInCents: formatter.currency, date: formatter.date },
+		keyEventHandlers: { amountInCents: currencyKeyEventHandler },
+		parsers: { amountInCents: parser.currency, date: parser.date },
+		request: (model) => accountingResource.addAccountPosting($organizationStore?.id!, model),
+		schema: createAccountPostingSchema()
+	});
 
 	$effect(() => {
 		if (activity && selectedPostingType) {
@@ -132,9 +131,9 @@
 			updateAccountPostingModalOpen = false;
 		},
 		exposedActions: (exposedActions) => (updateAccountPostingFormActions = exposedActions),
-		formatters: { amountInCents: currencyFormatter },
-		keyEventHandlers: { amountInCents: currencyKeyEventHandler() },
-		parsers: { amountInCents: currencyParser() },
+		formatters: { amountInCents: formatter.currency, date: formatter.date },
+		keyEventHandlers: { amountInCents: currencyKeyEventHandler },
+		parsers: { amountInCents: parser.currency, date: parser.date },
 		request: async (model) =>
 			accountingResource.updateAccountPosting($organizationStore?.id!, selectedPosting?.id!, model),
 		schema: createAccountPostingSchema()
@@ -146,18 +145,15 @@
 		}
 	});
 
-	const updateActivityForm = $derived(
-		new Form({
-			completed: async ({ model }) => {
-				console.log('model', model);
-				await organizationStore.update($organizationStore?.id!);
-				updateActivityModalOpen = false;
-			},
-			exposedActions: (exposedActions) => (updateActivityFormActions = exposedActions),
-			request: async (model) => organizationResource.updateActivity($organizationStore?.id!, activity?.id!, model),
-			schema: updateActivitySchema()
-		})
-	);
+	const updateActivityForm = new Form({
+		completed: async () => {
+			await organizationStore.update($organizationStore?.id!);
+			updateActivityModalOpen = false;
+		},
+		exposedActions: (exposedActions) => (updateActivityFormActions = exposedActions),
+		request: async (model) => organizationResource.updateActivity($organizationStore?.id!, activity?.id!, model),
+		schema: updateActivitySchema()
+	});
 
 	$effect(() => {
 		updateActivityFormActions.setModel(activity);
@@ -212,9 +208,9 @@
 		}
 		const balance = totalIncome - totalExpense;
 		return {
-			balance: currencyFormatter(balance),
-			income: currencyFormatter(totalIncome),
-			spent: currencyFormatter(totalExpense)
+			balance: formatter.currency(balance),
+			income: formatter.currency(totalIncome),
+			spent: formatter.currency(totalExpense)
 		};
 	}
 
@@ -344,7 +340,7 @@
 			<div class="flex items-center gap-1">
 				<ion-icon icon={calendarOutline}></ion-icon>
 				<ion-text>
-					{formatDistanceToNow(addDays(new Date(), 5), {
+					{formatDistanceToNow(addDays(new TZDate(), 5), {
 						addSuffix: true,
 						includeSeconds: true,
 						locale: getDateFnsLocale($localeStore)
@@ -412,7 +408,7 @@
 >
 	<Card title={$t('routes.organization.page.activity.edit-modal.card.title')}>
 		<form use:customForm={updateActivityForm}>
-			<InputItem
+			<TextInputItem
 				name="name"
 				label={$t('routes.organization.page.activity.create-modal.card.input.name')}
 				icon={documentOutline}
@@ -421,7 +417,7 @@
 				label={$t('routes.organization.page.activity.update-modal.card.input.location')}
 				name="location"
 			/>
-			<DatetimeInputItem label="Date" />
+			<DatetimeInputItem label="Date" name="date" />
 		</form>
 	</Card>
 </Modal>
@@ -445,11 +441,11 @@
 					clicked={() => (selectedPostingType = AccountPostingType.CREDIT)}
 				/>
 			</div>
-			<InputItem name="purpose" label="Purpose" icon={documentOutline} />
-			<InputItem name="amountInCents" label="Amount" icon={cashOutline} />
+			<TextInputItem name="purpose" label="Purpose" icon={documentOutline} />
+			<TextInputItem inputmode="numeric" name="amountInCents" label="Amount" icon={cashOutline} />
 			<DatetimeInputItem
 				label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.date')}
-				applied={(value) => createAccountPostingFormActions.onUpdate('date', value)}
+				name="date"
 			/>
 		</form>
 	</Card>
@@ -474,11 +470,11 @@
 					clicked={() => (selectedPostingType = AccountPostingType.CREDIT)}
 				/>
 			</div>
-			<InputItem name="purpose" label="Purpose" icon={documentOutline} />
-			<InputItem name="amountInCents" label="Amount" icon={cashOutline} />
+			<TextInputItem name="purpose" label="Purpose" icon={documentOutline} />
+			<TextInputItem name="amountInCents" label="Amount" icon={cashOutline} />
 			<DatetimeInputItem
 				label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.date')}
-				applied={(value) => updateAccountPostingFormActions.onUpdate('date', value)}
+				name="date"
 			/>
 		</form>
 	</Card>
@@ -550,12 +546,12 @@
 				</ion-text>
 				<ion-text color="medium" class="flex items-center justify-center gap-1">
 					<ion-icon icon={calendarClearOutline}></ion-icon>
-					<div>{format(new Date(posting.date), 'PPP')}</div>
+					<div>{format(new TZDate(posting.date), 'PPP')}</div>
 				</ion-text>
 				<ion-text color="medium" class="flex items-center justify-center gap-1">
 					<ion-icon icon={cashOutline}></ion-icon>
 					<div>
-						{posting.type === AccountPostingType.CREDIT ? '-' : '+'}{currencyFormatter(posting.amountInCents)}
+						{posting.type === AccountPostingType.CREDIT ? '-' : '+'}{formatter.currency(posting.amountInCents)}
 					</div>
 				</ion-text>
 			</div>

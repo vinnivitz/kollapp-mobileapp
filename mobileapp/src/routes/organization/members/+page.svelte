@@ -3,6 +3,7 @@
 
 	import { Clipboard } from '@capacitor/clipboard';
 	import { Share } from '@capacitor/share';
+	import { TZDate } from '@date-fns/tz';
 	import QRCode from '@svelte-put/qr/svg/QR.svelte';
 	import { EmailComposer } from 'capacitor-email-composer';
 	import { formatDistanceToNow } from 'date-fns';
@@ -48,7 +49,7 @@
 	const userId = $derived($userStore?.id);
 
 	const invitationCodeExpiration = $derived(
-		new Date($organizationStore?.organizationInvitationCode.expirationDate ?? new Date())
+		new TZDate($organizationStore?.organizationInvitationCode.expirationDate ?? new TZDate())
 	);
 	const inviationCode = $derived($organizationStore?.organizationInvitationCode.code ?? '');
 

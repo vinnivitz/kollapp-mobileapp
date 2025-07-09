@@ -8,7 +8,7 @@
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
+	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import Welcome from '$lib/components/widgets/Welcome.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
@@ -44,15 +44,15 @@
 
 {#snippet registerForm()}
 	<form use:customForm={form}>
-		<InputItem name="username" label={$t('routes.auth.register.form.input.username')} icon={personCircleOutline} />
-		<InputItem name="email" type="email" label={$t('routes.auth.register.form.input.email')} icon={mailOutline} />
-		<InputItem
+		<TextInputItem name="username" label={$t('routes.auth.register.form.input.username')} icon={personCircleOutline} />
+		<TextInputItem name="email" type="email" label={$t('routes.auth.register.form.input.email')} icon={mailOutline} />
+		<TextInputItem
 			name="password"
 			type="password"
 			label={$t('routes.auth.register.form.input.password')}
 			icon={keyOutline}
 		/>
-		<InputItem
+		<TextInputItem
 			name="confirmPassword"
 			type="password"
 			label={$t('routes.auth.register.form.input.confirm-password')}

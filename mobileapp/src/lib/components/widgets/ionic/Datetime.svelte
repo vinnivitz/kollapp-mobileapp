@@ -1,10 +1,11 @@
 <script lang="ts">
-	import type { Colors } from '$lib/models/ui';
 	import type { DatetimeChangeEventDetail } from '@ionic/core';
 
-	import { addYears } from 'date-fns';
+	import { TZDate } from '@date-fns/tz';
+	import { addYears, format } from 'date-fns';
 
 	import { t } from '$lib/locales';
+	import { type Colors, DateTimePickerType } from '$lib/models/ui';
 	import { localeStore } from '$lib/stores';
 	import { clickOutside } from '$lib/utility';
 
@@ -12,12 +13,11 @@
 		applyText?: string;
 		color?: Colors;
 		dismissText?: string;
-		includeDate?: boolean;
-		includeTime?: boolean;
 		max?: string;
 		min?: string;
 		showButtons?: boolean;
 		showTitle?: boolean;
+		type?: DateTimePickerType;
 		value?: string;
 		applied?: (value: string) => void;
 		dismissed?: () => void;
@@ -29,32 +29,21 @@
 		color = 'secondary',
 		dismissed,
 		dismissText = $t('components.widgets.calendar.dismiss-button.label'),
-		includeDate = true,
-		includeTime = false,
-		max = addYears(new Date(), 10).toISOString(),
+		max = format(addYears(new TZDate(), 10), 'yyyy-MM-dd'),
 		min,
 		showButtons = true,
 		showTitle = true,
-		value = new Date().toISOString()
+		type = DateTimePickerType.DATE,
+		value
 	}: Properties = $props();
 
-	let calendar = $state<HTMLIonDatetimeElement>();
-
 	function onDismiss(): void {
-		calendar?.reset();
 		dismissed?.();
 	}
 
 	async function onApply(event: CustomEvent<DatetimeChangeEventDetail>): Promise<void> {
-		calendar?.reset();
 		value = event.detail.value as string;
 		applied?.(value);
-	}
-
-	function getPresentation(): 'date-time' | 'date' | 'time' {
-		if (includeDate && includeTime) return 'date-time';
-		if (includeDate) return 'date';
-		return 'time';
 	}
 </script>
 
@@ -70,11 +59,10 @@
 	on:blur={onDismiss}
 	{color}
 	size="cover"
-	bind:this={calendar}
 	locale={$localeStore}
 	on:ionChange={onApply}
 	first-day-of-week={1}
-	presentation={getPresentation()}
+	presentation={type}
 >
 	{#if showTitle}
 		<span slot="title">{$t('routes.organization.page.activity.calendar.title')}</span>

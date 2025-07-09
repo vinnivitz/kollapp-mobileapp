@@ -1,9 +1,9 @@
 <script lang="ts">
+	import { TZDate } from '@date-fns/tz';
 	import { format } from 'date-fns';
 	import { calendarClearOutline } from 'ionicons/icons';
 
-	import Button from './Button.svelte';
-	import CustomItem from './CustomItem.svelte';
+	import TextInputItem from './TextInputItem.svelte';
 
 	import { DateTimePickerType } from '$lib/models/ui';
 	import { globalPopoverStore } from '$lib/stores';
@@ -14,92 +14,54 @@
 		max?: string;
 		min?: string;
 		type?: DateTimePickerType;
-		value?: string;
-		applied?: (value: string) => void;
-		dismissed?: () => void;
-	};
-
-	const { datetimeInputItem } = globalPopoverStore;
+	} & (
+		| { name: string; applied?: never; value?: never }
+		| { value: string; name?: never; applied?: (value: string) => void }
+	);
 
 	let {
 		applied,
-		dismissed,
 		icon = calendarClearOutline,
 		label,
 		max,
 		min,
+		name,
 		type = DateTimePickerType.DATE,
 		value
 	}: Properties = $props();
 
-	let selectedValue = $state(value ?? new Date().toISOString());
-	let includeDate = $state(true);
-	let includeTime = $state(false);
+	const { datetimeInputItem } = globalPopoverStore;
+
+	$effect(() => {
+		if (value && element) element.value = format(new TZDate(value), 'PPP');
+	});
+
+	let element = $state<HTMLIonInputElement | undefined>();
 
 	function onApply(value: string): void {
-		selectedValue = value;
-		datetimeInputItem.update((item) => ({ ...item, value }));
-		applied?.(format(selectedValue, includeDate ? 'yyyy-MM-dd' : 'HH:mm'));
+		const date = format(value, 'PPP');
+		applied?.(value);
+		if (element) element.value = date;
+		element?.dispatchEvent(new CustomEvent('ionInput', { bubbles: true }));
 	}
 
-	function onDismiss(): void {
-		dismissed?.();
-	}
-
-	function onOpenDatetimeModal(type: DateTimePickerType): void {
-		switch (type) {
-			case DateTimePickerType.DATE: {
-				includeDate = true;
-				includeTime = false;
-				break;
-			}
-			case DateTimePickerType.TIME: {
-				includeDate = false;
-				includeTime = true;
-				break;
-			}
-		}
+	function onOpenDatetimeModal(): void {
 		datetimeInputItem.set({
 			applied: onApply,
-			dismissed: onDismiss,
-			includeDate,
-			includeTime,
 			max,
 			min,
 			open: true,
-			value: selectedValue
+			type,
+			value: format(new TZDate(element?.value?.toString() ?? ''), 'yyyy-MM-dd')
 		});
 	}
 </script>
 
-<CustomItem {icon}>
-	<div class="flex flex-col">
-		<ion-text class="ms-3 pt-2 text-xs">
-			{label}
-		</ion-text>
-		<div class="-ms-5 flex">
-			{#if type === DateTimePickerType.DATE || type === DateTimePickerType.DATETIME}
-				<Button
-					classList="m-0 ms-1"
-					fill="clear"
-					color="dark"
-					size="default"
-					type="button"
-					clicked={() => onOpenDatetimeModal(DateTimePickerType.DATE)}
-					label={format(selectedValue, 'PPP')}
-				></Button>
-			{/if}
-			{#if type === DateTimePickerType.TIME || type === DateTimePickerType.DATETIME}
-				<Button
-					classList="m-0"
-					fill="clear"
-					color="dark"
-					size="default"
-					type="button"
-					clicked={() => onOpenDatetimeModal(DateTimePickerType.TIME)}
-					label={format(selectedValue, 'p')}
-				></Button>
-			{/if}
-		</div>
-	</div>
-</CustomItem>
+<TextInputItem
+	inputElement={(value) => (element = value)}
+	{label}
+	{icon}
+	name={name ?? ''}
+	readonly
+	clicked={onOpenDatetimeModal}
+></TextInputItem>

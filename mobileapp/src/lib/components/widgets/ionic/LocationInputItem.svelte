@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { locationOutline, mapOutline } from 'ionicons/icons';
 
-	import InputItem from './InputItem.svelte';
 	import Modal from './Modal.svelte';
+	import TextInputItem from './TextInputItem.svelte';
 	import LeafletMap from '../LeafletMap.svelte';
 
 	import { t } from '$lib/locales';
@@ -25,7 +25,7 @@
 	}
 </script>
 
-<InputItem {value} {name} {label} {icon} inputIcon={mapOutline} inputIconClick={() => (open = true)} />
+<TextInputItem {value} {name} {label} {icon} inputIcon={mapOutline} inputIconClick={() => (open = true)} />
 
 <Modal
 	{open}

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { ActivityModel, OrganizationModel, UserModel } from '$lib/models/models';
 
+	import { TZDate } from '@date-fns/tz';
 	import { addDays, formatDistanceToNow } from 'date-fns';
 	import {
 		accessibilityOutline,
@@ -19,7 +20,7 @@
 	import { t } from '$lib/locales';
 	import { PageRoute, type PageRoutePaths } from '$lib/models/routing';
 	import { accountPostingsStore, localeStore, organizationStore, userStore } from '$lib/stores';
-	import { currencyFormatter, featureNotImplementedAlert, getDateFnsLocale } from '$lib/utility';
+	import { featureNotImplementedAlert, formatter, getDateFnsLocale } from '$lib/utility';
 
 	const activity = $derived($organizationStore?.activities && $organizationStore.activities[0]);
 
@@ -82,7 +83,7 @@
 			<div class="flex items-center gap-2">
 				<ion-icon icon={calendarOutline}></ion-icon>
 				<ion-text>
-					{formatDistanceToNow(addDays(new Date(), 5), {
+					{formatDistanceToNow(addDays(new TZDate(), 5), {
 						addSuffix: true,
 						includeSeconds: true,
 						locale: getDateFnsLocale($localeStore)
@@ -111,7 +112,7 @@
 			/>
 			<Button
 				icon={cashOutline}
-				label={currencyFormatter(accountPostingsStore.getTotalBudget())}
+				label={formatter.currency(accountPostingsStore.getTotalBudget())}
 				size="small"
 				fill="clear"
 				color="dark"

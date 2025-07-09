@@ -8,7 +8,7 @@
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
+	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
 	import { Form } from '$lib/models/ui';
@@ -41,19 +41,19 @@
 <Layout title={$t('routes.auth.change-password.confirmation.title')} showBackButton>
 	<Card title={$t('routes.auth.change-password.confirmation.form.title')}>
 		<form use:customForm={form}>
-			<InputItem
+			<TextInputItem
 				name="currentPassword"
 				type="password"
 				label={$t('routes.account.change-password.form.input.current-password')}
 				icon={keyOutline}
 			/>
-			<InputItem
+			<TextInputItem
 				name="newPassword"
 				type="password"
 				label={$t('routes.account.change-password.form.input.new-password')}
 				icon={keySharp}
 			/>
-			<InputItem
+			<TextInputItem
 				name="confirmNewPassword"
 				type="password"
 				label={$t('routes.auth.reset-password.confirmation.form.input.confirm-password')}

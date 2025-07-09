@@ -18,8 +18,8 @@
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
-	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
+	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import { t } from '$lib/locales';
 	import { PreferencesKey } from '$lib/models/preferences';
 	import { PageRoute } from '$lib/models/routing';
@@ -145,7 +145,7 @@
 <ion-popover class="extended" is-open={showPasswordPrompt} on:didDismiss={onPasswordPromptDismiss}>
 	<Card title="Enter your password">
 		<form use:customForm={form}>
-			<InputItem
+			<TextInputItem
 				name="password"
 				type="password"
 				label={$t('routes.account.list.account.privacy-and-security.form.input.password')}

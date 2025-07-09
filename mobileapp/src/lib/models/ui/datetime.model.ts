@@ -3,6 +3,6 @@
  */
 export enum DateTimePickerType {
 	DATE = 'date',
-	DATETIME = 'datetime',
+	DATETIME = 'date-time',
 	TIME = 'time'
 }

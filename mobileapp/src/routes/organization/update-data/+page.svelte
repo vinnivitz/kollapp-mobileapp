@@ -6,9 +6,9 @@
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import LocationInputItem from '$lib/components/widgets/ionic/LocationInputItem.svelte';
 	import TextareaItem from '$lib/components/widgets/ionic/TextareaItem.svelte';
+	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import { t } from '$lib/locales';
 	import { Form, type FormActions } from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';
@@ -18,18 +18,16 @@
 
 	let actions: FormActions<UpdateOrganizationDto>;
 
-	const form = $derived(
-		new Form({
-			completed: async () => {
-				await organizationStore.init();
-				touched = false;
-			},
-			exposedActions: (exposedActions) => (actions = exposedActions),
-			onTouched: () => (touched = true),
-			request: async (model) => organizationResource.update($organizationStore?.id!, model),
-			schema: updateOrganizationSchema()
-		})
-	);
+	const form = new Form({
+		completed: async () => {
+			await organizationStore.init();
+			touched = false;
+		},
+		exposedActions: (exposedActions) => (actions = exposedActions),
+		onTouched: () => (touched = true),
+		request: async (model) => organizationResource.update($organizationStore?.id!, model),
+		schema: updateOrganizationSchema()
+	});
 
 	$effect(() => {
 		if ($organizationStore) {
@@ -46,7 +44,7 @@
 	{#if form}
 		<Card title={$t('routes.organization.update-info.card.title')}>
 			<form use:customForm={form}>
-				<InputItem
+				<TextInputItem
 					name="name"
 					label={$t('routes.auth.register.organization.form.input.name')}
 					icon={accessibilityOutline}
