@@ -45,7 +45,13 @@
 {#snippet registerForm()}
 	<form use:customForm={form}>
 		<TextInputItem name="username" label={$t('routes.auth.register.form.input.username')} icon={personCircleOutline} />
-		<TextInputItem name="email" inputmode="email" type="email" label={$t('routes.auth.register.form.input.email')} icon={mailOutline} />
+		<TextInputItem
+			name="email"
+			inputmode="email"
+			type="email"
+			label={$t('routes.auth.register.form.input.email')}
+			icon={mailOutline}
+		/>
 		<TextInputItem
 			name="password"
 			type="password"

@@ -79,10 +79,7 @@
 				modalOpen = false;
 				showAlert('Modal dismissed');
 			}}
-			confirm={() => {
-				modalOpen = false;
-				showAlert('Model confirmed', { type: AlertType.SUCCESS });
-			}}
+			confirmed={() => showAlert('Model confirmed', { type: AlertType.SUCCESS })}
 		>
 			<ion-text>This is a modal.</ion-text>
 		</Modal>

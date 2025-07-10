@@ -12,12 +12,15 @@
 		createOutline,
 		documentOutline,
 		filterOutline,
+		flashOffOutline,
 		flashOutline,
 		listOutline,
 		logOutOutline,
 		peopleOutline,
 		personAddOutline,
 		personOutline,
+		refreshOutline,
+		saveOutline,
 		swapHorizontalOutline,
 		trashBinOutline,
 		trendingDownOutline,
@@ -70,6 +73,7 @@
 	type ActivityFilterValue = {
 		id: number;
 		name: string;
+		icon?: string;
 	};
 
 	const organizations = $derived(organizationStore.organizations);
@@ -79,7 +83,7 @@
 	let createAccountPostingFormActions = $state<FormActions<CreateAccountPostingDto>>();
 	let updateAccountPostingFormActions = $state<FormActions<CreateAccountPostingDto>>();
 
-	let createAccountPostingModalOpen = $state(false);
+	let createAccountPostingModal = $state(false);
 	let updateAccountPostingModalOpen = $state(false);
 	let transactionHistoryModalOpen = $state(false);
 
@@ -87,10 +91,10 @@
 	let postingsSearchValue = $state('');
 	let selectedPostingTypes: AccountPostingType[] = $state([AccountPostingType.DEBIT, AccountPostingType.CREDIT]);
 
+	let filterOpen = $state(false);
+
 	let selectedPosting = $state<AccountPostingModel | undefined>();
 	let selectedPostingType = $state<AccountPostingType>(AccountPostingType.DEBIT);
-
-	let filterOpen = $state(false);
 
 	let fromFilterDate = $state(format(new TZDate(), 'yyyy-MM-dd'));
 	let toFilterDate = $state(format(new TZDate(), 'yyyy-MM-dd'));
@@ -100,12 +104,13 @@
 	const memberFilterItems = $derived<FilterItem[]>(
 		$organizationStore?.personsOfOrganization.map((member) => ({ data: member.username, selected: true })) ?? []
 	);
-	const activityFilterItems = $derived<FilterItem<ActivityFilterValue>[]>(
-		$organizationStore?.activities.map((activity) => ({
+	const activityFilterItems = $derived<FilterItem<ActivityFilterValue>[]>([
+		...($organizationStore?.activities.map((activity) => ({
 			data: { id: activity.id, name: activity.name },
 			selected: true
-		})) ?? []
-	);
+		})) ?? []),
+		{ data: { icon: flashOffOutline, id: -1, name: 'Not assigned to activity' }, selected: true }
+	]);
 	let filteredMemberFilterItems = $state<FilterItem[]>([]);
 	let filteredActivityFilterItems = $state<FilterItem<ActivityFilterValue>[]>([]);
 	const displayedFilteredMembers = $derived(getDisplayedFilteredMembers(filteredMemberFilterItems));
@@ -120,7 +125,7 @@
 	const createAccountPostingForm = new Form({
 		completed: async () => {
 			await organizationStore.update($organizationStore?.id!);
-			createAccountPostingModalOpen = false;
+			createAccountPostingModal = false;
 		},
 		exposedActions: (exposedActions) => (createAccountPostingFormActions = exposedActions),
 		formatters: { amountInCents: formatter.currency, date: formatter.date },
@@ -217,7 +222,9 @@
 			const matchesDateRange =
 				new TZDate(posting.date) >= new TZDate(fromFilterDate) && new TZDate(posting.date) <= new TZDate(toFilterDate);
 			const matchesActivities = filteredActivityFilterItems.some(
-				(activity) => activity.selected && activity.data.id === posting.activityId
+				(activity) =>
+					activity.selected &&
+					(activity.data.id === posting.activityId || (activity.data.id === -1 && !posting.activityId))
 			);
 			return (
 				matchesActivities &&
@@ -260,7 +267,7 @@
 
 	async function onOpenCreateAccountPosting(type: AccountPostingType): Promise<void> {
 		selectedPostingType = type;
-		createAccountPostingModalOpen = true;
+		createAccountPostingModal = true;
 	}
 
 	function getCreatePostingTitle(type: AccountPostingType): string {
@@ -347,8 +354,8 @@
 
 	function onSearchActivities(event: CustomEvent): void {
 		const value = event.detail.value;
-		filteredActivityFilterItems = activityFilterItems.filter((activity) =>
-			activity.data.name.toLowerCase().includes(value)
+		filteredActivityFilterItems = activityFilterItems.filter(
+			(activity) => activity.data.id !== -1 && activity.data.name.toLowerCase().includes(value)
 		);
 	}
 
@@ -362,6 +369,14 @@
 			selected: value ?? false
 		}));
 	}
+
+	function resetFilter(): void {
+		fromFilterDate = getMinPostingDate(postings);
+		toFilterDate = getMaxPostingDate(postings);
+		filteredMemberFilterItems = memberFilterItems;
+		filteredActivityFilterItems = activityFilterItems;
+		selectedPostingTypes = [AccountPostingType.DEBIT, AccountPostingType.CREDIT];
+	}
 </script>
 
 <Layout title={$t('routes.organization.title')}>
@@ -369,10 +384,10 @@
 		{#if $organizationStore.activities.length > 0}
 			{@render changeCollective($organizationStore)}
 		{/if}
+		{@render budgetCard()}
 		{#if $organizationStore.activities.length > 0}
 			{@render upcomingEvent($organizationStore.activities)}
 		{/if}
-		{@render budgetCard()}
 		{@render eventsList()}
 		{@render collectiveList()}
 	{/if}
@@ -531,11 +546,7 @@
 	</Card>
 {/snippet}
 
-<Modal
-	open={createAccountPostingModalOpen}
-	confirm={createAccountPostingFormActions?.onSubmit}
-	dismissed={() => (createAccountPostingModalOpen = false)}
->
+<Modal open={createAccountPostingModal} dismissed={() => (createAccountPostingModal = false)}>
 	<Card title={getCreatePostingTitle(selectedPostingType)}>
 		<form use:customForm={createAccountPostingForm!}>
 			<div class="mb-3 flex items-center justify-center gap-2">
@@ -560,11 +571,7 @@
 	</Card>
 </Modal>
 
-<Modal
-	open={updateAccountPostingModalOpen}
-	confirm={updateAccountPostingFormActions?.onSubmit}
-	dismissed={() => (updateAccountPostingModalOpen = false)}
->
+<Modal open={updateAccountPostingModalOpen} dismissed={() => (updateAccountPostingModalOpen = false)}>
 	<Card title={selectedPosting?.purpose}>
 		<form use:customForm={updateAccountPostingForm}>
 			<div class="mb-3 flex items-center justify-center gap-2">
@@ -614,54 +621,56 @@
 	{/if}
 </Modal>
 
-{#key postings}
-	<!-- svelte-ignore event_directive_deprecated -->
-	<ion-popover class="extended" is-open={filterOpen} on:didDismiss={() => (filterOpen = false)}>
-		<Card title="Filters" classList="m-0">
-			<div class="flex items-center justify-center gap-2">
-				<Chip
-					clicked={() => toggleAccountPostingTypeSelected(AccountPostingType.DEBIT)}
-					color="success"
-					selected={selectedPostingTypes.includes(AccountPostingType.DEBIT)}
-					icon={trendingUpOutline}
-					label="Income"
-				/>
-				<Chip
-					clicked={() => toggleAccountPostingTypeSelected(AccountPostingType.CREDIT)}
-					color="danger"
-					selected={selectedPostingTypes.includes(AccountPostingType.CREDIT)}
-					icon={trendingDownOutline}
-					label="Expense"
-				/>
-			</div>
-			<DatetimeInputItem max={toFilterDate} label="From" value={fromFilterDate} applied={onApplyFromFilterDate} />
-			<DatetimeInputItem
-				min={fromFilterDate}
-				label="To"
-				value={toFilterDate}
-				applied={(value) => (toFilterDate = value)}
+<!-- svelte-ignore event_directive_deprecated -->
+<ion-popover class="extended" is-open={filterOpen} on:didDismiss={() => (filterOpen = false)}>
+	<Card title="Filters" classList="m-0">
+		<div class="flex items-center justify-center gap-2">
+			<Chip
+				clicked={() => toggleAccountPostingTypeSelected(AccountPostingType.DEBIT)}
+				color="success"
+				selected={selectedPostingTypes.includes(AccountPostingType.DEBIT)}
+				icon={trendingUpOutline}
+				label="Income"
 			/>
-			<CustomItem icon={personOutline} clicked={() => (filterMembersModalOpen = true)}>
+			<Chip
+				clicked={() => toggleAccountPostingTypeSelected(AccountPostingType.CREDIT)}
+				color="danger"
+				selected={selectedPostingTypes.includes(AccountPostingType.CREDIT)}
+				icon={trendingDownOutline}
+				label="Expense"
+			/>
+		</div>
+		<DatetimeInputItem max={toFilterDate} label="From" value={fromFilterDate} applied={onApplyFromFilterDate} />
+		<DatetimeInputItem
+			min={fromFilterDate}
+			label="To"
+			value={toFilterDate}
+			applied={(value) => (toFilterDate = value)}
+		/>
+		<CustomItem icon={personOutline} clicked={() => (filterMembersModalOpen = true)}>
+			<div class="flex flex-col">
+				<ion-text class="ms-3 pt-2 text-xs">Select members</ion-text>
+				<ion-text class="my-2 ms-4 truncate">
+					{displayedFilteredMembers}
+				</ion-text>
+			</div>
+		</CustomItem>
+		{#if $organizationStore && $organizationStore.activities.length > 0}
+			<CustomItem icon={flashOutline} clicked={() => (filterActivitiesModalOpen = true)}>
 				<div class="flex flex-col">
-					<ion-text class="ms-3 pt-2 text-xs">Select members</ion-text>
+					<ion-text class="ms-3 pt-2 text-xs">Select events</ion-text>
 					<ion-text class="my-2 ms-4 truncate">
-						{displayedFilteredMembers}
+						{displayedFilteredActivities}
 					</ion-text>
 				</div>
 			</CustomItem>
-			{#if $organizationStore && $organizationStore.activities.length > 0}
-				<CustomItem icon={flashOutline} clicked={() => (filterActivitiesModalOpen = true)}>
-					<div class="flex flex-col">
-						<ion-text class="ms-3 pt-2 text-xs">Select events</ion-text>
-						<ion-text class="my-2 ms-4 truncate">
-							{displayedFilteredActivities}
-						</ion-text>
-					</div>
-				</CustomItem>
-			{/if}
-		</Card>
-	</ion-popover>
-{/key}
+		{/if}
+		<div class="mt-2 flex items-center justify-center gap-2">
+			<Button label="Reset filter" color="danger" icon={refreshOutline} fill="outline" clicked={resetFilter} />
+			<Button label="Apply filter" icon={saveOutline} fill="outline" clicked={() => (filterOpen = false)} />
+		</div>
+	</Card>
+</ion-popover>
 
 {#snippet transactionItem(posting: AccountPostingModel)}
 	<CustomItem
@@ -674,12 +683,14 @@
 				<ion-text class="truncate">
 					{posting.purpose}
 				</ion-text>
-				<ion-text color="medium" class="flex items-center justify-center gap-1">
-					<ion-icon icon={flashOutline}></ion-icon>
-					<div class="truncate">
-						{$organizationStore?.activities.find((activity) => activity.id === posting.activityId)?.name}
-					</div>
-				</ion-text>
+				{#if posting.activityId}
+					<ion-text color="medium" class="flex items-center justify-center gap-1">
+						<ion-icon icon={flashOutline}></ion-icon>
+						<div class="truncate">
+							{$organizationStore?.activities.find((activity) => activity.id === posting.activityId)?.name}
+						</div>
+					</ion-text>
+				{/if}
 			</div>
 			<div class="flex w-full flex-wrap items-start justify-between gap-2 text-sm">
 				<ion-text color="medium" class="flex items-center justify-center gap-1">
@@ -742,8 +753,18 @@
 				<ion-checkbox
 					value={activity.data.name}
 					checked={activity.selected}
-					on:ionChange={() => (activity.selected = !activity.selected)}>{activity.data.name}</ion-checkbox
+					on:ionChange={() => (activity.selected = !activity.selected)}
+					color={activity.data.icon ? 'tertiary' : 'primary'}
 				>
+					<div class="flex items-center justify-center gap-2">
+						{#if activity.data.icon}
+							<ion-icon color="tertiary" icon={activity.data.icon}></ion-icon>
+						{/if}
+						<ion-text color={activity.data.icon ? 'tertiary' : 'dark'}>
+							{activity.data.name}
+						</ion-text>
+					</div>
+				</ion-checkbox>
 			</CustomItem>
 		{/each}
 	</ion-list>

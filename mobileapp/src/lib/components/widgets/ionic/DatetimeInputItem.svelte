@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { TZDate } from '@date-fns/tz';
 	import { format } from 'date-fns';
-	import { calendarClearOutline } from 'ionicons/icons';
+	import { calendarClearOutline, calendarOutline } from 'ionicons/icons';
 
 	import TextInputItem from './TextInputItem.svelte';
 
@@ -52,7 +52,7 @@
 			min,
 			open: true,
 			type,
-			value: format(new TZDate(element?.value?.toString() ?? ''), 'yyyy-MM-dd')
+			value: element?.value ? format(new TZDate(element.value.toString()), 'yyyy-MM-dd') : undefined
 		});
 	}
 </script>
@@ -63,5 +63,6 @@
 	{icon}
 	name={name ?? ''}
 	readonly
+	inputIcon={calendarOutline}
 	clicked={onOpenDatetimeModal}
 ></TextInputItem>

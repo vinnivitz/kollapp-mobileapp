@@ -24,7 +24,12 @@
 <Layout title={$t('routes.auth.resend-confirmation.title')} showBackButton>
 	<Card title={$t('routes.auth.resend-confirmation.card.title')}>
 		<form use:customForm={form}>
-			<TextInputItem name="email" inputmode="email" label={$t('routes.auth.reset-password.form.email')} icon={mailOutline} />
+			<TextInputItem
+				name="email"
+				inputmode="email"
+				label={$t('routes.auth.reset-password.form.email')}
+				icon={mailOutline}
+			/>
 			<Button
 				classList="mt-3"
 				expand="block"

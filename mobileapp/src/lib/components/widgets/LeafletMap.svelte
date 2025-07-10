@@ -13,26 +13,27 @@
 
 	type Properties = {
 		classList?: string;
-		position?: LatLng;
 		searchable?: boolean;
+		value?: string;
 		selected?: (name: string) => void;
 	};
 
 	const TILE_LAYER_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 	const TILE_LAYER_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>';
 
-	let { classList, position, searchable = true, selected }: Properties = $props();
+	let { classList, searchable = true, selected, value }: Properties = $props();
 	let map: Map | undefined;
 	let marker: Marker | undefined;
 	let searchbarOpen = $state(false);
 	let searchItems = $state<PositionItem[]>([]);
 	let searchbar = $state<HTMLIonSearchbarElement | undefined>();
 
-	onMount(() => initializeMap(position));
+	onMount(() => initializeMap(value));
 
 	onDestroy(() => map?.remove());
 
-	async function initializeMap(position?: LatLng): Promise<void> {
+	async function initializeMap(value?: string): Promise<void> {
+		console.log('value', value);
 		const coordinates = (await getStoredValue(PreferencesKey.POSITION)) || JSON.parse(environment.defaultPosition);
 		const latlng = new LatLng(coordinates[0], coordinates[1]);
 		if (document.querySelector('.leaflet-container')) return;
@@ -48,8 +49,13 @@
 			maxNativeZoom: 19,
 			maxZoom: 20
 		}).addTo(map);
-		if (position) {
-			await setMarker(position);
+		if (value) {
+			console.log('item', value);
+			const response = await osmResource.getLocationsByQuery(value);
+			const item = response[0];
+			if (item) {
+				await setMarker(item.latlng);
+			}
 		}
 	}
 

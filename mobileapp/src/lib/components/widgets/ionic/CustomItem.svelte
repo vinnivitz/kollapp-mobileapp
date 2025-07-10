@@ -73,7 +73,7 @@
 		role="button"
 		tabindex="0"
 		{color}
-		detail={!!(clicked || slidingOptions)}
+		detail={!!(clicked || slidingOptions) && !iconEnd}
 		data-transparent={transparent}
 		onclick={() => (slidingOptions ? ionItemSlidingElement?.open('end') : clicked?.())}
 		class={classList}

@@ -32,7 +32,7 @@
 	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
-	import { Form, type FormActions } from '$lib/models/ui';
+	import { Form } from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';
 	import { customForm } from '$lib/utility';
 
@@ -79,14 +79,11 @@
 	let searchActivityValue = $state('');
 	let filteredActivities = $state<ActivityModel[] | undefined>();
 
-	let createActions: FormActions<CreateActivityDto>;
-
 	const form = new Form({
 		completed: async () => {
 			await organizationStore.update($organizationStore?.id!);
 			createActivityModalOpen = false;
 		},
-		exposedActions: (exposedActions) => (createActions = exposedActions),
 		request: async (model: CreateActivityDto) => organizationResource.createActivity($organizationStore?.id!, model),
 		schema: createActivitySchema()
 	});
@@ -242,7 +239,6 @@
 
 <Modal
 	open={createActivityModalOpen}
-	confirm={() => createActions.onSubmit()}
 	dismissed={() => (createActivityModalOpen = false)}
 	confirmLabel={$t('routes.organization.page.activity.create-modal.button.confirm')}
 >

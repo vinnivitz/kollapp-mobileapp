@@ -16,10 +16,14 @@
 		cashOutline,
 		createOutline,
 		documentOutline,
+		filterOutline,
 		listOutline,
 		locationOutline,
 		mapOutline,
+		peopleOutline,
 		personOutline,
+		refreshOutline,
+		saveOutline,
 		trashBinOutline,
 		trashOutline,
 		trendingDownOutline,
@@ -42,10 +46,11 @@
 	import LocationInputItem from '$lib/components/widgets/ionic/LocationInputItem.svelte';
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
 	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
+	import ToggleItem from '$lib/components/widgets/ionic/ToggleItem.svelte';
 	import { t } from '$lib/locales';
 	import { type AccountPostingModel, AccountPostingType } from '$lib/models/models';
 	import { PageRoute } from '$lib/models/routing';
-	import { type FabButtonButtons, Form, type FormActions } from '$lib/models/ui';
+	import { type FabButtonButtons, type FilterItem, Form, type FormActions } from '$lib/models/ui';
 	import { accountPostingsStore, localeStore, organizationStore, userStore } from '$lib/stores';
 	import {
 		currencyKeyEventHandler,
@@ -97,9 +102,23 @@
 	let postingsSearchValue = $state('');
 	let selectedPostingTypes: AccountPostingType[] = $state([AccountPostingType.DEBIT, AccountPostingType.CREDIT]);
 
-	let selectedPosting = $state<AccountPostingModel | undefined>();
+	let filterOpen = $state(false);
 
+	let selectedPosting = $state<AccountPostingModel | undefined>();
 	let selectedPostingType = $state<AccountPostingType>(AccountPostingType.DEBIT);
+
+	let fromFilterDate = $state(format(new TZDate(), 'yyyy-MM-dd'));
+	let toFilterDate = $state(format(new TZDate(), 'yyyy-MM-dd'));
+
+	let filterMembersModalOpen = $state(false);
+	const memberFilterItems = $derived<FilterItem[]>(
+		$organizationStore?.personsOfOrganization.map((member) => ({ data: member.username, selected: true })) ?? []
+	);
+	let filteredMemberFilterItems = $state<FilterItem[]>([]);
+	const displayedFilteredMembers = $derived(getDisplayedFilteredMembers(filteredMemberFilterItems));
+	const allMemberFilterItemsToggleActive = $derived(
+		filteredMemberFilterItems.length === filteredMemberFilterItems.filter((member) => member.selected).length
+	);
 
 	const createAccountPostingForm = new Form({
 		completed: async () => {
@@ -161,8 +180,17 @@
 
 	$effect(() => {
 		if (postings) {
-			filterPostings();
+			fromFilterDate = getMinPostingDate(postings);
+			toFilterDate = getMaxPostingDate(postings);
 		}
+	});
+
+	$effect(() => {
+		if (memberFilterItems) filteredMemberFilterItems = memberFilterItems;
+	});
+
+	$effect(() => {
+		if (postings) filterPostings();
 	});
 
 	$effect(() => {
@@ -170,6 +198,48 @@
 			goto(PageRoute.ORGANIZATION.ACTIVITIES.ROOT);
 		}
 	});
+
+	function onSearchMembers(event: CustomEvent): void {
+		const value = event.detail.value;
+		filteredMemberFilterItems = memberFilterItems.filter((member) => member.data.toLowerCase().includes(value));
+	}
+
+	function getMinPostingDate(postings: AccountPostingModel[]): string {
+		return postings.length > 0
+			? new TZDate(Math.min(...postings.map((posting) => new TZDate(posting.date).getTime()))).toISOString()
+			: new TZDate().toISOString();
+	}
+
+	function getMaxPostingDate(postings: AccountPostingModel[]): string {
+		return postings.length > 0
+			? new TZDate(Math.max(...postings.map((posting) => new TZDate(posting.date).getTime()))).toISOString()
+			: new TZDate().toISOString();
+	}
+
+	function filterPostings(): void {
+		filteredPostings = postings.filter((posting) => {
+			const matchesType = selectedPostingTypes.includes(posting.type);
+			const matchesPurpose = posting.purpose.toLowerCase().includes(postingsSearchValue.toLowerCase());
+			const matchesActivityName = $organizationStore?.activities
+				.find((activity) => activity.id === posting.activityId)
+				?.name.toLowerCase()
+				.includes(postingsSearchValue.toLowerCase());
+			const matchesUsername = $userStore?.username.toLowerCase().includes(postingsSearchValue.toLowerCase());
+			const matchesDateRange =
+				new TZDate(posting.date) >= new TZDate(fromFilterDate) && new TZDate(posting.date) <= new TZDate(toFilterDate);
+			return matchesType && matchesDateRange && (matchesPurpose || matchesActivityName || matchesUsername);
+		});
+	}
+
+	function getDisplayedFilteredMembers(members: FilterItem[]): string {
+		const filtered = members.filter((member) => member.selected);
+		if (filtered.length === members.length) {
+			return 'All members';
+		} else if (filtered.length === 0) {
+			return 'None selected';
+		}
+		return filtered.map((member) => member.data).join(', ');
+	}
 
 	async function onDeleteActivity(): Promise<void> {
 		const alert = await alertController.create({
@@ -279,13 +349,6 @@
 		selectedPostingTypes = selectedPostingTypes.includes(type)
 			? selectedPostingTypes.filter((_type) => _type !== type)
 			: [...selectedPostingTypes, type];
-		filterPostings();
-	}
-
-	function filterPostings(): void {
-		filteredPostings = postings
-			.filter((posting) => selectedPostingTypes.includes(posting.type))
-			.filter((posting) => posting.purpose.toLowerCase().includes(postingsSearchValue.toLowerCase()));
 	}
 
 	async function onDeletePosting(postingId: number): Promise<void> {
@@ -320,6 +383,22 @@
 		selectedPosting = posting;
 		selectedPostingType = posting.type;
 		updateAccountPostingModalOpen = true;
+	}
+
+	function onApplyFromFilterDate(date: string): void {
+		fromFilterDate = date;
+		filterPostings();
+	}
+
+	function toggleMemberFilterItemsSelection(value?: boolean): void {
+		filteredMemberFilterItems = filteredMemberFilterItems.map((member) => ({ ...member, selected: value ?? false }));
+	}
+
+	function resetFilter(): void {
+		fromFilterDate = getMinPostingDate(postings);
+		toFilterDate = getMaxPostingDate(postings);
+		filteredMemberFilterItems = memberFilterItems;
+		selectedPostingTypes = [AccountPostingType.DEBIT, AccountPostingType.CREDIT];
 	}
 </script>
 
@@ -403,7 +482,6 @@
 <Modal
 	dismissed={() => (updateActivityModalOpen = false)}
 	open={updateActivityModalOpen}
-	confirm={() => updateActivityFormActions?.onSubmit()}
 	confirmLabel={$t('routes.organization.page.activity.edit-modal.button.confirm')}
 >
 	<Card title={$t('routes.organization.page.activity.edit-modal.card.title')}>
@@ -422,11 +500,7 @@
 	</Card>
 </Modal>
 
-<Modal
-	open={createAccountPostingModalOpen}
-	confirm={() => createAccountPostingFormActions.onSubmit()}
-	dismissed={() => (createAccountPostingModalOpen = false)}
->
+<Modal open={createAccountPostingModalOpen} dismissed={() => (createAccountPostingModalOpen = false)}>
 	<Card title={getCreatePostingTitle(selectedPostingType)}>
 		<form use:customForm={createAccountPostingForm!}>
 			<div class="mb-3 flex items-center justify-center gap-2">
@@ -451,11 +525,7 @@
 	</Card>
 </Modal>
 
-<Modal
-	open={updateAccountPostingModalOpen}
-	confirm={() => updateAccountPostingFormActions.onSubmit()}
-	dismissed={() => (updateAccountPostingModalOpen = false)}
->
+<Modal open={updateAccountPostingModalOpen} dismissed={() => (updateAccountPostingModalOpen = false)}>
 	<Card title={selectedPosting?.purpose}>
 		<form use:customForm={updateAccountPostingForm}>
 			<div class="mb-3 flex items-center justify-center gap-2">
@@ -481,29 +551,16 @@
 </Modal>
 
 <Modal open={transactionHistoryModalOpen} dismissed={() => (transactionHistoryModalOpen = false)} informational>
-	<!-- svelte-ignore event_directive_deprecated -->
-	<ion-searchbar
-		class="w-full"
-		debounce={100}
-		placeholder="Search transactions..."
-		value={postingsSearchValue}
-		on:ionInput={onSearchPostings}
-	></ion-searchbar>
-	<div class="mb-2 flex items-center justify-center gap-2">
-		<Chip
-			color="success"
-			clicked={() => toggleAccountPostingTypeSelected(AccountPostingType.DEBIT)}
-			selected={selectedPostingTypes.includes(AccountPostingType.DEBIT)}
-			icon={trendingUpOutline}
-			label="Income"
-		/>
-		<Chip
-			color="danger"
-			clicked={() => toggleAccountPostingTypeSelected(AccountPostingType.CREDIT)}
-			selected={selectedPostingTypes.includes(AccountPostingType.CREDIT)}
-			icon={trendingDownOutline}
-			label="Expense"
-		/>
+	<div class="flex items-center justify-center gap-2">
+		<!-- svelte-ignore event_directive_deprecated -->
+		<ion-searchbar
+			class="w-full"
+			debounce={100}
+			placeholder="Search transactions..."
+			value={postingsSearchValue}
+			on:ionInput={onSearchPostings}
+		></ion-searchbar>
+		<Button icon={filterOutline} clicked={() => (filterOpen = true)} />
 	</div>
 	{#if filteredPostings.length === 0}
 		<div class="mt-3 text-center">
@@ -558,3 +615,68 @@
 		</div>
 	</CustomItem>
 {/snippet}
+
+<!-- svelte-ignore event_directive_deprecated -->
+<ion-popover class="extended" is-open={filterOpen} on:didDismiss={() => (filterOpen = false)}>
+	<Card title="Filters" classList="m-0">
+		<div class="flex items-center justify-center gap-2">
+			<Chip
+				clicked={() => toggleAccountPostingTypeSelected(AccountPostingType.DEBIT)}
+				color="success"
+				selected={selectedPostingTypes.includes(AccountPostingType.DEBIT)}
+				icon={trendingUpOutline}
+				label="Income"
+			/>
+			<Chip
+				clicked={() => toggleAccountPostingTypeSelected(AccountPostingType.CREDIT)}
+				color="danger"
+				selected={selectedPostingTypes.includes(AccountPostingType.CREDIT)}
+				icon={trendingDownOutline}
+				label="Expense"
+			/>
+		</div>
+		<DatetimeInputItem max={toFilterDate} label="From" value={fromFilterDate} applied={onApplyFromFilterDate} />
+		<DatetimeInputItem
+			min={fromFilterDate}
+			label="To"
+			value={toFilterDate}
+			applied={(value) => (toFilterDate = value)}
+		/>
+		<CustomItem icon={personOutline} clicked={() => (filterMembersModalOpen = true)}>
+			<div class="flex flex-col">
+				<ion-text class="ms-3 pt-2 text-xs">Select members</ion-text>
+				<ion-text class="my-2 ms-4 truncate">
+					{displayedFilteredMembers}
+				</ion-text>
+			</div>
+		</CustomItem>
+		<div class="mt-2 flex items-center justify-center gap-2">
+			<Button label="Reset filter" color="danger" icon={refreshOutline} fill="outline" clicked={resetFilter} />
+			<Button label="Apply filter" icon={saveOutline} fill="outline" clicked={() => (filterOpen = false)} />
+		</div>
+	</Card>
+</ion-popover>
+
+<Modal open={filterMembersModalOpen} dismissed={() => (filterMembersModalOpen = false)} informational>
+	<!-- svelte-ignore event_directive_deprecated -->
+	<ion-searchbar class="w-full" debounce={100} placeholder="Search members..." on:ionInput={onSearchMembers}>
+	</ion-searchbar>
+	<ToggleItem
+		disabled={memberFilterItems.length !== filteredMemberFilterItems.length}
+		checked={allMemberFilterItemsToggleActive}
+		label="All selected"
+		icon={peopleOutline}
+		change={toggleMemberFilterItemsSelection}
+	/>
+	<ion-list>
+		{#each filteredMemberFilterItems as member (member.data)}
+			<CustomItem>
+				<ion-checkbox
+					value={member.data}
+					checked={member.selected}
+					on:ionChange={() => (member.selected = !member.selected)}>{member.data}</ion-checkbox
+				>
+			</CustomItem>
+		{/each}
+	</ion-list>
+</Modal>

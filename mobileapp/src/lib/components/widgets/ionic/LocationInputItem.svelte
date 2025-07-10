@@ -11,29 +11,47 @@
 		label: string;
 		name: string;
 		icon?: string;
-		value?: string;
 	};
 
-	let { icon = locationOutline, label, name, value }: Properties = $props();
+	let { icon = locationOutline, label, name }: Properties = $props();
 
 	let cachedLocation = $state('');
 	let open = $state(false);
+	let value = $state('');
+	let inputElement = $state<HTMLIonInputElement>();
 
 	async function onConfirmMap(): Promise<void> {
 		value = cachedLocation;
 		open = false;
 	}
+
+	function onDismissMap(): void {
+		open = false;
+	}
 </script>
 
-<TextInputItem {value} {name} {label} {icon} inputIcon={mapOutline} inputIconClick={() => (open = true)} />
+<TextInputItem
+	inputElement={(value) => (inputElement = value)}
+	{value}
+	{name}
+	{label}
+	{icon}
+	inputIcon={mapOutline}
+	inputIconClick={() => (open = true)}
+/>
 
 <Modal
 	{open}
+	informational={!cachedLocation}
 	confirmLabel={$t('routes.organization.page.activity.map-modal.button.confirm')}
-	confirm={onConfirmMap}
-	cancelLabel={$t('routes.organization.page.activity.map-modal.button.cancel')}
+	dismissed={onDismissMap}
+	confirmed={onConfirmMap}
 >
 	{#if open}
-		<LeafletMap selected={(location) => (cachedLocation = location)} classList="-m-4" />
+		<LeafletMap
+			value={inputElement?.value as string}
+			selected={(location) => (cachedLocation = location)}
+			classList="-m-4"
+		/>
 	{/if}
 </Modal>

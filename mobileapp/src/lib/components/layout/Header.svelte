@@ -40,11 +40,13 @@
 <ion-header>
 	<ion-toolbar>
 		<ion-title>{title}</ion-title>
-
 		<ion-buttons slot="start">
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
-			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<ion-button onclick={navigate}>
+			<ion-button
+				role="button"
+				tabindex="0"
+				onkeydown={(_event) => _event.key === 'Enter' && navigate()}
+				onclick={navigate}
+			>
 				{#if showBackButton}
 					<ion-back-button default-href="/"> </ion-back-button>
 				{:else}

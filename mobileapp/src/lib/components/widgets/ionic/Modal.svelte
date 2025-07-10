@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { getPlatforms } from '@ionic/core';
 	import { modalController } from 'ionic-svelte';
-	import { arrowBackOutline, saveOutline, trashBinOutline } from 'ionicons/icons';
+	import { saveOutline, trashBinOutline } from 'ionicons/icons';
 	import { onDestroy, type Snippet } from 'svelte';
 
 	import Button from './Button.svelte';
@@ -16,7 +16,7 @@
 		cancelLabel?: string;
 		confirmLabel?: string;
 		informational?: boolean;
-		confirm?: () => void;
+		confirmed?: () => void;
 		dismissed?: () => void;
 	};
 
@@ -24,7 +24,7 @@
 		cancelIcon,
 		cancelLabel = $t('components.widgets.modal.button.cancel'),
 		children,
-		confirm,
+		confirmed,
 		confirmLabel = $t('components.widgets.modal.button.confirm'),
 		dismissed,
 		informational,
@@ -51,6 +51,11 @@
 		dismissed?.();
 	}
 
+	async function onConfirm(): Promise<void> {
+		_modalController?.querySelector('form')?.requestSubmit();
+		confirmed?.();
+	}
+
 	onDestroy(async () => {
 		if (!isPlatformWeb()) return;
 		const controller = await modalController.getTop();
@@ -70,7 +75,14 @@
 		<ion-toolbar>
 			{#if informational}
 				<ion-buttons slot="start">
-					<Button type="button" icon={arrowBackOutline} color="white" clicked={onDismiss} />
+					<ion-button
+						role="button"
+						tabindex="0"
+						on:keydown={(_event) => _event.key === 'Enter' && onDismiss()}
+						on:click={onDismiss}
+					>
+						<ion-back-button default-href="/"></ion-back-button>
+					</ion-button>
 				</ion-buttons>
 			{:else}
 				<ion-buttons slot="start">
@@ -84,7 +96,7 @@
 				</ion-buttons>
 				{#if !!confirm}
 					<ion-buttons slot="end">
-						<Button type="button" label={confirmLabel} color="white" clicked={confirm} icon={saveOutline} />
+						<Button type="button" label={confirmLabel} color="white" clicked={onConfirm} icon={saveOutline} />
 					</ion-buttons>
 				{/if}
 			{/if}
