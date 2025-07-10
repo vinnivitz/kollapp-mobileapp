@@ -53,6 +53,7 @@
 	import { type FabButtonButtons, type FilterItem, Form, type FormActions } from '$lib/models/ui';
 	import { accountPostingsStore, localeStore, organizationStore, userStore } from '$lib/stores';
 	import {
+		clone,
 		currencyKeyEventHandler,
 		customForm,
 		featureNotImplementedAlert,
@@ -98,6 +99,9 @@
 	let updateActivityModalOpen = $state(false);
 	let transactionHistoryModalOpen = $state(false);
 
+	let updateAccountPostingModelTouched = $state(false);
+	let updateActivityModelTouched = $state(false);
+
 	let filteredPostings = $state<AccountPostingModel[]>([]);
 	let postingsSearchValue = $state('');
 	let selectedPostingTypes: AccountPostingType[] = $state([AccountPostingType.DEBIT, AccountPostingType.CREDIT]);
@@ -133,49 +137,32 @@
 		schema: createAccountPostingSchema()
 	});
 
-	$effect(() => {
-		if (activity && selectedPostingType) {
-			createAccountPostingFormActions.setModel(
-				createAccountPostingSchema().cast({
-					activityId: activity?.id,
-					type: selectedPostingType
-				}) as CreateAccountPostingDto
-			);
-		}
-	});
-
 	const updateAccountPostingForm = new Form({
 		completed: async () => {
 			await organizationStore.update($organizationStore?.id!);
 			updateAccountPostingModalOpen = false;
+			updateAccountPostingModelTouched = false;
 		},
 		exposedActions: (exposedActions) => (updateAccountPostingFormActions = exposedActions),
 		formatters: { amountInCents: formatter.currency, date: formatter.date },
 		keyEventHandlers: { amountInCents: currencyKeyEventHandler },
+		onTouched: () => (updateAccountPostingModelTouched = true),
 		parsers: { amountInCents: parser.currency, date: parser.date },
 		request: async (model) =>
 			accountingResource.updateAccountPosting($organizationStore?.id!, selectedPosting?.id!, model),
 		schema: createAccountPostingSchema()
 	});
 
-	$effect(() => {
-		if (selectedPosting) {
-			updateAccountPostingFormActions.setModel(selectedPosting);
-		}
-	});
-
 	const updateActivityForm = new Form({
 		completed: async () => {
 			await organizationStore.update($organizationStore?.id!);
 			updateActivityModalOpen = false;
+			updateActivityModelTouched = false;
 		},
 		exposedActions: (exposedActions) => (updateActivityFormActions = exposedActions),
+		onTouched: () => (updateActivityModelTouched = true),
 		request: async (model) => organizationResource.updateActivity($organizationStore?.id!, activity?.id!, model),
 		schema: updateActivitySchema()
-	});
-
-	$effect(() => {
-		updateActivityFormActions.setModel(activity);
 	});
 
 	$effect(() => {
@@ -194,9 +181,7 @@
 	});
 
 	$effect(() => {
-		if ($organizationStore && !activity) {
-			goto(PageRoute.ORGANIZATION.ACTIVITIES.ROOT);
-		}
+		if ($organizationStore && !activity) goto(PageRoute.ORGANIZATION.ACTIVITIES.ROOT);
 	});
 
 	function onSearchMembers(event: CustomEvent): void {
@@ -265,7 +250,7 @@
 	}
 
 	async function onOpenUpdateActivityModal(): Promise<void> {
-		if (!activity) return showAlert('Activity not found');
+		updateActivityFormActions.setModel(clone(activity));
 		updateActivityModalOpen = true;
 	}
 
@@ -286,6 +271,12 @@
 
 	async function onOpenCreateAccountPosting(type: AccountPostingType): Promise<void> {
 		selectedPostingType = type;
+		createAccountPostingFormActions.setModel(
+			createAccountPostingSchema().cast({
+				activityId: activity?.id,
+				type: selectedPostingType
+			}) as CreateAccountPostingDto
+		);
 		createAccountPostingModalOpen = true;
 	}
 
@@ -379,9 +370,10 @@
 		await loader.dismiss();
 	}
 
-	function onOpenUpdatePostingModal(posting: AccountPostingModel): void {
+	async function onOpenUpdatePostingModal(posting: AccountPostingModel): Promise<void> {
 		selectedPosting = posting;
 		selectedPostingType = posting.type;
+		updateAccountPostingFormActions.setModel(clone(selectedPosting));
 		updateAccountPostingModalOpen = true;
 	}
 
@@ -410,7 +402,7 @@
 
 {#snippet eventSummary()}
 	<!-- svelte-ignore attribute_quoted -->
-	<Card border="secondary" title={activity?.name} classList="mb-5" clicked={() => (updateActivityModalOpen = true)}>
+	<Card border="secondary" title={activity?.name} classList="mb-5" clicked={onOpenUpdateActivityModal}>
 		<div class="flex flex-wrap items-center justify-center gap-3">
 			<div class="flex items-center gap-1">
 				<ion-icon icon={locationOutline}></ion-icon>
@@ -481,6 +473,7 @@
 
 <Modal
 	dismissed={() => (updateActivityModalOpen = false)}
+	touched={updateActivityModelTouched}
 	open={updateActivityModalOpen}
 	confirmLabel={$t('routes.organization.page.activity.edit-modal.button.confirm')}
 >
@@ -525,8 +518,12 @@
 	</Card>
 </Modal>
 
-<Modal open={updateAccountPostingModalOpen} dismissed={() => (updateAccountPostingModalOpen = false)}>
-	<Card title={selectedPosting?.purpose}>
+<Modal
+	open={updateAccountPostingModalOpen}
+	dismissed={() => (updateAccountPostingModalOpen = false)}
+	touched={updateAccountPostingModelTouched}
+>
+	<Card title="Update transaction">
 		<form use:customForm={updateAccountPostingForm}>
 			<div class="mb-3 flex items-center justify-center gap-2">
 				<Chip

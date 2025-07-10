@@ -43,16 +43,12 @@
 	}
 
 	ion-popover.extended {
-		--width: 97%;
+		--width: 98%;
 	}
 
 	.scroll-viewport {
-		/* 1) Höhe auf den verbleibenden Platz begrenzen: */
-		/*    z.B. 100% des ion-content oder flex:1 innerhalb eines Flex-Containers */
 		height: 100%;
-		/* 2) nur hier das Scrollen erlauben: */
 		overflow-y: auto;
-		/* optional: damit Scroll-Bar und Touch-Scrolling schön funktionieren */
 		-webkit-overflow-scrolling: touch;
 	}
 }

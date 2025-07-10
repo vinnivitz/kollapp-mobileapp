@@ -104,7 +104,8 @@ export default ts.config(
 			'svelte/no-unused-svelte-ignore': 'off',
 			'svelte/prefer-writable-derived': 'off',
 			'svelte/valid-compile': 'off',
-			'unicorn/filename-case': 'off'
+			'unicorn/filename-case': 'off',
+			'unicorn/prefer-structured-clone': 'off'
 		},
 		settings: {
 			'import/parsers': {

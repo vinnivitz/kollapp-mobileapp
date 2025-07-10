@@ -54,6 +54,7 @@
 	import { type FilterItem, Form, type FormActions, type ItemSlidingOption } from '$lib/models/ui';
 	import { accountPostingsStore, localeStore, organizationStore, userStore } from '$lib/stores';
 	import {
+		clone,
 		currencyKeyEventHandler,
 		customForm,
 		formatter,
@@ -76,6 +77,11 @@
 		icon?: string;
 	};
 
+	type MemberFilterValue = {
+		id: number;
+		username: string;
+	};
+
 	const organizations = $derived(organizationStore.organizations);
 	const postings = $derived($accountPostingsStore ?? []);
 	const accountBalance = $derived(calculateAccountBalance(postings ?? []));
@@ -87,13 +93,15 @@
 	let updateAccountPostingModalOpen = $state(false);
 	let transactionHistoryModalOpen = $state(false);
 
+	let updateAccountPostingModelTouched = $state(false);
+
 	let filteredPostings = $state<AccountPostingModel[]>([]);
 	let postingsSearchValue = $state('');
 	let selectedPostingTypes: AccountPostingType[] = $state([AccountPostingType.DEBIT, AccountPostingType.CREDIT]);
 
 	let filterOpen = $state(false);
 
-	let selectedPosting = $state<AccountPostingModel | undefined>();
+	let selectedPosting = $state<AccountPostingModel>();
 	let selectedPostingType = $state<AccountPostingType>(AccountPostingType.DEBIT);
 
 	let fromFilterDate = $state(format(new TZDate(), 'yyyy-MM-dd'));
@@ -101,8 +109,11 @@
 
 	let filterMembersModalOpen = $state(false);
 	let filterActivitiesModalOpen = $state(false);
-	const memberFilterItems = $derived<FilterItem[]>(
-		$organizationStore?.personsOfOrganization.map((member) => ({ data: member.username, selected: true })) ?? []
+	const memberFilterItems = $derived<FilterItem<MemberFilterValue>[]>(
+		$organizationStore?.personsOfOrganization.map((member) => ({
+			data: { id: member.userId, username: member.username },
+			selected: true
+		})) ?? []
 	);
 	const activityFilterItems = $derived<FilterItem<ActivityFilterValue>[]>([
 		...($organizationStore?.activities.map((activity) => ({
@@ -111,7 +122,7 @@
 		})) ?? []),
 		{ data: { icon: flashOffOutline, id: -1, name: 'Not assigned to activity' }, selected: true }
 	]);
-	let filteredMemberFilterItems = $state<FilterItem[]>([]);
+	let filteredMemberFilterItems = $state<FilterItem<MemberFilterValue>[]>([]);
 	let filteredActivityFilterItems = $state<FilterItem<ActivityFilterValue>[]>([]);
 	const displayedFilteredMembers = $derived(getDisplayedFilteredMembers(filteredMemberFilterItems));
 	const displayedFilteredActivities = $derived(getDisplayedFilteredActivities(filteredActivityFilterItems));
@@ -150,33 +161,20 @@
 		if (activityFilterItems) filteredActivityFilterItems = activityFilterItems;
 	});
 
-	$effect(() => {
-		if (selectedPostingType) {
-			createAccountPostingFormActions?.setModel(
-				createAccountPostingSchema().cast({
-					activityId: 0,
-					type: selectedPostingType
-				}) as CreateAccountPostingDto
-			);
-		}
-	});
-
 	const updateAccountPostingForm = new Form({
 		completed: async () => {
 			await organizationStore.update($organizationStore?.id!);
 			updateAccountPostingModalOpen = false;
+			updateAccountPostingModelTouched = false;
 		},
 		exposedActions: (exposedActions) => (updateAccountPostingFormActions = exposedActions),
 		formatters: { amountInCents: formatter.currency, date: formatter.date },
 		keyEventHandlers: { amountInCents: currencyKeyEventHandler },
+		onTouched: () => (updateAccountPostingModelTouched = true),
 		parsers: { amountInCents: parser.currency, date: parser.date },
 		request: async (model) =>
 			accountingResource.updateAccountPosting($organizationStore?.id!, selectedPosting?.id!, model),
 		schema: createAccountPostingSchema()
-	});
-
-	$effect(() => {
-		if (selectedPosting) updateAccountPostingFormActions?.setModel(selectedPosting);
 	});
 
 	$effect(() => {
@@ -267,6 +265,12 @@
 
 	async function onOpenCreateAccountPosting(type: AccountPostingType): Promise<void> {
 		selectedPostingType = type;
+		createAccountPostingFormActions?.setModel(
+			createAccountPostingSchema().cast({
+				activityId: 0,
+				type: selectedPostingType
+			}) as CreateAccountPostingDto
+		);
 		createAccountPostingModal = true;
 	}
 
@@ -319,6 +323,7 @@
 	function onOpenUpdatePostingModal(posting: AccountPostingModel): void {
 		selectedPosting = posting;
 		selectedPostingType = posting.type;
+		updateAccountPostingFormActions?.setModel(clone(selectedPosting));
 		updateAccountPostingModalOpen = true;
 	}
 
@@ -337,7 +342,7 @@
 		return filtered.map((activity) => activity.data.name).join(', ');
 	}
 
-	function getDisplayedFilteredMembers(members: FilterItem[]): string {
+	function getDisplayedFilteredMembers(members: FilterItem<MemberFilterValue>[]): string {
 		const filtered = members.filter((member) => member.selected);
 		if (filtered.length === members.length) {
 			return 'All members';
@@ -349,7 +354,9 @@
 
 	function onSearchMembers(event: CustomEvent): void {
 		const value = event.detail.value;
-		filteredMemberFilterItems = memberFilterItems.filter((member) => member.data.toLowerCase().includes(value));
+		filteredMemberFilterItems = memberFilterItems.filter((member) =>
+			member.data.username.toLowerCase().includes(value)
+		);
 	}
 
 	function onSearchActivities(event: CustomEvent): void {
@@ -571,8 +578,12 @@
 	</Card>
 </Modal>
 
-<Modal open={updateAccountPostingModalOpen} dismissed={() => (updateAccountPostingModalOpen = false)}>
-	<Card title={selectedPosting?.purpose}>
+<Modal
+	open={updateAccountPostingModalOpen}
+	touched={updateAccountPostingModelTouched}
+	dismissed={() => (updateAccountPostingModalOpen = false)}
+>
+	<Card title="Update transaction">
 		<form use:customForm={updateAccountPostingForm}>
 			<div class="mb-3 flex items-center justify-center gap-2">
 				<Chip
@@ -727,9 +738,9 @@
 		{#each filteredMemberFilterItems as member (member.data)}
 			<CustomItem>
 				<ion-checkbox
-					value={member.data}
+					value={member.data.username}
 					checked={member.selected}
-					on:ionChange={() => (member.selected = !member.selected)}>{member.data}</ion-checkbox
+					on:ionChange={() => (member.selected = !member.selected)}>{member.data.username}</ion-checkbox
 				>
 			</CustomItem>
 		{/each}

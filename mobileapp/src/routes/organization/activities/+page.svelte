@@ -89,9 +89,7 @@
 	});
 
 	$effect(() => {
-		if (activityItems) {
-			filteredActivities = activityItems;
-		}
+		if (activityItems) filteredActivities = activityItems;
 	});
 
 	function onCreateActivity(date: string): void {

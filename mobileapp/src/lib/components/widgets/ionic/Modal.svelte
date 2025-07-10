@@ -16,6 +16,7 @@
 		cancelLabel?: string;
 		confirmLabel?: string;
 		informational?: boolean;
+		touched?: boolean;
 		confirmed?: () => void;
 		dismissed?: () => void;
 	};
@@ -28,7 +29,8 @@
 		confirmLabel = $t('components.widgets.modal.button.confirm'),
 		dismissed,
 		informational,
-		open
+		open,
+		touched = true
 	}: Properties = $props();
 
 	let _modalController = $state<HTMLIonModalElement | undefined>();
@@ -96,7 +98,14 @@
 				</ion-buttons>
 				{#if !!confirm}
 					<ion-buttons slot="end">
-						<Button type="button" label={confirmLabel} color="white" clicked={onConfirm} icon={saveOutline} />
+						<Button
+							disabled={!touched}
+							type="button"
+							label={confirmLabel}
+							color="white"
+							clicked={onConfirm}
+							icon={saveOutline}
+						/>
 					</ion-buttons>
 				{/if}
 			{/if}
