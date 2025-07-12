@@ -6,12 +6,12 @@ const config: Config<{ value?: number | string }> = {
 	loaders: [
 		{
 			key: '',
-			loader: () => import('./en.json'),
+			loader: async () => import('./en.json'),
 			locale: 'en'
 		},
 		{
 			key: '',
-			loader: () => import('./de.json'),
+			loader: async () => import('./de.json'),
 			locale: 'de'
 		}
 	]

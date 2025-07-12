@@ -69,12 +69,7 @@
 {/snippet}
 
 {#snippet upcomingEventCard(activity: ActivityModel)}
-	<Card
-		color="transparent"
-		classList="border border-[var(--ion-color-secondary)]"
-		title="Upcoming event"
-		clicked={onNavigateEvent}
-	>
+	<Card color="transparent" title="Upcoming event" border="secondary" clicked={onNavigateEvent}>
 		<div class="mb-3 flex flex-wrap items-center justify-center gap-5">
 			<div class="flex items-center gap-2">
 				<ion-icon icon={flashOutline}></ion-icon>
@@ -95,12 +90,7 @@
 {/snippet}
 
 {#snippet organizationCard(organization: OrganizationModel)}
-	<Card
-		color="transparent"
-		title={organization.name}
-		clicked={() => goto(PageRoute.ORGANIZATION.ROOT)}
-		classList="border border-[var(--ion-color-primary)]"
-	>
+	<Card border="primary" title={organization.name} clicked={() => goto(PageRoute.ORGANIZATION.ROOT)}>
 		<div class="flex flex-wrap items-center justify-center">
 			<Button
 				size="small"

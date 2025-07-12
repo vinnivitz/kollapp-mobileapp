@@ -247,11 +247,11 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 	function addListener<T extends Event>(
 		element: HTMLElement,
 		event: string,
-		function_: (_event: T) => void,
+		_function: (_event: T) => void,
 		options?: AddEventListenerOptions | boolean
 	): void {
-		element.addEventListener(event, function_ as EventListener, options);
-		teardowns.push(() => element.removeEventListener(event, function_ as EventListener, options));
+		element.addEventListener(event, _function as EventListener, options);
+		teardowns.push(() => element.removeEventListener(event, _function as EventListener, options));
 	}
 
 	function destroy(): void {

@@ -70,6 +70,7 @@
 			await showAlert('Could not log in with biometrics. Wrong credentials provided.');
 			await storeValue(PreferencesKey.BIOMETRICS_ENABLED, false);
 		}
+		await loading.dismiss();
 	}
 
 	async function handleLogin(model: UserTokenDto): Promise<void> {
