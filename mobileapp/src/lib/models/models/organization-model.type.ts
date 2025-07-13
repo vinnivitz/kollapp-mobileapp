@@ -1,7 +1,7 @@
 import type { ActivityModel, InvitationCodeModel, MemberModel } from '$lib/models/models';
 
 /**
- * Stores basic information about an organization.
+ * Stores information about an organization.
  */
 export type OrganizationModel = {
 	activities: ActivityModel[];

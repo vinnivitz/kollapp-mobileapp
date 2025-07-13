@@ -26,7 +26,7 @@
 	let marker: Marker | undefined;
 	let searchbarOpen = $state(false);
 	let searchItems = $state<PositionItem[]>([]);
-	let searchbar = $state<HTMLIonSearchbarElement | undefined>();
+	let searchbar = $state<HTMLIonSearchbarElement>();
 
 	onMount(() => initializeMap(value));
 

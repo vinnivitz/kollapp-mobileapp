@@ -16,6 +16,7 @@
 		cancelLabel?: string;
 		confirmLabel?: string;
 		informational?: boolean;
+		initialBreakPoint?: number;
 		touched?: boolean;
 		confirmed?: () => void;
 		dismissed?: () => void;
@@ -29,11 +30,12 @@
 		confirmLabel = $t('components.widgets.modal.button.confirm'),
 		dismissed,
 		informational,
+		initialBreakPoint = 0.5,
 		open,
 		touched = true
 	}: Properties = $props();
 
-	let _modalController = $state<HTMLIonModalElement | undefined>();
+	let _modalController = $state<HTMLIonModalElement>();
 
 	$effect(() => {
 		if (!_modalController) return;
@@ -58,6 +60,15 @@
 		confirmed?.();
 	}
 
+	function onPresent(): void {
+		if ($modalStore)
+			for (const modal of $modalStore) {
+				if (modal !== _modalController) {
+					modal.setCurrentBreakpoint(1);
+				}
+			}
+	}
+
 	onDestroy(async () => {
 		if (!isPlatformWeb()) return;
 		const controller = await modalController.getTop();
@@ -72,7 +83,14 @@
 </script>
 
 <!-- svelte-ignore event_directive_deprecated -->
-<ion-modal bind:this={_modalController} is-open={open} on:didDismiss={dismissed}>
+<ion-modal
+	bind:this={_modalController}
+	is-open={open}
+	on:willPresent={onPresent}
+	on:didDismiss={dismissed}
+	breakpoints={[0.5, 0.75, 1]}
+	initial-breakpoint={initialBreakPoint}
+>
 	<ion-header>
 		<ion-toolbar>
 			{#if informational}

@@ -69,7 +69,7 @@
 {/snippet}
 
 {#snippet upcomingEventCard(activity: ActivityModel)}
-	<Card color="transparent" title="Upcoming event" border="secondary" clicked={onNavigateEvent}>
+	<Card title="Upcoming event" border="secondary" clicked={onNavigateEvent}>
 		<div class="mb-3 flex flex-wrap items-center justify-center gap-5">
 			<div class="flex items-center gap-2">
 				<ion-icon icon={flashOutline}></ion-icon>

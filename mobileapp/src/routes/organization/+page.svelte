@@ -607,7 +607,12 @@
 	</Card>
 </Modal>
 
-<Modal open={transactionHistoryModalOpen} dismissed={() => (transactionHistoryModalOpen = false)} informational>
+<Modal
+	open={transactionHistoryModalOpen}
+	initialBreakPoint={0.75}
+	dismissed={() => (transactionHistoryModalOpen = false)}
+	informational
+>
 	<div class="flex items-center justify-center gap-2">
 		<!-- svelte-ignore event_directive_deprecated -->
 		<ion-searchbar

@@ -36,7 +36,7 @@
 
 	let showPasswordPrompt = $state(false);
 	let isPasswordConfirmed = $state(false);
-	let toggle = $state<HTMLIonToggleElement | undefined>();
+	let toggle = $state<HTMLIonToggleElement>();
 
 	let actions: FormActions<VerifyPasswordDto>;
 

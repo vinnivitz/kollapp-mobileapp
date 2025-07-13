@@ -34,7 +34,7 @@
 	import { UserRole } from '$lib/models/api';
 	import { AlertType, type ItemSlidingOption } from '$lib/models/ui';
 	import { localeStore, organizationStore, userStore } from '$lib/stores';
-	import { featureNotImplementedAlert, getDateFnsLocale, showAlert, StatusCheck } from '$lib/utility';
+	import { getDateFnsLocale, showAlert, StatusCheck } from '$lib/utility';
 
 	let invitationCodeModalOpen = $state(false);
 	let qrModalOpen = $state(false);
@@ -42,7 +42,7 @@
 	function getSlidingOptions(member: MemberModel): ItemSlidingOption[] {
 		return [
 			{ color: 'tertiary', handler: () => onSelectRole(member), icon: ribbonOutline },
-			{ color: 'danger', handler: featureNotImplementedAlert, icon: logOutOutline }
+			{ color: 'danger', handler: () => onRemoveUser(member.id), icon: logOutOutline }
 		];
 	}
 
@@ -60,6 +60,15 @@
 	);
 
 	const memberGroups = $derived(getGroupedMembers(members));
+
+	async function onRemoveUser(userId: number): Promise<void> {
+		const organizationId = $organizationStore?.id;
+		if (!organizationId) return;
+		const response = await organizationResource.removeUserFromOrganization(organizationId, userId);
+		if (StatusCheck.isOK(response.status)) {
+			await organizationStore.update(organizationId);
+		}
+	}
 
 	async function onSelectRole(member: MemberModel): Promise<void> {
 		const organizationId = $organizationStore?.id;

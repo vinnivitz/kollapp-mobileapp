@@ -16,21 +16,22 @@
 	let { loading, showBackButton, title }: Properties = $props();
 
 	const loaded = $derived($initializationStore.loadedServer);
-	let navigationDebounced = $state(false);
-	let navigationTimeout: ReturnType<typeof setTimeout>;
+
+	let timer: ReturnType<typeof setTimeout>;
+	let showProgressBar = $state(false);
 
 	$effect(() => {
-		if (!$loaded) {
-			navigationDebounced = false;
-			navigationTimeout = setTimeout(() => (navigationDebounced = true), 100);
+		clearTimeout(timer);
+
+		if (loading || !$loaded) {
+			showProgressBar = false;
+			timer = setTimeout(() => (showProgressBar = true), 100);
+		} else {
+			showProgressBar = false;
 		}
 	});
 
-	onDestroy(() => {
-		if (navigationTimeout) {
-			clearTimeout(navigationTimeout);
-		}
-	});
+	onDestroy(() => clearTimeout(timer));
 
 	async function navigate(): Promise<void> {
 		return showBackButton ? navigateBack() : goto(PageRoute.HOME);
@@ -58,7 +59,7 @@
 			<ion-menu-button class="text-3xl"></ion-menu-button>
 		</ion-buttons>
 	</ion-toolbar>
-	{#if (!$loaded && navigationDebounced) || loading}
+	{#if showProgressBar}
 		<ion-progress-bar type="indeterminate"></ion-progress-bar>
 	{/if}
 </ion-header>

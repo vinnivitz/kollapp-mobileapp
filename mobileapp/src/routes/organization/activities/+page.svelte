@@ -77,7 +77,7 @@
 	let createActivityModalOpen = $state(false);
 
 	let searchActivityValue = $state('');
-	let filteredActivities = $state<ActivityModel[] | undefined>();
+	let filteredActivities = $state<ActivityModel[]>();
 
 	const form = new Form({
 		completed: async () => {

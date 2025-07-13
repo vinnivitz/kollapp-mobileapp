@@ -36,7 +36,7 @@
 		if (value && element) element.value = format(new TZDate(value), 'PPP');
 	});
 
-	let element = $state<HTMLIonInputElement | undefined>();
+	let element = $state<HTMLIonInputElement>();
 
 	function onApply(value: string): void {
 		const date = format(value, 'PPP');

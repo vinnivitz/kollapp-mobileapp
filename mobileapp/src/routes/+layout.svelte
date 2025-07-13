@@ -19,7 +19,7 @@
 
 	let { children } = $props();
 
-	let tabs = $state<TabConfig[] | undefined>();
+	let tabs = $state<TabConfig[]>();
 	let loaded = $state(false);
 
 	setupIonicBase();

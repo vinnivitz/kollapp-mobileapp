@@ -47,7 +47,7 @@
 		value
 	}: Properties = $props();
 
-	let element = $state<HTMLIonInputElement | undefined>();
+	let element = $state<HTMLIonInputElement>();
 
 	$effect(() => {
 		if (element) inputElement?.(element);

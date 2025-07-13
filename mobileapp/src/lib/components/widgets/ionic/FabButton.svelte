@@ -27,7 +27,7 @@
 		vertical = 'bottom'
 	}: Properties = $props();
 
-	let fabButtonElement = $state<HTMLIonFabElement | undefined>();
+	let fabButtonElement = $state<HTMLIonFabElement>();
 
 	// workaround to avoid reference linting error
 	void searchable;

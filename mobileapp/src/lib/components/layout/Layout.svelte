@@ -38,7 +38,7 @@
 	const loadedServer = $derived($initializationStore.loadedServer);
 	const loaded = $derived($loadedCache || $loadedServer);
 
-	let refresher = $state<HTMLIonRefresherElement | undefined>();
+	let refresher = $state<HTMLIonRefresherElement>();
 	let menuComponent = $state<ReturnType<typeof Menu>>();
 
 	async function navigate(route: string): Promise<void> {

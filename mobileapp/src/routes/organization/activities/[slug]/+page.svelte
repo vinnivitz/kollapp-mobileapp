@@ -108,7 +108,7 @@
 
 	let filterOpen = $state(false);
 
-	let selectedPosting = $state<AccountPostingModel | undefined>();
+	let selectedPosting = $state<AccountPostingModel>();
 	let selectedPostingType = $state<AccountPostingType>(AccountPostingType.DEBIT);
 
 	let fromFilterDate = $state(format(new TZDate(), 'yyyy-MM-dd'));

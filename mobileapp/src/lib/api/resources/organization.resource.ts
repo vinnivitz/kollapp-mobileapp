@@ -67,8 +67,8 @@ export async function leaveOrganization(organizationId: number): Promise<Respons
  * @param userId The user id.
  * @returns {Promise<ResponseBody>} The response body.
  */
-export async function removeUserFromOrganization(userId: number): Promise<ResponseBody> {
-	return customFetch(`${ENDPOINT}/person/${userId}`, {
+export async function removeUserFromOrganization(organizationId: number, userId: number): Promise<ResponseBody> {
+	return customFetch(`${ENDPOINT}/${organizationId}/person/${userId}`, {
 		method: RequestMethod.DELETE
 	});
 }

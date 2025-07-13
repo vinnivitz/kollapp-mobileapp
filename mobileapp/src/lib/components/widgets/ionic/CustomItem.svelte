@@ -43,7 +43,7 @@
 	// workaround to avoid reference linting error
 	void searchable;
 
-	let ionItemSlidingElement = $state<HTMLIonItemSlidingElement | undefined>();
+	let ionItemSlidingElement = $state<HTMLIonItemSlidingElement>();
 </script>
 
 {#if slidingOptions}
