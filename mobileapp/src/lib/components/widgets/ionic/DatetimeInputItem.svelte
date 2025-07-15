@@ -25,7 +25,7 @@
 		label,
 		max,
 		min,
-		name,
+		name = '',
 		type = DateTimePickerType.DATE,
 		value
 	}: Properties = $props();
@@ -41,7 +41,7 @@
 	function onApply(value: string): void {
 		const date = format(value, 'PPP');
 		applied?.(value);
-		if (element) element.value = date;
+		element!.value = date;
 		element?.dispatchEvent(new CustomEvent('ionInput', { bubbles: true }));
 	}
 
@@ -61,7 +61,7 @@
 	inputElement={(value) => (element = value)}
 	{label}
 	{icon}
-	name={name ?? ''}
+	{name}
 	readonly
 	inputIcon={calendarOutline}
 	clicked={onOpenDatetimeModal}

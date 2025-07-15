@@ -48,7 +48,7 @@
 				helperText="Get it from a collective admin."
 				icon={keyOutline}
 				inputIcon={qrCodeOutline}
-				inputIconClick={onCodeScan}
+				inputIconClicked={onCodeScan}
 			/>
 			<div class="text-center">
 				<Button

@@ -157,7 +157,7 @@
 			label="Input item with clickable icon"
 			name="value"
 			inputIcon={attachOutline}
-			inputIconClick={() => showAlert('Item clicked', { type: AlertType.SUCCESS })}
+			inputIconClicked={() => showAlert('Item clicked', { type: AlertType.SUCCESS })}
 		></TextInputItem>
 	</Card>
 	<Card title="Modal">

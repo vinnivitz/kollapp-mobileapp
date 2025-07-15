@@ -23,7 +23,7 @@
 		changed?: (value: string) => void;
 		clicked?: () => void;
 		inputElement?: (element: HTMLIonInputElement) => void;
-		inputIconClick?: () => void;
+		inputIconClicked?: () => void;
 	};
 
 	let {
@@ -36,7 +36,7 @@
 		icon,
 		inputElement,
 		inputIcon,
-		inputIconClick,
+		inputIconClicked,
 		inputmode = 'text',
 		label,
 		maxlength,
@@ -54,7 +54,7 @@
 	});
 </script>
 
-<CustomItem {card} {color} {icon} iconEnd={inputIcon} {clicked} iconClick={inputIconClick}>
+<CustomItem {card} {color} {icon} iconEnd={inputIcon} {clicked} iconClick={inputIconClicked}>
 	<!-- svelte-ignore event_directive_deprecated -->
 	<ion-input
 		{inputmode}

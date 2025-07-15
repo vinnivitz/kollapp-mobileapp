@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Colors } from '$lib/models/ui';
+	import type { TextareaInputEventDetail } from '@ionic/core';
 
 	import CustomItem from './CustomItem.svelte';
 
@@ -14,7 +15,7 @@
 		placeholder?: string;
 		value?: string;
 		change?: (value: string) => void;
-		inputIconClick?: () => void;
+		inputIconClicked?: () => void;
 	};
 	let {
 		change,
@@ -22,16 +23,20 @@
 		disabled = false,
 		icon,
 		iconEnd,
-		inputIconClick,
+		inputIconClicked,
 		label,
 		maxlength,
 		name,
 		placeholder,
 		value
 	}: Properties = $props();
+
+	function onChange(event: CustomEvent<TextareaInputEventDetail>): void {
+		change?.(event.detail.value || '');
+	}
 </script>
 
-<CustomItem {color} {icon} {iconEnd} iconClick={inputIconClick}>
+<CustomItem {color} {icon} {iconEnd} iconClick={inputIconClicked}>
 	<!-- svelte-ignore event_directive_deprecated -->
 	<ion-textarea
 		{name}
@@ -44,7 +49,7 @@
 		auto-grow
 		color="secondary"
 		{value}
-		on:ionInput={(event) => change?.(event.detail.value || '')}
+		on:ionInput={onChange}
 	></ion-textarea>
 </CustomItem>
 

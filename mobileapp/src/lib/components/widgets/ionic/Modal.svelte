@@ -14,6 +14,7 @@
 		open: boolean;
 		cancelIcon?: string;
 		cancelLabel?: string;
+		confirmIcon?: string;
 		confirmLabel?: string;
 		informational?: boolean;
 		initialBreakPoint?: number;
@@ -23,10 +24,11 @@
 	};
 
 	let {
-		cancelIcon,
+		cancelIcon = trashBinOutline,
 		cancelLabel = $t('components.widgets.modal.button.cancel'),
 		children,
 		confirmed,
+		confirmIcon = saveOutline,
 		confirmLabel = $t('components.widgets.modal.button.confirm'),
 		dismissed,
 		informational,
@@ -90,6 +92,7 @@
 	on:didDismiss={dismissed}
 	breakpoints={[0.5, 0.75, 1]}
 	initial-breakpoint={initialBreakPoint}
+	handle-behavior="cycle"
 >
 	<ion-header>
 		<ion-toolbar>
@@ -106,13 +109,7 @@
 				</ion-buttons>
 			{:else}
 				<ion-buttons slot="start">
-					<Button
-						type="button"
-						label={cancelLabel}
-						color="white"
-						clicked={onDismiss}
-						icon={cancelIcon ?? trashBinOutline}
-					/>
+					<Button type="button" label={cancelLabel} color="white" clicked={onDismiss} icon={cancelIcon} />
 				</ion-buttons>
 				{#if !!confirm}
 					<ion-buttons slot="end">
@@ -122,7 +119,7 @@
 							label={confirmLabel}
 							color="white"
 							clicked={onConfirm}
-							icon={saveOutline}
+							icon={confirmIcon}
 						/>
 					</ion-buttons>
 				{/if}

@@ -22,7 +22,7 @@
 
 	async function onConfirmMap(): Promise<void> {
 		value = cachedLocation;
-		if (inputElement) inputElement.value = value;
+		inputElement!.value = value;
 		inputElement?.dispatchEvent(new CustomEvent('ionInput', { bubbles: true }));
 		open = false;
 	}
@@ -39,7 +39,7 @@
 	{label}
 	{icon}
 	inputIcon={mapOutline}
-	inputIconClick={() => (open = true)}
+	inputIconClicked={() => (open = true)}
 />
 
 <Modal
