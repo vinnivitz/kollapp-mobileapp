@@ -19,6 +19,7 @@
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
 	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
+	import Popover from '$lib/components/widgets/ionic/Popover.svelte';
 	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import { t } from '$lib/locales';
 	import { PreferencesKey } from '$lib/models/preferences';
@@ -142,7 +143,7 @@
 </Layout>
 
 <!-- svelte-ignore event_directive_deprecated -->
-<ion-popover class="extended" is-open={showPasswordPrompt} on:didDismiss={onPasswordPromptDismiss}>
+<Popover extended open={showPasswordPrompt} dismissed={onPasswordPromptDismiss}>
 	<Card title="Enter your password">
 		<form use:customForm={form}>
 			<TextInputItem
@@ -160,10 +161,4 @@
 			/>
 		</form>
 	</Card>
-</ion-popover>
-
-<style>
-	ion-popover.extended {
-		--width: 95%;
-	}
-</style>
+</Popover>

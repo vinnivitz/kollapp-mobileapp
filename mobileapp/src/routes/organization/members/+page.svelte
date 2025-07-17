@@ -30,6 +30,7 @@
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
 	import FabButton from '$lib/components/widgets/ionic/FabButton.svelte';
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
+	import Popover from '$lib/components/widgets/ionic/Popover.svelte';
 	import { t } from '$lib/locales';
 	import { UserRole } from '$lib/models/api';
 	import { AlertType, type ItemSlidingOption } from '$lib/models/ui';
@@ -242,6 +243,6 @@
 </Modal>
 
 <!-- svelte-ignore event_directive_deprecated -->
-<ion-popover class="extended" is-open={qrModalOpen} on:didDismiss={() => (qrModalOpen = false)}>
+<Popover extended open={qrModalOpen} dismissed={() => (qrModalOpen = false)}>
 	<QRCode data={$organizationStore?.organizationInvitationCode.code ?? ''} shape="circle" />
-</ion-popover>
+</Popover>

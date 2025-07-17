@@ -21,7 +21,7 @@
 	const TILE_LAYER_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 	const TILE_LAYER_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>';
 
-	let { classList, searchable = true, selected, value }: Properties = $props();
+	let { classList = '', searchable = true, selected, value }: Properties = $props();
 	let map: Map | undefined;
 	let marker: Marker | undefined;
 	let searchbarOpen = $state(false);
@@ -129,7 +129,7 @@
 	}
 </script>
 
-<div class={`relative ${classList ?? ''}`}>
+<div class={`relative ${classList}`}>
 	{#if searchable}
 		{@render search()}
 	{/if}

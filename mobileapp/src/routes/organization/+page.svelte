@@ -40,6 +40,7 @@
 	import DatetimeInputItem from '$lib/components/widgets/ionic/DatetimeInputItem.svelte';
 	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
+	import Popover from '$lib/components/widgets/ionic/Popover.svelte';
 	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import ToggleItem from '$lib/components/widgets/ionic/ToggleItem.svelte';
 	import { t } from '$lib/locales';
@@ -637,8 +638,7 @@
 	{/if}
 </Modal>
 
-<!-- svelte-ignore event_directive_deprecated -->
-<ion-popover class="extended" is-open={filterOpen} on:didDismiss={() => (filterOpen = false)}>
+<Popover extended open={filterOpen} dismissed={() => (filterOpen = false)}>
 	<Card title="Filters" classList="m-0">
 		<div class="flex items-center justify-center gap-2">
 			<Chip
@@ -686,7 +686,7 @@
 			<Button label="Apply filter" icon={saveOutline} fill="outline" clicked={() => (filterOpen = false)} />
 		</div>
 	</Card>
-</ion-popover>
+</Popover>
 
 {#snippet transactionItem(posting: AccountPostingModel)}
 	<CustomItem

@@ -25,7 +25,7 @@
 	let {
 		card,
 		children,
-		classList,
+		classList = '',
 		clicked,
 		color = 'light',
 		disabled,

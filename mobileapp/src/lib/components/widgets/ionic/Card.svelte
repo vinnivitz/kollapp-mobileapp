@@ -23,7 +23,7 @@
 		accessible,
 		border,
 		children,
-		classList,
+		classList = '',
 		clicked,
 		color = border ? 'transparent' : 'light',
 		icon,
@@ -39,6 +39,8 @@
 	void accessible;
 	void id;
 	void icon;
+
+	const borderClass = $derived(border ? `border border-[var(--ion-color-${border})]` : '');
 </script>
 
 {#if !!clicked}
@@ -50,13 +52,13 @@
 		{id}
 		{color}
 		button
-		class={border ? `border border-[var(--ion-color-${border})] ${classList} ` : classList}
+		class={`${borderClass} ${classList}`}
 		onclick={clicked}
 	>
 		{@render content()}
 	</ion-card>
 {:else}
-	<ion-card {id} {color} class={border ? `border border-[var(--ion-color-${border})] ${classList} ` : classList}>
+	<ion-card {id} {color} class={`${borderClass} ${classList}`}>
 		{@render content()}
 	</ion-card>
 {/if}

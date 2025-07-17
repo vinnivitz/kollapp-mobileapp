@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Datetime from './Datetime.svelte';
+	import Popover from './Popover.svelte';
 
 	import { globalPopoverStore } from '$lib/stores';
 
@@ -8,11 +9,10 @@
 
 <!-- DatetimeInputItem popover for calendar selection -->
 
-<!-- svelte-ignore event_directive_deprecated -->
-<ion-popover
-	class="extended"
-	is-open={$datetimeInputItem.open}
-	on:didDismiss={() => datetimeInputItem.update((item) => ({ ...item, open: false }))}
+<Popover
+	open={$datetimeInputItem.open}
+	extended
+	dismissed={() => datetimeInputItem.update((item) => ({ ...item, open: false }))}
 >
 	{#if $datetimeInputItem.open}
 		<div class="text-center">
@@ -26,4 +26,4 @@
 			/>
 		</div>
 	{/if}
-</ion-popover>
+</Popover>

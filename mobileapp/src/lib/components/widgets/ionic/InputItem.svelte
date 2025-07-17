@@ -15,7 +15,7 @@
 		clicked: () => void;
 	};
 
-	let { children, classList, clicked, color, disabled, icon, label }: Properties = $props();
+	let { children, classList = '', clicked, color, disabled, icon, label }: Properties = $props();
 </script>
 
 <CustomItem {icon} {clicked} {classList} {color} {disabled}>

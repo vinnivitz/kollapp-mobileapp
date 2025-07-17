@@ -28,6 +28,7 @@
 	import FabButton from '$lib/components/widgets/ionic/FabButton.svelte';
 	import LocationInputItem from '$lib/components/widgets/ionic/LocationInputItem.svelte';
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
+	import Popover from '$lib/components/widgets/ionic/Popover.svelte';
 	import SegmentButton from '$lib/components/widgets/ionic/SegmentButton.svelte';
 	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import { t } from '$lib/locales';
@@ -224,8 +225,7 @@
 	</Card>
 {/snippet}
 
-<!-- svelte-ignore event_directive_deprecated -->
-<ion-popover is-open={showFilters} on:didDismiss={() => (showFilters = false)}>
+<Popover open={showFilters} dismissed={() => (showFilters = false)}>
 	<Card title={$t('routes.organization.page.activity.filters.title')} classList="m-0">
 		<div class="flex flex-wrap items-center justify-center gap-2">
 			{#each activityFilters as filter (filter.type)}
@@ -233,7 +233,7 @@
 			{/each}
 		</div>
 	</Card>
-</ion-popover>
+</Popover>
 
 <Modal
 	open={createActivityModalOpen}

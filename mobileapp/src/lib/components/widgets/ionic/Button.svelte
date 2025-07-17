@@ -26,7 +26,7 @@
 	let {
 		badge,
 		badgeColor = 'danger',
-		classList,
+		classList = '',
 		clicked,
 		color = 'secondary',
 		disabled,

@@ -18,7 +18,7 @@
 	let {
 		accessible,
 		card,
-		classList,
+		classList = '',
 		clicked,
 		color = 'light',
 		icon,

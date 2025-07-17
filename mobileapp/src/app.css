@@ -42,10 +42,6 @@
 		--button-color: var(--ion-color-white);
 	}
 
-	ion-popover.extended {
-		--width: 98%;
-	}
-
 	.scroll-viewport {
 		height: 100%;
 		overflow-y: auto;

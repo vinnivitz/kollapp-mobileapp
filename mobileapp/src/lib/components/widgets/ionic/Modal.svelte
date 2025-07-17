@@ -18,6 +18,7 @@
 		confirmLabel?: string;
 		informational?: boolean;
 		initialBreakPoint?: number;
+		title?: string;
 		touched?: boolean;
 		confirmed?: () => void;
 		dismissed?: () => void;
@@ -34,6 +35,7 @@
 		informational,
 		initialBreakPoint = 0.5,
 		open,
+		title,
 		touched = true
 	}: Properties = $props();
 
@@ -90,12 +92,15 @@
 	is-open={open}
 	on:willPresent={onPresent}
 	on:didDismiss={dismissed}
-	breakpoints={[0.5, 0.75, 1]}
+	breakpoints={[0, 0.5, 0.75, 1]}
 	initial-breakpoint={initialBreakPoint}
 	handle-behavior="cycle"
 >
 	<ion-header>
 		<ion-toolbar>
+			{#if title}
+				<ion-title>{title}</ion-title>
+			{/if}
 			{#if informational}
 				<ion-buttons slot="start">
 					<ion-button

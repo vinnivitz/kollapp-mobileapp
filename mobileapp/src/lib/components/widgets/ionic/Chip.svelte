@@ -11,7 +11,7 @@
 		clicked?: () => void;
 	};
 
-	let { classList, clicked, color = 'secondary', icon, iconEnd, label, selected }: Properties = $props();
+	let { classList = '', clicked, color = 'secondary', icon, iconEnd, label, selected }: Properties = $props();
 </script>
 
 <ion-chip
