@@ -1,6 +1,5 @@
 package org.kollappbackend.core.config;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -23,10 +22,18 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
     @Autowired
     private ResponseUtil responseUtil;
 
+    @Autowired
+    private EndpointResolver endpointResolver;
+
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
-                         AuthenticationException authException) throws IOException, ServletException {
-        responseUtil.createMessageResponse(response, HttpServletResponse.SC_UNAUTHORIZED,
-                messageSource.getMessage("error.authentication", null, LocaleContextHolder.getLocale()));
+                         AuthenticationException authException) throws IOException {
+        if (endpointResolver.endpointExists(request)) {
+            responseUtil.createMessageResponse(response, HttpServletResponse.SC_UNAUTHORIZED,
+                    messageSource.getMessage("error.authentication", null, LocaleContextHolder.getLocale()));
+        } else {
+            responseUtil.createMessageResponse(response, HttpServletResponse.SC_NOT_FOUND,
+                    messageSource.getMessage("error.resource-not-found", null, LocaleContextHolder.getLocale()));
+        }
     }
 }
