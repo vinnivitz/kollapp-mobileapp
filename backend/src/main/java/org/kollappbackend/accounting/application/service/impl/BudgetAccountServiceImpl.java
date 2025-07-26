@@ -3,8 +3,8 @@ package org.kollappbackend.accounting.application.service.impl;
 import jakarta.transaction.Transactional;
 import org.kollappbackend.accounting.application.exception.BudgetAccountDoesNotContainPostingException;
 import org.kollappbackend.accounting.application.exception.BudgetAccountDoesNotExistException;
-import org.kollappbackend.accounting.application.exception.PostingDoesNotExistException;
 import org.kollappbackend.accounting.application.exception.OrganizationHasNoBudgetAccount;
+import org.kollappbackend.accounting.application.exception.PostingDoesNotExistException;
 import org.kollappbackend.accounting.application.model.BudgetAccount;
 import org.kollappbackend.accounting.application.model.Posting;
 import org.kollappbackend.accounting.application.repository.BudgetAccountRepository;
@@ -36,17 +36,18 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
     }
 
     @Override
-    public Posting editPosting(Posting postingToBeEdited, long postingId, long budgetAccountId) {
+    public Posting editPosting(Posting updatedPosting, long postingId, long budgetAccountId) {
         BudgetAccount budgetAccount = budgetAccountRepository.findById(budgetAccountId)
                 .orElseThrow(BudgetAccountDoesNotExistException::new);
-        Posting posting = postingRepository.findById(postingId).orElseThrow(PostingDoesNotExistException::new);
-        if (!budgetAccount.containsPosting(posting)) {
+        Posting postingToBeEdited = postingRepository.findById(postingId).orElseThrow(PostingDoesNotExistException::new);
+        if (!budgetAccount.containsPosting(postingToBeEdited)) {
             throw new BudgetAccountDoesNotContainPostingException();
         }
-        posting.setDate(postingToBeEdited.getDate());
-        posting.setPurpose(postingToBeEdited.getPurpose());
-        posting.setAmountInCents(postingToBeEdited.getAmountInCents());
-        return posting;
+        postingToBeEdited.setDate(updatedPosting.getDate());
+        postingToBeEdited.setPurpose(updatedPosting.getPurpose());
+        postingToBeEdited.setAmountInCents(updatedPosting.getAmountInCents());
+        postingToBeEdited.setType(updatedPosting.getType());
+        return postingToBeEdited;
     }
 
     @Override
