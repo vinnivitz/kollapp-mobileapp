@@ -1,7 +1,9 @@
-package org.kollappbackend.apiversion.adapters.primary.rest;
+package org.kollappbackend.core.adapters.primary.rest;
 
+import io.swagger.v3.oas.annotations.Operation;
+import lombok.AllArgsConstructor;
 import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
-import org.kollappbackend.apiversion.adapters.primary.rest.model.ApiVersionTO;
+import org.kollappbackend.core.adapters.primary.rest.model.ApiVersionTO;
 import org.kollappbackend.core.adapters.primary.rest.model.DataResponseTO;
 import org.kollappbackend.core.adapters.primary.rest.model.ResponseTO;
 import org.kollappbackend.core.config.properties.ApplicationProperties;
@@ -11,9 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import io.swagger.v3.oas.annotations.Operation;
-import lombok.AllArgsConstructor;
 
 @RestController
 @PrimaryAdapter

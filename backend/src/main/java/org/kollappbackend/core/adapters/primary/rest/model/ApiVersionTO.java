@@ -1,4 +1,4 @@
-package org.kollappbackend.apiversion.adapters.primary.rest.model;
+package org.kollappbackend.core.adapters.primary.rest.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
