@@ -12,11 +12,11 @@ import org.kollappbackend.user.application.exception.IncorrectPasswordException;
 import org.kollappbackend.user.application.exception.InvalidConfirmationLinkException;
 import org.kollappbackend.user.application.exception.UsernameExistsException;
 import org.kollappbackend.user.application.exception.UsernameNotFoundException;
-import org.kollappbackend.user.application.model.ERole;
 import org.kollappbackend.user.application.model.KollappUser;
 import org.kollappbackend.user.application.model.KollappUserDeletedEvent;
 import org.kollappbackend.user.application.model.KollappUserDetails;
 import org.kollappbackend.user.application.model.KollappUserUpdatedEvent;
+import org.kollappbackend.user.application.model.SystemRole;
 import org.kollappbackend.user.application.publisher.KollappUserPublisher;
 import org.kollappbackend.user.application.repository.KollappUserRepository;
 import org.kollappbackend.user.application.service.EmailService;
@@ -119,7 +119,7 @@ public class KollappUserServiceImpl implements KollappUserService {
         String encodedPassword = encoder.encode(password);
         KollappUser kollappUser =
                 KollappUser.builder().username(username).email(email).isActivated(false)
-                        .password(encodedPassword).roles(List.of(ERole.ROLE_KOLLAPP_USER)).build();
+                        .password(encodedPassword).roles(List.of(SystemRole.ROLE_KOLLAPP_USER)).build();
         userRepo.save(kollappUser);
         String confirmationToken = jwtUtil.generateConfirmationToken(username);
         emailService.sendConfirmationMail(kollappUser.getEmail(), createConfirmationBaseUrl(confirmationToken));

@@ -48,13 +48,13 @@ public class KollappUser {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
-    private List<ERole> roles;
+    private List<SystemRole> roles;
 
-    public void addRoleOrganizationManager() {
+    public void addRoleOrganizationMember() {
         if (this.roles == null) {
             this.roles = new ArrayList<>();
         }
-        this.roles.add(ERole.ROLE_ORGANIZATION_MANAGER);
+        this.roles.add(SystemRole.ROLE_KOLLAPP_ORGANIZATION_MEMBER);
     }
 
 }

@@ -7,8 +7,8 @@ import org.kollappbackend.core.core.BaseIT;
 import org.kollappbackend.organization.application.model.Organization;
 import org.kollappbackend.organization.application.repository.OrganizationRepository;
 import org.kollappbackend.organization.application.service.OrganizationService;
-import org.kollappbackend.user.application.model.ERole;
 import org.kollappbackend.user.application.model.KollappUser;
+import org.kollappbackend.user.application.model.SystemRole;
 import org.kollappbackend.user.application.service.KollappUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 
@@ -37,9 +36,9 @@ public class OrganizationServiceIT extends BaseIT {
 
     @BeforeEach
     public void beforeEach() {
-        List<ERole> userRoles = new ArrayList<>();
-        userRoles.add(ERole.ROLE_KOLLAPP_USER);
-        userRoles.add(ERole.ROLE_ORGANIZATION_MANAGER);
+        List<SystemRole> userRoles = new ArrayList<>();
+        userRoles.add(SystemRole.ROLE_KOLLAPP_USER);
+        userRoles.add(SystemRole.ROLE_KOLLAPP_ORGANIZATION_MEMBER);
         KollappUser mockUser = KollappUser.builder()
                 .id(1L)
                 .username("erika")
