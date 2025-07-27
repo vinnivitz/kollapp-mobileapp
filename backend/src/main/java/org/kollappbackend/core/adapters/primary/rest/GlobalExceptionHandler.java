@@ -9,6 +9,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -51,5 +52,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ResponseTO> handleNoSuchMessage(NoSuchMessageException ex) {
         log.error(ex.getMessage());
         return ResponseEntity.internalServerError().body(new ErrorResponseTO("error.generic", messageSource));
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ResponseTO> handleAuthorizationDenied(AuthorizationDeniedException ex) {
+        log.error(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponseTO("error.authorization", messageSource));
     }
 }
