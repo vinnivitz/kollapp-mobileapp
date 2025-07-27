@@ -31,9 +31,6 @@ spring:
       charset: UTF-8
       enabled: true
       force: true
-logging:
-  level:
-    web: DEBUG
 
 server:
   port: ${BACKEND_PORT:8080}
