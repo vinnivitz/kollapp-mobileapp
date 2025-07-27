@@ -8,6 +8,7 @@ import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
 import org.kollappbackend.accounting.adapters.primary.rest.mapper.BudgetAccountMapper;
 import org.kollappbackend.accounting.adapters.primary.rest.mapper.PostingMapper;
 import org.kollappbackend.accounting.adapters.primary.rest.model.BudgetAccountTO;
+import org.kollappbackend.accounting.adapters.primary.rest.model.PostingCreateUpdateRequestTO;
 import org.kollappbackend.accounting.adapters.primary.rest.model.PostingTO;
 import org.kollappbackend.accounting.application.model.BudgetAccount;
 import org.kollappbackend.accounting.application.model.Posting;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -64,21 +66,22 @@ public class AccountingController {
             @SecurityRequirement(name = "bearer-key")})
     @RequiresManagerRole
     public ResponseEntity<ResponseTO> addPosting(@PathVariable("account-id") long accountId,
-                                                 @RequestBody @Valid PostingTO postingTO) {
-        Posting postingToBeAdded = mapPostingAccordingToActivityId(postingTO);
+                                                 @RequestBody @Valid
+                                                 PostingCreateUpdateRequestTO postingCreateUpdateRequestTO) {
+        Posting postingToBeAdded = mapPostingAccordingToActivityId(postingCreateUpdateRequestTO);
         Posting addedPosting = budgetAccountService.addPosting(postingToBeAdded, accountId);
         PostingTO response = postingMapper.mapPostingToPostingTO(addedPosting);
         return ResponseEntity.ok(new DataResponseTO(response, "success.posting.create", messageSource));
     }
 
-    @PostMapping("/account/{account-id}/posting/{posting-id}")
+    @PutMapping("/account/{account-id}/posting/{posting-id}")
     @Operation(summary = "Edit an existing posting.", security = {
             @SecurityRequirement(name = "bearer-key")})
     @RequiresManagerRole
     public ResponseEntity<ResponseTO> editPosting(@PathVariable("account-id") long accountId,
                                                   @PathVariable("posting-id") long postingId,
-                                                  @RequestBody @Valid PostingTO postingTo) {
-        Posting postingToBeEdited = mapPostingAccordingToActivityId(postingTo);
+                                                  @RequestBody @Valid PostingCreateUpdateRequestTO postingUpdateRequestTO) {
+        Posting postingToBeEdited = mapPostingAccordingToActivityId(postingUpdateRequestTO);
         Posting editedPosting = budgetAccountService.editPosting(postingToBeEdited, postingId, accountId);
         PostingTO response = postingMapper.mapPostingToPostingTO(editedPosting);
         return ResponseEntity.ok(new DataResponseTO(response, "success.posting.update", messageSource));
@@ -94,11 +97,11 @@ public class AccountingController {
         return ResponseEntity.ok(new MessageResponseTO("success.posting.delete", messageSource));
     }
 
-    private Posting mapPostingAccordingToActivityId(PostingTO postingTO) {
-        if (postingTO.getActivityId() == 0) {
-            return postingMapper.mapPostingTOToOrganizationPosting(postingTO);
+    private Posting mapPostingAccordingToActivityId(PostingCreateUpdateRequestTO postingCreateUpdateRequestTO) {
+        if (postingCreateUpdateRequestTO.getActivityId() == 0) {
+            return postingMapper.mapPostingCreationRequestTOToOrganizationPosting(postingCreateUpdateRequestTO);
         }
-        return postingMapper.mapPostingTOToActivityPosting(postingTO);
+        return postingMapper.mapPostingCreationRequestTOToActivityPosting(postingCreateUpdateRequestTO);
     }
 
 }
