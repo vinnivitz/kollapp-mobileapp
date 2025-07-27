@@ -11,6 +11,7 @@ import org.kollappbackend.core.adapters.primary.rest.model.ResponseTO;
 import org.kollappbackend.organization.adapters.primary.rest.mapper.OrganizationMapper;
 import org.kollappbackend.organization.adapters.primary.rest.model.OrganizationBaseTO;
 import org.kollappbackend.organization.adapters.primary.rest.model.OrganizationCreationRequestTO;
+import org.kollappbackend.organization.adapters.primary.rest.model.OrganizationMinifiedTO;
 import org.kollappbackend.organization.adapters.primary.rest.model.OrganizationTO;
 import org.kollappbackend.organization.adapters.primary.rest.model.OrganizationUpdateRequestTO;
 import org.kollappbackend.organization.adapters.primary.rest.model.PersonOfOrganizationPatchRoleRequestTO;
@@ -55,8 +56,8 @@ public class OrganizationController {
     @RequiresKollappUserRole
     public ResponseEntity<ResponseTO> getOrganizationOfLoggedInUser() {
         List<Organization> organizations = organizationService.getOrganizationsByLoggedInUser();
-        List<OrganizationBaseTO> organizationBaseTOs = organizations.stream()
-                .map(o -> organizationMapper.organizationToOrganizationBaseTO(o))
+        List<OrganizationMinifiedTO> organizationBaseTOs = organizations.stream()
+                .map(o -> organizationMapper.organizationToOrganizationMinifiedTO(o))
                 .toList();
         return ResponseEntity.ok(new DataResponseTO(organizationBaseTOs, "success.organization.get", messageSource));
     }
