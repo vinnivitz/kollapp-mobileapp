@@ -32,7 +32,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/organization")
@@ -55,10 +54,10 @@ public class OrganizationController {
     @RequiresKollappUserRole
     public ResponseEntity<ResponseTO> getOrganizationOfLoggedInUser() {
         List<Organization> organizations = organizationService.getOrganizationsByLoggedInUser();
-        List<OrganizationTO> organizationTOs = organizations.stream()
-                .map(o -> organizationMapper.organizationToOrganizationTO(o))
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(new DataResponseTO(organizationTOs, "success.organization.get", messageSource));
+        List<OrganizationBaseTO> organizationBaseTOs = organizations.stream()
+                .map(o -> organizationMapper.organizationToOrganizationBaseTO(o))
+                .toList();
+        return ResponseEntity.ok(new DataResponseTO(organizationBaseTOs, "success.organization.get", messageSource));
     }
 
     @GetMapping("/{organization-id}")
