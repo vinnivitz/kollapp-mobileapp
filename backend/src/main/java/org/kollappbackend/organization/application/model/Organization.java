@@ -66,7 +66,7 @@ public class Organization {
     public List<PersonOfOrganization> getManagers() {
         return personsOfOrganization.stream()
                 .filter(p ->
-                        p.getOrganizationRole().equals(OrganizationRole.ROLE_ORGANIZATION_MANAGING_MEMBER))
+                        p.getOrganizationRole().equals(OrganizationRole.ROLE_ORGANIZATION_MANAGER))
                 .toList();
     }
 

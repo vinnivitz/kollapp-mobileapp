@@ -44,4 +44,9 @@ public class KollappUserRepositoryImpl implements KollappUserRepository {
     public void deleteById(long id) {
         jpaRepository.deleteById(id);
     }
+
+    @Override
+    public Optional<KollappUser> findById(Long id) {
+        return jpaRepository.findById(id);
+    }
 }

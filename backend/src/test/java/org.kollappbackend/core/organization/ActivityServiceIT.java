@@ -12,6 +12,7 @@ import org.kollappbackend.user.application.model.KollappUser;
 import org.kollappbackend.user.application.service.KollappUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
@@ -36,12 +37,13 @@ public class ActivityServiceIT extends BaseIT {
 
     @BeforeEach
     public void beforeEach() {
-        KollappUser mockUser = KollappUser.builder().id(1L).username("Erika").build();
+        KollappUser mockUser = KollappUser.builder().id(1L).username("erika").build();
         when(kollappUserService.getLoggedInKollappUser()).thenReturn(mockUser);
     }
 
     @Test
     @Sql("/sql/organization/organization_with_manager_and_activities.sql")
+    @WithMockUser(username = "erika", authorities = { "ROLE_KOLLAPP_ORGANIZATION_MEMBER" })
     public void getActivitiesOfOrganization() {
         List<Activity> activities = activityService.getActivitiesOfOrganization(1);
         assertThat(activities.size()).isEqualTo(2);
@@ -49,6 +51,7 @@ public class ActivityServiceIT extends BaseIT {
 
     @Test
     @Sql("/sql/organization/organization_with_single_manager.sql")
+    @WithMockUser(username = "erika", authorities = { "ROLE_KOLLAPP_ORGANIZATION_MEMBER" })
     public void createActivityForOrganization() {
         Activity activity = Activity.builder().name("Halloween").location("Kashay-Salon").build();
         activityService.createActivityForOrganization(1, activity);
@@ -59,6 +62,7 @@ public class ActivityServiceIT extends BaseIT {
 
     @Test
     @Sql("/sql/organization/organization_with_manager_and_activities.sql")
+    @WithMockUser(username = "erika", authorities = { "ROLE_KOLLAPP_ORGANIZATION_MEMBER" })
     public void updateActivitySuccess() {
         Activity updatedActivity = Activity.builder().name("Halloween-updated").location("Kashay-Salon").id(1).build();
         activityService.updateActivity(1, 1, updatedActivity);
@@ -69,6 +73,7 @@ public class ActivityServiceIT extends BaseIT {
 
     @Test
     @Sql("/sql/organization/organization_with_manager_and_activities.sql")
+    @WithMockUser(username = "erika", authorities = { "ROLE_KOLLAPP_ORGANIZATION_MEMBER" })
     public void updateActivityFailure() {
         Activity updatedActivity = Activity.builder().name("Halloween-updated").location("Kashay-Salon").id(3).build();
         assertThrows(ActivityNotFoundException.class, () -> activityService.updateActivity(1, 3, updatedActivity));
@@ -76,6 +81,7 @@ public class ActivityServiceIT extends BaseIT {
 
     @Test
     @Sql("/sql/organization/organization_with_manager_and_activities.sql")
+    @WithMockUser(username = "erika", authorities = { "ROLE_KOLLAPP_ORGANIZATION_MEMBER" })
     public void deleteActivity() {
         activityService.deleteActivity(1, 1);
         List<Activity> activities = organizationRepository.findById(1).get().getActivities();

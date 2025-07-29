@@ -9,5 +9,5 @@ import java.lang.annotation.RetentionPolicy;
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
 @PreAuthorize("hasRole(T(org.kollappbackend.user.application.model.SystemRole)" + ".ROLE_KOLLAPP_ORGANIZATION_MEMBER.name())")
-public @interface RequiresManagerOrMemberRole {
+public @interface RequiresKollappOrganizationMemberRole {
 }

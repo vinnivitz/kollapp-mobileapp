@@ -10,12 +10,14 @@ import org.kollappbackend.user.application.exception.EmailIsAlreadyConfirmedExce
 import org.kollappbackend.user.application.exception.EmailNotFoundException;
 import org.kollappbackend.user.application.exception.IncorrectPasswordException;
 import org.kollappbackend.user.application.exception.InvalidConfirmationLinkException;
+import org.kollappbackend.user.application.exception.KollappUserNotFoundException;
 import org.kollappbackend.user.application.exception.UsernameExistsException;
 import org.kollappbackend.user.application.exception.UsernameNotFoundException;
 import org.kollappbackend.user.application.model.KollappUser;
 import org.kollappbackend.user.application.model.KollappUserDeletedEvent;
 import org.kollappbackend.user.application.model.KollappUserDetails;
 import org.kollappbackend.user.application.model.KollappUserUpdatedEvent;
+import org.kollappbackend.user.application.model.RequiresKollappUserRole;
 import org.kollappbackend.user.application.model.SystemRole;
 import org.kollappbackend.user.application.publisher.KollappUserPublisher;
 import org.kollappbackend.user.application.repository.KollappUserRepository;
@@ -55,15 +57,11 @@ public class KollappUserServiceImpl implements KollappUserService {
     }
 
     @Override
+    @RequiresKollappUserRole
     public KollappUser getLoggedInKollappUser() {
         String username = ((KollappUserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal()).getUsername();
         return userRepo.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(messageSource));
-    }
-
-    @Override
-    public KollappUser getKollappUserByEmail(String email) {
-        return userRepo.findByEmail(email).orElseThrow(() -> new EmailNotFoundException(messageSource));
     }
 
     @Override
@@ -81,6 +79,7 @@ public class KollappUserServiceImpl implements KollappUserService {
     }
 
     @Override
+    @RequiresKollappUserRole
     public void changePassword(String oldPassword, String newPassword) {
         String usernameOfLoggedInUser = getLoggedInKollappUser().getUsername();
         KollappUser kollappUser = getKollappUserByUsername(usernameOfLoggedInUser);
@@ -126,6 +125,7 @@ public class KollappUserServiceImpl implements KollappUserService {
     }
 
     @Override
+    @RequiresKollappUserRole
     public KollappUser updateKollappUser(@Nullable String username, @Nullable String email) {
         KollappUser kollappUser = getLoggedInKollappUser();
         if (username != null && !kollappUser.getUsername().equals(username)) {
@@ -148,11 +148,17 @@ public class KollappUserServiceImpl implements KollappUserService {
     }
 
     @Override
+    @RequiresKollappUserRole
     public void deleteKollappUser() {
         KollappUser kollappUser = getLoggedInKollappUser();
         kollappUserPublisher.publishUserDeletedEvent(new KollappUserDeletedEvent(this, kollappUser.getId()));
         SecurityContextHolder.getContext().setAuthentication(null);
         userRepo.deleteById(kollappUser.getId());
+    }
+
+    @Override
+    public KollappUser findById(Long id) {
+        return userRepo.findById(id).orElseThrow(() -> new KollappUserNotFoundException(messageSource));
     }
 
     private String createConfirmationBaseUrl(String token) {
@@ -163,5 +169,9 @@ public class KollappUserServiceImpl implements KollappUserService {
     private String createResetPasswordBaseUrl(String token) {
         Map<String, String> params = Map.of("resetPasswordToken", token);
         return urlBuilderUtil.buildClientUrl(ClientPlatform.WEB, "/auth/reset-password/confirmation", params);
+    }
+
+    private KollappUser getKollappUserByEmail(String email) {
+        return userRepo.findByEmail(email).orElseThrow(() -> new EmailNotFoundException(messageSource));
     }
 }
