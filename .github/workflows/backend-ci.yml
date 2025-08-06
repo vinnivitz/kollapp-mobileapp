@@ -58,17 +58,6 @@ jobs:
           git commit -m "[GitHubActions] set release version to ${{ github.event.inputs.developmentVersion }}"
           git push
 
-      - name: Publish quality analysis results to SonarQube
-        run: |
-          mvn sonar:sonar \
-            -Dsonar.projectKey=kollapp \   
-            -Dsonar.projectName='kollapp' \   
-            -Dsonar.host.url=http://188.245.253.119:9000 \   
-            -Dsonar.token=${{ secrets.SONARQUBE_TOKEN }} \ 
-            -Dsonar.java.coveragePlugin=jacoco \
-            -Dsonar.dynamicAnalysis=reuseReports \ 
-            -Dsonar.jacoco.reportPath=./target/jacoco.exec
-
       - name: Log in to Docker registry
         uses: docker/login-action@v3
         with:
