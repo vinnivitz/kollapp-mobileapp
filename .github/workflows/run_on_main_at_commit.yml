@@ -23,7 +23,7 @@ jobs:
           mvn -f backend/pom.xml -B clean verify
       - name: Publish quality analysis results to SonarQube
         run: |
-          mvn -B sonar:sonar \
+          mvn -f backend/pom.xml -B sonar:sonar \
             -Dsonar.projectKey=kollapp \   
             -Dsonar.projectName='kollapp' \   
             -Dsonar.host.url=http://188.245.253.119:9000 \   
