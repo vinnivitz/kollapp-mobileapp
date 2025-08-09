@@ -37,10 +37,11 @@ jobs:
           pnpm --prefix mobileapp build
       - name: Publish frontend quality analysis results to SonarQube
         run: |
-          cd mobileapp
-          npm install @sonar/scan
-          sonar -Dsonar.host.url={{ secrets.SONARQUBE_SERVER}} -Dsonar.token={{ secrets.SONARQUBE_TOKEN_FE }} -Dsonar.projectKey=kollapp-frontend
-          npm uninstall @sonar/scan
+          wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-7.2.0.5079-linux-x64.zip
+          unzip sonar-scanner-cli-7.2.0.5079-linux-x64.zip
+          sonar-scanner-7.2.0.5079-linux-x64/bin/sonar-scanner -Dsonar.projectKey=kollapp-frontend -Dsonar.sources=mobileapp -Dsonar.host.url=https://sonar.kollapp.org -Dsonar.token=sqp_5015e2eb160ff406830b5f1a66828cbdb8fe8c74
+          rm -r sonar-scanner-cli-7.2.0.5079-linux-x64/
+          rm sonar-scanner-cli-7.2.0.5079-linux-x64.zip
       - name: Dump Docker container logs
         if: failure()
         run: |
