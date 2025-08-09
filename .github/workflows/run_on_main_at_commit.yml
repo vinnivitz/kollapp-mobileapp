@@ -23,7 +23,7 @@ jobs:
           mvn -f backend/pom.xml -B clean verify
       - name: Publish quality analysis results to SonarQube
         run: |
-          mvn -f backend/pom.xml -B sonar:sonar -Dsonar.projectKey=kollapp -Dsonar.projectName='kollapp' -Dsonar.host.url=${{ secrets.SONARQUBE_SERVER }} -Dsonar.token=${{ secrets.SONARQUBE_TOKEN }} -Dsonar.java.coveragePlugin=jacoco -Dsonar.dynamicAnalysis=reuseReports -Dsonar.jacoco.reportPath=./backend/target/jacoco.exec
+          mvn -f backend/pom.xml -B sonar:sonar -Dsonar.projectKey=kollapp-backend -Dsonar.projectName='kollapp-backend' -Dsonar.host.url=${{ secrets.SONARQUBE_SERVER }} -Dsonar.token=${{ secrets.SONARQUBE_TOKEN }} -Dsonar.java.coveragePlugin=jacoco -Dsonar.dynamicAnalysis=reuseReports -Dsonar.jacoco.reportPath=./backend/target/jacoco.exec
       - name: Setup Node 22.9
         uses: actions/setup-node@v4
         with:
