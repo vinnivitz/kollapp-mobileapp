@@ -34,6 +34,7 @@ jobs:
           pnpm install --prefix mobileapp --frozen-lockfile
           pnpm --prefix mobileapp validate
           pnpm --prefix mobileapp test
+          pnpm --prefix mobileapp test:coverage
           pnpm --prefix mobileapp build
       - name: Publish frontend quality analysis results to SonarQube
         run: |
