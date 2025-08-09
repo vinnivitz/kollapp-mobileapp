@@ -40,7 +40,7 @@ jobs:
         run: |
           wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-7.2.0.5079-linux-x64.zip
           unzip sonar-scanner-cli-7.2.0.5079-linux-x64.zip
-          sonar-scanner-7.2.0.5079-linux-x64/bin/sonar-scanner -Dsonar.projectKey=kollapp-frontend -Dsonar.sources=mobileapp -Dsonar.host.url=https://sonar.kollapp.org -Dsonar.token=sqp_5015e2eb160ff406830b5f1a66828cbdb8fe8c74 -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
+          sonar-scanner-7.2.0.5079-linux-x64/bin/sonar-scanner -Dsonar.projectKey=kollapp-frontend -Dsonar.sources=mobileapp -Dsonar.host.url=https://sonar.kollapp.org -Dsonar.token=sqp_5015e2eb160ff406830b5f1a66828cbdb8fe8c74 -Dsonar.javascript.lcov.reportPaths=./mobileapp/coverage/lcov.info
       - name: Dump Docker container logs
         if: failure()
         run: |
