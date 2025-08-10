@@ -39,7 +39,7 @@
 		labelColor,
 		readonly,
 		searchable,
-		shape,
+		shape = 'round',
 		size,
 		type
 	}: Properties = $props();

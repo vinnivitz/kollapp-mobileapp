@@ -64,12 +64,12 @@
 			username: credentials.username
 		} as LoginDto);
 		const result = getValidationResult<LoginDto>(response);
-		if (result.valid) {
-			await handleLogin(response.data);
-		} else {
-			await showAlert('Could not log in with biometrics. Wrong credentials provided.');
-			await storeValue(PreferencesKey.BIOMETRICS_ENABLED, false);
-		}
+		await (result.valid
+			? handleLogin(response.data)
+			: Promise.all([
+					showAlert('Could not log in with biometrics. Wrong credentials provided.'),
+					storeValue(PreferencesKey.BIOMETRICS_ENABLED, false)
+				]));
 		await loading.dismiss();
 	}
 
@@ -122,14 +122,10 @@
 	{/await}
 	{#if dev}
 		<div class="mx-3 flex justify-between gap-2">
-			<Button color="tertiary" size="large" fill="outline" icon={logoGoogle} clicked={featureNotImplementedAlert}
-			></Button>
-			<Button color="tertiary" size="large" fill="outline" icon={logoApple} clicked={featureNotImplementedAlert}
-			></Button>
-			<Button color="tertiary" size="large" fill="outline" icon={logoSlack} clicked={featureNotImplementedAlert}
-			></Button>
-			<Button color="tertiary" size="large" fill="outline" icon={logoGithub} clicked={featureNotImplementedAlert}
-			></Button>
+			<Button color="tertiary" size="large" fill="outline" icon={logoGoogle} clicked={featureNotImplementedAlert} />
+			<Button color="tertiary" size="large" fill="outline" icon={logoApple} clicked={featureNotImplementedAlert} />
+			<Button color="tertiary" size="large" fill="outline" icon={logoSlack} clicked={featureNotImplementedAlert} />
+			<Button color="tertiary" size="large" fill="outline" icon={logoGithub} clicked={featureNotImplementedAlert} />
 		</div>
 	{/if}
 	<Card color="light" clicked={() => goto(PageRoute.AUTH.REGISTER)} classList="text-center">

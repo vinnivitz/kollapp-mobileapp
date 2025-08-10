@@ -547,7 +547,7 @@
 			icon={listOutline}
 			classList="mx-2"
 			expand="block"
-			fill="outline"
+			fill="clear"
 			label="Transaction history"
 			clicked={() => (transactionHistoryModalOpen = true)}
 		/>
