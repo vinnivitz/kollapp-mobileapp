@@ -20,7 +20,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -48,7 +48,7 @@ public class AuthorizedKollappUserController {
         return ResponseEntity.ok(new DataResponseTO(kollappUserTO, "success.user.get-data", messageSource));
     }
 
-    @PostMapping("/change-password")
+    @PatchMapping("/change-password")
     @Operation(summary = "Change the password of the logged in user", security = {
             @SecurityRequirement(name = "bearer-key")})
     @RequiresKollappUserRole
@@ -57,7 +57,7 @@ public class AuthorizedKollappUserController {
         return ResponseEntity.ok(new MessageResponseTO("success.password.changed", messageSource));
     }
 
-    @PostMapping("/update-information")
+    @PatchMapping("/update-information")
     @Operation(summary = "Change user base information of the logged in user", security = {
             @SecurityRequirement(name = "bearer-key")})
     @RequiresKollappUserRole
@@ -68,7 +68,7 @@ public class AuthorizedKollappUserController {
         return ResponseEntity.ok(new DataResponseTO(updatedUserTO, "success.user.update-data", messageSource));
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping
     @Operation(summary = "Delete the logged in user", security = {@SecurityRequirement(name = "bearer-key")})
     @RequiresKollappUserRole
     public ResponseEntity<ResponseTO> deleteUser() {
