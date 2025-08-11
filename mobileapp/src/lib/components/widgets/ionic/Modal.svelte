@@ -116,7 +116,7 @@
 				<ion-buttons slot="start">
 					<Button type="button" label={cancelLabel} color="white" clicked={onDismiss} icon={cancelIcon} />
 				</ion-buttons>
-				{#if !!confirm}
+				{#if !!confirmed}
 					<ion-buttons slot="end">
 						<Button
 							disabled={!touched}

@@ -33,7 +33,6 @@
 	onDestroy(() => map?.remove());
 
 	async function initializeMap(value?: string): Promise<void> {
-		console.log('value', value);
 		const coordinates = (await getStoredValue(PreferencesKey.POSITION)) || JSON.parse(environment.defaultPosition);
 		const latlng = new LatLng(coordinates[0], coordinates[1]);
 		if (document.querySelector('.leaflet-container')) return;
@@ -50,7 +49,6 @@
 			maxZoom: 20
 		}).addTo(map);
 		if (value) {
-			console.log('item', value);
 			const response = await osmResource.getLocationsByQuery(value);
 			const item = response[0];
 			if (item) {

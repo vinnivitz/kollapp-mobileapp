@@ -1,51 +1,45 @@
-import { fireEvent, render } from '@testing-library/svelte';
+import { render } from '@testing-library/svelte';
+import { createRawSnippet } from 'svelte';
 import { describe, expect, it, vi } from 'vitest';
 
-import ItemInput from '$lib/components/widgets/ionic/TextInputItem.svelte';
+import ItemInput from '$lib/components/widgets/ionic/InputItem.svelte';
 
 describe('CustomItemInput Component', () => {
-	it('renders ion-input with correct attributes', () => {
-		const properties = {
-			helperText: 'Helper text here',
-			label: 'Test Label',
-			name: 'testName',
-			type: 'email' as const,
-			value: 'john@doe.com'
-		};
-		const { container } = render(ItemInput, { props: properties });
-		const ionInput = container.querySelector('ion-input');
+	it('renders label and children content', () => {
+		const childHtml = '<ion-input data-testid="inner-input" value="john@doe.com"></ion-input>';
+		const children = createRawSnippet(() => ({ render: () => childHtml }));
 
-		expect(ionInput).toBeTruthy();
-		expect(ionInput?.getAttribute('label')).toBe(properties.label);
-		expect(ionInput?.getAttribute('name')).toBe(properties.name);
-		expect(ionInput?.getAttribute('type')).toBe(properties.type);
-		expect(ionInput?.getAttribute('value')).toBe(properties.value);
-		expect(ionInput?.getAttribute('helper-text')).toBe(properties.helperText);
+		const properties = {
+			children,
+			clicked: vi.fn(),
+			icon: 'mail-outline',
+			label: 'Email',
+			name: 'email'
+		};
+
+		const { container, getByTestId } = render(ItemInput, { props: properties });
+		const label = container.querySelector('ion-text');
+
+		expect(label).toBeTruthy();
+		expect(label?.textContent?.trim()).toBe('Email');
+		expect(getByTestId('inner-input')).toBeTruthy();
 	});
 
-	it('calls the change callback on ionInput event', async () => {
-		const changeMock = vi.fn();
+	it('accepts optional flags without throwing', () => {
+		const children = createRawSnippet(() => ({ render: () => '<div>child</div>' }));
+
 		const properties = {
-			change: changeMock,
-			label: 'Test Label',
-			name: 'testName'
+			children,
+			classList: 'extra-class',
+			clicked: vi.fn(),
+			disabled: true,
+			icon: 'help',
+			label: 'Whatever',
+			name: 'ignored-prop'
 		};
 
 		const { container } = render(ItemInput, { props: properties });
-
-		const ionInput = container.querySelector('ion-input') as HTMLIonInputElement;
-		expect(ionInput).toBeTruthy();
-
-		const newValue: string | undefined = 'new value';
-		const event = new CustomEvent('ionInput', { detail: { value: newValue } });
-		await fireEvent(ionInput, event);
-
-		expect(changeMock).toHaveBeenCalledWith(newValue);
-
-		const newValue2 = undefined;
-		const event2 = new CustomEvent('ionInput', { detail: { value: newValue2 } });
-		await fireEvent(ionInput, event2);
-
-		expect(changeMock).toHaveBeenCalledWith('');
+		// We can at least assert the label still renders with optional props set
+		expect(container.querySelector('ion-text')?.textContent?.trim()).toBe('Whatever');
 	});
 });

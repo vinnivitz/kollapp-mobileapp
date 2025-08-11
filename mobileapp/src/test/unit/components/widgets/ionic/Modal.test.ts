@@ -21,68 +21,63 @@ describe('ModalComponent', () => {
 		const childContent = 'This is modal content';
 		const { container } = render(ModalComponent, {
 			props: {
-				children: createRawSnippet(() => ({
-					render: () => `<p>${childContent}</p>`
-				})),
+				children: createRawSnippet(() => ({ render: () => `<p>${childContent}</p>` })),
 				open: true
 			}
 		});
 		const ionContent = container.querySelector('ion-content');
-
 		expect(ionContent?.textContent).toContain(childContent);
 	});
 
 	it('calls dismissed callback and closes modal on cancel button click', async () => {
-		const properties = {
-			cancelLabel: 'Cancel Modal',
-			children: createRawSnippet(() => ({
-				render: () => `<p>Modal Content</p>`
-			})),
-			dismissed: vi.fn(),
-			open: true
-		};
-		const { getByText } = render(ModalComponent, { props: properties });
-		const cancelButton = getByText(properties.cancelLabel);
+		const dismissed = vi.fn();
+		const cancelLabel = 'Cancel Modal';
+		const { getByText } = render(ModalComponent, {
+			props: {
+				cancelLabel,
+				children: createRawSnippet(() => ({ render: () => `<p>Modal Content</p>` })),
+				dismissed,
+				open: true
+			}
+		});
 
+		const cancelButton = getByText(cancelLabel);
 		expect(cancelButton).toBeTruthy();
 
 		await fireEvent.click(cancelButton);
-
-		expect(properties.dismissed).toHaveBeenCalled();
+		expect(dismissed).toHaveBeenCalled();
 	});
 
-	it('calls confirm callback on confirm button click', async () => {
-		const properties = {
-			children: createRawSnippet(() => ({
-				render: () => `<p>Modal Content</p>`
-			})),
-			confirm: vi.fn(),
-			confirmLabel: 'Confirm Modal',
-			open: true
-		};
+	it('calls confirmed callback on confirm button click', async () => {
+		const confirmed = vi.fn();
+		const confirmLabel = 'Confirm Modal';
 
-		const { getByText } = render(ModalComponent, { props: properties });
+		const { getByText } = render(ModalComponent, {
+			props: {
+				children: createRawSnippet(() => ({ render: () => `<p>Modal Content</p>` })),
+				confirmed,
+				confirmLabel,
+				open: true
+			}
+		});
 
-		const confirmButton = getByText(properties.confirmLabel);
+		const confirmButton = getByText(confirmLabel);
 		expect(confirmButton).toBeTruthy();
 
 		await fireEvent.click(confirmButton);
-
-		expect(properties.confirm).toHaveBeenCalled();
+		expect(confirmed).toHaveBeenCalled();
 	});
 
-	it('does not render confirm button if confirm callback is not provided', () => {
-		const properties = {
-			children: createRawSnippet(() => ({
-				render: () => `<p>Modal Content</p>`
-			})),
-			confirmLabel: 'Confirm Modal',
-			open: true
-		};
+	it('does not render confirm button if confirmed callback is not provided', () => {
+		const confirmLabel = 'Confirm Modal';
+		const { queryByText } = render(ModalComponent, {
+			props: {
+				children: createRawSnippet(() => ({ render: () => `<p>Modal Content</p>` })),
+				confirmLabel,
+				open: true
+			}
+		});
 
-		const { queryByText } = render(ModalComponent, { props: properties });
-
-		const confirmButton = queryByText(properties.confirmLabel);
-		expect(confirmButton).toBeFalsy();
+		expect(queryByText(confirmLabel)).toBeFalsy();
 	});
 });

@@ -1,39 +1,59 @@
+import type { Readable } from 'svelte/store';
+
 import { fireEvent, render } from '@testing-library/svelte';
 import { createRawSnippet } from 'svelte';
-import { beforeAll, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import Layout from '$lib/components/layout/Layout.svelte';
 
 let storesInitialized = true;
-
 const navigate = vi.fn();
 
-function registerMocks(): void {
-	vi.mock('$lib/components/layout/Header.svelte', () => ({
-		default: () => ({
-			$$render: () => `<div data-testid="header-stub"></div>`
-		})
-	}));
+const makeReadable = (value: boolean): Readable<boolean> => ({
+	subscribe: (run: (v: boolean) => void) => {
+		run(value);
+		return () => {};
+	}
+});
 
-	vi.mock('$lib/components/layout/Menu.svelte', () => ({
-		default: () => ({
-			$$render: () => `<div data-testid="menu-stub">Menu</div>`,
-			navigate
-		})
-	}));
+vi.mock('$lib/components/layout/Header.svelte', () => ({
+	default: () => ({
+		$$render: () => `<div data-testid="header-stub"></div>`
+	})
+}));
 
-	vi.mock('$lib/stores', () => ({
+vi.mock('$lib/components/layout/Menu.svelte', () => ({
+	default: () => ({
+		$$render: () => `<div data-testid="menu-stub">Menu</div>`,
+		navigate
+	})
+}));
+
+vi.mock('$lib/stores', () => {
+	return {
 		initializationStore: {
-			subscribe: (run: (value: boolean) => void) => {
-				run(storesInitialized);
+			subscribe: (run: (v: { loadedCache: Readable<boolean>; loadedServer: Readable<boolean> }) => void) => {
+				run({
+					loadedCache: makeReadable(storesInitialized),
+					loadedServer: makeReadable(storesInitialized)
+				});
 				return () => {};
 			}
+		},
+		organizationStore: {
+			init: vi.fn().mockResolvedValue({})
+		},
+		userStore: {
+			init: vi.fn().mockResolvedValue({})
 		}
-	}));
-}
+	};
+});
 
 describe('Layout Component', () => {
-	beforeAll(() => registerMocks());
+	beforeEach(() => {
+		storesInitialized = true;
+		navigate.mockClear();
+	});
 
 	it('renders child content', () => {
 		const childText = 'Hello, world!';
@@ -71,7 +91,7 @@ describe('Layout Component', () => {
 		expect(queryByTestId('menu-stub')).toBeNull();
 	});
 
-	it('do not render content if stores are not initialized', () => {
+	it('does not render content if stores are not initialized', () => {
 		storesInitialized = false;
 		const properties = { hideLayout: false, hideMenu: false, title: 'Test Title' };
 		const { container } = render(Layout, { props: properties });
@@ -80,11 +100,10 @@ describe('Layout Component', () => {
 	});
 
 	it('renders ion-refresher and calls onRefresh when refreshed', async () => {
-		storesInitialized = true;
-		const onRefresh = vi.fn();
+		const onRefresh = vi.fn().mockResolvedValue({});
 		const properties = { onRefresh, title: 'Test Title' };
 		const { container } = render(Layout, { props: properties });
-		const refresherElement = container.querySelector('ion-refresher') as HTMLIonRefresherElement;
+		const refresherElement = container.querySelector('ion-refresher') as HTMLElement;
 
 		expect(refresherElement).toBeTruthy();
 

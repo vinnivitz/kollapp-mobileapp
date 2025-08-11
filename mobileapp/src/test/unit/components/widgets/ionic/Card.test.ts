@@ -16,6 +16,7 @@ describe('CardComponent', () => {
 			subtitle: 'Test Subtitle',
 			title: 'Test Title'
 		};
+
 		const { container } = render(Card, { props: properties });
 		const ionCardTitle = container.querySelector('ion-card-title');
 		const ionCardSubtitle = container.querySelector('ion-card-subtitle');
@@ -26,20 +27,43 @@ describe('CardComponent', () => {
 		expect(ionCardContent?.textContent).toContain(childContent);
 	});
 
-	it('calls the click callback when the card is clicked', async () => {
-		const clickMock = vi.fn();
+	it('calls the clicked callback when the card is clicked', async () => {
+		const clicked = vi.fn();
 		const properties = {
 			children,
-			click: clickMock
+			clicked
 		};
+
 		const { container } = render(Card, { props: properties });
 		const ionCard = container.querySelector('ion-card');
-		const ionCardContent = ionCard?.querySelector('ion-card-content');
 
 		expect(ionCard).toBeTruthy();
-		expect(ionCardContent?.textContent).toContain(childContent);
 
-		await fireEvent.click(ionCard as HTMLIonCardElement);
-		expect(clickMock).toHaveBeenCalled();
+		await fireEvent.click(ionCard as HTMLElement);
+		expect(clicked).toHaveBeenCalledTimes(1);
+	});
+
+	it('exposes button semantics (role + tabindex) when clickable', async () => {
+		const clicked = vi.fn();
+		const { container } = render(Card, {
+			props: { children, clicked }
+		});
+
+		const ionCard = container.querySelector('ion-card') as HTMLElement;
+		expect(ionCard?.getAttribute('role')).toBe('button');
+		expect(ionCard?.getAttribute('tabindex')).toBe('0');
+
+		await fireEvent.keyDown(ionCard, { key: 'Enter' });
+		expect(clicked).toHaveBeenCalled();
+	});
+
+	it('does not expose button semantics when not clickable', () => {
+		const { container } = render(Card, {
+			props: { children }
+		});
+
+		const ionCard = container.querySelector('ion-card') as HTMLElement;
+		expect(ionCard?.getAttribute('role')).toBeNull();
+		expect(ionCard?.getAttribute('tabindex')).toBeNull();
 	});
 });
