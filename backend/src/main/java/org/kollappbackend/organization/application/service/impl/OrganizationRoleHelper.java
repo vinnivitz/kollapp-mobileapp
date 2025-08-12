@@ -54,21 +54,22 @@ class OrganizationRoleHelper {
     }
 
     private boolean isMemberOfOrganization(KollappUser currentUser, Organization organization) {
-        PersonOfOrganization personOfOrganization = organization.getPersonsOfOrganization().stream()
-                .filter(p -> p.getUserId() == currentUser.getId())
-                .findFirst()
-                .orElseThrow(() -> new PersonNotRegisteredInOrganizationException(messageSource));
-        if(personOfOrganization.getStatus().equals(PersonOfOrganizationStatus.PENDING)) {
+        PersonOfOrganization personOfOrganization = getPersonOfOrganization(currentUser, organization);
+        if (personOfOrganization.getStatus().equals(PersonOfOrganizationStatus.PENDING)) {
             throw new PersonOfOrganizationIsNotApprovedYetException(messageSource);
         }
         return personOfOrganization.getOrganizationRole().equals(OrganizationRole.ROLE_ORGANIZATION_MEMBER);
     }
 
     private boolean isManagerOfOrganization(KollappUser currentUser, Organization organization) {
-        PersonOfOrganization personOfOrganization = organization.getPersonsOfOrganization().stream()
+        PersonOfOrganization personOfOrganization = getPersonOfOrganization(currentUser, organization);
+        return personOfOrganization.getOrganizationRole().equals(OrganizationRole.ROLE_ORGANIZATION_MANAGER);
+    }
+
+    private PersonOfOrganization getPersonOfOrganization(KollappUser currentUser, Organization organization) {
+        return organization.getPersonsOfOrganization().stream()
                 .filter(p -> p.getUserId() == currentUser.getId())
                 .findFirst()
                 .orElseThrow(() -> new PersonNotRegisteredInOrganizationException(messageSource));
-        return personOfOrganization.getOrganizationRole().equals(OrganizationRole.ROLE_ORGANIZATION_MEMBER);
     }
 }

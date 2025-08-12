@@ -30,7 +30,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -118,7 +117,7 @@ public class KollappUserServiceImpl implements KollappUserService {
         String encodedPassword = encoder.encode(password);
         KollappUser kollappUser =
                 KollappUser.builder().username(username).email(email).isActivated(false)
-                        .password(encodedPassword).roles(List.of(SystemRole.ROLE_KOLLAPP_USER)).build();
+                        .password(encodedPassword).role(SystemRole.ROLE_KOLLAPP_USER).build();
         userRepo.save(kollappUser);
         String confirmationToken = jwtUtil.generateConfirmationToken(username);
         emailService.sendConfirmationMail(kollappUser.getEmail(), createConfirmationBaseUrl(confirmationToken));

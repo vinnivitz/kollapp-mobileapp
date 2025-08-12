@@ -65,7 +65,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     @RequiresKollappUserRole
     public Organization createOrganization(Organization organization) {
         KollappUser user = kollappUserService.getLoggedInKollappUser();
-        user.addRoleOrganizationMember();
+        user.setRole(SystemRole.ROLE_KOLLAPP_ORGANIZATION_MEMBER);
         Organization persistedOrganization = organizationRepository.save(organization);
         OrganizationInvitationCode invitationCode =
                 persistedOrganization.generateNewInvitationCode(applicationProperties.getOrganizationInvitationValidityDays());
@@ -109,7 +109,7 @@ public class OrganizationServiceImpl implements OrganizationService {
                 .orElseThrow(() -> new PersonNotRegisteredInOrganizationException(messageSource));
         KollappUser kollappUser = kollappUserService.findById(personToBeDeleted.getUserId());
         if (userIsNoOrganizationMember(kollappUser.getId())) {
-            kollappUser.getRoles().remove(SystemRole.ROLE_KOLLAPP_ORGANIZATION_MEMBER);
+            kollappUser.setRole(SystemRole.ROLE_KOLLAPP_USER);
         }
         organization.getPersonsOfOrganization().remove(personToBeDeleted);
         return organization;
@@ -143,8 +143,8 @@ public class OrganizationServiceImpl implements OrganizationService {
                 .build();
         newMember.setOrganization(organization);
         organization.addPersonOfOrganization(newMember);
-        if(userIsNoOrganizationMember(currentUser.getId())) {
-            currentUser.addRoleOrganizationMember();
+        if (userIsNoOrganizationMember(currentUser.getId())) {
+            currentUser.setRole(SystemRole.ROLE_KOLLAPP_ORGANIZATION_MEMBER);
         }
         return organization;
     }
@@ -176,7 +176,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             organization.getPersonsOfOrganization().remove(personOfOrganization);
         }
         if (userIsNoOrganizationMember(loggedInUser.getId())) {
-            loggedInUser.getRoles().remove(SystemRole.ROLE_KOLLAPP_ORGANIZATION_MEMBER);
+            loggedInUser.setRole(SystemRole.ROLE_KOLLAPP_USER);
         }
     }
 
@@ -191,9 +191,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     @RequiresKollappOrganizationMemberRole
     public Organization grantRoleToPersonOfOrganization(long organizationId, long personId, String role) {
         organizationRoleHelper.verifyOrganizationManager(organizationId);
-        OrganizationRole targetRole = role.equals("MANAGER")
-                ? OrganizationRole.ROLE_ORGANIZATION_MANAGER
-                : OrganizationRole.ROLE_ORGANIZATION_MEMBER;
+        OrganizationRole targetRole = OrganizationRole.valueOf(role);
         Organization organization = organizationRepository.findById(organizationId)
                 .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
         PersonOfOrganization personOfOrganization = personOfOrganizationRepository.findById(personId)
@@ -251,7 +249,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         organizationPublisher.publishOrganizationDeletedEvent(organizationDeletedEvent);
 
         if (userIsNoOrganizationMember(loggedInUser.getId())) {
-            loggedInUser.getRoles().remove(SystemRole.ROLE_KOLLAPP_ORGANIZATION_MEMBER);
+            loggedInUser.setRole(SystemRole.ROLE_KOLLAPP_USER);
         }
     }
 

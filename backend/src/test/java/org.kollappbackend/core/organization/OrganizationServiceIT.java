@@ -15,7 +15,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -65,7 +64,7 @@ public class OrganizationServiceIT extends BaseIT {
 
     @Test
     @Sql("/sql/organization/organization_with_single_manager.sql")
-    @WithMockUser(username = "erika", authorities = { "ROLE_KOLLAPP_USER", "ROLE_KOLLAPP_ORGANIZATION_MEMBER" })
+    @WithMockUser(username = "erika", authorities = { "ROLE_KOLLAPP_ORGANIZATION_MEMBER" })
     public void editOrganizationOfLoggedInUser() {
         Organization organization = Organization.builder().name("Frequenzfamilie").build();
         organizationService.updateOrganization(organization, 1);
@@ -85,7 +84,7 @@ public class OrganizationServiceIT extends BaseIT {
 
     @Test
     @Sql("/sql/organization/organization_with_single_manager.sql")
-    @WithMockUser(username = "erika", authorities = { "ROLE_KOLLAPP_USER", "ROLE_KOLLAPP_ORGANIZATION_MEMBER" })
+    @WithMockUser(username = "erika", authorities = { "ROLE_KOLLAPP_ORGANIZATION_MEMBER" })
     public void leaveOrganizationWithNoRemainingManager() {
         mockRoles();
         organizationService.leaveOrganization(1);
@@ -95,7 +94,7 @@ public class OrganizationServiceIT extends BaseIT {
 
     @Test
     @Sql("/sql/organization/organization_with_manager_and_member.sql")
-    @WithMockUser(username = "erika", authorities = { "ROLE_KOLLAPP_USER", "ROLE_KOLLAPP_ORGANIZATION_MEMBER" })
+    @WithMockUser(username = "erika", authorities = { "ROLE_KOLLAPP_ORGANIZATION_MEMBER" })
     public void leaveOrganizationWithNoRemainingManagerButMember() {
         mockRoles();
         organizationService.leaveOrganization(1);
@@ -105,7 +104,7 @@ public class OrganizationServiceIT extends BaseIT {
 
     @Test
     @Sql("/sql/organization/organization_with_manager_and_member.sql")
-    @WithMockUser(username = "erika", authorities = { "ROLE_KOLLAPP_USER", "ROLE_KOLLAPP_ORGANIZATION_MEMBER" })
+    @WithMockUser(username = "erika", authorities = { "ROLE_KOLLAPP_ORGANIZATION_MEMBER" })
     public void deleteUserFromOrganization() {
         organizationService.deleteUserFromOrganization(2, 1);
         List<Organization> organizations = organizationService.getOrganizationsByLoggedInUser();
@@ -113,13 +112,10 @@ public class OrganizationServiceIT extends BaseIT {
     }
 
     private void mockRoles() {
-        List<SystemRole> roles = new ArrayList<>();
-        roles.add(SystemRole.ROLE_KOLLAPP_ORGANIZATION_MEMBER);
-        roles.add(SystemRole.ROLE_KOLLAPP_USER);
         KollappUser mockUser = KollappUser.builder()
                 .id(1L)
                 .username("erika")
-                .roles(roles)
+                .role(SystemRole.ROLE_KOLLAPP_ORGANIZATION_MEMBER)
                 .build();
         when(kollappUserService.getLoggedInKollappUser()).thenReturn(mockUser);
     }
