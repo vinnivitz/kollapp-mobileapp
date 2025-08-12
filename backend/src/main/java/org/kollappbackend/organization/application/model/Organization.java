@@ -13,6 +13,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.Hibernate;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -108,5 +109,10 @@ public class Organization {
         updated.setOrganization(this);
         personsOfOrganization.remove(original);
         personsOfOrganization.add(updated);
+    }
+
+    public void initChildren() {
+        Hibernate.initialize(personsOfOrganization);
+        Hibernate.initialize(activities);
     }
 }

@@ -1,5 +1,6 @@
 package org.kollappbackend.accounting.adapters.primary.rest.mapper;
 
+import org.kollappbackend.accounting.adapters.primary.rest.model.PostingCreateUpdateRequestTO;
 import org.kollappbackend.accounting.adapters.primary.rest.model.PostingTO;
 import org.kollappbackend.accounting.application.model.ActivityPosting;
 import org.kollappbackend.accounting.application.model.OrganizationPosting;
@@ -14,7 +15,11 @@ public interface PostingMapper {
     @SubclassMapping(source = OrganizationPosting.class, target = PostingTO.class)
     PostingTO mapPostingToPostingTO(Posting posting);
 
-    ActivityPosting mapPostingTOToActivityPosting(PostingTO postingTO);
+    OrganizationPosting mapPostingCreationRequestTOToOrganizationPosting(
+            PostingCreateUpdateRequestTO postingCreateUpdateRequestTO);
 
-    OrganizationPosting mapPostingTOToOrganizationPosting(PostingTO postingTO);
+    OrganizationPosting mapPostingCreationRequestTOToActivityPosting(
+            PostingCreateUpdateRequestTO postingCreateUpdateRequestTO);
+
+
 }

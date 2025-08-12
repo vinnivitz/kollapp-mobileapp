@@ -101,6 +101,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     public Organization generateNewOrganizationInvitationCode(long organizationId) {
         Organization organization = organizationRepository.findById(organizationId)
                 .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
+        organization.initChildren();
         organization.generateNewInvitationCode(applicationProperties.getOrganizationInvitationValidityDays());
         return organization;
     }
@@ -196,7 +197,11 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     public Organization getOrganizationById(long id) {
-        return organizationRepository.findById(id).orElseThrow(() -> new OrganizationNotFoundException(messageSource));
+        Organization organization = organizationRepository
+                .findById(id)
+                .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
+        organization.initChildren();
+        return organization;
     }
 
     @Override
