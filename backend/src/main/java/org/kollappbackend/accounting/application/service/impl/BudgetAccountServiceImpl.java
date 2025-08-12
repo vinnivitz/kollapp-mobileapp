@@ -35,17 +35,18 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
     }
 
     @Override
-    public Posting editPosting(Posting postingToBeEdited, long postingId, long budgetAccountId) {
+    public Posting editPosting(Posting updatedPosting, long postingId, long budgetAccountId) {
         BudgetAccount budgetAccount = budgetAccountRepository.findById(budgetAccountId)
                 .orElseThrow(BudgetAccountDoesNotExistException::new);
-        Posting posting = postingRepository.findById(postingId).orElseThrow(PostingDoesNotExistException::new);
-        if (!budgetAccount.containsPosting(posting)) {
+        Posting postingToBeEdited = postingRepository.findById(postingId).orElseThrow(PostingDoesNotExistException::new);
+        if (!budgetAccount.containsPosting(postingToBeEdited)) {
             throw new BudgetAccountDoesNotContainPostingException();
         }
-        posting.setDate(postingToBeEdited.getDate());
-        posting.setPurpose(postingToBeEdited.getPurpose());
-        posting.setAmountInCents(postingToBeEdited.getAmountInCents());
-        return posting;
+        postingToBeEdited.setDate(updatedPosting.getDate());
+        postingToBeEdited.setPurpose(updatedPosting.getPurpose());
+        postingToBeEdited.setAmountInCents(updatedPosting.getAmountInCents());
+        postingToBeEdited.setType(updatedPosting.getType());
+        return postingToBeEdited;
     }
 
     @Override

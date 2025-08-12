@@ -11,6 +11,7 @@
 		"validate": "npm run check && npm run lint",
 		"test:unit": "vitest",
 		"vitest-ui": "vitest --ui",
+		"test:coverage": "vitest --coverage",
 		"test:e2e": "playwright test",
 		"test": "npm run test:unit -- --run",
 		"typedoc": "typedoc & live-server ./docs --watch --silent --no-browser --port=1234 & chokidar 'src/lib' -c 'typedoc' --silent",

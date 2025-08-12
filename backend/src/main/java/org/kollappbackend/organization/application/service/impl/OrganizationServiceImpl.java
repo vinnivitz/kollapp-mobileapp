@@ -81,6 +81,8 @@ public class OrganizationServiceImpl implements OrganizationService {
                 .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
         if (updatedOrganization.getName() != null) {
             organization.setName(updatedOrganization.getName());
+            organization.setPlace(updatedOrganization.getPlace());
+            organization.setDescription(updatedOrganization.getDescription());
         }
         return organization;
     }

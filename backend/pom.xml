@@ -37,6 +37,7 @@
         <google-findbugs.version>3.0.2</google-findbugs.version>
         <checkstyle.version>3.6.0</checkstyle.version>
         <spring-boot-starter-actuator.version>3.4.3</spring-boot-starter-actuator.version>
+        <jacoco.version>0.8.13</jacoco.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -274,6 +275,11 @@
                     <artifactId>maven-failsafe-plugin</artifactId>
                     <version>${maven-failsafe-plugin.version}</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${jacoco.version}</version>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -289,6 +295,25 @@
                         <goals>
                             <goal>scan</goal>
                             <goal>analyze</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>jacoco-initialize</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>jacoco-site</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
                         </goals>
                     </execution>
                 </executions>
