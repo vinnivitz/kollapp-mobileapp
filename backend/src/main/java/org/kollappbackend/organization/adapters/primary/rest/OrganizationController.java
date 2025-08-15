@@ -11,8 +11,10 @@ import org.kollappbackend.core.adapters.primary.rest.model.ResponseTO;
 import org.kollappbackend.organization.adapters.primary.rest.mapper.OrganizationMapper;
 import org.kollappbackend.organization.adapters.primary.rest.model.OrganizationBaseTO;
 import org.kollappbackend.organization.adapters.primary.rest.model.OrganizationCreationRequestTO;
+import org.kollappbackend.organization.adapters.primary.rest.model.OrganizationMinifiedTO;
 import org.kollappbackend.organization.adapters.primary.rest.model.OrganizationTO;
 import org.kollappbackend.organization.adapters.primary.rest.model.OrganizationUpdateRequestTO;
+import org.kollappbackend.organization.adapters.primary.rest.model.PersonOfOrganizationPatchRoleRequestTO;
 import org.kollappbackend.organization.application.model.Organization;
 import org.kollappbackend.organization.application.service.OrganizationService;
 import org.kollappbackend.user.application.model.RequiresKollappUserRole;
@@ -23,16 +25,15 @@ import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/organization")
@@ -55,10 +56,10 @@ public class OrganizationController {
     @RequiresKollappUserRole
     public ResponseEntity<ResponseTO> getOrganizationOfLoggedInUser() {
         List<Organization> organizations = organizationService.getOrganizationsByLoggedInUser();
-        List<OrganizationTO> organizationTOs = organizations.stream()
-                .map(o -> organizationMapper.organizationToOrganizationTO(o))
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(new DataResponseTO(organizationTOs, "success.organization.get", messageSource));
+        List<OrganizationMinifiedTO> organizationBaseTOs = organizations.stream()
+                .map(o -> organizationMapper.organizationToOrganizationMinifiedTO(o))
+                .toList();
+        return ResponseEntity.ok(new DataResponseTO(organizationBaseTOs, "success.organization.get", messageSource));
     }
 
     @GetMapping("/{organization-id}")
@@ -93,19 +94,21 @@ public class OrganizationController {
         return ResponseEntity.ok(new DataResponseTO(organizationTO, "success.organization.get", messageSource));
     }
 
-    @PostMapping("/{organization-id}/person/{person-id}/grant-role")
+    @PatchMapping("/{organization-id}/person/{person-id}/grant-role")
     @Operation(summary = "Grant a certain role to a person of an organization.", security = {
             @SecurityRequirement(name = "bearer-key")})
     @RequiresManagerRole
     public ResponseEntity<ResponseTO> grantRoleToPersonOfOrganization(@PathVariable("organization-id") long organizationId,
                                                                       @PathVariable("person-id") long personId,
-                                                                      @RequestParam("role") String role) {
-        Organization organization = organizationService.grantRoleToPersonOfOrganization(organizationId, personId, role);
+                                                                      @RequestBody
+                                                                      PersonOfOrganizationPatchRoleRequestTO patchRoleRequestTO) {
+        Organization organization = organizationService.grantRoleToPersonOfOrganization(organizationId, personId,
+                patchRoleRequestTO.getRole());
         OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(organization);
         return ResponseEntity.ok(new DataResponseTO(organizationTO, "success.organization.get", messageSource));
     }
 
-    @PostMapping("/{organization-id}/invitation-code")
+    @PatchMapping("/{organization-id}/invitation-code")
     @Operation(summary = "Renew the invitation code of the organization.", security = {
             @SecurityRequirement(name = "bearer-key")})
     @RequiresManagerRole

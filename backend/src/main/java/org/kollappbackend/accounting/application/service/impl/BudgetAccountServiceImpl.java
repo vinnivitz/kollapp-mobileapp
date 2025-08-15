@@ -3,7 +3,6 @@ package org.kollappbackend.accounting.application.service.impl;
 import jakarta.transaction.Transactional;
 import org.kollappbackend.accounting.application.exception.BudgetAccountDoesNotContainPostingException;
 import org.kollappbackend.accounting.application.exception.BudgetAccountDoesNotExistException;
-import org.kollappbackend.accounting.application.exception.OrganizationHasNoBudgetAccount;
 import org.kollappbackend.accounting.application.exception.PostingDoesNotExistException;
 import org.kollappbackend.accounting.application.model.BudgetAccount;
 import org.kollappbackend.accounting.application.model.Posting;
@@ -63,9 +62,11 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
 
     @Override
     public BudgetAccount getBudgetAccountByOrganizationId(long organizationId) {
-        return budgetAccountRepository
+        BudgetAccount budgetAccount = budgetAccountRepository
                 .findByOrganizationId(organizationId)
-                .orElseThrow(OrganizationHasNoBudgetAccount::new);
+                .orElseThrow(BudgetAccountDoesNotExistException::new);
+        budgetAccount.initChildren();
+        return budgetAccount;
     }
 
     @Override

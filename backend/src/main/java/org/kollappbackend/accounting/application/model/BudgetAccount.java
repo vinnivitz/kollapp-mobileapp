@@ -12,6 +12,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.Hibernate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,5 +47,9 @@ public class BudgetAccount {
 
     public void deletePosting(Posting posting) {
         postings.remove(posting);
+    }
+
+    public void initChildren() {
+        Hibernate.initialize(postings);
     }
 }
