@@ -111,4 +111,20 @@ describe('Layout Component', () => {
 
 		expect(onRefresh).toHaveBeenCalled();
 	});
+
+	it('renders ion-refresher, calls onRefresh, and calls refresher.complete()', async () => {
+		const onRefresh = vi.fn().mockResolvedValue({});
+		const properties = { onRefresh, title: 'Test Title' };
+		const { container } = render(Layout, { props: properties });
+		const refresherElement = container.querySelector('ion-refresher') as HTMLIonRefresherElement;
+
+		expect(refresherElement).toBeTruthy();
+
+		refresherElement.complete = vi.fn();
+
+		await fireEvent(refresherElement, new CustomEvent('ionRefresh'));
+
+		expect(onRefresh).toHaveBeenCalled();
+		expect(refresherElement.complete).toHaveBeenCalled();
+	});
 });

@@ -1,10 +1,18 @@
 import { fireEvent, render, waitFor } from '@testing-library/svelte';
 import { createRawSnippet } from 'svelte';
-import { beforeAll, describe, expect, it, vi } from 'vitest';
+import { beforeAll, describe, expect, it, type Mock, vi } from 'vitest';
 
 import { goto } from '$app/navigation';
 
 import Tabs from '$lib/components/layout/Tabs.svelte';
+import { PageRoute } from '$lib/models/routing';
+
+const mockState = vi.hoisted(() => ({
+	navigating: undefined as { to: { route: { id: string } } } | undefined,
+	page: { route: { id: '/home' as string | undefined } }
+}));
+
+vi.mock('$app/state', () => mockState);
 
 beforeAll(() => {
 	class FakeIonTabs extends HTMLElement {
@@ -33,6 +41,9 @@ describe('Tabs Component', () => {
 	};
 
 	it('renders children', async () => {
+		mockState.page.route.id = '/home';
+		mockState.navigating = { to: { route: { id: '/next' } } };
+
 		const childContent = 'Child content';
 		const { container } = render(Tabs, { props: properties });
 
@@ -43,6 +54,9 @@ describe('Tabs Component', () => {
 	});
 
 	it('tab selection works properly', async () => {
+		mockState.page.route.id = '/home';
+		mockState.navigating = { to: { route: { id: '/next' } } };
+
 		const { container, queryByText } = render(Tabs, { props: properties });
 		const ionTabs = container.querySelector('ion-tabs') as HTMLIonTabsElement;
 		const aboutTabButton = queryByText(tab.label)?.closest('ion-tab-button');
@@ -54,6 +68,43 @@ describe('Tabs Component', () => {
 		await waitFor(() => {
 			expect(goto).toHaveBeenCalledWith(tab.tab);
 			expect(ionTabs.select).toHaveBeenCalledWith(tab.tab);
+		});
+	});
+
+	it('updates currentTabName from navigating in $effect and selects it on mount', async () => {
+		mockState.page.route.id = '/home';
+		mockState.navigating = { to: { route: { id: '/next' } } };
+
+		const { container } = render(Tabs, {
+			props: {
+				children: createRawSnippet(() => ({ render: () => `<p>content</p>` })),
+				tabs: [{ icon: 'homeIcon', label: 'Home', tab: '/home' }]
+			}
+		});
+
+		const ionTabs = container.querySelector('ion-tabs') as HTMLIonTabsElement;
+		expect(ionTabs).toBeTruthy();
+
+		await waitFor(() => {
+			expect(ionTabs.select as Mock).toHaveBeenCalledWith('/next');
+		});
+	});
+
+	it('falls back to PageRoute.HOME when page.route.id is undefined', async () => {
+		mockState.page.route.id = undefined;
+		mockState.navigating = undefined;
+
+		const { container } = render(Tabs, {
+			props: {
+				children: createRawSnippet(() => ({ render: () => `<p>content</p>` })),
+				tabs: [{ icon: 'homeIcon', label: 'Home', tab: '/home' }]
+			}
+		});
+
+		const ionTabs = container.querySelector('ion-tabs') as HTMLIonTabsElement;
+
+		await waitFor(() => {
+			expect(ionTabs.select).toHaveBeenCalledWith(PageRoute.HOME);
 		});
 	});
 });

@@ -41,10 +41,6 @@
 	let refresher = $state<HTMLIonRefresherElement>();
 	let menuComponent = $state<ReturnType<typeof Menu>>();
 
-	async function navigate(route: string): Promise<void> {
-		menuComponent?.navigate(route);
-	}
-
 	async function doRefresh(): Promise<void> {
 		await (onRefresh ? onRefresh() : Promise.all([userStore.init(), organizationStore.init()]));
 		refresher?.complete?.();
@@ -56,24 +52,29 @@
 		<ion-list>
 			<LabeledItem
 				transparent
-				clicked={() => navigate(PageRoute.ACCOUNT.ROOT)}
+				clicked={() => menuComponent?.navigate(PageRoute.ACCOUNT.ROOT)}
 				icon={personOutline}
 				label={$t('components.layout.header.button.account')}
 			/>
 			<LabeledItem
 				transparent
-				clicked={() => navigate(PageRoute.ORGANIZATION.ACTIVITIES.ROOT)}
+				clicked={() => menuComponent?.navigate(PageRoute.ORGANIZATION.ACTIVITIES.ROOT)}
 				icon={flashOutline}
 				label={$t('components.layout.header.button.activities')}
 			/>
 			<LabeledItem
 				transparent
-				clicked={() => navigate(PageRoute.ORGANIZATION.ROOT)}
+				clicked={() => menuComponent?.navigate(PageRoute.ORGANIZATION.ROOT)}
 				icon={accessibilityOutline}
 				label={$t('components.layout.menu.list.organization')}
 			/>
 			{#if dev}
-				<LabeledItem transparent icon={diamondOutline} clicked={() => navigate('/showcase')} label="Showcase" />
+				<LabeledItem
+					transparent
+					icon={diamondOutline}
+					clicked={() => menuComponent?.navigate('/showcase')}
+					label="Showcase"
+				/>
 			{/if}
 		</ion-list>
 	</Menu>
