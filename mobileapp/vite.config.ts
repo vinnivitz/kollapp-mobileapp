@@ -11,12 +11,7 @@ export default defineConfig({
 	test: {
 		coverage: {
 			enabled: true,
-			/*
-			SonarQube does not show the code coverage properly if files are included for code coverage. The better approach
-			would be to include all files per default and exclude some.
-			 */
-			//include: ['src/lib/components/**/*.svelte'],
-			reporter: ['lcov', 'text']
+			include: ['src/lib/components/**/*.svelte']
 		},
 		environment: 'jsdom',
 		globals: true,
