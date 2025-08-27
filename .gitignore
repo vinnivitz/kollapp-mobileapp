@@ -6,8 +6,6 @@
 # Env
 .env
 .env.*
-!.env.example
-!.env.test
 
 # Backend
 /backend/**/target
@@ -18,11 +16,8 @@
 /mobileapp/test-results
 /mobileapp/coverage
 
-/mobileapp/.output
-/mobileapp/.vercel
 /mobileapp/.svelte-kit
 /mobileapp/build
-/mobileapp/dist
 /mobileapp/docs
 /mobileapp/visualize
 
@@ -36,9 +31,5 @@
 /mobileapp/src/lib/locales/en.json
 
 # Web App
-/webapp/.dart_tool/
-/webapp/.flutter-plugins
-/webapp/.flutter-plugins-dependencies
-/webapp/.pub-cache/
-/webapp/.pub/
-/webapp/build/
+/webapp/.svelte-kit
+/webapp/node_modules
