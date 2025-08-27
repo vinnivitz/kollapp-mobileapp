@@ -4,12 +4,12 @@ import { describe, expect, it, vi } from 'vitest';
 
 import Card from '$lib/components/widgets/ionic/Card.svelte';
 
-describe('CardComponent', () => {
-	const childContent = 'Child content';
-	const children = createRawSnippet(() => ({
-		render: () => `<p>${childContent}</p>`
-	}));
+const childContent = 'Child content';
+const children = createRawSnippet(() => ({
+	render: () => `<p>${childContent}</p>`
+}));
 
+describe('CardComponent', () => {
 	it('renders title, subtitle, and children correctly', () => {
 		const properties = {
 			children,

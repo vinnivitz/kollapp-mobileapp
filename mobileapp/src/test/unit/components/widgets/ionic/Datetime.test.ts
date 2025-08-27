@@ -1,11 +1,11 @@
 import { fireEvent, render } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 
+import Datetime from '$lib/components/widgets/ionic/Datetime.svelte';
+
 vi.mock('$lib/utility', () => ({
 	clickOutside: () => ({ destroy() {} })
 }));
-
-import Datetime from '$lib/components/widgets/ionic/Datetime.svelte';
 
 describe('Datetime Component', () => {
 	it('renders with title when showTitle is true', () => {

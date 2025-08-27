@@ -1,6 +1,6 @@
 import { fireEvent, render } from '@testing-library/svelte';
 import { tick } from 'svelte';
-import { beforeAll, describe, expect, test, vi } from 'vitest';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { goto } from '$app/navigation';
 
@@ -35,7 +35,7 @@ function registerMocks(): void {
 
 describe('Header Component', () => {
 	beforeAll(() => registerMocks());
-	test('renders title correctly', () => {
+	it('renders title correctly', () => {
 		const properties = { title: 'Test Header' };
 		const { container } = render(Header, { props: properties });
 
@@ -43,7 +43,7 @@ describe('Header Component', () => {
 		expect(ionTitle?.textContent).toBe(properties.title);
 	});
 
-	test('renders back button when showBackButton is true', () => {
+	it('renders back button when showBackButton is true', () => {
 		const properties = { showBackButton: true, title: 'Test Header' };
 		const { container } = render(Header, { props: properties });
 
@@ -54,7 +54,7 @@ describe('Header Component', () => {
 		expect(backButton).toBeTruthy();
 	});
 
-	test('renders logo when showBackButton is false and clicking logo navigates home', async () => {
+	it('renders logo when showBackButton is false and clicking logo navigates home', async () => {
 		const properties = { showBackButton: false, title: 'Test Header' };
 		const { container, queryByAltText } = render(Header, { props: properties });
 
@@ -70,7 +70,7 @@ describe('Header Component', () => {
 
 		expect(goto).toHaveBeenCalledWith(PageRoute.HOME);
 	});
-	test('do not render content if stores are not initialized', () => {
+	it('do not render content if stores are not initialized', () => {
 		storesInitialized = false;
 		const properties = { title: 'Test Title' };
 		const { container } = render(Header, { props: properties });
@@ -78,7 +78,7 @@ describe('Header Component', () => {
 		expect(container.querySelector('ion-content')).toBeFalsy();
 	});
 
-	test('when not loading and store is loaded, progress bar remains hidden (showProgressBar = false)', async () => {
+	it('when not loading and store is loaded, progress bar remains hidden (showProgressBar = false)', async () => {
 		vi.useFakeTimers();
 
 		storesInitialized = true;
@@ -104,7 +104,7 @@ describe('Header Component', () => {
 		vi.useRealTimers();
 	});
 
-	test('clicking the left ion-button when showBackButton = true calls navigateBack()', async () => {
+	it('clicking the left ion-button when showBackButton = true calls navigateBack()', async () => {
 		const { container } = render(Header, {
 			props: { showBackButton: true, title: 'Back Test' }
 		});
@@ -118,7 +118,7 @@ describe('Header Component', () => {
 		expect(navigateBackMock).toHaveBeenCalledTimes(1);
 	});
 
-	test('keydown Enter on left ion-button triggers navigate() -> navigateBack() when showBackButton = true', async () => {
+	it('keydown Enter on left ion-button triggers navigate() -> navigateBack() when showBackButton = true', async () => {
 		const { container } = render(Header, {
 			props: { showBackButton: true, title: 'Keydown Test' }
 		});
@@ -132,7 +132,7 @@ describe('Header Component', () => {
 		expect(navigateBackMock).toHaveBeenCalled();
 	});
 
-	test('keydown Enter with showBackButton = false triggers goto(PageRoute.HOME)', async () => {
+	it('keydown Enter with showBackButton = false triggers goto(PageRoute.HOME)', async () => {
 		const { container } = render(Header, {
 			props: { showBackButton: false, title: 'Keydown Home' }
 		});

@@ -2,7 +2,7 @@ import type { Readable } from 'svelte/store';
 
 import { fireEvent, render } from '@testing-library/svelte';
 import { createRawSnippet } from 'svelte';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import Layout from '$lib/components/layout/Layout.svelte';
 
@@ -16,21 +16,21 @@ const makeReadable = (value: boolean): Readable<boolean> => ({
 	}
 });
 
-vi.mock('$lib/components/layout/Header.svelte', () => ({
-	default: () => ({
-		$$render: () => `<div data-testid="header-stub"></div>`
-	})
-}));
+function registerMocks(): void {
+	vi.mock('$lib/components/layout/Header.svelte', () => ({
+		default: () => ({
+			$$render: () => `<div data-testid="header-stub"></div>`
+		})
+	}));
 
-vi.mock('$lib/components/layout/Menu.svelte', () => ({
-	default: () => ({
-		$$render: () => `<div data-testid="menu-stub">Menu</div>`,
-		navigate
-	})
-}));
+	vi.mock('$lib/components/layout/Menu.svelte', () => ({
+		default: () => ({
+			$$render: () => `<div data-testid="menu-stub">Menu</div>`,
+			navigate
+		})
+	}));
 
-vi.mock('$lib/stores', () => {
-	return {
+	vi.mock('$lib/stores', () => ({
 		initializationStore: {
 			subscribe: (run: (v: { loadedCache: Readable<boolean>; loadedServer: Readable<boolean> }) => void) => {
 				run({
@@ -46,13 +46,13 @@ vi.mock('$lib/stores', () => {
 		userStore: {
 			init: vi.fn().mockResolvedValue({})
 		}
-	};
-});
+	}));
+}
 
 describe('Layout Component', () => {
+	beforeAll(() => registerMocks());
 	beforeEach(() => {
 		storesInitialized = true;
-		navigate.mockClear();
 	});
 
 	it('renders child content', () => {

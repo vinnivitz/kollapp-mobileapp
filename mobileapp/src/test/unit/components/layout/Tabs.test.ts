@@ -12,9 +12,12 @@ const mockState = vi.hoisted(() => ({
 	page: { route: { id: '/home' as string | undefined } }
 }));
 
-vi.mock('$app/state', () => mockState);
+function registerMocks(): void {
+	vi.mock('$app/state', () => mockState);
+}
 
 beforeAll(() => {
+	registerMocks();
 	class FakeIonTabs extends HTMLElement {
 		select(...arguments_: unknown[]): Promise<unknown> {
 			return Promise.resolve(arguments_);

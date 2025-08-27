@@ -1,6 +1,6 @@
 import { fireEvent, render, waitFor } from '@testing-library/svelte';
 import { LatLng, Map as LeafletMap, Marker as LeafletMarker } from 'leaflet';
-import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
+import { beforeAll, beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
 
 import { osmResource } from '$lib/api/resources';
 import LeafletMapComponent from '$lib/components/widgets/LeafletMap.svelte';
@@ -12,65 +12,68 @@ type MockMap = {
 	setView: Mock;
 };
 
-vi.mock('$lib/environment', () => ({
-	default: {
-		defaultPosition: '[48.137154, 11.576124]'
-	}
-}));
+function registerMocks(): void {
+	vi.mock('$lib/environment', () => ({
+		default: {
+			defaultPosition: '[48.137154, 11.576124]'
+		}
+	}));
 
-vi.mock('$lib/utility', () => {
-	const storedValue = undefined;
-	return {
-		clickOutside: vi.fn(() => ({
-			destroy: () => {}
-		})),
-		getStoredValue: vi.fn().mockResolvedValue(storedValue)
-	};
-});
+	vi.mock('$lib/utility', () => {
+		const storedValue = undefined;
+		return {
+			clickOutside: vi.fn(() => ({
+				destroy: () => {}
+			})),
+			getStoredValue: vi.fn().mockResolvedValue(storedValue)
+		};
+	});
 
-vi.mock('leaflet', async () => {
-	const actual = await vi.importActual<typeof import('leaflet')>('leaflet');
-	return {
-		...actual,
-		Map: vi.fn().mockImplementation(() => ({
-			addLayer: vi.fn(),
-			on: vi.fn(),
-			remove: vi.fn(),
-			setView: vi.fn()
-		})),
-		Marker: vi.fn().mockImplementation(() => ({
-			addTo: vi.fn().mockReturnThis(),
-			bindTooltip: vi.fn().mockReturnThis(),
-			openTooltip: vi.fn(),
-			removeFrom: vi.fn()
-		})),
-		TileLayer: vi.fn().mockImplementation(() => ({
-			addTo: vi.fn().mockReturnThis()
-		}))
-	};
-});
+	vi.mock('leaflet', async () => {
+		const actual = await vi.importActual<typeof import('leaflet')>('leaflet');
+		return {
+			...actual,
+			Map: vi.fn().mockImplementation(() => ({
+				addLayer: vi.fn(),
+				on: vi.fn(),
+				remove: vi.fn(),
+				setView: vi.fn()
+			})),
+			Marker: vi.fn().mockImplementation(() => ({
+				addTo: vi.fn().mockReturnThis(),
+				bindTooltip: vi.fn().mockReturnThis(),
+				openTooltip: vi.fn(),
+				removeFrom: vi.fn()
+			})),
+			TileLayer: vi.fn().mockImplementation(() => ({
+				addTo: vi.fn().mockReturnThis()
+			}))
+		};
+	});
 
-vi.mock('$lib/api/resources', () => ({
-	osmResource: {
-		getLocationByLatLng: vi.fn().mockResolvedValue({
-			locality: 'Testville',
-			number: '1',
-			street: 'Test St',
-			zip: '12345'
-		}),
-		getLocationsByQuery: vi.fn().mockResolvedValue([
-			{
-				latlng: new LatLng(1, 2),
-				locality: 'Querytown',
-				number: '5',
-				street: 'Query St',
-				zip: '54321'
-			}
-		])
-	}
-}));
+	vi.mock('$lib/api/resources', () => ({
+		osmResource: {
+			getLocationByLatLng: vi.fn().mockResolvedValue({
+				locality: 'Testville',
+				number: '1',
+				street: 'Test St',
+				zip: '12345'
+			}),
+			getLocationsByQuery: vi.fn().mockResolvedValue([
+				{
+					latlng: new LatLng(1, 2),
+					locality: 'Querytown',
+					number: '5',
+					street: 'Query St',
+					zip: '54321'
+				}
+			])
+		}
+	}));
+}
 
 describe('LeafletMap', () => {
+	beforeAll(() => registerMocks());
 	beforeEach(() => {
 		const existing = document.querySelector('#map');
 		existing?.remove();

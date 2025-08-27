@@ -1,4 +1,4 @@
-import { fireEvent, render, waitFor } from '@testing-library/svelte';
+import { fireEvent, render } from '@testing-library/svelte';
 import { describe, expect, it } from 'vitest';
 
 import { goto } from '$app/navigation';
@@ -15,8 +15,6 @@ describe('PageNotFound Component', () => {
 
 		await fireEvent.click(ionButton);
 
-		await waitFor(() => {
-			expect(goto).toHaveBeenCalledWith(PageRoute.HOME);
-		});
+		expect(goto).toHaveBeenCalledWith(PageRoute.HOME);
 	});
 });
