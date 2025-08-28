@@ -19,6 +19,7 @@ const config: Config<{ value?: number | string }> = {
 
 /**
  * Locale enum for the supported languages.
+ * @enum {string} Locale
  */
 export enum Locale {
 	DE = 'de',
@@ -27,5 +28,6 @@ export enum Locale {
 
 /**
  * I18n instance for managing translations and locale.
+ * @constant {I18n} i18n
  */
 export const { initialized, loadTranslations, locale, t } = new I18n(config);

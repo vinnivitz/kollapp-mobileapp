@@ -245,7 +245,7 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 	}
 
 	function addListener<T extends Event>(
-		element: HTMLElement,
+		element: HTMLElement | HTMLIonInputElement | HTMLIonTextareaElement,
 		event: string,
 		_function: (_event: T) => void,
 		options?: AddEventListenerOptions | boolean

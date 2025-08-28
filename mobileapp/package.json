@@ -11,7 +11,7 @@
 		"validate": "npm run check && npm run lint",
 		"test:ui": "vitest --ui",
 		"test": "vitest -- --run",
-		"typedoc": "typedoc & live-server ./docs --watch --silent --no-browser --port=1234 & chokidar 'src/lib' -c 'typedoc' --silent",
+		"doc": "typedoc & live-server ./docs --watch --silent --no-browser --port=1234 & chokidar 'src/lib' -c 'typedoc' --silent",
 		"build-android": "cross-env ADAPTER=static npm run build --prod && dotenv cross-env-shell 'cap sync && ./android/gradlew -p android assembleDebug'",
 		"build-web": "cross-env ADAPTER=node npm run build",
 		"visualize": "mkdir -p visualize && madge --extensions ts,svelte --image visualize/dependency-graph.png src",

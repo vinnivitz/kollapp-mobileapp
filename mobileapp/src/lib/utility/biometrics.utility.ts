@@ -3,13 +3,10 @@ import type { LoginDto } from '$lib/api/dto/client/auth';
 import { NativeBiometric } from '@capgo/capacitor-native-biometric';
 import { get } from 'svelte/store';
 
-import { showAlert } from './alert.utility';
-
-import { getStoredValue, storeValue } from '.';
-
 import environment from '$lib/environment';
 import { t } from '$lib/locales';
 import { PreferencesKey } from '$lib/models/preferences';
+import { getStoredValue, showAlert, storeValue } from '$lib/utility';
 
 const $t = get(t);
 

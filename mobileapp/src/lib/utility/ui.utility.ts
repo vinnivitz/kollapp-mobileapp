@@ -124,7 +124,7 @@ export function appendToBody(element: HTMLElement): { destroy(): void } | undefi
 
 /**
  * Debounces a function call
- * @param fn function to debounce
+ * @param function_ function to debounce
  * @param delay delay in milliseconds
  * @returns debounced function
  */
