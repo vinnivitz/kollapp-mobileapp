@@ -148,4 +148,83 @@ describe('ItemComponent', () => {
 		expect(startIcon3?.getAttribute('icon')).toBe(properties3.icon);
 		expect(startIcon3?.getAttribute('color')).toBe('white');
 	});
+
+	it('opens sliding options on item click when slidingOptions are provided and calls option handler', async () => {
+		const handler = vi.fn();
+
+		const { container } = render(CustomItem, {
+			props: {
+				children: createRawSnippet(() => ({ render: () => `<p>Swipe me</p>` })),
+				// also pass a clicked to ensure it is NOT called in this branch
+				clicked: vi.fn(),
+				slidingOptions: [{ color: 'danger', handler, icon: 'trash' }]
+			}
+		});
+
+		const sliding = container.querySelector('ion-item-sliding') as HTMLElement;
+		const ionItem = container.querySelector('ion-item') as HTMLElement;
+		expect(sliding).toBeTruthy();
+		expect(ionItem).toBeTruthy();
+
+		// Stub the .open method that the component calls through bind:this
+		const openMock = vi.fn();
+		(sliding as HTMLIonItemSlidingElement).open = openMock;
+
+		// Clicking the item should open the sliding options (not call clicked)
+		await fireEvent.click(ionItem);
+		expect(openMock).toHaveBeenCalledWith('end');
+
+		// The option should render with right color+icon and call its handler on click
+		const option = container.querySelector('ion-item-option[color="danger"]') as HTMLElement;
+		expect(option).toBeTruthy();
+
+		const optionIcon = option.querySelector('ion-icon') as HTMLElement;
+		expect(optionIcon).toBeTruthy();
+		expect(optionIcon.getAttribute('icon')).toBe('trash');
+
+		await fireEvent.click(option);
+		expect(handler).toHaveBeenCalledTimes(1);
+	});
+
+	it('invokes clicked on Enter keydown on the item (no slidingOptions), ignores other keys', async () => {
+		const clicked = vi.fn();
+		const { container } = render(CustomItem, {
+			props: {
+				children: createRawSnippet(() => ({ render: () => `<p>Key me</p>` })),
+				clicked
+			}
+		});
+
+		const ionItem = container.querySelector('ion-item') as HTMLElement;
+
+		await fireEvent.keyDown(ionItem, { key: ' ' });
+		expect(clicked).not.toHaveBeenCalled();
+
+		await fireEvent.keyDown(ionItem, { key: 'Enter' });
+		expect(clicked).toHaveBeenCalledTimes(1);
+	});
+
+	it('pressing Enter on end icon button triggers clicked (not iconClick)', async () => {
+		const clicked = vi.fn();
+		const iconClick = vi.fn();
+
+		const { container } = render(CustomItem, {
+			props: {
+				children: createRawSnippet(() => ({ render: () => `<p>End icon</p>` })),
+				clicked,
+				iconClick,
+				iconEnd: 'chevron-forward'
+			}
+		});
+
+		const endButton = container.querySelector('ion-button[slot="end"]') as HTMLElement;
+		expect(endButton).toBeTruthy();
+
+		await fireEvent.keyDown(endButton, { key: 'Enter' });
+		expect(clicked).toHaveBeenCalled();
+		expect(iconClick).not.toHaveBeenCalled();
+
+		await fireEvent.click(endButton);
+		expect(iconClick).toHaveBeenCalledTimes(1);
+	});
 });

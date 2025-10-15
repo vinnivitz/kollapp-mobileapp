@@ -145,7 +145,7 @@ export async function grantUserRole(userId: number, organizationId: number, role
  */
 export async function renewInvitationCode(organizationId: number): Promise<ResponseBody<string>> {
 	return customFetch(`${ENDPOINT}/${organizationId}/invitation-code`, {
-		method: RequestMethod.POST
+		method: RequestMethod.PATCH
 	});
 }
 

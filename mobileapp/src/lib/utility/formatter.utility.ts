@@ -2,6 +2,7 @@ import { TZDate } from '@date-fns/tz';
 import { format } from 'date-fns';
 import { get } from 'svelte/store';
 
+import { Currency } from '$lib/models/ui';
 import { localeStore } from '$lib/stores';
 
 /**
@@ -9,14 +10,13 @@ import { localeStore } from '$lib/stores';
  * @returns The formatter
  */
 function currency(cents: number): string {
-	const nf = new Intl.NumberFormat(get(localeStore), {
-		currency: 'EUR',
+	const numberFormat = new Intl.NumberFormat(get(localeStore), {
+		currency: Currency.EUR,
 		maximumFractionDigits: 2,
-		minimumFractionDigits: 2,
+		minimumFractionDigits: 0,
 		style: 'currency'
 	});
-
-	return nf.format(cents / 100);
+	return numberFormat.format(cents / 100);
 }
 
 /**

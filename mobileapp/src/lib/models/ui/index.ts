@@ -1,5 +1,6 @@
 export * from './alert.model';
 export * from './colors.type';
+export * from './currency.enum';
 export * from './datetime.model';
 export * from './fab-button.model';
 export * from './form.model';

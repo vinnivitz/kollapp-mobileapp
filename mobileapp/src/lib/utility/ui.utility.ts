@@ -94,17 +94,6 @@ export function getDateFnsLocale(locale: Locale | undefined): DateFnsLocale {
 }
 
 /**
- * Key event handler for currency input
- * @returns The key event handler
- */
-export function currencyKeyEventHandler(_event: KeyboardEvent, value: number, update: (value: number) => void): void {
-	if (_event.key === 'Backspace') {
-		_event.preventDefault();
-		update(Math.floor(value / 10));
-	}
-}
-
-/**
  * Appends an element to the body and returns a destroy function to remove it
  * @param element element to append to the body
  * @returns {destroy} function to remove the element from the body

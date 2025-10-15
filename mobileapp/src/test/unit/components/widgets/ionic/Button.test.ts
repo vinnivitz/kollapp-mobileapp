@@ -117,4 +117,26 @@ describe('Button Component', () => {
 		expect(iconEnd).toBeTruthy();
 		expect(iconEnd?.getAttribute('size')).toBe(properties3.iconSize);
 	});
+
+	it('invokes clicked when pressing Enter (onkeydown handler)', async () => {
+		const clickMock = vi.fn();
+		const { container } = render(Button, { props: { clicked: clickMock, label: 'Press' } });
+		const ionButton = container.querySelector('ion-button') as HTMLElement;
+
+		await fireEvent.keyDown(ionButton, { key: 'Space' });
+		expect(clickMock).not.toHaveBeenCalled();
+
+		await fireEvent.keyDown(ionButton, { key: 'Enter' });
+		expect(clickMock).toHaveBeenCalledTimes(1);
+	});
+
+	it('sets pointer-events based on readonly prop in inline style', () => {
+		const { container: c1 } = render(Button, { props: { label: 'Read only', readonly: true } });
+		const button1 = c1.querySelector('ion-button') as HTMLElement;
+		expect(button1.getAttribute('style')).toContain('pointer-events: none');
+
+		const { container: c2 } = render(Button, { props: { clicked: vi.fn(), label: 'Interactive' } });
+		const button2 = c2.querySelector('ion-button') as HTMLElement;
+		expect(button2.getAttribute('style')).toContain('pointer-events: auto');
+	});
 });

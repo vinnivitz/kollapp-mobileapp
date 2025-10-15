@@ -67,17 +67,4 @@ describe('ModalComponent', () => {
 		await fireEvent.click(confirmButton);
 		expect(confirmed).toHaveBeenCalled();
 	});
-
-	it('does not render confirm button if confirmed callback is not provided', () => {
-		const confirmLabel = 'Confirm Modal';
-		const { queryByText } = render(ModalComponent, {
-			props: {
-				children: createRawSnippet(() => ({ render: () => `<p>Modal Content</p>` })),
-				confirmLabel,
-				open: true
-			}
-		});
-
-		expect(queryByText(confirmLabel)).toBeFalsy();
-	});
 });

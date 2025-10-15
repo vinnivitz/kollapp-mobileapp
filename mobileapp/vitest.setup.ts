@@ -1,3 +1,4 @@
+import { Writable } from 'svelte/store';
 import { vi } from 'vitest';
 
 vi.mock('$app/navigation', () => ({
@@ -38,6 +39,29 @@ vi.mock('$lib/locales', () => ({
 }));
 
 vi.mock('$lib/stores', () => ({
+	globalPopoverStore: {
+		subscribe: (
+			run: (v: {
+				datetimeInputItem: {
+					set: (
+						value: Writable<{
+							open: boolean;
+							type: string;
+							value: string | undefined;
+							applied: (value: string) => void;
+						}>
+					) => void;
+				};
+			}) => void
+		) => {
+			run({
+				datetimeInputItem: {
+					set: vi.fn()
+				}
+			});
+			return () => {};
+		}
+	},
 	localeStore: {
 		subscribe: (run: (value: (key: string) => string) => void) => {
 			run((key: string) => key);

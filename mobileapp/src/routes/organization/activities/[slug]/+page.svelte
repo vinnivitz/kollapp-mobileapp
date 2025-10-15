@@ -37,6 +37,7 @@
 	import { type UpdateActivityDto, updateActivitySchema } from '$lib/api/dto/client/organization';
 	import { accountingResource, organizationResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
+	import AmountInputItem from '$lib/components/widgets/ionic/AmountInputItem.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import Chip from '$lib/components/widgets/ionic/Chip.svelte';
@@ -55,7 +56,6 @@
 	import { accountPostingsStore, localeStore, organizationStore, userStore } from '$lib/stores';
 	import {
 		clone,
-		currencyKeyEventHandler,
 		customForm,
 		featureNotImplementedAlert,
 		formatter,
@@ -132,7 +132,6 @@
 		},
 		exposedActions: (exposedActions) => (createAccountPostingFormActions = exposedActions),
 		formatters: { amountInCents: formatter.currency, date: formatter.date },
-		keyEventHandlers: { amountInCents: currencyKeyEventHandler },
 		parsers: { amountInCents: parser.currency, date: parser.date },
 		request: (model) => accountingResource.addAccountPosting($organizationStore?.id!, model),
 		schema: createAccountPostingSchema()
@@ -146,7 +145,6 @@
 		},
 		exposedActions: (exposedActions) => (updateAccountPostingFormActions = exposedActions),
 		formatters: { amountInCents: formatter.currency, date: formatter.date },
-		keyEventHandlers: { amountInCents: currencyKeyEventHandler },
 		onTouched: () => (updateAccountPostingModelTouched = true),
 		parsers: { amountInCents: parser.currency, date: parser.date },
 		request: async (model) =>
@@ -510,7 +508,7 @@
 				/>
 			</div>
 			<TextInputItem name="purpose" label="Purpose" icon={documentOutline} />
-			<TextInputItem inputmode="numeric" name="amountInCents" label="Amount" icon={cashOutline} />
+			<AmountInputItem name="amountInCents" label="Amount" />
 			<DatetimeInputItem
 				label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.date')}
 				name="date"
@@ -539,7 +537,7 @@
 				/>
 			</div>
 			<TextInputItem name="purpose" label="Purpose" icon={documentOutline} />
-			<TextInputItem name="amountInCents" inputmode="numeric" label="Amount" icon={cashOutline} />
+			<AmountInputItem name="amountInCents" label="Amount" />
 			<DatetimeInputItem
 				label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.date')}
 				name="date"

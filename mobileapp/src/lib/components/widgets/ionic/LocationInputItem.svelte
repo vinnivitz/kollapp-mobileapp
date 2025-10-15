@@ -48,6 +48,7 @@
 	confirmLabel={$t('routes.organization.page.activity.map-modal.button.confirm')}
 	dismissed={onDismissMap}
 	confirmed={onConfirmMap}
+	initialBreakPoint={1}
 >
 	{#if open}
 		<LeafletMap

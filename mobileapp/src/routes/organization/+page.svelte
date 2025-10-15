@@ -33,6 +33,7 @@
 	import { type CreateAccountPostingDto, createAccountPostingSchema } from '$lib/api/dto/client/accounting';
 	import { accountingResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
+	import AmountInputItem from '$lib/components/widgets/ionic/AmountInputItem.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import Chip from '$lib/components/widgets/ionic/Chip.svelte';
@@ -56,7 +57,6 @@
 	import { accountPostingsStore, localeStore, organizationStore, userStore } from '$lib/stores';
 	import {
 		clone,
-		currencyKeyEventHandler,
 		customForm,
 		formatter,
 		getDateFnsLocale,
@@ -135,13 +135,13 @@
 	);
 
 	const createAccountPostingForm = new Form({
-		completed: async () => {
+		completed: async ({ model }) => {
+			console.log('model', model);
 			await organizationStore.update($organizationStore?.id!);
 			createAccountPostingModal = false;
 		},
 		exposedActions: (exposedActions) => (createAccountPostingFormActions = exposedActions),
 		formatters: { amountInCents: formatter.currency, date: formatter.date },
-		keyEventHandlers: { amountInCents: currencyKeyEventHandler },
 		parsers: { amountInCents: parser.currency, date: parser.date },
 		request: async (model) => accountingResource.addAccountPosting($organizationStore?.id!, model),
 		schema: createAccountPostingSchema()
@@ -170,7 +170,6 @@
 		},
 		exposedActions: (exposedActions) => (updateAccountPostingFormActions = exposedActions),
 		formatters: { amountInCents: formatter.currency, date: formatter.date },
-		keyEventHandlers: { amountInCents: currencyKeyEventHandler },
 		onTouched: () => (updateAccountPostingModelTouched = true),
 		parsers: { amountInCents: parser.currency, date: parser.date },
 		request: async (model) =>
@@ -570,7 +569,7 @@
 				/>
 			</div>
 			<TextInputItem name="purpose" label="Purpose" icon={documentOutline} />
-			<TextInputItem name="amountInCents" inputmode="numeric" label="Amount" icon={cashOutline} />
+			<AmountInputItem name="amountInCents" label="Amount" />
 			<DatetimeInputItem
 				name="date"
 				label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.date')}
@@ -599,7 +598,7 @@
 				/>
 			</div>
 			<TextInputItem name="purpose" label="Purpose" icon={documentOutline} />
-			<TextInputItem name="amountInCents" inputmode="numeric" label="Amount" icon={cashOutline} />
+			<AmountInputItem name="amountInCents" label="Amount" />
 			<DatetimeInputItem
 				name="date"
 				label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.date')}
@@ -694,7 +693,7 @@
 		iconColor={posting.type === AccountPostingType.CREDIT ? 'danger' : 'success'}
 		icon={posting.type === AccountPostingType.CREDIT ? trendingDownOutline : trendingUpOutline}
 	>
-		<div class="mt-1 flex w-full flex-col justify-center">
+		<div class="ms-1 mt-1 flex w-full flex-col justify-center" style="padding-left: 0px !important;">
 			<div class="flex gap-2">
 				<ion-text class="truncate">
 					{posting.purpose}
@@ -708,7 +707,7 @@
 					</ion-text>
 				{/if}
 			</div>
-			<div class="flex w-full flex-wrap items-start justify-between gap-2 text-sm">
+			<div class="flex w-full flex-wrap items-start justify-between gap-1 text-sm">
 				<ion-text color="medium" class="flex items-center justify-center gap-1">
 					<ion-icon icon={personOutline}></ion-icon>
 					<div class="truncate">{$userStore?.username}</div>

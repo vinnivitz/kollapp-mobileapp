@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { TZDate } from '@date-fns/tz';
-	import { format } from 'date-fns';
+	import { format, parse } from 'date-fns';
 	import { calendarClearOutline, calendarOutline } from 'ionicons/icons';
 
 	import TextInputItem from './TextInputItem.svelte';
@@ -33,7 +33,9 @@
 	const { datetimeInputItem } = globalPopoverStore;
 
 	$effect(() => {
-		if (value && element) element.value = format(new TZDate(value), 'PPP');
+		if (value && element) {
+			element.value = format(new TZDate(value), 'PPP');
+		}
 	});
 
 	let element = $state<HTMLIonInputElement>();
@@ -52,7 +54,7 @@
 			min,
 			open: true,
 			type,
-			value: element?.value ? format(new TZDate(element.value.toString()), 'yyyy-MM-dd') : undefined
+			value: element?.value ? format(parse(element.value.toString(), 'PPP', new Date()), 'yyyy-MM-dd') : undefined
 		});
 	}
 </script>
@@ -65,4 +67,4 @@
 	readonly
 	inputIcon={calendarOutline}
 	clicked={onOpenDatetimeModal}
-></TextInputItem>
+/>

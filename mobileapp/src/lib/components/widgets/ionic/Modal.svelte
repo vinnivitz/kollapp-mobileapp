@@ -33,7 +33,7 @@
 		confirmLabel = $t('components.widgets.modal.button.confirm'),
 		dismissed,
 		informational,
-		initialBreakPoint = 0.5,
+		initialBreakPoint = 0.75,
 		open,
 		title,
 		touched = true
@@ -116,18 +116,16 @@
 				<ion-buttons slot="start">
 					<Button type="button" label={cancelLabel} color="white" clicked={onDismiss} icon={cancelIcon} />
 				</ion-buttons>
-				{#if !!confirmed}
-					<ion-buttons slot="end">
-						<Button
-							disabled={!touched}
-							type="button"
-							label={confirmLabel}
-							color="white"
-							clicked={onConfirm}
-							icon={confirmIcon}
-						/>
-					</ion-buttons>
-				{/if}
+				<ion-buttons slot="end">
+					<Button
+						disabled={!touched}
+						type="button"
+						label={confirmLabel}
+						color="white"
+						clicked={onConfirm}
+						icon={confirmIcon}
+					/>
+				</ion-buttons>
 			{/if}
 		</ion-toolbar>
 	</ion-header>

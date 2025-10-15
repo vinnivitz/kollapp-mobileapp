@@ -13,7 +13,7 @@ export type CustomFetchConfig =
 			silentOnSuccess?: boolean;
 	  }
 	| {
-			method: RequestMethod.POST | RequestMethod.PUT;
+			method: RequestMethod.PATCH | RequestMethod.POST | RequestMethod.PUT;
 			authorizationType?: AuthorizationType;
 			body?: string;
 			query?: Record<string, string>;

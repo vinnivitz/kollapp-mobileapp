@@ -66,4 +66,52 @@ describe('CardComponent', () => {
 		expect(ionCard?.getAttribute('role')).toBeNull();
 		expect(ionCard?.getAttribute('tabindex')).toBeNull();
 	});
+
+	it('defaults color to transparent when border is provided and applies border class', () => {
+		const { container } = render(Card, {
+			props: {
+				border: 'primary',
+				children
+			}
+		});
+
+		const ionCard = container.querySelector('ion-card') as HTMLElement;
+		expect(ionCard.getAttribute('color')).toBe('transparent');
+
+		const cls = ionCard.getAttribute('class') ?? '';
+		expect(cls).toContain('border');
+		expect(cls).toContain('border-[var(--ion-color-primary)]');
+	});
+
+	it('defaults color to light and has no border class when border is omitted', () => {
+		const { container } = render(Card, {
+			props: { children }
+		});
+
+		const ionCard = container.querySelector('ion-card') as HTMLElement;
+		expect(ionCard.getAttribute('color')).toBe('light');
+
+		const cls = ionCard.getAttribute('class') ?? '';
+		expect(cls).not.toContain('border border-');
+	});
+
+	it('sets pointer-events to none in style when readonly is true (clickable card)', () => {
+		const clicked = vi.fn();
+		const { container } = render(Card, {
+			props: { children, clicked, readonly: true }
+		});
+
+		const ionCard = container.querySelector('ion-card') as HTMLElement;
+		expect(ionCard.getAttribute('style')).toContain('pointer-events: none');
+	});
+
+	it('sets pointer-events to auto in style when readonly is false/undefined (clickable card)', () => {
+		const clicked = vi.fn();
+		const { container } = render(Card, {
+			props: { children, clicked }
+		});
+
+		const ionCard = container.querySelector('ion-card') as HTMLElement;
+		expect(ionCard.getAttribute('style')).toContain('pointer-events: auto');
+	});
 });

@@ -37,7 +37,7 @@ export async function updateAccountPosting(
 ): Promise<ResponseBody<AccountPostingDto>> {
 	return customFetch(`${ENDPOINT}/${accountId}/posting/${postingId}`, {
 		body: JSON.stringify(model),
-		method: RequestMethod.POST
+		method: RequestMethod.PUT
 	});
 }
 

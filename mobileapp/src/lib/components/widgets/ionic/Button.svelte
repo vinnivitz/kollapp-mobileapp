@@ -20,7 +20,11 @@
 		size?: 'default' | 'large' | 'small' | undefined;
 		type?: 'button' | 'reset' | 'submit';
 		clicked?: (event?: MouseEvent) => void;
-	} & ({ type: 'submit'; clicked?: never } | { type?: 'button' | 'reset'; clicked: (event?: MouseEvent) => void }) &
+	} & (
+		| { readonly: true; type?: 'button' | 'reset'; clicked?: (event?: MouseEvent) => void }
+		| { readonly?: false; type?: 'button' | 'reset'; clicked: (event?: MouseEvent) => void }
+		| { type: 'submit'; clicked?: never; readonly?: boolean }
+	) &
 		({ icon: string; label?: string } | { label: string; icon?: string });
 
 	let {

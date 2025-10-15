@@ -43,12 +43,12 @@
 	} from '$lib/utility';
 
 	const form = new Form({
-		completed: async ({ response }) => handleLogin(response),
-		request: async (model: LoginDto) => authResource.login(model),
+		completed: async ({ response }) => await handleLogin(response),
+		request: async (model: LoginDto) => await authResource.login(model),
 		schema: loginSchema()
 	});
 
-	onMount(() => performBiometricVerification());
+	onMount(async () => await performBiometricVerification());
 
 	async function performBiometricVerification(): Promise<void> {
 		if (dev || !(await isBiometricAvailable()) || !(await isBiometricEnabled()) || $authenticationStore) return;
