@@ -1,7 +1,6 @@
 package org.kollappbackend.core.organization;
 
 import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kollappbackend.core.core.BaseIT;
 import org.kollappbackend.organization.application.model.Organization;
@@ -9,16 +8,13 @@ import org.kollappbackend.organization.application.repository.OrganizationReposi
 import org.kollappbackend.organization.application.service.OrganizationService;
 import org.kollappbackend.user.application.model.KollappUser;
 import org.kollappbackend.user.application.model.SystemRole;
-import org.kollappbackend.user.application.service.KollappUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 
 @Sql(scripts = "/sql/clear.sql", executionPhase = AFTER_TEST_METHOD)
@@ -28,20 +24,10 @@ public class OrganizationServiceIT extends BaseIT {
     @Autowired
     private OrganizationService organizationService;
 
-    @MockBean
-    private KollappUserService kollappUserService;
 
     @Autowired
     private OrganizationRepository organizationRepository;
 
-    @BeforeEach
-    public void beforeEach() {
-        KollappUser mockUser = KollappUser.builder()
-                .id(1L)
-                .username("erika")
-                .build();
-        when(kollappUserService.getLoggedInKollappUser()).thenReturn(mockUser);
-    }
 
     @Test
     @Sql("/sql/organization/organization_with_single_manager.sql")
@@ -53,6 +39,7 @@ public class OrganizationServiceIT extends BaseIT {
     }
 
     @Test
+    @Sql("/sql/organization/kollapp_user.sql")
     @WithMockUser(username = "erika", authorities = { "ROLE_KOLLAPP_USER" })
     public void createOrganizationOfLoggedInUser() {
         Organization organizationToPersist = Organization.builder().name("NMS").build();
@@ -76,7 +63,6 @@ public class OrganizationServiceIT extends BaseIT {
     @Sql("/sql/organization/organization_with_two_managers.sql")
     @WithMockUser(username = "erika", authorities = { "ROLE_KOLLAPP_ORGANIZATION_MEMBER" })
     public void leaveOrganizationWithRemainingManager() {
-        mockRoles();
         organizationService.leaveOrganization(1);
         Organization organization = organizationRepository.findById(1).get();
         assertThat(organization.getPersonsOfOrganization().size()).isEqualTo(1);
@@ -86,7 +72,6 @@ public class OrganizationServiceIT extends BaseIT {
     @Sql("/sql/organization/organization_with_single_manager.sql")
     @WithMockUser(username = "erika", authorities = { "ROLE_KOLLAPP_ORGANIZATION_MEMBER" })
     public void leaveOrganizationWithNoRemainingManager() {
-        mockRoles();
         organizationService.leaveOrganization(1);
         List<Organization> organizations = organizationService.getOrganizationsByLoggedInUser();
         assertThat(organizations.size()).isEqualTo(0);
@@ -96,7 +81,6 @@ public class OrganizationServiceIT extends BaseIT {
     @Sql("/sql/organization/organization_with_manager_and_member.sql")
     @WithMockUser(username = "erika", authorities = { "ROLE_KOLLAPP_ORGANIZATION_MEMBER" })
     public void leaveOrganizationWithNoRemainingMemberButManager() {
-        mockRoles();
         organizationService.leaveOrganization(1);
         List<Organization> organizations = organizationService.getOrganizationsByLoggedInUser();
         assertThat(organizations.size()).isEqualTo(0);
@@ -111,18 +95,9 @@ public class OrganizationServiceIT extends BaseIT {
                 .username("heinz")
                 .role(SystemRole.ROLE_KOLLAPP_ORGANIZATION_MEMBER)
                 .build();
-        when(kollappUserService.findById(2L)).thenReturn(mockedUserToBeDeleted);
+        //when(kollappUserService.findById(2L)).thenReturn(mockedUserToBeDeleted);
         organizationService.deleteUserFromOrganization(2, 1);
         List<Organization> organizations = organizationService.getOrganizationsByLoggedInUser();
         assertThat(organizations.getFirst().getPersonsOfOrganization().size()).isEqualTo(1);
-    }
-
-    private void mockRoles() {
-        KollappUser mockUser = KollappUser.builder()
-                .id(1L)
-                .username("erika")
-                .role(SystemRole.ROLE_KOLLAPP_ORGANIZATION_MEMBER)
-                .build();
-        when(kollappUserService.getLoggedInKollappUser()).thenReturn(mockUser);
     }
 }
