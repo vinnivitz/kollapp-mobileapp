@@ -58,7 +58,8 @@ class OrganizationRoleHelper {
         if (personOfOrganization.getStatus().equals(PersonOfOrganizationStatus.PENDING)) {
             throw new PersonOfOrganizationIsNotApprovedYetException(messageSource);
         }
-        return personOfOrganization.getOrganizationRole().equals(OrganizationRole.ROLE_ORGANIZATION_MEMBER);
+        return personOfOrganization.getOrganizationRole().equals(OrganizationRole.ROLE_ORGANIZATION_MEMBER)
+                || isManagerOfOrganization(currentUser, organization);
     }
 
     private boolean isManagerOfOrganization(KollappUser currentUser, Organization organization) {

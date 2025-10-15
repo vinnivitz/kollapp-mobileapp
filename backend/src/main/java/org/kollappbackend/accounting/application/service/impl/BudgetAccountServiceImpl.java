@@ -3,13 +3,14 @@ package org.kollappbackend.accounting.application.service.impl;
 import jakarta.transaction.Transactional;
 import org.kollappbackend.accounting.application.exception.BudgetAccountDoesNotContainPostingException;
 import org.kollappbackend.accounting.application.exception.BudgetAccountDoesNotExistException;
-import org.kollappbackend.accounting.application.exception.OrganizationHasNoBudgetAccount;
 import org.kollappbackend.accounting.application.exception.PostingDoesNotExistException;
 import org.kollappbackend.accounting.application.model.BudgetAccount;
 import org.kollappbackend.accounting.application.model.Posting;
 import org.kollappbackend.accounting.application.repository.BudgetAccountRepository;
 import org.kollappbackend.accounting.application.repository.PostingRepository;
 import org.kollappbackend.accounting.application.service.BudgetAccountService;
+import org.kollappbackend.user.application.model.RequiresKollappOrganizationMemberRole;
+import org.kollappbackend.user.application.model.RequiresKollappUserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -75,7 +76,7 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
     }
 
     @Override
-    @RequiresKollappOrganizationMemberRole
+    @RequiresKollappUserRole
     public void createBudgetAccount(Long organizationId) {
         BudgetAccount budgetAccount = BudgetAccount.builder().organizationId(organizationId).build();
         budgetAccountRepository.save(budgetAccount);

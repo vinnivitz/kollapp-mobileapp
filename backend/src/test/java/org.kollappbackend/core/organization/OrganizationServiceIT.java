@@ -95,7 +95,7 @@ public class OrganizationServiceIT extends BaseIT {
     @Test
     @Sql("/sql/organization/organization_with_manager_and_member.sql")
     @WithMockUser(username = "erika", authorities = { "ROLE_KOLLAPP_ORGANIZATION_MEMBER" })
-    public void leaveOrganizationWithNoRemainingManagerButMember() {
+    public void leaveOrganizationWithNoRemainingMemberButManager() {
         mockRoles();
         organizationService.leaveOrganization(1);
         List<Organization> organizations = organizationService.getOrganizationsByLoggedInUser();
@@ -106,6 +106,12 @@ public class OrganizationServiceIT extends BaseIT {
     @Sql("/sql/organization/organization_with_manager_and_member.sql")
     @WithMockUser(username = "erika", authorities = { "ROLE_KOLLAPP_ORGANIZATION_MEMBER" })
     public void deleteUserFromOrganization() {
+        KollappUser mockedUserToBeDeleted = KollappUser.builder()
+                .id(2L)
+                .username("heinz")
+                .role(SystemRole.ROLE_KOLLAPP_ORGANIZATION_MEMBER)
+                .build();
+        when(kollappUserService.findById(2L)).thenReturn(mockedUserToBeDeleted);
         organizationService.deleteUserFromOrganization(2, 1);
         List<Organization> organizations = organizationService.getOrganizationsByLoggedInUser();
         assertThat(organizations.getFirst().getPersonsOfOrganization().size()).isEqualTo(1);
