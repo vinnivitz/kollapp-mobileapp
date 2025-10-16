@@ -5,10 +5,8 @@
 	import { get } from 'svelte/store';
 
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
-	import { type Colors, Currency } from '$lib/models/ui';
+	import { type Colors, Currency, type NumberStyle } from '$lib/models/ui';
 	import { localeStore } from '$lib/stores';
-
-	type NumberStyle = 'currency' | 'decimal' | 'unit';
 
 	type Properties = {
 		label: string;

@@ -89,8 +89,6 @@
 		{ color: 'primary', handler: onOpenUpdateActivityModal, icon: createOutline, label: 'Edit event' }
 	];
 
-	const loaded = $state(accountPostingsStore.loadedCache);
-
 	let createAccountPostingFormActions: FormActions<CreateAccountPostingDto>;
 	let updateAccountPostingFormActions: FormActions<CreateAccountPostingDto>;
 	let updateActivityFormActions: FormActions<UpdateActivityDto>;
@@ -262,9 +260,9 @@
 		}
 		const balance = totalIncome - totalExpense;
 		return {
-			balance: formatter.currency(balance),
-			income: formatter.currency(totalIncome),
-			spent: formatter.currency(totalExpense)
+			balance: formatter.currency(balance, true),
+			income: formatter.currency(totalIncome, true),
+			spent: formatter.currency(totalExpense, true)
 		};
 	}
 
@@ -393,7 +391,7 @@
 	}
 </script>
 
-<Layout title="Event Details" showBackButton loading={!$loaded}>
+<Layout title="Event Details" showBackButton>
 	{@render eventSummary()}
 	{@render activityAccountSummary()}
 	{@render actionButton()}
@@ -429,16 +427,16 @@
 	<Card>
 		<div class="flex flex-col items-center justify-center gap-2">
 			<div class="flex items-center justify-center gap-2">
-				<ion-icon icon={cardOutline}></ion-icon>
+				<ion-icon icon={cardOutline} class="text-xl"></ion-icon>
 				<ion-text class="text-lg font-bold">Event balance:</ion-text>
 			</div>
 			<ion-text class="text-xl font-bold">{accountBalance?.balance}</ion-text>
 			<div class="flex items-center justify-center gap-2">
-				<ion-icon icon={trendingUpOutline}></ion-icon>
+				<ion-icon color="success" icon={trendingUpOutline}></ion-icon>
 				<ion-text class="text-sm text-gray-500">Total incoming: {accountBalance?.income}</ion-text>
 			</div>
 			<div class="flex items-center justify-center gap-2">
-				<ion-icon icon={trendingDownOutline}></ion-icon>
+				<ion-icon color="danger" icon={trendingDownOutline}></ion-icon>
 				<ion-text class="text-sm text-gray-500">Total expense: {accountBalance?.spent}</ion-text>
 			</div>
 		</div>

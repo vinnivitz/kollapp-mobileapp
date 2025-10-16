@@ -49,6 +49,7 @@
 	dismissed={onDismissMap}
 	confirmed={onConfirmMap}
 	initialBreakPoint={1}
+	breakpoints={false}
 >
 	{#if open}
 		<LeafletMap

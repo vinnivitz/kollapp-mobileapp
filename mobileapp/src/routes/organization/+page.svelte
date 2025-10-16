@@ -9,6 +9,7 @@
 		calendarOutline,
 		cardOutline,
 		cashOutline,
+		checkmark,
 		createOutline,
 		documentOutline,
 		filterOutline,
@@ -90,7 +91,7 @@
 	let createAccountPostingFormActions = $state<FormActions<CreateAccountPostingDto>>();
 	let updateAccountPostingFormActions = $state<FormActions<CreateAccountPostingDto>>();
 
-	let createAccountPostingModal = $state(false);
+	let createAccountPostingModalOpen = $state(false);
 	let updateAccountPostingModalOpen = $state(false);
 	let transactionHistoryModalOpen = $state(false);
 
@@ -121,7 +122,7 @@
 			data: { id: activity.id, name: activity.name },
 			selected: true
 		})) ?? []),
-		{ data: { icon: flashOffOutline, id: -1, name: 'Not assigned to activity' }, selected: true }
+		{ data: { icon: flashOffOutline, id: 0, name: 'Not assigned to activity' }, selected: true }
 	]);
 	let filteredMemberFilterItems = $state<FilterItem<MemberFilterValue>[]>([]);
 	let filteredActivityFilterItems = $state<FilterItem<ActivityFilterValue>[]>([]);
@@ -134,11 +135,14 @@
 		filteredActivityFilterItems.length === filteredActivityFilterItems.filter((activity) => activity.selected).length
 	);
 
+	let selectActivityModalOpen = $state(false);
+	let selectedActivityId = $state('0');
+	let selectedActivity = $state<ActivityModel>();
+
 	const createAccountPostingForm = new Form({
-		completed: async ({ model }) => {
-			console.log('model', model);
+		completed: async () => {
 			await organizationStore.update($organizationStore?.id!);
-			createAccountPostingModal = false;
+			createAccountPostingModalOpen = false;
 		},
 		exposedActions: (exposedActions) => (createAccountPostingFormActions = exposedActions),
 		formatters: { amountInCents: formatter.currency, date: formatter.date },
@@ -222,7 +226,7 @@
 			const matchesActivities = filteredActivityFilterItems.some(
 				(activity) =>
 					activity.selected &&
-					(activity.data.id === posting.activityId || (activity.data.id === -1 && !posting.activityId))
+					(activity.data.id === posting.activityId || (activity.data.id === 0 && !posting.activityId))
 			);
 			return (
 				matchesActivities &&
@@ -242,9 +246,9 @@
 		}
 		const balance = totalIncome - totalExpense;
 		return {
-			balance: formatter.currency(balance),
-			income: formatter.currency(totalIncome),
-			spent: formatter.currency(totalExpense)
+			balance: formatter.currency(balance, true),
+			income: formatter.currency(totalIncome, true),
+			spent: formatter.currency(totalExpense, true)
 		};
 	}
 
@@ -271,7 +275,7 @@
 				type: selectedPostingType
 			}) as CreateAccountPostingDto
 		);
-		createAccountPostingModal = true;
+		createAccountPostingModalOpen = true;
 	}
 
 	function getCreatePostingTitle(type: AccountPostingType): string {
@@ -362,8 +366,11 @@
 	function onSearchActivities(event: CustomEvent): void {
 		const value = event.detail.value;
 		filteredActivityFilterItems = activityFilterItems.filter(
-			(activity) => activity.data.id !== -1 && activity.data.name.toLowerCase().includes(value)
+			(activity) => activity.data.id !== 0 && activity.data.name.toLowerCase().includes(value)
 		);
+		if (!value) {
+			filteredActivityFilterItems = activityFilterItems;
+		}
 	}
 
 	function toggleMemberFilterItemsSelection(value?: boolean): void {
@@ -383,6 +390,25 @@
 		filteredMemberFilterItems = memberFilterItems;
 		filteredActivityFilterItems = activityFilterItems;
 		selectedPostingTypes = [AccountPostingType.DEBIT, AccountPostingType.CREDIT];
+	}
+
+	function onConfirmSelectActivity(): void {
+		selectedActivity = $organizationStore?.activities.find((activity) => activity.id === +selectedActivityId);
+		selectActivityModalOpen = false;
+		createAccountPostingFormActions?.setModel({
+			...createAccountPostingForm.model,
+			activityId: +selectedActivityId
+		} as CreateAccountPostingDto);
+	}
+
+	function onDismissSelectActivity(): void {
+		selectActivityModalOpen = false;
+		selectedActivityId = createAccountPostingForm.model.activityId.toString() ?? '0';
+	}
+
+	function onOpenSelectActivityModal(): void {
+		selectedActivityId = createAccountPostingForm.model.activityId?.toString() ?? '0';
+		selectActivityModalOpen = true;
 	}
 </script>
 
@@ -515,16 +541,16 @@
 	<Card>
 		<div class="flex flex-col items-center justify-center gap-2">
 			<div class="flex items-center justify-center gap-2">
-				<ion-icon icon={cardOutline}></ion-icon>
+				<ion-icon icon={cardOutline} class="text-xl"></ion-icon>
 				<ion-text class="text-lg font-bold">Collective balance:</ion-text>
 			</div>
 			<ion-text class="text-xl font-bold">{accountBalance?.balance}</ion-text>
 			<div class="flex items-center justify-center gap-2">
-				<ion-icon icon={trendingUpOutline}></ion-icon>
+				<ion-icon color="success" icon={trendingUpOutline}></ion-icon>
 				<ion-text class="text-sm text-gray-500">Total incoming: {accountBalance?.income}</ion-text>
 			</div>
 			<div class="flex items-center justify-center gap-2">
-				<ion-icon icon={trendingDownOutline}></ion-icon>
+				<ion-icon color="danger" icon={trendingDownOutline}></ion-icon>
 				<ion-text class="text-sm text-gray-500">Total expense: {accountBalance?.spent}</ion-text>
 			</div>
 		</div>
@@ -553,7 +579,7 @@
 	</Card>
 {/snippet}
 
-<Modal open={createAccountPostingModal} dismissed={() => (createAccountPostingModal = false)}>
+<Modal open={createAccountPostingModalOpen} dismissed={() => (createAccountPostingModalOpen = false)}>
 	<Card title={getCreatePostingTitle(selectedPostingType)}>
 		<form use:customForm={createAccountPostingForm!}>
 			<div class="mb-3 flex items-center justify-center gap-2">
@@ -574,6 +600,16 @@
 				name="date"
 				label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.date')}
 			/>
+			{#if $organizationStore && $organizationStore.activities.length > 0}
+				<CustomItem icon={flashOutline} clicked={onOpenSelectActivityModal}>
+					<div class="flex flex-col">
+						<ion-text class="ms-3 pt-2 text-xs">Select event</ion-text>
+						<ion-text class="my-2 ms-4 truncate">
+							{selectedActivity ? selectedActivity.name : 'Not assigned to event'}
+						</ion-text>
+					</div>
+				</CustomItem>
+			{/if}
 		</form>
 	</Card>
 </Modal>
@@ -603,6 +639,16 @@
 				name="date"
 				label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.date')}
 			/>
+			{#if $organizationStore && $organizationStore.activities.length > 0}
+				<CustomItem icon={flashOutline} clicked={onOpenSelectActivityModal}>
+					<div class="flex flex-col">
+						<ion-text class="ms-3 pt-2 text-xs">Select event</ion-text>
+						<ion-text class="my-2 ms-4 truncate">
+							{selectedActivity ? selectedActivity.name : 'Not assigned to event'}
+						</ion-text>
+					</div>
+				</CustomItem>
+			{/if}
 		</form>
 	</Card>
 </Modal>
@@ -783,4 +829,39 @@
 			</CustomItem>
 		{/each}
 	</ion-list>
+</Modal>
+
+<Modal
+	open={selectActivityModalOpen}
+	title="Select Event"
+	confirmLabel="Select"
+	confirmIcon={checkmark}
+	confirmed={onConfirmSelectActivity}
+	dismissed={onDismissSelectActivity}
+>
+	<!-- svelte-ignore event_directive_deprecated -->
+	<ion-searchbar class="w-full" debounce={100} placeholder="Search activities..." on:ionInput={onSearchActivities}>
+	</ion-searchbar>
+	<ion-radio-group value={selectedActivityId}>
+		{#each filteredActivityFilterItems as activity (activity.data.id)}
+			<CustomItem>
+				<!-- svelte-ignore a11y_click_events_have_key_events -->
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
+				<ion-radio
+					value={activity.data.id.toString()}
+					on:click={() => (selectedActivityId = activity.data.id.toString())}
+					color={activity.data.icon ? 'tertiary' : 'primary'}
+				>
+					<div class="flex items-center justify-center gap-2">
+						{#if activity.data.icon}
+							<ion-icon color="tertiary" icon={activity.data.icon}></ion-icon>
+						{/if}
+						<ion-text color={activity.data.icon ? 'tertiary' : 'dark'}>
+							{activity.data.name}
+						</ion-text>
+					</div>
+				</ion-radio>
+			</CustomItem>
+		{/each}
+	</ion-radio-group>
 </Modal>

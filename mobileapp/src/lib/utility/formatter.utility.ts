@@ -9,11 +9,11 @@ import { localeStore } from '$lib/stores';
  * Formatter for form based currency input in €
  * @returns The formatter
  */
-function currency(cents: number): string {
+function currency(cents: number, showCents = false): string {
 	const numberFormat = new Intl.NumberFormat(get(localeStore), {
 		currency: Currency.EUR,
 		maximumFractionDigits: 2,
-		minimumFractionDigits: 0,
+		minimumFractionDigits: showCents ? 2 : 0,
 		style: 'currency'
 	});
 	return numberFormat.format(cents / 100);

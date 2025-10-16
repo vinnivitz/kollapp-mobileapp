@@ -12,6 +12,7 @@
 	type Properties = {
 		children: Snippet;
 		open: boolean;
+		breakpoints?: boolean;
 		cancelIcon?: string;
 		cancelLabel?: string;
 		confirmIcon?: string;
@@ -25,6 +26,7 @@
 	};
 
 	let {
+		breakpoints = true,
 		cancelIcon = trashBinOutline,
 		cancelLabel = $t('components.widgets.modal.button.cancel'),
 		children,
@@ -92,7 +94,7 @@
 	is-open={open}
 	on:willPresent={onPresent}
 	on:didDismiss={dismissed}
-	breakpoints={[0, 0.5, 0.75, 1]}
+	breakpoints={breakpoints ? [0, 0.5, 0.75, 1] : undefined}
 	initial-breakpoint={initialBreakPoint}
 	handle-behavior="cycle"
 >

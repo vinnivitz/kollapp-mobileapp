@@ -8,6 +8,7 @@ export * from './global-popover.type';
 export * from './item-filter.model';
 export * from './item-sliding-option.model';
 export * from './layout.enum';
+export * from './number-style.model';
 export * from './tab-config.type';
 export * from './theme.enum';
 export * from './validation.model';
