@@ -15,7 +15,7 @@ const $t = get(t);
  * @param query The query string to search for locations.
  * @returns {Promise<AddressModel[]>} A promise that resolves to an array of AddressModel objects.
  */
-export async function getLocationsByQuery(query: string): Promise<AddressModel[]> {
+async function getLocationsByQuery(query: string): Promise<AddressModel[]> {
 	try {
 		const response = await fetch(
 			`https://nominatim.openstreetmap.org/search?q=${query}&format=jsonv2&addressdetails=1&limit=5&countrycodes=DE&class=place&type=residential`
@@ -37,7 +37,7 @@ export async function getLocationsByQuery(query: string): Promise<AddressModel[]
  * @param latlng The latitude and longitude coordinates.
  * @returns {Promise<AddressModel | undefined>} A promise that resolves to an AddressModel object or undefined if not found.
  */
-export async function getLocationByLatLng(latlng: LatLng): Promise<AddressModel | undefined> {
+async function getLocationByLatLng(latlng: LatLng): Promise<AddressModel | undefined> {
 	try {
 		const response = await fetch(
 			`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latlng.lat}&lon=${latlng.lng}`
@@ -68,3 +68,8 @@ function getAddress(item: NominatimItemDto): AddressModel {
 function isEmptyAddress(item: AddressModel): boolean {
 	return !item.locality && !item.street && !item.number && !item.zip;
 }
+
+export const osmResource = {
+	getLocationByLatLng,
+	getLocationsByQuery
+};

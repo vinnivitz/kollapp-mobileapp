@@ -13,7 +13,7 @@ const $t = get(t);
  * @param value The search term to filter searchable items.
  * @returns {Promise<SearchableItemDto[]>} A promise that resolves to an array of searchable items that match the search term.
  */
-export async function filter(value: string): Promise<SearchableItemDto[]> {
+async function filter(value: string): Promise<SearchableItemDto[]> {
 	const response = await fetch('/data/searchables.json');
 	const items: SearchableItemDto[] = await response.json();
 	const userRoles = get(userStore)?.roles;
@@ -32,3 +32,7 @@ export async function filter(value: string): Promise<SearchableItemDto[]> {
 		})
 		.map((item) => ({ ...item, label: $t(item.label) }));
 }
+
+export const searchableResource = {
+	filter
+};

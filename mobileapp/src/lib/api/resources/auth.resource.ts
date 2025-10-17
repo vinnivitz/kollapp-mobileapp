@@ -15,7 +15,7 @@ const ENDPOINT = 'public/auth';
  * @param model login model
  * @returns {Promise<ResponseBody<UserDto>>} validation result
  */
-export async function login(model: LoginDto): Promise<ResponseBody<UserTokenDto>> {
+async function login(model: LoginDto): Promise<ResponseBody<UserTokenDto>> {
 	return customFetch(`${ENDPOINT}/signin`, {
 		authorizationType: AuthorizationType.NONE,
 		body: JSON.stringify(model),
@@ -29,7 +29,7 @@ export async function login(model: LoginDto): Promise<ResponseBody<UserTokenDto>
  * @param token refresh token
  * @returns {Promise<ResponseBody<AccessTokenDto>>} new access token
  */
-export async function refresh(token: string): Promise<ResponseBody<TokenDto>> {
+async function refresh(token: string): Promise<ResponseBody<TokenDto>> {
 	return customFetch(`${ENDPOINT}/refresh`, {
 		authorizationType: AuthorizationType.NONE,
 		query: { token },
@@ -40,8 +40,14 @@ export async function refresh(token: string): Promise<ResponseBody<TokenDto>> {
 /**
  * Logs out the user by clearing authentication tokens and user information
  */
-export async function logout(): Promise<void> {
+async function logout(): Promise<void> {
 	await authenticationStore.reset();
 	await goto(PageRoute.AUTH.LOGIN);
 	await Promise.all([organizationStore.reset(), userStore.reset()]);
 }
+
+export const authResource = {
+	login,
+	logout,
+	refresh
+};

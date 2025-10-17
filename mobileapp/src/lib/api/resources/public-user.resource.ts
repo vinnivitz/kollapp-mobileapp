@@ -10,7 +10,7 @@ const ENDPOINT = 'public/user';
  * @param model registration model
  * @returns {Promise<ResponseBody>} response body
  */
-export async function register(model: RegisterDto): Promise<ResponseBody> {
+async function register(model: RegisterDto): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/signup`, {
 		authorizationType: AuthorizationType.NONE,
 		body: JSON.stringify(model),
@@ -23,7 +23,7 @@ export async function register(model: RegisterDto): Promise<ResponseBody> {
  * @param model email model
  * @returns {Promise<ResponseBody>} response body
  */
-export async function forgotPassword(model: ResetPasswordDto): Promise<ResponseBody> {
+async function forgotPassword(model: ResetPasswordDto): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/forgot-password`, {
 		authorizationType: AuthorizationType.NONE,
 		body: JSON.stringify(model),
@@ -36,7 +36,7 @@ export async function forgotPassword(model: ResetPasswordDto): Promise<ResponseB
  * @param model password reset model
  * @returns {Promise<ResponseBody>} response body
  */
-export async function resetPassword(model: ResetPasswordConfirmationDto, token: string): Promise<ResponseBody> {
+async function resetPassword(model: ResetPasswordConfirmationDto, token: string): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/reset-password`, {
 		authorizationType: AuthorizationType.NONE,
 		body: JSON.stringify(model),
@@ -50,10 +50,17 @@ export async function resetPassword(model: ResetPasswordConfirmationDto, token: 
  * @param model email model
  * @returns {Promise<ResponseBody>}	response body
  */
-export async function resendConfirmation(model: ResetPasswordConfirmationDto): Promise<ResponseBody> {
+async function resendConfirmation(model: ResetPasswordConfirmationDto): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/confirmation`, {
 		authorizationType: AuthorizationType.NONE,
 		body: JSON.stringify(model),
 		method: RequestMethod.POST
 	});
 }
+
+export const publicUserResource = {
+	forgotPassword,
+	register,
+	resendConfirmation,
+	resetPassword
+};

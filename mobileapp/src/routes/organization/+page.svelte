@@ -444,7 +444,6 @@
 				<ion-text>
 					{formatDistanceToNow(addDays(new Date(), 5), {
 						addSuffix: true,
-						includeSeconds: true,
 						locale: getDateFnsLocale($localeStore)
 					})}
 				</ion-text>
@@ -581,7 +580,7 @@
 
 <Modal open={createAccountPostingModalOpen} dismissed={() => (createAccountPostingModalOpen = false)}>
 	<Card title={getCreatePostingTitle(selectedPostingType)}>
-		<form use:customForm={createAccountPostingForm!}>
+		<form use:customForm={createAccountPostingForm}>
 			<div class="mb-3 flex items-center justify-center gap-2">
 				<Chip
 					selected={selectedPostingType === AccountPostingType.DEBIT}
@@ -658,32 +657,37 @@
 	initialBreakPoint={0.75}
 	dismissed={() => (transactionHistoryModalOpen = false)}
 	informational
+	lazy
 >
-	<div class="flex items-center justify-center gap-2">
-		<!-- svelte-ignore event_directive_deprecated -->
-		<ion-searchbar
-			class="w-full"
-			debounce={100}
-			placeholder="Search transactions..."
-			value={postingsSearchValue}
-			on:ionInput={onSearchPostings}
-		></ion-searchbar>
-		<Button icon={filterOutline} clicked={() => (filterOpen = true)} />
-	</div>
-	{#if filteredPostings.length === 0}
-		<div class="mt-3 text-center">
-			<ion-note>No transactions found.</ion-note>
+	{#if transactionHistoryModalOpen}
+		<div class="relative">
+			<div class="sticky top-0 left-0 z-10 flex items-center justify-center gap-2">
+				<!-- svelte-ignore event_directive_deprecated -->
+				<ion-searchbar
+					class="w-full"
+					debounce={100}
+					placeholder="Search transactions..."
+					value={postingsSearchValue}
+					on:ionInput={onSearchPostings}
+				></ion-searchbar>
+				<Button icon={filterOutline} clicked={() => (filterOpen = true)} />
+			</div>
+			{#if filteredPostings.length === 0}
+				<div class="mt-3 text-center">
+					<ion-note>No transactions found.</ion-note>
+				</div>
+			{:else}
+				<ion-list>
+					{#each filteredPostings as posting (posting.id)}
+						{@render transactionItem(posting)}
+					{/each}
+				</ion-list>
+			{/if}
 		</div>
-	{:else}
-		<ion-list>
-			{#each filteredPostings as posting (posting.id)}
-				{@render transactionItem(posting)}
-			{/each}
-		</ion-list>
 	{/if}
 </Modal>
 
-<Popover extended open={filterOpen} dismissed={() => (filterOpen = false)}>
+<Popover extended open={filterOpen} dismissed={() => (filterOpen = false)} lazy>
 	<Card title="Filters" classList="m-0">
 		<div class="flex items-center justify-center gap-2">
 			<Chip
@@ -773,7 +777,7 @@
 	</CustomItem>
 {/snippet}
 
-<Modal open={filterMembersModalOpen} dismissed={() => (filterMembersModalOpen = false)} informational>
+<Modal open={filterMembersModalOpen} dismissed={() => (filterMembersModalOpen = false)} informational lazy>
 	<!-- svelte-ignore event_directive_deprecated -->
 	<ion-searchbar class="w-full" debounce={100} placeholder="Search members..." on:ionInput={onSearchMembers}>
 	</ion-searchbar>
@@ -797,7 +801,7 @@
 	</ion-list>
 </Modal>
 
-<Modal open={filterActivitiesModalOpen} dismissed={() => (filterActivitiesModalOpen = false)} informational>
+<Modal open={filterActivitiesModalOpen} dismissed={() => (filterActivitiesModalOpen = false)} informational lazy>
 	<!-- svelte-ignore event_directive_deprecated -->
 	<ion-searchbar class="w-full" debounce={100} placeholder="Search activities..." on:ionInput={onSearchActivities}>
 	</ion-searchbar>
@@ -838,6 +842,7 @@
 	confirmIcon={checkmark}
 	confirmed={onConfirmSelectActivity}
 	dismissed={onDismissSelectActivity}
+	lazy
 >
 	<!-- svelte-ignore event_directive_deprecated -->
 	<ion-searchbar class="w-full" debounce={100} placeholder="Search activities..." on:ionInput={onSearchActivities}>

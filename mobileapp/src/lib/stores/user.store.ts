@@ -19,7 +19,7 @@ function createStore(): UserStore {
 			loadedCache.set(true);
 		}
 
-		const response = await userResource.getByAuthentication();
+		const response = await userResource.get();
 
 		if (StatusCheck.isOK(response.status)) {
 			await _set(response.data);

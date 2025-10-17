@@ -201,7 +201,7 @@
 	</CustomItem>
 {/snippet}
 
-<Modal open={invitationCodeModalOpen} informational dismissed={() => (invitationCodeModalOpen = false)}>
+<Modal open={invitationCodeModalOpen} informational dismissed={() => (invitationCodeModalOpen = false)} lazy>
 	<Card title="Invitation Code">
 		<div class="flex flex-col">
 			<div class="mx-12 rounded border border-[var(--ion-color-primary)] p-2 text-center font-extrabold">

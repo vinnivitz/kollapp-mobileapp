@@ -19,6 +19,7 @@
 		confirmLabel?: string;
 		informational?: boolean;
 		initialBreakPoint?: number;
+		lazy?: boolean;
 		title?: string;
 		touched?: boolean;
 		confirmed?: () => void;
@@ -36,6 +37,7 @@
 		dismissed,
 		informational,
 		initialBreakPoint = 0.75,
+		lazy = false,
 		open,
 		title,
 		touched = true
@@ -88,50 +90,52 @@
 	});
 </script>
 
-<!-- svelte-ignore event_directive_deprecated -->
-<ion-modal
-	bind:this={_modalController}
-	is-open={open}
-	on:willPresent={onPresent}
-	on:didDismiss={dismissed}
-	breakpoints={breakpoints ? [0, 0.5, 0.75, 1] : undefined}
-	initial-breakpoint={initialBreakPoint}
-	handle-behavior="cycle"
->
-	<ion-header>
-		<ion-toolbar>
-			{#if title}
-				<ion-title>{title}</ion-title>
-			{/if}
-			{#if informational}
-				<ion-buttons slot="start">
-					<ion-button
-						role="button"
-						tabindex="0"
-						on:keydown={(_event) => _event.key === 'Enter' && onDismiss()}
-						on:click={onDismiss}
-					>
-						<ion-back-button default-href="/"></ion-back-button>
-					</ion-button>
-				</ion-buttons>
-			{:else}
-				<ion-buttons slot="start">
-					<Button type="button" label={cancelLabel} color="white" clicked={onDismiss} icon={cancelIcon} />
-				</ion-buttons>
-				<ion-buttons slot="end">
-					<Button
-						disabled={!touched}
-						type="button"
-						label={confirmLabel}
-						color="white"
-						clicked={onConfirm}
-						icon={confirmIcon}
-					/>
-				</ion-buttons>
-			{/if}
-		</ion-toolbar>
-	</ion-header>
-	<ion-content class="ion-padding">
-		{@render children?.()}
-	</ion-content>
-</ion-modal>
+{#if (lazy && open) || !lazy}
+	<!-- svelte-ignore event_directive_deprecated -->
+	<ion-modal
+		bind:this={_modalController}
+		is-open={open}
+		on:willPresent={onPresent}
+		on:didDismiss={dismissed}
+		breakpoints={breakpoints ? [0, 0.5, 0.75, 1] : undefined}
+		initial-breakpoint={initialBreakPoint}
+		handle-behavior="cycle"
+	>
+		<ion-header>
+			<ion-toolbar>
+				{#if title}
+					<ion-title>{title}</ion-title>
+				{/if}
+				{#if informational}
+					<ion-buttons slot="start">
+						<ion-button
+							role="button"
+							tabindex="0"
+							on:keydown={(_event) => _event.key === 'Enter' && onDismiss()}
+							on:click={onDismiss}
+						>
+							<ion-back-button default-href="/"></ion-back-button>
+						</ion-button>
+					</ion-buttons>
+				{:else}
+					<ion-buttons slot="start">
+						<Button type="button" label={cancelLabel} color="white" clicked={onDismiss} icon={cancelIcon} />
+					</ion-buttons>
+					<ion-buttons slot="end">
+						<Button
+							disabled={!touched}
+							type="button"
+							label={confirmLabel}
+							color="white"
+							clicked={onConfirm}
+							icon={confirmIcon}
+						/>
+					</ion-buttons>
+				{/if}
+			</ion-toolbar>
+		</ion-header>
+		<ion-content class="ion-padding">
+			{@render children?.()}
+		</ion-content>
+	</ion-modal>
+{/if}

@@ -13,7 +13,7 @@ const ENDPOINT = 'budget/account';
  * @param model The data for the new account posting.
  * @returns {Promise<ResponseBody<AccountPostingDto>>} The response containing the created account posting.
  */
-export async function addAccountPosting(
+async function addAccountPosting(
 	accountId: number,
 	model: CreateAccountPostingDto
 ): Promise<ResponseBody<AccountPostingDto>> {
@@ -30,7 +30,7 @@ export async function addAccountPosting(
  * @param model The updated data for the account posting.
  * @returns {Promise<ResponseBody<AccountPostingDto>>} The response containing the updated account posting.
  */
-export async function updateAccountPosting(
+async function updateAccountPosting(
 	accountId: number,
 	postingId: number,
 	model: CreateAccountPostingDto
@@ -46,7 +46,7 @@ export async function updateAccountPosting(
  * @param organizationId The ID of the organization for which to retrieve account postings, if 0 its organization postings.
  * @returns {Promise<ResponseBody<AccountAccountDto>>} The response containing the list of account postings.
  */
-export async function getAccountPostings(organizationId: number): Promise<ResponseBody<BudgetAccountDto>> {
+async function getAccountPostings(organizationId: number): Promise<ResponseBody<BudgetAccountDto>> {
 	return customFetch(`${ENDPOINT}?organization-id=${organizationId}`, { silentOnSuccess: true });
 }
 
@@ -56,8 +56,15 @@ export async function getAccountPostings(organizationId: number): Promise<Respon
  * @param postingId The ID of the account posting to delete.
  * @returns {Promise<ResponseBody>} The response indicating the result of the deletion.
  */
-export async function deleteAccountPosting(accountId: number, postingId: number): Promise<ResponseBody> {
+async function deleteAccountPosting(accountId: number, postingId: number): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/${accountId}/posting/${postingId}`, {
 		method: RequestMethod.DELETE
 	});
 }
+
+export const accountingResource = {
+	addAccountPosting,
+	deleteAccountPosting,
+	getAccountPostings,
+	updateAccountPosting
+};

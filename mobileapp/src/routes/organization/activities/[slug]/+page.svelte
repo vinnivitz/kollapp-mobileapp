@@ -34,8 +34,8 @@
 	import { goto } from '$app/navigation';
 
 	import { type CreateAccountPostingDto, createAccountPostingSchema } from '$lib/api/dto/client/accounting';
-	import { type UpdateActivityDto, updateActivitySchema } from '$lib/api/dto/client/organization';
-	import { accountingResource, organizationResource } from '$lib/api/resources';
+	import { updateActivitySchema } from '$lib/api/dto/client/organization';
+	import { accountingResource, activityResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import AmountInputItem from '$lib/components/widgets/ionic/AmountInputItem.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
@@ -86,12 +86,11 @@
 			label: 'Delete event'
 		},
 		{ color: 'tertiary', handler: featureNotImplementedAlert, icon: archiveOutline, label: 'Archieve event' },
-		{ color: 'primary', handler: onOpenUpdateActivityModal, icon: createOutline, label: 'Edit event' }
+		{ color: 'primary', handler: () => (updateActivityModalOpen = true), icon: createOutline, label: 'Edit event' }
 	];
 
 	let createAccountPostingFormActions: FormActions<CreateAccountPostingDto>;
 	let updateAccountPostingFormActions: FormActions<CreateAccountPostingDto>;
-	let updateActivityFormActions: FormActions<UpdateActivityDto>;
 
 	let createAccountPostingModalOpen = $state(false);
 	let updateAccountPostingModalOpen = $state(false);
@@ -156,9 +155,10 @@
 			updateActivityModalOpen = false;
 			updateActivityModelTouched = false;
 		},
-		exposedActions: (exposedActions) => (updateActivityFormActions = exposedActions),
+		// have to clone to avoid mutatiion issues
+		exposedActions: (actions) => actions.setModel(clone(activity)),
 		onTouched: () => (updateActivityModelTouched = true),
-		request: async (model) => organizationResource.updateActivity($organizationStore?.id!, activity?.id!, model),
+		request: async (model) => await activityResource.updateActivity($organizationStore?.id!, activity?.id!, model),
 		schema: updateActivitySchema()
 	});
 
@@ -239,16 +239,11 @@
 		const loader = await loadingController.create({});
 		await loader.present();
 		if (!($organizationStore?.id && activity?.id)) return showAlert('No organization or activity found');
-		await organizationResource.deleteActivity($organizationStore.id, activity?.id);
+		await activityResource.deleteActivity($organizationStore.id, activity?.id);
 		await organizationStore.update($organizationStore.id);
 		updateActivityModalOpen = false;
 		await loader.dismiss();
 		goto(PageRoute.ORGANIZATION.ACTIVITIES.ROOT);
-	}
-
-	async function onOpenUpdateActivityModal(): Promise<void> {
-		updateActivityFormActions.setModel(clone(activity));
-		updateActivityModalOpen = true;
 	}
 
 	function calculateAccountBalance(postings: AccountPostingModel[]): AccountBalance {
@@ -399,7 +394,7 @@
 
 {#snippet eventSummary()}
 	<!-- svelte-ignore attribute_quoted -->
-	<Card border="secondary" title={activity?.name} classList="mb-5" clicked={onOpenUpdateActivityModal}>
+	<Card border="secondary" title={activity?.name} classList="mb-5" clicked={() => (updateActivityModalOpen = true)}>
 		<div class="flex flex-wrap items-center justify-center gap-3">
 			<div class="flex items-center gap-1">
 				<ion-icon icon={locationOutline}></ion-icon>
@@ -549,6 +544,7 @@
 	open={transactionHistoryModalOpen}
 	dismissed={() => (transactionHistoryModalOpen = false)}
 	informational
+	lazy
 >
 	<div class="flex items-center justify-center gap-2">
 		<!-- svelte-ignore event_directive_deprecated -->

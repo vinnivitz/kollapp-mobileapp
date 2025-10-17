@@ -10,7 +10,7 @@ const ENDPOINT = 'user';
  * Gets the data of authenticated user
  * @returns {Promise<ResponseBody>} response body
  */
-export async function getByAuthentication(): Promise<ResponseBody<UserDto>> {
+async function get(): Promise<ResponseBody<UserDto>> {
 	return customFetch(ENDPOINT, { silentOnSuccess: true });
 }
 
@@ -19,10 +19,10 @@ export async function getByAuthentication(): Promise<ResponseBody<UserDto>> {
  * @param model change password model
  * @returns {Promise<ResponseBody>} response body
  */
-export async function changePassword(model: ChangePasswordDto): Promise<ResponseBody> {
+async function changePassword(model: ChangePasswordDto): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/change-password`, {
 		body: JSON.stringify(model),
-		method: RequestMethod.POST
+		method: RequestMethod.PATCH
 	});
 }
 
@@ -31,10 +31,10 @@ export async function changePassword(model: ChangePasswordDto): Promise<Response
  * @param model user data model
  * @returns {Promise<ResponseBody>} response body
  */
-export async function update(model: UpdateUserDataDto): Promise<ResponseBody> {
+async function update(model: UpdateUserDataDto): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/update-information`, {
 		body: JSON.stringify(model),
-		method: RequestMethod.POST
+		method: RequestMethod.PATCH
 	});
 }
 
@@ -42,8 +42,15 @@ export async function update(model: UpdateUserDataDto): Promise<ResponseBody> {
  * Deletes the account of the authenticated user
  * @returns {Promise<ResponseBody>} response body
  */
-export async function deleteAccount(): Promise<ResponseBody> {
+async function deleteAccount(): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/delete`, {
 		method: RequestMethod.DELETE
 	});
 }
+
+export const userResource = {
+	changePassword,
+	deleteAccount,
+	get,
+	update
+};

@@ -19,7 +19,7 @@
 	import { goto } from '$app/navigation';
 
 	import { type CreateActivityDto, createActivitySchema } from '$lib/api/dto/client/organization';
-	import { organizationResource } from '$lib/api/resources';
+	import { activityResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
@@ -85,7 +85,7 @@
 			await organizationStore.update($organizationStore?.id!);
 			createActivityModalOpen = false;
 		},
-		request: async (model: CreateActivityDto) => organizationResource.createActivity($organizationStore?.id!, model),
+		request: async (model: CreateActivityDto) => activityResource.createActivity($organizationStore?.id!, model),
 		schema: createActivitySchema()
 	});
 
@@ -225,7 +225,7 @@
 	</Card>
 {/snippet}
 
-<Popover open={showFilters} dismissed={() => (showFilters = false)}>
+<Popover open={showFilters} dismissed={() => (showFilters = false)} lazy>
 	<Card title={$t('routes.organization.page.activity.filters.title')} classList="m-0">
 		<div class="flex flex-wrap items-center justify-center gap-2">
 			{#each activityFilters as filter (filter.type)}

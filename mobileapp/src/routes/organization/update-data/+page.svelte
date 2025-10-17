@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { accessibilityOutline, readerOutline, saveOutline } from 'ionicons/icons';
 
-	import { type UpdateOrganizationDto, updateOrganizationSchema } from '$lib/api/dto/client/organization';
+	import { updateOrganizationSchema } from '$lib/api/dto/client/organization';
 	import { organizationResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
@@ -10,33 +10,27 @@
 	import TextareaItem from '$lib/components/widgets/ionic/TextareaItem.svelte';
 	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import { t } from '$lib/locales';
-	import { Form, type FormActions } from '$lib/models/ui';
+	import { Form } from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';
 	import { customForm } from '$lib/utility';
 
 	let touched = $state(false);
-
-	let actions: FormActions<UpdateOrganizationDto>;
 
 	const form = new Form({
 		completed: async () => {
 			await organizationStore.init();
 			touched = false;
 		},
-		exposedActions: (exposedActions) => (actions = exposedActions),
+		exposedActions: (actions) => {
+			actions?.setModel({
+				description: $organizationStore!.description,
+				name: $organizationStore!.name,
+				place: $organizationStore!.place
+			});
+		},
 		onTouched: () => (touched = true),
 		request: async (model) => organizationResource.update($organizationStore?.id!, model),
 		schema: updateOrganizationSchema()
-	});
-
-	$effect(() => {
-		if ($organizationStore) {
-			actions?.setModel({
-				description: $organizationStore.description,
-				name: $organizationStore.name,
-				place: $organizationStore.place
-			});
-		}
 	});
 </script>
 
