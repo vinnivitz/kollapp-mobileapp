@@ -6,6 +6,7 @@ import org.kollappbackend.core.config.properties.ApplicationProperties;
 import org.kollappbackend.organization.application.exception.InvalidInvitationCodeException;
 import org.kollappbackend.organization.application.exception.OrganizationNotFoundException;
 import org.kollappbackend.organization.application.exception.PersonAlreadyHasTargetRoleException;
+import org.kollappbackend.organization.application.exception.PersonAlreadyRegisteredInOrganizationException;
 import org.kollappbackend.organization.application.exception.PersonNotRegisteredInOrganizationException;
 import org.kollappbackend.organization.application.exception.PersonOfOrganizationIsNotApprovedYetException;
 import org.kollappbackend.organization.application.model.Organization;
@@ -135,6 +136,10 @@ public class OrganizationServiceImpl implements OrganizationService {
                 .findByInvitationCodeAndExpirationDateIsAfter(invitationCode, currentDatePlusOneDay)
                 .orElseThrow(() -> new InvalidInvitationCodeException(messageSource));
         Organization organization = organizationInvitationCode.getOrganization();
+        if(organization.getPersonsOfOrganization().stream()
+                .anyMatch(p -> p.getUserId() == currentUser.getId())) {
+            throw new PersonAlreadyRegisteredInOrganizationException(messageSource);
+        }
         PersonOfOrganization newMember = PersonOfOrganization.builder()
                 .userId(currentUser.getId())
                 .username(currentUser.getUsername())
