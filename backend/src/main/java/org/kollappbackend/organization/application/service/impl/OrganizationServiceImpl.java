@@ -136,7 +136,7 @@ public class OrganizationServiceImpl implements OrganizationService {
                 .findByInvitationCodeAndExpirationDateIsAfter(invitationCode, currentDatePlusOneDay)
                 .orElseThrow(() -> new InvalidInvitationCodeException(messageSource));
         Organization organization = organizationInvitationCode.getOrganization();
-        if(organization.getPersonsOfOrganization().stream()
+        if (organization.getPersonsOfOrganization().stream()
                 .anyMatch(p -> p.getUserId() == currentUser.getId())) {
             throw new PersonAlreadyRegisteredInOrganizationException(messageSource);
         }

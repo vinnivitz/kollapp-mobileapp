@@ -63,8 +63,7 @@ public class KollappUserServiceImpl implements KollappUserService {
         String username;
         if (principal instanceof User) {
             username = ((User) principal).getUsername();
-        }
-        else {
+        } else {
             username = ((KollappUserDetails) principal).getUsername();
         }
         return userRepo.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(messageSource));
