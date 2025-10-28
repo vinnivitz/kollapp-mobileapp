@@ -29,7 +29,7 @@ import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TES
 @Sql(scripts = "/sql/clear.sql",
         executionPhase = AFTER_TEST_METHOD)
 @WithMockUser(username = "nina", authorities = { "ROLE_KOLLAPP_ORGANIZATION_MEMBER" })
-public class OrganizationServiceKollappOrganizationMemberIT extends BaseIT {
+public class OrganizationServiceMemberIT extends BaseIT {
 
     @Autowired
     private OrganizationService organizationService;

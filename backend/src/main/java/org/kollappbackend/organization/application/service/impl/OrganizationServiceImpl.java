@@ -106,13 +106,14 @@ public class OrganizationServiceImpl implements OrganizationService {
         organizationRoleHelper.verifyOrganizationManager(organizationId);
         Organization organization = organizationRepository
                 .findById(organizationId).orElseThrow(() -> new OrganizationNotFoundException(messageSource));
-        PersonOfOrganization personToBeDeleted = personOfOrganizationRepository.findById(personOfOrganizationId)
+        PersonOfOrganization personToBeDeleted = personOfOrganizationRepository
+                .findByIdAndOrganization(personOfOrganizationId, organization)
                 .orElseThrow(() -> new PersonNotRegisteredInOrganizationException(messageSource));
+        organization.getPersonsOfOrganization().remove(personToBeDeleted);
         KollappUser kollappUser = kollappUserService.findById(personToBeDeleted.getUserId());
         if (userIsNoOrganizationMember(kollappUser.getId())) {
             kollappUser.setRole(SystemRole.ROLE_KOLLAPP_USER);
         }
-        organization.getPersonsOfOrganization().remove(personToBeDeleted);
         return organization;
     }
 
