@@ -7,6 +7,7 @@
 		icon: string;
 		label: string;
 		buttons?: FabButtonButtons[];
+		classList?: string;
 		color?: Colors;
 		horizontal?: 'center' | 'end' | 'start';
 		id?: string;
@@ -17,6 +18,7 @@
 
 	let {
 		buttons = [],
+		classList = '',
 		clicked,
 		color = 'secondary',
 		horizontal = 'end',
@@ -36,7 +38,7 @@
 <!-- svelte-ignore event_directive_deprecated -->
 <ion-fab
 	bind:this={fabButtonElement}
-	class="fixed"
+	class={`fixed ${classList}`}
 	{vertical}
 	{horizontal}
 	{id}

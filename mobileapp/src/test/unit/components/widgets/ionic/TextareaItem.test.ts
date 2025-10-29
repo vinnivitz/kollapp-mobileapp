@@ -1,9 +1,9 @@
 import { fireEvent, render } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 
-import TextareaItem from '$lib/components/widgets/ionic/TextareaItem.svelte';
+import TextareaInputItem from '$lib/components/widgets/ionic/TextareaInputItem.svelte';
 
-describe('TextareaItem Component', () => {
+describe('TextareaInputItem Component', () => {
 	it('renders ion-textarea with correct attributes', () => {
 		const properties = {
 			disabled: true,
@@ -15,7 +15,7 @@ describe('TextareaItem Component', () => {
 			value: 'Initial text'
 		};
 
-		const { container } = render(TextareaItem, { props: properties });
+		const { container } = render(TextareaInputItem, { props: properties });
 		const textarea = container.querySelector('ion-textarea');
 
 		expect(textarea).toBeTruthy();
@@ -35,7 +35,7 @@ describe('TextareaItem Component', () => {
 			name: 'textareaName'
 		};
 
-		const { container } = render(TextareaItem, { props: properties });
+		const { container } = render(TextareaInputItem, { props: properties });
 		const textarea = container.querySelector('ion-textarea') as HTMLIonTextareaElement;
 
 		expect(textarea).toBeTruthy();

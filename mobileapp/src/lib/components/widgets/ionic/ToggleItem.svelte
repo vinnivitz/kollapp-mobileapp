@@ -2,22 +2,23 @@
 	import CustomItem from './CustomItem.svelte';
 
 	type Properties = {
-		icon: string;
 		label: string;
+		card?: boolean;
 		checked?: boolean;
 		disabled?: boolean;
 		element?: HTMLIonToggleElement | undefined;
+		icon?: string;
 		searchable?: string;
 		change: (value?: boolean) => void;
 	};
 
-	let { change, checked, disabled, element, icon, label, searchable }: Properties = $props();
+	let { card, change, checked, disabled, element, icon, label, searchable }: Properties = $props();
 	void element;
 	void searchable;
 	void label;
 </script>
 
-<CustomItem {icon}>
+<CustomItem {icon} {card}>
 	<!-- svelte-ignore event_directive_deprecated -->
 	<ion-toggle
 		{disabled}

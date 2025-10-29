@@ -2,15 +2,13 @@ import { loadingController } from 'ionic-svelte';
 import { eye, eyeOff } from 'ionicons/icons';
 import { type AnyObject, type ObjectSchema, ValidationError } from 'yup';
 
-import { getValidationResult } from './api.utility';
-import { getObjectFromSchema } from './ui.utility';
-
 import {
 	type ValidationError as CustomValidationError,
 	Form,
 	type FormActions,
 	type ValidationResult
 } from '$lib/models/ui';
+import { getObjectFromSchema, getValidationResult } from '$lib/utility';
 
 /**
  * Creates a custom form with validation and feedback

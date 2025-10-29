@@ -7,6 +7,7 @@
 	type Properties = {
 		label: string;
 		name: string;
+		card?: boolean;
 		color?: Colors;
 		disabled?: boolean;
 		icon?: string;
@@ -18,6 +19,7 @@
 		inputIconClicked?: () => void;
 	};
 	let {
+		card,
 		change,
 		color,
 		disabled = false,
@@ -36,7 +38,7 @@
 	}
 </script>
 
-<CustomItem {color} {icon} {iconEnd} iconClick={inputIconClicked}>
+<CustomItem {color} {icon} {iconEnd} iconClick={inputIconClicked} {card}>
 	<!-- svelte-ignore event_directive_deprecated -->
 	<ion-textarea
 		{name}

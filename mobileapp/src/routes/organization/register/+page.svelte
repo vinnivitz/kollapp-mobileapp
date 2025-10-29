@@ -9,7 +9,7 @@
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import LocationInputItem from '$lib/components/widgets/ionic/LocationInputItem.svelte';
-	import TextareaItem from '$lib/components/widgets/ionic/TextareaItem.svelte';
+	import TextareaInputItem from '$lib/components/widgets/ionic/TextareaInputItem.svelte';
 	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
@@ -36,11 +36,11 @@
 				label={$t('routes.auth.register.organization.form.input.name')}
 				icon={accessibilityOutline}
 			/>
-			<TextareaItem
+			<TextareaInputItem
 				name="description"
 				icon={readerOutline}
 				label={$t('routes.organization.page.register.form.description')}
-			></TextareaItem>
+			></TextareaInputItem>
 			<LocationInputItem name="place" label={$t('routes.organization.page.register.form.place')} />
 			<Button
 				classList="mt-3"

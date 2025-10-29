@@ -10,6 +10,7 @@
 
 	type Properties = {
 		label: string;
+		card?: boolean;
 		icon?: string;
 		max?: string;
 		min?: string;
@@ -21,6 +22,7 @@
 
 	let {
 		applied,
+		card,
 		icon = calendarClearOutline,
 		label,
 		max,
@@ -60,6 +62,7 @@
 </script>
 
 <TextInputItem
+	{card}
 	inputElement={(value) => (element = value)}
 	{label}
 	{icon}

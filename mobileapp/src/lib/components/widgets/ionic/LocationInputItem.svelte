@@ -10,10 +10,12 @@
 	type Properties = {
 		label: string;
 		name: string;
+		card?: boolean;
+		helperText?: string;
 		icon?: string;
 	};
 
-	let { icon = locationOutline, label, name }: Properties = $props();
+	let { card, helperText, icon = locationOutline, label, name }: Properties = $props();
 
 	let cachedLocation = $state('');
 	let open = $state(false);
@@ -33,6 +35,8 @@
 </script>
 
 <TextInputItem
+	{helperText}
+	{card}
 	inputElement={(value) => (inputElement = value)}
 	{value}
 	{name}
