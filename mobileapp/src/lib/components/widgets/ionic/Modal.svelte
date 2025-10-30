@@ -79,10 +79,11 @@
 
 	onDestroy(async () => {
 		if (!isPlatformWeb()) return;
+		const self = _modalController;
 		const controller = await modalController.getTop();
-		if (controller && controller === _modalController) {
+		if (controller && controller === self) {
 			try {
-				await _modalController.dismiss();
+				await self?.dismiss();
 			} catch {
 				return;
 			}
