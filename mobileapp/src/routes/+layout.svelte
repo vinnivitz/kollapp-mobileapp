@@ -45,8 +45,7 @@
 	});
 
 	async function initStores(): Promise<void> {
-		userStore.init();
-		organizationStore.init();
+		await Promise.all([userStore.init(), organizationStore.init()]);
 	}
 
 	onMount(async () => {

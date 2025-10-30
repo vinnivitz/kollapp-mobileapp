@@ -32,10 +32,10 @@
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
 	import Popover from '$lib/components/widgets/ionic/Popover.svelte';
 	import { t } from '$lib/locales';
-	import { UserRole } from '$lib/models/api';
+	import { OrganizationRole } from '$lib/models/api';
 	import { AlertType, type ItemSlidingOption } from '$lib/models/ui';
 	import { localeStore, organizationStore, userStore } from '$lib/stores';
-	import { getDateFnsLocale, hasRole, showAlert, StatusCheck } from '$lib/utility';
+	import { getDateFnsLocale, hasOrganizationRole, showAlert, StatusCheck } from '$lib/utility';
 
 	let invitationCodeModalOpen = $state(false);
 	let qrModalOpen = $state(false);
@@ -72,19 +72,19 @@
 	}
 
 	async function onSelectRole(member: MemberModel): Promise<void> {
-		const organizationId = $organizationStore?.id;
+		const organizationId = $organizationStore?.id as number;
 		const actionsheet = await actionSheetController.create({
 			buttons: [
 				{
-					handler: () => grantUserRole(member.id, organizationId!, UserRole.ORGANIZATION_MEMBER),
+					handler: () => grantOrganizationRole(member.id, organizationId, OrganizationRole.MANAGER),
 					icon: medalOutline,
-					role: member.role === UserRole.ORGANIZATION_MEMBER ? 'selected' : undefined,
+					role: member.organizationRole === OrganizationRole.MANAGER ? 'selected' : undefined,
 					text: $t('routes.organization.page.members.select-user-role.role.manager')
 				},
 				{
-					handler: () => grantUserRole(member.id, organizationId!, UserRole.USER),
+					handler: () => grantOrganizationRole(member.id, organizationId, OrganizationRole.MEMBER),
 					icon: personOutline,
-					role: member.role === UserRole.USER ? 'selected' : undefined,
+					role: member.organizationRole === OrganizationRole.MEMBER ? 'selected' : undefined,
 					text: $t('routes.organization.page.members.select-user-role.role.user')
 				}
 			],
@@ -94,8 +94,8 @@
 		await actionsheet.present();
 	}
 
-	async function grantUserRole(userId: number, organizationId: number, role: UserRole): Promise<void> {
-		await organizationResource.grantUserRole(userId, organizationId, role);
+	async function grantOrganizationRole(userId: number, organizationId: number, role: OrganizationRole): Promise<void> {
+		await organizationResource.grantOrganizationRole(userId, organizationId, role);
 	}
 
 	function getGroupedMembers(members: MemberModel[]): [string, MemberModel[]][] {
@@ -166,7 +166,7 @@
 </script>
 
 <Layout title={$t('routes.organization.page.members.title')} showBackButton>
-	{#if hasRole(UserRole.ORGANIZATION_MEMBER)}
+	{#if hasOrganizationRole(OrganizationRole.MANAGER)}
 		<FabButton label="Invite member" icon={personAddOutline} clicked={() => (invitationCodeModalOpen = true)} />
 	{/if}
 

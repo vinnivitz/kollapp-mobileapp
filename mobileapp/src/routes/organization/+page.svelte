@@ -46,7 +46,7 @@
 	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import ToggleItem from '$lib/components/widgets/ionic/ToggleItem.svelte';
 	import { t } from '$lib/locales';
-	import { UserRole } from '$lib/models/api';
+	import { OrganizationRole } from '$lib/models/api';
 	import {
 		type AccountPostingModel,
 		AccountPostingType,
@@ -62,7 +62,7 @@
 		formatter,
 		getDateFnsLocale,
 		getValidationResult,
-		hasRole,
+		hasOrganizationRole,
 		parser,
 		triggerClickByLabel
 	} from '$lib/utility';
@@ -499,10 +499,10 @@
 			icon={peopleOutline}
 			label={$t('routes.organization.list.organization.members')}
 		/>
-		{#if !hasRole(UserRole.ORGANIZATION_MEMBER)}
+		{#if !hasOrganizationRole(OrganizationRole.MANAGER)}
 			<LabeledItem
 				searchable={PageRoute.ORGANIZATION.UPDATE_DATA}
-				accessible={[UserRole.ORGANIZATION_MEMBER]}
+				accessible={[OrganizationRole.MANAGER]}
 				clicked={() => goto(PageRoute.ORGANIZATION.UPDATE_DATA)}
 				icon={buildOutline}
 				label={$t('routes.organization.list.update-info.update-info')}

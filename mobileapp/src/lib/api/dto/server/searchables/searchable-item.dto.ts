@@ -1,4 +1,4 @@
-import type { UserRole } from '$lib/models/api';
+import type { OrganizationRole } from '$lib/models/api';
 import type { PageRoutePaths } from '$lib/models/routing';
 
 /**
@@ -8,6 +8,6 @@ export type SearchableItemDto = {
 	id: number;
 	label: string;
 	route: PageRoutePaths;
-	accessible?: UserRole[];
+	accessible?: OrganizationRole;
 	icon?: string;
 };

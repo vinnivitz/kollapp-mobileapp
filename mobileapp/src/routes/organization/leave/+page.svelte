@@ -9,12 +9,12 @@
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import { t } from '$lib/locales';
-	import { UserRole } from '$lib/models/api';
+	import { OrganizationRole } from '$lib/models/api';
 	import { PageRoute } from '$lib/models/routing';
 	import { organizationStore } from '$lib/stores';
 
 	const isLastManager = $derived(
-		$organizationStore?.personsOfOrganization.filter((member) => member.role === UserRole.ORGANIZATION_MEMBER)
+		$organizationStore?.personsOfOrganization.filter((member) => member.organizationRole === OrganizationRole.MANAGER)
 			.length === 1
 	);
 

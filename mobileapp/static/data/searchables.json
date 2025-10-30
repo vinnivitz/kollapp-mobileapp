@@ -78,9 +78,7 @@
     "route": "/organization/members"
   },
   {
-    "accessible": [
-      "ROLE_KOLLAPP_ORGANIZATION_MEMBER"
-    ],
+    "accessible": "ROLE_ORGANIZATION_MANAGER",
     "icon": "buildOutline",
     "id": 14,
     "label": "routes.organization.list.update-info.update-info",

@@ -14,6 +14,7 @@ import {
 	ContentType,
 	type CustomFetchConfig,
 	HeaderKey,
+	OrganizationRole,
 	RequestMethod,
 	type ResponseBody,
 	StatusCode,
@@ -21,7 +22,7 @@ import {
 } from '$lib/models/api';
 import { PreferencesKey } from '$lib/models/preferences';
 import { AlertType, type ValidationResult } from '$lib/models/ui';
-import { authenticationStore, connectionStore, localeStore, userStore } from '$lib/stores';
+import { authenticationStore, connectionStore, localeStore, organizationStore, userStore } from '$lib/stores';
 import { getStoredValue, removeStoredValue, showAlert, storeValue } from '$lib/utility';
 
 const $t = get(t);
@@ -126,12 +127,24 @@ export const StatusCheck = {
 };
 
 /**
- * Checks if the user has the given role.
+ * Checks if the user has the given organization role.
+ * @param role OrganizationRole to check.
+ * @returns {boolean} True if the user has the role; otherwise, false.
+ */
+export function hasOrganizationRole(role: OrganizationRole): boolean {
+	const userId = get(userStore)?.id;
+	return !!get(organizationStore)?.personsOfOrganization.find(
+		(personOfOrganization) => personOfOrganization.userId === userId && personOfOrganization.organizationRole === role
+	);
+}
+
+/**
+ * Checks if the user has the given user role.
  * @param role UserRole to check.
  * @returns {boolean} True if the user has the role; otherwise, false.
  */
-export function hasRole(role: UserRole): boolean {
-	return !!get(userStore)?.role.split(' ').includes(role);
+export function hasUserRole(role: UserRole): boolean {
+	return get(userStore)?.role === role;
 }
 
 /**

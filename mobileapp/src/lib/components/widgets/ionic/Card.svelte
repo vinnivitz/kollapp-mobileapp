@@ -1,11 +1,11 @@
 <script lang="ts">
-	import type { UserRole } from '$lib/models/api';
+	import type { OrganizationRole } from '$lib/models/api';
 	import type { Snippet } from 'svelte';
 
 	import { type Colors } from '$lib/models/ui';
 
 	type Properties = {
-		accessible?: UserRole[];
+		accessible?: OrganizationRole[];
 		border?: Colors;
 		children?: Snippet;
 		classList?: string;

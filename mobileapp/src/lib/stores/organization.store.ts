@@ -62,6 +62,7 @@ function createStore(): OrganizationStore {
 
 	async function update(id: number): Promise<void> {
 		const response = await organizationResource.getById(id);
+		console.log('organization', response.data);
 		if (StatusCheck.isOK(response.status)) {
 			await _set(response.data);
 			await accountPostingsStore.update(id);

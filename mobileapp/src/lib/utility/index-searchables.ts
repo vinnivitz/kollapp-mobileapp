@@ -1,5 +1,5 @@
 import type { SearchableItemDto } from '$lib/api/dto/server';
-import type { UserRole } from '$lib/models/api';
+import type { OrganizationRole } from '$lib/models/api';
 import type { Expression, Identifier, MemberExpression } from 'estree';
 
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -12,6 +12,7 @@ import { type AST, parse } from 'svelte/compiler';
  */
 const SRC_DIR = './';
 const OUTPUT_FILE = './static/data/searchables.json';
+const ROLE_PREFIX = 'ROLE_ORGANIZATION_';
 
 /**
  * Global array to store found items and a simple counter for ID assignment.
@@ -124,11 +125,11 @@ function addSearchableItem(node: ASTComponent): void {
 	const route = getAttributeValue(node, 'searchable');
 	const label = getAttributeValue(node, 'label') ?? getAttributeValue(node, 'id');
 	const icon = getAttributeValue(node, 'icon');
-	const accessible = getAttributeValue(node, 'accessible');
+	const accessible = getAttributeValue(node, 'accessible') as OrganizationRole;
 
 	if (label && route) {
 		searchableItems.push({
-			accessible: (accessible ? accessible.split(',') : undefined) as UserRole[],
+			accessible,
 			icon,
 			id: ++idCounter,
 			label,
@@ -166,7 +167,7 @@ function getAttributeValue(node: ASTComponent, name: string): string | undefined
 		}
 		case 'ArrayExpression': {
 			return expression.elements
-				.map((element) => `ROLE_KOLLAPP_${((element as MemberExpression).property as Identifier).name}`)
+				.map((element) => `${ROLE_PREFIX}${((element as MemberExpression).property as Identifier).name}`)
 				.join(',');
 		}
 		case 'MemberExpression': {

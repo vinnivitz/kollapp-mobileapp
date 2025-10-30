@@ -8,7 +8,7 @@
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import { t } from '$lib/locales';
-	import { UserRole } from '$lib/models/api';
+	import { OrganizationRole } from '$lib/models/api';
 	import { PageRoute } from '$lib/models/routing';
 	import { organizationStore } from '$lib/stores';
 	import { StatusCheck } from '$lib/utility';
@@ -18,7 +18,8 @@
 	const lastManagerOrganizations = $derived(
 		$organizations.filter(
 			(organization) =>
-				organization.personsOfOrganization.filter((member) => member.role === UserRole.ORGANIZATION_MEMBER).length === 1
+				organization.personsOfOrganization.filter((member) => member.organizationRole === OrganizationRole.MANAGER)
+					.length === 1
 		)
 	);
 
@@ -57,7 +58,7 @@
 								<li class="font-bold">{organization.name}</li>
 							{/each}
 						</ul>
-						<ion-text>Deleting the account will delete this organizati°ons.</ion-text>
+						<ion-text>Deleting the account will delete these organizations.</ion-text>
 					</div>
 				</div>
 			</Card>

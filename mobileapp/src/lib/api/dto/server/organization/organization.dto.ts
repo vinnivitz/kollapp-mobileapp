@@ -1,4 +1,4 @@
-import type { UserRole, UserStatus } from '$lib/models/api';
+import type { OrganizationRole, UserStatus } from '$lib/models/api';
 import type { ActivityDto } from './activity.dto';
 
 /**
@@ -14,7 +14,13 @@ export type OrganizationDto = {
 	description?: string;
 };
 
-type PersonsOfOrganization = { id: number; role: UserRole; status: UserStatus; userId: number; username: string };
+type PersonsOfOrganization = {
+	id: number;
+	organizationRole: OrganizationRole;
+	status: UserStatus;
+	userId: number;
+	username: string;
+};
 
 type OrganizationInvitationCode = {
 	code: string;

@@ -1,7 +1,7 @@
 import type { RegisterOrganizationDto, UpdateOrganizationDto } from '$lib/api/dto/client/organization';
 import type { OrganizationDto } from '$lib/api/dto/server';
 
-import { RequestMethod, type ResponseBody, UserRole } from '$lib/models/api';
+import { OrganizationRole, RequestMethod, type ResponseBody } from '$lib/models/api';
 import { customFetch } from '$lib/utility';
 
 const ENDPOINT = 'organization';
@@ -69,13 +69,17 @@ async function removeUserFromOrganization(organizationId: number, userId: number
 }
 
 /**
- * Grants a user a role in the organization.
+ * Grants a organization a role in the organization.
  * @param userId The user id.
  * @param organizationId The organization id.
  * @param role The role to grant.
  * @returns {Promise<ResponseBody>} The response body.
  */
-async function grantUserRole(userId: number, organizationId: number, role: UserRole): Promise<ResponseBody> {
+async function grantOrganizationRole(
+	userId: number,
+	organizationId: number,
+	role: OrganizationRole
+): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/${organizationId}/person/${userId}/grant-role?role=${role}`, {
 		method: RequestMethod.PATCH
 	});
@@ -117,7 +121,7 @@ export const organizationResource = {
 	getAll,
 	getById,
 	getOrganizationByInvitationCode,
-	grantUserRole,
+	grantOrganizationRole,
 	joinOrganizationByInvitationCode,
 	leaveOrganization,
 	removeUserFromOrganization,
