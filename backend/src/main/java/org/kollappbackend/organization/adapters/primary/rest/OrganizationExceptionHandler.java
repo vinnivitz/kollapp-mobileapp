@@ -4,9 +4,11 @@ import org.kollappbackend.core.adapters.primary.rest.model.ErrorResponseTO;
 import org.kollappbackend.core.adapters.primary.rest.model.ResponseTO;
 import org.kollappbackend.organization.application.exception.ActivityNotFoundException;
 import org.kollappbackend.organization.application.exception.InvalidInvitationCodeException;
+import org.kollappbackend.organization.application.exception.OrganizationAuthorizationException;
 import org.kollappbackend.organization.application.exception.OrganizationNotFoundException;
 import org.kollappbackend.organization.application.exception.PersonNotRegisteredInOrganizationException;
 import org.kollappbackend.organization.application.exception.PersonOfOrganizationIsNotApprovedYetException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -40,5 +42,10 @@ public class OrganizationExceptionHandler {
     public ResponseEntity<ResponseTO> handlePersonOfOrganizationIsNotApprovedYet(
             PersonOfOrganizationIsNotApprovedYetException ex) {
         return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
+    }
+
+    @ExceptionHandler(OrganizationAuthorizationException.class)
+    public ResponseEntity<ResponseTO> handleOrganizationAuthorizationException(OrganizationAuthorizationException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponseTO(ex.getMessage()));
     }
 }
