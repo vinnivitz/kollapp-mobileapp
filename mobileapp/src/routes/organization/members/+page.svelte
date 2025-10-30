@@ -35,7 +35,7 @@
 	import { UserRole } from '$lib/models/api';
 	import { AlertType, type ItemSlidingOption } from '$lib/models/ui';
 	import { localeStore, organizationStore, userStore } from '$lib/stores';
-	import { getDateFnsLocale, showAlert, StatusCheck } from '$lib/utility';
+	import { getDateFnsLocale, hasRole, showAlert, StatusCheck } from '$lib/utility';
 
 	let invitationCodeModalOpen = $state(false);
 	let qrModalOpen = $state(false);
@@ -76,9 +76,9 @@
 		const actionsheet = await actionSheetController.create({
 			buttons: [
 				{
-					handler: () => grantUserRole(member.id, organizationId!, UserRole.MANAGER),
+					handler: () => grantUserRole(member.id, organizationId!, UserRole.ORGANIZATION_MEMBER),
 					icon: medalOutline,
-					role: member.role === UserRole.MANAGER ? 'selected' : undefined,
+					role: member.role === UserRole.ORGANIZATION_MEMBER ? 'selected' : undefined,
 					text: $t('routes.organization.page.members.select-user-role.role.manager')
 				},
 				{
@@ -166,7 +166,7 @@
 </script>
 
 <Layout title={$t('routes.organization.page.members.title')} showBackButton>
-	{#if !$userStore?.roles.includes(UserRole.MANAGER)}
+	{#if hasRole(UserRole.ORGANIZATION_MEMBER)}
 		<FabButton label="Invite member" icon={personAddOutline} clicked={() => (invitationCodeModalOpen = true)} />
 	{/if}
 

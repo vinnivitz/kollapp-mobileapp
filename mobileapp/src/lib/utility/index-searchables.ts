@@ -166,7 +166,7 @@ function getAttributeValue(node: ASTComponent, name: string): string | undefined
 		}
 		case 'ArrayExpression': {
 			return expression.elements
-				.map((element) => `ROLE_${((element as MemberExpression).property as Identifier).name}`)
+				.map((element) => `ROLE_KOLLAPP_${((element as MemberExpression).property as Identifier).name}`)
 				.join(',');
 		}
 		case 'MemberExpression': {

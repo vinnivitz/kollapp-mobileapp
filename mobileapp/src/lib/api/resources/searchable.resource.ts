@@ -1,4 +1,5 @@
 import type { SearchableItemDto } from '$lib/api/dto/server';
+import type { UserRole } from '$lib/models/api';
 
 import { get } from 'svelte/store';
 
@@ -16,7 +17,7 @@ const $t = get(t);
 async function filter(value: string): Promise<SearchableItemDto[]> {
 	const response = await fetch('/data/searchables.json');
 	const items: SearchableItemDto[] = await response.json();
-	const userRoles = get(userStore)?.roles;
+	const userRoles = get(userStore)?.role.split(' ') as UserRole[];
 	const organization = get(organizationStore);
 	return items
 		.filter((item: SearchableItemDto) => {

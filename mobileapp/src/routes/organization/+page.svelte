@@ -499,10 +499,10 @@
 			icon={peopleOutline}
 			label={$t('routes.organization.list.organization.members')}
 		/>
-		{#if !hasRole(UserRole.MANAGER)}
+		{#if !hasRole(UserRole.ORGANIZATION_MEMBER)}
 			<LabeledItem
 				searchable={PageRoute.ORGANIZATION.UPDATE_DATA}
-				accessible={[UserRole.MANAGER]}
+				accessible={[UserRole.ORGANIZATION_MEMBER]}
 				clicked={() => goto(PageRoute.ORGANIZATION.UPDATE_DATA)}
 				icon={buildOutline}
 				label={$t('routes.organization.list.update-info.update-info')}

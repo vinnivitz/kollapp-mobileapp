@@ -79,7 +79,7 @@
   },
   {
     "accessible": [
-      "ROLE_MANAGER"
+      "ROLE_KOLLAPP_ORGANIZATION_MEMBER"
     ],
     "icon": "buildOutline",
     "id": 14,

@@ -14,7 +14,8 @@
 	import { organizationStore } from '$lib/stores';
 
 	const isLastManager = $derived(
-		$organizationStore?.personsOfOrganization.filter((member) => member.role === UserRole.MANAGER).length === 1
+		$organizationStore?.personsOfOrganization.filter((member) => member.role === UserRole.ORGANIZATION_MEMBER)
+			.length === 1
 	);
 
 	const isLastMember = $derived($organizationStore?.personsOfOrganization.length === 1);

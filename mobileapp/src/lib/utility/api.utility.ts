@@ -131,7 +131,7 @@ export const StatusCheck = {
  * @returns {boolean} True if the user has the role; otherwise, false.
  */
 export function hasRole(role: UserRole): boolean {
-	return !!get(userStore)?.roles.includes(role);
+	return !!get(userStore)?.role.split(' ').includes(role);
 }
 
 /**

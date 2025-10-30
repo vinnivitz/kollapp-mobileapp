@@ -18,7 +18,7 @@
 	const lastManagerOrganizations = $derived(
 		$organizations.filter(
 			(organization) =>
-				organization.personsOfOrganization.filter((member) => member.role === UserRole.MANAGER).length === 1
+				organization.personsOfOrganization.filter((member) => member.role === UserRole.ORGANIZATION_MEMBER).length === 1
 		)
 	);
 
