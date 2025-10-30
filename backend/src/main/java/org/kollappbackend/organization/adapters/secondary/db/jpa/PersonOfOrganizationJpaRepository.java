@@ -13,4 +13,6 @@ public interface PersonOfOrganizationJpaRepository extends JpaRepository<PersonO
     List<PersonOfOrganization> findByUserId(long userId);
 
     Optional<PersonOfOrganization> findByUserIdAndOrganization(long userId, Organization organization);
+
+    Optional<PersonOfOrganization> findByIdAndOrganization(long id, Organization organization);
 }

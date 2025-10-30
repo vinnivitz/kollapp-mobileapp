@@ -10,8 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -33,5 +31,5 @@ public class KollappUserTO {
 
     private boolean activated;
 
-    private List<String> roles;
+    private String role;
 }

@@ -17,9 +17,6 @@ import org.kollappbackend.organization.adapters.primary.rest.model.OrganizationU
 import org.kollappbackend.organization.adapters.primary.rest.model.PersonOfOrganizationPatchRoleRequestTO;
 import org.kollappbackend.organization.application.model.Organization;
 import org.kollappbackend.organization.application.service.OrganizationService;
-import org.kollappbackend.user.application.model.RequiresKollappUserRole;
-import org.kollappbackend.user.application.model.RequiresManagerOrMemberRole;
-import org.kollappbackend.user.application.model.RequiresManagerRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
@@ -53,7 +50,6 @@ public class OrganizationController {
     @GetMapping
     @Operation(summary = "Get the organizations of the logged in user", security = {
             @SecurityRequirement(name = "bearer-key")})
-    @RequiresKollappUserRole
     public ResponseEntity<ResponseTO> getOrganizationOfLoggedInUser() {
         List<Organization> organizations = organizationService.getOrganizationsByLoggedInUser();
         List<OrganizationMinifiedTO> organizationBaseTOs = organizations.stream()
@@ -65,7 +61,6 @@ public class OrganizationController {
     @GetMapping("/{organization-id}")
     @Operation(summary = "Get an organization by its id", security = {
             @SecurityRequirement(name = "bearer-key")})
-    @RequiresKollappUserRole
     public ResponseEntity<ResponseTO> getOrganizationById(@PathVariable("organization-id") long organizationId) {
         Organization organization = organizationService.getOrganizationById(organizationId);
         OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(organization);
@@ -75,7 +70,6 @@ public class OrganizationController {
     @GetMapping("/invitation/{invitation-code}")
     @Operation(summary = "Get the basic information of the organization by its invitation code", security = {
             @SecurityRequirement(name = "bearer-key")})
-    @RequiresKollappUserRole
     public ResponseEntity<ResponseTO> getOrganizationBaseInformationByInvitationCode(
             @PathVariable("invitation-code") String invitationCode) {
         Organization organization = organizationService.getOrganizationByInvitationCode(invitationCode);
@@ -86,7 +80,6 @@ public class OrganizationController {
     @PostMapping("/invitation/{invitation-code}")
     @Operation(summary = "Enter an organization based on its invitation code.", security = {
             @SecurityRequirement(name = "bearer-key")})
-    @RequiresKollappUserRole
     public ResponseEntity<ResponseTO> enterOrganizationBasedOnInvitationCode(
             @PathVariable("invitation-code") String invitationCode) {
         Organization organization = organizationService.enterOrganizationByInvitationCode(invitationCode);
@@ -97,7 +90,6 @@ public class OrganizationController {
     @PatchMapping("/{organization-id}/person/{person-id}/grant-role")
     @Operation(summary = "Grant a certain role to a person of an organization.", security = {
             @SecurityRequirement(name = "bearer-key")})
-    @RequiresManagerRole
     public ResponseEntity<ResponseTO> grantRoleToPersonOfOrganization(@PathVariable("organization-id") long organizationId,
                                                                       @PathVariable("person-id") long personId,
                                                                       @RequestBody
@@ -111,7 +103,6 @@ public class OrganizationController {
     @PatchMapping("/{organization-id}/invitation-code")
     @Operation(summary = "Renew the invitation code of the organization.", security = {
             @SecurityRequirement(name = "bearer-key")})
-    @RequiresManagerRole
     public ResponseEntity<ResponseTO> updateOrganizationInvitationCode(
             @PathVariable("organization-id") long organizationId) {
         Organization organization = organizationService.generateNewOrganizationInvitationCode(organizationId);
@@ -121,7 +112,6 @@ public class OrganizationController {
 
     @PostMapping
     @Operation(summary = "Create an organization", security = {@SecurityRequirement(name = "bearer-key")})
-    @RequiresKollappUserRole
     public ResponseEntity<ResponseTO> createOrganization(
             @Valid @RequestBody OrganizationCreationRequestTO creationRequestTO) {
         Organization organization = organizationMapper.organizationCreationRequestToOrganization(creationRequestTO);
@@ -132,7 +122,6 @@ public class OrganizationController {
 
     @PutMapping("/{organization-id}")
     @Operation(summary = "Update an organization", security = {@SecurityRequirement(name = "bearer-key")})
-    @RequiresManagerRole
     public ResponseEntity<ResponseTO> updateOrganization(
             @Valid @RequestBody OrganizationUpdateRequestTO updateRequestTO,
             @PathVariable("organization-id") long organizationId) {
@@ -145,7 +134,6 @@ public class OrganizationController {
     @DeleteMapping("/{organization-id}")
     @Operation(summary = "Leave the organization, deletion if last manager", security = {
             @SecurityRequirement(name = "bearer-key")})
-    @RequiresManagerOrMemberRole
     public ResponseEntity<ResponseTO> leaveOrganization(@PathVariable("organization-id") long organizationId) {
         organizationService.leaveOrganization(organizationId);
         return ResponseEntity.ok(new MessageResponseTO("success.organization.delete", messageSource));
@@ -153,7 +141,6 @@ public class OrganizationController {
 
     @DeleteMapping("/{organization-id}/person/{person-of-organization-id}")
     @Operation(summary = "Remove user from the organization", security = {@SecurityRequirement(name = "bearer-key")})
-    @RequiresManagerRole
     public ResponseEntity<ResponseTO> removeUserFromOrganization(
             @PathVariable("person-of-organization-id") long personOfOrganizationId,
             @PathVariable("organization-id") long organizationId) {

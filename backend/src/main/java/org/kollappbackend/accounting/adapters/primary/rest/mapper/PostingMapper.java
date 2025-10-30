@@ -6,6 +6,7 @@ import org.kollappbackend.accounting.application.model.ActivityPosting;
 import org.kollappbackend.accounting.application.model.OrganizationPosting;
 import org.kollappbackend.accounting.application.model.Posting;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.SubclassMapping;
 
 @Mapper(componentModel = "spring")
@@ -18,8 +19,8 @@ public interface PostingMapper {
     OrganizationPosting mapPostingCreationRequestTOToOrganizationPosting(
             PostingCreateUpdateRequestTO postingCreateUpdateRequestTO);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "budgetAccount", ignore = true)
     OrganizationPosting mapPostingCreationRequestTOToActivityPosting(
             PostingCreateUpdateRequestTO postingCreateUpdateRequestTO);
-
-
 }

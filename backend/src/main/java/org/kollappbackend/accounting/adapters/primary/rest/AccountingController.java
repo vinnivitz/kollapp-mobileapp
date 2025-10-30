@@ -16,8 +16,6 @@ import org.kollappbackend.accounting.application.service.BudgetAccountService;
 import org.kollappbackend.core.adapters.primary.rest.model.DataResponseTO;
 import org.kollappbackend.core.adapters.primary.rest.model.MessageResponseTO;
 import org.kollappbackend.core.adapters.primary.rest.model.ResponseTO;
-import org.kollappbackend.user.application.model.RequiresManagerOrMemberRole;
-import org.kollappbackend.user.application.model.RequiresManagerRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
@@ -52,7 +50,6 @@ public class AccountingController {
     @GetMapping("/account")
     @Operation(summary = "Get the budget account by the organization id.", security = {
             @SecurityRequirement(name = "bearer-key")})
-    @RequiresManagerOrMemberRole
     public ResponseEntity<ResponseTO> getBudgetAccountByOrganizationId(
             @RequestParam("organization-id") long organizationId) {
         BudgetAccount budgetAccount = budgetAccountService.getBudgetAccountByOrganizationId(organizationId);
@@ -64,7 +61,6 @@ public class AccountingController {
     @PostMapping("/account/{account-id}/posting")
     @Operation(summary = "Add a new posting to a budget account.", security = {
             @SecurityRequirement(name = "bearer-key")})
-    @RequiresManagerRole
     public ResponseEntity<ResponseTO> addPosting(@PathVariable("account-id") long accountId,
                                                  @RequestBody @Valid
                                                  PostingCreateUpdateRequestTO postingCreateUpdateRequestTO) {
@@ -77,7 +73,6 @@ public class AccountingController {
     @PutMapping("/account/{account-id}/posting/{posting-id}")
     @Operation(summary = "Edit an existing posting.", security = {
             @SecurityRequirement(name = "bearer-key")})
-    @RequiresManagerRole
     public ResponseEntity<ResponseTO> editPosting(@PathVariable("account-id") long accountId,
                                                   @PathVariable("posting-id") long postingId,
                                                   @RequestBody @Valid PostingCreateUpdateRequestTO postingUpdateRequestTO) {
@@ -90,7 +85,6 @@ public class AccountingController {
     @DeleteMapping("/account/{account-id}/posting/{posting-id}")
     @Operation(summary = "Delete an existing posting.", security = {
             @SecurityRequirement(name = "bearer-key")})
-    @RequiresManagerRole
     public ResponseEntity<MessageResponseTO> deletePosting(@PathVariable("account-id") long accountId,
                                                            @PathVariable("posting-id") long postingId) {
         budgetAccountService.deletePosting(accountId, postingId);

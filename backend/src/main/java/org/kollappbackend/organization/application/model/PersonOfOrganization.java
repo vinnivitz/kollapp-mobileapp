@@ -1,17 +1,15 @@
 package org.kollappbackend.organization.application.model;
 
-import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,9 +19,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "role")
-public abstract class PersonOfOrganization {
+@Builder
+public  class PersonOfOrganization {
     private long userId;
 
     @Id
@@ -37,11 +34,8 @@ public abstract class PersonOfOrganization {
     private Organization organization;
 
     @Enumerated(EnumType.STRING)
-    private PersonOfOrganizationStatus status;
+    private OrganizationRole organizationRole;
 
-    public PersonOfOrganization(long userId, String username, PersonOfOrganizationStatus status) {
-        this.userId = userId;
-        this.username = username;
-        this.status = status;
-    }
+    @Enumerated(EnumType.STRING)
+    private PersonOfOrganizationStatus status;
 }

@@ -63,13 +63,11 @@ public class Organization {
         activities.add(activity);
     }
 
-    public List<OrganizationManager> getManagers() {
-        return personsOfOrganization.stream().filter(p -> p instanceof OrganizationManager)
-                .map(p -> (OrganizationManager) p).toList();
-    }
-
-    public boolean hasManager(OrganizationManager organizationManager) {
-        return getManagers().contains(organizationManager);
+    public List<PersonOfOrganization> getManagers() {
+        return personsOfOrganization.stream()
+                .filter(p ->
+                        p.getOrganizationRole().equals(OrganizationRole.ROLE_ORGANIZATION_MANAGER))
+                .toList();
     }
 
     public boolean hasOnlyOneManagerLeft() {

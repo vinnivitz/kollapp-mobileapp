@@ -20,4 +20,6 @@ public interface KollappUserRepository {
     void save(KollappUser user);
 
     void deleteById(long id);
+
+    Optional<KollappUser> findById(Long id);
 }

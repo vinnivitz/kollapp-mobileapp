@@ -13,7 +13,6 @@ import org.kollappbackend.organization.adapters.primary.rest.model.ActivityTO;
 import org.kollappbackend.organization.adapters.primary.rest.model.ActivityUpdateRequestTO;
 import org.kollappbackend.organization.application.model.Activity;
 import org.kollappbackend.organization.application.service.ActivityService;
-import org.kollappbackend.user.application.model.RequiresManagerRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +40,6 @@ public class ActivityController {
 
     @PostMapping("/{organization-id}/activity")
     @Operation(summary = "Create new activity for organization", security = {@SecurityRequirement(name = "bearer-key")})
-    @RequiresManagerRole
     public ResponseEntity<ResponseTO> createNewActivity(@PathVariable("organization-id") long organizationId,
                                                         @RequestBody
                                                         ActivityCreationRequestTO activityCreationRequestTO) {
@@ -53,7 +51,6 @@ public class ActivityController {
 
     @PostMapping("/{organization-id}/activity/{activity-id}")
     @Operation(summary = "Update activity of organization", security = {@SecurityRequirement(name = "bearer-key")})
-    @RequiresManagerRole
     public ResponseEntity<ResponseTO> updateActivityOfOrganization(@PathVariable("organization-id") long organizationId,
                                                                    @PathVariable("activity-id") long activityId,
                                                                    @RequestBody
@@ -66,7 +63,6 @@ public class ActivityController {
 
     @DeleteMapping("/{organization-id}/activity/{activity-id}")
     @Operation(summary = "Delete activity of organization", security = {@SecurityRequirement(name = "bearer-key")})
-    @RequiresManagerRole
     public ResponseEntity<MessageResponseTO> deleteActivityOfOrganization(
             @PathVariable("organization-id") long organizationId, @PathVariable("activity-id") long activityId) {
         activityService.deleteActivity(organizationId, activityId);
