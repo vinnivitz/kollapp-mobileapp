@@ -9,6 +9,8 @@ import org.kollappbackend.accounting.application.model.Posting;
 import org.kollappbackend.accounting.application.repository.BudgetAccountRepository;
 import org.kollappbackend.accounting.application.repository.PostingRepository;
 import org.kollappbackend.accounting.application.service.BudgetAccountService;
+import org.kollappbackend.user.application.model.RequiresKollappOrganizationMemberRole;
+import org.kollappbackend.user.application.model.RequiresKollappUserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +28,7 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
     }
 
     @Override
+    @RequiresKollappOrganizationMemberRole
     public Posting addPosting(Posting posting, long budgetAccountId) {
         BudgetAccount budgetAccount =
                 budgetAccountRepository.findById(budgetAccountId).orElseThrow(BudgetAccountDoesNotExistException::new);
@@ -35,6 +38,7 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
     }
 
     @Override
+    @RequiresKollappOrganizationMemberRole
     public Posting editPosting(Posting updatedPosting, long postingId, long budgetAccountId) {
         BudgetAccount budgetAccount = budgetAccountRepository.findById(budgetAccountId)
                 .orElseThrow(BudgetAccountDoesNotExistException::new);
@@ -50,6 +54,7 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
     }
 
     @Override
+    @RequiresKollappOrganizationMemberRole
     public void deletePosting(long budgetAccountId, long postingId) {
         BudgetAccount budgetAccount = budgetAccountRepository.findById(budgetAccountId)
                 .orElseThrow(BudgetAccountDoesNotExistException::new);
@@ -61,6 +66,7 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
     }
 
     @Override
+    @RequiresKollappOrganizationMemberRole
     public BudgetAccount getBudgetAccountByOrganizationId(long organizationId) {
         BudgetAccount budgetAccount = budgetAccountRepository
                 .findByOrganizationId(organizationId)
@@ -70,17 +76,20 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
     }
 
     @Override
+    @RequiresKollappUserRole
     public void createBudgetAccount(Long organizationId) {
         BudgetAccount budgetAccount = BudgetAccount.builder().organizationId(organizationId).build();
         budgetAccountRepository.save(budgetAccount);
     }
 
     @Override
+    @RequiresKollappOrganizationMemberRole
     public void deleteBudgetAccount(long organizationId) {
         budgetAccountRepository.deleteByOrganizationId(organizationId);
     }
 
     @Override
+    @RequiresKollappOrganizationMemberRole
     public void deletePostingsOfActivity(long activityId) {
         postingRepository.deleteByActivityId(activityId);
     }

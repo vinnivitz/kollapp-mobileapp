@@ -10,8 +10,6 @@ public interface KollappUserService {
 
     KollappUser getKollappUserByUsername(String username);
 
-    KollappUser getKollappUserByEmail(String email);
-
     void activateKollappUser(String confirmationToken);
 
     void changePassword(String oldPassword, String newPassword);
@@ -25,4 +23,6 @@ public interface KollappUserService {
     KollappUser updateKollappUser(@Nullable String username, @Nullable String email);
 
     void deleteKollappUser();
+
+    KollappUser findById(Long id);
 }

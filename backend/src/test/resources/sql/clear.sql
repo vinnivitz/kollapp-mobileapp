@@ -5,10 +5,10 @@ FROM activity;
 DELETE
 FROM kollapp_user;
 DELETE
-FROM kollapp_user_roles;
-DELETE
 FROM organization;
 DELETE
 FROM person_of_organization;
+DELETE
+FROM organization_invitation_code;
 SET
 FOREIGN_KEY_CHECKS=1;

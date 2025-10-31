@@ -13,7 +13,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -29,9 +28,7 @@ public class KollappUserDetailsServiceImpl implements UserDetailsService {
             throws UsernameNotFoundException {
         KollappUser kollappUser =
                 userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(messageSource));
-        List<GrantedAuthority> authorities =
-                kollappUser.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.name()))
-                        .collect(Collectors.toList());
+        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(kollappUser.getRole().name()));
         return KollappUserDetails.builder().username(kollappUser.getUsername()).isActivated(kollappUser.isActivated())
                 .email(kollappUser.getEmail()).password(kollappUser.getPassword()).authorities(authorities).build();
     }
