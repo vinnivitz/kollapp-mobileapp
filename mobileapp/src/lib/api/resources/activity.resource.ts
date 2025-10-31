@@ -3,7 +3,7 @@ import type { CreateActivityDto, UpdateActivityDto } from '$lib/api/dto/client/o
 import { RequestMethod, type ResponseBody } from '$lib/models/api';
 import { customFetch } from '$lib/utility';
 
-const ENDPOINT = 'organization/activity';
+const ENDPOINT = 'organization';
 
 /**
  * Creates a new activity for the given organization.

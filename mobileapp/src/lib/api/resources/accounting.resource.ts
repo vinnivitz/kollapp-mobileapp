@@ -17,6 +17,7 @@ async function addAccountPosting(
 	accountId: number,
 	model: CreateAccountPostingDto
 ): Promise<ResponseBody<AccountPostingDto>> {
+	console.log('model', model);
 	return customFetch(`${ENDPOINT}/${accountId}/posting`, {
 		body: JSON.stringify(model),
 		method: RequestMethod.POST

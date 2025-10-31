@@ -1,7 +1,8 @@
 <script lang="ts">
-	import type { ActivityModel, OrganizationModel, UserModel } from '$lib/models/models';
+	import type { ApexOptions } from 'apexcharts';
 
 	import { TZDate } from '@date-fns/tz';
+	import Chart from '@edde746/svelte-apexcharts';
 	import { addDays, formatDistanceToNow } from 'date-fns';
 	import {
 		accessibilityOutline,
@@ -9,7 +10,9 @@
 		cashOutline,
 		flashOutline,
 		notificationsOffOutline,
-		peopleOutline
+		peopleOutline,
+		trendingDown,
+		trendingUp
 	} from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
@@ -17,12 +20,68 @@
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
+	import Chip from '$lib/components/widgets/ionic/Chip.svelte';
 	import { t } from '$lib/locales';
+	import { AccountPostingType, type ActivityModel, type OrganizationModel, type UserModel } from '$lib/models/models';
 	import { PageRoute, type PageRoutePaths } from '$lib/models/routing';
 	import { accountPostingsStore, localeStore, organizationStore, userStore } from '$lib/stores';
 	import { featureNotImplementedAlert, formatter, getDateFnsLocale } from '$lib/utility';
 
+	enum ChartType {
+		ALL,
+		CREDIT,
+		DEBIT
+	}
+
 	const activity = $derived($organizationStore?.activities && $organizationStore.activities[0]);
+
+	let selectedChart = $state<ChartType>(ChartType.ALL);
+
+	let chartSeries = $state<number[]>([]);
+	let labels = $state<string[]>([]);
+
+	const hasDebit = $derived($accountPostingsStore?.some((p) => p.type === AccountPostingType.DEBIT) ?? false);
+
+	const hasCredit = $derived($accountPostingsStore?.some((p) => p.type === AccountPostingType.CREDIT) ?? false);
+
+	$effect(() => {
+		switch (selectedChart) {
+			case ChartType.CREDIT: {
+				const credits = $accountPostingsStore?.filter((p) => p.type === AccountPostingType.CREDIT) ?? [];
+				chartSeries = credits.map((credit) => credit.amountInCents);
+				labels = credits.map((credit) => credit.purpose) ?? [];
+				break;
+			}
+			case ChartType.DEBIT: {
+				const debits = $accountPostingsStore?.filter((p) => p.type === AccountPostingType.DEBIT) ?? [];
+				chartSeries = debits.map((debit) => debit.amountInCents);
+				labels = debits.map((debit) => debit.purpose) ?? [];
+				break;
+			}
+			default: {
+				chartSeries = $accountPostingsStore?.map((posting) => posting.amountInCents) ?? [];
+				labels = $accountPostingsStore?.map((posting) => posting.purpose) ?? [];
+				break;
+			}
+		}
+	});
+
+	const chartOptions = $derived<ApexOptions>({
+		chart: { type: 'pie', width: '100%' },
+		dataLabels: {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			formatter: (_: number, options: any): string => {
+				const label = options.w.globals.labels[options.seriesIndex];
+				const postingType = $accountPostingsStore?.find((posting) => posting.purpose === label)?.type;
+				const formattedValue = formatter.currency(options.w.globals.series[options.seriesIndex]);
+				return `${postingType === AccountPostingType.CREDIT ? '+' : '-'} ${formattedValue}`;
+			}
+		},
+		labels,
+		legend: { position: 'bottom' },
+		plotOptions: { pie: { dataLabels: { offset: -15 } } },
+		series: chartSeries
+	});
 
 	function onNavigateEvent(): void {
 		if ($organizationStore?.activities[0]?.id) {
@@ -34,6 +93,10 @@
 		_event?.stopPropagation();
 		await goto(route);
 	}
+
+	function setSelectedChart(type: ChartType): void {
+		selectedChart = type;
+	}
 </script>
 
 <Layout title={$t('routes.home.title')}>
@@ -44,6 +107,7 @@
 				{@render upcomingEventCard(activity)}
 			{/if}
 			{@render organizationCard($organizationStore)}
+			{@render budgetChartCard()}
 		{:else}
 			{@render noCollectiveCards()}
 		{/if}
@@ -136,5 +200,36 @@
 			icon={accessibilityOutline}
 			label={$t('routes.home.card.organization.join')}
 		/>
+	</Card>
+{/snippet}
+
+{#snippet budgetChartCard()}
+	<Card>
+		<div class="flex items-center justify-center gap-2">
+			{#if hasCredit && hasDebit}
+				<Chip
+					icon={cashOutline}
+					label="All"
+					color="secondary"
+					selected={selectedChart === ChartType.ALL}
+					clicked={() => setSelectedChart(ChartType.ALL)}
+				/>
+				<Chip
+					icon={trendingUp}
+					label="Income"
+					color="success"
+					selected={selectedChart === ChartType.CREDIT}
+					clicked={() => setSelectedChart(ChartType.CREDIT)}
+				/>
+				<Chip
+					icon={trendingDown}
+					label="Expenses"
+					color="danger"
+					selected={selectedChart === ChartType.DEBIT}
+					clicked={() => setSelectedChart(ChartType.DEBIT)}
+				/>
+			{/if}
+		</div>
+		<Chart options={chartOptions}></Chart>
 	</Card>
 {/snippet}

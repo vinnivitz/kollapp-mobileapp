@@ -34,7 +34,7 @@
 	import { goto } from '$app/navigation';
 
 	import { type CreateAccountPostingDto, createAccountPostingSchema } from '$lib/api/dto/client/accounting';
-	import { updateActivitySchema } from '$lib/api/dto/client/organization';
+	import { type UpdateActivityDto, updateActivitySchema } from '$lib/api/dto/client/organization';
 	import { accountingResource, activityResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import AmountInputItem from '$lib/components/widgets/ionic/AmountInputItem.svelte';
@@ -91,6 +91,7 @@
 
 	let createAccountPostingFormActions: FormActions<CreateAccountPostingDto>;
 	let updateAccountPostingFormActions: FormActions<CreateAccountPostingDto>;
+	let updateActivityFormActions: FormActions<UpdateActivityDto>;
 
 	let createAccountPostingModalOpen = $state(false);
 	let updateAccountPostingModalOpen = $state(false);
@@ -155,8 +156,8 @@
 			updateActivityModalOpen = false;
 			updateActivityModelTouched = false;
 		},
-		// have to clone to avoid mutatiion issues
-		exposedActions: (actions) => actions.setModel(clone(activity)),
+		// have to clone to avoid mutation issues
+		exposedActions: (actions) => (updateActivityFormActions = actions),
 		onTouched: () => (updateActivityModelTouched = true),
 		request: async (model) => await activityResource.updateActivity($organizationStore?.id!, activity?.id!, model),
 		schema: updateActivitySchema()
@@ -246,6 +247,11 @@
 		goto(PageRoute.ORGANIZATION.ACTIVITIES.ROOT);
 	}
 
+	function onOpenActivityModal(): void {
+		updateActivityFormActions.setModel(clone(activity));
+		updateActivityModalOpen = true;
+	}
+
 	function calculateAccountBalance(postings: AccountPostingModel[]): AccountBalance {
 		let totalIncome = 0,
 			totalExpense = 0;
@@ -263,6 +269,7 @@
 
 	async function onOpenCreateAccountPosting(type: AccountPostingType): Promise<void> {
 		selectedPostingType = type;
+		console.log('activity id', activity?.id);
 		createAccountPostingFormActions.setModel(
 			createAccountPostingSchema().cast({
 				activityId: activity?.id,
@@ -394,7 +401,7 @@
 
 {#snippet eventSummary()}
 	<!-- svelte-ignore attribute_quoted -->
-	<Card border="secondary" title={activity?.name} classList="mb-5" clicked={() => (updateActivityModalOpen = true)}>
+	<Card border="secondary" title={activity?.name} classList="mb-5" clicked={onOpenActivityModal}>
 		<div class="flex flex-wrap items-center justify-center gap-3">
 			<div class="flex items-center gap-1">
 				<ion-icon icon={locationOutline}></ion-icon>
