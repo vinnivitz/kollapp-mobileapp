@@ -16,11 +16,13 @@ public interface PostingMapper {
     @SubclassMapping(source = OrganizationPosting.class, target = PostingTO.class)
     PostingTO mapPostingToPostingTO(Posting posting);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "budgetAccount", ignore = true)
     OrganizationPosting mapPostingCreationRequestTOToOrganizationPosting(
             PostingCreateUpdateRequestTO postingCreateUpdateRequestTO);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "budgetAccount", ignore = true)
-    OrganizationPosting mapPostingCreationRequestTOToActivityPosting(
+    ActivityPosting mapPostingCreationRequestTOToActivityPosting(
             PostingCreateUpdateRequestTO postingCreateUpdateRequestTO);
 }
