@@ -13,11 +13,7 @@ const ENDPOINT = 'budget/account';
  * @param model The data for the new account posting.
  * @returns {Promise<ResponseBody<AccountPostingDto>>} The response containing the created account posting.
  */
-async function addAccountPosting(
-	accountId: number,
-	model: CreateAccountPostingDto
-): Promise<ResponseBody<AccountPostingDto>> {
-	console.log('model', model);
+async function add(accountId: number, model: CreateAccountPostingDto): Promise<ResponseBody<AccountPostingDto>> {
 	return customFetch(`${ENDPOINT}/${accountId}/posting`, {
 		body: JSON.stringify(model),
 		method: RequestMethod.POST
@@ -31,7 +27,7 @@ async function addAccountPosting(
  * @param model The updated data for the account posting.
  * @returns {Promise<ResponseBody<AccountPostingDto>>} The response containing the updated account posting.
  */
-async function updateAccountPosting(
+async function update(
 	accountId: number,
 	postingId: number,
 	model: CreateAccountPostingDto
@@ -47,7 +43,7 @@ async function updateAccountPosting(
  * @param organizationId The ID of the organization for which to retrieve account postings, if 0 its organization postings.
  * @returns {Promise<ResponseBody<AccountAccountDto>>} The response containing the list of account postings.
  */
-async function getAccountPostings(organizationId: number): Promise<ResponseBody<BudgetAccountDto>> {
+async function getAllByOrganizationId(organizationId: number): Promise<ResponseBody<BudgetAccountDto>> {
 	return customFetch(`${ENDPOINT}?organization-id=${organizationId}`, { silentOnSuccess: true });
 }
 
@@ -57,15 +53,15 @@ async function getAccountPostings(organizationId: number): Promise<ResponseBody<
  * @param postingId The ID of the account posting to delete.
  * @returns {Promise<ResponseBody>} The response indicating the result of the deletion.
  */
-async function deleteAccountPosting(accountId: number, postingId: number): Promise<ResponseBody> {
+async function remove(accountId: number, postingId: number): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/${accountId}/posting/${postingId}`, {
 		method: RequestMethod.DELETE
 	});
 }
 
 export const accountingResource = {
-	addAccountPosting,
-	deleteAccountPosting,
-	getAccountPostings,
-	updateAccountPosting
+	add,
+	getAllByOrganizationId,
+	remove,
+	update
 };

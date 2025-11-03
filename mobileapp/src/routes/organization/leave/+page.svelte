@@ -37,7 +37,7 @@
 		await loader.present();
 		const organizationId = $organizationStore?.id;
 		if (organizationId) {
-			await organizationResource.leaveOrganization(organizationId);
+			await organizationResource.leave(organizationId);
 			await organizationStore.init();
 		}
 		await loader.dismiss();

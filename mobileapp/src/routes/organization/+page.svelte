@@ -147,7 +147,7 @@
 		exposedActions: (exposedActions) => (createAccountPostingFormActions = exposedActions),
 		formatters: { amountInCents: formatter.currency, date: formatter.date },
 		parsers: { amountInCents: parser.currency, date: parser.date },
-		request: async (model) => accountingResource.addAccountPosting($organizationStore?.id!, model),
+		request: async (model) => accountingResource.add($organizationStore?.id!, model),
 		schema: createAccountPostingSchema()
 	});
 
@@ -176,8 +176,7 @@
 		formatters: { amountInCents: formatter.currency, date: formatter.date },
 		onTouched: () => (updateAccountPostingModelTouched = true),
 		parsers: { amountInCents: parser.currency, date: parser.date },
-		request: async (model) =>
-			accountingResource.updateAccountPosting($organizationStore?.id!, selectedPosting?.id!, model),
+		request: async (model) => accountingResource.update($organizationStore?.id!, selectedPosting?.id!, model),
 		schema: createAccountPostingSchema()
 	});
 
@@ -316,7 +315,7 @@
 		await loader.present();
 		const organizationId = $organizationStore?.id;
 		if (organizationId) {
-			const result = getValidationResult(await accountingResource.deleteAccountPosting(organizationId, postingId));
+			const result = getValidationResult(await accountingResource.remove(organizationId, postingId));
 			if (result.valid) {
 				await accountPostingsStore.update(organizationId);
 			}

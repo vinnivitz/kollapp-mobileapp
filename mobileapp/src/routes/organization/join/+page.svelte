@@ -20,7 +20,7 @@
 		const result = await CapacitorBarcodeScanner.scanBarcode({ hint: CapacitorBarcodeScannerTypeHint.QR_CODE });
 		const code = result.ScanResult;
 		if (code.length === 8) {
-			const response = await organizationResource.joinOrganizationByInvitationCode(code);
+			const response = await organizationResource.joinByInvitationCode(code);
 			if (StatusCheck.isOK(response.status)) {
 				await Haptics.vibrate({ duration: 1000 });
 				await organizationStore.update(response.data.id);

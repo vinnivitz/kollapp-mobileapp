@@ -131,7 +131,7 @@
 		exposedActions: (exposedActions) => (createAccountPostingFormActions = exposedActions),
 		formatters: { amountInCents: formatter.currency, date: formatter.date },
 		parsers: { amountInCents: parser.currency, date: parser.date },
-		request: (model) => accountingResource.addAccountPosting($organizationStore?.id!, model),
+		request: (model) => accountingResource.add($organizationStore?.id!, model),
 		schema: createAccountPostingSchema()
 	});
 
@@ -145,8 +145,7 @@
 		formatters: { amountInCents: formatter.currency, date: formatter.date },
 		onTouched: () => (updateAccountPostingModelTouched = true),
 		parsers: { amountInCents: parser.currency, date: parser.date },
-		request: async (model) =>
-			accountingResource.updateAccountPosting($organizationStore?.id!, selectedPosting?.id!, model),
+		request: async (model) => accountingResource.update($organizationStore?.id!, selectedPosting?.id!, model),
 		schema: createAccountPostingSchema()
 	});
 
@@ -158,7 +157,7 @@
 		},
 		exposedActions: (actions) => (updateActivityFormActions = actions),
 		onTouched: () => (updateActivityModelTouched = true),
-		request: async (model) => await activityResource.updateActivity($organizationStore?.id!, activity?.id!, model),
+		request: async (model) => await activityResource.update($organizationStore?.id!, activity?.id!, model),
 		schema: updateActivitySchema()
 	});
 
@@ -239,7 +238,7 @@
 		const loader = await loadingController.create({});
 		await loader.present();
 		if (!($organizationStore?.id && activity?.id)) return showAlert('No organization or activity found');
-		await activityResource.deleteActivity($organizationStore.id, activity?.id);
+		await activityResource.remove($organizationStore.id, activity?.id);
 		await organizationStore.update($organizationStore.id);
 		updateActivityModalOpen = false;
 		await loader.dismiss();
@@ -359,7 +358,7 @@
 		await loader.present();
 		const organizationId = $organizationStore?.id;
 		if (organizationId) {
-			const result = getValidationResult(await accountingResource.deleteAccountPosting(organizationId, postingId));
+			const result = getValidationResult(await accountingResource.remove(organizationId, postingId));
 			if (result.valid) {
 				await accountPostingsStore.update(organizationId);
 			}

@@ -11,7 +11,7 @@ const ENDPOINT = 'organization';
  * @param model activity model
  * @returns {Promise<ResponseBody>} response body
  */
-async function createActivity(organizationId: number, model: CreateActivityDto): Promise<ResponseBody> {
+async function create(organizationId: number, model: CreateActivityDto): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/${organizationId}/activity`, {
 		body: JSON.stringify(model),
 		method: RequestMethod.POST
@@ -25,11 +25,7 @@ async function createActivity(organizationId: number, model: CreateActivityDto):
  * @param model activity model
  * @returns {Promise<ResponseBody>} response body
  */
-async function updateActivity(
-	organizationId: number,
-	activityId: number,
-	model: UpdateActivityDto
-): Promise<ResponseBody> {
+async function update(organizationId: number, activityId: number, model: UpdateActivityDto): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/${organizationId}/activity/${activityId}`, {
 		body: JSON.stringify(model),
 		method: RequestMethod.POST
@@ -42,14 +38,14 @@ async function updateActivity(
  * @param activityId id of the activity
  * @returns {Promise<ResponseBody>} response body
  */
-async function deleteActivity(organizationId: number, activityId: number): Promise<ResponseBody> {
+async function remove(organizationId: number, activityId: number): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/${organizationId}/activity/${activityId}`, {
 		method: RequestMethod.DELETE
 	});
 }
 
 export const activityResource = {
-	createActivity,
-	deleteActivity,
-	updateActivity
+	create,
+	remove,
+	update
 };

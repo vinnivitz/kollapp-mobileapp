@@ -20,7 +20,7 @@ function createStore(): AccountPostingsStore {
 				loadedCache.set(true);
 			}
 
-			const response = await accountingResource.getAccountPostings(organizationId);
+			const response = await accountingResource.getAllByOrganizationId(organizationId);
 			if (StatusCheck.isOK(response.status)) {
 				_set(response.data.postings);
 			} else if (StatusCheck.isUnauthorized(response.status)) {
@@ -40,7 +40,7 @@ function createStore(): AccountPostingsStore {
 	}
 
 	async function update(organizationId: number): Promise<void> {
-		const response = await accountingResource.getAccountPostings(organizationId);
+		const response = await accountingResource.getAllByOrganizationId(organizationId);
 		if (StatusCheck.isOK(response.status)) {
 			await _set(response.data.postings);
 		}

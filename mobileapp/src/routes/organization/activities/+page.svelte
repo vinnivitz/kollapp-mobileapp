@@ -84,7 +84,7 @@
 			await organizationStore.update($organizationStore?.id!);
 			createActivityModalOpen = false;
 		},
-		request: async (model: CreateActivityDto) => activityResource.createActivity($organizationStore?.id!, model),
+		request: async (model: CreateActivityDto) => activityResource.create($organizationStore?.id!, model),
 		schema: createActivitySchema()
 	});
 

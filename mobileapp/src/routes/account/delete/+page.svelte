@@ -24,7 +24,7 @@
 	);
 
 	async function onDeleteAccount(): Promise<void> {
-		const response = await userResource.deleteAccount();
+		const response = await userResource.remove();
 		if (StatusCheck.isOK(response.status)) {
 			await authResource.logout();
 			goto(PageRoute.AUTH.LOGIN);

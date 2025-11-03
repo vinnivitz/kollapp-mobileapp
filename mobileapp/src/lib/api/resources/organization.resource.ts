@@ -51,7 +51,7 @@ async function update(id: number, model: UpdateOrganizationDto): Promise<Respons
  * Deletes user from the organization.
  * @returns {Promise<ResponseBody>} The response body.
  */
-async function leaveOrganization(organizationId: number): Promise<ResponseBody> {
+async function leave(organizationId: number): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/${organizationId}`, {
 		method: RequestMethod.DELETE
 	});
@@ -62,7 +62,7 @@ async function leaveOrganization(organizationId: number): Promise<ResponseBody> 
  * @param userId The user id.
  * @returns {Promise<ResponseBody>} The response body.
  */
-async function removeUserFromOrganization(organizationId: number, userId: number): Promise<ResponseBody> {
+async function removeUser(organizationId: number, userId: number): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/${organizationId}/person/${userId}`, {
 		method: RequestMethod.DELETE
 	});
@@ -75,11 +75,7 @@ async function removeUserFromOrganization(organizationId: number, userId: number
  * @param role The role to grant.
  * @returns {Promise<ResponseBody>} The response body.
  */
-async function grantOrganizationRole(
-	userId: number,
-	organizationId: number,
-	role: OrganizationRole
-): Promise<ResponseBody> {
+async function grantRole(userId: number, organizationId: number, role: OrganizationRole): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/${organizationId}/person/${userId}/grant-role?role=${role}`, {
 		method: RequestMethod.PATCH
 	});
@@ -101,7 +97,7 @@ async function renewInvitationCode(organizationId: number): Promise<ResponseBody
  * @param code The invitation code.
  * @returns {Promise<ResponseBody<OrganizationDto>>} The organization.
  */
-async function getOrganizationByInvitationCode(code: string): Promise<ResponseBody<OrganizationDto>> {
+async function getByInvitationCode(code: string): Promise<ResponseBody<OrganizationDto>> {
 	return customFetch(`${ENDPOINT}/invitation/${code}`, { silentOnSuccess: true });
 }
 
@@ -110,7 +106,7 @@ async function getOrganizationByInvitationCode(code: string): Promise<ResponseBo
  * @param code The invitation code.
  * @returns {Promise<ResponseBody<OrganizationDto>>} The organization.
  */
-async function joinOrganizationByInvitationCode(code: string): Promise<ResponseBody<OrganizationDto>> {
+async function joinByInvitationCode(code: string): Promise<ResponseBody<OrganizationDto>> {
 	return customFetch(`${ENDPOINT}/invitation/${code}`, {
 		method: RequestMethod.POST
 	});
@@ -120,11 +116,11 @@ export const organizationResource = {
 	create,
 	getAll,
 	getById,
-	getOrganizationByInvitationCode,
-	grantOrganizationRole,
-	joinOrganizationByInvitationCode,
-	leaveOrganization,
-	removeUserFromOrganization,
+	getByInvitationCode,
+	grantRole,
+	joinByInvitationCode,
+	leave,
+	removeUser,
 	renewInvitationCode,
 	update
 };

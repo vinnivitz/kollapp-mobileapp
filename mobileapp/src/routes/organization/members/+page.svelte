@@ -65,7 +65,7 @@
 	async function onRemoveUser(userId: number): Promise<void> {
 		const organizationId = $organizationStore?.id;
 		if (!organizationId) return;
-		const response = await organizationResource.removeUserFromOrganization(organizationId, userId);
+		const response = await organizationResource.removeUser(organizationId, userId);
 		if (StatusCheck.isOK(response.status)) {
 			await organizationStore.update(organizationId);
 		}
@@ -95,7 +95,7 @@
 	}
 
 	async function grantOrganizationRole(userId: number, organizationId: number, role: OrganizationRole): Promise<void> {
-		await organizationResource.grantOrganizationRole(userId, organizationId, role);
+		await organizationResource.grantRole(userId, organizationId, role);
 	}
 
 	function getGroupedMembers(members: MemberModel[]): [string, MemberModel[]][] {

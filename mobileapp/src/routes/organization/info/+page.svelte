@@ -21,7 +21,7 @@
 
 	onMount(async () => {
 		if (data.invitationCode) {
-			const response = await organizationResource.getOrganizationByInvitationCode(data.invitationCode);
+			const response = await organizationResource.getByInvitationCode(data.invitationCode);
 			if (StatusCheck.isOK(response.status)) {
 				organization = response.data;
 			}

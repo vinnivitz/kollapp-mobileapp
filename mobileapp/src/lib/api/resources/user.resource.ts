@@ -42,7 +42,7 @@ async function update(model: UpdateUserDataDto): Promise<ResponseBody> {
  * Deletes the account of the authenticated user
  * @returns {Promise<ResponseBody>} response body
  */
-async function deleteAccount(): Promise<ResponseBody> {
+async function remove(): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/delete`, {
 		method: RequestMethod.DELETE
 	});
@@ -50,7 +50,7 @@ async function deleteAccount(): Promise<ResponseBody> {
 
 export const userResource = {
 	changePassword,
-	deleteAccount,
 	get,
+	remove,
 	update
 };
