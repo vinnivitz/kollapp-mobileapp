@@ -418,8 +418,6 @@
                                     </typeMappings>
                                     <removeTypeNameSuffixes>
                                         <suffix>TO</suffix>
-                                        <suffix>Dto</suffix>
-                                        <suffix>DTO</suffix>
                                     </removeTypeNameSuffixes>
                                     <generateJaxrsApplicationClient>false</generateJaxrsApplicationClient>
                                     <generateJaxrsClient>false</generateJaxrsClient>
