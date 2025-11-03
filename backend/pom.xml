@@ -18,6 +18,7 @@
         <node.version>v22.9.0</node.version>
         <npm.version>10.8.3</npm.version>
         <frontend-maven-plugin.version>1.12.1</frontend-maven-plugin.version>
+        <typescript-generator.version>3.2.1263</typescript-generator.version>
         <jsonwebtoken.version>0.11.5</jsonwebtoken.version>
         <lombok.version>1.18.30</lombok.version>
         <springdoc.version>2.6.0</springdoc.version>
@@ -288,11 +289,6 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
             <plugin>
-                <groupId>org.sonarsource.scanner.maven</groupId>
-                <artifactId>sonar-maven-plugin</artifactId>
-                <version>4.0.0.4121</version>
-            </plugin>
-            <plugin>
                 <groupId>com.buschmais.jqassistant</groupId>
                 <artifactId>jqassistant-maven-plugin</artifactId>
                 <executions>
@@ -378,4 +374,63 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>generate-client-api-types</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>cz.habarta.typescript-generator</groupId>
+                        <artifactId>typescript-generator-maven-plugin</artifactId>
+                        <version>${typescript-generator.version}</version>
+                        <executions>
+                            <execution>
+                                <id>generate-typescript-dtos</id>
+                                <phase>process-classes</phase>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                                <configuration>
+                                    <jsonLibrary>jackson2</jsonLibrary>
+                                    <classPatterns>
+                                        <classPattern>org.kollappbackend.**.adapters.**.rest.model.*</classPattern>
+                                    </classPatterns>
+                                    <excludeClasses>
+                                        <excludeClass>
+                                            org.kollappbackend.core.adapters.primary.rest.model.DataResponseTO</excludeClass>
+                                    </excludeClasses>
+                                    <outputKind>module</outputKind>
+                                    <outputFile>../mobileapp/api-types/api-types.ts</outputFile>
+                                    <outputFileType>implementationFile</outputFileType>
+                                    <typeMappings>
+                                        <typeMapping>
+                                            <javaType>long</javaType>
+                                            <tsType>number</tsType>
+                                        </typeMapping>
+                                        <typeMapping>
+                                            <javaType>java.lang.Long</javaType>
+                                            <tsType>number</tsType>
+                                        </typeMapping>
+                                        <typeMapping>
+                                            <javaType>java.time.LocalDate</javaType>
+                                            <tsType>string</tsType>
+                                        </typeMapping>
+                                    </typeMappings>
+                                    <removeTypeNameSuffixes>
+                                        <suffix>TO</suffix>
+                                        <suffix>Dto</suffix>
+                                        <suffix>DTO</suffix>
+                                    </removeTypeNameSuffixes>
+                                    <generateJaxrsApplicationClient>false</generateJaxrsApplicationClient>
+                                    <generateJaxrsClient>false</generateJaxrsClient>
+                                    <noFileComment>true</noFileComment>
+                                    <addCompileClasspath>true</addCompileClasspath>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
