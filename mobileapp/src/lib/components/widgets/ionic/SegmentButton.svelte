@@ -4,12 +4,12 @@
 		label: string;
 		value: string;
 		id?: string;
-		searchable?: string | unknown;
+		indexed?: string;
 	};
-	let { icon, id, label, searchable, value }: Properties = $props();
+	let { icon, id, indexed, label, value }: Properties = $props();
 
 	// workaround to avoid reference linting error
-	void searchable;
+	void indexed;
 </script>
 
 <ion-segment-button {value} {id}>

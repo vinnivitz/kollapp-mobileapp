@@ -11,9 +11,9 @@
 		classList?: string;
 		color?: Colors | undefined;
 		icon?: string;
-		searchable?: string;
+		indexed?: string;
 		transparent?: boolean;
-	} & ({ searchable: string; clicked: () => void } | { searchable?: string; clicked?: () => void });
+	} & ({ indexed: string; clicked: () => void } | { indexed?: string; clicked?: () => void });
 
 	let {
 		accessible,
@@ -22,13 +22,13 @@
 		clicked,
 		color = 'light',
 		icon,
+		indexed,
 		label,
-		searchable,
 		transparent = false
 	}: Properties = $props();
 
 	// workaround to avoid reference linting error
-	void searchable;
+	void indexed;
 	void accessible;
 
 	const labelColor = $derived(color === 'light' || color === 'white' ? 'dark' : 'white');

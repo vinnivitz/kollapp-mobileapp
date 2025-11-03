@@ -466,7 +466,7 @@
 		<LabeledItem
 			label={$t('routes.organization.list.organization.activity.label')}
 			icon={calendarOutline}
-			searchable={PageRoute.ORGANIZATION.ACTIVITIES.ROOT}
+			indexed={PageRoute.ORGANIZATION.ACTIVITIES.ROOT}
 			clicked={() => goto(PageRoute.ORGANIZATION.ACTIVITIES.ROOT)}
 		/>
 	</ion-list>
@@ -478,7 +478,7 @@
 		id={$t('routes.organization.change-organization.action-sheet.title')}
 		icon={swapHorizontalOutline}
 		clicked={onOrganizationSelect}
-		searchable={PageRoute.ORGANIZATION.ROOT}
+		indexed={PageRoute.ORGANIZATION.ROOT}
 		readonly={$organizations.length === 1}
 	>
 		<div class="flex items-center justify-center gap-4 text-2xl">
@@ -494,14 +494,14 @@
 	<ion-list inset>
 		<ion-list-header>{$t('routes.organization.list.current-collective.title')}</ion-list-header>
 		<LabeledItem
-			searchable={PageRoute.ORGANIZATION.MEMBERS}
+			indexed={PageRoute.ORGANIZATION.MEMBERS}
 			clicked={() => goto(PageRoute.ORGANIZATION.MEMBERS)}
 			icon={peopleOutline}
 			label={$t('routes.organization.list.organization.members')}
 		/>
 		{#if !hasOrganizationRole(OrganizationRole.MANAGER)}
 			<LabeledItem
-				searchable={PageRoute.ORGANIZATION.UPDATE_DATA}
+				indexed={PageRoute.ORGANIZATION.UPDATE_DATA}
 				accessible={[OrganizationRole.MANAGER]}
 				clicked={() => goto(PageRoute.ORGANIZATION.UPDATE_DATA)}
 				icon={buildOutline}
@@ -509,7 +509,7 @@
 			/>
 		{/if}
 		<LabeledItem
-			searchable={PageRoute.ORGANIZATION.LEAVE}
+			indexed={PageRoute.ORGANIZATION.LEAVE}
 			clicked={() => goto(PageRoute.ORGANIZATION.LEAVE)}
 			icon={logOutOutline}
 			label={$t('routes.organization.list.organization.leave.label')}
@@ -522,13 +522,13 @@
 		<ion-list-header>{$t('routes.organization.list.general.title')}</ion-list-header>
 
 		<LabeledItem
-			searchable={PageRoute.ORGANIZATION.REGISTER}
+			indexed={PageRoute.ORGANIZATION.REGISTER}
 			clicked={() => goto(PageRoute.ORGANIZATION.REGISTER)}
 			icon={createOutline}
 			label={$t('routes.organization.list.general.register.label')}
 		/>
 		<LabeledItem
-			searchable={PageRoute.ORGANIZATION.JOIN}
+			indexed={PageRoute.ORGANIZATION.JOIN}
 			clicked={() => goto(PageRoute.ORGANIZATION.JOIN)}
 			icon={personAddOutline}
 			label={$t('routes.organization.list.general.join.label')}

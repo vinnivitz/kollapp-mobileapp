@@ -12,8 +12,8 @@
 		color?: Colors | undefined;
 		icon?: string;
 		id?: string;
+		indexed?: string;
 		readonly?: boolean;
-		searchable?: string;
 		subtitle?: string;
 		title?: string;
 		clicked?: () => void;
@@ -28,14 +28,14 @@
 		color = border ? 'transparent' : 'light',
 		icon,
 		id,
+		indexed,
 		readonly,
-		searchable,
 		subtitle,
 		title
 	}: Properties = $props();
 
 	// workaround to avoid reference linting error
-	void searchable;
+	void indexed;
 	void accessible;
 	void id;
 	void icon;

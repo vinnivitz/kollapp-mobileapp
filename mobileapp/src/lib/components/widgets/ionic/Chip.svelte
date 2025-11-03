@@ -7,11 +7,15 @@
 		color?: Colors;
 		icon?: string;
 		iconEnd?: string;
+		indexed?: string;
 		selected?: boolean;
 		clicked?: () => void;
 	};
 
-	let { classList = '', clicked, color = 'secondary', icon, iconEnd, label, selected }: Properties = $props();
+	let { classList = '', clicked, color = 'secondary', icon, iconEnd, indexed, label, selected }: Properties = $props();
+
+	// workaround to avoid reference linting error
+	void indexed;
 </script>
 
 <ion-chip

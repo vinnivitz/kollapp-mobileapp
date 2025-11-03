@@ -114,19 +114,19 @@
 	<ion-list inset>
 		<ion-list-header>{$t('routes.account.list.account.title')}</ion-list-header>
 		<LabeledItem
-			searchable={PageRoute.ACCOUNT.UPDATE_DATA}
+			indexed={PageRoute.ACCOUNT.UPDATE_DATA}
 			clicked={() => goto(PageRoute.ACCOUNT.UPDATE_DATA)}
 			icon={buildOutline}
 			label={$t('routes.account.list.account.button.update-data')}
 		/>
 		<LabeledItem
-			searchable={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.ROOT}
+			indexed={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.ROOT}
 			clicked={() => goto(PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.ROOT)}
 			icon={lockClosedOutline}
 			label={$t('routes.account.list.account.button.privacy-and-security')}
 		/>
 		<LabeledItem
-			searchable={PageRoute.ACCOUNT.DELETE}
+			indexed={PageRoute.ACCOUNT.DELETE}
 			clicked={() => goto(PageRoute.ACCOUNT.DELETE)}
 			icon={trashOutline}
 			label={$t('routes.account.list.account.button.delete-account')}
@@ -138,25 +138,25 @@
 	<ion-list inset>
 		<ion-list-header>{$t('routes.account.list.application.title')}</ion-list-header>
 		<LabeledItem
-			searchable={PageRoute.ACCOUNT.ROOT}
+			indexed={PageRoute.ACCOUNT.ROOT}
 			clicked={openLocaleActionSheet}
 			icon={languageOutline}
 			label={$t('routes.account.app.list.language.button')}
 		/>
 		<LabeledItem
-			searchable={PageRoute.ACCOUNT.ROOT}
+			indexed={PageRoute.ACCOUNT.ROOT}
 			clicked={openColorThemeActionSheet}
 			icon={colorPaletteOutline}
 			label={$t('routes.account.app.list.theme.button')}
 		/>
 		<LabeledItem
-			searchable={PageRoute.ACCOUNT.ROOT}
+			indexed={PageRoute.ACCOUNT.ROOT}
 			clicked={openLayoutActionSheet}
 			icon={colorWandOutline}
 			label={$t('routes.account.app.list.layout.button')}
 		/>
 		<LabeledItem
-			searchable={PageRoute.ACCOUNT.ROOT}
+			indexed={PageRoute.ACCOUNT.ROOT}
 			clicked={restoreApplicationDefaults}
 			icon={refreshOutline}
 			label={$t('routes.account.app.list.restore.button')}

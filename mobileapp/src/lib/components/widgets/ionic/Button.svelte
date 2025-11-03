@@ -12,10 +12,10 @@
 		icon?: string;
 		iconPosition?: 'end' | 'start';
 		iconSize?: 'large' | 'small' | undefined;
+		indexed?: string;
 		label?: string;
 		labelColor?: Colors;
 		readonly?: boolean;
-		searchable?: string;
 		shape?: 'round' | undefined;
 		size?: 'default' | 'large' | 'small' | undefined;
 		type?: 'button' | 'reset' | 'submit';
@@ -39,17 +39,17 @@
 		icon,
 		iconPosition = 'start',
 		iconSize,
+		indexed,
 		label,
 		labelColor,
 		readonly,
-		searchable,
 		shape = 'round',
 		size,
 		type
 	}: Properties = $props();
 
 	// workaround to avoid reference linting error
-	void searchable;
+	void indexed;
 
 	const fontWeight = $derived(fill === 'outline' ? 'font-extrabold' : 'font-medium');
 </script>

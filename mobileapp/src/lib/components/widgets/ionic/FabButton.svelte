@@ -11,7 +11,7 @@
 		color?: Colors;
 		horizontal?: 'center' | 'end' | 'start';
 		id?: string;
-		searchable?: string | unknown;
+		indexed?: string;
 		vertical?: 'bottom' | 'center' | 'top';
 		clicked?: () => void;
 	};
@@ -24,15 +24,15 @@
 		horizontal = 'end',
 		icon,
 		id,
+		indexed,
 		label,
-		searchable,
 		vertical = 'bottom'
 	}: Properties = $props();
 
 	let fabButtonElement = $state<HTMLIonFabElement>();
 
 	// workaround to avoid reference linting error
-	void searchable;
+	void indexed;
 </script>
 
 <!-- svelte-ignore event_directive_deprecated -->

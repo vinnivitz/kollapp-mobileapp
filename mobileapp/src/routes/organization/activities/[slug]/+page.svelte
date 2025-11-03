@@ -86,7 +86,7 @@
 			label: 'Delete event'
 		},
 		{ color: 'tertiary', handler: featureNotImplementedAlert, icon: archiveOutline, label: 'Archieve event' },
-		{ color: 'primary', handler: () => (updateActivityModalOpen = true), icon: createOutline, label: 'Edit event' }
+		{ color: 'primary', handler: onOpenActivityModal, icon: createOutline, label: 'Edit event' }
 	];
 
 	let createAccountPostingFormActions: FormActions<CreateAccountPostingDto>;
@@ -156,7 +156,6 @@
 			updateActivityModalOpen = false;
 			updateActivityModelTouched = false;
 		},
-		// have to clone to avoid mutation issues
 		exposedActions: (actions) => (updateActivityFormActions = actions),
 		onTouched: () => (updateActivityModelTouched = true),
 		request: async (model) => await activityResource.updateActivity($organizationStore?.id!, activity?.id!, model),
@@ -269,7 +268,6 @@
 
 	async function onOpenCreateAccountPosting(type: AccountPostingType): Promise<void> {
 		selectedPostingType = type;
-		console.log('activity id', activity?.id);
 		createAccountPostingFormActions.setModel(
 			createAccountPostingSchema().cast({
 				activityId: activity?.id,
@@ -391,6 +389,11 @@
 		filteredMemberFilterItems = memberFilterItems;
 		selectedPostingTypes = [AccountPostingType.DEBIT, AccountPostingType.CREDIT];
 	}
+
+	function setAccountPostingType(type: AccountPostingType): void {
+		selectedPostingType = type;
+		updateAccountPostingModelTouched = true;
+	}
 </script>
 
 <Layout title="Event Details" showBackButton>
@@ -398,6 +401,8 @@
 	{@render activityAccountSummary()}
 	{@render actionButton()}
 </Layout>
+
+<!-- Snippets -->
 
 {#snippet eventSummary()}
 	<!-- svelte-ignore attribute_quoted -->
@@ -470,113 +475,6 @@
 	<FabButton label="Event actions" icon={addOutline} buttons={activityEventButtons} />
 {/snippet}
 
-<Modal
-	dismissed={() => (updateActivityModalOpen = false)}
-	touched={updateActivityModelTouched}
-	open={updateActivityModalOpen}
-	confirmLabel={$t('routes.organization.page.activity.edit-modal.button.confirm')}
->
-	<Card title={$t('routes.organization.page.activity.edit-modal.card.title')}>
-		<form use:customForm={updateActivityForm}>
-			<TextInputItem
-				name="name"
-				label={$t('routes.organization.page.activity.create-modal.card.input.name')}
-				icon={documentOutline}
-			/>
-			<LocationInputItem
-				label={$t('routes.organization.page.activity.update-modal.card.input.location')}
-				name="location"
-			/>
-			<DatetimeInputItem label="Date" name="date" />
-		</form>
-	</Card>
-</Modal>
-
-<Modal open={createAccountPostingModalOpen} dismissed={() => (createAccountPostingModalOpen = false)}>
-	<Card title={getCreatePostingTitle(selectedPostingType)}>
-		<form use:customForm={createAccountPostingForm!}>
-			<div class="mb-3 flex items-center justify-center gap-2">
-				<Chip
-					selected={selectedPostingType === AccountPostingType.DEBIT}
-					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.income')}
-					clicked={() => (selectedPostingType = AccountPostingType.DEBIT)}
-				/>
-				<Chip
-					selected={selectedPostingType === AccountPostingType.CREDIT}
-					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.expense')}
-					clicked={() => (selectedPostingType = AccountPostingType.CREDIT)}
-				/>
-			</div>
-			<TextInputItem name="purpose" label="Purpose" icon={documentOutline} />
-			<AmountInputItem name="amountInCents" label="Amount" />
-			<DatetimeInputItem
-				label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.date')}
-				name="date"
-			/>
-		</form>
-	</Card>
-</Modal>
-
-<Modal
-	open={updateAccountPostingModalOpen}
-	dismissed={() => (updateAccountPostingModalOpen = false)}
-	touched={updateAccountPostingModelTouched}
->
-	<Card title="Update transaction">
-		<form use:customForm={updateAccountPostingForm}>
-			<div class="mb-3 flex items-center justify-center gap-2">
-				<Chip
-					selected={selectedPostingType === AccountPostingType.DEBIT}
-					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.income')}
-					clicked={() => (selectedPostingType = AccountPostingType.DEBIT)}
-				/>
-				<Chip
-					selected={selectedPostingType === AccountPostingType.CREDIT}
-					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.expense')}
-					clicked={() => (selectedPostingType = AccountPostingType.CREDIT)}
-				/>
-			</div>
-			<TextInputItem name="purpose" label="Purpose" icon={documentOutline} />
-			<AmountInputItem name="amountInCents" label="Amount" />
-			<DatetimeInputItem
-				label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.date')}
-				name="date"
-			/>
-		</form>
-	</Card>
-</Modal>
-
-<Modal
-	initialBreakPoint={0.75}
-	open={transactionHistoryModalOpen}
-	dismissed={() => (transactionHistoryModalOpen = false)}
-	informational
-	lazy
->
-	<div class="flex items-center justify-center gap-2">
-		<!-- svelte-ignore event_directive_deprecated -->
-		<ion-searchbar
-			class="w-full"
-			debounce={100}
-			placeholder="Search transactions..."
-			value={postingsSearchValue}
-			on:ionInput={onSearchPostings}
-		></ion-searchbar>
-		<Button icon={filterOutline} clicked={() => (filterOpen = true)} />
-	</div>
-	{#if filteredPostings.length === 0}
-		<div class="mt-3 text-center">
-			<ion-note>No transactions found.</ion-note>
-		</div>
-	{:else}
-		<ion-list>
-			{#each filteredPostings as posting (posting.id)}
-				{@render transactionItem(posting)}
-			{/each}
-		</ion-list>
-	{/if}
-</Modal>
-
 {#snippet transactionItem(posting: AccountPostingModel)}
 	<CustomItem
 		slidingOptions={[
@@ -618,7 +516,120 @@
 	</CustomItem>
 {/snippet}
 
-<!-- svelte-ignore event_directive_deprecated -->
+<!-- Modals -->
+
+<!-- Update Activity Modal -->
+<Modal
+	dismissed={() => (updateActivityModalOpen = false)}
+	touched={updateActivityModelTouched}
+	open={updateActivityModalOpen}
+	confirmLabel={$t('routes.organization.page.activity.edit-modal.button.confirm')}
+>
+	<Card title={$t('routes.organization.page.activity.edit-modal.card.title')}>
+		<form use:customForm={updateActivityForm}>
+			<TextInputItem
+				name="name"
+				label={$t('routes.organization.page.activity.create-modal.card.input.name')}
+				icon={documentOutline}
+			/>
+			<LocationInputItem
+				label={$t('routes.organization.page.activity.update-modal.card.input.location')}
+				name="location"
+			/>
+			<DatetimeInputItem label="Date" name="date" />
+		</form>
+	</Card>
+</Modal>
+
+<!-- Create Account Posting Modal -->
+<Modal open={createAccountPostingModalOpen} dismissed={() => (createAccountPostingModalOpen = false)}>
+	<Card title={getCreatePostingTitle(selectedPostingType)}>
+		<form use:customForm={createAccountPostingForm!}>
+			<div class="mb-3 flex items-center justify-center gap-2">
+				<Chip
+					selected={selectedPostingType === AccountPostingType.DEBIT}
+					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.income')}
+					clicked={() => (selectedPostingType = AccountPostingType.DEBIT)}
+				/>
+				<Chip
+					selected={selectedPostingType === AccountPostingType.CREDIT}
+					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.expense')}
+					clicked={() => (selectedPostingType = AccountPostingType.CREDIT)}
+				/>
+			</div>
+			<TextInputItem name="purpose" label="Purpose" icon={documentOutline} />
+			<AmountInputItem name="amountInCents" label="Amount" />
+			<DatetimeInputItem
+				label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.date')}
+				name="date"
+			/>
+		</form>
+	</Card>
+</Modal>
+
+<!-- Update Account Posting Modal -->
+<Modal
+	open={updateAccountPostingModalOpen}
+	dismissed={() => (updateAccountPostingModalOpen = false)}
+	touched={updateAccountPostingModelTouched}
+>
+	<Card title="Update transaction">
+		<form use:customForm={updateAccountPostingForm}>
+			<div class="mb-3 flex items-center justify-center gap-2">
+				<Chip
+					selected={selectedPostingType === AccountPostingType.DEBIT}
+					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.income')}
+					clicked={() => setAccountPostingType(AccountPostingType.DEBIT)}
+				/>
+				<Chip
+					selected={selectedPostingType === AccountPostingType.CREDIT}
+					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.expense')}
+					clicked={() => setAccountPostingType(AccountPostingType.CREDIT)}
+				/>
+			</div>
+			<TextInputItem name="purpose" label="Purpose" icon={documentOutline} />
+			<AmountInputItem name="amountInCents" label="Amount" />
+			<DatetimeInputItem
+				label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.date')}
+				name="date"
+			/>
+		</form>
+	</Card>
+</Modal>
+
+<!-- Transaction History Modal -->
+<Modal
+	initialBreakPoint={0.75}
+	open={transactionHistoryModalOpen}
+	dismissed={() => (transactionHistoryModalOpen = false)}
+	informational
+	lazy
+>
+	<div class="flex items-center justify-center gap-2">
+		<!-- svelte-ignore event_directive_deprecated -->
+		<ion-searchbar
+			class="w-full"
+			debounce={100}
+			placeholder="Search transactions..."
+			value={postingsSearchValue}
+			on:ionInput={onSearchPostings}
+		></ion-searchbar>
+		<Button icon={filterOutline} clicked={() => (filterOpen = true)} />
+	</div>
+	{#if filteredPostings.length === 0}
+		<div class="mt-3 text-center">
+			<ion-note>No transactions found.</ion-note>
+		</div>
+	{:else}
+		<ion-list>
+			{#each filteredPostings as posting (posting.id)}
+				{@render transactionItem(posting)}
+			{/each}
+		</ion-list>
+	{/if}
+</Modal>
+
+<!-- Activity Filters Popover Modal -->
 <Popover extended open={filterOpen} dismissed={() => (filterOpen = false)}>
 	<Card title="Filters" classList="m-0">
 		<div class="flex items-center justify-center gap-2">
@@ -659,6 +670,7 @@
 	</Card>
 </Popover>
 
+<!-- Filter Members Modal -->
 <Modal open={filterMembersModalOpen} dismissed={() => (filterMembersModalOpen = false)} informational>
 	<!-- svelte-ignore event_directive_deprecated -->
 	<ion-searchbar class="w-full" debounce={100} placeholder="Search members..." on:ionInput={onSearchMembers}>

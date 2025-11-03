@@ -14,8 +14,8 @@
 		iconColor?: Colors;
 		iconEnd?: string;
 		id?: string;
+		indexed?: string;
 		note?: string;
-		searchable?: string;
 		slidingOptions?: ItemSlidingOption[];
 		transparent?: boolean;
 		clicked?: () => void;
@@ -34,14 +34,14 @@
 		iconColor = color === 'light' || color === 'white' ? 'medium' : 'white',
 		iconEnd,
 		id,
+		indexed,
 		note,
-		searchable,
 		slidingOptions,
 		transparent
 	}: Properties = $props();
 
 	// workaround to avoid reference linting error
-	void searchable;
+	void indexed;
 
 	let ionItemSlidingElement = $state<HTMLIonItemSlidingElement>();
 </script>

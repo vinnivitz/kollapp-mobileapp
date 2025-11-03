@@ -29,7 +29,6 @@
 	import LocationInputItem from '$lib/components/widgets/ionic/LocationInputItem.svelte';
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
 	import Popover from '$lib/components/widgets/ionic/Popover.svelte';
-	import SegmentButton from '$lib/components/widgets/ionic/SegmentButton.svelte';
 	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
@@ -109,47 +108,42 @@
 	showBackButton
 	scrollable={activityView === ActivityView.CALENDAR}
 >
-	<div class="mb-1">
-		{@render activitySegmentsHeader()}
-	</div>
+	{@render activitySegmentsHeader()}
 	{@render activitySegmentView()}
 </Layout>
 
 {#snippet activitySegmentsHeader()}
-	<!-- svelte-ignore event_directive_deprecated -->
-	<ion-segment
-		in:fade={{ delay: 150, duration: 100 }}
-		out:fade={{ delay: 0, duration: 100 }}
-		on:ionChange={(event) => (activityView = event.detail.value as ActivityView)}
-		value={activityView}
-		color="secondary"
-	>
-		<SegmentButton
-			icon={flashOutline}
+	<div class="mb-2 flex items-center justify-center gap-3">
+		<Chip
+			color="primary"
 			label={$t('routes.organization.page.activity.segments.activities')}
-			value={ActivityView.ACTIVITIES}
-		></SegmentButton>
-		<SegmentButton
-			icon={calendarOutline}
+			icon={flashOutline}
+			selected={activityView === ActivityView.ACTIVITIES}
+			clicked={() => (activityView = ActivityView.ACTIVITIES)}
+		/>
+		<Chip
+			color="primary"
 			label={$t('routes.organization.page.activity.segments.calendar')}
-			value={ActivityView.CALENDAR}
-			searchable={PageRoute.ORGANIZATION.ACTIVITIES}
-		></SegmentButton>
-	</ion-segment>
+			icon={calendarOutline}
+			selected={activityView === ActivityView.CALENDAR}
+			clicked={() => (activityView = ActivityView.CALENDAR)}
+			indexed={PageRoute.ORGANIZATION.ACTIVITIES.ROOT}
+		/>
+	</div>
 {/snippet}
 
 {#snippet activitySegmentView()}
-	<ion-segment-view in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
-		<ion-segment-content class={activityView === ActivityView.ACTIVITIES ? 'flex h-full flex-col pb-6' : ''}>
+	<div in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
+		<div class={activityView === ActivityView.ACTIVITIES ? 'flex h-full flex-col pb-6' : ''}>
 			{#if activityView === ActivityView.ACTIVITIES}
 				<FabButton
 					label={$t('routes.organization.page.activity.create')}
 					clicked={() => onCreateActivity(format(new TZDate(), 'yyyy-MM-dd'))}
 					icon={createOutline}
-					searchable={PageRoute.ORGANIZATION.ACTIVITIES.ROOT}
+					indexed={PageRoute.ORGANIZATION.ACTIVITIES.ROOT}
 				></FabButton>
 
-				<div class="mt-4 flex items-center justify-between gap-2">
+				<div class="flex items-center justify-between gap-2">
 					<!-- svelte-ignore event_directive_deprecated -->
 					<ion-searchbar
 						color="light"
@@ -173,8 +167,8 @@
 					dismissText=""
 				></Datetime>
 			{/if}
-		</ion-segment-content>
-	</ion-segment-view>
+		</div>
+	</div>
 {/snippet}
 
 {#snippet activityFilter()}

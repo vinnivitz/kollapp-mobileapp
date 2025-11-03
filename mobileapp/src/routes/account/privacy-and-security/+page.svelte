@@ -101,21 +101,21 @@
 		<LabeledItem
 			label={$t('routes.account.page.privacy-and-security.security.list.legal')}
 			icon={receiptOutline}
-			searchable={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.LEGAL}
+			indexed={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.LEGAL}
 			clicked={() => goto(PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.LEGAL)}
 		/>
 		<LabeledItem
 			label="App version"
 			icon={constructOutline}
 			clicked={() => goto(PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.APP_VERSION)}
-			searchable={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.APP_VERSION}
+			indexed={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.APP_VERSION}
 		/>
 		<LabeledItem label="Report bug" icon={bugOutline} clicked={() => featureNotImplementedAlert()} />
 	</ion-list>
 	<ion-list inset>
 		<ion-list-header>{$t('routes.account.page.privacy-and-security.list.security')}</ion-list-header>
 		<LabeledItem
-			searchable={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.CHANGE_PASSWORD}
+			indexed={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.CHANGE_PASSWORD}
 			clicked={() => goto(PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.CHANGE_PASSWORD)}
 			icon={keyOutline}
 			label={$t('routes.account.list.account.privacy-and-security.button.change-password')}
@@ -124,7 +124,7 @@
 			<CustomItem
 				icon={fingerPrintOutline}
 				id={$t('routes.account.list.account.privacy-and-security.button.biometrics')}
-				searchable={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.ROOT}
+				indexed={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.ROOT}
 			>
 				<!-- svelte-ignore event_directive_deprecated -->
 				<ion-toggle

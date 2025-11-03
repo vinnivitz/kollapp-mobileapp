@@ -6,16 +6,17 @@
 		card?: boolean;
 		checked?: boolean;
 		disabled?: boolean;
-		element?: HTMLIonToggleElement | undefined;
+		element?: HTMLIonToggleElement;
 		icon?: string;
-		searchable?: string;
+		indexed?: string;
 		change: (value?: boolean) => void;
 	};
 
-	let { card, change, checked, disabled, element, icon, label, searchable }: Properties = $props();
+	let { card, change, checked, disabled, element, icon, indexed, label }: Properties = $props();
+
+	// workaround to avoid reference linting error
+	void indexed;
 	void element;
-	void searchable;
-	void label;
 </script>
 
 <CustomItem {icon} {card}>
