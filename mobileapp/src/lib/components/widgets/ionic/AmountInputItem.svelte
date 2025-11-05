@@ -159,7 +159,6 @@
 </script>
 
 <CustomItem {card} {color} {icon} iconEnd={inputIcon} {clicked} iconClick={inputIconClicked} {classList}>
-	<!-- svelte-ignore event_directive_deprecated -->
 	<ion-input
 		bind:this={element}
 		{readonly}
@@ -172,10 +171,10 @@
 		helper-text={helperText}
 		value={displayed}
 		{placeholder}
-		on:ionFocus={setCaretBeforeUnit}
-		on:focus={setCaretBeforeUnit}
-		on:keydown={onKeyDown}
-		on:ionInput={onIonInput}
+		onionFocus={setCaretBeforeUnit}
+		onfocus={setCaretBeforeUnit}
+		onkeydown={onKeyDown}
+		onionInput={onIonInput}
 		role="menuitem"
 		tabindex="0"
 	>

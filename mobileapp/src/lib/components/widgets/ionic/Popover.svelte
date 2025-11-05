@@ -14,8 +14,7 @@
 </script>
 
 {#if (lazy && open) || !lazy}
-	<!-- svelte-ignore event_directive_deprecated -->
-	<ion-popover translucent size="cover" is-open={open} on:didDismiss={dismissed} class={classList} class:extended>
+	<ion-popover translucent size="cover" is-open={open} ondidDismiss={dismissed} class={classList} class:extended>
 		{@render children()}
 	</ion-popover>
 {/if}

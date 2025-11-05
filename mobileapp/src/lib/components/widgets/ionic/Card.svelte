@@ -45,7 +45,7 @@
 
 {#if !!clicked}
 	<ion-card
-		onkeydown={(_event) => _event.key === 'Enter' && clicked?.()}
+		onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && clicked?.()}
 		role="button"
 		tabindex="0"
 		style={`pointer-events: ${readonly ? 'none' : 'auto'};`}

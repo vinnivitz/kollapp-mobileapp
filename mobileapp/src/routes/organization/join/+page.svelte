@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { CapacitorBarcodeScanner, CapacitorBarcodeScannerTypeHint } from '@capacitor/barcode-scanner';
 	import { Haptics } from '@capacitor/haptics';
-	import { alertController } from 'ionic-svelte';
+	import { alertController } from '@ionic/core';
 	import { keyOutline, qrCodeOutline, saveOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
@@ -17,24 +17,29 @@
 	import { showAlert, StatusCheck } from '$lib/utility';
 
 	async function onCodeScan(): Promise<void> {
-		const result = await CapacitorBarcodeScanner.scanBarcode({ hint: CapacitorBarcodeScannerTypeHint.QR_CODE });
-		const code = result.ScanResult;
-		if (code.length === 8) {
-			const response = await organizationResource.joinByInvitationCode(code);
-			if (StatusCheck.isOK(response.status)) {
-				await Haptics.vibrate({ duration: 1000 });
-				await organizationStore.update(response.data.id);
-				const alert = await alertController.create({
-					buttons: ['Ok'],
-					header: `Join request sent`,
-					message: `Your request to join ${response.data.name} has been sent. You will be notified once it is approved.`
-				});
-				await alert.present();
-				await alert.onDidDismiss();
-				return goto(PageRoute.ORGANIZATION.ROOT);
+		try {
+			const result = await CapacitorBarcodeScanner.scanBarcode({ hint: CapacitorBarcodeScannerTypeHint.QR_CODE });
+			const code = result.ScanResult;
+			if (code.length === 8) {
+				const response = await organizationResource.joinByInvitationCode(code);
+				if (StatusCheck.isOK(response.status)) {
+					await Haptics.vibrate({ duration: 1000 });
+					await organizationStore.update(response.data.id);
+					const alert = await alertController.create({
+						buttons: ['Ok'],
+						header: `Join request sent`,
+						message: `Your request to join ${response.data.name} has been sent. You will be notified once it is approved.`
+					});
+					await alert.present();
+					await alert.onDidDismiss();
+					return goto(PageRoute.ORGANIZATION.ROOT);
+				}
+			} else {
+				showAlert('QR code is not valid.');
 			}
-		} else {
-			showAlert('QR code is not valid.');
+		} catch (error) {
+			console.error('Error scanning QR code:', error);
+			showAlert('An error occurred while scanning the QR code. Please try again.');
 		}
 	}
 </script>

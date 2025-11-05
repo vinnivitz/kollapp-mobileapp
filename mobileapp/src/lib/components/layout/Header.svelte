@@ -45,7 +45,7 @@
 			<ion-button
 				role="button"
 				tabindex="0"
-				onkeydown={(_event) => _event.key === 'Enter' && navigate()}
+				onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && navigate()}
 				onclick={navigate}
 			>
 				{#if showBackButton}

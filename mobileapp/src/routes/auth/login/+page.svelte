@@ -2,7 +2,7 @@
 	import type { UserTokenDto } from '$lib/api/dto/server';
 	import type { AuthenticationModel } from '$lib/models/models';
 
-	import { loadingController } from 'ionic-svelte';
+	import { loadingController } from '@ionic/core';
 	import {
 		fingerPrintOutline,
 		keyOutline,

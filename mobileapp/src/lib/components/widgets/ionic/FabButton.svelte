@@ -35,7 +35,6 @@
 	void indexed;
 </script>
 
-<!-- svelte-ignore event_directive_deprecated -->
 <ion-fab
 	bind:this={fabButtonElement}
 	class={`fixed ${classList}`}
@@ -44,15 +43,14 @@
 	{id}
 	aria-label={label}
 	use:clickOutside
-	on:blur={fabButtonElement?.close}
+	onblur={fabButtonElement?.close}
 >
-	<!-- svelte-ignore event_directive_deprecated -->
 	<ion-fab-button
 		role="button"
 		tabindex="0"
-		on:keydown={(_event) => _event.key === 'Enter' && clicked?.()}
+		onkeydown={(_event: KeyboardEvent) => _event.key === 'Enter' && clicked?.()}
 		{color}
-		on:click={clicked}
+		onclick={clicked}
 		translucent
 	>
 		<ion-icon {icon}></ion-icon>
@@ -60,13 +58,12 @@
 	{#if buttons.length > 0}
 		<ion-fab-list side="top">
 			{#each buttons as button (button.label)}
-				<!-- svelte-ignore event_directive_deprecated -->
 				<ion-fab-button
 					role="button"
 					tabindex="0"
-					on:keydown={(_event) => _event.key === 'Enter' && button.handler()}
+					onkeydown={(_event: KeyboardEvent) => _event.key === 'Enter' && button.handler()}
 					color={button.color ?? 'secondary'}
-					on:click={button.handler}
+					onclick={button.handler}
 					aria-label={button.label}
 					translucent
 				>

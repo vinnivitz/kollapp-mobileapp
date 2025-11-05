@@ -4,11 +4,12 @@
 	import { Clipboard } from '@capacitor/clipboard';
 	import { Share } from '@capacitor/share';
 	import { TZDate } from '@date-fns/tz';
+	import { actionSheetController } from '@ionic/core';
 	import QRCode from '@svelte-put/qr/svg/QR.svelte';
 	import { EmailComposer } from 'capacitor-email-composer';
 	import { formatDistanceToNow } from 'date-fns';
-	import { actionSheetController } from 'ionic-svelte';
 	import {
+		accessibilityOutline,
 		clipboardOutline,
 		logOutOutline,
 		mailOutline,
@@ -17,6 +18,7 @@
 		personCircleOutline,
 		personOutline,
 		qrCode,
+		qrCodeOutline,
 		refreshCircleOutline,
 		ribbonOutline,
 		shareOutline
@@ -242,7 +244,22 @@
 	</Card>
 </Modal>
 
-<!-- svelte-ignore event_directive_deprecated -->
 <Popover extended open={qrModalOpen} dismissed={() => (qrModalOpen = false)}>
+	<div class="pt-2 text-center">
+		<ion-label class="font-bold">Join a collective by scanning this QR-Code</ion-label>
+		<ion-breadcrumbs>
+			<ion-breadcrumb class="flex items-center justify-center font-normal text-[var(--ion-text-color-step-200)]">
+				<ion-icon class="text-[var(--ion-text-color-step-200)]" slot="start" icon={accessibilityOutline}></ion-icon>
+				Collective
+			</ion-breadcrumb>
+			<ion-breadcrumb class="flex items-center justify-center font-normal text-[var(--ion-text-color-step-200)]">
+				<ion-icon class="text-[var(--ion-text-color-step-200)]" slot="start" icon={personAddOutline}></ion-icon>Join
+				Collective
+			</ion-breadcrumb>
+			<ion-breadcrumb class="flex items-center justify-center font-normal text-[var(--ion-text-color-step-200)]">
+				<ion-icon class="text-[var(--ion-text-color-step-200)]" slot="start" icon={qrCodeOutline}></ion-icon>
+			</ion-breadcrumb>
+		</ion-breadcrumbs>
+	</div>
 	<QRCode data={$organizationStore?.organizationInvitationCode.code ?? ''} shape="circle" />
 </Popover>

@@ -57,8 +57,8 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0(svelte@5.30.2)
       '@ionic/core':
-        specifier: ^8.5.0
-        version: 8.5.7
+        specifier: ^8.7.8
+        version: 8.7.8
       '@ionic/pwa-elements':
         specifier: ^3.3.0
         version: 3.3.0
@@ -86,9 +86,6 @@ importers:
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
-      ionic-svelte:
-        specifier: ^0.5.85
-        version: 0.5.85
       ionicons:
         specifier: ^7.4.0
         version: 7.4.0
@@ -648,8 +645,8 @@ packages:
     resolution: {integrity: sha512-TshtaFQsovB4NWRBydbNFawql6yul7d5bMiW1WYYf17hd99V6xdDdk3vtF51bw6sLkxON3bDQpWsnUc9/hVo3g==}
     engines: {node: '>=16.0.0'}
 
-  '@ionic/core@8.5.7':
-    resolution: {integrity: sha512-V5ZRYXD1MgAPdjfLyOejILAdTqIzpMY7/v6GSynFPPWoEpfFbGe/tNsimrYm1/D8iouigYLkJjWSeg2rpIpESA==}
+  '@ionic/core@8.7.8':
+    resolution: {integrity: sha512-GLWb/lz3kocpzTZTeQQ5xxoWz4CKHD6zpnbwJknTKsncebohAaw2KTe7uOw5toKQEDdohTseFuSGoDDBoRQ1Ug==}
 
   '@ionic/pwa-elements@3.3.0':
     resolution: {integrity: sha512-vbykpxd2nGRlA67AnqDwsiVf8PUmInLyi6lQdnPDjeiML1WZa0CPe6r632nGDV9PTi+sWNde9Xexg9SD6Pwyqw==}
@@ -955,13 +952,13 @@ packages:
   '@shikijs/vscode-textmate@10.0.2':
     resolution: {integrity: sha512-83yeghZ2xxin3Nj8z1NMd/NCuca+gsYXswywDy5bHvwlWL8tpTQmzGeUuHd9FC3E/SBEMvzJRwWEOz5gGes9Qg==}
 
-  '@stencil/core@4.20.0':
-    resolution: {integrity: sha512-WPrTHFngvN081RY+dJPneKQLwnOFD60OMCOQGmmSHfCW0f4ujPMzzhwWU1gcSwXPWXz5O+8cBiiCaxAbJU7kAg==}
+  '@stencil/core@4.31.0':
+    resolution: {integrity: sha512-Ei9MFJ6LPD9BMFs+klkHylbVOOYhG10Jv4bvoFf3GMH15kA41rSYkEdr4DiX84ZdErQE2qtFV/2SUyWoXh0AhA==}
     engines: {node: '>=16.0.0', npm: '>=7.10.0'}
     hasBin: true
 
-  '@stencil/core@4.31.0':
-    resolution: {integrity: sha512-Ei9MFJ6LPD9BMFs+klkHylbVOOYhG10Jv4bvoFf3GMH15kA41rSYkEdr4DiX84ZdErQE2qtFV/2SUyWoXh0AhA==}
+  '@stencil/core@4.38.0':
+    resolution: {integrity: sha512-oC3QFKO0X1yXVvETgc8OLY525MNKhn9vISBrbtKnGoPlokJ6rI8Vk1RK22TevnNrHLI4SExNLbcDnqilKR35JQ==}
     engines: {node: '>=16.0.0', npm: '>=7.10.0'}
     hasBin: true
 
@@ -3212,11 +3209,11 @@ packages:
     resolution: {integrity: sha512-5Hh7Y1wQbvY5ooGgPbDaL5iYLAPzMTUrjMulskHLH6wnv/A+1q5rgEaiuqEjB+oxGXIVZs1FF+R/KPN3ZSQYYg==}
     engines: {node: '>=12'}
 
-  ionic-svelte@0.5.85:
-    resolution: {integrity: sha512-ZVnsWOA9i4L888XYth3gE/p4cW5iWZecmWvyJpmpb0D1jXdw0JqIxzZhKfUSJJwx9D8fUdcQYyGK4LgDrTcysA==}
-
   ionicons@7.4.0:
     resolution: {integrity: sha512-ZK94MMqgzMCPPMhmk8Ouu6goyVHFIlw/ACP6oe3FrikcI0N7CX0xcwVaEbUc0G/v3W0shI93vo+9ve/KpvcNhQ==}
+
+  ionicons@8.0.13:
+    resolution: {integrity: sha512-2QQVyG2P4wszne79jemMjWYLp0DBbDhr4/yFroPCxvPP1wtMxgdIV3l5n+XZ5E9mgoXU79w7yTWpm2XzJsISxQ==}
 
   is-accessor-descriptor@1.0.1:
     resolution: {integrity: sha512-YBUanLI8Yoihw923YeFUS5fs0fF2f5TSFTNiYAAzhhDscDa3lEqYuz1pDOEP5KvX94I9ey3vsqjJcLVFVU+3QA==}
@@ -4872,9 +4869,6 @@ packages:
   split@1.0.1:
     resolution: {integrity: sha512-mTyOoPbrivtXnwnIxZRFYRrPNtEFKlpB2fvjSnCQUiAA6qAZzqwna5envK4uk6OIeP17CsdF3rSBGYVBsU0Tkg==}
 
-  ssr-window@4.0.2:
-    resolution: {integrity: sha512-ISv/Ch+ig7SOtw7G2+qkwfVASzazUnvlDTwypdLoPoySv+6MqlOV10VwPSE6EWkGjhW50lUmghPmpYZXMu/+AQ==}
-
   stackback@0.0.2:
     resolution: {integrity: sha512-1XMJE5fQo1jGH6Y/7ebnwPOBEkIEnT4QF32d5R1+VXdXveM0IBMJt8zfaxX1P3QhVwrYe+576+jkANtSS2mBbw==}
 
@@ -5020,10 +5014,6 @@ packages:
     resolution: {integrity: sha512-hjRWn4V4DBL8JQKJoJa3MRvn6d32Zo+rWkoSP5bsQ/XIAguPdQUZJ8LMe6Nc1rST8WEVdu9+vZI3aFdKYGR3+Q==}
     peerDependencies:
       svelte: '>=3.49.0'
-
-  swiper@9.4.1:
-    resolution: {integrity: sha512-1nT2T8EzUpZ0FagEqaN/YAhRj33F2x/lN6cyB0/xoYJDMf8KwTFT3hMOeoB8Tg4o3+P/CKqskP+WX0Df046fqA==}
-    engines: {node: '>= 4.7.0'}
 
   symbol-tree@3.2.4:
     resolution: {integrity: sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==}
@@ -6034,10 +6024,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@ionic/core@8.5.7':
+  '@ionic/core@8.7.8':
     dependencies:
-      '@stencil/core': 4.20.0
-      ionicons: 7.4.0
+      '@stencil/core': 4.38.0
+      ionicons: 8.0.13
       tslib: 2.8.1
 
   '@ionic/pwa-elements@3.3.0': {}
@@ -6362,9 +6352,18 @@ snapshots:
 
   '@shikijs/vscode-textmate@10.0.2': {}
 
-  '@stencil/core@4.20.0': {}
-
   '@stencil/core@4.31.0':
+    optionalDependencies:
+      '@rollup/rollup-darwin-arm64': 4.34.9
+      '@rollup/rollup-darwin-x64': 4.34.9
+      '@rollup/rollup-linux-arm64-gnu': 4.34.9
+      '@rollup/rollup-linux-arm64-musl': 4.34.9
+      '@rollup/rollup-linux-x64-gnu': 4.34.9
+      '@rollup/rollup-linux-x64-musl': 4.34.9
+      '@rollup/rollup-win32-arm64-msvc': 4.34.9
+      '@rollup/rollup-win32-x64-msvc': 4.34.9
+
+  '@stencil/core@4.38.0':
     optionalDependencies:
       '@rollup/rollup-darwin-arm64': 4.34.9
       '@rollup/rollup-darwin-x64': 4.34.9
@@ -8995,14 +8994,13 @@ snapshots:
 
   internmap@2.0.3: {}
 
-  ionic-svelte@0.5.85:
-    dependencies:
-      '@ionic/core': 8.5.7
-      swiper: 9.4.1
-
   ionicons@7.4.0:
     dependencies:
       '@stencil/core': 4.31.0
+
+  ionicons@8.0.13:
+    dependencies:
+      '@stencil/core': 4.38.0
 
   is-accessor-descriptor@1.0.1:
     dependencies:
@@ -10688,8 +10686,6 @@ snapshots:
     dependencies:
       through: 2.3.8
 
-  ssr-window@4.0.2: {}
-
   stackback@0.0.2: {}
 
   static-extend@0.1.2:
@@ -10867,10 +10863,6 @@ snapshots:
       '@sveltekit-i18n/base': 1.3.7(svelte@5.30.2)
       '@sveltekit-i18n/parser-default': 1.1.1
       svelte: 5.30.2
-
-  swiper@9.4.1:
-    dependencies:
-      ssr-window: 4.0.2
 
   symbol-tree@3.2.4: {}
 

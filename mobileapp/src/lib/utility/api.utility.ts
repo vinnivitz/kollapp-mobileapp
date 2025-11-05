@@ -1,7 +1,7 @@
 import type { AuthenticationModel } from '$lib/models/models';
 
+import { alertController } from '@ionic/core';
 import { format } from 'date-fns';
-import { alertController } from 'ionic-svelte';
 import { get } from 'svelte/store';
 
 import { dev } from '$app/environment';

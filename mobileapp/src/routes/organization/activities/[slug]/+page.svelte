@@ -4,9 +4,8 @@
 	import { AppLauncher } from '@capacitor/app-launcher';
 	import { TZDate } from '@date-fns/tz';
 	import { CalendarPermissionScope, CapacitorCalendar } from '@ebarooni/capacitor-calendar';
-	import { isPlatform } from '@ionic/core';
+	import { alertController, isPlatform, loadingController } from '@ionic/core';
 	import { addDays, format, formatDistanceToNow } from 'date-fns';
-	import { alertController, loadingController } from 'ionic-svelte';
 	import {
 		addOutline,
 		archiveOutline,
@@ -605,13 +604,12 @@
 	lazy
 >
 	<div class="flex items-center justify-center gap-2">
-		<!-- svelte-ignore event_directive_deprecated -->
 		<ion-searchbar
 			class="w-full"
 			debounce={100}
 			placeholder="Search transactions..."
 			value={postingsSearchValue}
-			on:ionInput={onSearchPostings}
+			onionInput={onSearchPostings}
 		></ion-searchbar>
 		<Button icon={filterOutline} clicked={() => (filterOpen = true)} />
 	</div>
@@ -671,8 +669,7 @@
 
 <!-- Filter Members Modal -->
 <Modal open={filterMembersModalOpen} dismissed={() => (filterMembersModalOpen = false)} informational>
-	<!-- svelte-ignore event_directive_deprecated -->
-	<ion-searchbar class="w-full" debounce={100} placeholder="Search members..." on:ionInput={onSearchMembers}>
+	<ion-searchbar class="w-full" debounce={100} placeholder="Search members..." onionInput={onSearchMembers}>
 	</ion-searchbar>
 	<ToggleItem
 		disabled={memberFilterItems.length !== filteredMemberFilterItems.length}
@@ -687,7 +684,7 @@
 				<ion-checkbox
 					value={member.data}
 					checked={member.selected}
-					on:ionChange={() => (member.selected = !member.selected)}>{member.data}</ion-checkbox
+					onionChange={() => (member.selected = !member.selected)}>{member.data}</ion-checkbox
 				>
 			</CustomItem>
 		{/each}

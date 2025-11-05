@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { ActionSheetButton } from '@ionic/core';
 
-	import { actionSheetController } from 'ionic-svelte';
+	import { actionSheetController } from '@ionic/core';
 	import {
 		buildOutline,
 		colorPaletteOutline,

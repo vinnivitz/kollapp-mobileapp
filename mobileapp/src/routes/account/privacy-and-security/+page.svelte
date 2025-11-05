@@ -126,14 +126,13 @@
 				id={$t('routes.account.list.account.privacy-and-security.button.biometrics')}
 				indexed={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.ROOT}
 			>
-				<!-- svelte-ignore event_directive_deprecated -->
 				<ion-toggle
 					bind:this={toggle}
 					color="secondary"
 					enable-on-off-labels
 					class="ms-4"
 					disabled={!isAvailable}
-					on:ionChange={() => onToggleBiometrics()}
+					onionChange={() => onToggleBiometrics()}
 				>
 					{$t('routes.account.list.account.privacy-and-security.button.biometrics')}
 				</ion-toggle>
@@ -142,7 +141,6 @@
 	</ion-list>
 </Layout>
 
-<!-- svelte-ignore event_directive_deprecated -->
 <Popover extended open={showPasswordPrompt} dismissed={onPasswordPromptDismiss}>
 	<Card title="Enter your password">
 		<form use:customForm={form}>

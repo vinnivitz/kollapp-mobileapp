@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { TZDate } from '@date-fns/tz';
+	import { actionSheetController, alertController, loadingController } from '@ionic/core';
 	import { addDays, format, formatDistanceToNow } from 'date-fns';
-	import { actionSheetController, alertController, loadingController } from 'ionic-svelte';
 	import {
 		albumsOutline,
 		buildOutline,
@@ -661,13 +661,12 @@
 	{#if transactionHistoryModalOpen}
 		<div class="relative">
 			<div class="sticky top-0 left-0 z-10 flex items-center justify-center gap-2">
-				<!-- svelte-ignore event_directive_deprecated -->
 				<ion-searchbar
 					class="w-full"
 					debounce={100}
 					placeholder="Search transactions..."
 					value={postingsSearchValue}
-					on:ionInput={onSearchPostings}
+					onionInput={onSearchPostings}
 				></ion-searchbar>
 				<Button icon={filterOutline} clicked={() => (filterOpen = true)} />
 			</div>
@@ -777,8 +776,7 @@
 {/snippet}
 
 <Modal open={filterMembersModalOpen} dismissed={() => (filterMembersModalOpen = false)} informational lazy>
-	<!-- svelte-ignore event_directive_deprecated -->
-	<ion-searchbar class="w-full" debounce={100} placeholder="Search members..." on:ionInput={onSearchMembers}>
+	<ion-searchbar class="w-full" debounce={100} placeholder="Search members..." onionInput={onSearchMembers}>
 	</ion-searchbar>
 	<ToggleItem
 		disabled={memberFilterItems.length !== filteredMemberFilterItems.length}
@@ -793,7 +791,7 @@
 				<ion-checkbox
 					value={member.data.username}
 					checked={member.selected}
-					on:ionChange={() => (member.selected = !member.selected)}>{member.data.username}</ion-checkbox
+					onionChange={() => (member.selected = !member.selected)}>{member.data.username}</ion-checkbox
 				>
 			</CustomItem>
 		{/each}
@@ -801,8 +799,7 @@
 </Modal>
 
 <Modal open={filterActivitiesModalOpen} dismissed={() => (filterActivitiesModalOpen = false)} informational lazy>
-	<!-- svelte-ignore event_directive_deprecated -->
-	<ion-searchbar class="w-full" debounce={100} placeholder="Search activities..." on:ionInput={onSearchActivities}>
+	<ion-searchbar class="w-full" debounce={100} placeholder="Search activities..." onionInput={onSearchActivities}>
 	</ion-searchbar>
 	<ToggleItem
 		disabled={activityFilterItems.length !== filteredActivityFilterItems.length}
@@ -817,7 +814,7 @@
 				<ion-checkbox
 					value={activity.data.name}
 					checked={activity.selected}
-					on:ionChange={() => (activity.selected = !activity.selected)}
+					onionChange={() => (activity.selected = !activity.selected)}
 					color={activity.data.icon ? 'tertiary' : 'primary'}
 				>
 					<div class="flex items-center justify-center gap-2">
@@ -843,8 +840,7 @@
 	dismissed={onDismissSelectActivity}
 	lazy
 >
-	<!-- svelte-ignore event_directive_deprecated -->
-	<ion-searchbar class="w-full" debounce={100} placeholder="Search activities..." on:ionInput={onSearchActivities}>
+	<ion-searchbar class="w-full" debounce={100} placeholder="Search activities..." onionInput={onSearchActivities}>
 	</ion-searchbar>
 	<ion-radio-group value={selectedActivityId}>
 		{#each filteredActivityFilterItems as activity (activity.data.id)}
@@ -853,7 +849,7 @@
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
 				<ion-radio
 					value={activity.data.id.toString()}
-					on:click={() => (selectedActivityId = activity.data.id.toString())}
+					onclick={() => (selectedActivityId = activity.data.id.toString())}
 					color={activity.data.icon ? 'tertiary' : 'primary'}
 				>
 					<div class="flex items-center justify-center gap-2">

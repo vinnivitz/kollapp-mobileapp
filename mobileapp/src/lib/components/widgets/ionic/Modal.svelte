@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { getPlatforms } from '@ionic/core';
-	import { modalController } from 'ionic-svelte';
+	import { getPlatforms, modalController } from '@ionic/core';
 	import { saveOutline, trashBinOutline } from 'ionicons/icons';
 	import { onDestroy, type Snippet } from 'svelte';
 
@@ -92,12 +91,11 @@
 </script>
 
 {#if (lazy && open) || !lazy}
-	<!-- svelte-ignore event_directive_deprecated -->
 	<ion-modal
 		bind:this={_modalController}
 		is-open={open}
-		on:willPresent={onPresent}
-		on:didDismiss={dismissed}
+		onwillPresent={onPresent}
+		ondidDismiss={dismissed}
 		breakpoints={breakpoints ? [0, 0.5, 0.75, 1] : undefined}
 		initial-breakpoint={initialBreakPoint}
 		handle-behavior="cycle"
@@ -112,8 +110,8 @@
 						<ion-button
 							role="button"
 							tabindex="0"
-							on:keydown={(_event) => _event.key === 'Enter' && onDismiss()}
-							on:click={onDismiss}
+							onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && onDismiss()}
+							onclick={onDismiss}
 						>
 							<ion-back-button default-href="/"></ion-back-button>
 						</ion-button>

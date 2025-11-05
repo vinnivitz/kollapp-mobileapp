@@ -25,7 +25,7 @@
 	{color}
 	outline={!selected}
 	onclick={clicked}
-	onkeydown={(_event) => _event.key === 'Enter' && clicked?.()}
+	onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && clicked?.()}
 >
 	<div class="flex items-center justify-between gap-2">
 		{#if icon}

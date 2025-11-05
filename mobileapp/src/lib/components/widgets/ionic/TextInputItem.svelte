@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Colors } from '$lib/models/ui';
+	import type { InputInputEventDetail } from '@ionic/core';
 
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
 
@@ -55,7 +56,6 @@
 </script>
 
 <CustomItem {card} {color} {icon} iconEnd={inputIcon} {clicked} iconClick={inputIconClicked}>
-	<!-- svelte-ignore event_directive_deprecated -->
 	<ion-input
 		{inputmode}
 		bind:this={element}
@@ -70,7 +70,7 @@
 		{value}
 		{disabled}
 		helper-text={helperText}
-		on:ionInput={(event) => changed?.(event.detail.value || '')}
+		onionInput={(event: CustomEvent<InputInputEventDetail>) => changed?.(event.detail.value || '')}
 	>
 	</ion-input>
 </CustomItem>

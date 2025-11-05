@@ -1,4 +1,6 @@
 <script lang="ts">
+	import type { ToggleChangeEventDetail } from '@ionic/core';
+
 	import CustomItem from './CustomItem.svelte';
 
 	type Properties = {
@@ -20,12 +22,11 @@
 </script>
 
 <CustomItem {icon} {card}>
-	<!-- svelte-ignore event_directive_deprecated -->
 	<ion-toggle
 		{disabled}
 		bind:this={element}
 		enable-on-off-labels
-		on:ionChange={(value) => change(value.detail.checked)}
+		onionChange={(value: CustomEvent<ToggleChangeEventDetail>) => change(value.detail.checked)}
 		{checked}
 		class="ms-4"
 		justify="space-between">{label}</ion-toggle

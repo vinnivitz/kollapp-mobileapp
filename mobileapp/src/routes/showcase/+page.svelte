@@ -52,14 +52,13 @@
 </script>
 
 <LayoutComponent title="Showcase">
-	<!-- svelte-ignore event_directive_deprecated -->
-	<ion-searchbar on:ionInput={onFilter} color="light"></ion-searchbar>
+	<ion-searchbar onionInput={onFilter} color="light"></ion-searchbar>
 	<div class="mx-2 flex gap-2 truncate">
 		<ion-select
 			aria-label="Layout"
 			interface="popover"
 			value={$layoutStore}
-			on:ionChange={onLayoutChange}
+			onionChange={onLayoutChange}
 			fill="outline"
 		>
 			<ion-select-option value={Layout.MD}>Android</ion-select-option>
@@ -69,13 +68,13 @@
 			aria-label="Language"
 			interface="popover"
 			value={$localeStore}
-			on:ionChange={onLocaleChange}
+			onionChange={onLocaleChange}
 			fill="outline"
 		>
 			<ion-select-option value={Locale.DE}>German</ion-select-option>
 			<ion-select-option value={Locale.EN}>English</ion-select-option>
 		</ion-select>
-		<ion-select aria-label="Theme" interface="popover" value={$themeStore} on:ionChange={onThemeChange} fill="outline">
+		<ion-select aria-label="Theme" interface="popover" value={$themeStore} onionChange={onThemeChange} fill="outline">
 			<ion-select-option value={Theme.LIGHT}>Light</ion-select-option>
 			<ion-select-option value={Theme.DARK}>Dark</ion-select-option>
 			<ion-select-option value={Theme.BLACK_AND_WHITE}>Black and white</ion-select-option>

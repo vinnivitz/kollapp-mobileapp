@@ -39,7 +39,6 @@
 </script>
 
 <CustomItem {color} {icon} {iconEnd} iconClick={inputIconClicked} {card}>
-	<!-- svelte-ignore event_directive_deprecated -->
 	<ion-textarea
 		{name}
 		{label}
@@ -51,7 +50,7 @@
 		auto-grow
 		color="secondary"
 		{value}
-		on:ionInput={onChange}
+		onionInput={onChange}
 	></ion-textarea>
 </CustomItem>
 

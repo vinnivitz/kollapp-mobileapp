@@ -65,7 +65,7 @@
 
 {#snippet item()}
 	<ion-item
-		onkeydown={(_event) => _event.key === 'Enter' && clicked?.()}
+		onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && clicked?.()}
 		{disabled}
 		{id}
 		data-card={card}
@@ -87,7 +87,7 @@
 		{/if}
 		{#if iconEnd}
 			<ion-button
-				onkeydown={(_event) => _event.key === 'Enter' && clicked?.()}
+				onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && clicked?.()}
 				role="button"
 				tabindex="0"
 				class="ms-0"

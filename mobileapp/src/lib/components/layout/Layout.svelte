@@ -86,8 +86,7 @@
 	{/if}
 	{#if loaded && !loading}
 		<ion-content class="ion-padding" in:fade={{ delay: 0, duration: 200 }} class:no-overflow={!scrollable}>
-			<!-- svelte-ignore event_directive_deprecated -->
-			<ion-refresher bind:this={refresher} slot="fixed" on:ionRefresh={doRefresh}>
+			<ion-refresher bind:this={refresher} slot="fixed" onionRefresh={doRefresh}>
 				<ion-refresher-content></ion-refresher-content>
 			</ion-refresher>
 			{@render children?.()}

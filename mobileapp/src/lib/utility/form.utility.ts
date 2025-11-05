@@ -1,4 +1,4 @@
-import { loadingController } from 'ionic-svelte';
+import { loadingController } from '@ionic/core';
 import { eye, eyeOff } from 'ionicons/icons';
 import { type AnyObject, type ObjectSchema, ValidationError } from 'yup';
 

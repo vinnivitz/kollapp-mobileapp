@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { AddressModel, PositionItem } from '$lib/models/osm';
+	import type { SearchbarInputEventDetail } from '@ionic/core';
 
 	import { searchOutline } from 'ionicons/icons';
 	import { LatLng, type LeafletMouseEvent, Map, Marker, TileLayer } from 'leaflet';
@@ -136,26 +137,23 @@
 
 {#snippet search()}
 	{#if searchbarOpen}
-		<!-- svelte-ignore event_directive_deprecated -->
-		<div class="absolute top-1 right-1 z-10 w-5/6" use:clickOutside on:blur={closeSearchbar}>
-			<!-- svelte-ignore event_directive_deprecated -->
+		<div class="absolute top-1 right-1 z-10 w-5/6" use:clickOutside onblur={closeSearchbar}>
 			<ion-searchbar
 				bind:this={searchbar}
 				debounce={250}
 				class="absolute transition-transform"
 				color="light"
 				placeholder={$t('components.widgets.map.searchbar.placeholder')}
-				on:ionInput={(event_) => onSearch(event_.target.value)}
+				onionInput={(event_: CustomEvent<SearchbarInputEventDetail>) => onSearch(event_.detail.value)}
 			></ion-searchbar>
 			<ion-list class="absolute top-13 right-3 left-3 mx-auto rounded-xl">
 				{#each searchItems as item (item.latlng)}
-					<!-- svelte-ignore event_directive_deprecated -->
 					<ion-item
 						role="button"
 						tabindex="0"
-						on:keydown={(_event) => _event.key === 'Enter' && onSearchItemSelection(item.latlng)}
+						onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && onSearchItemSelection(item.latlng)}
 						color="light"
-						on:click={() => onSearchItemSelection(item.latlng)}
+						onclick={() => onSearchItemSelection(item.latlng)}
 					>
 						<ion-label>{item.name}</ion-label>
 					</ion-item>
@@ -163,15 +161,14 @@
 			</ion-list>
 		</div>
 	{:else}
-		<!-- svelte-ignore event_directive_deprecated -->
 		<ion-fab-button
 			role="button"
 			tabindex="0"
-			on:keydown={(_event) => _event.key === 'Enter' && onOpenSearchbar()}
+			onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && onOpenSearchbar()}
 			size="small"
 			color="light"
 			class="absolute top-1 right-1 z-10"
-			on:click={onOpenSearchbar}
+			onclick={onOpenSearchbar}
 		>
 			<ion-icon icon={searchOutline}></ion-icon>
 		</ion-fab-button>

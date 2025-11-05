@@ -1,4 +1,4 @@
-import { toastController } from 'ionic-svelte';
+import { toastController } from '@ionic/core';
 import { alertCircleOutline, checkmarkCircleSharp } from 'ionicons/icons';
 import { get } from 'svelte/store';
 

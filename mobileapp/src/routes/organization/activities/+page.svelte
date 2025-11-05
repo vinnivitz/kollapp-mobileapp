@@ -144,13 +144,12 @@
 				></FabButton>
 
 				<div class="flex items-center justify-between gap-2">
-					<!-- svelte-ignore event_directive_deprecated -->
 					<ion-searchbar
 						color="light"
 						show-clear-button="always"
 						debounce={100}
 						placeholder={$t('routes.organization.page.activity.search.placeholder')}
-						on:ionInput={onSearchEvents}
+						onionInput={onSearchEvents}
 						value={searchActivityValue}
 					></ion-searchbar>
 					<Button icon={filterOutline} clicked={() => (showFilters = true)}></Button>

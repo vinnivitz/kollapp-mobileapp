@@ -1,18 +1,28 @@
 <script lang="ts">
 	import '../app.css';
-	import 'ionic-svelte/components/all';
+	import '$lib/ionic/components/all';
 	import 'leaflet/dist/leaflet.css';
+	import '@ionic/core/css/core.css';
+	import '@ionic/core/css/normalize.css';
+	import '@ionic/core/css/structure.css';
+	import '@ionic/core/css/typography.css';
+	import '@ionic/core/css/padding.css';
+	import '@ionic/core/css/float-elements.css';
+	import '@ionic/core/css/text-alignment.css';
+	import '@ionic/core/css/text-transformation.css';
+	import '@ionic/core/css/flex-utils.css';
+	import '@ionic/core/css/display.css';
 
 	import type { TabConfig } from '$lib/models/ui';
 
 	import { SplashScreen } from '@capacitor/splash-screen';
 	import { defineCustomElements } from '@ionic/pwa-elements/loader';
-	import { setupIonicBase } from 'ionic-svelte';
 	import { accessibility, home, person } from 'ionicons/icons';
 	import { onMount } from 'svelte';
 
 	import Tabs from '$lib/components/layout/Tabs.svelte';
 	import GlobalPopovers from '$lib/components/widgets/ionic/GlobalPopovers.svelte';
+	import { initializeIonic } from '$lib/ionic';
 	import { initialized, t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
 	import { authenticationStore, layoutStore, localeStore, organizationStore, userStore } from '$lib/stores';
@@ -22,7 +32,7 @@
 	let tabs = $state<TabConfig[]>();
 	let loaded = $state(false);
 
-	setupIonicBase();
+	initializeIonic();
 
 	$effect(() => {
 		if (loaded && $authenticationStore) {

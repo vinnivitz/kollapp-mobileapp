@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { alertController, loadingController } from 'ionic-svelte';
+	import { alertController, loadingController } from '@ionic/core';
 	import { ribbonOutline, trashOutline, warningOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';

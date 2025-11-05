@@ -47,7 +47,6 @@
 	}
 </script>
 
-<!-- svelte-ignore event_directive_deprecated -->
 <ion-datetime
 	{value}
 	{min}
@@ -56,11 +55,11 @@
 	cancel-text={dismissText}
 	done-text={applyText}
 	use:clickOutside
-	on:blur={onDismiss}
+	onblur={onDismiss}
 	{color}
 	size="cover"
 	locale={$localeStore}
-	on:ionChange={onApply}
+	onionChange={onApply}
 	first-day-of-week={1}
 	presentation={type}
 >

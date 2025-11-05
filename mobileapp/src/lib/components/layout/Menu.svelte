@@ -47,13 +47,12 @@
 	<ion-header>
 		<ion-toolbar>
 			<div class="flex">
-				<!-- svelte-ignore event_directive_deprecated -->
 				<ion-searchbar
 					class="pt-5"
 					color="light"
 					debounce={100}
 					placeholder={$t('components.layout.menu.searchbar.placeholder')}
-					on:ionInput={onSearch}
+					onionInput={onSearch}
 					value={searchValue}
 				>
 				</ion-searchbar>

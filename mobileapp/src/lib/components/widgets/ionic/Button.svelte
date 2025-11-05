@@ -55,7 +55,7 @@
 </script>
 
 <ion-button
-	onkeydown={(_event) => _event.key === 'Enter' && clicked?.()}
+	onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && clicked?.()}
 	style={`pointer-events: ${readonly ? 'none' : 'auto'};`}
 	{shape}
 	{color}
@@ -65,7 +65,7 @@
 	{size}
 	{type}
 	{disabled}
-	onclick={(event) => clicked?.(event)}
+	onclick={(event: MouseEvent) => clicked?.(event)}
 	role="button"
 	tabindex="0"
 >
