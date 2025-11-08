@@ -1,4 +1,4 @@
-package org.kollappbackend.accounting.adapters.primary.rest.model;
+package org.kollappbackend.organization.adapters.primary.rest.model;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -8,16 +8,17 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.kollappbackend.accounting.application.model.PostingType;
+import org.kollappbackend.organization.application.model.PostingType;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PostingCreateUpdateRequestTO {
+public class PostingTO {
 
-    @NotNull(message = "{validation.posting.type.required}")
+    private long id;
+
     private PostingType type;
 
     @NotNull(message = "{validation.posting.amount.required}")
@@ -28,6 +29,5 @@ public class PostingCreateUpdateRequestTO {
     private String date;
 
     private String purpose;
-
-    private long activityId;
 }
+

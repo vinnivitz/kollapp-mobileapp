@@ -47,6 +47,9 @@ public class Organization {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "organization", orphanRemoval = true)
     private List<Activity> activities;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "organization", orphanRemoval = true)
+    private List<OrganizationPosting> organizationPostings;
+
     public void addPersonOfOrganization(PersonOfOrganization personOfOrganization) {
         if (personsOfOrganization != null) {
             personsOfOrganization.add(personOfOrganization);
@@ -101,12 +104,6 @@ public class Organization {
                 .limit(targetStringLength)
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString();
-    }
-
-    public void exchangePersonOfOrganization(PersonOfOrganization original, PersonOfOrganization updated) {
-        updated.setOrganization(this);
-        personsOfOrganization.remove(original);
-        personsOfOrganization.add(updated);
     }
 
     public void initChildren() {
