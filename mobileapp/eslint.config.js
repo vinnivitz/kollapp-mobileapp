@@ -118,6 +118,8 @@ export default ts.config(
 			globals: {
 				...globals.browser,
 				...globals.node,
+				ApexAxisChartSeries: 'readonly',
+				ApexNonAxisChartSeries: 'readonly',
 				HTMLIonCardElement: 'readonly',
 				HTMLIonCardTitleElement: 'readonly',
 				HTMLIonDatetimeElement: 'readonly',

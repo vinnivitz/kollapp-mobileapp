@@ -422,8 +422,22 @@
 			</div>
 		</div>
 		<div class="mt-2 flex items-center justify-center gap-2">
-			<Button icon={mapOutline} size="small" fill="clear" label="Open in map" clicked={onOpenLocation}></Button>
-			<Button icon={calendarOutline} size="small" fill="clear" label="Add to calendar" clicked={onAddToCalendar} />
+			<Button
+				icon={mapOutline}
+				size="small"
+				fill="solid"
+				color="secondary"
+				label="Open in map"
+				clicked={onOpenLocation}
+			/>
+			<Button
+				icon={calendarOutline}
+				size="small"
+				fill="solid"
+				color="secondary"
+				label="Add to calendar"
+				clicked={onAddToCalendar}
+			/>
 		</div>
 	</Card>
 {/snippet}
