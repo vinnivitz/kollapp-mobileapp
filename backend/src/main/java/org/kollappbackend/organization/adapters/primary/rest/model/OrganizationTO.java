@@ -27,4 +27,6 @@ public class OrganizationTO {
     private List<PersonOfOrganizationTO> personsOfOrganization;
 
     private List<ActivityTO> activities;
+
+    private List<PostingTO> organizationPostings;
 }

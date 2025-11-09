@@ -1,4 +1,4 @@
-package org.kollappbackend.accounting.application.model;
+package org.kollappbackend.organization.application.model;
 
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
@@ -9,8 +9,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,12 +36,11 @@ public abstract class Posting {
 
     private String purpose;
 
-    @ManyToOne
-    @JoinColumn(name = "budgetAccount_id")
-    private BudgetAccount budgetAccount;
-
-    public Posting(PostingType type, long amountInCents) {
+    public Posting(PostingType type, long amountInCents, String date, String purpose) {
         this.type = type;
         this.amountInCents = amountInCents;
+        this.date = date;
+        this.purpose = purpose;
+
     }
 }
