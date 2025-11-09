@@ -13,4 +13,6 @@ public interface ActivityRepository {
     Optional<Activity> findById(long activityId);
 
     Activity save(Activity activity);
+
+    Optional<Activity> findByIdAndOrganizationId(long id, long organizationId);
 }

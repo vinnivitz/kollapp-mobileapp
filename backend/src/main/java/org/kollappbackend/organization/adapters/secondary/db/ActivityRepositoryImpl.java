@@ -29,4 +29,9 @@ public class ActivityRepositoryImpl implements ActivityRepository {
     public Activity save(Activity activity) {
         return activityJpaRepository.save(activity);
     }
+
+    @Override
+    public Optional<Activity> findByIdAndOrganizationId(long id, long organizationId) {
+        return activityJpaRepository.findByIdAndOrganizationId(id, organizationId);
+    }
 }
