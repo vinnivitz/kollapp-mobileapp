@@ -24,3 +24,6 @@ VALUES(2, 'asdfjkloe', '2099-08-15', 1);
 
 INSERT INTO activity(id, name, location, organization_id)
 VALUES(1, 'Halloween-Party', 'Soderso', 1);
+
+INSERT INTO posting(id, scope, amount_in_cents, date, purpose, type, activity_id, organization_id)
+VALUES(1, 'activity', 10000, '2025-09-11', 'Test', 'CREDIT', 1, null)

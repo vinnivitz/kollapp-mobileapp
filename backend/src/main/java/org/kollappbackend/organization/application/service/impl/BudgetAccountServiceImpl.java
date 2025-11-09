@@ -43,6 +43,7 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
     @Override
     @RequiresKollappOrganizationMemberRole
     public Posting editOrganizationPosting(long organizationId, long postingId, OrganizationPosting updatedPosting) {
+        organizationRoleHelper.verifyOrganizationManager(organizationId);
         Organization organization = organizationRepository.findById(organizationId)
                 .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
         OrganizationPosting postingToBeEdited =
@@ -57,8 +58,20 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
 
     @Override
     @RequiresKollappOrganizationMemberRole
-    public Posting addActivityPosting(long organizationId, long activityId, ActivityPosting posting) {
+    public void deleteOrganizationPosting(long organizationId, long postingId) {
         organizationRoleHelper.verifyOrganizationManager(organizationId);
+        Organization organization = organizationRepository.findById(organizationId)
+                .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
+        Posting postingToBeRemoved =
+                organization.getOrganizationPostings().stream().filter(p -> p.getId() == postingId).findFirst()
+                        .orElseThrow(PostingDoesNotExistException::new);
+        organization.getOrganizationPostings().remove(postingToBeRemoved);
+    }
+
+    @Override
+    @RequiresKollappOrganizationMemberRole
+    public Posting addActivityPosting(long organizationId, long activityId, ActivityPosting posting) {
+        organizationRoleHelper.verifyOrganizationMember(organizationId);
         Organization organization = organizationRepository.findById(organizationId)
                 .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
         Activity activity = organization.getActivities().stream().filter(a -> a.getId() == activityId).findFirst()
@@ -72,6 +85,7 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
     @RequiresKollappOrganizationMemberRole
     public Posting editActivityPosting(long organizationId, long activityId, long postingId,
                                        ActivityPosting updatedPosting) {
+        organizationRoleHelper.verifyOrganizationMember(organizationId);
         Organization organization = organizationRepository.findById(organizationId)
                 .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
         Activity activity = organization.getActivities().stream().filter(a -> a.getId() == activityId).findFirst()
@@ -88,18 +102,8 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
 
     @Override
     @RequiresKollappOrganizationMemberRole
-    public void deleteOrganizationPosting(long organizationId, long postingId) {
-        Organization organization = organizationRepository.findById(organizationId)
-                .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
-        Posting postingToBeRemoved =
-                organization.getOrganizationPostings().stream().filter(p -> p.getId() == postingId).findFirst()
-                        .orElseThrow(PostingDoesNotExistException::new);
-        organization.getOrganizationPostings().remove(postingToBeRemoved);
-    }
-
-    @Override
-    @RequiresKollappOrganizationMemberRole
     public void deleteActivityPosting(long organizationId, long activityId, long postingId) {
+        organizationRoleHelper.verifyOrganizationMember(organizationId);
         Organization organization = organizationRepository.findById(organizationId)
                 .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
         Activity activity = organization.getActivities().stream().filter(a -> a.getId() == activityId).findFirst()

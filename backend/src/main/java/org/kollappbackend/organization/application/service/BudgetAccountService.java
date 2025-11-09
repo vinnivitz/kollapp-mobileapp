@@ -11,7 +11,7 @@ public interface BudgetAccountService {
 
     Posting editOrganizationPosting(long organizationId, long postingId, OrganizationPosting postingToBeEdited);
 
-    Posting editActivityPosting(long organizationId, long activityPosting, long postingId,
+    Posting editActivityPosting(long organizationId, long activityId, long postingId,
                                 ActivityPosting postingToBeEdited);
 
     void deleteOrganizationPosting(long organizationId, long postingId);
