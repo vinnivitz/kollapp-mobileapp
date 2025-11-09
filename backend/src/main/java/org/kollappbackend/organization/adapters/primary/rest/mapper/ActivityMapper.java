@@ -7,7 +7,7 @@ import org.kollappbackend.organization.application.model.Activity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = PostingMapper.class)
 public interface ActivityMapper {
     ActivityTO activityToActivityTO(Activity activity);
 

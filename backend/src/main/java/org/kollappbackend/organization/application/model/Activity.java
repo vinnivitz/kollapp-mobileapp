@@ -37,7 +37,7 @@ public class Activity {
     @JoinColumn(name = "organization_id")
     private Organization organization;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "activity", orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "activity", orphanRemoval = true)
     private List<ActivityPosting> activityPostings;
 
 }

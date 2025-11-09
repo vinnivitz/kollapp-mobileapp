@@ -109,5 +109,6 @@ public class Organization {
     public void initChildren() {
         Hibernate.initialize(personsOfOrganization);
         Hibernate.initialize(activities);
+        Hibernate.initialize(organizationPostings);
     }
 }

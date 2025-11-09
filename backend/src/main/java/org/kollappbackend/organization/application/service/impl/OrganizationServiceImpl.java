@@ -234,7 +234,7 @@ public class OrganizationServiceImpl implements OrganizationService {
                 .findById(id)
                 .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
         organization.initChildren();
-        return organizationRepository.findById(id).orElseThrow(() -> new OrganizationNotFoundException(messageSource));
+        return organization;
     }
 
     @Override

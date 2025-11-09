@@ -28,6 +28,4 @@ public class PostingCreateUpdateRequestTO {
     private String date;
 
     private String purpose;
-
-    private long activityId;
 }
