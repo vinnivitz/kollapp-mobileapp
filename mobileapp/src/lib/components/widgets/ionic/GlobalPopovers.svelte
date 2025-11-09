@@ -14,16 +14,14 @@
 	extended
 	dismissed={() => datetimeInputItem.update((item) => ({ ...item, open: false }))}
 >
-	{#if $datetimeInputItem.open}
-		<div class="text-center">
-			<Datetime
-				value={$datetimeInputItem.value}
-				applied={$datetimeInputItem.applied}
-				dismissed={$datetimeInputItem.dismissed}
-				type={$datetimeInputItem.type}
-				min={$datetimeInputItem.min}
-				max={$datetimeInputItem.max}
-			/>
-		</div>
-	{/if}
+	<div class="text-center">
+		<Datetime
+			value={$datetimeInputItem.value}
+			applied={$datetimeInputItem.applied}
+			dismissed={$datetimeInputItem.dismissed}
+			type={$datetimeInputItem.type}
+			min={$datetimeInputItem.min}
+			max={$datetimeInputItem.max}
+		/>
+	</div>
 </Popover>
