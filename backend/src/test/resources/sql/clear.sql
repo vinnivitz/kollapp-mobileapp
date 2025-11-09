@@ -3,6 +3,8 @@ FOREIGN_KEY_CHECKS=0;
 DELETE
 FROM activity;
 DELETE
+FROM posting;
+DELETE
 FROM kollapp_user;
 DELETE
 FROM organization;
