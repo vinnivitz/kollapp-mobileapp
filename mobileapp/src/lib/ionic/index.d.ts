@@ -2242,6 +2242,130 @@ declare global {
 			'show-icon'?: string | undefined;
 		}
 
+		interface IonInputOtp {
+			/**
+			 * Indicates whether and how the text value should be automatically capitalized as it is entered/edited by the user. Available options: "off", "none", "on", "sentences", "words", "characters".
+			 * API info: https://ionicframework.com/docs/api/input-otp#autocapitalize
+			 */
+			autocapitalize?: string;
+
+			/**
+			 * The color to use from your application's color palette. Default options are: "primary", "secondary", "tertiary", "success", "warning", "danger", "light", "medium", and "dark".
+			 * API info: https://ionicframework.com/docs/api/input-otp#color
+			 */
+			color?:
+				| 'danger'
+				| 'dark'
+				| 'light'
+				| 'medium'
+				| 'primary'
+				| 'secondary'
+				| 'success'
+				| 'tertiary'
+				| 'warning'
+				| (string & Record<never, never>)
+				| undefined;
+
+			/**
+			 * If `true`, the user cannot interact with the input.
+			 * API info: https://ionicframework.com/docs/api/input-otp#disabled
+			 */
+			disabled?: boolean;
+
+			/**
+			 * The fill for the input boxes. If "solid" the input boxes will have a background. If "outline" the input boxes will be transparent with a border.
+			 * API info: https://ionicframework.com/docs/api/input-otp#fill
+			 */
+			fill?: 'outline' | 'solid' | undefined;
+
+			/**
+			 * A hint to the browser for which keyboard to display. Possible values: "none", "text", "tel", "url", "email", "numeric", "decimal", and "search".
+			 * API info: https://ionicframework.com/docs/api/input-otp#inputmode
+			 */
+			inputmode?: 'decimal' | 'email' | 'none' | 'numeric' | 'search' | 'tel' | 'text' | 'url' | undefined;
+
+			/**
+			 * The number of input boxes to display.
+			 * API info: https://ionicframework.com/docs/api/input-otp#length
+			 */
+			length?: number;
+
+			/**
+			 * A regex pattern string for allowed characters. Defaults based on `type`.
+			 * API info: https://ionicframework.com/docs/api/input-otp#pattern
+			 */
+			pattern?: string | undefined;
+
+			/**
+			 * If `true`, the user cannot modify the value.
+			 * API info: https://ionicframework.com/docs/api/input-otp#readonly
+			 */
+			readonly?: boolean;
+
+			/**
+			 * Where separators should be shown between input boxes. Can be a comma-separated string or an array of numbers, or the string "all".
+			 * API info: https://ionicframework.com/docs/api/input-otp#separators
+			 */
+			separators?: number[] | string | undefined;
+
+			/**
+			 * The shape of the input boxes. If "round" they will have an increased border radius. If "rectangular" they will have no border radius. If "soft" they will have a soft border radius.
+			 * API info: https://ionicframework.com/docs/api/input-otp#shape
+			 */
+			shape?: 'rectangular' | 'round' | 'soft';
+
+			/**
+			 * The size of the input boxes.
+			 * API info: https://ionicframework.com/docs/api/input-otp#size
+			 */
+			size?: 'large' | 'medium' | 'small';
+
+			/**
+			 * The type of input allowed in the input boxes.
+			 * API info: https://ionicframework.com/docs/api/input-otp#type
+			 */
+			type?: 'number' | 'text';
+
+			/**
+			 * The value of the input group.
+			 * API info: https://ionicframework.com/docs/api/input-otp#value
+			 */
+			value?: null | number | string | undefined;
+
+			/**
+			 * (event : FocusEvent) => void : Emitted when the input group loses focus.
+			 */
+			onionBlur?: (event: CustomEvent<FocusEvent> & { target: HTMLIonInputOtpElement }) => void;
+
+			/**
+			 * (event : InputChangeEventDetail) => void : The `ionChange` event is fired when the user modifies the input's value. Unlike the `ionInput` event, the `ionChange` event is only fired when changes are committed, not as the user types.
+			 */
+			onionChange?: (
+				event: CustomEvent<InputChangeEventDetail> & {
+					target: HTMLIonInputOtpElement;
+				}
+			) => void;
+
+			/**
+			 * (event : void) => void : Emitted when all input boxes have been filled with valid values.
+			 */
+			onionComplete?: (event: CustomEvent<void> & { target: HTMLIonInputOtpElement }) => void;
+
+			/**
+			 * (event : FocusEvent) => void : Emitted when the input group has focus.
+			 */
+			onionFocus?: (event: CustomEvent<FocusEvent> & { target: HTMLIonInputOtpElement }) => void;
+
+			/**
+			 * (event : InputInputEventDetail) => void : The `ionInput` event is fired each time the user modifies the input's value.
+			 */
+			onionInput?: (
+				event: CustomEvent<InputInputEventDetail> & {
+					target: HTMLIonInputOtpElement;
+				}
+			) => void;
+		}
+
 		interface IonItem {
 			/**
 			 * If `true`, a button tag will be rendered and the item will be tappable.
@@ -5451,6 +5575,7 @@ declare global {
 			'ion-infinite-scroll-content': IonInfiniteScrollContent & HTMLBaseAttributes;
 			'ion-input': IonInput & HTMLBaseAttributes;
 			'ion-input-password-toggle': IonInputPasswordToggle & HTMLBaseAttributes;
+			'ion-input-otp': IonInputOtp & HTMLBaseAttributes;
 			'ion-item': IonItem & HTMLBaseAttributes;
 			'ion-item-divider': IonItemDivider & HTMLBaseAttributes;
 			'ion-item-group': IonItemGroup & HTMLBaseAttributes;

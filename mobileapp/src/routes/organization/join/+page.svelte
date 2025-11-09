@@ -55,15 +55,13 @@
 				inputIcon={qrCodeOutline}
 				inputIconClicked={onCodeScan}
 			/>
-			<div class="text-center">
-				<Button
-					classList="mt-3"
-					expand="block"
-					type="submit"
-					label={$t('routes.organization.page.join.form.submit')}
-					icon={saveOutline}
-				/>
-			</div>
+			<Button
+				classList="mt-3"
+				expand="block"
+				type="submit"
+				label={$t('routes.organization.page.join.form.submit')}
+				icon={saveOutline}
+			/>
 		</form>
 	</Card>
 </Layout>
