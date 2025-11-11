@@ -1,4 +1,4 @@
-import type { RegisterDto, ResetPasswordConfirmationDto, ResetPasswordDto } from '$lib/api/dto/client/auth';
+import type { RegisterDto, ResetPasswordConfirmationDto, ResetPasswordDto } from '$lib/api/dto/client/authentication';
 
 import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/models/api';
 import { customFetch } from '$lib/utility';

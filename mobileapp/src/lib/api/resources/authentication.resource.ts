@@ -1,5 +1,5 @@
-import type { LoginDto } from '$lib/api/dto/client/auth';
-import type { TokenDto, UserTokenDto } from '$lib/api/dto/server';
+import type { LoginDto } from '$lib/api/dto/client/authentication';
+import type { TokenDto, UserAuthenticationDto } from '$lib/api/dto/server';
 
 import { goto } from '$app/navigation';
 
@@ -15,7 +15,7 @@ const ENDPOINT = 'public/auth';
  * @param model login model
  * @returns {Promise<ResponseBody<UserDto>>} validation result
  */
-async function login(model: LoginDto): Promise<ResponseBody<UserTokenDto>> {
+async function login(model: LoginDto): Promise<ResponseBody<UserAuthenticationDto>> {
 	return customFetch(`${ENDPOINT}/signin`, {
 		authorizationType: AuthorizationType.NONE,
 		body: JSON.stringify(model),
@@ -46,7 +46,7 @@ async function logout(): Promise<void> {
 	await Promise.all([organizationStore.reset(), userStore.reset()]);
 }
 
-export const authResource = {
+export const authenticationResource = {
 	login,
 	logout,
 	refresh

@@ -3,7 +3,7 @@
 
 	import { goto } from '$app/navigation';
 
-	import { authResource, userResource } from '$lib/api/resources';
+	import { authenticationResource, organizationResource, userResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
@@ -16,17 +16,23 @@
 	const organizations = $derived(organizationStore.organizations);
 
 	const lastManagerOrganizations = $derived(
-		$organizations.filter(
-			(organization) =>
-				organization.personsOfOrganization.filter((member) => member.organizationRole === OrganizationRole.MANAGER)
-					.length === 1
-		)
+		$organizations.filter(async (baseOrganization) => {
+			const organizationResult = await organizationResource.getById(baseOrganization.id);
+			if (!StatusCheck.isOK(organizationResult.status)) {
+				return false;
+			}
+			const organization = organizationResult.data;
+			const managers = organization.personsOfOrganization.filter(
+				(member) => member.organizationRole === OrganizationRole.MANAGER
+			);
+			return managers.length === 1;
+		})
 	);
 
 	async function onDeleteAccount(): Promise<void> {
 		const response = await userResource.remove();
 		if (StatusCheck.isOK(response.status)) {
-			await authResource.logout();
+			await authenticationResource.logout();
 			goto(PageRoute.AUTH.LOGIN);
 		}
 	}

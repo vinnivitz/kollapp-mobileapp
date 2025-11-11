@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { PostingDto } from '$lib/api/dto/server/organization';
 	import type { PageData } from './$types';
 
 	import { AppLauncher } from '@capacitor/app-launcher';
@@ -32,9 +33,9 @@
 
 	import { goto } from '$app/navigation';
 
-	import { type CreateAccountPostingDto, createAccountPostingSchema } from '$lib/api/dto/client/accounting';
+	import { createAccountPostingSchema, type CreatePostingDto } from '$lib/api/dto/client/budget';
 	import { type UpdateActivityDto, updateActivitySchema } from '$lib/api/dto/client/organization';
-	import { accountingResource, activityResource } from '$lib/api/resources';
+	import { activityResource, budgetResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import AmountInputItem from '$lib/components/widgets/ionic/AmountInputItem.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
@@ -49,10 +50,10 @@
 	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import ToggleItem from '$lib/components/widgets/ionic/ToggleItem.svelte';
 	import { t } from '$lib/locales';
-	import { type AccountPostingModel, AccountPostingType } from '$lib/models/models';
+	import { PostingType } from '$lib/models/models';
 	import { PageRoute } from '$lib/models/routing';
 	import { type FabButtonButtons, type FilterItem, Form, type FormActions } from '$lib/models/ui';
-	import { accountPostingsStore, localeStore, organizationStore, userStore } from '$lib/stores';
+	import { localeStore, organizationStore, userStore } from '$lib/stores';
 	import {
 		clone,
 		customForm,
@@ -73,7 +74,7 @@
 	const { data }: { data: PageData } = $props();
 
 	const activity = $derived($organizationStore?.activities.find((activity) => activity.id === data.activityId));
-	const postings = $derived($accountPostingsStore?.filter((posting) => posting.activityId === activity?.id) ?? []);
+	const postings = $derived($organizationStore?.activities.flatMap((activity) => activity.activityPostings) ?? []);
 
 	const accountBalance = $derived(calculateAccountBalance(postings ?? []));
 
@@ -88,8 +89,8 @@
 		{ color: 'primary', handler: onOpenActivityModal, icon: createOutline, label: 'Edit event' }
 	];
 
-	let createAccountPostingFormActions: FormActions<CreateAccountPostingDto>;
-	let updateAccountPostingFormActions: FormActions<CreateAccountPostingDto>;
+	let createAccountPostingFormActions: FormActions<CreatePostingDto>;
+	let updateAccountPostingFormActions: FormActions<CreatePostingDto>;
 	let updateActivityFormActions: FormActions<UpdateActivityDto>;
 
 	let createAccountPostingModalOpen = $state(false);
@@ -100,14 +101,14 @@
 	let updateAccountPostingModelTouched = $state(false);
 	let updateActivityModelTouched = $state(false);
 
-	let filteredPostings = $state<AccountPostingModel[]>([]);
+	let filteredPostings = $state<PostingDto[]>([]);
 	let postingsSearchValue = $state('');
-	let selectedPostingTypes: AccountPostingType[] = $state([AccountPostingType.DEBIT, AccountPostingType.CREDIT]);
+	let selectedPostingTypes: PostingType[] = $state([PostingType.DEBIT, PostingType.CREDIT]);
 
 	let filterOpen = $state(false);
 
-	let selectedPosting = $state<AccountPostingModel>();
-	let selectedPostingType = $state<AccountPostingType>(AccountPostingType.DEBIT);
+	let selectedPosting = $state<PostingDto>();
+	let selectedPostingType = $state<PostingType>(PostingType.DEBIT);
 
 	let fromFilterDate = $state(format(new TZDate(), 'yyyy-MM-dd'));
 	let toFilterDate = $state(format(new TZDate(), 'yyyy-MM-dd'));
@@ -130,7 +131,7 @@
 		exposedActions: (exposedActions) => (createAccountPostingFormActions = exposedActions),
 		formatters: { amountInCents: formatter.currency, date: formatter.date },
 		parsers: { amountInCents: parser.currency, date: parser.date },
-		request: (model) => accountingResource.add($organizationStore?.id!, model),
+		request: (model) => budgetResource.add($organizationStore?.id!, model),
 		schema: createAccountPostingSchema()
 	});
 
@@ -144,7 +145,8 @@
 		formatters: { amountInCents: formatter.currency, date: formatter.date },
 		onTouched: () => (updateAccountPostingModelTouched = true),
 		parsers: { amountInCents: parser.currency, date: parser.date },
-		request: async (model) => accountingResource.update($organizationStore?.id!, selectedPosting?.id!, model),
+		request: async (model) =>
+			budgetResource.updateActivityPosting($organizationStore?.id!, activity?.id!, selectedPosting?.id!, model),
 		schema: createAccountPostingSchema()
 	});
 
@@ -184,13 +186,13 @@
 		filteredMemberFilterItems = memberFilterItems.filter((member) => member.data.toLowerCase().includes(value));
 	}
 
-	function getMinPostingDate(postings: AccountPostingModel[]): string {
+	function getMinPostingDate(postings: PostingDto[]): string {
 		return postings.length > 0
 			? new TZDate(Math.min(...postings.map((posting) => new TZDate(posting.date).getTime()))).toISOString()
 			: new TZDate().toISOString();
 	}
 
-	function getMaxPostingDate(postings: AccountPostingModel[]): string {
+	function getMaxPostingDate(postings: PostingDto[]): string {
 		return postings.length > 0
 			? new TZDate(Math.max(...postings.map((posting) => new TZDate(posting.date).getTime()))).toISOString()
 			: new TZDate().toISOString();
@@ -201,7 +203,7 @@
 			const matchesType = selectedPostingTypes.includes(posting.type);
 			const matchesPurpose = posting.purpose.toLowerCase().includes(postingsSearchValue.toLowerCase());
 			const matchesActivityName = $organizationStore?.activities
-				.find((activity) => activity.id === posting.activityId)
+				.find((activity) => activity.activityPostings.some((activityPosting) => activityPosting.id === posting.id))
 				?.name.toLowerCase()
 				.includes(postingsSearchValue.toLowerCase());
 			const matchesUsername = $userStore?.username.toLowerCase().includes(postingsSearchValue.toLowerCase());
@@ -249,12 +251,12 @@
 		updateActivityModalOpen = true;
 	}
 
-	function calculateAccountBalance(postings: AccountPostingModel[]): AccountBalance {
+	function calculateAccountBalance(postings: PostingDto[]): AccountBalance {
 		let totalIncome = 0,
 			totalExpense = 0;
 		for (const posting of postings) {
-			if (posting.type === AccountPostingType.DEBIT) totalIncome += posting.amountInCents;
-			else if (posting.type === AccountPostingType.CREDIT) totalExpense += posting.amountInCents;
+			if (posting.type === PostingType.DEBIT) totalIncome += posting.amountInCents;
+			else if (posting.type === PostingType.CREDIT) totalExpense += posting.amountInCents;
 		}
 		const balance = totalIncome - totalExpense;
 		return {
@@ -264,19 +266,19 @@
 		};
 	}
 
-	async function onOpenCreateAccountPosting(type: AccountPostingType): Promise<void> {
+	async function onOpenCreateAccountPosting(type: PostingType): Promise<void> {
 		selectedPostingType = type;
 		createAccountPostingFormActions.setModel(
 			createAccountPostingSchema().cast({
 				activityId: activity?.id,
 				type: selectedPostingType
-			}) as CreateAccountPostingDto
+			}) as CreatePostingDto
 		);
 		createAccountPostingModalOpen = true;
 	}
 
-	function getCreatePostingTitle(type: AccountPostingType): string {
-		return type === AccountPostingType.DEBIT
+	function getCreatePostingTitle(type: PostingType): string {
+		return type === PostingType.DEBIT
 			? $t('routes.organization.page.activity.page.slug.modal.create-posting.title.income')
 			: $t('routes.organization.page.activity.page.slug.modal.create-posting.title.expense');
 	}
@@ -331,7 +333,7 @@
 		filterPostings();
 	}
 
-	function toggleAccountPostingTypeSelected(type: AccountPostingType): void {
+	function toggleAccountPostingTypeSelected(type: PostingType): void {
 		selectedPostingTypes = selectedPostingTypes.includes(type)
 			? selectedPostingTypes.filter((_type) => _type !== type)
 			: [...selectedPostingTypes, type];
@@ -357,15 +359,17 @@
 		await loader.present();
 		const organizationId = $organizationStore?.id;
 		if (organizationId) {
-			const result = getValidationResult(await accountingResource.remove(organizationId, postingId));
+			const result = getValidationResult(
+				await budgetResource.removeActivityPosting(organizationId, activity?.id!, postingId)
+			);
 			if (result.valid) {
-				await accountPostingsStore.update(organizationId);
+				await organizationStore.update(organizationId);
 			}
 		}
 		await loader.dismiss();
 	}
 
-	async function onOpenUpdatePostingModal(posting: AccountPostingModel): Promise<void> {
+	async function onOpenUpdatePostingModal(posting: PostingDto): Promise<void> {
 		selectedPosting = posting;
 		selectedPostingType = posting.type;
 		updateAccountPostingFormActions.setModel(clone(selectedPosting));
@@ -385,10 +389,10 @@
 		fromFilterDate = getMinPostingDate(postings);
 		toFilterDate = getMaxPostingDate(postings);
 		filteredMemberFilterItems = memberFilterItems;
-		selectedPostingTypes = [AccountPostingType.DEBIT, AccountPostingType.CREDIT];
+		selectedPostingTypes = [PostingType.DEBIT, PostingType.CREDIT];
 	}
 
-	function setAccountPostingType(type: AccountPostingType): void {
+	function setAccountPostingType(type: PostingType): void {
 		selectedPostingType = type;
 		updateAccountPostingModelTouched = true;
 	}
@@ -464,13 +468,13 @@
 				label="Add income"
 				color="primary"
 				icon={cashOutline}
-				clicked={() => onOpenCreateAccountPosting(AccountPostingType.DEBIT)}
+				clicked={() => onOpenCreateAccountPosting(PostingType.DEBIT)}
 			/>
 			<Button
 				label="Add expense"
 				color="tertiary"
 				icon={walletOutline}
-				clicked={() => onOpenCreateAccountPosting(AccountPostingType.CREDIT)}
+				clicked={() => onOpenCreateAccountPosting(PostingType.CREDIT)}
 			/>
 		</div>
 		<Button
@@ -487,7 +491,7 @@
 	<FabButton label="Event actions" icon={addOutline} buttons={activityEventButtons} />
 {/snippet}
 
-{#snippet transactionItem(posting: AccountPostingModel)}
+{#snippet transactionItem(posting: PostingDto)}
 	<CustomItem
 		slidingOptions={[
 			{
@@ -501,8 +505,8 @@
 				icon: createOutline
 			}
 		]}
-		iconColor={posting.type === AccountPostingType.CREDIT ? 'danger' : 'success'}
-		icon={posting.type === AccountPostingType.CREDIT ? trendingDownOutline : trendingUpOutline}
+		iconColor={posting.type === PostingType.CREDIT ? 'danger' : 'success'}
+		icon={posting.type === PostingType.CREDIT ? trendingDownOutline : trendingUpOutline}
 	>
 		<div class="mt-1 flex w-full flex-col justify-center">
 			<ion-text class="truncate">
@@ -520,7 +524,7 @@
 				<ion-text color="medium" class="flex items-center justify-center gap-1">
 					<ion-icon icon={cashOutline}></ion-icon>
 					<div>
-						{posting.type === AccountPostingType.CREDIT ? '-' : '+'}{formatter.currency(posting.amountInCents)}
+						{posting.type === PostingType.CREDIT ? '-' : '+'}{formatter.currency(posting.amountInCents)}
 					</div>
 				</ion-text>
 			</div>
@@ -559,14 +563,14 @@
 		<form use:customForm={createAccountPostingForm!}>
 			<div class="mb-3 flex items-center justify-center gap-2">
 				<Chip
-					selected={selectedPostingType === AccountPostingType.DEBIT}
+					selected={selectedPostingType === PostingType.DEBIT}
 					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.income')}
-					clicked={() => (selectedPostingType = AccountPostingType.DEBIT)}
+					clicked={() => (selectedPostingType = PostingType.DEBIT)}
 				/>
 				<Chip
-					selected={selectedPostingType === AccountPostingType.CREDIT}
+					selected={selectedPostingType === PostingType.CREDIT}
 					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.expense')}
-					clicked={() => (selectedPostingType = AccountPostingType.CREDIT)}
+					clicked={() => (selectedPostingType = PostingType.CREDIT)}
 				/>
 			</div>
 			<TextInputItem name="purpose" label="Purpose" icon={documentOutline} />
@@ -589,14 +593,14 @@
 		<form use:customForm={updateAccountPostingForm}>
 			<div class="mb-3 flex items-center justify-center gap-2">
 				<Chip
-					selected={selectedPostingType === AccountPostingType.DEBIT}
+					selected={selectedPostingType === PostingType.DEBIT}
 					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.income')}
-					clicked={() => setAccountPostingType(AccountPostingType.DEBIT)}
+					clicked={() => setAccountPostingType(PostingType.DEBIT)}
 				/>
 				<Chip
-					selected={selectedPostingType === AccountPostingType.CREDIT}
+					selected={selectedPostingType === PostingType.CREDIT}
 					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.expense')}
-					clicked={() => setAccountPostingType(AccountPostingType.CREDIT)}
+					clicked={() => setAccountPostingType(PostingType.CREDIT)}
 				/>
 			</div>
 			<TextInputItem name="purpose" label="Purpose" icon={documentOutline} />
@@ -645,16 +649,16 @@
 	<Card title="Filters" classList="m-0">
 		<div class="flex items-center justify-center gap-2">
 			<Chip
-				clicked={() => toggleAccountPostingTypeSelected(AccountPostingType.DEBIT)}
+				clicked={() => toggleAccountPostingTypeSelected(PostingType.DEBIT)}
 				color="success"
-				selected={selectedPostingTypes.includes(AccountPostingType.DEBIT)}
+				selected={selectedPostingTypes.includes(PostingType.DEBIT)}
 				icon={trendingUpOutline}
 				label="Income"
 			/>
 			<Chip
-				clicked={() => toggleAccountPostingTypeSelected(AccountPostingType.CREDIT)}
+				clicked={() => toggleAccountPostingTypeSelected(PostingType.CREDIT)}
 				color="danger"
-				selected={selectedPostingTypes.includes(AccountPostingType.CREDIT)}
+				selected={selectedPostingTypes.includes(PostingType.CREDIT)}
 				icon={trendingDownOutline}
 				label="Expense"
 			/>

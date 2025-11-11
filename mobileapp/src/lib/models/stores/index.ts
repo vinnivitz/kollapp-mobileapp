@@ -1,4 +1,3 @@
-export * from './account-postings-store.type';
 export * from './authentication-store.type';
 export * from './base-store.type';
 export * from './connection-store.type';

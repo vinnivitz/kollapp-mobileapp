@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { mailOutline, refreshOutline } from 'ionicons/icons';
 
-	import { resetPasswordSchema } from '$lib/api/dto/client/auth';
+	import { resetPasswordSchema } from '$lib/api/dto/client/authentication';
 	import { publicUserResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';

@@ -1,4 +1,4 @@
-import type { UserModel } from '$lib/models/models';
+import type { UserDto } from '$lib/api/dto/server/user.dto';
 import type { UserStore } from '$lib/models/stores';
 
 import { writable } from 'svelte/store';
@@ -8,12 +8,12 @@ import { PreferencesKey } from '$lib/models/preferences';
 import { getStoredValue, removeStoredValue, StatusCheck, storeValue } from '$lib/utility';
 
 function createStore(): UserStore {
-	const { set, subscribe } = writable<undefined | UserModel>();
+	const { set, subscribe } = writable<undefined | UserDto>();
 	const loadedCache = writable(false);
 	const loadedServer = writable(false);
 
 	async function init(): Promise<void> {
-		const storedUser = await getStoredValue<UserModel>(PreferencesKey.USER);
+		const storedUser = await getStoredValue<UserDto>(PreferencesKey.USER);
 		if (storedUser) {
 			await _set(storedUser);
 			loadedCache.set(true);
@@ -30,7 +30,7 @@ function createStore(): UserStore {
 		loadedServer.set(true);
 	}
 
-	async function _set(model?: UserModel): Promise<void> {
+	async function _set(model?: UserDto): Promise<void> {
 		await (model ? storeValue(PreferencesKey.USER, model) : removeStoredValue(PreferencesKey.USER));
 		set(model);
 	}

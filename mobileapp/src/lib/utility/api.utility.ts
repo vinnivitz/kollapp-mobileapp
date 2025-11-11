@@ -6,7 +6,7 @@ import { get } from 'svelte/store';
 
 import { dev } from '$app/environment';
 
-import { authResource, metaResource } from '$lib/api/resources';
+import { authenticationResource, metaResource } from '$lib/api/resources';
 import environment from '$lib/environment';
 import { Locale, t } from '$lib/locales';
 import {
@@ -175,7 +175,7 @@ export async function checkMaintenance(): Promise<void> {
 }
 
 async function handleAuthenticationError(): Promise<ResponseBody> {
-	await authResource.logout();
+	await authenticationResource.logout();
 	return createErrorResponse(StatusCode.UNAUTHORIZED, $t('api.unauthorized'), true);
 }
 
@@ -233,7 +233,7 @@ async function getEnhancedUrl(url: string, query: Record<string, string> | undef
 async function getNewAuthenticationToken(): Promise<string | undefined> {
 	const refreshToken = get(authenticationStore)?.refreshToken;
 	if (refreshToken) {
-		const body = await authResource.refresh(refreshToken);
+		const body = await authenticationResource.refresh(refreshToken);
 		if (StatusCheck.isOK(body.status)) {
 			const accessToken = body.data.token;
 			await authenticationStore.set({ accessToken, refreshToken });

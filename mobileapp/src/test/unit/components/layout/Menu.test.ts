@@ -4,7 +4,7 @@ import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { goto } from '$app/navigation';
 
-import { authResource } from '$lib/api/resources';
+import { authenticationResource } from '$lib/api/resources';
 import Menu from '$lib/components/layout/Menu.svelte';
 import { triggerClickByLabel } from '$lib/utility';
 
@@ -102,6 +102,6 @@ describe('Menu Component', () => {
 		const logoutButton = container.querySelectorAll('ion-button').item(1) as HTMLIonButtonElement;
 		expect(logoutButton).toBeTruthy();
 		await fireEvent.click(logoutButton);
-		await waitFor(() => expect(authResource.logout).toHaveBeenCalled());
+		await waitFor(() => expect(authenticationResource.logout).toHaveBeenCalled());
 	});
 });

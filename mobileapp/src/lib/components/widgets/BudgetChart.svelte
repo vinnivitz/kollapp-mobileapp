@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { PostingDto } from '$lib/api/dto/server/organization';
 	import type { ApexOptions } from 'apexcharts';
 
 	import Chart from '@edde746/svelte-apexcharts';
@@ -7,7 +8,7 @@
 
 	import Chip from './ionic/Chip.svelte';
 
-	import { type AccountPostingModel, AccountPostingType } from '$lib/models/models';
+	import { PostingType } from '$lib/models/models';
 	import { formatter } from '$lib/utility';
 
 	enum ChartType {
@@ -16,7 +17,7 @@
 		DEBIT
 	}
 
-	let { postings }: { postings?: AccountPostingModel[] } = $props();
+	let { postings }: { postings?: PostingDto[] } = $props();
 
 	let selectedChart = $state<ChartType>(ChartType.ALL);
 	let chartSeries = $state<ApexAxisChartSeries | ApexNonAxisChartSeries>();
@@ -24,11 +25,11 @@
 	let colors = $state<string[]>();
 	let selectedChartDataId = $state<number>();
 
-	const hasDebit = $derived(postings?.some((posting) => posting.type === AccountPostingType.DEBIT) ?? false);
+	const hasDebit = $derived(postings?.some((posting) => posting.type === PostingType.DEBIT) ?? false);
 
-	const hasCredit = $derived(postings?.some((postings) => postings.type === AccountPostingType.CREDIT) ?? false);
+	const hasCredit = $derived(postings?.some((postings) => postings.type === PostingType.CREDIT) ?? false);
 
-	function getTotalAmountByType(type: AccountPostingType): number {
+	function getTotalAmountByType(type: PostingType): number {
 		return (
 			postings
 				?.filter((posting) => posting.type === type)
@@ -37,15 +38,15 @@
 	}
 
 	function getTotalBudget(): number {
-		const totalCredits = getTotalAmountByType(AccountPostingType.CREDIT);
-		const totalDebits = getTotalAmountByType(AccountPostingType.DEBIT);
+		const totalCredits = getTotalAmountByType(PostingType.CREDIT);
+		const totalDebits = getTotalAmountByType(PostingType.DEBIT);
 		return totalCredits - totalDebits;
 	}
 
 	$effect(() => {
 		switch (selectedChart) {
 			case ChartType.CREDIT: {
-				const credits = postings?.filter((posting) => posting.type === AccountPostingType.CREDIT) ?? [];
+				const credits = postings?.filter((posting) => posting.type === PostingType.CREDIT) ?? [];
 				chartSeries = [
 					{
 						data: credits.map((credit) => ({
@@ -59,7 +60,7 @@
 				break;
 			}
 			case ChartType.DEBIT: {
-				const debits = postings?.filter((posting) => posting.type === AccountPostingType.DEBIT) ?? [];
+				const debits = postings?.filter((posting) => posting.type === PostingType.DEBIT) ?? [];
 				chartSeries = [
 					{
 						data: debits.map((debit) => ({
@@ -73,8 +74,8 @@
 				break;
 			}
 			default: {
-				const credits = postings?.filter((posting) => posting.type === AccountPostingType.CREDIT) ?? [];
-				const debits = postings?.filter((posting) => posting.type === AccountPostingType.DEBIT) ?? [];
+				const credits = postings?.filter((posting) => posting.type === PostingType.CREDIT) ?? [];
+				const debits = postings?.filter((posting) => posting.type === PostingType.DEBIT) ?? [];
 				chartSeries = [
 					credits.reduce((accumulator, credit) => accumulator + credit.amountInCents, 0),
 					debits.reduce((accumulator, debit) => accumulator + debit.amountInCents, 0)
@@ -92,16 +93,14 @@
 				dataPointSelection: (_event, _chartContext, options) => {
 					const clickedIndex = options.dataPointIndex ?? 0;
 
-					const metaType = options?.w?.config?.series?.[0]?.data?.[clickedIndex]?.meta?.type as
-						| AccountPostingType
-						| undefined;
+					const metaType = options?.w?.config?.series?.[0]?.data?.[clickedIndex]?.meta?.type as PostingType | undefined;
 
 					if (selectedChart !== ChartType.ALL) return;
 
 					let target: ChartType | undefined;
 
-					if (metaType === AccountPostingType.CREDIT || metaType === AccountPostingType.DEBIT) {
-						target = metaType === AccountPostingType.CREDIT ? ChartType.CREDIT : ChartType.DEBIT;
+					if (metaType === PostingType.CREDIT || metaType === PostingType.DEBIT) {
+						target = metaType === PostingType.CREDIT ? ChartType.CREDIT : ChartType.DEBIT;
 					} else if (clickedIndex === 0) {
 						target = ChartType.CREDIT;
 					} else if (clickedIndex === 1) {

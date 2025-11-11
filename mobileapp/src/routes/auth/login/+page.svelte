@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { UserTokenDto } from '$lib/api/dto/server';
+	import type { UserAuthenticationDto } from '$lib/api/dto/server';
 	import type { AuthenticationModel } from '$lib/models/models';
 
 	import { loadingController } from '@ionic/core';
@@ -18,8 +18,8 @@
 	import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
 
-	import { type LoginDto, loginSchema } from '$lib/api/dto/client/auth';
-	import { authResource } from '$lib/api/resources';
+	import { type LoginDto, loginSchema } from '$lib/api/dto/client/authentication';
+	import { authenticationResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
@@ -44,7 +44,7 @@
 
 	const form = new Form({
 		completed: async ({ response }) => await handleLogin(response),
-		request: async (model: LoginDto) => await authResource.login(model),
+		request: async (model: LoginDto) => await authenticationResource.login(model),
 		schema: loginSchema()
 	});
 
@@ -59,7 +59,7 @@
 		const loading = await loadingController.create({});
 		await loading.present();
 
-		const response = await authResource.login({
+		const response = await authenticationResource.login({
 			password: credentials.password,
 			username: credentials.username
 		} as LoginDto);
@@ -73,7 +73,7 @@
 		await loading.dismiss();
 	}
 
-	async function handleLogin(model: UserTokenDto): Promise<void> {
+	async function handleLogin(model: UserAuthenticationDto): Promise<void> {
 		const authenticationModel: AuthenticationModel = {
 			accessToken: model.accessToken,
 			refreshToken: model.refreshToken

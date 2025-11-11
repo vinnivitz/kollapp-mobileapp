@@ -4,21 +4,21 @@ import { type AnyObject, object, type ObjectSchema, string } from 'yup';
 import { t } from '$lib/locales';
 
 /**
- * Data Transfer Object for registering an organization.
+ * Data Transfer Object for creating an organization.
  */
-export type RegisterOrganizationDto = {
+export type CreateOrganizationDto = {
 	name: string;
 	place: string;
 	description?: string;
 };
 
 /**
- * Creates a schema for validating the `RegisterOrganizationDto`.
- * @returns {ObjectSchema<AnyObject, RegisterOrganizationDto>} The schema for validating the `RegisterOrganizationDto`.
+ * Creates a schema for validating the `CreateOrganizationDto`.
+ * @returns {ObjectSchema<AnyObject, CreateOrganizationDto>} The schema for validating the `CreateOrganizationDto`.
  */
-export const registerOrganizationSchema = (): ObjectSchema<AnyObject, RegisterOrganizationDto> => {
+export const createOrganizationSchema = (): ObjectSchema<AnyObject, CreateOrganizationDto> => {
 	const $t = get(t);
-	return object<RegisterOrganizationDto>({
+	return object<CreateOrganizationDto>({
 		description: string()
 			.default('')
 			.trim()

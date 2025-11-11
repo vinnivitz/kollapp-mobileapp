@@ -3,7 +3,7 @@
 
 	import { goto } from '$app/navigation';
 
-	import { registerSchema } from '$lib/api/dto/client/auth';
+	import { registerSchema } from '$lib/api/dto/client/authentication';
 	import { publicUserResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';

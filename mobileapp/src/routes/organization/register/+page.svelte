@@ -3,7 +3,7 @@
 
 	import { goto } from '$app/navigation';
 
-	import { type RegisterOrganizationDto, registerOrganizationSchema } from '$lib/api/dto/client/organization';
+	import { type CreateOrganizationDto, createOrganizationSchema } from '$lib/api/dto/client/organization';
 	import { organizationResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
@@ -23,8 +23,8 @@
 			await organizationStore.update(response.id);
 			goto(PageRoute.ORGANIZATION.ROOT);
 		},
-		request: async (model: RegisterOrganizationDto) => organizationResource.create(model),
-		schema: registerOrganizationSchema()
+		request: async (model: CreateOrganizationDto) => organizationResource.create(model),
+		schema: createOrganizationSchema()
 	});
 </script>
 

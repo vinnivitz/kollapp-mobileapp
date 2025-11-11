@@ -1,5 +1,6 @@
-import type { RegisterOrganizationDto, UpdateOrganizationDto } from '$lib/api/dto/client/organization';
+import type { CreateOrganizationDto, UpdateOrganizationDto } from '$lib/api/dto/client/organization';
 import type { OrganizationDto } from '$lib/api/dto/server';
+import type { OrganizationBaseDto } from '$lib/api/dto/server/organization';
 
 import { OrganizationRole, RequestMethod, type ResponseBody } from '$lib/models/api';
 import { customFetch } from '$lib/utility';
@@ -20,7 +21,7 @@ async function getById(id: number): Promise<ResponseBody<OrganizationDto>> {
  * @returns {Promise<ResponseBody<OrganizationDto[]>>} The organizations.
  */
 async function getAll(): Promise<ResponseBody<OrganizationDto[]>> {
-	return customFetch(`${ENDPOINT}`, { silentOnSuccess: true });
+	return customFetch(ENDPOINT, { silentOnSuccess: true });
 }
 
 /**
@@ -28,8 +29,8 @@ async function getAll(): Promise<ResponseBody<OrganizationDto[]>> {
  * @param model The organization information.
  * @returns {Promise<ResponseBody>} The response body.
  */
-async function create(model: RegisterOrganizationDto): Promise<ResponseBody<OrganizationDto>> {
-	return customFetch(`${ENDPOINT}`, {
+async function create(model: CreateOrganizationDto): Promise<ResponseBody<OrganizationDto>> {
+	return customFetch(ENDPOINT, {
 		body: JSON.stringify(model),
 		method: RequestMethod.POST
 	});
@@ -48,7 +49,7 @@ async function update(id: number, model: UpdateOrganizationDto): Promise<Respons
 }
 
 /**
- * Deletes user from the organization.
+ * Deletes user from the organization and delete if last user with manager role.
  * @returns {Promise<ResponseBody>} The response body.
  */
 async function leave(organizationId: number): Promise<ResponseBody> {
@@ -76,7 +77,8 @@ async function removeUser(organizationId: number, userId: number): Promise<Respo
  * @returns {Promise<ResponseBody>} The response body.
  */
 async function grantRole(userId: number, organizationId: number, role: OrganizationRole): Promise<ResponseBody> {
-	return customFetch(`${ENDPOINT}/${organizationId}/person/${userId}/grant-role?role=${role}`, {
+	return customFetch(`${ENDPOINT}/${organizationId}/person/${userId}/grant-role`, {
+		body: JSON.stringify({ role }),
 		method: RequestMethod.PATCH
 	});
 }
@@ -84,9 +86,9 @@ async function grantRole(userId: number, organizationId: number, role: Organizat
 /**
  * Renews the invitation code for the organization.
  * @param organizationId The organization id.
- * @returns {Promise<ResponseBody<string>>} The new invitation code.
+ * @returns {Promise<ResponseBody<OrganizationDto>>} The organization.
  */
-async function renewInvitationCode(organizationId: number): Promise<ResponseBody<string>> {
+async function renewInvitationCode(organizationId: number): Promise<ResponseBody<OrganizationDto>> {
 	return customFetch(`${ENDPOINT}/${organizationId}/invitation-code`, {
 		method: RequestMethod.PATCH
 	});
@@ -95,9 +97,9 @@ async function renewInvitationCode(organizationId: number): Promise<ResponseBody
 /**
  * Retrieves the organization by invitation code.
  * @param code The invitation code.
- * @returns {Promise<ResponseBody<OrganizationDto>>} The organization.
+ * @returns {Promise<ResponseBody<OrganizationBaseDto>>} The organization.
  */
-async function getByInvitationCode(code: string): Promise<ResponseBody<OrganizationDto>> {
+async function getByInvitationCode(code: string): Promise<ResponseBody<OrganizationBaseDto>> {
 	return customFetch(`${ENDPOINT}/invitation/${code}`, { silentOnSuccess: true });
 }
 

@@ -3,7 +3,6 @@ import type { AuthenticationStore, InitializationStore } from '$lib/models/store
 
 import { derived, writable } from 'svelte/store';
 
-import { accountPostingsStore } from './account-postings.store';
 import { authenticationStore } from './authentication.store';
 import { organizationStore } from './organization.store';
 import { userStore } from './user.store';
@@ -11,7 +10,7 @@ import { userStore } from './user.store';
 /**
  * Add new loadable stores to this array to include them in the initialization process.
  */
-const stores = [userStore, organizationStore, accountPostingsStore] as const;
+const stores = [userStore, organizationStore] as const;
 
 function createStore(): InitializationStore {
 	const model = combineInitialization(stores, authenticationStore);

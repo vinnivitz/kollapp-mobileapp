@@ -1,4 +1,7 @@
 <script lang="ts">
+	import type { OrganizationDto, UserDto } from '$lib/api/dto/server';
+	import type { ActivityModel } from '$lib/models/models';
+
 	import { TZDate } from '@date-fns/tz';
 	import { addDays, formatDistanceToNow } from 'date-fns';
 	import {
@@ -16,12 +19,12 @@
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import { t } from '$lib/locales';
-	import { type ActivityModel, type OrganizationModel, type UserModel } from '$lib/models/models';
 	import { PageRoute, type PageRoutePaths } from '$lib/models/routing';
-	import { accountPostingsStore, localeStore, organizationStore, userStore } from '$lib/stores';
+	import { localeStore, organizationStore, userStore } from '$lib/stores';
 	import { featureNotImplementedAlert, getDateFnsLocale } from '$lib/utility';
 
 	const activity = $derived($organizationStore?.activities && $organizationStore.activities[0]);
+	const postings = $derived($organizationStore ? $organizationStore.activities.flatMap((a) => a.activityPostings) : []);
 
 	function onNavigateEvent(): void {
 		if ($organizationStore?.activities[0]?.id) {
@@ -50,7 +53,7 @@
 	{/if}
 </Layout>
 
-{#snippet accountCard(user: UserModel)}
+{#snippet accountCard(user: UserDto)}
 	<Card color="transparent" classList="text-center" clicked={() => goto(PageRoute.ACCOUNT.ROOT)}>
 		<div class="truncate">
 			<ion-text class="text-2xl" color="dark">
@@ -89,7 +92,7 @@
 	</Card>
 {/snippet}
 
-{#snippet organizationCard(organization: OrganizationModel)}
+{#snippet organizationCard(organization: OrganizationDto)}
 	<Card border="primary" title={organization.name} clicked={() => goto(PageRoute.ORGANIZATION.ROOT)}>
 		<div class="flex flex-wrap items-center justify-center gap-2">
 			<Button
@@ -132,5 +135,5 @@
 {/snippet}
 
 {#snippet budgetChartCard()}
-	<BudgetChart postings={$accountPostingsStore} />
+	<BudgetChart {postings} />
 {/snippet}

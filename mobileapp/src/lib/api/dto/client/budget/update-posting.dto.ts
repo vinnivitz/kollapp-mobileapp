@@ -4,26 +4,25 @@ import { get } from 'svelte/store';
 import { type AnyObject, number, object, ObjectSchema, string } from 'yup';
 
 import { t } from '$lib/locales';
-import { AccountPostingType } from '$lib/models/models';
+import { PostingType } from '$lib/models/models';
 
 /**
- * Data Transfer Object for updating a account posting.
+ * Data Transfer Object for updating a posting.
  */
-export type UpdateAccountPostingDto = {
-	activityId: number;
+export type UpdatePostingDto = {
 	amountInCents: number;
 	date: string;
 	purpose: string;
-	type: AccountPostingType;
+	type: PostingType;
 };
 
 /**
- * Creates a schema for validating the `UpdateAccountPostingDto`.
- * @returns schema for validating the `UpdateAccountPostingDto`.
+ * Creates a schema for validating the `UpdatePostingDto`.
+ * @returns schema for validating the `UpdatePostingDto`.
  */
-export const updateAccountPostingSchema = (): ObjectSchema<AnyObject, UpdateAccountPostingDto> => {
+export const updatePostingSchema = (): ObjectSchema<AnyObject, UpdatePostingDto> => {
 	const $t = get(t);
-	return object<UpdateAccountPostingDto>({
+	return object<UpdatePostingDto>({
 		activityId: string().default('').optional(),
 		amountInCents: number()
 			.default(0)
@@ -34,6 +33,6 @@ export const updateAccountPostingSchema = (): ObjectSchema<AnyObject, UpdateAcco
 			.default(format(new TZDate(), 'yyyy-MM-dd'))
 			.required($t('api.dto.budget.create-posting.schema.date.required')),
 		purpose: string().default('').required($t('api.dto.budget.create-posting.schema.purpose.required')),
-		type: string().oneOf(Object.values(AccountPostingType)).default(AccountPostingType.CREDIT)
+		type: string().oneOf(Object.values(PostingType)).default(PostingType.CREDIT)
 	});
 };

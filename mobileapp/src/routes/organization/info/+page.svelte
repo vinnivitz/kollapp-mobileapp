@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { BaseOrganizationModel } from '$lib/models/models';
+	import type { OrganizationBaseDto } from '$lib/api/dto/server/organization';
 	import type { PageData } from './$types';
 
 	import { homeOutline, locationOutline } from 'ionicons/icons';
@@ -17,7 +17,7 @@
 	let { data }: { data: PageData } = $props();
 
 	let loading = $state(true);
-	let organization = $state<BaseOrganizationModel>();
+	let organization = $state<OrganizationBaseDto>();
 
 	onMount(async () => {
 		if (data.invitationCode) {

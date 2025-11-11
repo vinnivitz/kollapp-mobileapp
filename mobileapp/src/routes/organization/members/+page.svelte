@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { MemberModel } from '$lib/models/models';
+	import type { PersonsOfOrganizationDto } from '$lib/api/dto/server/organization';
 
 	import { Clipboard } from '@capacitor/clipboard';
 	import { Share } from '@capacitor/share';
@@ -42,7 +42,7 @@
 	let invitationCodeModalOpen = $state(false);
 	let qrModalOpen = $state(false);
 
-	function getSlidingOptions(member: MemberModel): ItemSlidingOption[] {
+	function getSlidingOptions(member: PersonsOfOrganizationDto): ItemSlidingOption[] {
 		return [
 			{ color: 'tertiary', handler: () => onSelectRole(member), icon: ribbonOutline },
 			{ color: 'danger', handler: () => onRemoveUser(member.id), icon: logOutOutline }
@@ -51,8 +51,10 @@
 
 	const userId = $derived($userStore?.id);
 
+	console.log('date', new TZDate(''));
+
 	const invitationCodeExpiration = $derived(
-		new TZDate($organizationStore?.organizationInvitationCode.expirationDate ?? new TZDate())
+		new TZDate($organizationStore?.organizationInvitationCode.expirationDate ?? '')
 	);
 	const inviationCode = $derived($organizationStore?.organizationInvitationCode.code ?? '');
 
@@ -73,7 +75,7 @@
 		}
 	}
 
-	async function onSelectRole(member: MemberModel): Promise<void> {
+	async function onSelectRole(member: PersonsOfOrganizationDto): Promise<void> {
 		const organizationId = $organizationStore?.id as number;
 		const actionsheet = await actionSheetController.create({
 			buttons: [
@@ -100,8 +102,8 @@
 		await organizationResource.grantRole(userId, organizationId, role);
 	}
 
-	function getGroupedMembers(members: MemberModel[]): [string, MemberModel[]][] {
-		const result: Map<string, MemberModel[]> = new Map();
+	function getGroupedMembers(members: PersonsOfOrganizationDto[]): [string, PersonsOfOrganizationDto[]][] {
+		const result: Map<string, PersonsOfOrganizationDto[]> = new Map();
 
 		for (const member of members) {
 			const key = member.username.charAt(0).toUpperCase();
@@ -194,7 +196,7 @@
 	{/if}
 </Layout>
 
-{#snippet memberItem(member: MemberModel)}
+{#snippet memberItem(member: PersonsOfOrganizationDto)}
 	<CustomItem slidingOptions={getSlidingOptions(member)}>
 		<ion-avatar class="mb-1">
 			<ion-icon icon={personCircleOutline} class="h-10 w-10" color="medium"></ion-icon>

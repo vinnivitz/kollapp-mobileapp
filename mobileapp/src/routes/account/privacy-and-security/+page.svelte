@@ -12,8 +12,8 @@
 	import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
 
-	import { type LoginDto, type VerifyPasswordDto, verifyPasswordSchema } from '$lib/api/dto/client/auth';
-	import { authResource } from '$lib/api/resources';
+	import { type LoginDto, type VerifyPasswordDto, verifyPasswordSchema } from '$lib/api/dto/client/authentication';
+	import { authenticationResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
@@ -45,7 +45,7 @@
 		completed: async ({ model }) => onPasswordConfirmed($userStore?.username!, model.password),
 		exposedActions: (exposedActions) => (actions = exposedActions),
 		request: async (model: VerifyPasswordDto) =>
-			authResource.login({ password: model.password, username: $userStore?.username! } as LoginDto),
+			authenticationResource.login({ password: model.password, username: $userStore?.username! } as LoginDto),
 		schema: verifyPasswordSchema()
 	});
 

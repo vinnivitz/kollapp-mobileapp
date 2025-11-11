@@ -4,27 +4,25 @@ import { get } from 'svelte/store';
 import { type AnyObject, number, object, type ObjectSchema, string } from 'yup';
 
 import { t } from '$lib/locales';
-import { AccountPostingType } from '$lib/models/models';
+import { PostingType } from '$lib/models/models';
 
 /**
- * Data Transfer Object for creating a account posting.
+ * Data Transfer Object for creating a posting.
  */
-export type CreateAccountPostingDto = {
-	activityId: number;
+export type CreatePostingDto = {
 	amountInCents: number;
 	date: string;
 	purpose: string;
-	type: AccountPostingType;
+	type: PostingType;
 };
 
 /**
  * Creates a schema for validating the `CreateAccountPostingDto`.
- * @returns {ObjectSchema<AnyObject, CreateAccountPostingDto>} The schema for validating the `CreateAccountPostingDto`.
+ * @returns {ObjectSchema<AnyObject, CreatePostingDto>} The schema for validating the `CreateAccountPostingDto`.
  */
-export const createAccountPostingSchema = (): ObjectSchema<AnyObject, CreateAccountPostingDto> => {
+export const createAccountPostingSchema = (): ObjectSchema<AnyObject, CreatePostingDto> => {
 	const $t = get(t);
-	return object<CreateAccountPostingDto>({
-		activityId: string().default(''),
+	return object<CreatePostingDto>({
 		amountInCents: number()
 			.default(0)
 			.min(1, $t('api.dto.budget.create-posting.schema.amount.min'))
@@ -38,6 +36,6 @@ export const createAccountPostingSchema = (): ObjectSchema<AnyObject, CreateAcco
 			.trim()
 			.max(200, $t('api.dto.budget.create-posting.schema.purpose.max'))
 			.required($t('api.dto.budget.create-posting.schema.purpose.required')),
-		type: string().oneOf(Object.values(AccountPostingType)).default(AccountPostingType.CREDIT)
+		type: string().oneOf(Object.values(PostingType)).default(PostingType.CREDIT)
 	});
 };

@@ -7,7 +7,7 @@
 
 	import { goto } from '$app/navigation';
 
-	import { authResource, searchableResource } from '$lib/api/resources';
+	import { authenticationResource, searchableResource } from '$lib/api/resources';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
 	import { t } from '$lib/locales';
@@ -34,7 +34,7 @@
 	}
 
 	async function logout(): Promise<void> {
-		await authResource.logout();
+		await authenticationResource.logout();
 	}
 
 	async function onSearch(event: CustomEvent): Promise<void> {

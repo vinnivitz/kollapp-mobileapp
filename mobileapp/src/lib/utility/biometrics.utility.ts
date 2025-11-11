@@ -1,4 +1,4 @@
-import type { LoginDto } from '$lib/api/dto/client/auth';
+import type { LoginDto } from '$lib/api/dto/client/authentication';
 
 import { NativeBiometric } from '@capgo/capacitor-native-biometric';
 import { get } from 'svelte/store';
