@@ -1,0 +1,7 @@
+{
+  "name": "@kollapp/backend-api",
+  "version": "1.0.0",
+  "publishConfig": {
+    "registry": "https://npm.kollapp.org"
+  }
+}

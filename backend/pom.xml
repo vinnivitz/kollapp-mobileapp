@@ -1,12 +1,12 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns="http://maven.apache.org/POM/4.0.0"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.3.5</version>
-        <relativePath /> <!-- lookup parent from repository -->
+        <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>org.kollapp</groupId>
     <artifactId>backend</artifactId>
@@ -397,10 +397,11 @@
                                     </classPatterns>
                                     <excludeClasses>
                                         <excludeClass>
-                                            org.kollappbackend.core.adapters.primary.rest.model.DataResponseTO</excludeClass>
+                                            org.kollappbackend.core.adapters.primary.rest.model.DataResponseTO
+                                        </excludeClass>
                                     </excludeClasses>
                                     <outputKind>module</outputKind>
-                                    <outputFile>../mobileapp/api-types/api-types.ts</outputFile>
+                                    <outputFile>../backend-api/api-types.ts</outputFile>
                                     <outputFileType>implementationFile</outputFileType>
                                     <typeMappings>
                                         <typeMapping>
