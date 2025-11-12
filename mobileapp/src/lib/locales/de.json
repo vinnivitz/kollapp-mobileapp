@@ -515,7 +515,7 @@
         "organization": {
           "button": "Zum Kollektiv",
           "register": "Registrieren",
-          "join": "Anschließen"
+          "join": "Beitreten"
         },
         "user": {
           "title": "Hallo {{value}}!"

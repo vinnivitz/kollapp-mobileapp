@@ -32,9 +32,10 @@ jobs:
         run: |
           npm -g install pnpm 
           pnpm install --prefix mobileapp --frozen-lockfile
+          pnpm --prefix mobileapp sync-ionic-types
+          pnpm --prefix mobileapp index-searchables
           pnpm --prefix mobileapp validate
           pnpm --prefix mobileapp test
-          pnpm --prefix mobileapp test:coverage
           pnpm --prefix mobileapp build
 #      - name: Publish frontend quality analysis results to SonarQube
 #        run: |

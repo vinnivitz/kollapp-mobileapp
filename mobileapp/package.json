@@ -15,7 +15,8 @@
 		"build-android": "cross-env ADAPTER=static npm run build --prod && dotenv cross-env-shell 'cap sync && ./android/gradlew -p android assembleDebug'",
 		"build-web": "cross-env ADAPTER=node npm run build",
 		"visualize": "mkdir -p visualize && madge --extensions ts,svelte --image visualize/dependency-graph.png src",
-		"index-searchables": "tsx ./src/lib/utility/index-searchables.ts"
+		"index-searchables": "tsx ./src/lib/utility/index-searchables.ts",
+		"sync-ionic-types": "tsx ./src/lib/utility/sync-ionic-types.ts"
 	},
 	"type": "module",
 	"devDependencies": {
