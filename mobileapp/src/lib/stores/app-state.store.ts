@@ -14,7 +14,7 @@ import {
 	themeStore,
 	userStore
 } from '$lib/stores';
-import { showAlert } from '$lib/utility';
+import { clearRequestCache, showAlert } from '$lib/utility';
 
 function createAppStateStore(): AppStateStore {
 	const { set, subscribe } = writable<AppStateType>(AppStateType.UNINITIALIZED);
@@ -59,6 +59,7 @@ function createAppStateStore(): AppStateStore {
 	}
 
 	async function reset(): Promise<void> {
+		clearRequestCache();
 		await Promise.all([userStore.reset(), organizationStore.reset(), authenticationStore.reset()]);
 		set(AppStateType.READY);
 		isInitialized = false;

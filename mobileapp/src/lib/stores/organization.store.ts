@@ -5,7 +5,7 @@ import { writable } from 'svelte/store';
 
 import { organizationResource } from '$lib/api/resources';
 import { PreferencesKey } from '$lib/models/preferences';
-import { getStoredValue, removeStoredValue, StatusCheck, storeValue } from '$lib/utility';
+import { deduplicateRequest, getStoredValue, removeStoredValue, StatusCheck, storeValue } from '$lib/utility';
 
 function createStore(): OrganizationStore {
 	const { set, subscribe } = writable<OrganizationDto | undefined>();
@@ -14,26 +14,28 @@ function createStore(): OrganizationStore {
 	const organizations = writable<OrganizationDto[]>([]);
 
 	async function init(): Promise<void> {
-		const storedOrganization = await getStoredValue<OrganizationDto>(PreferencesKey.ORGANIZATION);
-		if (storedOrganization) {
-			organizations.set([storedOrganization]);
-			set(storedOrganization);
-			loadedCache.set(true);
-		}
+		return deduplicateRequest('organization-store-init', async () => {
+			const storedOrganization = await getStoredValue<OrganizationDto>(PreferencesKey.ORGANIZATION);
+			if (storedOrganization) {
+				organizations.set([storedOrganization]);
+				set(storedOrganization);
+				loadedCache.set(true);
+			}
 
-		const response = await organizationResource.getAll();
+			const response = await organizationResource.getAll();
 
-		if (StatusCheck.isOK(response.status)) {
-			const allOrganizations = response.data;
-			organizations.set(allOrganizations);
+			if (StatusCheck.isOK(response.status)) {
+				const allOrganizations = response.data;
+				organizations.set(allOrganizations);
 
-			const organizationId = storedOrganization?.id ?? allOrganizations[0]?.id;
+				const organizationId = storedOrganization?.id ?? allOrganizations[0]?.id;
 
-			await (organizationId ? update(organizationId) : _set());
-		} else if (StatusCheck.isUnauthorized(response.status)) {
-			await _set();
-		}
-		loadedServer.set(true);
+				await (organizationId ? update(organizationId) : _set());
+			} else if (StatusCheck.isUnauthorized(response.status)) {
+				await _set();
+			}
+			loadedServer.set(true);
+		});
 	}
 
 	async function _set(model?: OrganizationDto): Promise<void> {
@@ -48,10 +50,12 @@ function createStore(): OrganizationStore {
 	}
 
 	async function update(id: number): Promise<void> {
-		const response = await organizationResource.getById(id);
-		if (StatusCheck.isOK(response.status)) {
-			await _set(response.data);
-		}
+		return deduplicateRequest(`organization-get-${id}`, async () => {
+			const response = await organizationResource.getById(id);
+			if (StatusCheck.isOK(response.status)) {
+				await _set(response.data);
+			}
+		});
 	}
 
 	return {

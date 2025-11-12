@@ -5,7 +5,7 @@ import { writable } from 'svelte/store';
 
 import { userResource } from '$lib/api/resources';
 import { PreferencesKey } from '$lib/models/preferences';
-import { getStoredValue, removeStoredValue, StatusCheck, storeValue } from '$lib/utility';
+import { deduplicateRequest, getStoredValue, removeStoredValue, StatusCheck, storeValue } from '$lib/utility';
 
 function createStore(): UserStore {
 	const { set, subscribe } = writable<undefined | UserDto>();
@@ -13,21 +13,23 @@ function createStore(): UserStore {
 	const loadedServer = writable(false);
 
 	async function init(): Promise<void> {
-		const storedUser = await getStoredValue<UserDto>(PreferencesKey.USER);
-		if (storedUser) {
-			await _set(storedUser);
-			loadedCache.set(true);
-		}
+		return deduplicateRequest('user-store-init', async () => {
+			const storedUser = await getStoredValue<UserDto>(PreferencesKey.USER);
+			if (storedUser) {
+				await _set(storedUser);
+				loadedCache.set(true);
+			}
 
-		const response = await userResource.get();
+			const response = await userResource.get();
 
-		if (StatusCheck.isOK(response.status)) {
-			await _set(response.data);
-		} else if (StatusCheck.isUnauthorized(response.status)) {
-			await _set();
-		}
+			if (StatusCheck.isOK(response.status)) {
+				await _set(response.data);
+			} else if (StatusCheck.isUnauthorized(response.status)) {
+				await _set();
+			}
 
-		loadedServer.set(true);
+			loadedServer.set(true);
+		});
 	}
 
 	async function _set(model?: UserDto): Promise<void> {
