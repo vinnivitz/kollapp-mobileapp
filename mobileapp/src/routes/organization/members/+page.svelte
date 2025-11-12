@@ -134,7 +134,7 @@
 				url: `https://api.kollapp.org/api/organization/invitation/${organizationCode}`
 			});
 		} else {
-			showAlert($t('routes.organization.page.members.share.not-supported'));
+			await showAlert($t('routes.organization.page.members.share.not-supported'));
 		}
 	}
 

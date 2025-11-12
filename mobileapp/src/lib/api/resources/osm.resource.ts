@@ -27,7 +27,7 @@ async function getLocationsByQuery(query: string): Promise<AddressModel[]> {
 			throw new Error('Failed to fetch locations');
 		}
 	} catch {
-		showAlert($t('components.widgets.map.api.error'), { type: AlertType.ERROR });
+		await showAlert($t('components.widgets.map.api.error'), { type: AlertType.ERROR });
 		return [];
 	}
 }
@@ -46,10 +46,10 @@ async function getLocationByLatLng(latlng: LatLng): Promise<AddressModel | undef
 			const result = (await response.json()) as NominatimItemDto;
 			return getAddress(result);
 		} else {
-			showAlert($t('components.widgets.map.api.location-error'), { type: AlertType.ERROR });
+			await showAlert($t('components.widgets.map.api.location-error'), { type: AlertType.ERROR });
 		}
 	} catch {
-		showAlert($t('components.widgets.map.api.location-error'), { type: AlertType.ERROR });
+		await showAlert($t('components.widgets.map.api.location-error'), { type: AlertType.ERROR });
 	}
 }
 

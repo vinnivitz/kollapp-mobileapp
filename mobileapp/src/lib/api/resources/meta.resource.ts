@@ -57,7 +57,7 @@ async function getReleaseNotes(): Promise<ReleaseNotesModel[]> {
 			throw new Error('Failed to fetch release notes');
 		}
 	} catch {
-		showAlert('Failed to fetch release notes');
+		await showAlert('Failed to fetch release notes');
 		return [];
 	}
 }

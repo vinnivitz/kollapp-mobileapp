@@ -15,7 +15,7 @@ export async function storeValue<T>(key: PreferencesKey, value: T): Promise<void
 	try {
 		await Preferences.set({ key: getKey(key), value: JSON.stringify(value) });
 	} catch {
-		showAlert('Failed to store value');
+		await showAlert('Failed to store value');
 	}
 }
 
@@ -35,7 +35,7 @@ export async function getStoredValue<T = string>(key: PreferencesKey): Promise<T
 			return value as T;
 		}
 	} catch {
-		showAlert('Failed to retrieve value');
+		await showAlert('Failed to retrieve value');
 	}
 }
 
@@ -48,7 +48,7 @@ export async function removeStoredValue(key: PreferencesKey): Promise<void> {
 	try {
 		await Preferences.remove({ key: getKey(key) });
 	} catch {
-		showAlert('Failed to remove value');
+		await showAlert('Failed to remove value');
 	}
 }
 

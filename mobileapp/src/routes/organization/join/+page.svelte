@@ -35,11 +35,11 @@
 					return goto(PageRoute.ORGANIZATION.ROOT);
 				}
 			} else {
-				showAlert('QR code is not valid.');
+				await showAlert('QR code is not valid.');
 			}
 		} catch (error) {
 			console.error('Error scanning QR code:', error);
-			showAlert('An error occurred while scanning the QR code. Please try again.');
+			await showAlert('An error occurred while scanning the QR code. Please try again.');
 		}
 	}
 </script>

@@ -17,20 +17,20 @@ export async function initPushNotifications(): Promise<void> {
 			await PushNotifications.register();
 		}
 
-		PushNotifications.addListener('registration', (token: Token) => {
-			showAlert('Push registration success, token: ' + token.value, { type: AlertType.SUCCESS });
+		PushNotifications.addListener('registration', async (token: Token) => {
+			await showAlert('Push registration success, token: ' + token.value, { type: AlertType.SUCCESS });
 		});
 
-		PushNotifications.addListener('registrationError', (error: RegistrationError) => {
-			showAlert('Error on registration: ' + error.error);
+		PushNotifications.addListener('registrationError', async (error: RegistrationError) => {
+			await showAlert('Error on registration: ' + error.error);
 		});
 
-		PushNotifications.addListener('pushNotificationReceived', (notification: PushNotificationSchema) => {
-			showAlert('Push received: ' + JSON.stringify(notification), { type: AlertType.SUCCESS });
+		PushNotifications.addListener('pushNotificationReceived', async (notification: PushNotificationSchema) => {
+			await showAlert('Push received: ' + JSON.stringify(notification), { type: AlertType.SUCCESS });
 		});
 
-		PushNotifications.addListener('pushNotificationActionPerformed', (notification: ActionPerformed) => {
-			showAlert('Push action performed: ' + JSON.stringify(notification), { type: AlertType.SUCCESS });
+		PushNotifications.addListener('pushNotificationActionPerformed', async (notification: ActionPerformed) => {
+			await showAlert('Push action performed: ' + JSON.stringify(notification), { type: AlertType.SUCCESS });
 		});
 	} catch {
 		console.info('Push notifications not supported on this platform');

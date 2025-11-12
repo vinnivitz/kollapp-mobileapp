@@ -231,7 +231,7 @@ async function getResponseBody<T>(
 	data = body.data ?? data;
 	const { validationCode, validationField } = body;
 	if (!silent && !validationField) {
-		showAlert(message, { type: response.ok ? AlertType.SUCCESS : AlertType.ERROR });
+		await showAlert(message, { type: response.ok ? AlertType.SUCCESS : AlertType.ERROR });
 	}
 	// only triggered in dev mode
 	if (dev) {
@@ -286,7 +286,7 @@ async function getNewAuthenticationToken(): Promise<string | undefined> {
 
 async function createErrorResponse(status: number, message: string, silent: boolean): Promise<ResponseBody> {
 	if (!silent) {
-		showAlert(message);
+		await showAlert(message);
 	}
 	const log = `status: ${status}, msg: ${message}`;
 	if (dev) {

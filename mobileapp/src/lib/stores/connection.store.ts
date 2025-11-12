@@ -24,10 +24,10 @@ function createStore(): ConnectionStore {
 			const isOnline = status.connected;
 
 			if (!isOnline && wasOnline) {
-				showAlert($t('api.offline'));
+				await showAlert($t('api.offline'));
 				console.info($t('api.offline'));
 			} else if (isOnline && wasOnline === false) {
-				showAlert($t('api.online'), { type: AlertType.SUCCESS });
+				await showAlert($t('api.online'), { type: AlertType.SUCCESS });
 				console.info($t('api.online'));
 			}
 
@@ -52,10 +52,10 @@ function createStore(): ConnectionStore {
 		const wasOnline = get(connectionStore);
 
 		if (!isOnline && wasOnline) {
-			showAlert($t('api.offline'));
+			await showAlert($t('api.offline'));
 			console.info($t('api.offline'));
 		} else if (isOnline && wasOnline === false) {
-			showAlert($t('api.online'), { type: AlertType.SUCCESS });
+			await showAlert($t('api.online'), { type: AlertType.SUCCESS });
 			console.info($t('api.online'));
 		}
 
