@@ -2,6 +2,7 @@
 	import type { PostingDto } from '$lib/api/dto/server/organization';
 	import type { ApexOptions } from 'apexcharts';
 
+	import { TZDate } from '@date-fns/tz';
 	import Chart from '@edde746/svelte-apexcharts';
 	import { format } from 'date-fns';
 	import { calendarOutline, cashOutline, trendingDown, trendingUp } from 'ionicons/icons';
@@ -142,7 +143,7 @@
 
 							const purpose = dataPoint.x;
 							const amount = dataPoint.y;
-							const date = new Date(dataPoint.meta.date);
+							const date = new TZDate(dataPoint.meta.date);
 							const id = dataPoint.meta.id;
 
 							if (id === selectedChartDataId) {

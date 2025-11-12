@@ -21,7 +21,7 @@ async function get(): Promise<ResponseBody<UserDto>> {
  */
 async function changePassword(model: ChangePasswordDto): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/change-password`, {
-		body: JSON.stringify(model),
+		body: model,
 		method: RequestMethod.PATCH
 	});
 }
@@ -33,7 +33,7 @@ async function changePassword(model: ChangePasswordDto): Promise<ResponseBody> {
  */
 async function update(model: UpdateUserDataDto): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/update-information`, {
-		body: JSON.stringify(model),
+		body: model,
 		method: RequestMethod.PATCH
 	});
 }

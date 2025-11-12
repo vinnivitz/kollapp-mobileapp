@@ -28,33 +28,63 @@
 	let searchbarOpen = $state(false);
 	let searchItems = $state<PositionItem[]>([]);
 	let searchbar = $state<HTMLIonSearchbarElement>();
+	let mapInitialized = false;
 
 	onMount(() => initializeMap(value));
 
-	onDestroy(() => map?.remove());
+	onDestroy(() => {
+		if (map) {
+			map.remove();
+			map = undefined;
+		}
+		mapInitialized = false;
+	});
+
+	// Re-initialize map when value prop changes
+	$effect(() => {
+		if (value && mapInitialized) {
+			updateMarkerFromValue(value);
+		}
+	});
+
+	async function updateMarkerFromValue(value: string): Promise<void> {
+		if (!map) return;
+		const response = await osmResource.getLocationsByQuery(value);
+		const item = response[0];
+		if (item) {
+			await setMarker(item.latlng);
+		}
+	}
 
 	async function initializeMap(value?: string): Promise<void> {
+		if (mapInitialized) return;
+
+		const existingContainer = document.querySelector('#map .leaflet-container');
+		if (existingContainer) {
+			existingContainer.remove();
+		}
+
 		const coordinates = (await getStoredValue(PreferencesKey.POSITION)) || JSON.parse(environment.defaultPosition);
 		const latlng = new LatLng(coordinates[0], coordinates[1]);
-		if (document.querySelector('.leaflet-container')) return;
+
 		map = new Map('map', {
 			center: latlng,
 			doubleClickZoom: true,
 			zoom: 16,
 			zoomControl: true
 		});
+
+		mapInitialized = true;
+
 		map.on('click', handleMapClick);
 		new TileLayer(TILE_LAYER_URL, {
 			attribution: TILE_LAYER_ATTRIBUTION,
 			maxNativeZoom: 19,
 			maxZoom: 20
 		}).addTo(map);
+
 		if (value) {
-			const response = await osmResource.getLocationsByQuery(value);
-			const item = response[0];
-			if (item) {
-				await setMarker(item.latlng);
-			}
+			await updateMarkerFromValue(value);
 		}
 	}
 

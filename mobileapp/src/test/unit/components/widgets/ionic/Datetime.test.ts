@@ -1,3 +1,4 @@
+import { TZDate } from '@date-fns/tz';
 import { fireEvent, render } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -36,7 +37,7 @@ describe('Datetime Component', () => {
 		});
 
 		const ionDatetime = container.querySelector('ion-datetime') as HTMLElement;
-		const newValue = new Date().toISOString();
+		const newValue = new TZDate().toISOString();
 
 		await fireEvent(ionDatetime, new CustomEvent('ionChange', { detail: { value: newValue } }));
 

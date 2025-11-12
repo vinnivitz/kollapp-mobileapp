@@ -13,7 +13,7 @@ const ENDPOINT = 'organization';
  */
 async function create(organizationId: number, model: CreateActivityDto): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/${organizationId}/activity`, {
-		body: JSON.stringify(model),
+		body: model,
 		method: RequestMethod.POST
 	});
 }
@@ -27,7 +27,7 @@ async function create(organizationId: number, model: CreateActivityDto): Promise
  */
 async function update(organizationId: number, activityId: number, model: UpdateActivityDto): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/${organizationId}/activity/${activityId}`, {
-		body: JSON.stringify(model),
+		body: model,
 		method: RequestMethod.POST
 	});
 }

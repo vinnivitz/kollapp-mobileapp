@@ -28,15 +28,6 @@ export function clickableElement(node: HTMLElement, callback: () => void): { des
 }
 
 /**
- * Clones an object using JSON serialization
- * @param object object to clone
- * @returns cloned object
- */
-export function clone<T>(object: T): T {
-	return JSON.parse(JSON.stringify(object));
-}
-
-/**
  * Triggers a click event on an element with a specific label
  * @param label label of the element to click
  */

@@ -54,7 +54,6 @@
 	import { type FilterItem, Form, type FormActions, type ItemSlidingOption } from '$lib/models/ui';
 	import { localeStore, organizationStore, userStore } from '$lib/stores';
 	import {
-		clone,
 		customForm,
 		formatter,
 		getDateFnsLocale,
@@ -340,7 +339,7 @@
 	function onOpenUpdatePostingModal(posting: PostingDto): void {
 		selectedPosting = posting;
 		selectedPostingType = posting.type;
-		updateAccountPostingFormActions?.setModel(clone(selectedPosting));
+		updateAccountPostingFormActions?.setModel(structuredClone(selectedPosting));
 		updateAccountPostingModalOpen = true;
 	}
 
@@ -461,7 +460,7 @@
 			<div class="flex items-center gap-2">
 				<ion-icon icon={calendarOutline}></ion-icon>
 				<ion-text>
-					{formatDistanceToNow(addDays(new Date(), 5), {
+					{formatDistanceToNow(addDays(new TZDate(), 5), {
 						addSuffix: true,
 						locale: getDateFnsLocale($localeStore)
 					})}
@@ -782,7 +781,7 @@
 				</ion-text>
 				<ion-text color="medium" class="flex items-center justify-center gap-1">
 					<ion-icon icon={calendarClearOutline}></ion-icon>
-					<div>{format(new Date(posting.date), 'PPP')}</div>
+					<div>{format(new TZDate(posting.date), 'PPP')}</div>
 				</ion-text>
 				<ion-text color="medium" class="flex items-center justify-center gap-1">
 					<ion-icon icon={cashOutline}></ion-icon>

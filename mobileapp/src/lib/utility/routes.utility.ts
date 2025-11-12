@@ -9,7 +9,7 @@ import { modalStore } from '$lib/stores';
  * Navigates back in the browser history if history is present otherwise one hirarchy up.
  */
 export async function navigateBack(): Promise<void> {
-	const hasModal = await modalStore.closeLastIfExists();
+	const hasModal = modalStore.closeLastIfExists();
 	if (hasModal) return;
 	const path = getPath();
 	if (path !== PageRoute.HOME) {

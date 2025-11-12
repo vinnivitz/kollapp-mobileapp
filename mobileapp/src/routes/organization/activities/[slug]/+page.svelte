@@ -55,7 +55,6 @@
 	import { type FabButtonButtons, type FilterItem, Form, type FormActions } from '$lib/models/ui';
 	import { localeStore, organizationStore, userStore } from '$lib/stores';
 	import {
-		clone,
 		customForm,
 		featureNotImplementedAlert,
 		formatter,
@@ -247,7 +246,7 @@
 	}
 
 	function onOpenActivityModal(): void {
-		updateActivityFormActions.setModel(clone(activity));
+		updateActivityFormActions.setModel(structuredClone(activity));
 		updateActivityModalOpen = true;
 	}
 
@@ -372,7 +371,7 @@
 	async function onOpenUpdatePostingModal(posting: PostingDto): Promise<void> {
 		selectedPosting = posting;
 		selectedPostingType = posting.type;
-		updateAccountPostingFormActions.setModel(clone(selectedPosting));
+		updateAccountPostingFormActions.setModel(structuredClone(selectedPosting));
 		updateAccountPostingModalOpen = true;
 	}
 

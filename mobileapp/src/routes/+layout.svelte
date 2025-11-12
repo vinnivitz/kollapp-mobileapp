@@ -31,13 +31,21 @@
 
 	let tabs = $state<TabConfig[]>();
 	let loaded = $state(false);
+	let storesInitialized = $state(false);
 
 	initializeIonic();
 
 	$effect(() => {
-		if (loaded && $authenticationStore) {
+		if (loaded && $authenticationStore && !storesInitialized) {
+			storesInitialized = true;
 			initStores();
 		}
+
+		return () => {
+			if (!$authenticationStore && storesInitialized) {
+				storesInitialized = false;
+			}
+		};
 	});
 
 	$effect(() => {

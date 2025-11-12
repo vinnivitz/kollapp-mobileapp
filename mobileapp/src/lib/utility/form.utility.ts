@@ -254,7 +254,22 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 
 	function destroy(): void {
 		for (const teardown of teardowns) teardown();
+
 		for (const icon of passwordIcons) icon.remove();
+
+		for (const input of customInputs) {
+			removeCustomValidationFeedback(input);
+		}
+
+		if (data.config.exposedActions) {
+			data.config.exposedActions({
+				applyValidationFeedback: () => {},
+				applyValidationFeedbackByKey: () => {},
+				onSubmit: async () => {},
+				onUpdate: async () => {},
+				setModel: () => {}
+			});
+		}
 	}
 
 	return {

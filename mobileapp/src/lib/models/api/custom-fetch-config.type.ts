@@ -15,7 +15,7 @@ export type CustomFetchConfig =
 	| {
 			method: RequestMethod.PATCH | RequestMethod.POST | RequestMethod.PUT;
 			authorizationType?: AuthorizationType;
-			body?: string;
+			body?: unknown;
 			query?: Record<string, string>;
 			silentOnError?: boolean;
 			silentOnSuccess?: boolean;

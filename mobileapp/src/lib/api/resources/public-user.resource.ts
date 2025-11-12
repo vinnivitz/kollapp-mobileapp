@@ -13,7 +13,7 @@ const ENDPOINT = 'public/user';
 async function register(model: RegisterDto): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/signup`, {
 		authorizationType: AuthorizationType.NONE,
-		body: JSON.stringify(model),
+		body: model,
 		method: RequestMethod.POST
 	});
 }
@@ -26,7 +26,7 @@ async function register(model: RegisterDto): Promise<ResponseBody> {
 async function forgotPassword(model: ResetPasswordDto): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/forgot-password`, {
 		authorizationType: AuthorizationType.NONE,
-		body: JSON.stringify(model),
+		body: model,
 		method: RequestMethod.POST
 	});
 }
@@ -39,7 +39,7 @@ async function forgotPassword(model: ResetPasswordDto): Promise<ResponseBody> {
 async function resetPassword(model: ResetPasswordConfirmationDto, token: string): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/reset-password`, {
 		authorizationType: AuthorizationType.NONE,
-		body: JSON.stringify(model),
+		body: model,
 		method: RequestMethod.POST,
 		query: { token }
 	});
@@ -53,7 +53,7 @@ async function resetPassword(model: ResetPasswordConfirmationDto, token: string)
 async function resendConfirmation(model: ResetPasswordConfirmationDto): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/confirmation`, {
 		authorizationType: AuthorizationType.NONE,
-		body: JSON.stringify(model),
+		body: model,
 		method: RequestMethod.POST
 	});
 }

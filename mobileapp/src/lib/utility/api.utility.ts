@@ -1,5 +1,6 @@
 import type { AuthenticationModel } from '$lib/models/models';
 
+import { TZDate } from '@date-fns/tz';
 import { alertController } from '@ionic/core';
 import { format } from 'date-fns';
 import { get } from 'svelte/store';
@@ -25,7 +26,7 @@ import { AlertType, type ValidationResult } from '$lib/models/ui';
 import { authenticationStore, connectionStore, localeStore, organizationStore, userStore } from '$lib/stores';
 import { getStoredValue, removeStoredValue, showAlert, storeValue } from '$lib/utility';
 
-const $t = get(t);
+let refreshPromise: Promise<string | undefined> | undefined;
 
 /**
  * Custom fetch function with authentication and error handling.
@@ -34,50 +35,74 @@ const $t = get(t);
  * @returns {Promise<ResponseBody<T>>}
  */
 export async function customFetch<T = never>(url: string, config?: CustomFetchConfig): Promise<ResponseBody<T>> {
+	const $t = get(t);
 	url = getUrl(url);
-	const method = config?.method ?? RequestMethod.GET;
-	const body = config?.body;
-	const query = config?.query;
-	const authorizationType = config?.authorizationType ?? AuthorizationType.BEARER;
-	const silentOnSuccess = config?.silentOnSuccess ?? false;
-	const silentOnError = config?.silentOnError ?? false;
+
+	const {
+		authorizationType = AuthorizationType.BEARER,
+		body,
+		method = RequestMethod.GET,
+		query,
+		silentOnError = false,
+		silentOnSuccess = false
+	} = config ?? {};
+
+	const hasBody = hasRequestBody(method);
+
+	function buildHeaders(): Headers {
+		const headers = new Headers();
+		headers.set(HeaderKey.ACCEPT_LANGUAGE, get(localeStore) ?? Locale.DE);
+		if (hasBody) {
+			headers.set(HeaderKey.CONTENT_TYPE, ContentType.JSON);
+		}
+		return headers;
+	}
+
+	function buildOptions(headers: Headers): RequestInit {
+		const options: RequestInit = { headers, method };
+		if (hasBody && body !== undefined) {
+			options.body = typeof body === 'string' ? body : JSON.stringify(body);
+		}
+		return options;
+	}
+
+	async function handleUnauthorizedResponse(
+		response: Response,
+		enhancedUrl: string,
+		headers: Headers
+	): Promise<Response | undefined> {
+		if (!StatusCheck.isUnauthorized(response.status)) return response;
+		const newToken = await getNewAuthenticationToken();
+		if (!newToken) return undefined;
+		headers.set(HeaderKey.AUTHORIZATION, getBearerToken(newToken));
+		response = await fetch(enhancedUrl, buildOptions(headers));
+		if (StatusCheck.isUnauthorized(response.status)) return undefined;
+		return response;
+	}
 
 	try {
-		const options: RequestInit = { method };
-		const headers = new Headers();
-
-		headers.set(HeaderKey.ACCEPT_LANGUAGE, get(localeStore) ?? Locale.DE);
-
-		if (hasRequestBody(method)) {
-			headers.set(HeaderKey.CONTENT_TYPE, ContentType.JSON);
-			options.body = body;
-		}
+		const headers = buildHeaders();
 
 		if (authorizationType === AuthorizationType.BEARER) {
 			const token = get(authenticationStore)?.accessToken;
-			if (token) {
-				headers.set(HeaderKey.AUTHORIZATION, getBearerToken(token));
-			} else {
+			if (!token) {
 				return handleAuthenticationError();
 			}
+			headers.set(HeaderKey.AUTHORIZATION, getBearerToken(token));
 		}
 
 		const enhancedUrl = await getEnhancedUrl(url, query);
+		let response = await fetch(enhancedUrl, buildOptions(headers));
 
-		let response = await fetch(enhancedUrl, { ...options, headers });
-
-		if (StatusCheck.isUnauthorized(response.status)) {
-			const newToken = await getNewAuthenticationToken();
-			if (!newToken) {
-				return handleAuthenticationError();
-			}
-			headers.set(HeaderKey.AUTHORIZATION, getBearerToken(newToken));
-			response = await fetch(enhancedUrl, { ...options, headers });
+		const handled = await handleUnauthorizedResponse(response, enhancedUrl, headers);
+		if (!handled) {
+			return handleAuthenticationError();
 		}
+		response = handled;
 
 		connectionStore.check();
 
-		return getResponseBody(response, silentOnSuccess, silentOnError);
+		return getResponseBody<T>(response, silentOnSuccess, silentOnError);
 	} catch (error) {
 		let message = $t('api.error');
 		let status = StatusCode.SERVICE_UNAVAILABLE;
@@ -105,6 +130,7 @@ export async function isAuthenticated(): Promise<boolean> {
  * @returns {ValidationResult<T>} Validation result containing errors and validity status.
  */
 export function getValidationResult<T>(body: ResponseBody<unknown>): ValidationResult<T> {
+	const $t = get(t);
 	return {
 		errors: [
 			{
@@ -154,10 +180,11 @@ export function hasUserRole(role: UserRole): boolean {
  * @returns {Promise<void>}
  */
 export async function checkMaintenance(): Promise<void> {
+	const $t = get(t);
 	const response = await metaResource.getMaintenanceInfo();
 	if (StatusCheck.isOK(response.status)) {
-		const schedule = new Date(response.data.scheduled);
-		if (!response.data.scheduled || schedule <= new Date()) {
+		const schedule = new TZDate(response.data.scheduled);
+		if (!response.data.scheduled || schedule <= new TZDate()) {
 			removeStoredValue(PreferencesKey.MAINTENANCE_SCHEDULE);
 		} else {
 			const storedSchedule = await getStoredValue<Date>(PreferencesKey.MAINTENANCE_SCHEDULE);
@@ -175,6 +202,7 @@ export async function checkMaintenance(): Promise<void> {
 }
 
 async function handleAuthenticationError(): Promise<ResponseBody> {
+	const $t = get(t);
 	await authenticationResource.logout();
 	return createErrorResponse(StatusCode.UNAUTHORIZED, $t('api.unauthorized'), true);
 }
@@ -188,6 +216,7 @@ async function getResponseBody<T>(
 	silentOnSuccess: boolean,
 	silentOnError: boolean
 ): Promise<ResponseBody<T>> {
+	const $t = get(t);
 	const status = response.status;
 	let message = $t('api.success');
 	let data = {} as T;
@@ -231,17 +260,28 @@ async function getEnhancedUrl(url: string, query: Record<string, string> | undef
 }
 
 async function getNewAuthenticationToken(): Promise<string | undefined> {
-	const refreshToken = get(authenticationStore)?.refreshToken;
-	if (refreshToken) {
+	if (refreshPromise) return refreshPromise;
+
+	refreshPromise = (async () => {
+		const refreshToken = get(authenticationStore)?.refreshToken;
+		if (!refreshToken) {
+			await authenticationStore.reset();
+			return;
+		}
+
 		const body = await authenticationResource.refresh(refreshToken);
 		if (StatusCheck.isOK(body.status)) {
 			const accessToken = body.data.token;
 			await authenticationStore.set({ accessToken, refreshToken });
 			return accessToken;
 		}
-	} else {
+
 		await authenticationStore.reset();
-	}
+	})();
+
+	const result = await refreshPromise;
+	refreshPromise = undefined;
+	return result;
 }
 
 async function createErrorResponse(status: number, message: string, silent: boolean): Promise<ResponseBody> {

@@ -1,6 +1,8 @@
 import type { MaintenanceInfoDto } from '$lib/api/dto/server';
 import type { ReleaseNotesModel } from '$lib/models/models';
 
+import { TZDate } from '@date-fns/tz';
+
 import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/models/api';
 import { customFetch, showAlert } from '$lib/utility';
 
@@ -22,7 +24,7 @@ async function getApiVersion(): Promise<ResponseBody<string>> {
 async function reportErrorLog(log: string): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/report-error`, {
 		authorizationType: AuthorizationType.NONE,
-		body: JSON.stringify({ log, timestamp: new Date().toISOString() }),
+		body: { log, timestamp: new TZDate().toISOString() },
 		method: RequestMethod.POST,
 		silentOnError: true,
 		silentOnSuccess: true

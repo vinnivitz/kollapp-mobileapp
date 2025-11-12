@@ -46,11 +46,18 @@
 
 	$effect(() => {
 		if (!_modalController) return;
+
 		if (open) {
 			modalStore.add(_modalController);
 		} else {
 			modalStore.remove(_modalController);
 		}
+
+		return () => {
+			if (_modalController) {
+				modalStore.remove(_modalController);
+			}
+		};
 	});
 
 	function isPlatformWeb(): boolean {

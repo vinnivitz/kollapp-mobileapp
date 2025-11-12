@@ -6,8 +6,6 @@ import environment from '$lib/environment';
 import { t } from '$lib/locales';
 import { type AlertConfig, AlertType } from '$lib/models/ui';
 
-const $t = get(t);
-
 let toast: HTMLIonToastElement | undefined;
 
 /**
@@ -16,9 +14,12 @@ let toast: HTMLIonToastElement | undefined;
  * @param config alert model
  */
 export async function showAlert(message: string, config?: AlertConfig): Promise<void> {
+	const $t = get(t);
 	const type = config?.type ?? AlertType.ERROR;
 
-	if (toast?.message === message && toast.color === type) return;
+	const sanitizedMessage = sanitizeMessage(message);
+
+	if (toast?.message === sanitizedMessage && toast.color === type) return;
 
 	if (toast) {
 		await toast.dismiss();
@@ -30,7 +31,7 @@ export async function showAlert(message: string, config?: AlertConfig): Promise<
 		color: type,
 		duration: config?.duration ?? environment.toastDuration,
 		icon: type === AlertType.ERROR ? alertCircleOutline : checkmarkCircleSharp,
-		message,
+		message: sanitizedMessage,
 		swipeGesture: 'vertical'
 	});
 
@@ -44,6 +45,13 @@ export async function showAlert(message: string, config?: AlertConfig): Promise<
  * @returns {Promise<void>} A promise that resolves when the alert is shown
  */
 export async function featureNotImplementedAlert(): Promise<void> {
+	const $t = get(t);
 	const message = $t('utils.alert.feature-not-implemented');
 	await showAlert(message);
+}
+
+function sanitizeMessage(message: string): string {
+	const div = document.createElement('div');
+	div.textContent = message;
+	return div.innerHTML;
 }

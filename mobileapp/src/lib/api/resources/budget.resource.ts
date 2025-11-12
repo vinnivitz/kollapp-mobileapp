@@ -14,7 +14,7 @@ const ENDPOINT = (organizationId: number): string => `organization/${organizatio
  */
 async function add(accountId: number, model: CreatePostingDto): Promise<ResponseBody<ActivityPostingDto>> {
 	return customFetch(`${ENDPOINT}/${accountId}/posting`, {
-		body: JSON.stringify(model),
+		body: model,
 		method: RequestMethod.POST
 	});
 }
@@ -34,7 +34,7 @@ async function updateActivityPosting(
 	model: UpdatePostingDto
 ): Promise<ResponseBody<ActivityPostingDto>> {
 	return customFetch(`${ENDPOINT(organizationId)}/${activityId}/posting/${postingId}`, {
-		body: JSON.stringify(model),
+		body: model,
 		method: RequestMethod.PUT
 	});
 }
@@ -52,7 +52,7 @@ async function updateOrganizationPosting(
 	model: UpdatePostingDto
 ): Promise<ResponseBody<ActivityPostingDto>> {
 	return customFetch(`${ENDPOINT(organizationId)}/posting/${postingId}`, {
-		body: JSON.stringify(model),
+		body: model,
 		method: RequestMethod.PUT
 	});
 }

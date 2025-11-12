@@ -31,7 +31,7 @@ async function getAll(): Promise<ResponseBody<OrganizationDto[]>> {
  */
 async function create(model: CreateOrganizationDto): Promise<ResponseBody<OrganizationDto>> {
 	return customFetch(ENDPOINT, {
-		body: JSON.stringify(model),
+		body: model,
 		method: RequestMethod.POST
 	});
 }
@@ -43,7 +43,7 @@ async function create(model: CreateOrganizationDto): Promise<ResponseBody<Organi
  */
 async function update(id: number, model: UpdateOrganizationDto): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/${id}`, {
-		body: JSON.stringify(model),
+		body: model,
 		method: RequestMethod.PUT
 	});
 }
@@ -78,7 +78,7 @@ async function removeUser(organizationId: number, userId: number): Promise<Respo
  */
 async function grantRole(userId: number, organizationId: number, role: OrganizationRole): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/${organizationId}/person/${userId}/grant-role`, {
-		body: JSON.stringify({ role }),
+		body: { role },
 		method: RequestMethod.PATCH
 	});
 }

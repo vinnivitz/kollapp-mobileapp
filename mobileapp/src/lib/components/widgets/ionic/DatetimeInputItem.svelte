@@ -56,7 +56,7 @@
 			min,
 			open: true,
 			type,
-			value: element?.value ? format(parse(element.value.toString(), 'PPP', new Date()), 'yyyy-MM-dd') : undefined
+			value: element?.value ? format(parse(element.value.toString(), 'PPP', new TZDate()), 'yyyy-MM-dd') : undefined
 		});
 	}
 </script>

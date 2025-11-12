@@ -18,7 +18,7 @@ const ENDPOINT = 'public/auth';
 async function login(model: LoginDto): Promise<ResponseBody<UserAuthenticationDto>> {
 	return customFetch(`${ENDPOINT}/signin`, {
 		authorizationType: AuthorizationType.NONE,
-		body: JSON.stringify(model),
+		body: model,
 		method: RequestMethod.POST,
 		silentOnSuccess: true
 	});
