@@ -286,33 +286,33 @@ function generateAppDTS(interfaces: Map<string, PropertyInfo[]>, types: Set<stri
 
 // Main function
 function main(): void {
-	console.log('🔄 Starting Ionic types synchronization...\n');
+	console.info('🔄 Starting Ionic types synchronization...\n');
 
 	// Read source file
-	console.log(`📖 Reading ${IONIC_TYPES_PATH}...`);
+	console.info(`📖 Reading ${IONIC_TYPES_PATH}...`);
 	const ionicTypesContent = readFileSync(IONIC_TYPES_PATH, 'utf8');
 
 	// Extract interfaces
-	console.log('🔍 Extracting LocalJSX interfaces...');
+	console.info('🔍 Extracting LocalJSX interfaces...');
 	const interfaces = extractLocalJSXInterfaces(ionicTypesContent);
-	console.log(`   Found ${interfaces.size} interfaces`);
+	console.info(`   Found ${interfaces.size} interfaces`);
 
 	// Extract types
-	console.log('🔍 Extracting required types...');
+	console.info('🔍 Extracting required types...');
 	const types = extractRequiredTypes(interfaces);
-	console.log(`   Found ${types.size} type imports needed`);
+	console.info(`   Found ${types.size} type imports needed`);
 
 	// Generate new content
-	console.log('✨ Generating svelteHTML namespace...');
+	console.info('✨ Generating svelteHTML namespace...');
 	const newContent = generateAppDTS(interfaces, types);
 
 	// Write to file
-	console.log(`💾 Writing to ${APP_D_TS_PATH}...`);
+	console.info(`💾 Writing to ${APP_D_TS_PATH}...`);
 	writeFileSync(APP_D_TS_PATH, newContent, 'utf8');
 
-	console.log('\n✅ Ionic types synchronized successfully!');
-	console.log(`   ${interfaces.size} interfaces processed`);
-	console.log(`   ${types.size} types imported`);
+	console.info('\n✅ Ionic types synchronized successfully!');
+	console.info(`   ${interfaces.size} interfaces processed`);
+	console.info(`   ${types.size} types imported`);
 }
 
 // Run the script

@@ -64,14 +64,15 @@
 {/if}
 
 {#snippet item()}
+	<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 	<ion-item
 		onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && clicked?.()}
 		{disabled}
 		{id}
 		data-card={card}
 		button={!!clicked}
-		role="button"
-		tabindex="0"
+		role={clicked ? 'button' : undefined}
+		tabindex={clicked ? 0 : undefined}
 		{color}
 		detail={!!(clicked || slidingOptions) && !iconEnd}
 		data-transparent={transparent}

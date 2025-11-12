@@ -51,8 +51,6 @@
 
 	const userId = $derived($userStore?.id);
 
-	console.log('date', new TZDate(''));
-
 	const invitationCodeExpiration = $derived(
 		new TZDate($organizationStore?.organizationInvitationCode.expirationDate ?? '')
 	);

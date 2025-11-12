@@ -23,7 +23,14 @@ import {
 } from '$lib/models/api';
 import { PreferencesKey } from '$lib/models/preferences';
 import { AlertType, type ValidationResult } from '$lib/models/ui';
-import { authenticationStore, connectionStore, localeStore, organizationStore, userStore } from '$lib/stores';
+import {
+	appStateStore,
+	authenticationStore,
+	connectionStore,
+	localeStore,
+	organizationStore,
+	userStore
+} from '$lib/stores';
 import { getStoredValue, removeStoredValue, showAlert, storeValue } from '$lib/utility';
 
 let refreshPromise: Promise<string | undefined> | undefined;
@@ -121,7 +128,7 @@ export async function customFetch<T = never>(url: string, config?: CustomFetchCo
  */
 export async function isAuthenticated(): Promise<boolean> {
 	const model = get(authenticationStore) || (await getStoredValue<AuthenticationModel>(PreferencesKey.AUTHENTICATION));
-	return !!model;
+	return !!model?.accessToken;
 }
 
 /**
@@ -265,7 +272,7 @@ async function getNewAuthenticationToken(): Promise<string | undefined> {
 	refreshPromise = (async () => {
 		const refreshToken = get(authenticationStore)?.refreshToken;
 		if (!refreshToken) {
-			await authenticationStore.reset();
+			await appStateStore.reset();
 			return;
 		}
 
@@ -276,7 +283,7 @@ async function getNewAuthenticationToken(): Promise<string | undefined> {
 			return accessToken;
 		}
 
-		await authenticationStore.reset();
+		await appStateStore.reset();
 	})();
 
 	const result = await refreshPromise;

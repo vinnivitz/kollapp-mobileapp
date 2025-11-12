@@ -1,4 +1,5 @@
 export * from './alert.model';
+export * from './app-state.enum';
 export * from './colors.type';
 export * from './currency.enum';
 export * from './datetime.model';

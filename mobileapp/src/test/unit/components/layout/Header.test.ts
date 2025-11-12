@@ -93,7 +93,6 @@ describe('Header Component', () => {
 		await tick();
 		expect(container.querySelector('ion-progress-bar')).toBeFalsy();
 
-		// // Flip to loading=true -> schedule timer -> shows after 100ms
 		await rerender({ loading: true, title: 'Progress Test' });
 		expect(container.querySelector('ion-progress-bar')).toBeFalsy();
 

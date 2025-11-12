@@ -29,7 +29,7 @@
 	import { PreferencesKey } from '$lib/models/preferences';
 	import { PageRoute } from '$lib/models/routing';
 	import { Form } from '$lib/models/ui';
-	import { authenticationStore } from '$lib/stores';
+	import { appStateStore, authenticationStore } from '$lib/stores';
 	import {
 		customForm,
 		featureNotImplementedAlert,
@@ -79,6 +79,7 @@
 			refreshToken: model.refreshToken
 		};
 		await authenticationStore.set(authenticationModel);
+		await appStateStore.initializeUserData();
 		goto(PageRoute.HOME);
 	}
 </script>

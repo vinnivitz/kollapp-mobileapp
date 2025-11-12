@@ -5,7 +5,7 @@ import { App, type URLOpenListenerEvent } from '@capacitor/app';
 import { goto } from '$app/navigation';
 
 import { PageRoute } from '$lib/models/routing';
-import { authenticationStore, connectionStore, layoutStore, themeStore } from '$lib/stores';
+import { appStateStore } from '$lib/stores';
 import { initPushNotifications, isAuthenticated, navigateBack } from '$lib/utility';
 
 export const ssr = false;
@@ -13,16 +13,15 @@ export const ssr = false;
 let initialized = false;
 
 export const load: LayoutLoad = async ({ url }) => {
-	const authenticated = await isAuthenticated();
-	await handleRouting(url.pathname, authenticated);
 	if (!initialized) {
 		initialized = true;
-		await initStores();
+		await appStateStore.initialize();
 		handleAppEvents();
 		initPushNotifications();
-	} else if (!authenticated) {
-		await authenticationStore.init();
 	}
+
+	const authenticated = await isAuthenticated();
+	await handleRouting(url.pathname, authenticated);
 };
 
 async function handleRouting(pathname: string, authenticated: boolean): Promise<void> {
@@ -33,10 +32,6 @@ async function handleRouting(pathname: string, authenticated: boolean): Promise<
 	} else if (!authenticated && !isAuthPath) {
 		return goto(PageRoute.AUTH.LOGIN);
 	}
-}
-
-async function initStores(): Promise<void> {
-	await Promise.all([themeStore.init(), layoutStore.init(), connectionStore.init(), authenticationStore.init()]);
 }
 
 async function handleAppEvents(): Promise<void> {

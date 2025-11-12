@@ -5,7 +5,7 @@ import { goto } from '$app/navigation';
 
 import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/models/api';
 import { PageRoute } from '$lib/models/routing';
-import { authenticationStore, organizationStore, userStore } from '$lib/stores';
+import { appStateStore } from '$lib/stores';
 import { customFetch } from '$lib/utility';
 
 const ENDPOINT = 'public/auth';
@@ -41,9 +41,8 @@ async function refresh(token: string): Promise<ResponseBody<TokenDto>> {
  * Logs out the user by clearing authentication tokens and user information
  */
 async function logout(): Promise<void> {
-	await authenticationStore.reset();
+	await appStateStore.reset();
 	await goto(PageRoute.AUTH.LOGIN);
-	await Promise.all([organizationStore.reset(), userStore.reset()]);
 }
 
 export const authenticationResource = {

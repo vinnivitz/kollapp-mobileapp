@@ -25,31 +25,17 @@
 	import { initializeIonic } from '$lib/ionic';
 	import { initialized, t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
-	import { authenticationStore, layoutStore, localeStore, organizationStore, userStore } from '$lib/stores';
+	import { AppStateType } from '$lib/models/ui';
+	import { appStateStore, authenticationStore, layoutStore } from '$lib/stores';
 
 	let { children } = $props();
 
 	let tabs = $state<TabConfig[]>();
-	let loaded = $state(false);
-	let storesInitialized = $state(false);
 
 	initializeIonic();
 
 	$effect(() => {
-		if (loaded && $authenticationStore && !storesInitialized) {
-			storesInitialized = true;
-			initStores();
-		}
-
-		return () => {
-			if (!$authenticationStore && storesInitialized) {
-				storesInitialized = false;
-			}
-		};
-	});
-
-	$effect(() => {
-		if (loaded && initialized) {
+		if (initialized) {
 			tabs = [
 				{ icon: home, label: $t('common.page-routes.home'), tab: PageRoute.HOME },
 				{
@@ -62,14 +48,15 @@
 		}
 	});
 
-	async function initStores(): Promise<void> {
-		await Promise.all([userStore.init(), organizationStore.init()]);
-	}
+	$effect(() => {
+		const state = $appStateStore;
+		if (state === AppStateType.READY || state === AppStateType.ERROR) {
+			SplashScreen.hide();
+		}
+	});
 
 	onMount(async () => {
-		await Promise.all([defineCustomElements(globalThis as unknown as Window), localeStore.init()]);
-		loaded = true;
-		await SplashScreen.hide();
+		await defineCustomElements(globalThis as unknown as Window);
 	});
 </script>
 
@@ -79,7 +66,7 @@
 
 {#key $layoutStore}
 	<ion-app>
-		{#if loaded}
+		{#if $appStateStore === AppStateType.READY}
 			{#if $authenticationStore && tabs}
 				<Tabs {tabs}>
 					{@render children?.()}
@@ -88,6 +75,13 @@
 				{@render children?.()}
 			{/if}
 			<GlobalPopovers />
+		{:else if $appStateStore === AppStateType.ERROR}
+			<div class="flex h-full items-center justify-center p-4">
+				<div class="text-center">
+					<h2 class="mb-2 text-xl font-bold">Initialization Error</h2>
+					<p class="text-gray-600">An error occurred while starting the app.</p>
+				</div>
+			</div>
 		{/if}
 	</ion-app>
 {/key}

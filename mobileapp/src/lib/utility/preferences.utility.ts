@@ -28,7 +28,7 @@ export async function getStoredValue<T = string>(key: PreferencesKey): Promise<T
 	try {
 		const result = await Preferences.get({ key: getKey(key) });
 		const value = result.value ?? undefined;
-		if (value) return undefined;
+		if (!value) return undefined;
 		try {
 			return value ? (JSON.parse(value) as T) : undefined;
 		} catch {
