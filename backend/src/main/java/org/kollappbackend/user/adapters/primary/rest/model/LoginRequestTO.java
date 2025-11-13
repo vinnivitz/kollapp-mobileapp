@@ -1,4 +1,4 @@
-package org.kollappbackend.user.adapters.rest.model;
+package org.kollappbackend.user.adapters.primary.rest.model;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

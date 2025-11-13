@@ -1,4 +1,4 @@
-package org.kollappbackend.user.adapters.rest;
+package org.kollappbackend.user.adapters.primary.rest;
 
 import org.kollappbackend.core.adapters.primary.rest.model.ErrorResponseTO;
 import org.kollappbackend.core.adapters.primary.rest.model.ValidationFailureResponseTO;

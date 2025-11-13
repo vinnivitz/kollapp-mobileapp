@@ -1,4 +1,4 @@
-package org.kollappbackend.user.adapters.rest.config;
+package org.kollappbackend.user.adapters.primary.rest.config;
 
 import org.kollappbackend.core.config.AuthEntryPointJwt;
 import org.kollappbackend.core.config.AuthTokenFilter;

@@ -1,4 +1,4 @@
-package org.kollappbackend.user.adapters.rest;
+package org.kollappbackend.user.adapters.primary.rest;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
 import org.kollappbackend.core.adapters.primary.rest.model.DataResponseTO;
 import org.kollappbackend.core.adapters.primary.rest.model.ResponseTO;
-import org.kollappbackend.user.adapters.rest.model.LoginRequestTO;
+import org.kollappbackend.user.adapters.primary.rest.model.LoginRequestTO;
 import org.kollappbackend.user.application.model.AuthToken;
 import org.kollappbackend.user.application.model.AuthenticatedKollappUser;
 import org.kollappbackend.user.application.service.AuthService;

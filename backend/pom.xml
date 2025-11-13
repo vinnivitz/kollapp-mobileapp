@@ -19,6 +19,8 @@
         <npm.version>10.8.3</npm.version>
         <frontend-maven-plugin.version>1.12.1</frontend-maven-plugin.version>
         <typescript-generator.version>3.2.1263</typescript-generator.version>
+        <maven-javadoc.version>3.12.0</maven-javadoc.version>
+        <xml-doclet.version>1.0.5</xml-doclet.version>
         <jsonwebtoken.version>0.11.5</jsonwebtoken.version>
         <lombok.version>1.18.30</lombok.version>
         <springdoc.version>2.6.0</springdoc.version>
@@ -393,7 +395,7 @@
                                 <configuration>
                                     <jsonLibrary>jackson2</jsonLibrary>
                                     <classPatterns>
-                                        <classPattern>org.kollappbackend.**.adapters.**.rest.model.*</classPattern>
+                                        <classPattern>org.kollappbackend.**.adapters.primary.rest.model.*</classPattern>
                                     </classPatterns>
                                     <excludeClasses>
                                         <excludeClass>
@@ -401,29 +403,27 @@
                                         </excludeClass>
                                     </excludeClasses>
                                     <outputKind>module</outputKind>
-                                    <outputFile>../backend-api/api-types.ts</outputFile>
-                                    <outputFileType>implementationFile</outputFileType>
-                                    <typeMappings>
-                                        <typeMapping>
-                                            <javaType>long</javaType>
-                                            <tsType>number</tsType>
-                                        </typeMapping>
-                                        <typeMapping>
-                                            <javaType>java.lang.Long</javaType>
-                                            <tsType>number</tsType>
-                                        </typeMapping>
-                                        <typeMapping>
-                                            <javaType>java.time.LocalDate</javaType>
-                                            <tsType>string</tsType>
-                                        </typeMapping>
-                                    </typeMappings>
-                                    <removeTypeNameSuffixes>
-                                        <suffix>TO</suffix>
-                                    </removeTypeNameSuffixes>
+                                    <outputFile>../backend-api/ts/index.d.ts</outputFile>
+                                    <outputFileType>declarationFile</outputFileType>
+                                    <customTypeMappings>
+                                        <customTypeMapping>long:number</customTypeMapping>
+                                        <customTypeMapping>java.lang.Long:number</customTypeMapping>
+                                        <customTypeMapping>java.time.LocalDate:string</customTypeMapping>
+                                    </customTypeMappings>
+                                    <mapDate>asString</mapDate>
+                                    <mapMap>asRecord</mapMap>
+                                    <mapEnum>asUnion</mapEnum>
+                                    <noEslintDisable>true</noEslintDisable>
+                                    <noTslintDisable>true</noTslintDisable>
                                     <generateJaxrsApplicationClient>false</generateJaxrsApplicationClient>
-                                    <generateJaxrsClient>false</generateJaxrsClient>
                                     <noFileComment>true</noFileComment>
-                                    <addCompileClasspath>true</addCompileClasspath>
+                                    <optionalProperties>useSpecifiedAnnotations</optionalProperties>
+                                    <requiredAnnotations>
+                                        <annotation>jakarta.validation.constraints.NotNull</annotation>
+                                        <annotation>jakarta.validation.constraints.NotBlank</annotation>
+                                        <annotation>jakarta.validation.constraints.NotEmpty</annotation>
+                                    </requiredAnnotations>
+                                    <optionalPropertiesDeclaration>questionMark</optionalPropertiesDeclaration>
                                 </configuration>
                             </execution>
                         </executions>

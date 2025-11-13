@@ -1,4 +1,6 @@
-package org.kollappbackend.user.adapters.rest.model;
+package org.kollappbackend.user.adapters.primary.rest.model;
+
+import org.kollappbackend.user.application.model.SystemRole;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -31,5 +33,5 @@ public class KollappUserTO {
 
     private boolean activated;
 
-    private String role;
+    private SystemRole role;
 }

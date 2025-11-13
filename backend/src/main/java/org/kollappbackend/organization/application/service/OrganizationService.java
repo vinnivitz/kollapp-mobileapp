@@ -2,6 +2,7 @@ package org.kollappbackend.organization.application.service;
 
 import org.jmolecules.architecture.hexagonal.PrimaryPort;
 import org.kollappbackend.organization.application.model.Organization;
+import org.kollappbackend.organization.application.model.OrganizationRole;
 
 import java.util.List;
 
@@ -29,5 +30,5 @@ public interface OrganizationService {
 
     void updatePersonOfOrganizationsOfUser(long userId, String username);
 
-    Organization grantRoleToPersonOfOrganization(long organizationId, long personId, String role);
+    Organization grantRoleToPersonOfOrganization(long organizationId, long personId, OrganizationRole role);
 }

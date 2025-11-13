@@ -195,9 +195,8 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     @RequiresKollappOrganizationMemberRole
-    public Organization grantRoleToPersonOfOrganization(long organizationId, long personId, String role) {
+    public Organization grantRoleToPersonOfOrganization(long organizationId, long personId, OrganizationRole role) {
         organizationRoleHelper.verifyOrganizationManager(organizationId);
-        OrganizationRole targetRole = OrganizationRole.valueOf(role);
         Organization organization = organizationRepository.findById(organizationId)
                 .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
         PersonOfOrganization personOfOrganization = personOfOrganizationRepository.findById(personId)
@@ -208,10 +207,10 @@ public class OrganizationServiceImpl implements OrganizationService {
         if (personOfOrganization.getStatus().equals(PersonOfOrganizationStatus.PENDING)) {
             throw new PersonOfOrganizationIsNotApprovedYetException(messageSource);
         }
-        if (targetRole.equals(personOfOrganization.getOrganizationRole())) {
+        if (role.equals(personOfOrganization.getOrganizationRole())) {
             throw new PersonAlreadyHasTargetRoleException(messageSource);
         }
-        personOfOrganization.setOrganizationRole(targetRole);
+        personOfOrganization.setOrganizationRole(role);
         return organization;
     }
 

@@ -1,4 +1,4 @@
-package org.kollappbackend.user.adapters.rest;
+package org.kollappbackend.user.adapters.primary.rest;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -8,10 +8,10 @@ import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
 import org.kollappbackend.core.adapters.primary.rest.model.DataResponseTO;
 import org.kollappbackend.core.adapters.primary.rest.model.MessageResponseTO;
 import org.kollappbackend.core.adapters.primary.rest.model.ResponseTO;
-import org.kollappbackend.user.adapters.rest.mapper.KollappUserMapper;
-import org.kollappbackend.user.adapters.rest.model.KollappUserTO;
-import org.kollappbackend.user.adapters.rest.model.KollappUserUpdateRequestTO;
-import org.kollappbackend.user.adapters.rest.model.PasswordChangeRequestTO;
+import org.kollappbackend.user.adapters.primary.rest.mapper.KollappUserMapper;
+import org.kollappbackend.user.adapters.primary.rest.model.KollappUserTO;
+import org.kollappbackend.user.adapters.primary.rest.model.KollappUserUpdateRequestTO;
+import org.kollappbackend.user.adapters.primary.rest.model.PasswordChangeRequestTO;
 import org.kollappbackend.user.application.model.KollappUser;
 import org.kollappbackend.user.application.service.KollappUserService;
 import org.springframework.beans.factory.annotation.Autowired;

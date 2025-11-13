@@ -1,5 +1,7 @@
 package org.kollappbackend.organization.adapters.primary.rest.model;
 
+import org.kollappbackend.organization.application.model.OrganizationRole;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,5 +14,5 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 public class PersonOfOrganizationPatchRoleRequestTO {
-    private String role;
+    private OrganizationRole role;
 }

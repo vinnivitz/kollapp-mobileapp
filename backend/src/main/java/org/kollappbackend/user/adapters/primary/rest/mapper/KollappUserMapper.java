@@ -1,6 +1,6 @@
-package org.kollappbackend.user.adapters.rest.mapper;
+package org.kollappbackend.user.adapters.primary.rest.mapper;
 
-import org.kollappbackend.user.adapters.rest.model.KollappUserTO;
+import org.kollappbackend.user.adapters.primary.rest.model.KollappUserTO;
 import org.kollappbackend.user.application.model.KollappUser;
 import org.mapstruct.Mapper;
 import org.springframework.stereotype.Service;
