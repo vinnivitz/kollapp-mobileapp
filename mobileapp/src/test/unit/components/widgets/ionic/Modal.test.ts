@@ -25,9 +25,7 @@ function registerMocks(): void {
 		}
 	}));
 	vi.mock('@ionic/core', () => ({
-		getPlatforms: getPlatformsMock
-	}));
-	vi.mock('@ionic/core', () => ({
+		getPlatforms: getPlatformsMock,
 		modalController: {
 			getTop: getTopMock
 		}

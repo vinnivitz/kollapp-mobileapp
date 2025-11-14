@@ -185,64 +185,103 @@ describe('AmountInputItem', () => {
 	});
 
 	it('onKeyDown inserts decimal separator when absent and updates caret/changed', async () => {
+		vi.useFakeTimers();
 		const changed = vi.fn();
 		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', name: 'amount' }
+			props: { changed, label: 'Amount', name: 'amount', value: 0 }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const native = { setSelectionRange: vi.fn(), value: '123\u00A0€' };
-		ion.getInputElement = vi.fn().mockResolvedValue(native);
+
+		// Create a proper mock with mutable value property
+		const native = {
+			setSelectionRange: vi.fn(),
+			value: '123\u00A0€'
+		};
+
+		const getInputSpy = vi.fn().mockResolvedValue(native);
+		ion.getInputElement = getInputSpy;
 
 		// Press '.' which should map to '.' for en-US and insert before trailing unit
-		const event_ = new KeyboardEvent('keydown', { key: '.' });
+		const event_ = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: '.' });
 		await fireEvent(ion, event_);
+
+		// The handler should have been called
+		expect(getInputSpy).toHaveBeenCalled();
+
+		// Flush microtasks and animation frames
+		await vi.runAllTimersAsync();
 
 		expect(native.value).toBe('123.\u00A0€');
 		expect(changed).toHaveBeenCalledWith('123.\u00A0€');
-		await waitFor(() => expect(native.setSelectionRange).toHaveBeenCalledWith(4, 4));
+		expect(native.setSelectionRange).toHaveBeenCalledWith(4, 4);
+
+		vi.useRealTimers();
 	});
 
 	it('onKeyDown does not insert a second decimal separator and just fixes caret', async () => {
+		vi.useFakeTimers();
 		const changed = vi.fn();
 		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', name: 'amount' }
+			props: { changed, label: 'Amount', name: 'amount', value: 0 }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const native = { setSelectionRange: vi.fn(), value: '123.\u00A0€' };
-		ion.getInputElement = vi.fn().mockResolvedValue(native);
 
-		const event_ = new KeyboardEvent('keydown', { key: '.' });
+		const getInputSpy = vi.fn().mockResolvedValue(native);
+		ion.getInputElement = getInputSpy;
+
+		const event_ = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: '.' });
 		await fireEvent(ion, event_);
+
+		expect(getInputSpy).toHaveBeenCalled();
 
 		// value unchanged, changed not called again
 		expect(native.value).toBe('123.\u00A0€');
 		expect(changed).not.toHaveBeenCalled();
-		await waitFor(() => expect(native.setSelectionRange).toHaveBeenCalledWith(4, 4));
+
+		await vi.runAllTimersAsync();
+		expect(native.setSelectionRange).toHaveBeenCalledWith(4, 4);
+
+		vi.useRealTimers();
 	});
 
 	it('onKeyDown inserts at start when native.value is empty', async () => {
+		vi.useFakeTimers();
 		const changed = vi.fn();
 		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', name: 'amount' }
+			props: { changed, label: 'Amount', name: 'amount', value: 0 }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const native = { setSelectionRange: vi.fn(), value: '' };
-		ion.getInputElement = vi.fn().mockResolvedValue(native);
-		const event_ = new KeyboardEvent('keydown', { key: '.' });
+
+		const getInputSpy = vi.fn().mockResolvedValue(native);
+		ion.getInputElement = getInputSpy;
+
+		const event_ = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: '.' });
 		await fireEvent(ion, event_);
+
+		expect(getInputSpy).toHaveBeenCalled();
+
+		await vi.runAllTimersAsync();
+
 		expect(native.value).toBe('.');
 		expect(changed).toHaveBeenCalledWith('.');
-		await waitFor(() => expect(native.setSelectionRange).toHaveBeenCalledWith(1, 1));
+		expect(native.setSelectionRange).toHaveBeenCalledWith(1, 1);
+
+		vi.useRealTimers();
 	});
 
 	it('getDecimalSeparator falls back to comma when probe has no separator', async () => {
+		vi.useFakeTimers();
 		const changed = vi.fn();
 		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', name: 'amount' }
+			props: { changed, label: 'Amount', name: 'amount', value: 0 }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const native = { setSelectionRange: vi.fn(), value: '123\u00A0€' };
-		ion.getInputElement = vi.fn().mockResolvedValue(native);
+
+		const getInputSpy = vi.fn().mockResolvedValue(native);
+		ion.getInputElement = getInputSpy;
 
 		// Mock Intl.NumberFormat to return a probe string without a separator ("11")
 		const OriginalNF = Intl.NumberFormat;
@@ -251,15 +290,20 @@ describe('AmountInputItem', () => {
 			return { format: () => '11' };
 		};
 
-		const event_ = new KeyboardEvent('keydown', { key: '.' });
+		const event_ = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: '.' });
 		await fireEvent(ion, event_);
+
+		expect(getInputSpy).toHaveBeenCalled();
+
+		await vi.runAllTimersAsync();
 
 		expect(native.value).toBe('123,\u00A0€');
 		expect(changed).toHaveBeenCalledWith('123,\u00A0€');
-		await waitFor(() => expect(native.setSelectionRange).toHaveBeenCalledWith(4, 4));
+		expect(native.setSelectionRange).toHaveBeenCalledWith(4, 4);
 
 		// restore
 		Intl.NumberFormat = OriginalNF;
+		vi.useRealTimers();
 	});
 
 	it('buildNumberFormat supports unit style', () => {

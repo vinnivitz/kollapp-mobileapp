@@ -174,7 +174,7 @@
 				class="absolute transition-transform"
 				color="light"
 				placeholder={$t('components.widgets.map.searchbar.placeholder')}
-				onionInput={(event_: CustomEvent<SearchbarInputEventDetail>) => onSearch(event_.detail.value)}
+				onionInput={(event_: CustomEvent<SearchbarInputEventDetail>) => onSearch(event_.detail?.value ?? '')}
 			></ion-searchbar>
 			<ion-list class="absolute top-13 right-3 left-3 mx-auto rounded-xl">
 				{#each searchItems as item (item.latlng)}

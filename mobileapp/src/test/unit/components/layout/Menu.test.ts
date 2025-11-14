@@ -18,7 +18,7 @@ const { searchItem } = vi.hoisted(() => ({
 describe('Menu Component', () => {
 	beforeAll(() => {
 		vi.mock('$lib/api/resources', () => ({
-			authResource: {
+			authenticationResource: {
 				logout: vi.fn()
 			},
 			searchableResource: {

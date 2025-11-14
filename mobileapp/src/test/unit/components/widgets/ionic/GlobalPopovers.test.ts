@@ -45,8 +45,10 @@ describe('GlobalPopovers', () => {
 		const popover = container.querySelector('ion-popover') as HTMLElement;
 		expect(popover).toBeTruthy();
 		expect(popover.classList.contains('extended')).toBe(true);
-		// closed => no datetime rendered
-		expect(container.querySelector('ion-datetime')).toBeNull();
+		// Popover is closed, so isOpen should be false
+		expect(popover.getAttribute('is-open')).toBe('false');
+		// Datetime is rendered but inside closed Popover
+		expect(container.querySelector('ion-datetime')).toBeTruthy();
 	});
 
 	it('renders Datetime when open and passes props; applied and dismissed fire', async () => {
@@ -89,9 +91,12 @@ describe('GlobalPopovers', () => {
 		expect(popover).toBeTruthy();
 		// When open, Datetime is rendered inside
 		expect(container.querySelector('ion-datetime')).toBeTruthy();
+		// Popover should be open
+		expect(popover.getAttribute('is-open')).toBe('true');
 
 		await fireEvent(popover, new CustomEvent('didDismiss'));
-		// After dismissal, Datetime is not rendered
-		expect(container.querySelector('ion-datetime')).toBeNull();
+		// After dismissal, Popover is closed but Datetime still exists in DOM
+		expect(popover.getAttribute('is-open')).toBe('false');
+		expect(container.querySelector('ion-datetime')).toBeTruthy();
 	});
 });

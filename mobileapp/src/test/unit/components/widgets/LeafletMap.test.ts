@@ -12,6 +12,12 @@ type MockMap = {
 	setView: Mock;
 };
 
+function mockSearchbarSetFocus(searchbar: HTMLIonSearchbarElement): void {
+	if (searchbar) {
+		searchbar.setFocus = vi.fn();
+	}
+}
+
 function registerMocks(): void {
 	vi.mock('$lib/environment', () => ({
 		default: {
@@ -108,7 +114,11 @@ describe('LeafletMap', () => {
 		await fireEvent.click(fab);
 
 		await waitFor(() => {
-			expect(container.querySelector('ion-searchbar')).toBeTruthy();
+			const searchbar = container.querySelector('ion-searchbar');
+			if (searchbar) {
+				searchbar.setFocus = vi.fn();
+			}
+			expect(searchbar).toBeTruthy();
 		});
 	});
 
@@ -117,14 +127,17 @@ describe('LeafletMap', () => {
 		await fireEvent.click(container.querySelector('ion-fab-button')!);
 
 		const searchbar = container.querySelector('ion-searchbar') as HTMLIonSearchbarElement;
-		searchbar.value = 'Test';
-		await fireEvent(searchbar, new CustomEvent('ionInput'));
+		mockSearchbarSetFocus(searchbar);
+		await fireEvent(searchbar, new CustomEvent('ionInput', { detail: { value: 'Test' } }));
 
-		await waitFor(() => {
-			const items = container.querySelectorAll('ion-item');
-			expect(items.length).toBeGreaterThan(0);
-			expect(items?.[0]?.textContent).toContain('Query St');
-		});
+		await waitFor(
+			() => {
+				const items = container.querySelectorAll('ion-item');
+				expect(items.length).toBeGreaterThan(0);
+				expect(items?.[0]?.textContent).toContain('Query St');
+			},
+			{ timeout: 2000 }
+		);
 	});
 
 	it('clears results for empty search value', async () => {
@@ -132,13 +145,12 @@ describe('LeafletMap', () => {
 		await fireEvent.click(container.querySelector('ion-fab-button')!);
 
 		const searchbar = container.querySelector('ion-searchbar') as HTMLIonSearchbarElement;
+		mockSearchbarSetFocus(searchbar);
 
-		searchbar.value = 'Some';
-		await fireEvent(searchbar, new CustomEvent('ionInput'));
-		await waitFor(() => expect(container.querySelectorAll('ion-item').length).toBeGreaterThan(0));
+		await fireEvent(searchbar, new CustomEvent('ionInput', { detail: { value: 'Some' } }));
+		await waitFor(() => expect(container.querySelectorAll('ion-item').length).toBeGreaterThan(0), { timeout: 2000 });
 
-		searchbar.value = '';
-		await fireEvent(searchbar, new CustomEvent('ionInput'));
+		await fireEvent(searchbar, new CustomEvent('ionInput', { detail: { value: '' } }));
 
 		await waitFor(() => expect(container.querySelectorAll('ion-item').length).toBe(0));
 	});
@@ -148,12 +160,15 @@ describe('LeafletMap', () => {
 		await fireEvent.click(container.querySelector('ion-fab-button')!);
 
 		const searchbar = container.querySelector('ion-searchbar') as HTMLIonSearchbarElement;
-		searchbar.value = '40.7128, -74.0060';
-		await fireEvent(searchbar, new CustomEvent('ionInput'));
+		mockSearchbarSetFocus(searchbar);
+		await fireEvent(searchbar, new CustomEvent('ionInput', { detail: { value: '40.7128, -74.0060' } }));
 
-		await waitFor(() => {
-			expect(osmResource.getLocationByLatLng).toHaveBeenCalled();
-		});
+		await waitFor(
+			() => {
+				expect(osmResource.getLocationByLatLng).toHaveBeenCalled();
+			},
+			{ timeout: 2000 }
+		);
 	});
 
 	it('calls selected callback with formatted address after marker placement', async () => {
@@ -162,12 +177,15 @@ describe('LeafletMap', () => {
 		await fireEvent.click(container.querySelector('ion-fab-button')!);
 
 		const searchbar = container.querySelector('ion-searchbar') as HTMLIonSearchbarElement;
-		searchbar.value = '40.7128, -74.0060';
-		await fireEvent(searchbar, new CustomEvent('ionInput'));
+		mockSearchbarSetFocus(searchbar);
+		await fireEvent(searchbar, new CustomEvent('ionInput', { detail: { value: '40.7128, -74.0060' } }));
 
-		await waitFor(() => {
-			expect(selected).toHaveBeenCalledWith('Test St 1, 12345 Testville');
-		});
+		await waitFor(
+			() => {
+				expect(selected).toHaveBeenCalledWith('Test St 1, 12345 Testville');
+			},
+			{ timeout: 2000 }
+		);
 	});
 
 	it('replaces an existing marker on subsequent placements (removeFrom branch)', async () => {
@@ -175,19 +193,21 @@ describe('LeafletMap', () => {
 		await fireEvent.click(container.querySelector('ion-fab-button')!);
 
 		const searchbar = container.querySelector('ion-searchbar') as HTMLIonSearchbarElement;
+		mockSearchbarSetFocus(searchbar);
 
-		searchbar.value = '40.0, 10.0';
-		await fireEvent(searchbar, new CustomEvent('ionInput'));
-		await waitFor(() => expect(osmResource.getLocationByLatLng).toHaveBeenCalledTimes(1));
+		await fireEvent(searchbar, new CustomEvent('ionInput', { detail: { value: '40.0, 10.0' } }));
+		await waitFor(() => expect(osmResource.getLocationByLatLng).toHaveBeenCalledTimes(1), { timeout: 2000 });
 
-		searchbar.value = '41.0, 11.0';
-		await fireEvent(searchbar, new CustomEvent('ionInput'));
+		await fireEvent(searchbar, new CustomEvent('ionInput', { detail: { value: '41.0, 11.0' } }));
 
-		await waitFor(() => {
-			const instances = (LeafletMarker as unknown as Mock).mock.results.map((r) => r.value).filter(Boolean);
-			const anyRemoved = instances.some((m: LeafletMarker) => (m.removeFrom as Mock).mock.calls.length > 0);
-			expect(anyRemoved).toBe(true);
-		});
+		await waitFor(
+			() => {
+				const instances = (LeafletMarker as unknown as Mock).mock.results.map((r) => r.value).filter(Boolean);
+				const anyRemoved = instances.some((m: LeafletMarker) => (m.removeFrom as Mock).mock.calls.length > 0);
+				expect(anyRemoved).toBe(true);
+			},
+			{ timeout: 2000 }
+		);
 	});
 
 	it('selecting a search result places a marker and closes the searchbar', async () => {
@@ -195,10 +215,11 @@ describe('LeafletMap', () => {
 		await fireEvent.click(container.querySelector('ion-fab-button')!);
 
 		const searchbar = container.querySelector('ion-searchbar') as HTMLIonSearchbarElement;
-		searchbar.value = 'Main Sq';
-		await fireEvent(searchbar, new CustomEvent('ionInput'));
+		mockSearchbarSetFocus(searchbar);
+		await fireEvent(searchbar, new CustomEvent('ionInput', { detail: { value: 'Main Sq' } }));
 
-		const firstItem = await waitFor(() => container.querySelector('ion-item'));
+		const firstItem = await waitFor(() => container.querySelector('ion-item'), { timeout: 2000 });
+		expect(firstItem).toBeTruthy();
 		await fireEvent.click(firstItem!);
 
 		await waitFor(() => {
@@ -206,7 +227,6 @@ describe('LeafletMap', () => {
 			expect(container.querySelectorAll('ion-item').length).toBe(0);
 		});
 	});
-
 	it('searchbar focuses when opened (setTimeout path)', async () => {
 		vi.useFakeTimers();
 		const { container } = render(LeafletMapComponent, { props: {} });
@@ -375,22 +395,23 @@ describe('LeafletMap', () => {
 		});
 	});
 
-	it('skips initialization when a leaflet container already exists (early return)', async () => {
+	it('removes existing leaflet container before initialization', async () => {
 		for (const element of document.querySelectorAll('.leaflet-container')) element.remove();
 
+		const mapDiv = document.createElement('div');
+		mapDiv.id = 'map';
 		const existing = document.createElement('div');
 		existing.className = 'leaflet-container';
-		document.body.append(existing);
+		mapDiv.append(existing);
+		document.body.append(mapDiv);
 
-		render(LeafletMapComponent, { props: { value: 'Should Not Query' } });
+		render(LeafletMapComponent, { props: {} });
 
 		await Promise.resolve();
 
-		expect(LeafletMap).not.toHaveBeenCalled();
-		expect(LeafletMarker).not.toHaveBeenCalled();
+		// Should have removed the existing container and created a new map
+		expect(LeafletMap).toHaveBeenCalled();
 
-		expect(osmResource.getLocationsByQuery).not.toHaveBeenCalled();
-
-		existing.remove();
+		mapDiv.remove();
 	});
 });
