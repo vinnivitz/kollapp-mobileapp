@@ -3,6 +3,10 @@ STAGED_FILES=$(git diff --cached --name-only)
 if echo "$STAGED_FILES" | grep -q '^mobileapp/'; then
   echo "Linting mobileapp failed. Aborting commit"
   npm run validate --prefix mobileapp
+  DECLARED=$(grep '"@kollapp/api-types"' package.json | sed 's/.*: *"//; s/".*//')
+  LATEST=$(npm view @kollapp/api-types version 2>/dev/null)
+  [ "$DECLARED" = "$LATEST" ] && exit 0
+  echo "@kollapp/api-types outdated: declared=$DECLARED, latest=$LATEST"
 fi
 
 if echo "$STAGED_FILES" | grep -q '^backend/'; then
