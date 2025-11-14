@@ -1,8 +1,10 @@
 <script lang="ts">
+	import type { KollappUserUpdateRequestTO } from '@kollapp/api-types';
+
 	import { mailOutline, personOutline, saveOutline } from 'ionicons/icons';
 
-	import { type UpdateUserDataDto, updateUserDataSchema } from '$lib/api/dto/client/user';
 	import { userResource } from '$lib/api/resources';
+	import { updateUserDataSchema } from '$lib/api/validation/user';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
@@ -33,7 +35,7 @@
 			});
 		},
 		onTouched: () => (touched = true),
-		request: async (model: UpdateUserDataDto) => userResource.update(model),
+		request: async (model: KollappUserUpdateRequestTO) => userResource.update(model),
 		schema: updateUserDataSchema()
 	});
 </script>

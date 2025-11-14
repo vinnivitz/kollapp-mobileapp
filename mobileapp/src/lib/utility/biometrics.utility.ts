@@ -1,4 +1,4 @@
-import type { LoginDto } from '$lib/api/dto/client/authentication';
+import type { LoginRequestTO } from '@kollapp/api-types';
 
 import { NativeBiometric } from '@capgo/capacitor-native-biometric';
 import { get } from 'svelte/store';
@@ -38,12 +38,12 @@ export async function isBiometricEnabled(): Promise<boolean> {
 
 /**
  * Retrieves the biometric credentials stored on the device.
- * @returns {Promise<LoginDto | undefined>} - Returns the credentials if available, otherwise undefined.
+ * @returns {Promise<LoginRequestTO | undefined>} - Returns the credentials if available, otherwise undefined.
  */
-export async function getBiometricCredentials(): Promise<LoginDto | undefined> {
+export async function getBiometricCredentials(): Promise<LoginRequestTO | undefined> {
 	try {
 		const result = await NativeBiometric.getCredentials({ server: BIOMETRICS_SERVER });
-		return { password: result.password, username: result.username } as LoginDto;
+		return { password: result.password, username: result.username } satisfies LoginRequestTO;
 	} catch {
 		await showAlert($t('utils.biometrics.not-available'));
 		return undefined;
@@ -120,9 +120,9 @@ export async function deleteBiometricCredentials(): Promise<void> {
 
 /**
  * Requests biometric authentication from the user.
- * @returns {Promise<LoginDto | undefined>} - Returns the credentials if authentication is successful, otherwise undefined.
+ * @returns {Promise<LoginRequestTO | undefined>} - Returns the credentials if authentication is successful, otherwise undefined.
  */
-export async function requestBiometricAuthentication(): Promise<LoginDto | undefined> {
+export async function requestBiometricAuthentication(): Promise<LoginRequestTO | undefined> {
 	await NativeBiometric.verifyIdentity({
 		maxAttempts: environment.maxBiometricAuthRetries,
 		negativeButtonText: $t('utils.biometrics.cancel'),

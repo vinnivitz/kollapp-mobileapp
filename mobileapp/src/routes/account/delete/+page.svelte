@@ -8,7 +8,6 @@
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import { t } from '$lib/locales';
-	import { OrganizationRole } from '$lib/models/api';
 	import { PageRoute } from '$lib/models/routing';
 	import { organizationStore } from '$lib/stores';
 	import { StatusCheck } from '$lib/utility';
@@ -23,7 +22,7 @@
 			}
 			const organization = organizationResult.data;
 			const managers = organization.personsOfOrganization.filter(
-				(member) => member.organizationRole === OrganizationRole.MANAGER
+				(member) => member.organizationRole === 'ROLE_ORGANIZATION_MANAGER'
 			);
 			return managers.length === 1;
 		})

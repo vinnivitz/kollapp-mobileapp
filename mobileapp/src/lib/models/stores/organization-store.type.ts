@@ -1,12 +1,11 @@
-import type { OrganizationDto } from '$lib/api/dto/server';
-import type { OrganizationBaseDto } from '$lib/api/dto/server/organization';
 import type { LoadableStore } from '$lib/models/stores';
+import type { OrganizationMinifiedTO, OrganizationTO } from '@kollapp/api-types';
 import type { Writable } from 'svelte/store';
 
 /**
  * Store for organization information.
  */
-export type OrganizationStore = LoadableStore<OrganizationDto> & {
-	organizations: Writable<OrganizationBaseDto[]>;
+export type OrganizationStore = LoadableStore<OrganizationTO> & {
+	organizations: Writable<OrganizationMinifiedTO[]>;
 	update: (organizationId: number) => Promise<void>;
 };

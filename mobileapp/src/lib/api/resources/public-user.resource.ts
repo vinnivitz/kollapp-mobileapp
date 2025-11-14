@@ -1,4 +1,4 @@
-import type { RegisterDto, ResetPasswordConfirmationDto, ResetPasswordDto } from '$lib/api/dto/client/authentication';
+import type { ForgotPasswordRequestTO, KollappUserSignupRequestTO, ResetPasswordRequestTO } from '@kollapp/api-types';
 
 import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/models/api';
 import { customFetch } from '$lib/utility';
@@ -10,7 +10,7 @@ const ENDPOINT = 'public/user';
  * @param model registration model
  * @returns {Promise<ResponseBody>} response body
  */
-async function register(model: RegisterDto): Promise<ResponseBody> {
+async function register(model: KollappUserSignupRequestTO): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/signup`, {
 		authorizationType: AuthorizationType.NONE,
 		body: model,
@@ -23,7 +23,7 @@ async function register(model: RegisterDto): Promise<ResponseBody> {
  * @param model email model
  * @returns {Promise<ResponseBody>} response body
  */
-async function forgotPassword(model: ResetPasswordDto): Promise<ResponseBody> {
+async function forgotPassword(model: ForgotPasswordRequestTO): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/forgot-password`, {
 		authorizationType: AuthorizationType.NONE,
 		body: model,
@@ -36,7 +36,7 @@ async function forgotPassword(model: ResetPasswordDto): Promise<ResponseBody> {
  * @param model password reset model
  * @returns {Promise<ResponseBody>} response body
  */
-async function resetPassword(model: ResetPasswordConfirmationDto, token: string): Promise<ResponseBody> {
+async function resetPassword(model: ResetPasswordRequestTO, token: string): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/reset-password`, {
 		authorizationType: AuthorizationType.NONE,
 		body: model,
@@ -45,22 +45,8 @@ async function resetPassword(model: ResetPasswordConfirmationDto, token: string)
 	});
 }
 
-/**
- * Resends the confirmation email
- * @param model email model
- * @returns {Promise<ResponseBody>}	response body
- */
-async function resendConfirmation(model: ResetPasswordConfirmationDto): Promise<ResponseBody> {
-	return customFetch(`${ENDPOINT}/confirmation`, {
-		authorizationType: AuthorizationType.NONE,
-		body: model,
-		method: RequestMethod.POST
-	});
-}
-
 export const publicUserResource = {
 	forgotPassword,
 	register,
-	resendConfirmation,
 	resetPassword
 };

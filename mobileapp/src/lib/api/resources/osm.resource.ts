@@ -1,4 +1,4 @@
-import type { NominatimItemDto } from '$lib/api/dto/server';
+import type { NominatimItemDto } from '$lib/api/dtos';
 import type { AddressModel } from '$lib/models/osm';
 import type { LatLng } from 'leaflet';
 

@@ -3,8 +3,8 @@
 
 	import { goto } from '$app/navigation';
 
-	import { registerSchema } from '$lib/api/dto/client/authentication';
 	import { publicUserResource } from '$lib/api/resources';
+	import { registerSchema } from '$lib/api/validation/authentication';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
@@ -18,7 +18,6 @@
 	const form = new Form({
 		completed: async () => goto(PageRoute.AUTH.LOGIN),
 		request: async (model) => {
-			delete model.confirmPassword;
 			return publicUserResource.register(model);
 		},
 		schema: registerSchema()

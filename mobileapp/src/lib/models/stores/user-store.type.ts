@@ -1,7 +1,7 @@
-import type { UserDto } from '$lib/api/dto/server';
 import type { LoadableStore } from '$lib/models/stores';
+import type { KollappUserTO } from '@kollapp/api-types';
 
 /**
  * Store for user information.
  */
-export type UserStore = LoadableStore<UserDto>;
+export type UserStore = LoadableStore<KollappUserTO>;

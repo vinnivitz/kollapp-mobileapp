@@ -1,5 +1,5 @@
-import type { MaintenanceInfoDto } from '$lib/api/dto/server';
-import type { ReleaseNotesModel } from '$lib/models/models';
+import type { ReleaseNotesDto } from '../dtos';
+import type { ApiVersionTO } from '@kollapp/api-types';
 
 import { TZDate } from '@date-fns/tz';
 
@@ -12,7 +12,7 @@ const ENDPOINT = '';
  * Fetches the API version from the server.
  * @returns {Promise<ResponseBody<string>>} The API version as a response body.
  */
-async function getApiVersion(): Promise<ResponseBody<string>> {
+async function getApiVersion(): Promise<ResponseBody<ApiVersionTO>> {
 	return customFetch(`${ENDPOINT}/public/version`);
 }
 
@@ -33,9 +33,9 @@ async function reportErrorLog(log: string): Promise<ResponseBody> {
 
 /**
  * Fetches the maintenance information from the server.
- * @returns {Promise<ResponseBody<MaintenanceInfoDto>>} The maintenance information from the server.
+ * @returns {Promise<ResponseBody<unknown>>} The maintenance information from the server.
  */
-async function getMaintenanceInfo(): Promise<ResponseBody<MaintenanceInfoDto>> {
+async function getMaintenanceInfo(): Promise<ResponseBody<{ scheduled: string }>> {
 	return customFetch(`${ENDPOINT}/maintenance-info`, {
 		authorizationType: AuthorizationType.NONE,
 		method: RequestMethod.GET
@@ -44,9 +44,9 @@ async function getMaintenanceInfo(): Promise<ResponseBody<MaintenanceInfoDto>> {
 
 /**
  * Fetches the release notes from the server.
- * @returns {Promise<ReleaseNotesModel[]>} The release notes from the server.
+ * @returns {Promise<ReleaseNotesTO[]>} The release notes from the server.
  */
-async function getReleaseNotes(): Promise<ReleaseNotesModel[]> {
+async function getReleaseNotes(): Promise<ReleaseNotesDto[]> {
 	try {
 		const response = await fetch('/data/release-notes.json');
 

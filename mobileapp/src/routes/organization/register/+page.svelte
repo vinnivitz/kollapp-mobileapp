@@ -1,10 +1,12 @@
 <script lang="ts">
+	import type { OrganizationCreationRequestTO } from '@kollapp/api-types';
+
 	import { accessibilityOutline, readerOutline, saveOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
 
-	import { type CreateOrganizationDto, createOrganizationSchema } from '$lib/api/dto/client/organization';
 	import { organizationResource } from '$lib/api/resources';
+	import { createOrganizationSchema } from '$lib/api/validation/organization';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
@@ -23,7 +25,7 @@
 			await organizationStore.update(response.id);
 			goto(PageRoute.ORGANIZATION.ROOT);
 		},
-		request: async (model: CreateOrganizationDto) => organizationResource.create(model),
+		request: async (model: OrganizationCreationRequestTO) => organizationResource.create(model),
 		schema: createOrganizationSchema()
 	});
 </script>

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { UserAuthenticationDto } from '$lib/api/dto/server';
 	import type { AuthenticationModel } from '$lib/models/models';
+	import type { AuthenticatedUserTO, LoginRequestTO } from '@kollapp/api-types';
 
 	import { loadingController } from '@ionic/core';
 	import {
@@ -18,8 +18,8 @@
 	import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
 
-	import { type LoginDto, loginSchema } from '$lib/api/dto/client/authentication';
 	import { authenticationResource } from '$lib/api/resources';
+	import { loginSchema } from '$lib/api/validation/authentication';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
@@ -44,7 +44,7 @@
 
 	const form = new Form({
 		completed: async ({ response }) => await handleLogin(response),
-		request: async (model: LoginDto) => await authenticationResource.login(model),
+		request: async (model: LoginRequestTO) => await authenticationResource.login(model),
 		schema: loginSchema()
 	});
 
@@ -62,8 +62,8 @@
 		const response = await authenticationResource.login({
 			password: credentials.password,
 			username: credentials.username
-		} as LoginDto);
-		const result = getValidationResult<LoginDto>(response);
+		} satisfies LoginRequestTO);
+		const result = getValidationResult<AuthenticatedUserTO>(response);
 		await (result.valid
 			? handleLogin(response.data)
 			: Promise.all([
@@ -73,7 +73,7 @@
 		await loading.dismiss();
 	}
 
-	async function handleLogin(model: UserAuthenticationDto): Promise<void> {
+	async function handleLogin(model: AuthenticatedUserTO): Promise<void> {
 		const authenticationModel: AuthenticationModel = {
 			accessToken: model.accessToken,
 			refreshToken: model.refreshToken

@@ -5,8 +5,8 @@
 
 	import { goto } from '$app/navigation';
 
-	import { resetPasswordConfirmationSchema } from '$lib/api/dto/client/authentication';
 	import { publicUserResource } from '$lib/api/resources';
+	import { resetPasswordSchema } from '$lib/api/validation/authentication';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
@@ -28,10 +28,9 @@
 	const form = new Form({
 		completed: async () => goto(PageRoute.AUTH.LOGIN),
 		request: async (model) => {
-			delete model.confirmPassword;
 			return publicUserResource.resetPassword(model, data.token!);
 		},
-		schema: resetPasswordConfirmationSchema()
+		schema: resetPasswordSchema()
 	});
 </script>
 

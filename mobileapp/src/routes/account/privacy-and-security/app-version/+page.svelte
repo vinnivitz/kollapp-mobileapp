@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ReleaseNotesModel } from '$lib/models/models';
+	import type { ReleaseNotesDto } from '$lib/api/dtos';
 
 	import { onMount } from 'svelte';
 
@@ -7,7 +7,7 @@
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 
-	let releaseNotes = $state<ReleaseNotesModel[]>([]);
+	let releaseNotes = $state<ReleaseNotesDto[]>([]);
 
 	onMount(async () => (releaseNotes = await metaResource.getReleaseNotes()));
 </script>

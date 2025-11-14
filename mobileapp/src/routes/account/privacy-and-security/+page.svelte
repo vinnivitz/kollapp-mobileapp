@@ -1,4 +1,6 @@
 <script lang="ts">
+	import type { LoginRequestTO } from '@kollapp/api-types';
+
 	import {
 		bugOutline,
 		constructOutline,
@@ -12,8 +14,8 @@
 	import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
 
-	import { type LoginDto, type VerifyPasswordDto, verifyPasswordSchema } from '$lib/api/dto/client/authentication';
 	import { authenticationResource } from '$lib/api/resources';
+	import { loginSchema } from '$lib/api/validation/authentication';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
@@ -39,14 +41,14 @@
 	let isPasswordConfirmed = $state(false);
 	let toggle = $state<HTMLIonToggleElement>();
 
-	let actions: FormActions<VerifyPasswordDto>;
+	let actions: FormActions<LoginRequestTO>;
 
 	const form = new Form({
 		completed: async ({ model }) => onPasswordConfirmed($userStore?.username!, model.password),
 		exposedActions: (exposedActions) => (actions = exposedActions),
-		request: async (model: VerifyPasswordDto) =>
-			authenticationResource.login({ password: model.password, username: $userStore?.username! } as LoginDto),
-		schema: verifyPasswordSchema()
+		hiddenFields: { username: $userStore?.username! },
+		request: async (model: LoginRequestTO) => authenticationResource.login(model),
+		schema: loginSchema()
 	});
 
 	onMount(async () => {

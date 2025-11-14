@@ -24,12 +24,13 @@ export type FormActions<T = object> = {
  * Configuration for a custom form.
  */
 export type FormConfig<T, R> = {
-	schema: ObjectSchema<AnyObject, T>;
+	schema: ObjectSchema<T & AnyObject>;
 	customValidators?: (
 		| (() => Promise<ValidationResult<T>> | ValidationResult<T>)
 		| ((model: T) => Promise<ValidationResult<T>> | ValidationResult<T>)
 	)[];
 	formatters?: { [K in keyof T]?: (value: T[K]) => string };
+	hiddenFields?: { [K in keyof T]?: T[K] };
 	keyEventHandlers?: {
 		[K in keyof T]?: (_event: KeyboardEvent, value: T[K], onUpdate: (value: T[K]) => void) => void;
 	};

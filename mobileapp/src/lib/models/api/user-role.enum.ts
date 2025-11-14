@@ -1,8 +1,0 @@
-/**
- * User role enum
- */
-export enum UserRole {
-	ADMIN = 'ROLE_KOLLAPP_ADMIN',
-	ORGANIZATION_MEMBER = 'ROLE_KOLLAPP_ORGANIZATION_MEMBER',
-	USER = 'ROLE_KOLLAPP_USER'
-}

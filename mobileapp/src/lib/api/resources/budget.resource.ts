@@ -1,5 +1,4 @@
-import type { CreatePostingDto, UpdatePostingDto } from '$lib/api/dto/client/budget';
-import type { ActivityPostingDto } from '../dto/server/budget/activity-posting.dto';
+import type { PostingCreateUpdateRequestTO, PostingTO } from '@kollapp/api-types';
 
 import { RequestMethod, type ResponseBody } from '$lib/models/api';
 import { customFetch } from '$lib/utility';
@@ -10,9 +9,9 @@ const ENDPOINT = (organizationId: number): string => `organization/${organizatio
  * Adds a new account posting to the specified account.
  * @param accountId The ID of the account to which the account posting will be added, if 0 its added as organization posting.
  * @param model The data for the new account posting.
- * @returns {Promise<ResponseBody<ActivityPostingDto>>} The response containing the created account posting.
+ * @returns {Promise<ResponseBody<PostingTO>>} The response containing the created account posting.
  */
-async function add(accountId: number, model: CreatePostingDto): Promise<ResponseBody<ActivityPostingDto>> {
+async function add(accountId: number, model: PostingCreateUpdateRequestTO): Promise<ResponseBody<PostingTO>> {
 	return customFetch(`${ENDPOINT}/${accountId}/posting`, {
 		body: model,
 		method: RequestMethod.POST
@@ -25,14 +24,14 @@ async function add(accountId: number, model: CreatePostingDto): Promise<Response
  * @param activityId The ID of the activity the posting belongs to
  * @param postingId The ID of the posting to update.
  * @param model The updated data for the activity posting.
- * @returns {Promise<ResponseBody<ActivityPostingDto>>} The response containing the updated account posting.
+ * @returns {Promise<ResponseBody<PostingTO>>} The response containing the updated account posting.
  */
 async function updateActivityPosting(
 	organizationId: number,
 	activityId: number,
 	postingId: number,
-	model: UpdatePostingDto
-): Promise<ResponseBody<ActivityPostingDto>> {
+	model: PostingCreateUpdateRequestTO
+): Promise<ResponseBody<PostingTO>> {
 	return customFetch(`${ENDPOINT(organizationId)}/${activityId}/posting/${postingId}`, {
 		body: model,
 		method: RequestMethod.PUT
@@ -44,13 +43,13 @@ async function updateActivityPosting(
  * @param organizationId The ID of the organization the posting belongs to
  * @param postingId The ID of the posting to update.
  * @param model The updated data for the account posting.
- * @returns {Promise<ResponseBody<ActivityPostingDto>>} The response containing the updated account posting.
+ * @returns {Promise<ResponseBody<PostingTO>>} The response containing the updated account posting.
  */
 async function updateOrganizationPosting(
 	organizationId: number,
 	postingId: number,
-	model: UpdatePostingDto
-): Promise<ResponseBody<ActivityPostingDto>> {
+	model: PostingCreateUpdateRequestTO
+): Promise<ResponseBody<PostingTO>> {
 	return customFetch(`${ENDPOINT(organizationId)}/posting/${postingId}`, {
 		body: model,
 		method: RequestMethod.PUT

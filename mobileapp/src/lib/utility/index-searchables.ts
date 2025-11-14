@@ -1,5 +1,5 @@
-import type { SearchableItemDto } from '$lib/api/dto/server';
-import type { OrganizationRole } from '$lib/models/api';
+import type { SearchableItemDto } from '$lib/api/dtos';
+import type { OrganizationRole } from '@kollapp/api-types';
 import type { Expression, Identifier, MemberExpression } from 'estree';
 
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';

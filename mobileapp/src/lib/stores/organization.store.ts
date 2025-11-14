@@ -1,5 +1,5 @@
-import type { OrganizationDto } from '$lib/api/dto/server';
 import type { OrganizationStore } from '$lib/models/stores';
+import type { OrganizationMinifiedTO, OrganizationTO } from '@kollapp/api-types';
 
 import { writable } from 'svelte/store';
 
@@ -7,15 +7,18 @@ import { organizationResource } from '$lib/api/resources';
 import { PreferencesKey } from '$lib/models/preferences';
 import { deduplicateRequest, getStoredValue, removeStoredValue, StatusCheck, storeValue } from '$lib/utility';
 
+const ORGANIZATION_STORE_INIT_REQUEST_KEY = 'organization-store-init';
+const ORGANIZATION_STORE_UPDATE_REQUEST_KEY = (id: number): string => `organization-store-update-${id}`;
+
 function createStore(): OrganizationStore {
-	const { set, subscribe } = writable<OrganizationDto | undefined>();
+	const { set, subscribe } = writable<OrganizationTO | undefined>();
 	const loadedCache = writable(false);
 	const loadedServer = writable(false);
-	const organizations = writable<OrganizationDto[]>([]);
+	const organizations = writable<OrganizationMinifiedTO[]>([]);
 
 	async function init(): Promise<void> {
-		return deduplicateRequest('organization-store-init', async () => {
-			const storedOrganization = await getStoredValue<OrganizationDto>(PreferencesKey.ORGANIZATION);
+		return deduplicateRequest(ORGANIZATION_STORE_INIT_REQUEST_KEY, async () => {
+			const storedOrganization = await getStoredValue<OrganizationTO>(PreferencesKey.ORGANIZATION);
 			if (storedOrganization) {
 				organizations.set([storedOrganization]);
 				set(storedOrganization);
@@ -38,7 +41,7 @@ function createStore(): OrganizationStore {
 		});
 	}
 
-	async function _set(model?: OrganizationDto): Promise<void> {
+	async function _set(model?: OrganizationTO): Promise<void> {
 		await (model ? storeValue(PreferencesKey.ORGANIZATION, model) : removeStoredValue(PreferencesKey.ORGANIZATION));
 		set(model);
 	}
@@ -50,7 +53,7 @@ function createStore(): OrganizationStore {
 	}
 
 	async function update(id: number): Promise<void> {
-		return deduplicateRequest(`organization-get-${id}`, async () => {
+		return deduplicateRequest(ORGANIZATION_STORE_UPDATE_REQUEST_KEY(id), async () => {
 			const response = await organizationResource.getById(id);
 			if (StatusCheck.isOK(response.status)) {
 				await _set(response.data);

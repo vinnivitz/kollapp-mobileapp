@@ -1,10 +1,12 @@
 <script lang="ts">
+	import type { PasswordChangeRequestTO } from '@kollapp/api-types';
+
 	import { keyOutline, keySharp, saveOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
 
-	import { type ChangePasswordDto, changePasswordSchema } from '$lib/api/dto/client/user';
 	import { userResource } from '$lib/api/resources';
+	import { changePasswordSchema } from '$lib/api/validation/user';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
@@ -26,14 +28,7 @@
 			}
 			goto(PageRoute.ACCOUNT.ROOT);
 		},
-		failed: (result) => {
-			for (const error of result.errors ?? []) {
-				if (error.field === ('password' as keyof ChangePasswordDto)) {
-					error.field = 'currentPassword';
-				}
-			}
-		},
-		request: async (model: ChangePasswordDto) => userResource.changePassword(model),
+		request: async (model: PasswordChangeRequestTO) => userResource.changePassword(model),
 		schema: changePasswordSchema()
 	});
 </script>

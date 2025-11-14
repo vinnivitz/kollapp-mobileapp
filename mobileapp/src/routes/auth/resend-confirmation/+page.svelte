@@ -1,10 +1,11 @@
 <script lang="ts">
+	import type { ResponseBody } from '$lib/models/api';
+
 	import { mailOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
 
-	import { resetPasswordConfirmationSchema } from '$lib/api/dto/client/authentication';
-	import { publicUserResource } from '$lib/api/resources';
+	import { resendConfirmationSchema } from '$lib/api/validation/authentication';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
@@ -12,12 +13,12 @@
 	import { t } from '$lib/locales';
 	import { PageRoute } from '$lib/models/routing';
 	import { Form } from '$lib/models/ui';
-	import { customForm } from '$lib/utility';
+	import { customForm, featureNotImplementedAlert } from '$lib/utility';
 
 	const form = new Form({
 		completed: async () => goto(PageRoute.AUTH.LOGIN),
-		request: async (model) => publicUserResource.resendConfirmation(model),
-		schema: resetPasswordConfirmationSchema()
+		request: async () => featureNotImplementedAlert() as unknown as Promise<ResponseBody<void>>,
+		schema: resendConfirmationSchema()
 	});
 </script>
 

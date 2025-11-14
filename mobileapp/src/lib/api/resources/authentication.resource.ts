@@ -1,5 +1,4 @@
-import type { LoginDto } from '$lib/api/dto/client/authentication';
-import type { TokenDto, UserAuthenticationDto } from '$lib/api/dto/server';
+import type { AuthenticatedUserTO, LoginRequestTO, TokenTO } from '@kollapp/api-types';
 
 import { goto } from '$app/navigation';
 
@@ -13,9 +12,9 @@ const ENDPOINT = 'public/auth';
 /**
  * Logs in a user and returns the validation result
  * @param model login model
- * @returns {Promise<ResponseBody<UserDto>>} validation result
+ * @returns {Promise<ResponseBody<AuthenticatedUserTO>>} validation result
  */
-async function login(model: LoginDto): Promise<ResponseBody<UserAuthenticationDto>> {
+async function login(model: LoginRequestTO): Promise<ResponseBody<AuthenticatedUserTO>> {
 	return customFetch(`${ENDPOINT}/signin`, {
 		authorizationType: AuthorizationType.NONE,
 		body: model,
@@ -27,9 +26,9 @@ async function login(model: LoginDto): Promise<ResponseBody<UserAuthenticationDt
 /**
  * Refreshes the access token
  * @param token refresh token
- * @returns {Promise<ResponseBody<AccessTokenDto>>} new access token
+ * @returns {Promise<ResponseBody<TokenTO>>} new access token
  */
-async function refresh(token: string): Promise<ResponseBody<TokenDto>> {
+async function refresh(token: string): Promise<ResponseBody<TokenTO>> {
 	return customFetch(`${ENDPOINT}/refresh`, {
 		authorizationType: AuthorizationType.NONE,
 		query: { token },

@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { mailOutline, refreshOutline } from 'ionicons/icons';
 
-	import { resetPasswordSchema } from '$lib/api/dto/client/authentication';
 	import { publicUserResource } from '$lib/api/resources';
+	import { forgotPasswordSchema } from '$lib/api/validation/authentication';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
@@ -13,7 +13,7 @@
 
 	const form = new Form({
 		request: async (model) => publicUserResource.forgotPassword(model),
-		schema: resetPasswordSchema()
+		schema: forgotPasswordSchema()
 	});
 </script>
 

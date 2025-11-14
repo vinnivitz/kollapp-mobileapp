@@ -38,29 +38,9 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 
 	data.config.exposedActions?.(actions);
 
-	if (data.config.keyEventHandlers) {
-		for (const key of Object.keys(data.config.keyEventHandlers) as Array<keyof T>) {
-			const handler = data.config.keyEventHandlers[key];
-			const input = fields[key as string];
-			if (handler && input) {
-				addListener(input, 'keydown', (_event) => {
-					handler(_event as KeyboardEvent, data.model[key], onUpdate.bind(undefined, key));
-				});
-			}
-		}
-	}
-
-	for (const input of inputs) {
-		input.classList.add('ion-touched');
-		const formatter = data.config.formatters?.[input.name as keyof T];
-		input.value = (
-			formatter ? formatter(data.model[input.name as keyof T]) : data.model[input.name as keyof T]
-		) as string;
-		if (isIonInputElement(input) && input.type === 'password') {
-			input.clearOnEdit = false;
-			addPasswordIcon(input);
-		}
-	}
+	setupKeyEventHandlers();
+	initializeHiddenFields();
+	initializeInputs();
 
 	addListener(node, 'ionInput', (event) => {
 		const input = event.target as HTMLInputElement;
@@ -75,6 +55,42 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 
 	node.noValidate = true;
 	addListener(node, 'submit', onSubmit);
+
+	function setupKeyEventHandlers(): void {
+		if (!data.config.keyEventHandlers) return;
+
+		for (const key of Object.keys(data.config.keyEventHandlers) as Array<keyof T>) {
+			const handler = data.config.keyEventHandlers[key];
+			const input = fields[key as string];
+			if (handler && input) {
+				addListener(input, 'keydown', (_event) => {
+					handler(_event as KeyboardEvent, data.model[key], onUpdate.bind(undefined, key));
+				});
+			}
+		}
+	}
+
+	function initializeHiddenFields(): void {
+		if (!data.config.hiddenFields) return;
+
+		for (const key of Object.keys(data.config.hiddenFields) as Array<keyof T>) {
+			data.model[key] = data.config.hiddenFields[key] as T[keyof T];
+		}
+	}
+
+	function initializeInputs(): void {
+		for (const input of inputs) {
+			input.classList.add('ion-touched');
+			const formatter = data.config.formatters?.[input.name as keyof T];
+			input.value = (
+				formatter ? formatter(data.model[input.name as keyof T]) : data.model[input.name as keyof T]
+			) as string;
+			if (isIonInputElement(input) && input.type === 'password') {
+				input.clearOnEdit = false;
+				addPasswordIcon(input);
+			}
+		}
+	}
 
 	function addPasswordIcon(input: HTMLIonInputElement): void {
 		const icon = document.createElement('ion-icon') as HTMLIonIconElement;
@@ -94,6 +110,14 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 
 	function setModel(model?: T): void {
 		data.model = model ?? (data.config.schema.cast({}) as T);
+		initializeHiddenFields();
+		resetInputsValidation();
+		for (const input of customInputs) {
+			removeCustomValidationFeedback(input);
+		}
+	}
+
+	function resetInputsValidation(): void {
 		for (const input of inputs) {
 			input.classList.remove('ion-invalid');
 			input.errorText = '';
@@ -101,9 +125,6 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 			input.value = data.config.formatters?.[key]
 				? data.config.formatters[key](data.model[key])
 				: (data.model[key] as string);
-		}
-		for (const input of customInputs) {
-			removeCustomValidationFeedback(input);
 		}
 	}
 
@@ -148,6 +169,27 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 		}
 	}
 
+	function getMessageForKey(result: ValidationResult<T>, key: keyof T): string | undefined {
+		return result.errors?.find((error) => error.field === key)?.message;
+	}
+
+	function setNativeInputFeedback(input: HTMLIonInputElement | HTMLIonTextareaElement, message?: string): void {
+		if (message) {
+			input.classList.add('ion-invalid');
+			input.errorText = message;
+		} else {
+			input.classList.remove('ion-invalid');
+			input.errorText = '';
+		}
+	}
+
+	function setCustomInputFeedback(customInput: HTMLElement, message?: string): void {
+		removeCustomValidationFeedback(customInput);
+		if (message) {
+			applyCustomValidationFeedback(customInput, message);
+		}
+	}
+
 	function applyValidationFeedback(result: ValidationResult<T>): void {
 		for (const input of inputs) {
 			applyValidationFeedbackByKey(input.name as keyof T, result);
@@ -159,24 +201,13 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 
 	function applyValidationFeedbackByKey(key: keyof T, result: ValidationResult<T>): void {
 		const input = fields[key as string];
-		const message = result.errors?.find((error) => error.field === key)?.message;
+		const message = getMessageForKey(result, key);
 
 		if (input) {
-			if (message) {
-				input.classList.add('ion-invalid');
-				input.errorText = message;
-			} else {
-				input.classList.remove('ion-invalid');
-				input.errorText = '';
-			}
+			setNativeInputFeedback(input, message);
 		} else {
 			const customInput = customInputs.find((input) => input.dataset.name === key);
-			if (customInput) {
-				removeCustomValidationFeedback(customInput);
-				if (message) {
-					applyCustomValidationFeedback(customInput, message);
-				}
-			}
+			if (customInput) setCustomInputFeedback(customInput, message);
 		}
 	}
 
@@ -203,16 +234,29 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 	async function onSubmit(event?: Event): Promise<void> {
 		dirty = true;
 		event?.preventDefault();
+
+		const validationResult = await validateForm();
+		if (!validationResult.valid) {
+			return applyValidationFeedback(validationResult);
+		}
+
+		await submitForm();
+	}
+
+	async function validateForm(): Promise<ValidationResult<T>> {
 		let validationResult = await validate(data.config.schema, data.model);
 		if (data.config.customValidators) {
 			validationResult = await runCustomValidators(validationResult);
 		}
-		if (!validationResult.valid) return applyValidationFeedback(validationResult);
+		return validationResult;
+	}
 
+	async function submitForm(): Promise<void> {
 		const loading = await loadingController.create({});
 		await loading.present();
 		const response = await data.submit();
-		validationResult = getValidationResult(response);
+		const validationResult = getValidationResult<T>(response);
+
 		if (validationResult.valid) {
 			data.config.completed?.({ actions, model: data.model, response: response.data });
 			setModel(getObjectFromSchema(data.config.schema));
@@ -220,6 +264,7 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 			data.config.failed?.(validationResult);
 			applyValidationFeedback(validationResult);
 		}
+
 		await loading.dismiss();
 	}
 
@@ -262,13 +307,14 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 		}
 
 		if (data.config.exposedActions) {
-			data.config.exposedActions({
+			const emptyActions: FormActions<T> = {
 				applyValidationFeedback: () => {},
 				applyValidationFeedbackByKey: () => {},
 				onSubmit: async () => {},
 				onUpdate: async () => {},
 				setModel: () => {}
-			});
+			};
+			data.config.exposedActions(emptyActions);
 		}
 	}
 
@@ -277,7 +323,7 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 	};
 }
 
-async function validate<T>(schema: ObjectSchema<AnyObject, T>, data: T): Promise<ValidationResult<T>> {
+async function validate<T>(schema: ObjectSchema<T & AnyObject>, data: T): Promise<ValidationResult<T>> {
 	try {
 		await schema.validate(data, { abortEarly: false });
 		return { valid: true };

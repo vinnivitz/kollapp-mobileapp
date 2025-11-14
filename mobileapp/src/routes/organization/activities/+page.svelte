@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { ActivityModel } from '$lib/models/models';
+	import type { ActivityCreationRequestTO } from '@kollapp/api-types';
 
 	import { TZDate } from '@date-fns/tz';
 	import { format } from 'date-fns';
@@ -18,8 +19,8 @@
 
 	import { goto } from '$app/navigation';
 
-	import { type CreateActivityDto, createActivitySchema } from '$lib/api/dto/client/organization';
 	import { activityResource } from '$lib/api/resources';
+	import { createActivitySchema } from '$lib/api/validation/organization';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
@@ -84,7 +85,7 @@
 			await organizationStore.update($organizationStore?.id!);
 			createActivityModalOpen = false;
 		},
-		request: async (model: CreateActivityDto) => activityResource.create($organizationStore?.id!, model),
+		request: async (model: ActivityCreationRequestTO) => activityResource.create($organizationStore?.id!, model),
 		schema: createActivitySchema()
 	});
 

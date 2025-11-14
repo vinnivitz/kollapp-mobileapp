@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { OrganizationDto, UserDto } from '$lib/api/dto/server';
 	import type { ActivityModel } from '$lib/models/models';
+	import type { KollappUserTO, OrganizationTO } from '@kollapp/api-types';
 
 	import { TZDate } from '@date-fns/tz';
 	import { addDays, formatDistanceToNow } from 'date-fns';
@@ -53,7 +53,7 @@
 	{/if}
 </Layout>
 
-{#snippet accountCard(user: UserDto)}
+{#snippet accountCard(user: KollappUserTO)}
 	<Card color="transparent" classList="text-center" clicked={() => goto(PageRoute.ACCOUNT.ROOT)}>
 		<div class="truncate">
 			<ion-text class="text-2xl" color="dark">
@@ -92,7 +92,7 @@
 	</Card>
 {/snippet}
 
-{#snippet organizationCard(organization: OrganizationDto)}
+{#snippet organizationCard(organization: OrganizationTO)}
 	<Card border="primary" title={organization.name} clicked={() => goto(PageRoute.ORGANIZATION.ROOT)}>
 		<div class="flex flex-wrap items-center justify-center gap-2">
 			<Button

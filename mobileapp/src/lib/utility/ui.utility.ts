@@ -130,6 +130,6 @@ export function debounce<F extends (...arguments_: unknown[]) => unknown>(
  * @param schema schema to get the object from
  * @returns {ObjectSchema<AnyObject, T>} object with default values
  */
-export function getObjectFromSchema<T>(schema: ObjectSchema<AnyObject, T>): T {
+export function getObjectFromSchema<T>(schema: ObjectSchema<T & AnyObject>): T {
 	return schema.getDefault() as T;
 }

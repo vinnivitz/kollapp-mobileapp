@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { PersonsOfOrganizationDto } from '$lib/api/dto/server/organization';
+	import type { OrganizationRole, PersonOfOrganizationTO } from '@kollapp/api-types';
 
 	import { Clipboard } from '@capacitor/clipboard';
 	import { Share } from '@capacitor/share';
@@ -34,7 +34,6 @@
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
 	import Popover from '$lib/components/widgets/ionic/Popover.svelte';
 	import { t } from '$lib/locales';
-	import { OrganizationRole } from '$lib/models/api';
 	import { AlertType, type ItemSlidingOption } from '$lib/models/ui';
 	import { localeStore, organizationStore, userStore } from '$lib/stores';
 	import { getDateFnsLocale, hasOrganizationRole, showAlert, StatusCheck } from '$lib/utility';
@@ -42,7 +41,7 @@
 	let invitationCodeModalOpen = $state(false);
 	let qrModalOpen = $state(false);
 
-	function getSlidingOptions(member: PersonsOfOrganizationDto): ItemSlidingOption[] {
+	function getSlidingOptions(member: PersonOfOrganizationTO): ItemSlidingOption[] {
 		return [
 			{ color: 'tertiary', handler: () => onSelectRole(member), icon: ribbonOutline },
 			{ color: 'danger', handler: () => onRemoveUser(member.id), icon: logOutOutline }
@@ -73,20 +72,20 @@
 		}
 	}
 
-	async function onSelectRole(member: PersonsOfOrganizationDto): Promise<void> {
+	async function onSelectRole(member: PersonOfOrganizationTO): Promise<void> {
 		const organizationId = $organizationStore?.id as number;
 		const actionsheet = await actionSheetController.create({
 			buttons: [
 				{
-					handler: () => grantOrganizationRole(member.id, organizationId, OrganizationRole.MANAGER),
+					handler: () => grantOrganizationRole(member.id, organizationId, 'ROLE_ORGANIZATION_MANAGER'),
 					icon: medalOutline,
-					role: member.organizationRole === OrganizationRole.MANAGER ? 'selected' : undefined,
+					role: member.organizationRole === 'ROLE_ORGANIZATION_MANAGER' ? 'selected' : undefined,
 					text: $t('routes.organization.page.members.select-user-role.role.manager')
 				},
 				{
-					handler: () => grantOrganizationRole(member.id, organizationId, OrganizationRole.MEMBER),
+					handler: () => grantOrganizationRole(member.id, organizationId, 'ROLE_ORGANIZATION_MEMBER'),
 					icon: personOutline,
-					role: member.organizationRole === OrganizationRole.MEMBER ? 'selected' : undefined,
+					role: member.organizationRole === 'ROLE_ORGANIZATION_MEMBER' ? 'selected' : undefined,
 					text: $t('routes.organization.page.members.select-user-role.role.user')
 				}
 			],
@@ -100,8 +99,8 @@
 		await organizationResource.grantRole(userId, organizationId, role);
 	}
 
-	function getGroupedMembers(members: PersonsOfOrganizationDto[]): [string, PersonsOfOrganizationDto[]][] {
-		const result: Map<string, PersonsOfOrganizationDto[]> = new Map();
+	function getGroupedMembers(members: PersonOfOrganizationTO[]): [string, PersonOfOrganizationTO[]][] {
+		const result: Map<string, PersonOfOrganizationTO[]> = new Map();
 
 		for (const member of members) {
 			const key = member.username.charAt(0).toUpperCase();
@@ -168,7 +167,7 @@
 </script>
 
 <Layout title={$t('routes.organization.page.members.title')} showBackButton>
-	{#if hasOrganizationRole(OrganizationRole.MANAGER)}
+	{#if hasOrganizationRole('ROLE_ORGANIZATION_MANAGER')}
 		<FabButton label="Invite member" icon={personAddOutline} clicked={() => (invitationCodeModalOpen = true)} />
 	{/if}
 
@@ -194,7 +193,7 @@
 	{/if}
 </Layout>
 
-{#snippet memberItem(member: PersonsOfOrganizationDto)}
+{#snippet memberItem(member: PersonOfOrganizationTO)}
 	<CustomItem slidingOptions={getSlidingOptions(member)}>
 		<ion-avatar class="mb-1">
 			<ion-icon icon={personCircleOutline} class="h-10 w-10" color="medium"></ion-icon>

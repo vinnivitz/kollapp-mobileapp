@@ -1,4 +1,4 @@
-import type { CreateActivityDto, UpdateActivityDto } from '$lib/api/dto/client/organization';
+import type { ActivityCreationRequestTO, ActivityUpdateRequestTO } from '@kollapp/api-types';
 
 import { RequestMethod, type ResponseBody } from '$lib/models/api';
 import { customFetch } from '$lib/utility';
@@ -11,7 +11,7 @@ const ENDPOINT = 'organization';
  * @param model activity model
  * @returns {Promise<ResponseBody>} response body
  */
-async function create(organizationId: number, model: CreateActivityDto): Promise<ResponseBody> {
+async function create(organizationId: number, model: ActivityCreationRequestTO): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/${organizationId}/activity`, {
 		body: model,
 		method: RequestMethod.POST
@@ -25,7 +25,11 @@ async function create(organizationId: number, model: CreateActivityDto): Promise
  * @param model activity model
  * @returns {Promise<ResponseBody>} response body
  */
-async function update(organizationId: number, activityId: number, model: UpdateActivityDto): Promise<ResponseBody> {
+async function update(
+	organizationId: number,
+	activityId: number,
+	model: ActivityUpdateRequestTO
+): Promise<ResponseBody> {
 	return customFetch(`${ENDPOINT}/${organizationId}/activity/${activityId}`, {
 		body: model,
 		method: RequestMethod.POST

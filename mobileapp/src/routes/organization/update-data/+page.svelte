@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { accessibilityOutline, readerOutline, saveOutline } from 'ionicons/icons';
 
-	import { updateOrganizationSchema } from '$lib/api/dto/client/organization';
 	import { organizationResource } from '$lib/api/resources';
+	import { updateOrganizationSchema } from '$lib/api/validation/organization';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';

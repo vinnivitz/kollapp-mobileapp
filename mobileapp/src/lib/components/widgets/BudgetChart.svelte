@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { PostingDto } from '$lib/api/dto/server/organization';
+	import type { PostingTO, PostingType } from '@kollapp/api-types';
 	import type { ApexOptions } from 'apexcharts';
 
 	import { TZDate } from '@date-fns/tz';
@@ -7,9 +7,7 @@
 	import { format } from 'date-fns';
 	import { calendarOutline, cashOutline, trendingDown, trendingUp } from 'ionicons/icons';
 
-	import Chip from './ionic/Chip.svelte';
-
-	import { PostingType } from '$lib/models/models';
+	import Chip from '$lib/components/widgets/ionic/Chip.svelte';
 	import { formatter } from '$lib/utility';
 
 	enum ChartType {
@@ -18,7 +16,7 @@
 		DEBIT
 	}
 
-	let { postings }: { postings?: PostingDto[] } = $props();
+	let { postings }: { postings?: PostingTO[] } = $props();
 
 	let selectedChart = $state<ChartType>(ChartType.ALL);
 	let chartSeries = $state<ApexAxisChartSeries | ApexNonAxisChartSeries>();
@@ -26,9 +24,9 @@
 	let colors = $state<string[]>();
 	let selectedChartDataId = $state<number>();
 
-	const hasDebit = $derived(postings?.some((posting) => posting.type === PostingType.DEBIT) ?? false);
+	const hasDebit = $derived(postings?.some((posting) => posting.type === 'DEBIT') ?? false);
 
-	const hasCredit = $derived(postings?.some((postings) => postings.type === PostingType.CREDIT) ?? false);
+	const hasCredit = $derived(postings?.some((postings) => postings.type === 'CREDIT') ?? false);
 
 	function getTotalAmountByType(type: PostingType): number {
 		return (
@@ -39,15 +37,15 @@
 	}
 
 	function getTotalBudget(): number {
-		const totalCredits = getTotalAmountByType(PostingType.CREDIT);
-		const totalDebits = getTotalAmountByType(PostingType.DEBIT);
+		const totalCredits = getTotalAmountByType('CREDIT');
+		const totalDebits = getTotalAmountByType('DEBIT');
 		return totalCredits - totalDebits;
 	}
 
 	$effect(() => {
 		switch (selectedChart) {
 			case ChartType.CREDIT: {
-				const credits = postings?.filter((posting) => posting.type === PostingType.CREDIT) ?? [];
+				const credits = postings?.filter((posting) => posting.type === 'CREDIT') ?? [];
 				chartSeries = [
 					{
 						data: credits.map((credit) => ({
@@ -61,7 +59,7 @@
 				break;
 			}
 			case ChartType.DEBIT: {
-				const debits = postings?.filter((posting) => posting.type === PostingType.DEBIT) ?? [];
+				const debits = postings?.filter((posting) => posting.type === 'DEBIT') ?? [];
 				chartSeries = [
 					{
 						data: debits.map((debit) => ({
@@ -75,8 +73,8 @@
 				break;
 			}
 			default: {
-				const credits = postings?.filter((posting) => posting.type === PostingType.CREDIT) ?? [];
-				const debits = postings?.filter((posting) => posting.type === PostingType.DEBIT) ?? [];
+				const credits = postings?.filter((posting) => posting.type === 'CREDIT') ?? [];
+				const debits = postings?.filter((posting) => posting.type === 'DEBIT') ?? [];
 				chartSeries = [
 					credits.reduce((accumulator, credit) => accumulator + credit.amountInCents, 0),
 					debits.reduce((accumulator, debit) => accumulator + debit.amountInCents, 0)
@@ -100,8 +98,8 @@
 
 					let target: ChartType | undefined;
 
-					if (metaType === PostingType.CREDIT || metaType === PostingType.DEBIT) {
-						target = metaType === PostingType.CREDIT ? ChartType.CREDIT : ChartType.DEBIT;
+					if (metaType === 'CREDIT' || metaType === 'DEBIT') {
+						target = metaType === 'CREDIT' ? ChartType.CREDIT : ChartType.DEBIT;
 					} else if (clickedIndex === 0) {
 						target = ChartType.CREDIT;
 					} else if (clickedIndex === 1) {

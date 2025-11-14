@@ -1,12 +1,12 @@
 <script lang="ts">
-	import type { OrganizationRole } from '$lib/models/api';
 	import type { Colors } from '$lib/models/ui';
+	import type { OrganizationRole } from '@kollapp/api-types';
 
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
 
 	type Properties = {
 		label: string;
-		accessible?: OrganizationRole[];
+		accessible?: OrganizationRole;
 		card?: boolean;
 		classList?: string;
 		color?: Colors | undefined;

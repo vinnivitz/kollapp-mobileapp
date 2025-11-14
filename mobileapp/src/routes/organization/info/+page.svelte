@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { OrganizationBaseDto } from '$lib/api/dto/server/organization';
 	import type { PageData } from './$types';
+	import type { OrganizationBaseTO } from '@kollapp/api-types';
 
 	import { homeOutline, locationOutline } from 'ionicons/icons';
 	import { onMount } from 'svelte';
@@ -17,7 +17,7 @@
 	let { data }: { data: PageData } = $props();
 
 	let loading = $state(true);
-	let organization = $state<OrganizationBaseDto>();
+	let organization = $state<OrganizationBaseTO>();
 
 	onMount(async () => {
 		if (data.invitationCode) {

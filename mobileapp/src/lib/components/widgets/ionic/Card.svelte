@@ -1,11 +1,11 @@
 <script lang="ts">
-	import type { OrganizationRole } from '$lib/models/api';
+	import type { OrganizationRole } from '@kollapp/api-types';
 	import type { Snippet } from 'svelte';
 
 	import { type Colors } from '$lib/models/ui';
 
 	type Properties = {
-		accessible?: OrganizationRole[];
+		accessible?: OrganizationRole;
 		border?: Colors;
 		children?: Snippet;
 		classList?: string;

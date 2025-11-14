@@ -1,4 +1,5 @@
 import type { AuthenticationModel } from '$lib/models/models';
+import type { OrganizationRole, SystemRole } from '@kollapp/api-types';
 
 import { TZDate } from '@date-fns/tz';
 import { alertController } from '@ionic/core';
@@ -15,11 +16,9 @@ import {
 	ContentType,
 	type CustomFetchConfig,
 	HeaderKey,
-	OrganizationRole,
 	RequestMethod,
 	type ResponseBody,
-	StatusCode,
-	UserRole
+	StatusCode
 } from '$lib/models/api';
 import { PreferencesKey } from '$lib/models/preferences';
 import { AlertType, type ValidationResult } from '$lib/models/ui';
@@ -136,13 +135,14 @@ export async function isAuthenticated(): Promise<boolean> {
  * @param body Fetch response.
  * @returns {ValidationResult<T>} Validation result containing errors and validity status.
  */
-export function getValidationResult<T>(body: ResponseBody<unknown>): ValidationResult<T> {
+export function getValidationResult<TField = unknown, TData = unknown>(
+	body: ResponseBody<TData>
+): ValidationResult<TField> {
 	const $t = get(t);
 	return {
 		errors: [
 			{
-				code: body.validationCode,
-				field: body.validationField as keyof T,
+				field: body.validationField as keyof TField,
 				message: body.message ?? $t('api.error')
 			}
 		],
@@ -172,11 +172,11 @@ export function hasOrganizationRole(role: OrganizationRole): boolean {
 }
 
 /**
- * Checks if the user has the given user role.
- * @param role UserRole to check.
+ * Checks if the user has the given system role.
+ * @param role SystemRole to check.
  * @returns {boolean} True if the user has the role; otherwise, false.
  */
-export function hasUserRole(role: UserRole): boolean {
+export function hasSystemRole(role: SystemRole): boolean {
 	return get(userStore)?.role === role;
 }
 
@@ -236,7 +236,7 @@ async function getResponseBody<T>(
 	const body = (await response.json()) as ResponseBody<T>;
 	message = body.message ?? (response.ok ? message : $t('api.error'));
 	data = body.data ?? data;
-	const { validationCode, validationField } = body;
+	const { validationField } = body;
 	if (!silent && !validationField) {
 		await showAlert(message, { type: response.ok ? AlertType.SUCCESS : AlertType.ERROR });
 	}
@@ -252,7 +252,6 @@ async function getResponseBody<T>(
 		data,
 		message,
 		status,
-		validationCode,
 		validationField
 	};
 }
