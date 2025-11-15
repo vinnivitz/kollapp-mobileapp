@@ -52,6 +52,11 @@
 	void indexed;
 
 	const fontWeight = $derived(fill === 'outline' ? 'font-extrabold' : 'font-medium');
+
+	function onClicked(event: MouseEvent): void {
+		event.stopPropagation();
+		clicked?.(event);
+	}
 </script>
 
 <ion-button
@@ -65,7 +70,7 @@
 	{size}
 	{type}
 	{disabled}
-	onclick={(event: MouseEvent) => clicked?.(event)}
+	onclick={(event: MouseEvent) => onClicked(event)}
 	role="button"
 	tabindex="0"
 >

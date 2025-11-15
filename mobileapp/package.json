@@ -3,7 +3,7 @@
 	"version": "1.0.0",
 	"scripts": {
 		"dev": "vite dev",
-		"build": "npm run indexing && vite build --mode production",
+		"build": "npm run indexing && npm run sync-ionic-types && vite build --mode production",
 		"preview": "vite preview --mode production",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"format": "prettier --write . && eslint . --fix",
@@ -16,7 +16,7 @@
 		"build-web": "cross-env ADAPTER=node npm run build",
 		"visualize": "mkdir -p visualize && madge --extensions ts,svelte --image visualize/dependency-graph.png src",
 		"indexing": "tsx ./src/lib/utility/indexing.utility.ts",
-		"sync-ionic-types": "tsx ./src/lib/utility/sync-ionic-types.ts && npm run format"
+		"sync-ionic-types": "tsx ./src/lib/utility/sync-ionic-types.ts && prettier --write ./src/app.d.ts && eslint ./src/app.d.ts --fix"
 	},
 	"type": "module",
 	"devDependencies": {

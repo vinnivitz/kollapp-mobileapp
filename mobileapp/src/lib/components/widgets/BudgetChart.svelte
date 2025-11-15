@@ -175,38 +175,42 @@
 </script>
 
 <div class="mt-5 mb-2 text-center text-2xl">Budget overview</div>
-<div class="flex items-center justify-center gap-2">
-	{#if hasCredit && hasDebit}
-		<Chip
-			icon={cashOutline}
-			label="All"
-			color="secondary"
-			selected={selectedChart === ChartType.ALL}
-			clicked={() => setSelectedChart(ChartType.ALL)}
-		/>
-		<Chip
-			icon={trendingUp}
-			label="Income"
-			color="success"
-			selected={selectedChart === ChartType.CREDIT}
-			clicked={() => setSelectedChart(ChartType.CREDIT)}
-		/>
-		<Chip
-			icon={trendingDown}
-			label="Expenses"
-			color="danger"
-			selected={selectedChart === ChartType.DEBIT}
-			clicked={() => setSelectedChart(ChartType.DEBIT)}
-		/>
-	{/if}
-</div>
-<div class="relative h-[350px]">
-	{#if selectedChart === ChartType.ALL}
-		<ion-text class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-7 text-center text-xl font-bold">
-			{formatter.currency(getTotalBudget())}
-		</ion-text>
-	{/if}
-	{#key selectedChart}
-		<Chart options={chartOptions}></Chart>
-	{/key}
-</div>
+{#if postings && postings.length > 0}
+	<div class="flex items-center justify-center gap-2">
+		{#if hasCredit && hasDebit}
+			<Chip
+				icon={cashOutline}
+				label="All"
+				color="secondary"
+				selected={selectedChart === ChartType.ALL}
+				clicked={() => setSelectedChart(ChartType.ALL)}
+			/>
+			<Chip
+				icon={trendingUp}
+				label="Income"
+				color="success"
+				selected={selectedChart === ChartType.CREDIT}
+				clicked={() => setSelectedChart(ChartType.CREDIT)}
+			/>
+			<Chip
+				icon={trendingDown}
+				label="Expenses"
+				color="danger"
+				selected={selectedChart === ChartType.DEBIT}
+				clicked={() => setSelectedChart(ChartType.DEBIT)}
+			/>
+		{/if}
+	</div>
+	<div class="relative h-[350px]">
+		{#if selectedChart === ChartType.ALL}
+			<ion-text class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-7 text-center text-xl font-bold">
+				{formatter.currency(getTotalBudget())}
+			</ion-text>
+		{/if}
+		{#key selectedChart}
+			<Chart options={chartOptions}></Chart>
+		{/key}
+	</div>
+{:else}
+	<div class="text-medium mt-5 text-center"><ion-note>No budget postings available.</ion-note></div>
+{/if}

@@ -114,16 +114,16 @@
 </Layout>
 
 {#snippet activitySegmentsHeader()}
-	<div class="mb-2 flex items-center justify-center gap-3">
+	<div class="mb-2 flex items-center justify-center gap-3 bg-(--ion-background-color-step-50) rounded-full">
 		<Chip
-			color="primary"
+			color="dark"
 			label={$t('routes.organization.page.activity.segments.activities')}
 			icon={flashOutline}
 			selected={activityView === ActivityView.ACTIVITIES}
 			clicked={() => (activityView = ActivityView.ACTIVITIES)}
 		/>
 		<Chip
-			color="primary"
+			color="dark"
 			label={$t('routes.organization.page.activity.segments.calendar')}
 			icon={calendarOutline}
 			selected={activityView === ActivityView.CALENDAR}
@@ -185,7 +185,7 @@
 	{#if filteredActivities}
 		{#if activityItems.length === 0}
 			<div class="mt-4 text-center" in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
-				{$t('routes.organization.page.activity.no-activities')}
+				<ion-note>{$t('routes.organization.page.activity.no-activities')}</ion-note>
 			</div>
 		{:else if filteredActivities.length > 0}
 			<ion-list in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>

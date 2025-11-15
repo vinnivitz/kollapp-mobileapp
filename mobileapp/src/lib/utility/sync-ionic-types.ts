@@ -278,8 +278,7 @@ function generateAppDTS(interfaces: Map<string, PropertyInfo[]>, types: Set<stri
 
 	// Close namespace and declare global
 	output += `\t}\n`;
-	output += `}\n\n`;
-	output += `export {};\n`;
+	output += `}\n`;
 
 	return output;
 }
