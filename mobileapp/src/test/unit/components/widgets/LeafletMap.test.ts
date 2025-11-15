@@ -39,21 +39,24 @@ function registerMocks(): void {
 		const actual = await vi.importActual<typeof import('leaflet')>('leaflet');
 		return {
 			...actual,
-			Map: vi.fn().mockImplementation(() => ({
-				addLayer: vi.fn(),
-				on: vi.fn(),
-				remove: vi.fn(),
-				setView: vi.fn()
-			})),
-			Marker: vi.fn().mockImplementation(() => ({
-				addTo: vi.fn().mockReturnThis(),
-				bindTooltip: vi.fn().mockReturnThis(),
-				openTooltip: vi.fn(),
-				removeFrom: vi.fn()
-			})),
-			TileLayer: vi.fn().mockImplementation(() => ({
-				addTo: vi.fn().mockReturnThis()
-			}))
+			Map: vi.fn(function (this: MockMap) {
+				this.addLayer = vi.fn();
+				this.on = vi.fn();
+				this.remove = vi.fn();
+				this.setView = vi.fn();
+				return this;
+			}),
+			Marker: vi.fn(function (this: any) {
+				this.addTo = vi.fn().mockReturnThis();
+				this.bindTooltip = vi.fn().mockReturnThis();
+				this.openTooltip = vi.fn();
+				this.removeFrom = vi.fn();
+				return this;
+			}),
+			TileLayer: vi.fn(function (this: any) {
+				this.addTo = vi.fn().mockReturnThis();
+				return this;
+			})
 		};
 	});
 
@@ -94,8 +97,8 @@ describe('LeafletMap', () => {
 	});
 
 	it('renders the map container', () => {
-		const { container } = render(LeafletMapComponent, { props: {} });
-		expect(container.querySelector('#map')).toBeTruthy();
+		render(LeafletMapComponent, { props: {} });
+		expect(document.querySelector('#map')).toBeTruthy();
 	});
 
 	it('renders the search FAB when searchable is true', () => {
@@ -407,10 +410,8 @@ describe('LeafletMap', () => {
 
 		render(LeafletMapComponent, { props: {} });
 
-		await Promise.resolve();
-
 		// Should have removed the existing container and created a new map
-		expect(LeafletMap).toHaveBeenCalled();
+		await waitFor(() => expect(LeafletMap).toHaveBeenCalled());
 
 		mapDiv.remove();
 	});

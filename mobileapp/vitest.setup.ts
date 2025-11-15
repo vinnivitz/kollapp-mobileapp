@@ -1,3 +1,5 @@
+// eslint-disable unicorn/consistent-function-scoping
+
 import { Writable } from 'svelte/store';
 import { vi } from 'vitest';
 

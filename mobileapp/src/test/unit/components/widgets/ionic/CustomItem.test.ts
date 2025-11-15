@@ -63,8 +63,8 @@ describe('ItemComponent', () => {
 		const ionItem = container.querySelector('ion-item');
 
 		expect(ionItem).toBeTruthy();
-		expect(ionItem?.getAttribute('data-card')).toBeTruthy();
-		expect(ionItem?.getAttribute('data-transparent')).toBeTruthy();
+		expect(ionItem?.dataset.card).toBeTruthy();
+		expect(ionItem?.dataset.transparent).toBeTruthy();
 	});
 
 	it('calls the click callback when the item is clicked', async () => {

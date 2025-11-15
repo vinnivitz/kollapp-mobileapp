@@ -7,15 +7,5 @@ export default defineConfig({
 	resolve: process.env.VITEST ? { conditions: ['browser'] } : undefined,
 	ssr: {
 		noExternal: ['@ionic/core']
-	},
-	test: {
-		coverage: {
-			enabled: true,
-			include: ['src/lib/components/**/*.svelte']
-		},
-		environment: 'jsdom',
-		globals: true,
-		include: ['src/test/unit/**/*.test.ts'],
-		setupFiles: './vitest.setup.ts'
 	}
 });

@@ -1,10 +1,11 @@
+// eslint-disable unicorn/consistent-function-scoping
+
 import { fireEvent, render, waitFor } from '@testing-library/svelte';
 import { createRawSnippet, tick } from 'svelte';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import ModalComponent from '$lib/components/widgets/ionic/Modal.svelte';
 
-// Hoisted mocks for dependencies
 const addMock = vi.hoisted(() => vi.fn());
 const removeMock = vi.hoisted(() => vi.fn());
 const subscribeMock = vi.hoisted(() =>
