@@ -80,7 +80,7 @@ describe('CardComponent', () => {
 
 		const cls = ionCard.getAttribute('class') ?? '';
 		expect(cls).toContain('border');
-		expect(cls).toContain('border-[var(--ion-color-primary)]');
+		expect(cls).toContain('border-(--ion-color-primary)');
 	});
 
 	it('defaults color to light and has no border class when border is omitted', () => {

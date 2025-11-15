@@ -118,7 +118,7 @@ importers:
         specifier: ^9.39.1
         version: 9.39.1
       '@kollapp/api-types':
-        specifier: ^1.0.0
+        specifier: 1.0.0
         version: 1.0.0
       '@sveltejs/adapter-node':
         specifier: ^5.4.0

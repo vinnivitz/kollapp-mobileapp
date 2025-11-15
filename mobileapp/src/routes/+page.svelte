@@ -96,7 +96,7 @@
 				color="light"
 				icon={peopleOutline}
 				label={`${organization.personsOfOrganization.length} members`}
-				clicked={(_event) => goto(resolve('/organization/members'))}
+				clicked={() => goto(resolve('/organization/members'))}
 			/>
 			<Button
 				icon={flashOutline}
@@ -104,7 +104,7 @@
 				size="small"
 				fill="solid"
 				color="light"
-				clicked={(_event) => goto(resolve('/organization/activities'))}
+				clicked={() => goto(resolve('/organization/activities'))}
 			/>
 		</div>
 	</Card>
@@ -113,7 +113,7 @@
 {#snippet noCollectiveCards()}
 	<Card title={$t('routes.home.card.register-organization.title')} classList="text-center">
 		<Button
-			clicked={(_event) => _event?.stopPropagation() && goto(resolve('/organization/register'))}
+			clicked={() => goto(resolve('/organization/register'))}
 			fill="outline"
 			icon={accessibilityOutline}
 			label={$t('routes.home.card.organization.register')}
@@ -121,7 +121,7 @@
 	</Card>
 	<Card title={$t('routes.home.card.join-organization.title')} classList="text-center">
 		<Button
-			clicked={(_event) => _event?.stopPropagation() && goto(resolve('/organization/join'))}
+			clicked={() => goto(resolve('/organization/join'))}
 			fill="outline"
 			icon={accessibilityOutline}
 			label={$t('routes.home.card.organization.join')}
