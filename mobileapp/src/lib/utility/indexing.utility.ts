@@ -62,7 +62,7 @@ function scanSvelteFile(filePath: string): void {
 type ASTComponent = AST.AwaitBlock | AST.Component | AST.Fragment | AST.IfBlock | AST.RegularElement | AST.SnippetBlock;
 
 /**
- * Examines the parsed AST for `<LabeledItem searchable={...} label={...} iconSrc={...}>` components,
+ * Examines the parsed AST for `<LabeledItem indexed={...} label={...} icon={...}>` components,
  * and stores them in `searchableItems`.
  */
 function findSearchableComponents(ast: AST.Root): void {
@@ -72,7 +72,7 @@ function findSearchableComponents(ast: AST.Root): void {
 function recurse(node: ASTComponent): void {
 	if (node.type === 'Component') {
 		for (const attribute of node.attributes) {
-			if (attribute.type === 'Attribute' && attribute.name === 'searchable') {
+			if (attribute.type === 'Attribute' && attribute.name === 'indexed') {
 				addSearchableItem(node);
 			}
 		}
@@ -124,7 +124,7 @@ function exploreChildNodes(node: ASTComponent): void {
 }
 
 function addSearchableItem(node: ASTComponent): void {
-	const route = getAttributeValue(node, 'searchable') as RouteId;
+	const route = getAttributeValue(node, 'indexed') as RouteId;
 	const label = getAttributeValue(node, 'label') ?? getAttributeValue(node, 'id');
 	const icon = getAttributeValue(node, 'icon');
 	const accessible = getAttributeValue(node, 'accessible') as OrganizationRole;
@@ -137,11 +137,13 @@ function addSearchableItem(node: ASTComponent): void {
 			label,
 			route
 		});
+	} else {
+		console.warn('Skipping searchable item - missing label or route:', { label, route });
 	}
 }
 
 /**
- * Returns the string value of a named attribute (e.g., 'searchable', 'label', 'iconSrc')
+ * Returns the string value of a named attribute (e.g., 'indexed', 'label', 'icon')
  * by inspecting the Svelte AST node.
  */
 function getAttributeValue(node: ASTComponent, name: string): string | undefined {
@@ -149,14 +151,45 @@ function getAttributeValue(node: ASTComponent, name: string): string | undefined
 	const attributeNode = (node as AST.Component).attributes.find(
 		(attribute) => attribute.type === 'Attribute' && attribute.name === name
 	) as AST.Attribute | undefined;
-	// If the attribute or its value doesn't exist, return undefined
-	const expressionTag = attributeNode?.value as AST.ExpressionTag | undefined;
 
-	if (!expressionTag?.expression) {
+	if (!attributeNode) {
 		return;
 	}
 
-	let expression = expressionTag?.expression;
+	// Check if it's a simple text value (for string literals like indexed="/account")
+	if (attributeNode.value === true) {
+		return name; // Boolean attribute
+	}
+
+	// If the value is a single ExpressionTag (e.g., label={$t('...')})
+	if (
+		typeof attributeNode.value === 'object' &&
+		!Array.isArray(attributeNode.value) &&
+		'type' in attributeNode.value &&
+		attributeNode.value.type === 'ExpressionTag'
+	) {
+		return parseExpression((attributeNode.value as AST.ExpressionTag).expression);
+	}
+
+	// Handle array of values (text + expressions, e.g., "text{expr}text")
+	if (Array.isArray(attributeNode.value)) {
+		// For simple string attributes, the value is an array with a single Text node
+		const textNode = attributeNode.value.find((value) => value.type === 'Text');
+		if (textNode && 'data' in textNode) {
+			return textNode.data;
+		}
+
+		// If there's an ExpressionTag, process it
+		const expressionTag = attributeNode.value.find((value) => value.type === 'ExpressionTag') as
+			| AST.ExpressionTag
+			| undefined;
+		if (expressionTag?.expression) {
+			return parseExpression(expressionTag.expression);
+		}
+	}
+}
+
+function parseExpression(expression: Expression): string | undefined {
 	switch (expression.type) {
 		case 'Literal': {
 			return expression.value as string;
@@ -165,7 +198,12 @@ function getAttributeValue(node: ASTComponent, name: string): string | undefined
 			return expression.name;
 		}
 		case 'CallExpression': {
-			return expression.arguments.find((argument) => argument.type === 'Literal')?.value as string;
+			// Handle $t('key') calls - extract the translation key
+			const firstArgument = expression.arguments[0];
+			if (firstArgument && firstArgument.type === 'Literal') {
+				return firstArgument.value as string;
+			}
+			return undefined;
 		}
 		case 'ArrayExpression': {
 			return expression.elements
@@ -174,16 +212,17 @@ function getAttributeValue(node: ASTComponent, name: string): string | undefined
 		}
 		case 'MemberExpression': {
 			const parts: string[] = [];
-			while (expression.type === 'MemberExpression') {
-				if (expression.property.type === 'Identifier') {
-					parts.unshift(expression.property.name.replaceAll('_', '-').toLowerCase());
+			let expr: Expression = expression;
+			while (expr.type === 'MemberExpression') {
+				if (expr.property.type === 'Identifier') {
+					parts.unshift(expr.property.name.replaceAll('_', '-').toLowerCase());
 				}
-				expression = expression.object as Expression;
+				expr = expr.object as Expression;
 			}
 
 			// Handle the last piece if it's an Identifier
-			if (expression.type === 'Identifier') {
-				parts.unshift(expression.name.replaceAll('_', '-').toLowerCase());
+			if (expr.type === 'Identifier') {
+				parts.unshift(expr.name.replaceAll('_', '-').toLowerCase());
 			}
 
 			parts.shift(); // Removes the "first" piece if not needed
@@ -193,6 +232,7 @@ function getAttributeValue(node: ASTComponent, name: string): string | undefined
 			return '/' + parts.join('/');
 		}
 		default: {
+			console.warn('Unhandled expression type:', expression.type, JSON.stringify(expression, undefined, 2));
 			return undefined;
 		}
 	}

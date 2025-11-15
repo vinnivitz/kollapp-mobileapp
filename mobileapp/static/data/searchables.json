@@ -48,69 +48,75 @@
     "route": "/account/privacy-and-security/legal"
   },
   {
-    "icon": "keyOutline",
+    "icon": "constructOutline",
     "id": 9,
+    "label": "App version",
+    "route": "/account/privacy-and-security/app-version"
+  },
+  {
+    "icon": "keyOutline",
+    "id": 10,
     "label": "routes.account.list.account.privacy-and-security.button.change-password",
     "route": "/account/privacy-and-security/change-password"
   },
   {
     "icon": "fingerPrintOutline",
-    "id": 10,
+    "id": 11,
     "label": "routes.account.list.account.privacy-and-security.button.biometrics",
     "route": "/account/privacy-and-security"
   },
   {
     "icon": "calendarOutline",
-    "id": 11,
+    "id": 12,
     "label": "routes.organization.list.organization.activity.label",
     "route": "/organization/activities"
   },
   {
     "icon": "swapHorizontalOutline",
-    "id": 12,
+    "id": 13,
     "label": "routes.organization.change-organization.action-sheet.title",
     "route": "/organization"
   },
   {
     "icon": "peopleOutline",
-    "id": 13,
+    "id": 14,
     "label": "routes.organization.list.organization.members",
     "route": "/organization/members"
   },
   {
     "accessible": "ROLE_ORGANIZATION_MANAGER",
     "icon": "buildOutline",
-    "id": 14,
+    "id": 15,
     "label": "routes.organization.list.update-info.update-info",
     "route": "/organization/update-data"
   },
   {
     "icon": "logOutOutline",
-    "id": 15,
+    "id": 16,
     "label": "routes.organization.list.organization.leave.label",
     "route": "/organization/leave"
   },
   {
     "icon": "createOutline",
-    "id": 16,
+    "id": 17,
     "label": "routes.organization.list.general.register.label",
     "route": "/organization/register"
   },
   {
     "icon": "personAddOutline",
-    "id": 17,
+    "id": 18,
     "label": "routes.organization.list.general.join.label",
     "route": "/organization/join"
   },
   {
     "icon": "calendarOutline",
-    "id": 18,
+    "id": 19,
     "label": "routes.organization.page.activity.segments.calendar",
     "route": "/organization/activities"
   },
   {
     "icon": "createOutline",
-    "id": 19,
+    "id": 20,
     "label": "routes.organization.page.activity.create",
     "route": "/organization/activities"
   }
