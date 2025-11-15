@@ -3,8 +3,9 @@ import type { LayoutLoad } from './$types';
 import { App, type URLOpenListenerEvent } from '@capacitor/app';
 
 import { goto } from '$app/navigation';
+import { resolve } from '$app/paths';
+import type { RouteId } from '$app/types';
 
-import { PageRoute } from '$lib/models/routing';
 import { appStateStore } from '$lib/stores';
 import { initPushNotifications, isAuthenticated, navigateBack } from '$lib/utility';
 
@@ -25,12 +26,12 @@ export const load: LayoutLoad = async ({ url }) => {
 };
 
 async function handleRouting(pathname: string, authenticated: boolean): Promise<void> {
-	const isAuthPath = pathname.startsWith(PageRoute.AUTH.ROOT);
+	const isAuthPath = pathname.startsWith('/auth' satisfies RouteId);
 
 	if (authenticated && isAuthPath) {
-		return goto(PageRoute.HOME);
+		return goto(resolve('/'));
 	} else if (!authenticated && !isAuthPath) {
-		return goto(PageRoute.AUTH.LOGIN);
+		return goto(resolve('/auth/login'));
 	}
 }
 
@@ -38,7 +39,8 @@ async function handleAppEvents(): Promise<void> {
 	App.addListener('appUrlOpen', async (event: URLOpenListenerEvent) => {
 		const url = event.url;
 		if (url.startsWith('kollapp://')) {
-			const path = url.replace('kollapp:/', '');
+			const path = url.replace('kollapp:/', '') as RouteId;
+			// eslint-disable-next-line svelte/no-navigation-without-resolve
 			await goto(path);
 		}
 	});

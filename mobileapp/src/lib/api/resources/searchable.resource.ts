@@ -2,8 +2,9 @@ import type { SearchableItemDto } from '$lib/api/dtos';
 
 import { get } from 'svelte/store';
 
+import type { RouteId } from '$app/types';
+
 import { t } from '$lib/locales';
-import { PageRoute } from '$lib/models/routing';
 import { organizationStore } from '$lib/stores';
 import { hasOrganizationRole } from '$lib/utility';
 
@@ -23,10 +24,10 @@ async function filter(value: string): Promise<SearchableItemDto[]> {
 			const hasTerm = $t(item.label).toLowerCase().includes(value.toLowerCase());
 			const validRole = item.accessible ? hasOrganizationRole(item.accessible) : true;
 			const accessible =
-				item.route.startsWith(PageRoute.ORGANIZATION.ROOT) && !organization
-					? item.route === PageRoute.ORGANIZATION.ROOT ||
-						item.route === PageRoute.ORGANIZATION.REGISTER ||
-						item.route === PageRoute.ORGANIZATION.JOIN
+				item.route.startsWith('/organization' satisfies RouteId) && !organization
+					? item.route === '/organization' ||
+						item.route === '/organization/register' ||
+						item.route === '/organization/join'
 					: true;
 			return hasTerm && validRole && accessible;
 		})

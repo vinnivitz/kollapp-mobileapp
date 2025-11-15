@@ -1,3 +1,5 @@
+/* eslint-disable unicorn/consistent-function-scoping */
+
 import type { Readable } from 'svelte/store';
 
 import { fireEvent, render } from '@testing-library/svelte';

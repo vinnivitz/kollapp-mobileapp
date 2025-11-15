@@ -38,6 +38,7 @@
 	} from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 
 	import { budgetResource } from '$lib/api/resources';
 	import { createAccountPostingSchema } from '$lib/api/validation/budget';
@@ -54,7 +55,6 @@
 	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import ToggleItem from '$lib/components/widgets/ionic/ToggleItem.svelte';
 	import { t } from '$lib/locales';
-	import { PageRoute } from '$lib/models/routing';
 	import { type FilterItem, Form, type FormActions, type ItemSlidingOption } from '$lib/models/ui';
 	import { localeStore, organizationStore, userStore } from '$lib/stores';
 	import {
@@ -454,7 +454,8 @@
 		border="secondary"
 		title="Upcoming event"
 		classList="mt-5"
-		clicked={() => activities[0]?.id && goto(PageRoute.ORGANIZATION.ACTIVITIES.DETAIL(activities[0].id))}
+		clicked={() =>
+			activities[0]?.id && goto(resolve('/organization/activities/[slug]', { slug: activities[0].id.toString() }))}
 	>
 		<div class="flex flex-wrap items-center justify-center gap-5">
 			<div class="flex items-center gap-2">
@@ -481,15 +482,15 @@
 			label={$t('routes.organization.list.activities.create-activity')}
 			icon={flashOutline}
 			clicked={async () => {
-				await goto(PageRoute.ORGANIZATION.ACTIVITIES.ROOT);
+				await goto(resolve('/organization/activities'));
 				triggerClickByLabel($t('routes.organization.page.activity.create'));
 			}}
 		/>
 		<LabeledItem
 			label={$t('routes.organization.list.organization.activity.label')}
 			icon={calendarOutline}
-			indexed={PageRoute.ORGANIZATION.ACTIVITIES.ROOT}
-			clicked={() => goto(PageRoute.ORGANIZATION.ACTIVITIES.ROOT)}
+			indexed="/organization/activities"
+			clicked={() => goto(resolve('/organization/activities'))}
 		/>
 	</ion-list>
 {/snippet}
@@ -500,7 +501,7 @@
 		id={$t('routes.organization.change-organization.action-sheet.title')}
 		icon={swapHorizontalOutline}
 		clicked={onOrganizationSelect}
-		indexed={PageRoute.ORGANIZATION.ROOT}
+		indexed="/organization"
 		readonly={$organizations.length === 1}
 	>
 		<div class="flex items-center justify-center gap-4 text-2xl">
@@ -516,23 +517,23 @@
 	<ion-list inset>
 		<ion-list-header>{$t('routes.organization.list.current-collective.title')}</ion-list-header>
 		<LabeledItem
-			indexed={PageRoute.ORGANIZATION.MEMBERS}
-			clicked={() => goto(PageRoute.ORGANIZATION.MEMBERS)}
+			indexed="/organization/members"
+			clicked={() => goto(resolve('/organization/members'))}
 			icon={peopleOutline}
 			label={$t('routes.organization.list.organization.members')}
 		/>
 		{#if !hasOrganizationRole('ROLE_ORGANIZATION_MANAGER')}
 			<LabeledItem
-				indexed={PageRoute.ORGANIZATION.UPDATE_DATA}
+				indexed="/organization/update-data"
 				accessible="ROLE_ORGANIZATION_MANAGER"
-				clicked={() => goto(PageRoute.ORGANIZATION.UPDATE_DATA)}
+				clicked={() => goto(resolve('/organization/update-data'))}
 				icon={buildOutline}
 				label={$t('routes.organization.list.update-info.update-info')}
 			/>
 		{/if}
 		<LabeledItem
-			indexed={PageRoute.ORGANIZATION.LEAVE}
-			clicked={() => goto(PageRoute.ORGANIZATION.LEAVE)}
+			indexed="/organization/leave"
+			clicked={() => goto(resolve('/organization/leave'))}
 			icon={logOutOutline}
 			label={$t('routes.organization.list.organization.leave.label')}
 		/>
@@ -544,14 +545,14 @@
 		<ion-list-header>{$t('routes.organization.list.general.title')}</ion-list-header>
 
 		<LabeledItem
-			indexed={PageRoute.ORGANIZATION.REGISTER}
-			clicked={() => goto(PageRoute.ORGANIZATION.REGISTER)}
+			indexed="/organization/register"
+			clicked={() => goto(resolve('/organization/register'))}
 			icon={createOutline}
 			label={$t('routes.organization.list.general.register.label')}
 		/>
 		<LabeledItem
-			indexed={PageRoute.ORGANIZATION.JOIN}
-			clicked={() => goto(PageRoute.ORGANIZATION.JOIN)}
+			indexed="/organization/join"
+			clicked={() => goto(resolve('/organization/join'))}
 			icon={personAddOutline}
 			label={$t('routes.organization.list.general.join.label')}
 		/>

@@ -5,8 +5,7 @@
 
 	import { goto } from '$app/navigation';
 	import { navigating, page } from '$app/state';
-
-	import { PageRoute } from '$lib/models/routing';
+	import type { RouteId } from '$app/types';
 
 	type Properties = {
 		tabs: TabConfig[];
@@ -16,7 +15,7 @@
 	let { children, tabs }: Properties = $props();
 
 	let controller: HTMLIonTabsElement;
-	let currentTabName = $state(page.route.id ?? PageRoute.HOME);
+	let currentTabName = $state(page.route.id ?? ('/' satisfies RouteId));
 
 	$effect(() => {
 		const pathname = navigating?.to?.route.id;
@@ -27,7 +26,8 @@
 
 	onMount(() => controller.select(currentTabName));
 
-	const onTabSelect = async (selectedTab: string): Promise<void> => {
+	const onTabSelect = async (selectedTab: RouteId): Promise<void> => {
+		// eslint-disable-next-line svelte/no-navigation-without-resolve
 		await goto(selectedTab);
 		await controller.select(selectedTab);
 	};

@@ -1,4 +1,4 @@
-// eslint-disable unicorn/consistent-function-scoping
+/* eslint-disable unicorn/consistent-function-scoping */
 
 import { fireEvent, render, waitFor } from '@testing-library/svelte';
 import { createRawSnippet, tick } from 'svelte';

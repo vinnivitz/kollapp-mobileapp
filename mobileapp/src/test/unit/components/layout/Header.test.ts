@@ -1,11 +1,13 @@
+/* eslint-disable unicorn/consistent-function-scoping */
+
 import { fireEvent, render } from '@testing-library/svelte';
 import { tick } from 'svelte';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { goto } from '$app/navigation';
+import type { RouteId } from '$app/types';
 
 import Header from '$lib/components/layout/Header.svelte';
-import { PageRoute } from '$lib/models/routing';
 
 let storesInitialized = true;
 
@@ -68,7 +70,7 @@ describe('Header Component', () => {
 
 		await fireEvent.click(logo as HTMLElement);
 
-		expect(goto).toHaveBeenCalledWith(PageRoute.HOME);
+		expect(goto).toHaveBeenCalledWith('/' satisfies RouteId);
 	});
 	it('do not render content if stores are not initialized', () => {
 		storesInitialized = false;
@@ -131,7 +133,7 @@ describe('Header Component', () => {
 		expect(navigateBackMock).toHaveBeenCalled();
 	});
 
-	it('keydown Enter with showBackButton = false triggers goto(PageRoute.HOME)', async () => {
+	it('keydown Enter with showBackButton = false triggers navigateTo(PageRoute.HOME)', async () => {
 		const { container } = render(Header, {
 			props: { showBackButton: false, title: 'Keydown Home' }
 		});
@@ -141,6 +143,6 @@ describe('Header Component', () => {
 
 		await fireEvent.keyDown(leftButton as Element, { key: 'Enter' });
 
-		expect(goto).toHaveBeenCalledWith(PageRoute.HOME);
+		expect(goto).toHaveBeenCalledWith('/' satisfies RouteId);
 	});
 });

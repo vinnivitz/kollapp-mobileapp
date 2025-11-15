@@ -6,12 +6,12 @@
 	import { notificationsOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
+	import type { RouteId } from '$app/types';
 
 	import { authenticationResource, searchableResource } from '$lib/api/resources';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
 	import { t } from '$lib/locales';
-	import { type PageRoutePaths } from '$lib/models/routing';
 	import { featureNotImplementedAlert, triggerClickByLabel } from '$lib/utility';
 
 	type Properties = {
@@ -24,9 +24,10 @@
 	let searchValue = $state('');
 	let menuController: HTMLIonMenuElement;
 
-	export async function navigate(route: PageRoutePaths, label?: string): Promise<void> {
+	export async function navigate(route: RouteId, label?: string): Promise<void> {
 		await menuController.close();
 		searchValue = '';
+		// eslint-disable-next-line svelte/no-navigation-without-resolve
 		await goto(route);
 		if (label) {
 			triggerClickByLabel(label);
@@ -100,7 +101,7 @@
 			/>
 			<hr class="my-3" />
 		{/if}
-		<div class="fixed right-0 bottom-0 left-0 bg-[var(--ion-background-color)]">
+		<div class="fixed right-0 bottom-0 left-0 bg-(--ion-background-color)">
 			<ion-note>
 				Made with <ion-text color="danger">&#10084;</ion-text> from Dresden.
 			</ion-note>

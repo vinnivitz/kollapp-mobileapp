@@ -3,13 +3,13 @@
 	import { ribbonOutline, trashOutline, warningOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 
 	import { organizationResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import { t } from '$lib/locales';
-	import { PageRoute } from '$lib/models/routing';
 	import { organizationStore } from '$lib/stores';
 
 	const isLastManager = $derived(
@@ -41,7 +41,7 @@
 			await organizationStore.init();
 		}
 		await loader.dismiss();
-		goto(PageRoute.ORGANIZATION.ROOT);
+		await goto(resolve('/organization'));
 	}
 </script>
 
@@ -73,7 +73,7 @@
 					classList="mx-3"
 					fill="outline"
 					label="Grant manager role to another member"
-					clicked={() => goto(PageRoute.ORGANIZATION.MEMBERS)}
+					clicked={() => void goto(resolve('/organization/members'))}
 				/>
 			{/if}
 		{/if}

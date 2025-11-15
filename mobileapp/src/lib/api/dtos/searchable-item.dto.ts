@@ -1,5 +1,6 @@
-import type { PageRoutePaths } from '$lib/models/routing';
 import type { OrganizationRole } from '@kollapp/api-types';
+
+import type { RouteId } from '$app/types';
 
 /**
  * Data Transfer Object for searchable item information.
@@ -7,7 +8,7 @@ import type { OrganizationRole } from '@kollapp/api-types';
 export type SearchableItemDto = {
 	id: number;
 	label: string;
-	route: PageRoutePaths;
+	route: RouteId;
 	accessible?: OrganizationRole;
 	icon?: string;
 };

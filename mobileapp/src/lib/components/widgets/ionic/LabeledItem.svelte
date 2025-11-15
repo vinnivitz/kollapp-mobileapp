@@ -2,6 +2,8 @@
 	import type { Colors } from '$lib/models/ui';
 	import type { OrganizationRole } from '@kollapp/api-types';
 
+	import type { RouteId } from '$app/types';
+
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
 
 	type Properties = {
@@ -11,9 +13,9 @@
 		classList?: string;
 		color?: Colors | undefined;
 		icon?: string;
-		indexed?: string;
+		indexed?: RouteId;
 		transparent?: boolean;
-	} & ({ indexed: string; clicked: () => void } | { indexed?: string; clicked?: () => void });
+	} & ({ indexed: RouteId; clicked: () => void } | { indexed?: RouteId; clicked?: () => void });
 
 	let {
 		accessible,

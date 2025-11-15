@@ -4,6 +4,7 @@
 	import { accessibilityOutline, readerOutline, saveOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 
 	import { organizationResource } from '$lib/api/resources';
 	import { createOrganizationSchema } from '$lib/api/validation/organization';
@@ -14,7 +15,6 @@
 	import TextareaInputItem from '$lib/components/widgets/ionic/TextareaInputItem.svelte';
 	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import { t } from '$lib/locales';
-	import { PageRoute } from '$lib/models/routing';
 	import { Form } from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';
 	import { customForm } from '$lib/utility';
@@ -23,7 +23,7 @@
 		completed: async ({ response }) => {
 			await organizationStore.init();
 			await organizationStore.update(response.id);
-			goto(PageRoute.ORGANIZATION.ROOT);
+			await goto(resolve('/organization'));
 		},
 		request: async (model: OrganizationCreationRequestTO) => organizationResource.create(model),
 		schema: createOrganizationSchema()

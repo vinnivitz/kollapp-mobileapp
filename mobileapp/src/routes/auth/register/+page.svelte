@@ -2,6 +2,7 @@
 	import { keyOutline, keySharp, mailOpenOutline, mailOutline, personCircleOutline, saveOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 
 	import { publicUserResource } from '$lib/api/resources';
 	import { registerSchema } from '$lib/api/validation/authentication';
@@ -11,12 +12,11 @@
 	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import Welcome from '$lib/components/widgets/Welcome.svelte';
 	import { t } from '$lib/locales';
-	import { PageRoute } from '$lib/models/routing';
 	import { Form } from '$lib/models/ui';
 	import { customForm } from '$lib/utility';
 
 	const form = new Form({
-		completed: async () => goto(PageRoute.AUTH.LOGIN),
+		completed: async () => goto(resolve('/auth/login')),
 		request: async (model) => {
 			return publicUserResource.register(model);
 		},
@@ -71,7 +71,7 @@
 			icon={saveOutline}
 		/>
 	</form>
-	<Card clicked={() => goto(PageRoute.AUTH.LOGIN)} classList="text-center">
+	<Card clicked={() => goto(resolve('/auth/login'))} classList="text-center">
 		{$t('routes.auth.register.login.text')}
 		<ion-text color="secondary">{$t('routes.auth.register.login.link')}</ion-text>
 	</Card>

@@ -8,7 +8,6 @@
 </script>
 
 <!-- DatetimeInputItem popover for calendar selection -->
-
 <Popover
 	open={$datetimeInputItem.open}
 	extended

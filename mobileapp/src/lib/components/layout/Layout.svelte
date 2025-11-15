@@ -9,7 +9,6 @@
 	import Menu from '$lib/components/layout/Menu.svelte';
 	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
 	import { t } from '$lib/locales';
-	import { PageRoute } from '$lib/models/routing';
 	import { initializationStore, organizationStore, userStore } from '$lib/stores';
 
 	type Properties = {
@@ -52,19 +51,19 @@
 		<ion-list>
 			<LabeledItem
 				transparent
-				clicked={() => menuComponent?.navigate(PageRoute.ACCOUNT.ROOT)}
+				clicked={() => menuComponent?.navigate('/account')}
 				icon={personOutline}
 				label={$t('components.layout.header.button.account')}
 			/>
 			<LabeledItem
 				transparent
-				clicked={() => menuComponent?.navigate(PageRoute.ORGANIZATION.ACTIVITIES.ROOT)}
+				clicked={() => menuComponent?.navigate('/organization/activities')}
 				icon={flashOutline}
 				label={$t('components.layout.header.button.activities')}
 			/>
 			<LabeledItem
 				transparent
-				clicked={() => menuComponent?.navigate(PageRoute.ORGANIZATION.ROOT)}
+				clicked={() => menuComponent?.navigate('/organization')}
 				icon={accessibilityOutline}
 				label={$t('components.layout.menu.list.organization')}
 			/>

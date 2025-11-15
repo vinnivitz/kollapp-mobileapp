@@ -5,6 +5,7 @@
 	import { keyOutline, qrCodeOutline, saveOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 
 	import { organizationResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
@@ -12,7 +13,6 @@
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import { t } from '$lib/locales';
-	import { PageRoute } from '$lib/models/routing';
 	import { organizationStore } from '$lib/stores';
 	import { showAlert, StatusCheck } from '$lib/utility';
 
@@ -32,7 +32,7 @@
 					});
 					await alert.present();
 					await alert.onDidDismiss();
-					return goto(PageRoute.ORGANIZATION.ROOT);
+					return goto(resolve('/organization'));
 				}
 			} else {
 				await showAlert('QR code is not valid.');

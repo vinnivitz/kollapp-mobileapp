@@ -1,6 +1,8 @@
 <script lang="ts">
 	import type { Colors, FabButtonButtons } from '$lib/models/ui';
 
+	import type { RouteId } from '$app/types';
+
 	import { clickOutside } from '$lib/utility';
 
 	type Properties = {
@@ -11,7 +13,7 @@
 		color?: Colors;
 		horizontal?: 'center' | 'end' | 'start';
 		id?: string;
-		indexed?: string;
+		indexed?: RouteId;
 		vertical?: 'bottom' | 'center' | 'top';
 		clicked?: () => void;
 	};

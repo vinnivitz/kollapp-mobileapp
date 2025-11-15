@@ -4,6 +4,7 @@
 	import { keyOutline, keySharp } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 
 	import { publicUserResource } from '$lib/api/resources';
 	import { resetPasswordSchema } from '$lib/api/validation/authentication';
@@ -12,7 +13,6 @@
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import { t } from '$lib/locales';
-	import { PageRoute } from '$lib/models/routing';
 	import { Form } from '$lib/models/ui';
 	import { customForm, showAlert } from '$lib/utility';
 
@@ -21,12 +21,12 @@
 	$effect(() => {
 		if (!data.token) {
 			showAlert($t('routes.auth.reset-password.confirmation.no-token'));
-			goto(PageRoute.AUTH.LOGIN);
+			goto(resolve('/auth/login'));
 		}
 	});
 
 	const form = new Form({
-		completed: async () => goto(PageRoute.AUTH.LOGIN),
+		completed: async () => goto(resolve('/auth/login')),
 		request: async (model) => {
 			return publicUserResource.resetPassword(model, data.token!);
 		},

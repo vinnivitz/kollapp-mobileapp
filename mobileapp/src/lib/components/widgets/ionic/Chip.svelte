@@ -1,13 +1,15 @@
 <script lang="ts">
 	import type { Colors } from '$lib/models/ui';
 
+	import type { RouteId } from '$app/types';
+
 	type Properties = {
 		label: string;
 		classList?: string;
 		color?: Colors;
 		icon?: string;
 		iconEnd?: string;
-		indexed?: string;
+		indexed?: RouteId;
 		selected?: boolean;
 		clicked?: () => void;
 	};

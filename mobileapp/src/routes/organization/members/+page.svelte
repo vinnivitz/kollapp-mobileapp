@@ -23,6 +23,7 @@
 		ribbonOutline,
 		shareOutline
 	} from 'ionicons/icons';
+	import { SvelteMap } from 'svelte/reactivity';
 	import { fade } from 'svelte/transition';
 
 	import { organizationResource } from '$lib/api/resources';
@@ -57,7 +58,7 @@
 
 	const members = $derived(
 		($organizationStore?.personsOfOrganization ?? [])
-			.sort((a, b) => a.username.localeCompare(b.username))
+			.toSorted((a, b) => a.username.localeCompare(b.username))
 			.filter((member) => member.userId !== userId)
 	);
 
@@ -100,7 +101,7 @@
 	}
 
 	function getGroupedMembers(members: PersonOfOrganizationTO[]): [string, PersonOfOrganizationTO[]][] {
-		const result: Map<string, PersonOfOrganizationTO[]> = new Map();
+		const result: Map<string, PersonOfOrganizationTO[]> = new SvelteMap();
 
 		for (const member of members) {
 			const key = member.username.charAt(0).toUpperCase();
@@ -110,7 +111,7 @@
 			result.get(key)!.push(member);
 		}
 
-		return [...result.entries()].sort(([a], [b]) => a.localeCompare(b));
+		return [...result.entries()].toSorted(([a], [b]) => a.localeCompare(b));
 	}
 
 	async function onWriteToClipboard(): Promise<void> {
@@ -205,7 +206,7 @@
 <Modal open={invitationCodeModalOpen} informational dismissed={() => (invitationCodeModalOpen = false)} lazy>
 	<Card title="Invitation Code">
 		<div class="flex flex-col">
-			<div class="mx-12 rounded border border-[var(--ion-color-primary)] p-2 text-center font-extrabold">
+			<div class="mx-12 rounded border border-(--ion-color-primary) p-2 text-center font-extrabold">
 				<ion-note color="tertiary" class="text-2xl">
 					{inviationCode.toUpperCase()}
 				</ion-note>
@@ -247,16 +248,16 @@
 	<div class="pt-2 text-center">
 		<ion-label class="font-bold">Join a collective by scanning this QR-Code</ion-label>
 		<ion-breadcrumbs>
-			<ion-breadcrumb class="flex items-center justify-center font-normal text-[var(--ion-text-color-step-200)]">
-				<ion-icon class="text-[var(--ion-text-color-step-200)]" slot="start" icon={accessibilityOutline}></ion-icon>
+			<ion-breadcrumb class="flex items-center justify-center font-normal text-(--ion-text-color-step-200)">
+				<ion-icon class="text-(--ion-text-color-step-200)" slot="start" icon={accessibilityOutline}></ion-icon>
 				Collective
 			</ion-breadcrumb>
-			<ion-breadcrumb class="flex items-center justify-center font-normal text-[var(--ion-text-color-step-200)]">
-				<ion-icon class="text-[var(--ion-text-color-step-200)]" slot="start" icon={personAddOutline}></ion-icon>Join
+			<ion-breadcrumb class="flex items-center justify-center font-normal text-(--ion-text-color-step-200)">
+				<ion-icon class="text-(--ion-text-color-step-200)" slot="start" icon={personAddOutline}></ion-icon>Join
 				Collective
 			</ion-breadcrumb>
-			<ion-breadcrumb class="flex items-center justify-center font-normal text-[var(--ion-text-color-step-200)]">
-				<ion-icon class="text-[var(--ion-text-color-step-200)]" slot="start" icon={qrCodeOutline}></ion-icon>
+			<ion-breadcrumb class="flex items-center justify-center font-normal text-(--ion-text-color-step-200)">
+				<ion-icon class="text-(--ion-text-color-step-200)" slot="start" icon={qrCodeOutline}></ion-icon>
 			</ion-breadcrumb>
 		</ion-breadcrumbs>
 	</div>

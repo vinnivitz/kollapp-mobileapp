@@ -37,6 +37,7 @@
 	} from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 
 	import { activityResource, budgetResource } from '$lib/api/resources';
 	import { createAccountPostingSchema } from '$lib/api/validation/budget';
@@ -55,7 +56,6 @@
 	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import ToggleItem from '$lib/components/widgets/ionic/ToggleItem.svelte';
 	import { t } from '$lib/locales';
-	import { PageRoute } from '$lib/models/routing';
 	import { type FabButtonButtons, type FilterItem, Form, type FormActions } from '$lib/models/ui';
 	import { localeStore, organizationStore, userStore } from '$lib/stores';
 	import {
@@ -181,7 +181,7 @@
 	});
 
 	$effect(() => {
-		if ($organizationStore && !activity) goto(PageRoute.ORGANIZATION.ACTIVITIES.ROOT);
+		if ($organizationStore && !activity) goto(resolve('/organization/activities'));
 	});
 
 	function onSearchMembers(event: CustomEvent): void {
@@ -246,7 +246,7 @@
 		await organizationStore.update($organizationStore.id);
 		updateActivityModalOpen = false;
 		await loader.dismiss();
-		goto(PageRoute.ORGANIZATION.ACTIVITIES.ROOT);
+		goto(resolve('/organization/activities'));
 	}
 
 	function onOpenActivityModal(): void {

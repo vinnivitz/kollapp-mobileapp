@@ -19,11 +19,11 @@
 	} from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 
 	import LayoutComponent from '$lib/components/layout/Layout.svelte';
 	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
 	import { Locale, t } from '$lib/locales';
-	import { PageRoute } from '$lib/models/routing';
 	import { Layout, Theme } from '$lib/models/ui';
 	import { layoutStore, localeStore, themeStore } from '$lib/stores';
 
@@ -114,20 +114,20 @@
 	<ion-list inset>
 		<ion-list-header>{$t('routes.account.list.account.title')}</ion-list-header>
 		<LabeledItem
-			indexed={PageRoute.ACCOUNT.UPDATE_DATA}
-			clicked={() => goto(PageRoute.ACCOUNT.UPDATE_DATA)}
+			indexed="/account/update-data"
+			clicked={() => goto(resolve('/account/update-data'))}
 			icon={buildOutline}
 			label={$t('routes.account.list.account.button.update-data')}
 		/>
 		<LabeledItem
-			indexed={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.ROOT}
-			clicked={() => goto(PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.ROOT)}
+			indexed="/account/privacy-and-security"
+			clicked={() => goto(resolve('/account/privacy-and-security'))}
 			icon={lockClosedOutline}
 			label={$t('routes.account.list.account.button.privacy-and-security')}
 		/>
 		<LabeledItem
-			indexed={PageRoute.ACCOUNT.DELETE}
-			clicked={() => goto(PageRoute.ACCOUNT.DELETE)}
+			indexed="/account/delete"
+			clicked={() => goto(resolve('/account/delete'))}
 			icon={trashOutline}
 			label={$t('routes.account.list.account.button.delete-account')}
 		/>
@@ -138,25 +138,25 @@
 	<ion-list inset>
 		<ion-list-header>{$t('routes.account.list.application.title')}</ion-list-header>
 		<LabeledItem
-			indexed={PageRoute.ACCOUNT.ROOT}
+			indexed="/account"
 			clicked={openLocaleActionSheet}
 			icon={languageOutline}
 			label={$t('routes.account.app.list.language.button')}
 		/>
 		<LabeledItem
-			indexed={PageRoute.ACCOUNT.ROOT}
+			indexed="/account"
 			clicked={openColorThemeActionSheet}
 			icon={colorPaletteOutline}
 			label={$t('routes.account.app.list.theme.button')}
 		/>
 		<LabeledItem
-			indexed={PageRoute.ACCOUNT.ROOT}
+			indexed="/account"
 			clicked={openLayoutActionSheet}
 			icon={colorWandOutline}
 			label={$t('routes.account.app.list.layout.button')}
 		/>
 		<LabeledItem
-			indexed={PageRoute.ACCOUNT.ROOT}
+			indexed="/account"
 			clicked={restoreApplicationDefaults}
 			icon={refreshOutline}
 			label={$t('routes.account.app.list.restore.button')}

@@ -2,8 +2,8 @@
 	import { onDestroy } from 'svelte';
 
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 
-	import { PageRoute } from '$lib/models/routing';
 	import { initializationStore } from '$lib/stores';
 	import { navigateBack } from '$lib/utility';
 
@@ -34,7 +34,7 @@
 	onDestroy(() => clearTimeout(timer));
 
 	async function navigate(): Promise<void> {
-		return showBackButton ? navigateBack() : goto(PageRoute.HOME);
+		return showBackButton ? navigateBack() : goto(resolve('/'));
 	}
 </script>
 

@@ -24,7 +24,6 @@
 	import GlobalPopovers from '$lib/components/widgets/ionic/GlobalPopovers.svelte';
 	import { initializeIonic } from '$lib/ionic';
 	import { initialized, t } from '$lib/locales';
-	import { PageRoute } from '$lib/models/routing';
 	import { AppStateType } from '$lib/models/ui';
 	import { appStateStore, authenticationStore, layoutStore } from '$lib/stores';
 
@@ -37,13 +36,13 @@
 	$effect(() => {
 		if (initialized) {
 			tabs = [
-				{ icon: home, label: $t('common.page-routes.home'), tab: PageRoute.HOME },
+				{ icon: home, label: $t('common.page-routes.home'), tab: '/' },
 				{
 					icon: accessibility,
 					label: $t('common.page-routes.organization'),
-					tab: PageRoute.ORGANIZATION.ROOT
+					tab: '/organization'
 				},
-				{ icon: person, label: $t('common.page-routes.account'), tab: PageRoute.ACCOUNT.ROOT }
+				{ icon: person, label: $t('common.page-routes.account'), tab: '/account' }
 			];
 		}
 	});

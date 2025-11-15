@@ -2,13 +2,13 @@
 	import { trashOutline, warningOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 
 	import { authenticationResource, organizationResource, userResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import { t } from '$lib/locales';
-	import { PageRoute } from '$lib/models/routing';
 	import { organizationStore } from '$lib/stores';
 	import { StatusCheck } from '$lib/utility';
 
@@ -32,7 +32,7 @@
 		const response = await userResource.remove();
 		if (StatusCheck.isOK(response.status)) {
 			await authenticationResource.logout();
-			goto(PageRoute.AUTH.LOGIN);
+			goto(resolve('/auth/login'));
 		}
 	}
 </script>

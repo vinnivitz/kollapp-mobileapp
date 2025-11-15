@@ -2,11 +2,11 @@
 	import { bugOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import { t } from '$lib/locales';
-	import { PageRoute } from '$lib/models/routing';
 </script>
 
 <div class="text-center">
@@ -14,10 +14,6 @@
 </div>
 <Card title={$t('common.error-page.card.title')}>
 	<div class="text-center">
-		<Button
-			fill="solid"
-			clicked={async () => await goto(PageRoute.HOME)}
-			label={$t('common.error-page.card.content.button')}
-		/>
+		<Button fill="solid" clicked={() => goto(resolve('/'))} label={$t('common.error-page.card.content.button')} />
 	</div>
 </Card>

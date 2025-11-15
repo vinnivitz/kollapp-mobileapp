@@ -75,12 +75,12 @@
 	}
 
 	function onPresent(): void {
-		if ($modalStore)
-			for (const modal of $modalStore) {
-				if (modal !== _modalController) {
-					modal.setCurrentBreakpoint(1);
-				}
+		if (!$modalStore) return;
+		for (const modal of $modalStore) {
+			if (modal !== _modalController) {
+				modal.setCurrentBreakpoint(1);
 			}
+		}
 	}
 
 	onDestroy(async () => {

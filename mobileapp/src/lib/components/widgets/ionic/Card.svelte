@@ -40,7 +40,7 @@
 	void id;
 	void icon;
 
-	const borderClass = $derived(border ? `border border-[var(--ion-color-${border})]` : '');
+	const borderClass = $derived(border ? `border border-(--ion-color-${border})` : '');
 </script>
 
 {#if !!clicked}

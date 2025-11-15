@@ -7,6 +7,8 @@ import path from 'node:path';
 
 import { type AST, parse } from 'svelte/compiler';
 
+import type { RouteId } from '$app/types';
+
 /**
  * Directory to scan and output file path.
  */
@@ -122,7 +124,7 @@ function exploreChildNodes(node: ASTComponent): void {
 }
 
 function addSearchableItem(node: ASTComponent): void {
-	const route = getAttributeValue(node, 'searchable');
+	const route = getAttributeValue(node, 'searchable') as RouteId;
 	const label = getAttributeValue(node, 'label') ?? getAttributeValue(node, 'id');
 	const icon = getAttributeValue(node, 'icon');
 	const accessible = getAttributeValue(node, 'accessible') as OrganizationRole;

@@ -13,6 +13,7 @@
 
 	import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 
 	import { authenticationResource } from '$lib/api/resources';
 	import { loginSchema } from '$lib/api/validation/authentication';
@@ -25,7 +26,6 @@
 	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import { t } from '$lib/locales';
 	import { PreferencesKey } from '$lib/models/preferences';
-	import { PageRoute } from '$lib/models/routing';
 	import { Form, type FormActions } from '$lib/models/ui';
 	import { userStore } from '$lib/stores';
 	import {
@@ -103,22 +103,22 @@
 		<LabeledItem
 			label={$t('routes.account.page.privacy-and-security.security.list.legal')}
 			icon={receiptOutline}
-			indexed={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.LEGAL}
-			clicked={() => goto(PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.LEGAL)}
+			indexed="/account/privacy-and-security/legal"
+			clicked={() => goto(resolve('/account/privacy-and-security/legal'))}
 		/>
 		<LabeledItem
 			label="App version"
 			icon={constructOutline}
-			clicked={() => goto(PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.APP_VERSION)}
-			indexed={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.APP_VERSION}
+			clicked={() => goto(resolve('/account/privacy-and-security/app-version'))}
+			indexed="/account/privacy-and-security/app-version"
 		/>
 		<LabeledItem label="Report bug" icon={bugOutline} clicked={() => featureNotImplementedAlert()} />
 	</ion-list>
 	<ion-list inset>
 		<ion-list-header>{$t('routes.account.page.privacy-and-security.list.security')}</ion-list-header>
 		<LabeledItem
-			indexed={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.CHANGE_PASSWORD}
-			clicked={() => goto(PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.CHANGE_PASSWORD)}
+			indexed="/account/privacy-and-security/change-password"
+			clicked={() => goto(resolve('/account/privacy-and-security/change-password'))}
 			icon={keyOutline}
 			label={$t('routes.account.list.account.privacy-and-security.button.change-password')}
 		/>
@@ -126,7 +126,7 @@
 			<CustomItem
 				icon={fingerPrintOutline}
 				id={$t('routes.account.list.account.privacy-and-security.button.biometrics')}
-				indexed={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.ROOT}
+				indexed="/account/privacy-and-security"
 			>
 				<ion-toggle
 					bind:this={toggle}

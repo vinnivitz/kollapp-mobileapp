@@ -4,6 +4,7 @@
 	import { keyOutline, keySharp, saveOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 
 	import { userResource } from '$lib/api/resources';
 	import { changePasswordSchema } from '$lib/api/validation/user';
@@ -12,7 +13,6 @@
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import { t } from '$lib/locales';
-	import { PageRoute } from '$lib/models/routing';
 	import { Form } from '$lib/models/ui';
 	import {
 		customForm,
@@ -26,7 +26,7 @@
 			if ((await isBiometricAvailable()) && (await isBiometricEnabled())) {
 				await updatePasswordBiometricCredentials(model.newPassword);
 			}
-			goto(PageRoute.ACCOUNT.ROOT);
+			goto(resolve('/account'));
 		},
 		request: async (model: PasswordChangeRequestTO) => userResource.changePassword(model),
 		schema: changePasswordSchema()

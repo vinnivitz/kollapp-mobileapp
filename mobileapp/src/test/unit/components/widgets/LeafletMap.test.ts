@@ -46,14 +46,14 @@ function registerMocks(): void {
 				this.setView = vi.fn();
 				return this;
 			}),
-			Marker: vi.fn(function (this: any) {
+			Marker: vi.fn(function (this: { addTo: Mock; bindTooltip: Mock; openTooltip: Mock; removeFrom: Mock }) {
 				this.addTo = vi.fn().mockReturnThis();
 				this.bindTooltip = vi.fn().mockReturnThis();
 				this.openTooltip = vi.fn();
 				this.removeFrom = vi.fn();
 				return this;
 			}),
-			TileLayer: vi.fn(function (this: any) {
+			TileLayer: vi.fn(function (this: { addTo: Mock }) {
 				this.addTo = vi.fn().mockReturnThis();
 				return this;
 			})

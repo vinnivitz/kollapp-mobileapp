@@ -18,6 +18,7 @@
 	import { fade } from 'svelte/transition';
 
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 
 	import { activityResource } from '$lib/api/resources';
 	import { createActivitySchema } from '$lib/api/validation/organization';
@@ -32,7 +33,6 @@
 	import Popover from '$lib/components/widgets/ionic/Popover.svelte';
 	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import { t } from '$lib/locales';
-	import { PageRoute } from '$lib/models/routing';
 	import { Form } from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';
 	import { customForm } from '$lib/utility';
@@ -128,7 +128,7 @@
 			icon={calendarOutline}
 			selected={activityView === ActivityView.CALENDAR}
 			clicked={() => (activityView = ActivityView.CALENDAR)}
-			indexed={PageRoute.ORGANIZATION.ACTIVITIES.ROOT}
+			indexed="/organization/activities"
 		/>
 	</div>
 {/snippet}
@@ -141,7 +141,7 @@
 					label={$t('routes.organization.page.activity.create')}
 					clicked={() => onCreateActivity(format(new TZDate(), 'yyyy-MM-dd'))}
 					icon={createOutline}
-					indexed={PageRoute.ORGANIZATION.ACTIVITIES.ROOT}
+					indexed="/organization/activities"
 				></FabButton>
 
 				<div class="flex items-center justify-between gap-2">
@@ -202,7 +202,10 @@
 {/snippet}
 
 {#snippet activityCard(activity: ActivityModel)}
-	<Card color="light" clicked={() => goto(PageRoute.ORGANIZATION.ACTIVITIES.DETAIL(activity.id))}>
+	<Card
+		color="light"
+		clicked={() => goto(resolve(`/organization/activities/[slug]`, { slug: activity.id.toString() }))}
+	>
 		<div class="flex flex-col justify-center">
 			<ion-text class="truncate">{activity.name}</ion-text>
 			<div class="flex flex-wrap items-center gap-2">

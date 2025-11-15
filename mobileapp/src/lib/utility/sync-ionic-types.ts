@@ -227,7 +227,7 @@ function generateInterface(interfaceName: string, properties: PropertyInfo[]): s
 function generateIntrinsicElements(interfaceNames: string[]): string {
 	let output = '\t\tinterface IntrinsicElements {\n';
 
-	for (const interfaceName of interfaceNames.sort()) {
+	for (const interfaceName of interfaceNames.toSorted()) {
 		// Convert IonButton -> ion-button
 		const tagName = interfaceName
 			.replace(/^Ion/, 'ion-')
@@ -242,12 +242,12 @@ function generateIntrinsicElements(interfaceNames: string[]): string {
 
 // Generate the complete app.d.ts content
 function generateAppDTS(interfaces: Map<string, PropertyInfo[]>, types: Set<string>): string {
-	const interfaceNames = [...interfaces.keys()].sort();
+	const interfaceNames = [...interfaces.keys()].toSorted();
 
 	let output = `/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-empty-object-type, @typescript-eslint/no-unsafe-function-type, sonarjs/use-type-alias */\n\n`;
 
 	// Add imports - sort and format nicely
-	const sortedTypes = [...types].sort();
+	const sortedTypes = [...types].toSorted();
 	output += `import {\n`;
 
 	// Format imports in groups of 3 per line

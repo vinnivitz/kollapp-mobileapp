@@ -4,6 +4,7 @@
 	import { mailOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 
 	import { resendConfirmationSchema } from '$lib/api/validation/authentication';
 	import Layout from '$lib/components/layout/Layout.svelte';
@@ -11,12 +12,11 @@
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import { t } from '$lib/locales';
-	import { PageRoute } from '$lib/models/routing';
 	import { Form } from '$lib/models/ui';
 	import { customForm, featureNotImplementedAlert } from '$lib/utility';
 
 	const form = new Form({
-		completed: async () => goto(PageRoute.AUTH.LOGIN),
+		completed: async () => goto(resolve('/auth/login')),
 		request: async () => featureNotImplementedAlert() as unknown as Promise<ResponseBody<void>>,
 		schema: resendConfirmationSchema()
 	});

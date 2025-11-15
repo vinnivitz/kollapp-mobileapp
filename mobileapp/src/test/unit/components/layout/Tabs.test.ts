@@ -3,9 +3,9 @@ import { createRawSnippet } from 'svelte';
 import { beforeAll, describe, expect, it, type Mock, vi } from 'vitest';
 
 import { goto } from '$app/navigation';
+import type { RouteId } from '$app/types';
 
 import Tabs from '$lib/components/layout/Tabs.svelte';
-import { PageRoute } from '$lib/models/routing';
 
 const mockState = vi.hoisted(() => ({
 	navigating: undefined as { to: { route: { id: string } } } | undefined,
@@ -33,7 +33,7 @@ beforeAll(() => {
 });
 
 describe('Tabs Component', () => {
-	const tab = { icon: 'homeIcon', label: 'Home', tab: '/home' };
+	const tab: { icon: string; label: string; tab: RouteId } = { icon: 'homeIcon', label: 'Home', tab: '/' };
 	const tabs = [tab];
 	const childContent = 'Child content';
 	const properties = {
@@ -57,7 +57,7 @@ describe('Tabs Component', () => {
 	});
 
 	it('tab selection works properly', async () => {
-		mockState.page.route.id = '/home';
+		mockState.page.route.id = '/' satisfies RouteId;
 		mockState.navigating = { to: { route: { id: '/next' } } };
 
 		const { container, queryByText } = render(Tabs, { props: properties });
@@ -81,7 +81,7 @@ describe('Tabs Component', () => {
 		const { container } = render(Tabs, {
 			props: {
 				children: createRawSnippet(() => ({ render: () => `<p>content</p>` })),
-				tabs: [{ icon: 'homeIcon', label: 'Home', tab: '/home' }]
+				tabs: [{ icon: 'homeIcon', label: 'Home', tab: '/' }]
 			}
 		});
 
@@ -100,14 +100,14 @@ describe('Tabs Component', () => {
 		const { container } = render(Tabs, {
 			props: {
 				children: createRawSnippet(() => ({ render: () => `<p>content</p>` })),
-				tabs: [{ icon: 'homeIcon', label: 'Home', tab: '/home' }]
+				tabs: [{ icon: 'homeIcon', label: 'Home', tab: '/' }]
 			}
 		});
 
 		const ionTabs = container.querySelector('ion-tabs') as HTMLIonTabsElement;
 
 		await waitFor(() => {
-			expect(ionTabs.select).toHaveBeenCalledWith(PageRoute.HOME);
+			expect(ionTabs.select).toHaveBeenCalledWith('/' satisfies RouteId);
 		});
 	});
 });

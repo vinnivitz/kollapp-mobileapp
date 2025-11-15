@@ -17,6 +17,7 @@
 
 	import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 
 	import { authenticationResource } from '$lib/api/resources';
 	import { loginSchema } from '$lib/api/validation/authentication';
@@ -27,7 +28,6 @@
 	import Welcome from '$lib/components/widgets/Welcome.svelte';
 	import { t } from '$lib/locales';
 	import { PreferencesKey } from '$lib/models/preferences';
-	import { PageRoute } from '$lib/models/routing';
 	import { Form } from '$lib/models/ui';
 	import { appStateStore, authenticationStore } from '$lib/stores';
 	import {
@@ -80,7 +80,7 @@
 		};
 		await authenticationStore.set(authenticationModel);
 		await appStateStore.initializeUserData();
-		goto(PageRoute.HOME);
+		await goto(resolve('/'));
 	}
 </script>
 
@@ -129,11 +129,11 @@
 			<Button color="tertiary" size="large" fill="outline" icon={logoGithub} clicked={featureNotImplementedAlert} />
 		</div>
 	{/if}
-	<Card color="light" clicked={() => goto(PageRoute.AUTH.REGISTER)} classList="text-center">
+	<Card color="light" clicked={() => goto(resolve('/auth/register'))} classList="text-center">
 		{$t('routes.auth.login.register.text')}
 		<ion-text color="secondary">{$t('routes.auth.login.register.link')}</ion-text>
 	</Card>
-	<Card color="light" clicked={() => goto(PageRoute.AUTH.RESET_PASSWORD)} classList="text-center">
+	<Card color="light" clicked={() => goto(resolve('/auth/reset-password'))} classList="text-center">
 		{$t('routes.auth.login.forgot-password.text')}
 		<ion-text color="secondary">{$t('routes.auth.login.forgot-password.link')}</ion-text>
 	</Card>

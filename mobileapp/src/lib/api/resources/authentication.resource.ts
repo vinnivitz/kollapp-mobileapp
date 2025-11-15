@@ -1,9 +1,9 @@
 import type { AuthenticatedUserTO, LoginRequestTO, TokenTO } from '@kollapp/api-types';
 
 import { goto } from '$app/navigation';
+import { resolve } from '$app/paths';
 
 import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/models/api';
-import { PageRoute } from '$lib/models/routing';
 import { appStateStore } from '$lib/stores';
 import { customFetch } from '$lib/utility';
 
@@ -41,7 +41,7 @@ async function refresh(token: string): Promise<ResponseBody<TokenTO>> {
  */
 async function logout(): Promise<void> {
 	await appStateStore.reset();
-	await goto(PageRoute.AUTH.LOGIN);
+	await goto(resolve('/auth/login'));
 }
 
 export const authenticationResource = {

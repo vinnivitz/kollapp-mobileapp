@@ -13,13 +13,13 @@
 	} from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import BudgetChart from '$lib/components/widgets/BudgetChart.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import { t } from '$lib/locales';
-	import { PageRoute, type PageRoutePaths } from '$lib/models/routing';
 	import { localeStore, organizationStore, userStore } from '$lib/stores';
 	import { featureNotImplementedAlert, getDateFnsLocale } from '$lib/utility';
 
@@ -28,13 +28,8 @@
 
 	function onNavigateEvent(): void {
 		if ($organizationStore?.activities[0]?.id) {
-			goto(PageRoute.ORGANIZATION.ACTIVITIES.DETAIL($organizationStore.activities[0].id));
+			goto(resolve('/organization/activities/[slug]', { slug: $organizationStore.activities[0].id.toString() }));
 		}
-	}
-
-	async function navigate(_event: MouseEvent | undefined, route: PageRoutePaths): Promise<void> {
-		_event?.stopPropagation();
-		await goto(route);
 	}
 </script>
 
@@ -54,7 +49,7 @@
 </Layout>
 
 {#snippet accountCard(user: KollappUserTO)}
-	<Card color="transparent" classList="text-center" clicked={() => goto(PageRoute.ACCOUNT.ROOT)}>
+	<Card color="transparent" classList="text-center" clicked={() => goto(resolve('/account'))}>
 		<div class="truncate">
 			<ion-text class="text-2xl" color="dark">
 				{$t('routes.home.card.user.title', { value: user.username })}
@@ -93,7 +88,7 @@
 {/snippet}
 
 {#snippet organizationCard(organization: OrganizationTO)}
-	<Card border="primary" title={organization.name} clicked={() => goto(PageRoute.ORGANIZATION.ROOT)}>
+	<Card border="primary" title={organization.name} clicked={() => goto(resolve('/organization'))}>
 		<div class="flex flex-wrap items-center justify-center gap-2">
 			<Button
 				size="small"
@@ -101,7 +96,7 @@
 				color="light"
 				icon={peopleOutline}
 				label={`${organization.personsOfOrganization.length} members`}
-				clicked={(_event) => navigate(_event, PageRoute.ORGANIZATION.MEMBERS)}
+				clicked={(_event) => goto(resolve('/organization/members'))}
 			/>
 			<Button
 				icon={flashOutline}
@@ -109,7 +104,7 @@
 				size="small"
 				fill="solid"
 				color="light"
-				clicked={(_event) => navigate(_event, PageRoute.ORGANIZATION.ACTIVITIES.ROOT)}
+				clicked={(_event) => goto(resolve('/organization/activities'))}
 			/>
 		</div>
 	</Card>
@@ -118,7 +113,7 @@
 {#snippet noCollectiveCards()}
 	<Card title={$t('routes.home.card.register-organization.title')} classList="text-center">
 		<Button
-			clicked={() => goto(PageRoute.ORGANIZATION.REGISTER)}
+			clicked={(_event) => _event?.stopPropagation() && goto(resolve('/organization/register'))}
 			fill="outline"
 			icon={accessibilityOutline}
 			label={$t('routes.home.card.organization.register')}
@@ -126,7 +121,7 @@
 	</Card>
 	<Card title={$t('routes.home.card.join-organization.title')} classList="text-center">
 		<Button
-			clicked={() => goto(PageRoute.ORGANIZATION.JOIN)}
+			clicked={(_event) => _event?.stopPropagation() && goto(resolve('/organization/join'))}
 			fill="outline"
 			icon={accessibilityOutline}
 			label={$t('routes.home.card.organization.join')}

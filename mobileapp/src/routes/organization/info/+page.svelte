@@ -6,12 +6,12 @@
 	import { onMount } from 'svelte';
 
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 
 	import { organizationResource } from '$lib/api/resources';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import { PageRoute } from '$lib/models/routing';
 	import { StatusCheck } from '$lib/utility';
 
 	let { data }: { data: PageData } = $props();
@@ -49,7 +49,7 @@
 				<ion-text class="text-center" color="medium"
 					>Ask the collective admin to provide you a new invitation code.</ion-text
 				>
-				<Button label="Back to home" icon={homeOutline} fill="outline" clicked={() => goto(PageRoute.HOME)}></Button>
+				<Button label="Back to home" icon={homeOutline} fill="outline" clicked={() => goto(resolve('/'))}></Button>
 			</div>
 		</Card>
 	{/if}
