@@ -10,30 +10,29 @@ import { hasOrganizationRole } from '$lib/utility';
 
 const $t = get(t);
 
-/**
- * Filters searchable items based on a search term.
- * @param value The search term to filter searchable items.
- * @returns {Promise<SearchableItemDto[]>} A promise that resolves to an array of searchable items that match the search term.
- */
-async function filter(value: string): Promise<SearchableItemDto[]> {
-	const response = await fetch('/data/searchables.json');
-	const items: SearchableItemDto[] = await response.json();
-	const organization = get(organizationStore);
-	return items
-		.filter((item: SearchableItemDto) => {
-			const hasTerm = $t(item.label).toLowerCase().includes(value.toLowerCase());
-			const validRole = item.accessible ? hasOrganizationRole(item.accessible) : true;
-			const accessible =
-				item.route.startsWith('/organization' satisfies RouteId) && !organization
-					? item.route === '/organization' ||
-						item.route === '/organization/register' ||
-						item.route === '/organization/join'
-					: true;
-			return hasTerm && validRole && accessible;
-		})
-		.map((item) => ({ ...item, label: $t(item.label) }));
+class SearchableResource {
+	/** Filters searchable items based on a search term.
+	 * @param value The search term.
+	 * @returns {Promise<SearchableItemDto[]>} The filtered searchable items.
+	 */
+	async filter(value: string): Promise<SearchableItemDto[]> {
+		const response = await fetch('/data/searchables.json');
+		const items: SearchableItemDto[] = await response.json();
+		const organization = get(organizationStore);
+		return items
+			.filter((item: SearchableItemDto) => {
+				const hasTerm = $t(item.label).toLowerCase().includes(value.toLowerCase());
+				const validRole = item.accessible ? hasOrganizationRole(item.accessible) : true;
+				const accessible =
+					item.route.startsWith('/organization' satisfies RouteId) && !organization
+						? item.route === '/organization' ||
+							item.route === '/organization/register' ||
+							item.route === '/organization/join'
+						: true;
+				return hasTerm && validRole && accessible;
+			})
+			.map((item) => ({ ...item, label: $t(item.label) }));
+	}
 }
 
-export const searchableResource = {
-	filter
-};
+export const searchableResource = new SearchableResource();

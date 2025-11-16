@@ -22,8 +22,8 @@ describe('CardComponent', () => {
 		const ionCardSubtitle = container.querySelector('ion-card-subtitle');
 		const ionCardContent = container.querySelector('ion-card-content');
 
-		expect(ionCardTitle?.textContent).toBe(properties.title);
-		expect(ionCardSubtitle?.textContent).toBe(properties.subtitle);
+		expect(ionCardTitle?.textContent?.trim()).toBe(properties.title);
+		expect(ionCardSubtitle?.textContent?.trim()).toBe(properties.subtitle);
 		expect(ionCardContent?.textContent).toContain(childContent);
 	});
 

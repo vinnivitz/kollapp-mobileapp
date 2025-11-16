@@ -6,65 +6,58 @@ import { TZDate } from '@date-fns/tz';
 import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/models/api';
 import { customFetch, showAlert } from '$lib/utility';
 
-const ENDPOINT = '';
+class MetaResource {
+	ENDPOINT = '';
 
-/**
- * Fetches the API version from the server.
- * @returns {Promise<ResponseBody<string>>} The API version as a response body.
- */
-async function getApiVersion(): Promise<ResponseBody<ApiVersionTO>> {
-	return customFetch(`${ENDPOINT}/public/version`);
-}
+	/** Fetches the API version from the server.
+	 * @return {Promise<ResponseBody<ApiVersionTO>>} The API version response body.
+	 */
+	async getApiVersion(): Promise<ResponseBody<ApiVersionTO>> {
+		return customFetch(`${this.ENDPOINT}/public/version`);
+	}
 
-/**
- * Reports an error log to the server.
- * @param log The error log to report
- * @returns {Promise<ResponseBody>} The response body from the server
- */
-async function reportErrorLog(log: string): Promise<ResponseBody> {
-	return customFetch(`${ENDPOINT}/report-error`, {
-		authorizationType: AuthorizationType.NONE,
-		body: { log, timestamp: new TZDate().toISOString() },
-		method: RequestMethod.POST,
-		silentOnError: true,
-		silentOnSuccess: true
-	});
-}
+	/** Reports an error log to the server.
+	 * @param log The error log.
+	 * @returns {Promise<ResponseBody>} The response body.
+	 */
+	async reportErrorLog(log: string): Promise<ResponseBody> {
+		return customFetch(`${this.ENDPOINT}/report-error`, {
+			authorizationType: AuthorizationType.NONE,
+			body: { log, timestamp: new TZDate().toISOString() },
+			method: RequestMethod.POST,
+			silentOnError: true,
+			silentOnSuccess: true
+		});
+	}
 
-/**
- * Fetches the maintenance information from the server.
- * @returns {Promise<ResponseBody<unknown>>} The maintenance information from the server.
- */
-async function getMaintenanceInfo(): Promise<ResponseBody<{ scheduled: string }>> {
-	return customFetch(`${ENDPOINT}/maintenance-info`, {
-		authorizationType: AuthorizationType.NONE,
-		method: RequestMethod.GET
-	});
-}
+	/** Fetches the maintenance information from the server.
+	 * @returns {Promise<ResponseBody<{ scheduled: string }>>} The maintenance information.
+	 */
+	async getMaintenanceInfo(): Promise<ResponseBody<{ scheduled: string }>> {
+		return customFetch(`${this.ENDPOINT}/maintenance-info`, {
+			authorizationType: AuthorizationType.NONE,
+			method: RequestMethod.GET
+		});
+	}
 
-/**
- * Fetches the release notes from the server.
- * @returns {Promise<ReleaseNotesTO[]>} The release notes from the server.
- */
-async function getReleaseNotes(): Promise<ReleaseNotesDto[]> {
-	try {
-		const response = await fetch('/data/release-notes.json');
+	/** Fetches the release notes from the server.
+	 * @returns {Promise<ReleaseNotesDto[]>} The release notes.
+	 */
+	async getReleaseNotes(): Promise<ReleaseNotesDto[]> {
+		try {
+			const response = await fetch('/data/release-notes.json');
 
-		if (response.ok) {
-			const data = await response.json();
-			return data;
-		} else {
-			throw new Error('Failed to fetch release notes');
+			if (response.ok) {
+				const data = await response.json();
+				return data;
+			} else {
+				throw new Error('Failed to fetch release notes');
+			}
+		} catch {
+			await showAlert('Failed to fetch release notes');
+			return [];
 		}
-	} catch {
-		await showAlert('Failed to fetch release notes');
-		return [];
 	}
 }
 
-export const metaResource = {
-	getApiVersion,
-	getMaintenanceInfo,
-	getReleaseNotes,
-	reportErrorLog
-};
+export const metaResource = new MetaResource();

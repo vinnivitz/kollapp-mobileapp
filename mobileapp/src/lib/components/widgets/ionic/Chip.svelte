@@ -25,6 +25,7 @@
 	tabindex="0"
 	class={classList}
 	{color}
+	style:background-color={selected ? `color-mix(in srgb, var(--ion-color-${color}) 30%, black 0%)` : 'transparent'}
 	outline={!selected}
 	onclick={clicked}
 	onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && clicked?.()}

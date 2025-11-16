@@ -22,17 +22,25 @@ export const load: LayoutLoad = async ({ url }) => {
 	}
 
 	const authenticated = await isAuthenticated();
-	await handleRouting(url.pathname, authenticated);
+	const shouldRedirect = await handleRouting(url.pathname, authenticated);
+
+	if (shouldRedirect) {
+		await new Promise(() => {});
+	}
 };
 
-async function handleRouting(pathname: string, authenticated: boolean): Promise<void> {
+async function handleRouting(pathname: string, authenticated: boolean): Promise<boolean> {
 	const isAuthPath = pathname.startsWith('/auth' satisfies RouteId);
 
 	if (authenticated && isAuthPath) {
-		return goto(resolve('/'));
+		await goto(resolve('/'));
+		return true;
 	} else if (!authenticated && !isAuthPath) {
-		return goto(resolve('/auth/login'));
+		await goto(resolve('/auth/login'));
+		return true;
 	}
+
+	return false;
 }
 
 async function handleAppEvents(): Promise<void> {

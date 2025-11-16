@@ -134,6 +134,7 @@ export default ts.config(
 				HTMLIonSearchbarElement: 'readonly',
 				HTMLIonTabsElement: 'readonly',
 				HTMLIonToggleElement: 'readonly',
+				NodeJS: 'readonly',
 				NodeListOf: 'readonly'
 			}
 		}

@@ -16,6 +16,8 @@
 		readonly?: boolean;
 		subtitle?: string;
 		title?: string;
+		titleIconEnd?: string;
+		titleIconStart?: string;
 		clicked?: () => void;
 	};
 
@@ -31,7 +33,9 @@
 		indexed,
 		readonly,
 		subtitle,
-		title
+		title,
+		titleIconEnd,
+		titleIconStart
 	}: Properties = $props();
 
 	// workaround to avoid reference linting error
@@ -66,7 +70,15 @@
 {#snippet content()}
 	{#if title || subtitle}
 		<ion-card-header>
-			<ion-card-title class="text-center text-2xl">{title}</ion-card-title>
+			<ion-card-title class="flex items-center justify-center gap-2 text-center text-2xl">
+				{#if titleIconStart}
+					<ion-icon icon={titleIconStart}></ion-icon>
+				{/if}
+				<ion-text>{title}</ion-text>
+				{#if titleIconEnd}
+					<ion-icon icon={titleIconEnd}></ion-icon>
+				{/if}
+			</ion-card-title>
 			{#if subtitle}
 				<ion-card-subtitle>{subtitle}</ion-card-subtitle>
 			{/if}

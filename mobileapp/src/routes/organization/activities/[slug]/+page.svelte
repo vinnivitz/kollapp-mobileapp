@@ -40,7 +40,7 @@
 	import { resolve } from '$app/paths';
 
 	import { activityResource, budgetResource } from '$lib/api/resources';
-	import { createAccountPostingSchema } from '$lib/api/validation/budget';
+	import { createPostingSchema } from '$lib/api/validation/budget';
 	import { updateActivitySchema } from '$lib/api/validation/organization';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import AmountInputItem from '$lib/components/widgets/ionic/AmountInputItem.svelte';
@@ -56,9 +56,16 @@
 	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import ToggleItem from '$lib/components/widgets/ionic/ToggleItem.svelte';
 	import { t } from '$lib/locales';
-	import { type FabButtonButtons, type FilterItem, Form, type FormActions } from '$lib/models/ui';
+	import {
+		type FabButtonButtons,
+		type FilterItem,
+		Form,
+		type FormActions,
+		type ItemSlidingOption
+	} from '$lib/models/ui';
 	import { localeStore, organizationStore, userStore } from '$lib/stores';
 	import {
+		clone,
 		customForm,
 		featureNotImplementedAlert,
 		formatter,
@@ -134,8 +141,8 @@
 		exposedActions: (exposedActions) => (createAccountPostingFormActions = exposedActions),
 		formatters: { amountInCents: formatter.currency, date: formatter.date },
 		parsers: { amountInCents: parser.currency, date: parser.date },
-		request: (model) => budgetResource.add($organizationStore?.id!, model),
-		schema: createAccountPostingSchema()
+		request: (model) => budgetResource.createActivityPosting($organizationStore?.id!, activity?.id!, model),
+		schema: createPostingSchema()
 	});
 
 	const updateAccountPostingForm = new Form({
@@ -150,7 +157,7 @@
 		parsers: { amountInCents: parser.currency, date: parser.date },
 		request: async (model) =>
 			budgetResource.updateActivityPosting($organizationStore?.id!, activity?.id!, selectedPosting?.id!, model),
-		schema: createAccountPostingSchema()
+		schema: createPostingSchema()
 	});
 
 	const updateActivityForm = new Form({
@@ -249,8 +256,23 @@
 		goto(resolve('/organization/activities'));
 	}
 
+	function getTransactionItemSlidingOptions(posting: PostingTO): ItemSlidingOption[] {
+		return [
+			{
+				color: 'danger',
+				handler: () => onDeletePosting(posting.id),
+				icon: trashBinOutline
+			},
+			{
+				color: 'primary',
+				handler: () => onOpenUpdatePostingModal(posting),
+				icon: createOutline
+			}
+		];
+	}
+
 	function onOpenActivityModal(): void {
-		updateActivityFormActions.setModel(structuredClone(activity));
+		updateActivityFormActions.setModel(clone(activity));
 		updateActivityModalOpen = true;
 	}
 
@@ -272,10 +294,9 @@
 	async function onOpenCreateAccountPosting(type: PostingType): Promise<void> {
 		selectedPostingType = type;
 		createAccountPostingFormActions.setModel(
-			createAccountPostingSchema().cast({
-				activityId: activity?.id,
+			createPostingSchema().cast({
 				type: selectedPostingType
-			})
+			} satisfies Partial<PostingCreateUpdateRequestTO>)
 		);
 		createAccountPostingModalOpen = true;
 	}
@@ -375,7 +396,7 @@
 	async function onOpenUpdatePostingModal(posting: PostingTO): Promise<void> {
 		selectedPosting = posting;
 		selectedPostingType = posting.type;
-		updateAccountPostingFormActions.setModel(structuredClone(selectedPosting));
+		updateAccountPostingFormActions.setModel(clone(selectedPosting));
 		updateAccountPostingModalOpen = true;
 	}
 
@@ -429,19 +450,12 @@
 			</div>
 		</div>
 		<div class="mt-2 flex items-center justify-center gap-2">
-			<Button
-				icon={mapOutline}
-				size="small"
-				fill="solid"
-				color="secondary"
-				label="Open in map"
-				clicked={onOpenLocation}
-			/>
+			<Button icon={mapOutline} size="small" fill="solid" color="light" label="Open in map" clicked={onOpenLocation} />
 			<Button
 				icon={calendarOutline}
 				size="small"
 				fill="solid"
-				color="secondary"
+				color="light"
 				label="Add to calendar"
 				clicked={onAddToCalendar}
 			/>
@@ -496,18 +510,7 @@
 
 {#snippet transactionItem(posting: PostingTO)}
 	<CustomItem
-		slidingOptions={[
-			{
-				color: 'danger',
-				handler: () => onDeletePosting(posting.id),
-				icon: trashBinOutline
-			},
-			{
-				color: 'primary',
-				handler: () => onOpenUpdatePostingModal(posting),
-				icon: createOutline
-			}
-		]}
+		slidingOptions={getTransactionItemSlidingOptions(posting)}
 		iconColor={posting.type === 'CREDIT' ? 'danger' : 'success'}
 		icon={posting.type === 'CREDIT' ? trendingDownOutline : trendingUpOutline}
 	>
@@ -682,8 +685,8 @@
 			</div>
 		</CustomItem>
 		<div class="mt-2 flex items-center justify-center gap-2">
-			<Button label="Reset filter" color="danger" icon={refreshOutline} fill="outline" clicked={resetFilter} />
-			<Button label="Apply filter" icon={saveOutline} fill="outline" clicked={() => (filterOpen = false)} />
+			<Button label="Reset" color="danger" icon={refreshOutline} fill="outline" clicked={resetFilter} />
+			<Button label="Apply" icon={saveOutline} fill="outline" clicked={() => (filterOpen = false)} />
 		</div>
 	</Card>
 </Popover>

@@ -10,7 +10,7 @@ import { localeStore } from '$lib/stores';
  * @returns The formatter
  */
 function currency(cents: number, showCents = false): string {
-	const numberFormat = new Intl.NumberFormat(get(localeStore), {
+	const numberFormat = new Intl.NumberFormat(get(localeStore) ?? 'de', {
 		currency: Currency.EUR,
 		maximumFractionDigits: 2,
 		minimumFractionDigits: showCents ? 2 : 0,

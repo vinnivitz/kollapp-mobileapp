@@ -11,7 +11,7 @@ import { t } from '$lib/locales';
  * Creates a schema for validating the `PostingCreateUpdateRequestTO`.
  * @returns {ObjectSchema<PostingCreateUpdateRequestTO>} The schema for validating the `PostingCreateUpdateRequestTO`.
  */
-export const createAccountPostingSchema = (): ObjectSchema<PostingCreateUpdateRequestTO> => {
+export const createPostingSchema = (): ObjectSchema<PostingCreateUpdateRequestTO> => {
 	const $t = get(t);
 	const types = Object.values({ CREDIT: 'CREDIT', DEBIT: 'DEBIT' } satisfies Record<PostingType, PostingType>);
 

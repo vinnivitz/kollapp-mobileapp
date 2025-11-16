@@ -6,6 +6,7 @@
 	import { addDays, formatDistanceToNow } from 'date-fns';
 	import {
 		accessibilityOutline,
+		arrowForwardOutline,
 		calendarOutline,
 		flashOutline,
 		notificationsOffOutline,
@@ -48,6 +49,8 @@
 	{/if}
 </Layout>
 
+<!-- Snippets -->
+
 {#snippet accountCard(user: KollappUserTO)}
 	<Card color="transparent" classList="text-center" clicked={() => goto(resolve('/account'))}>
 		<div class="truncate">
@@ -67,7 +70,7 @@
 {/snippet}
 
 {#snippet upcomingEventCard(activity: ActivityModel)}
-	<Card title="Upcoming event" border="secondary" clicked={onNavigateEvent}>
+	<Card title="Upcoming event" border="secondary" clicked={onNavigateEvent} titleIconEnd={arrowForwardOutline}>
 		<div class="mb-3 flex flex-wrap items-center justify-center gap-5">
 			<div class="flex items-center gap-2">
 				<ion-icon icon={flashOutline}></ion-icon>
@@ -88,7 +91,12 @@
 {/snippet}
 
 {#snippet organizationCard(organization: OrganizationTO)}
-	<Card border="primary" title={organization.name} clicked={() => goto(resolve('/organization'))}>
+	<Card
+		border="primary"
+		title={organization.name}
+		clicked={() => goto(resolve('/organization'))}
+		titleIconEnd={arrowForwardOutline}
+	>
 		<div class="flex flex-wrap items-center justify-center gap-2">
 			<Button
 				size="small"

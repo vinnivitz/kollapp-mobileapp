@@ -24,9 +24,9 @@
 	let colors = $state<string[]>();
 	let selectedChartDataId = $state<number>();
 
-	const hasDebit = $derived(postings?.some((posting) => posting.type === 'DEBIT') ?? false);
+	const hasSomeDebit = $derived((postings?.filter((posting) => posting.type === 'DEBIT') ?? []).length > 2);
 
-	const hasCredit = $derived(postings?.some((postings) => postings.type === 'CREDIT') ?? false);
+	const hasSomeCredit = $derived((postings?.filter((posting) => posting.type === 'CREDIT') ?? []).length > 2);
 
 	function getTotalAmountByType(type: PostingType): number {
 		return (
@@ -107,7 +107,11 @@
 					}
 
 					if (target !== undefined) {
-						setTimeout(() => setSelectedChart(target), 0);
+						const allowed =
+							(target === ChartType.CREDIT && hasSomeCredit) || (target === ChartType.DEBIT && hasSomeDebit);
+						if (allowed) {
+							setTimeout(() => setSelectedChart(target as ChartType));
+						}
 					}
 				}
 			},
@@ -128,6 +132,10 @@
 			}
 		},
 		series: chartSeries,
+		states:
+			hasSomeCredit || hasSomeDebit
+				? { active: { filter: { type: 'none' } }, hover: { filter: { type: 'none' } } }
+				: undefined,
 		tooltip:
 			selectedChart === ChartType.ALL
 				? { enabled: true }
@@ -177,7 +185,7 @@
 <div class="mt-5 mb-2 text-center text-2xl">Budget overview</div>
 {#if postings && postings.length > 0}
 	<div class="flex items-center justify-center gap-2">
-		{#if hasCredit && hasDebit}
+		{#if hasSomeCredit || hasSomeDebit}
 			<Chip
 				icon={cashOutline}
 				label="All"
@@ -185,20 +193,24 @@
 				selected={selectedChart === ChartType.ALL}
 				clicked={() => setSelectedChart(ChartType.ALL)}
 			/>
-			<Chip
-				icon={trendingUp}
-				label="Income"
-				color="success"
-				selected={selectedChart === ChartType.CREDIT}
-				clicked={() => setSelectedChart(ChartType.CREDIT)}
-			/>
-			<Chip
-				icon={trendingDown}
-				label="Expenses"
-				color="danger"
-				selected={selectedChart === ChartType.DEBIT}
-				clicked={() => setSelectedChart(ChartType.DEBIT)}
-			/>
+			{#if hasSomeCredit}
+				<Chip
+					icon={trendingUp}
+					label="Income"
+					color="success"
+					selected={selectedChart === ChartType.CREDIT}
+					clicked={() => setSelectedChart(ChartType.CREDIT)}
+				/>
+			{/if}
+			{#if hasSomeDebit}
+				<Chip
+					icon={trendingDown}
+					label="Expenses"
+					color="danger"
+					selected={selectedChart === ChartType.DEBIT}
+					clicked={() => setSelectedChart(ChartType.DEBIT)}
+				/>
+			{/if}
 		{/if}
 	</div>
 	<div class="relative h-[350px]">

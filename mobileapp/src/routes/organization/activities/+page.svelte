@@ -114,22 +114,24 @@
 </Layout>
 
 {#snippet activitySegmentsHeader()}
-	<div class="mb-2 flex items-center justify-center gap-3 bg-(--ion-background-color-step-50) rounded-full">
-		<Chip
-			color="dark"
-			label={$t('routes.organization.page.activity.segments.activities')}
-			icon={flashOutline}
-			selected={activityView === ActivityView.ACTIVITIES}
-			clicked={() => (activityView = ActivityView.ACTIVITIES)}
-		/>
-		<Chip
-			color="dark"
-			label={$t('routes.organization.page.activity.segments.calendar')}
-			icon={calendarOutline}
-			selected={activityView === ActivityView.CALENDAR}
-			clicked={() => (activityView = ActivityView.CALENDAR)}
-			indexed="/organization/activities"
-		/>
+	<div class="text-center">
+		<div class="mb-2 flex items-center justify-center gap-3 rounded-full bg-(--ion-background-color-step-50) px-5 py-1">
+			<Chip
+				color="dark"
+				label={$t('routes.organization.page.activity.segments.activities')}
+				icon={flashOutline}
+				selected={activityView === ActivityView.ACTIVITIES}
+				clicked={() => (activityView = ActivityView.ACTIVITIES)}
+			/>
+			<Chip
+				color="dark"
+				label={$t('routes.organization.page.activity.segments.calendar')}
+				icon={calendarOutline}
+				selected={activityView === ActivityView.CALENDAR}
+				clicked={() => (activityView = ActivityView.CALENDAR)}
+				indexed="/organization/activities"
+			/>
+		</div>
 	</div>
 {/snippet}
 

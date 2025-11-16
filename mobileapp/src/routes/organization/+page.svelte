@@ -12,6 +12,7 @@
 	import { addDays, format, formatDistanceToNow } from 'date-fns';
 	import {
 		albumsOutline,
+		arrowForwardOutline,
 		buildOutline,
 		calendarClearOutline,
 		calendarOutline,
@@ -41,7 +42,7 @@
 	import { resolve } from '$app/paths';
 
 	import { budgetResource } from '$lib/api/resources';
-	import { createAccountPostingSchema } from '$lib/api/validation/budget';
+	import { createPostingSchema } from '$lib/api/validation/budget';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import AmountInputItem from '$lib/components/widgets/ionic/AmountInputItem.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
@@ -58,6 +59,7 @@
 	import { type FilterItem, Form, type FormActions, type ItemSlidingOption } from '$lib/models/ui';
 	import { localeStore, organizationStore, userStore } from '$lib/stores';
 	import {
+		clone,
 		customForm,
 		formatter,
 		getDateFnsLocale,
@@ -67,7 +69,7 @@
 		triggerClickByLabel
 	} from '$lib/utility';
 
-	type AccountBalance = {
+	type Balance = {
 		balance: string;
 		income: string;
 		spent: string;
@@ -89,16 +91,16 @@
 		...($organizationStore?.organizationPostings ?? []),
 		...($organizationStore?.activities.flatMap((activity) => activity.activityPostings) ?? [])
 	]);
-	const accountBalance = $derived(calculateAccountBalance(postings ?? []));
+	const balance = $derived(calculateBalance(postings ?? []));
 
-	let createAccountPostingFormActions = $state<FormActions<PostingCreateUpdateRequestTO>>();
-	let updateAccountPostingFormActions = $state<FormActions<PostingCreateUpdateRequestTO>>();
+	let createPostingFormActions = $state<FormActions<PostingCreateUpdateRequestTO>>();
+	let updatePostingFormActions = $state<FormActions<PostingCreateUpdateRequestTO>>();
 
-	let createAccountPostingModalOpen = $state(false);
-	let updateAccountPostingModalOpen = $state(false);
+	let createPostingModalOpen = $state(false);
+	let updatePostingModalOpen = $state(false);
 	let transactionHistoryModalOpen = $state(false);
 
-	let updateAccountPostingModelTouched = $state(false);
+	let updatePostingModelTouched = $state(false);
 
 	let filteredPostings = $state<PostingTO[]>([]);
 	let postingsSearchValue = $state('');
@@ -139,34 +141,38 @@
 	);
 
 	let selectActivityModalOpen = $state(false);
-	let selectedActivityId = $state('0');
+	let selectedActivityId = $state<number>(0);
 	let selectedActivity = $state<ActivityTO>();
 
 	const createPostingForm = new Form({
 		completed: async () => {
 			await organizationStore.update($organizationStore?.id!);
-			createAccountPostingModalOpen = false;
+			createPostingModalOpen = false;
 		},
-		exposedActions: (exposedActions) => (createAccountPostingFormActions = exposedActions),
+		exposedActions: (exposedActions) => (createPostingFormActions = exposedActions),
 		formatters: { amountInCents: formatter.currency, date: formatter.date },
 		parsers: { amountInCents: parser.currency, date: parser.date },
-		request: async (model) => budgetResource.add($organizationStore?.id!, model),
-		schema: createAccountPostingSchema()
+		request: async (model) => {
+			return selectedActivityId > 0
+				? budgetResource.createActivityPosting($organizationStore?.id!, selectedActivityId, model)
+				: budgetResource.createOrganizationPosting($organizationStore?.id!, model);
+		},
+		schema: createPostingSchema()
 	});
 
 	const updatePostingForm = new Form({
 		completed: async () => {
 			await organizationStore.update($organizationStore?.id!);
-			updateAccountPostingModalOpen = false;
-			updateAccountPostingModelTouched = false;
+			updatePostingModalOpen = false;
+			updatePostingModelTouched = false;
 		},
-		exposedActions: (exposedActions) => (updateAccountPostingFormActions = exposedActions),
+		exposedActions: (exposedActions) => (updatePostingFormActions = exposedActions),
 		formatters: { amountInCents: formatter.currency, date: formatter.date },
-		onTouched: () => (updateAccountPostingModelTouched = true),
+		onTouched: () => (updatePostingModelTouched = true),
 		parsers: { amountInCents: parser.currency, date: parser.date },
 		request: async (model) =>
 			budgetResource.updateOrganizationPosting($organizationStore?.id!, selectedPosting?.id!, model),
-		schema: createAccountPostingSchema()
+		schema: createPostingSchema()
 	});
 
 	$effect(() => {
@@ -253,7 +259,7 @@
 		});
 	}
 
-	function calculateAccountBalance(postings: PostingTO[]): AccountBalance {
+	function calculateBalance(postings: PostingTO[]): Balance {
 		let totalIncome = 0,
 			totalExpense = 0;
 		for (const posting of postings) {
@@ -283,15 +289,14 @@
 		await actionSheet.present();
 	}
 
-	async function onOpenCreateAccountPosting(type: PostingType): Promise<void> {
+	async function onOpenCreatePosting(type: PostingType): Promise<void> {
 		selectedPostingType = type;
-		createAccountPostingFormActions?.setModel(
-			createAccountPostingSchema().cast({
-				activityId: 0,
+		createPostingFormActions?.setModel(
+			createPostingSchema().cast({
 				type: selectedPostingType
-			}) as PostingCreateUpdateRequestTO
+			} satisfies Partial<PostingCreateUpdateRequestTO>)
 		);
-		createAccountPostingModalOpen = true;
+		createPostingModalOpen = true;
 	}
 
 	function getCreatePostingTitle(type: PostingType): string {
@@ -305,7 +310,7 @@
 		filterPostings();
 	}
 
-	function toggleAccountPostingTypeSelected(type: PostingType): void {
+	function togglePostingTypeSelected(type: PostingType): void {
 		selectedPostingTypes = selectedPostingTypes.includes(type)
 			? selectedPostingTypes.filter((_type) => _type !== type)
 			: [...selectedPostingTypes, type];
@@ -343,8 +348,8 @@
 	function onOpenUpdatePostingModal(posting: PostingTO): void {
 		selectedPosting = posting;
 		selectedPostingType = posting.type;
-		updateAccountPostingFormActions?.setModel(structuredClone(selectedPosting));
-		updateAccountPostingModalOpen = true;
+		updatePostingFormActions?.setModel(clone(selectedPosting));
+		updatePostingModalOpen = true;
 	}
 
 	function onApplyFromFilterDate(date: string): void {
@@ -409,21 +414,20 @@
 	}
 
 	function onConfirmSelectActivity(): void {
-		selectedActivity = $organizationStore?.activities.find((activity) => activity.id === +selectedActivityId);
+		selectedActivity = $organizationStore?.activities.find((activity) => activity.id === selectedActivityId);
 		selectActivityModalOpen = false;
-		createAccountPostingFormActions?.setModel({
-			...createPostingForm.model,
-			activityId: +selectedActivityId
+		createPostingFormActions?.setModel({
+			...createPostingForm.model
 		} as PostingCreateUpdateRequestTO);
 	}
 
 	function onDismissSelectActivity(): void {
 		selectActivityModalOpen = false;
-		selectedActivityId = selectedActivity?.id?.toString() ?? '0';
+		selectedActivityId = selectedActivity?.id ?? 0;
 	}
 
 	function onOpenSelectActivityModal(): void {
-		selectedActivityId = selectedActivity?.id?.toString() ?? '0';
+		selectedActivityId = selectedActivity?.id ?? 0;
 		selectActivityModalOpen = true;
 	}
 
@@ -454,8 +458,8 @@
 		border="secondary"
 		title="Upcoming event"
 		classList="mt-5"
-		clicked={() =>
-			activities[0]?.id && goto(resolve('/organization/activities/[slug]', { slug: activities[0].id.toString() }))}
+		clicked={() => goto(resolve('/organization/activities/[slug]', { slug: activities[0]!.id.toString() }))}
+		titleIconEnd={arrowForwardOutline}
 	>
 		<div class="flex flex-wrap items-center justify-center gap-5">
 			<div class="flex items-center gap-2">
@@ -566,42 +570,32 @@
 				<ion-icon icon={cardOutline} class="text-xl"></ion-icon>
 				<ion-text class="text-lg font-bold">Collective balance:</ion-text>
 			</div>
-			<ion-text class="text-xl font-bold">{accountBalance?.balance}</ion-text>
+			<ion-text class="text-xl font-bold">{balance?.balance}</ion-text>
 			<div class="flex items-center justify-center gap-2">
 				<ion-icon color="success" icon={trendingUpOutline}></ion-icon>
-				<ion-text class="text-sm text-gray-500">Total incoming: {accountBalance?.income}</ion-text>
+				<ion-text class="text-sm text-gray-500">Total incoming: {balance?.income}</ion-text>
 			</div>
 			<div class="flex items-center justify-center gap-2">
 				<ion-icon color="danger" icon={trendingDownOutline}></ion-icon>
-				<ion-text class="text-sm text-gray-500">Total expense: {accountBalance?.spent}</ion-text>
+				<ion-text class="text-sm text-gray-500">Total expense: {balance?.spent}</ion-text>
 			</div>
 		</div>
 		<div class="mt-3 flex items-center justify-center gap-2">
-			<Button
-				label="Add income"
-				color="primary"
-				icon={cashOutline}
-				clicked={() => onOpenCreateAccountPosting('DEBIT')}
-			/>
-			<Button
-				label="Add expense"
-				color="tertiary"
-				icon={walletOutline}
-				clicked={() => onOpenCreateAccountPosting('CREDIT')}
-			/>
+			<Button label="Add income" color="primary" icon={cashOutline} clicked={() => onOpenCreatePosting('DEBIT')} />
+			<Button label="Add expense" color="tertiary" icon={walletOutline} clicked={() => onOpenCreatePosting('CREDIT')} />
 		</div>
 		<Button
 			icon={listOutline}
 			classList="mx-2"
 			expand="block"
-			fill="clear"
+			fill="outline"
 			label="Transaction history"
 			clicked={() => (transactionHistoryModalOpen = true)}
 		/>
 	</Card>
 {/snippet}
 
-<Modal open={createAccountPostingModalOpen} dismissed={() => (createAccountPostingModalOpen = false)}>
+<Modal open={createPostingModalOpen} dismissed={() => (createPostingModalOpen = false)}>
 	<Card title={getCreatePostingTitle(selectedPostingType)}>
 		<form use:customForm={createPostingForm}>
 			<div class="mb-3 flex items-center justify-center gap-2">
@@ -637,9 +631,9 @@
 </Modal>
 
 <Modal
-	open={updateAccountPostingModalOpen}
-	touched={updateAccountPostingModelTouched}
-	dismissed={() => (updateAccountPostingModalOpen = false)}
+	open={updatePostingModalOpen}
+	touched={updatePostingModelTouched}
+	dismissed={() => (updatePostingModalOpen = false)}
 >
 	<Card title="Update transaction">
 		<form use:customForm={updatePostingForm}>
@@ -713,14 +707,14 @@
 	<Card title="Filters" classList="m-0">
 		<div class="flex items-center justify-center gap-2">
 			<Chip
-				clicked={() => toggleAccountPostingTypeSelected('DEBIT')}
+				clicked={() => togglePostingTypeSelected('DEBIT')}
 				color="success"
 				selected={selectedPostingTypes.includes('DEBIT')}
 				icon={trendingUpOutline}
 				label="Income"
 			/>
 			<Chip
-				clicked={() => toggleAccountPostingTypeSelected('CREDIT')}
+				clicked={() => togglePostingTypeSelected('CREDIT')}
 				color="danger"
 				selected={selectedPostingTypes.includes('CREDIT')}
 				icon={trendingDownOutline}
@@ -753,8 +747,8 @@
 			</CustomItem>
 		{/if}
 		<div class="mt-2 flex items-center justify-center gap-2">
-			<Button label="Reset filter" color="danger" icon={refreshOutline} fill="outline" clicked={resetFilter} />
-			<Button label="Apply filter" icon={saveOutline} fill="outline" clicked={() => (filterOpen = false)} />
+			<Button label="Reset" color="danger" icon={refreshOutline} fill="outline" clicked={resetFilter} />
+			<Button label="Apply" icon={saveOutline} fill="outline" clicked={() => (filterOpen = false)} />
 		</div>
 	</Card>
 </Popover>
@@ -867,13 +861,14 @@
 	<ion-searchbar class="w-full" debounce={100} placeholder="Search activities..." onionInput={onSearchActivities}>
 	</ion-searchbar>
 	<ion-radio-group value={selectedActivityId}>
+		{console.log('selected activity id:', selectedActivityId)}
 		{#each filteredActivityFilterItems as activity (activity.data.id)}
 			<CustomItem>
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
 				<ion-radio
-					value={activity.data.id.toString()}
-					onclick={() => (selectedActivityId = activity.data.id.toString())}
+					value={activity.data.id}
+					onclick={() => (selectedActivityId = activity.data.id)}
 					color={activity.data.icon ? 'tertiary' : 'primary'}
 				>
 					<div class="flex items-center justify-center gap-2">

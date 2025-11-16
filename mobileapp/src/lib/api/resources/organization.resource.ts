@@ -100,7 +100,8 @@ class OrganizationResource {
 	 */
 	async renewInvitationCode(organizationId: number): Promise<ResponseBody<OrganizationTO>> {
 		return customFetch(`${this.ENDPOINT}/${organizationId}/invitation-code`, {
-			method: RequestMethod.PATCH
+			method: RequestMethod.PATCH,
+			silentOnSuccess: true
 		});
 	}
 

@@ -1,5 +1,6 @@
+import type { AnyObject, ObjectSchema } from 'yup';
+
 import { type Locale as DateFnsLocale, de, enUS } from 'date-fns/locale';
-import { type AnyObject, ObjectSchema } from 'yup';
 
 import { Locale } from '$lib/locales';
 
@@ -132,4 +133,12 @@ export function debounce<F extends (...arguments_: unknown[]) => unknown>(
  */
 export function getObjectFromSchema<T>(schema: ObjectSchema<T & AnyObject>): T {
 	return schema.getDefault() as T;
+}
+
+/** Clones a value deeply
+ * @param value value to clone
+ * @returns {T} cloned value
+ */
+export function clone<T>(value: T): T {
+	return JSON.parse(JSON.stringify(value)) as T;
 }

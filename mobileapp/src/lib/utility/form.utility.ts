@@ -111,6 +111,7 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 	function setModel(model?: T): void {
 		data.model = model ?? (data.config.schema.cast({}) as T);
 		initializeHiddenFields();
+		initializeInputs();
 		resetInputsValidation();
 		for (const input of customInputs) {
 			removeCustomValidationFeedback(input);
