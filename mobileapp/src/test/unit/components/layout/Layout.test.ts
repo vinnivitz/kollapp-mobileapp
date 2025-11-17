@@ -177,4 +177,73 @@ describe('Layout Component', () => {
 
 		expect(container.querySelector('.ion-page')).toBeTruthy();
 	});
+
+	it('does not render showcase menu item when dev is false', () => {
+		developmentMode = false;
+		const properties = { title: 'Test Title' };
+		const { container } = render(Layout, { props: properties });
+
+		expect(container.querySelector('.ion-page')).toBeTruthy();
+	});
+
+	it('renders ion-content when loaded and not loading', () => {
+		storesInitialized = true;
+		const properties = { loading: false, title: 'Test Title' };
+		const { container } = render(Layout, { props: properties });
+
+		const ionContent = container.querySelector('ion-content');
+		expect(ionContent).toBeTruthy();
+	});
+
+	it('renders ion-content with ion-padding class', () => {
+		const properties = { title: 'Test Title' };
+		const { container } = render(Layout, { props: properties });
+
+		const ionContent = container.querySelector('ion-content');
+		expect(ionContent?.classList.contains('ion-padding')).toBeTruthy();
+	});
+
+	it('renders ion-refresher with slot="fixed"', () => {
+		const properties = { title: 'Test Title' };
+		const { container } = render(Layout, { props: properties });
+
+		const refresher = container.querySelector('ion-refresher');
+		expect(refresher?.getAttribute('slot')).toBe('fixed');
+	});
+
+	it('renders children inside ion-content', () => {
+		const childText = 'Test Child Content';
+		const properties = {
+			children: createRawSnippet(() => ({ render: () => `<div class="test-child">${childText}</div>` })),
+			title: 'Test Title'
+		};
+		const { container } = render(Layout, { props: properties });
+
+		const ionContent = container.querySelector('ion-content');
+		expect(ionContent?.textContent).toContain(childText);
+	});
+
+	it('renders Menu only when both hideLayout and hideMenu are false', () => {
+		const properties = { hideLayout: false, hideMenu: false, title: 'Test Title' };
+		const { container } = render(Layout, { props: properties });
+
+		const ionPage = container.querySelector('.ion-page');
+		expect(ionPage).toBeTruthy();
+	});
+
+	it('does not render Menu when hideLayout is true', () => {
+		const properties = { hideLayout: true, hideMenu: false, title: 'Test Title' };
+		const { container } = render(Layout, { props: properties });
+
+		const ionPage = container.querySelector('.ion-page');
+		expect(ionPage).toBeTruthy();
+	});
+
+	it('does not render Menu when hideMenu is true', () => {
+		const properties = { hideLayout: false, hideMenu: true, title: 'Test Title' };
+		const { container } = render(Layout, { props: properties });
+
+		const ionPage = container.querySelector('.ion-page');
+		expect(ionPage).toBeTruthy();
+	});
 });

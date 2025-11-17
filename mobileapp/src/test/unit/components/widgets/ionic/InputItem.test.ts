@@ -2,7 +2,7 @@ import { render } from '@testing-library/svelte';
 import { createRawSnippet } from 'svelte';
 import { describe, expect, it, vi } from 'vitest';
 
-import ItemInput from '$lib/components/widgets/ionic/InputItem.svelte';
+import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 
 describe('CustomItemInput Component', () => {
 	it('renders label and children content', () => {
@@ -17,7 +17,7 @@ describe('CustomItemInput Component', () => {
 			name: 'email'
 		};
 
-		const { container, getByTestId } = render(ItemInput, { props: properties });
+		const { container, getByTestId } = render(InputItem, { props: properties });
 		const label = container.querySelector('ion-text');
 
 		expect(label).toBeTruthy();
@@ -38,7 +38,7 @@ describe('CustomItemInput Component', () => {
 			name: 'ignored-prop'
 		};
 
-		const { container } = render(ItemInput, { props: properties });
+		const { container } = render(InputItem, { props: properties });
 		expect(container.querySelector('ion-text')?.textContent?.trim()).toBe('Whatever');
 	});
 });

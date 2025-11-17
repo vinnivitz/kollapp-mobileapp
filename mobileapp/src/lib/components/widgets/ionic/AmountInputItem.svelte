@@ -14,41 +14,114 @@
 
 	type AmountTokenRole = 'currency' | 'decimalseparation' | 'fracal' | 'group' | 'int' | 'space';
 
-	interface AmountToken {
-		text: string;
+	type AmountToken = {
 		role: AmountTokenRole;
+		text: string;
 		grey?: boolean;
-	}
+	};
 
-	interface AmountEditState {
+	type AmountEditState = {
 		cents: number;
 		phase: AmountPhase;
 		typedFractalDigits: FractalDigit;
-	}
+	};
 
-	interface AmountFormatState {
+	type AmountFormatState = {
 		cents: number;
 		phase: AmountPhase;
 		typedFractalDigits: FractalDigit;
-		locale?: Locale;
 		currency?: Currency;
-	}
+		locale?: Locale;
+	};
 
 	type FractalDigit = 0 | 1 | 2;
 
-	interface LocaleBehavior {
+	type LocaleBehavior = {
+		currencyFirst: boolean;
 		decimal: string;
 		group: string;
-		currencyFirst: boolean;
 		thinNbspBetweenNumberAndCurrency: boolean;
-	}
+	};
 
-	interface LocaleSeparators {
+	type LocaleSeparators = {
 		decimal: string;
-	}
+	};
+
+	type Properties = {
+		label: string;
+		name: string;
+		card?: boolean;
+		classList?: string;
+		color?: Colors;
+		currency?: Currency;
+		disabled?: boolean;
+		helperText?: string;
+		icon?: string;
+		inputIcon?: string;
+		maximumFractionDigits?: number;
+		minimumFractionDigits?: number;
+		readonly?: boolean;
+		style?: NumberStyle;
+		unit?: string;
+		unitDisplay?: 'long' | 'narrow' | 'short';
+		value?: number;
+		changed?: (value: number) => void;
+		clicked?: () => void;
+		inputElement?: (element: HTMLIonInputElement) => void;
+		inputIconClicked?: () => void;
+	};
+
+	let {
+		card,
+		changed,
+		classList = '',
+		clicked,
+		color,
+		currency = Currency.EUR,
+		disabled,
+		helperText,
+		icon = cashOutline,
+		inputElement,
+		inputIcon,
+		inputIconClicked,
+		label,
+		name,
+		readonly,
+		value
+	}: Properties = $props();
 
 	const MAX_TOTAL_DIGITS = 9;
 	const MAX_INT_DIGITS = 7;
+
+	let element = $state<HTMLIonInputElement>();
+
+	let edit = $state(createStateFromCents(value ?? 0));
+	let tokens = $derived(
+		formatAmountTokens({
+			cents: edit.cents,
+			currency,
+			locale: get(localeStore),
+			phase: edit.phase,
+			typedFractalDigits: edit.typedFractalDigits
+		})
+	);
+	let plain = $derived(tokensToPlainString(tokens));
+
+	$effect(() => {
+		if (element) inputElement?.(element);
+	});
+
+	$effect(() => {
+		if (value && element) {
+			element.getInputElement().then((native) => {
+				if (native) {
+					edit = createStateFromCents(value);
+					native.value = plain;
+					native.dispatchEvent(new Event('input', { bubbles: true }));
+				}
+			});
+		}
+	});
 
 	function clampCents(value: number): number {
 		if (value < 0) return 0;
@@ -265,79 +338,6 @@
 		return tokens.map((token) => token.text).join('');
 	}
 
-	type Properties = {
-		label: string;
-		name: string;
-		card?: boolean;
-		classList?: string;
-		color?: Colors;
-		currency?: Currency;
-		disabled?: boolean;
-		helperText?: string;
-		icon?: string;
-		inputIcon?: string;
-		maximumFractionDigits?: number;
-		minimumFractionDigits?: number;
-		readonly?: boolean;
-		style?: NumberStyle;
-		unit?: string;
-		unitDisplay?: 'long' | 'narrow' | 'short';
-		value?: number;
-		changed?: (value: number) => void;
-		clicked?: () => void;
-		inputElement?: (element: HTMLIonInputElement) => void;
-		inputIconClicked?: () => void;
-	};
-
-	let {
-		card,
-		changed,
-		classList = '',
-		clicked,
-		color,
-		currency = Currency.EUR,
-		disabled,
-		helperText,
-		icon = cashOutline,
-		inputElement,
-		inputIcon,
-		inputIconClicked,
-		label,
-		name,
-		readonly,
-		value
-	}: Properties = $props();
-
-	let element = $state<HTMLIonInputElement>();
-
-	let edit = $state(createStateFromCents(value ?? 0));
-	let tokens = $derived(
-		formatAmountTokens({
-			cents: edit.cents,
-			currency,
-			locale: get(localeStore),
-			phase: edit.phase,
-			typedFractalDigits: edit.typedFractalDigits
-		})
-	);
-	let plain = $derived(tokensToPlainString(tokens));
-
-	$effect(() => {
-		if (element) inputElement?.(element);
-	});
-
-	$effect(() => {
-		if (value && element) {
-			element.getInputElement().then((native) => {
-				if (native) {
-					edit = createStateFromCents(value);
-					native.value = plain;
-					native.dispatchEvent(new Event('input', { bubbles: true }));
-				}
-			});
-		}
-	});
-
 	let intervalId: ReturnType<typeof setInterval> | undefined;
 
 	onMount(async () => {
@@ -420,6 +420,7 @@
 	}
 
 	function handleValueMismatch(native: HTMLInputElement): void {
+		if (native.value === undefined) return;
 		const digitsOnly = native.value.replaceAll(/\D/g, '');
 
 		if (digitsOnly.length === 0) {
@@ -505,6 +506,7 @@
 	}
 
 	function applyNativeMaskStyles(native: HTMLInputElement): void {
+		if (!native.style) return;
 		native.style.color = 'transparent';
 		native.style.webkitTextFillColor = 'transparent';
 		native.style.textShadow = 'none';
