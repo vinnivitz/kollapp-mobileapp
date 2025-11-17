@@ -1,14 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { object, string } from 'yup';
 
-vi.mock('@ionic/core', () => ({
-	loadingController: {
-		create: vi.fn()
-	}
-}));
+function registerMocks(): void {
+	vi.mock('@ionic/core', () => ({
+		loadingController: {
+			create: vi.fn()
+		}
+	}));
+}
 
 describe('form.utility', () => {
 	beforeEach(() => {
+		registerMocks();
 		vi.clearAllMocks();
 	});
 

@@ -155,30 +155,26 @@ describe('ItemComponent', () => {
 		const { container } = render(CustomItem, {
 			props: {
 				children: createRawSnippet(() => ({ render: () => `<p>Swipe me</p>` })),
-				// also pass a clicked to ensure it is NOT called in this branch
 				clicked: vi.fn(),
 				slidingOptions: [{ color: 'danger', handler, icon: 'trash' }]
 			}
 		});
 
-		const sliding = container.querySelector('ion-item-sliding') as HTMLElement;
-		const ionItem = container.querySelector('ion-item') as HTMLElement;
+		const sliding = container.querySelector('ion-item-sliding') as HTMLIonItemSlidingElement;
+		const ionItem = container.querySelector('ion-item') as HTMLIonItemElement;
 		expect(sliding).toBeTruthy();
 		expect(ionItem).toBeTruthy();
 
-		// Stub the .open method that the component calls through bind:this
 		const openMock = vi.fn();
 		(sliding as HTMLIonItemSlidingElement).open = openMock;
 
-		// Clicking the item should open the sliding options (not call clicked)
 		await fireEvent.click(ionItem);
 		expect(openMock).toHaveBeenCalledWith('end');
 
-		// The option should render with right color+icon and call its handler on click
-		const option = container.querySelector('ion-item-option[color="danger"]') as HTMLElement;
+		const option = container.querySelector('ion-item-option[color="danger"]') as HTMLIonItemOptionElement;
 		expect(option).toBeTruthy();
 
-		const optionIcon = option.querySelector('ion-icon') as HTMLElement;
+		const optionIcon = option.querySelector('ion-icon') as HTMLIonIconElement;
 		expect(optionIcon).toBeTruthy();
 		expect(optionIcon.getAttribute('icon')).toBe('trash');
 
@@ -195,7 +191,7 @@ describe('ItemComponent', () => {
 			}
 		});
 
-		const ionItem = container.querySelector('ion-item') as HTMLElement;
+		const ionItem = container.querySelector('ion-item') as HTMLIonItemElement;
 
 		await fireEvent.keyDown(ionItem, { key: ' ' });
 		expect(clicked).not.toHaveBeenCalled();
@@ -217,7 +213,7 @@ describe('ItemComponent', () => {
 			}
 		});
 
-		const endButton = container.querySelector('ion-button[slot="end"]') as HTMLElement;
+		const endButton = container.querySelector('ion-button[slot="end"]') as HTMLIonButtonElement;
 		expect(endButton).toBeTruthy();
 
 		await fireEvent.keyDown(endButton, { key: 'Enter' });

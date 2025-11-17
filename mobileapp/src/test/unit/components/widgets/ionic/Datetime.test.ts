@@ -1,14 +1,17 @@
 import { TZDate } from '@date-fns/tz';
 import { fireEvent, render } from '@testing-library/svelte';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import Datetime from '$lib/components/widgets/ionic/Datetime.svelte';
 
-vi.mock('$lib/utility', () => ({
-	clickOutside: () => ({ destroy() {} })
-}));
+function registerMocks(): void {
+	vi.mock('$lib/utility', () => ({
+		clickOutside: () => ({ destroy() {} })
+	}));
+}
 
 describe('Datetime Component', () => {
+	beforeAll(() => registerMocks());
 	it('renders with title when showTitle is true', () => {
 		const { container } = render(Datetime, {
 			props: { showTitle: true }
@@ -24,7 +27,7 @@ describe('Datetime Component', () => {
 			props: { dismissed }
 		});
 
-		const ionDatetime = container.querySelector('ion-datetime') as HTMLElement;
+		const ionDatetime = container.querySelector('ion-datetime') as HTMLIonDatetimeElement;
 		await fireEvent.blur(ionDatetime);
 
 		expect(dismissed).toHaveBeenCalledTimes(1);
@@ -36,7 +39,7 @@ describe('Datetime Component', () => {
 			props: { applied }
 		});
 
-		const ionDatetime = container.querySelector('ion-datetime') as HTMLElement;
+		const ionDatetime = container.querySelector('ion-datetime') as HTMLIonDatetimeElement;
 		const newValue = new TZDate().toISOString();
 
 		await fireEvent(ionDatetime, new CustomEvent('ionChange', { detail: { value: newValue } }));

@@ -189,7 +189,7 @@ describe('ui.utility', () => {
 			expect(clone('string')).toBe('string');
 			expect(clone(123)).toBe(123);
 			expect(clone(true)).toBe(true);
-			expect(clone({})).toBe({});
+			expect(clone({})).toStrictEqual({});
 		});
 	});
 });

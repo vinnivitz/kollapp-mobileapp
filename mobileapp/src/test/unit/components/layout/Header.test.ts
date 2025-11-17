@@ -1,5 +1,3 @@
-/* eslint-disable unicorn/consistent-function-scoping */
-
 import { fireEvent, render } from '@testing-library/svelte';
 import { tick } from 'svelte';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
@@ -16,7 +14,7 @@ const navigateBackMock = vi.hoisted(() => vi.fn().mockResolvedValue({}));
 const loadedServerStore = vi.hoisted(() => ({
 	subscribe(run: (v: boolean) => void) {
 		run(storesInitialized);
-		return () => {};
+		return vi.fn();
 	}
 }));
 
@@ -29,7 +27,7 @@ function registerMocks(): void {
 		initializationStore: {
 			subscribe(run: (v: { loadedServer: { subscribe: (function_: (b: boolean) => void) => () => void } }) => void) {
 				run({ loadedServer: loadedServerStore });
-				return () => {};
+				return vi.fn();
 			}
 		}
 	}));
@@ -37,6 +35,7 @@ function registerMocks(): void {
 
 describe('Header Component', () => {
 	beforeAll(() => registerMocks());
+
 	it('renders title correctly', () => {
 		const properties = { title: 'Test Header' };
 		const { container } = render(Header, { props: properties });
@@ -65,10 +64,10 @@ describe('Header Component', () => {
 
 		expect(container.querySelector('ion-back-button')).toBeNull();
 
-		const logo = queryByAltText('Logo');
+		const logo = queryByAltText('Logo') as HTMLImageElement;
 		expect(logo).toBeTruthy();
 
-		await fireEvent.click(logo as HTMLElement);
+		await fireEvent.click(logo);
 
 		expect(goto).toHaveBeenCalledWith('/' satisfies RouteId);
 	});
@@ -110,10 +109,10 @@ describe('Header Component', () => {
 			props: { showBackButton: true, title: 'Back Test' }
 		});
 
-		const leftButton = container.querySelector('ion-button');
+		const leftButton = container.querySelector('ion-button') as HTMLIonButtonElement;
 		expect(leftButton).toBeTruthy();
 
-		await fireEvent.click(leftButton as HTMLElement);
+		await fireEvent.click(leftButton);
 		await tick();
 
 		expect(navigateBackMock).toHaveBeenCalledTimes(1);
@@ -127,7 +126,7 @@ describe('Header Component', () => {
 		const leftButton = container.querySelector('ion-button') as HTMLIonButtonElement;
 		expect(leftButton).toBeTruthy();
 
-		await fireEvent.keyDown(leftButton as Element, { key: 'Enter' });
+		await fireEvent.keyDown(leftButton, { key: 'Enter' });
 		await tick();
 
 		expect(navigateBackMock).toHaveBeenCalled();
@@ -138,10 +137,10 @@ describe('Header Component', () => {
 			props: { showBackButton: false, title: 'Keydown Home' }
 		});
 
-		const leftButton = container.querySelector('ion-button');
+		const leftButton = container.querySelector('ion-button') as HTMLIonButtonElement;
 		expect(leftButton).toBeTruthy();
 
-		await fireEvent.keyDown(leftButton as Element, { key: 'Enter' });
+		await fireEvent.keyDown(leftButton, { key: 'Enter' });
 
 		expect(goto).toHaveBeenCalledWith('/' satisfies RouteId);
 	});

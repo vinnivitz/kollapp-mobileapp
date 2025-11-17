@@ -40,7 +40,7 @@ describe('ModalComponent', () => {
 		removeMock.mockClear();
 		subscribeMock.mockClear().mockImplementation((run: (v: unknown[]) => void) => {
 			run([]);
-			return () => {};
+			return vi.fn();
 		});
 		getPlatformsMock.mockClear().mockReturnValue(['desktop']);
 		getTopMock.mockClear().mockResolvedValue({});
@@ -122,7 +122,7 @@ describe('ModalComponent', () => {
 		expect(form).toBeTruthy();
 		const submitSpy = vi.fn();
 		form.requestSubmit = submitSpy;
-		const button = container.querySelector('ion-buttons[slot="end"] ion-button') as HTMLElement;
+		const button = container.querySelector('ion-buttons[slot="end"] ion-button') as HTMLIonButtonElement;
 		expect(button).toBeTruthy();
 		await fireEvent.click(button);
 		expect(submitSpy).toHaveBeenCalled();
@@ -132,10 +132,9 @@ describe('ModalComponent', () => {
 	it('onPresent sets other modals current breakpoint to 1', async () => {
 		const other1 = { setCurrentBreakpoint: vi.fn() };
 		const other2 = { setCurrentBreakpoint: vi.fn() };
-		// Provide two other modals via store value
 		subscribeMock.mockImplementation((run: (v: unknown[]) => void) => {
 			run([other1, other2]);
-			return () => {};
+			return vi.fn();
 		});
 		const { container } = render(ModalComponent, {
 			props: {
@@ -143,7 +142,7 @@ describe('ModalComponent', () => {
 				open: true
 			}
 		});
-		const modal = container.querySelector('ion-modal') as HTMLElement;
+		const modal = container.querySelector('ion-modal') as HTMLIonModalElement;
 		expect(modal).toBeTruthy();
 		await fireEvent(modal, new CustomEvent('willPresent'));
 		expect(other1.setCurrentBreakpoint).toHaveBeenCalledWith(1);
@@ -210,8 +209,7 @@ describe('ModalComponent', () => {
 				open: true
 			}
 		});
-		const modal = container.querySelector('ion-modal') as HTMLElement;
-		// Attribute should be absent when falsy
+		const modal = container.querySelector('ion-modal') as HTMLIonModalElement;
 		expect(modal.getAttribute('breakpoints')).toBeNull();
 	});
 
@@ -224,7 +222,7 @@ describe('ModalComponent', () => {
 		});
 		const modalElement = container.querySelector('ion-modal') as HTMLIonModalElement;
 		modalElement.dismiss = vi.fn();
-		const otherElement = document.createElement('ion-modal') as unknown as HTMLIonModalElement;
+		const otherElement = document.createElement('ion-modal') as HTMLIonModalElement;
 		getPlatformsMock.mockReturnValue(['desktop']);
 		getTopMock.mockResolvedValue(otherElement);
 		unmount();

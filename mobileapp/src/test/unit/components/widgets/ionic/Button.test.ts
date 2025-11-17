@@ -71,11 +71,11 @@ describe('Button Component', () => {
 			label: 'Press Me'
 		};
 		const { container } = render(Button, { props: properties });
-		const ionButton = container.querySelector('ion-button');
+		const ionButton = container.querySelector('ion-button') as HTMLIonButtonElement;
 
 		expect(ionButton).toBeTruthy();
 
-		await fireEvent.click(ionButton as HTMLIonButtonElement);
+		await fireEvent.click(ionButton);
 
 		expect(clickMock).toHaveBeenCalled();
 	});
@@ -121,7 +121,7 @@ describe('Button Component', () => {
 	it('invokes clicked when pressing Enter (onkeydown handler)', async () => {
 		const clickMock = vi.fn();
 		const { container } = render(Button, { props: { clicked: clickMock, label: 'Press' } });
-		const ionButton = container.querySelector('ion-button') as HTMLElement;
+		const ionButton = container.querySelector('ion-button') as HTMLIonButtonElement;
 
 		await fireEvent.keyDown(ionButton, { key: 'Space' });
 		expect(clickMock).not.toHaveBeenCalled();
@@ -132,11 +132,11 @@ describe('Button Component', () => {
 
 	it('sets pointer-events based on readonly prop in inline style', () => {
 		const { container: c1 } = render(Button, { props: { label: 'Read only', readonly: true } });
-		const button1 = c1.querySelector('ion-button') as HTMLElement;
+		const button1 = c1.querySelector('ion-button') as HTMLIonButtonElement;
 		expect(button1.getAttribute('style')).toContain('pointer-events: none');
 
 		const { container: c2 } = render(Button, { props: { clicked: vi.fn(), label: 'Interactive' } });
-		const button2 = c2.querySelector('ion-button') as HTMLElement;
+		const button2 = c2.querySelector('ion-button') as HTMLIonButtonElement;
 		expect(button2.getAttribute('style')).toContain('pointer-events: auto');
 	});
 });

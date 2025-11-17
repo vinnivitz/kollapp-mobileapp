@@ -385,7 +385,6 @@ describe('LeafletMap', () => {
 
 		await waitFor(() => expect(LeafletMap).toHaveBeenCalled());
 
-		// 👇 use LeafletMap (the mocked constructor), not the component
 		const mapInstance = vi.mocked(LeafletMap).mock.results.at(-1)!.value as MockMap;
 		const clickHandler = mapInstance.on.mock.calls.find(([event_]) => event_ === 'click')![1] as (event_: {
 			latlng: LatLng;
@@ -410,7 +409,6 @@ describe('LeafletMap', () => {
 
 		render(LeafletMapComponent, { props: {} });
 
-		// Should have removed the existing container and created a new map
 		await waitFor(() => expect(LeafletMap).toHaveBeenCalled());
 
 		mapDiv.remove();

@@ -2,7 +2,6 @@ import { fireEvent, render } from '@testing-library/svelte';
 import { describe, expect, it } from 'vitest';
 
 import { goto } from '$app/navigation';
-import type { RouteId } from '$app/types';
 
 import PageNotFound from '$lib/components/widgets/PageNotFound.svelte';
 
@@ -15,6 +14,6 @@ describe('PageNotFound Component', () => {
 
 		await fireEvent.click(ionButton);
 
-		expect(goto).toHaveBeenCalledWith('/' satisfies RouteId);
+		expect(goto).toHaveBeenCalledWith('/');
 	});
 });

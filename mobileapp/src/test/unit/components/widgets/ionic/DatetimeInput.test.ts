@@ -1,8 +1,9 @@
 import { fireEvent, render } from '@testing-library/svelte';
 import { tick } from 'svelte';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
 
-// Hoisted mocks (must appear before component import)
+import DatetimeInputItem from '$lib/components/widgets/ionic/DatetimeInputItem.svelte';
+
 const formattedDatePPP = 'August 10th, 2025';
 const formattedDateYYYYMMDD = '2025-08-10';
 
@@ -16,20 +17,21 @@ const formatMock = vi.hoisted(() =>
 
 const setPopoverMock = vi.hoisted(() => vi.fn());
 
-vi.mock('date-fns', () => ({
-	format: formatMock,
-	parse: vi.fn(() => ({}))
-}));
+function registerMocks(): void {
+	vi.mock('date-fns', () => ({
+		format: formatMock,
+		parse: vi.fn(() => ({}))
+	}));
 
-vi.mock('$lib/stores', () => ({
-	globalPopoverStore: {
-		datetimeInputItem: { set: setPopoverMock, subscribe: vi.fn() }
-	}
-}));
-
-import DatetimeInputItem from '$lib/components/widgets/ionic/DatetimeInputItem.svelte';
+	vi.mock('$lib/stores', () => ({
+		globalPopoverStore: {
+			datetimeInputItem: { set: setPopoverMock, subscribe: vi.fn() }
+		}
+	}));
+}
 
 describe('DatetimeInput Component', () => {
+	beforeAll(() => registerMocks());
 	it('should format and set initial value when `value` is provided', async () => {
 		const { container } = render(DatetimeInputItem, {
 			props: { label: 'Start date', value: formattedDateYYYYMMDD }

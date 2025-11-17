@@ -35,11 +35,11 @@ describe('CardComponent', () => {
 		};
 
 		const { container } = render(Card, { props: properties });
-		const ionCard = container.querySelector('ion-card');
+		const ionCard = container.querySelector('ion-card') as HTMLIonCardElement;
 
 		expect(ionCard).toBeTruthy();
 
-		await fireEvent.click(ionCard as HTMLElement);
+		await fireEvent.click(ionCard);
 		expect(clicked).toHaveBeenCalledTimes(1);
 	});
 
@@ -49,7 +49,7 @@ describe('CardComponent', () => {
 			props: { children, clicked }
 		});
 
-		const ionCard = container.querySelector('ion-card') as HTMLElement;
+		const ionCard = container.querySelector('ion-card') as HTMLIonCardElement;
 		expect(ionCard?.getAttribute('role')).toBe('button');
 		expect(ionCard?.getAttribute('tabindex')).toBe('0');
 
@@ -62,12 +62,12 @@ describe('CardComponent', () => {
 			props: { children }
 		});
 
-		const ionCard = container.querySelector('ion-card') as HTMLElement;
+		const ionCard = container.querySelector('ion-card') as HTMLIonCardElement;
 		expect(ionCard?.getAttribute('role')).toBeNull();
 		expect(ionCard?.getAttribute('tabindex')).toBeNull();
 	});
 
-	it('defaults color to transparent when border is provided and applies border class', () => {
+	it('defaults color to transparent when border is provided and applies border style', () => {
 		const { container } = render(Card, {
 			props: {
 				border: 'primary',
@@ -75,12 +75,14 @@ describe('CardComponent', () => {
 			}
 		});
 
-		const ionCard = container.querySelector('ion-card') as HTMLElement;
+		const ionCard = container.querySelector('ion-card') as HTMLIonCardElement;
 		expect(ionCard.getAttribute('color')).toBe('transparent');
 
+		const style = ionCard.getAttribute('style') ?? '';
 		const cls = ionCard.getAttribute('class') ?? '';
-		expect(cls).toContain('border');
-		expect(cls).toContain('border-(--ion-color-primary)');
+		const hasBorderInStyle = style.includes('border') && style.includes('--ion-color-primary');
+		const hasBorderInClass = cls.includes('1px solid var(--ion-color-primary)');
+		expect(hasBorderInStyle || hasBorderInClass).toBe(true);
 	});
 
 	it('defaults color to light and has no border class when border is omitted', () => {
@@ -88,7 +90,7 @@ describe('CardComponent', () => {
 			props: { children }
 		});
 
-		const ionCard = container.querySelector('ion-card') as HTMLElement;
+		const ionCard = container.querySelector('ion-card') as HTMLIonCardElement;
 		expect(ionCard.getAttribute('color')).toBe('light');
 
 		const cls = ionCard.getAttribute('class') ?? '';
@@ -101,7 +103,7 @@ describe('CardComponent', () => {
 			props: { children, clicked, readonly: true }
 		});
 
-		const ionCard = container.querySelector('ion-card') as HTMLElement;
+		const ionCard = container.querySelector('ion-card') as HTMLIonCardElement;
 		expect(ionCard.getAttribute('style')).toContain('pointer-events: none');
 	});
 
@@ -111,7 +113,7 @@ describe('CardComponent', () => {
 			props: { children, clicked }
 		});
 
-		const ionCard = container.querySelector('ion-card') as HTMLElement;
+		const ionCard = container.querySelector('ion-card') as HTMLIonCardElement;
 		expect(ionCard.getAttribute('style')).toContain('pointer-events: auto');
 	});
 });

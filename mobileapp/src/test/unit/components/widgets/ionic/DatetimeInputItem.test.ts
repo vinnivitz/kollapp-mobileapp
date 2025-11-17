@@ -1,8 +1,9 @@
 import { fireEvent, render } from '@testing-library/svelte';
 import { tick } from 'svelte';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
 
-// Hoisted mocks (must appear before component import)
+import DatetimeInputItem from '$lib/components/widgets/ionic/DatetimeInputItem.svelte';
+
 const formattedDatePPP = 'August 10th, 2025';
 const formattedDateYYYYMMDD = '2025-08-10';
 
@@ -16,20 +17,21 @@ const formatMock = vi.hoisted(() =>
 
 const setPopoverMock = vi.hoisted(() => vi.fn());
 
-vi.mock('date-fns', () => ({
-	format: formatMock,
-	parse: vi.fn(() => ({}))
-}));
+function registerMocks(): void {
+	vi.mock('date-fns', () => ({
+		format: formatMock,
+		parse: vi.fn(() => ({}))
+	}));
 
-vi.mock('$lib/stores', () => ({
-	globalPopoverStore: {
-		datetimeInputItem: { set: setPopoverMock, subscribe: vi.fn() }
-	}
-}));
-
-import DatetimeInputItem from '$lib/components/widgets/ionic/DatetimeInputItem.svelte';
+	vi.mock('$lib/stores', () => ({
+		globalPopoverStore: {
+			datetimeInputItem: { set: setPopoverMock, subscribe: vi.fn() }
+		}
+	}));
+}
 
 describe('DatetimeInput Component', () => {
+	beforeAll(() => registerMocks());
 	it('should format and set initial value when `value` is provided', async () => {
 		const { container } = render(DatetimeInputItem, {
 			props: { label: 'Start date', value: formattedDateYYYYMMDD }
@@ -53,15 +55,12 @@ describe('DatetimeInput Component', () => {
 		expect(inputElement).toBeTruthy();
 		expect(inputElement.value).toBe(formattedDatePPP);
 
-		// Spy on dispatchEvent to ensure ionInput is emitted
 		const dispatchSpy = vi.spyOn(inputElement, 'dispatchEvent');
 
-		// Click to open and populate store with onApply callback
 		const itemElement = container.querySelector('ion-item');
 		expect(itemElement).toBeTruthy();
 		await fireEvent.click(itemElement!);
 
-		// Invoke last set payload's apply callback
 		const lastCall = setPopoverMock.mock.calls.at(-1);
 		expect(lastCall).toBeTruthy();
 		const payload = lastCall![0] as { applied: (v: string) => void };

@@ -1,23 +1,25 @@
 import { fireEvent, render, waitFor } from '@testing-library/svelte';
 import { createRawSnippet } from 'svelte';
-import { beforeAll, describe, expect, it, type Mock, vi } from 'vitest';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { goto } from '$app/navigation';
 import type { RouteId } from '$app/types';
 
 import Tabs from '$lib/components/layout/Tabs.svelte';
 
-const mockState = vi.hoisted(() => ({
-	navigating: undefined as { to: { route: { id: string } } } | undefined,
-	page: { route: { id: '/home' as string | undefined } }
-}));
+const mockState = vi.hoisted(
+	() =>
+		({
+			navigating: undefined,
+			page: { route: { id: '/home' } }
+		}) as { page: { route: { id?: string } }; navigating?: { to: { route: { id?: string } } } }
+);
 
 function registerMocks(): void {
 	vi.mock('$app/state', () => mockState);
 }
 
-beforeAll(() => {
-	registerMocks();
+function polyfills(): void {
 	class FakeIonTabs extends HTMLElement {
 		select(...arguments_: unknown[]): Promise<unknown> {
 			return Promise.resolve(arguments_);
@@ -30,9 +32,14 @@ beforeAll(() => {
 	});
 
 	customElements.define('ion-tabs', FakeIonTabs);
-});
+}
 
 describe('Tabs Component', () => {
+	beforeAll(() => {
+		registerMocks();
+		polyfills();
+	});
+
 	const tab: { icon: string; label: string; tab: RouteId } = { icon: 'homeIcon', label: 'Home', tab: '/' };
 	const tabs = [tab];
 	const childContent = 'Child content';
@@ -57,16 +64,16 @@ describe('Tabs Component', () => {
 	});
 
 	it('tab selection works properly', async () => {
-		mockState.page.route.id = '/' satisfies RouteId;
+		mockState.page.route.id = '/';
 		mockState.navigating = { to: { route: { id: '/next' } } };
 
 		const { container, queryByText } = render(Tabs, { props: properties });
 		const ionTabs = container.querySelector('ion-tabs') as HTMLIonTabsElement;
-		const aboutTabButton = queryByText(tab.label)?.closest('ion-tab-button');
+		const aboutTabButton = queryByText(tab.label)?.closest('ion-tab-button') as HTMLIonTabButtonElement;
 
 		expect(aboutTabButton).toBeTruthy();
 
-		await fireEvent.click(aboutTabButton as HTMLIonTabButtonElement);
+		await fireEvent.click(aboutTabButton);
 
 		await waitFor(() => {
 			expect(goto).toHaveBeenCalledWith(tab.tab);
@@ -88,9 +95,7 @@ describe('Tabs Component', () => {
 		const ionTabs = container.querySelector('ion-tabs') as HTMLIonTabsElement;
 		expect(ionTabs).toBeTruthy();
 
-		await waitFor(() => {
-			expect(ionTabs.select as Mock).toHaveBeenCalledWith('/next');
-		});
+		await waitFor(() => expect(ionTabs.select).toHaveBeenCalledWith('/next'));
 	});
 
 	it('falls back to PageRoute.HOME when page.route.id is undefined', async () => {
@@ -106,8 +111,6 @@ describe('Tabs Component', () => {
 
 		const ionTabs = container.querySelector('ion-tabs') as HTMLIonTabsElement;
 
-		await waitFor(() => {
-			expect(ionTabs.select).toHaveBeenCalledWith('/' satisfies RouteId);
-		});
+		await waitFor(() => expect(ionTabs.select).toHaveBeenCalledWith('/'));
 	});
 });

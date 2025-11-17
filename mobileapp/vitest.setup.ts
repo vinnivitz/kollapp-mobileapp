@@ -1,5 +1,3 @@
-/* eslint-disable unicorn/consistent-function-scoping */
-
 import { Writable } from 'svelte/store';
 import { vi } from 'vitest';
 
@@ -13,15 +11,15 @@ vi.mock('$app/environment', () => ({
 
 vi.mock('svelte/store', () => ({
 	derived: () => ({
-		subscribe: () => {}
+		subscribe: vi.fn()
 	}),
-	get: () => {},
+	get: vi.fn(),
 	readable: () => ({
-		subscribe: () => {}
+		subscribe: vi.fn()
 	}),
 	writable: () => ({
-		set: () => {},
-		subscribe: () => {}
+		set: vi.fn(),
+		subscribe: vi.fn()
 	})
 }));
 
@@ -29,13 +27,13 @@ vi.mock('$lib/locales', () => ({
 	locale: {
 		subscribe: (run: (value: (key: string) => string) => void) => {
 			run((key: string) => key);
-			return () => {};
+			return vi.fn();
 		}
 	},
 	t: {
 		subscribe: (run: (value: (key: string) => string) => void) => {
 			run((key: string) => key);
-			return () => {};
+			return vi.fn();
 		}
 	}
 }));
@@ -61,33 +59,33 @@ vi.mock('$lib/stores', () => ({
 					set: vi.fn()
 				}
 			});
-			return () => {};
+			return vi.fn();
 		}
 	},
 	localeStore: {
 		subscribe: (run: (value: (key: string) => string) => void) => {
 			run((key: string) => key);
-			return () => {};
+			return vi.fn();
 		}
 	},
 	modalStore: {
 		subscribe: (run: () => void) => {
 			run();
-			return () => {};
+			return vi.fn();
 		}
 	}
 }));
 
 if (!globalThis.matchMedia) {
 	globalThis.matchMedia = () => ({
-		addEventListener: () => {},
-		addListener: () => {},
+		addEventListener: vi.fn(),
+		addListener: vi.fn(),
 		dispatchEvent: () => false,
 		matches: false,
 		media: '',
 		// eslint-disable-next-line unicorn/no-null
 		onchange: null,
-		removeEventListener: () => {},
-		removeListener: () => {}
+		removeEventListener: vi.fn(),
+		removeListener: vi.fn()
 	});
 }

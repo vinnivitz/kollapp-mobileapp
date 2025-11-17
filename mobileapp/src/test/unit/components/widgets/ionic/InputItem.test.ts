@@ -39,7 +39,6 @@ describe('CustomItemInput Component', () => {
 		};
 
 		const { container } = render(ItemInput, { props: properties });
-		// We can at least assert the label still renders with optional props set
 		expect(container.querySelector('ion-text')?.textContent?.trim()).toBe('Whatever');
 	});
 });

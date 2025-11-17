@@ -13,7 +13,7 @@ describe('Chip', () => {
 			}
 		});
 
-		const chip = container.querySelector('ion-chip') as HTMLElement;
+		const chip = container.querySelector('ion-chip') as HTMLIonChipElement;
 		expect(chip).toBeTruthy();
 
 		expect(chip.getAttribute('role')).toBe('button');
@@ -60,7 +60,7 @@ describe('Chip', () => {
 			}
 		});
 
-		const chip = container.querySelector('ion-chip') as HTMLElement;
+		const chip = container.querySelector('ion-chip') as HTMLIonChipElement;
 		expect(chip.getAttribute('color')).toBe('warning');
 		expect(chip.getAttribute('outline')).toBe('false');
 	});
@@ -74,12 +74,12 @@ describe('Chip', () => {
 			}
 		});
 
-		const chip = container.querySelector('ion-chip') as HTMLElement;
+		const chip = container.querySelector('ion-chip') as HTMLIonChipElement;
 
 		await fireEvent.click(chip);
 		expect(clicked).toHaveBeenCalledTimes(1);
 
-		await fireEvent.keyDown(chip, { key: ' ' }); // Space
+		await fireEvent.keyDown(chip, { key: ' ' });
 		expect(clicked).toHaveBeenCalledTimes(1);
 
 		await fireEvent.keyDown(chip, { key: 'Enter' });
@@ -93,7 +93,7 @@ describe('Chip', () => {
 			}
 		});
 
-		const chip = container.querySelector('ion-chip') as HTMLElement;
+		const chip = container.querySelector('ion-chip') as HTMLIonChipElement;
 		expect(chip).toBeTruthy();
 
 		await fireEvent.click(chip);

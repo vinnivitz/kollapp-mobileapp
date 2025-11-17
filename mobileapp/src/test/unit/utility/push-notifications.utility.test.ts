@@ -1,101 +1,98 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { PushNotifications } from '@capacitor/push-notifications';
+import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
 
 import { initPushNotifications } from '$lib/utility';
 
-vi.mock('@capacitor/push-notifications', () => ({
-	PushNotifications: {
-		addListener: vi.fn(),
-		register: vi.fn(),
-		requestPermissions: vi.fn()
-	}
-}));
+function registerMocks(): void {
+	vi.mock('@capacitor/push-notifications', () => ({
+		PushNotifications: {
+			addListener: vi.fn(),
+			register: vi.fn(),
+			requestPermissions: vi.fn()
+		}
+	}));
 
-vi.mock('$lib/utility/alert.utility', () => ({
-	showAlert: vi.fn()
-}));
+	vi.mock('$lib/utility/alert.utility', () => ({
+		showAlert: vi.fn()
+	}));
+}
 
 describe('push-notifications.utility', () => {
-	let mockPushNotifications: any;
-
 	beforeEach(async () => {
+		registerMocks();
 		vi.clearAllMocks();
-
-		const { PushNotifications } = await import('@capacitor/push-notifications');
-		mockPushNotifications = PushNotifications;
 	});
 
 	describe('initPushNotifications', () => {
 		it('should request permissions and register when granted', async () => {
-			mockPushNotifications.requestPermissions.mockResolvedValue({
+			(PushNotifications.requestPermissions as Mock).mockResolvedValue({
 				receive: 'granted'
 			});
-			mockPushNotifications.register.mockResolvedValue();
+			(PushNotifications.register as Mock).mockResolvedValue({});
 
 			await initPushNotifications();
 
-			expect(mockPushNotifications.requestPermissions).toHaveBeenCalled();
-			expect(mockPushNotifications.register).toHaveBeenCalled();
-			expect(mockPushNotifications.addListener).toHaveBeenCalledTimes(4);
+			expect(PushNotifications.requestPermissions).toHaveBeenCalled();
+			expect(PushNotifications.register).toHaveBeenCalled();
+			expect(PushNotifications.addListener).toHaveBeenCalledTimes(4);
 		});
 
 		it('should not register when permissions denied', async () => {
-			mockPushNotifications.requestPermissions.mockResolvedValue({
+			(PushNotifications.requestPermissions as Mock).mockResolvedValue({
 				receive: 'denied'
 			});
 
 			await initPushNotifications();
 
-			expect(mockPushNotifications.requestPermissions).toHaveBeenCalled();
-			expect(mockPushNotifications.register).not.toHaveBeenCalled();
+			expect(PushNotifications.requestPermissions).toHaveBeenCalled();
+			expect(PushNotifications.register).not.toHaveBeenCalled();
 		});
 
 		it('should add listener for registration', async () => {
-			mockPushNotifications.requestPermissions.mockResolvedValue({
+			(PushNotifications.requestPermissions as Mock).mockResolvedValue({
 				receive: 'granted'
 			});
 
 			await initPushNotifications();
 
-			expect(mockPushNotifications.addListener).toHaveBeenCalledWith('registration', expect.any(Function));
+			expect(PushNotifications.addListener).toHaveBeenCalledWith('registration', expect.any(Function));
 		});
 
 		it('should add listener for registration error', async () => {
-			mockPushNotifications.requestPermissions.mockResolvedValue({
+			(PushNotifications.requestPermissions as Mock).mockResolvedValue({
 				receive: 'granted'
 			});
 
 			await initPushNotifications();
 
-			expect(mockPushNotifications.addListener).toHaveBeenCalledWith('registrationError', expect.any(Function));
+			expect(PushNotifications.addListener).toHaveBeenCalledWith('registrationError', expect.any(Function));
 		});
 
 		it('should add listener for push notification received', async () => {
-			mockPushNotifications.requestPermissions.mockResolvedValue({
+			(PushNotifications.requestPermissions as Mock).mockResolvedValue({
 				receive: 'granted'
 			});
 
 			await initPushNotifications();
 
-			expect(mockPushNotifications.addListener).toHaveBeenCalledWith('pushNotificationReceived', expect.any(Function));
+			expect(PushNotifications.addListener).toHaveBeenCalledWith('pushNotificationReceived', expect.any(Function));
 		});
 
 		it('should add listener for push notification action performed', async () => {
-			mockPushNotifications.requestPermissions.mockResolvedValue({
+			(PushNotifications.requestPermissions as Mock).mockResolvedValue({
 				receive: 'granted'
 			});
 
 			await initPushNotifications();
 
-			expect(mockPushNotifications.addListener).toHaveBeenCalledWith(
+			expect(PushNotifications.addListener).toHaveBeenCalledWith(
 				'pushNotificationActionPerformed',
 				expect.any(Function)
 			);
 		});
 
 		it('should handle errors silently', async () => {
-			mockPushNotifications.requestPermissions.mockRejectedValue(new Error('Not supported'));
+			(PushNotifications.requestPermissions as Mock).mockRejectedValue(new Error('Not supported'));
 
 			await expect(initPushNotifications()).resolves.not.toThrow();
 		});

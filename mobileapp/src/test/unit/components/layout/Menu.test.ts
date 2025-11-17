@@ -11,26 +11,30 @@ import { triggerClickByLabel } from '$lib/utility';
 const childText = 'Hello, world!';
 const properties = { children: createRawSnippet(() => ({ render: () => `<p>${childText}</p>` })) };
 
-const { searchItem } = vi.hoisted(() => ({
-	searchItem: { icon: 'logOutOutline', id: '1', label: 'Test Item', route: '/test' }
-}));
+const searchItem = vi.hoisted(() => ({ icon: 'logOutOutline', id: '1', label: 'Test Item', route: '/test' }));
+
+function registerMocks(): void {
+	vi.mock('$lib/api/resources', () => ({
+		authenticationResource: {
+			logout: vi.fn()
+		},
+		searchableResource: {
+			filter: vi.fn().mockResolvedValue([searchItem])
+		}
+	}));
+
+	vi.mock('$lib/utility', () => ({
+		featureNotImplementedAlert: vi.fn(),
+		triggerClickByLabel: vi.fn()
+	}));
+
+	vi.mock('$app/environment', () => ({
+		dev: false
+	}));
+}
 
 describe('Menu Component', () => {
-	beforeAll(() => {
-		vi.mock('$lib/api/resources', () => ({
-			authenticationResource: {
-				logout: vi.fn()
-			},
-			searchableResource: {
-				filter: vi.fn().mockResolvedValue([searchItem])
-			}
-		}));
-
-		vi.mock('$lib/utility', () => ({
-			featureNotImplementedAlert: vi.fn(),
-			triggerClickByLabel: vi.fn()
-		}));
-	});
+	beforeAll(() => registerMocks());
 
 	it('renders a searchbar and children', () => {
 		const { container } = render(Menu, { props: properties });
@@ -86,15 +90,11 @@ describe('Menu Component', () => {
 
 		await fireEvent(searchbar as HTMLIonSearchbarElement, new CustomEvent('ionInput', { detail: { value: '' } }));
 
-		await waitFor(() => {
-			expect(queryByText(searchItem.label)).toBeNull();
-		});
+		await waitFor(() => expect(queryByText(searchItem.label)).toBeFalsy());
 
 		await fireEvent(searchbar as HTMLIonSearchbarElement, new CustomEvent('ionInput', { detail: { value: '' } }));
 
-		await waitFor(() => {
-			expect(queryByText(searchItem.label)).toBeNull();
-		});
+		await waitFor(() => expect(queryByText(searchItem.label)).toBeFalsy());
 	});
 
 	it('calls logout when clicking the logout button', async () => {
@@ -103,5 +103,10 @@ describe('Menu Component', () => {
 		expect(logoutButton).toBeTruthy();
 		await fireEvent.click(logoutButton);
 		await waitFor(() => expect(authenticationResource.logout).toHaveBeenCalled());
+	});
+
+	it('does not render showcase menu item when dev is false', () => {
+		const { queryByText } = render(Menu, { props: properties });
+		expect(queryByText('Showcase')).toBeFalsy();
 	});
 });

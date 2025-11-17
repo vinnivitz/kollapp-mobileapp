@@ -2,19 +2,20 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { formatter } from '$lib/utility';
 
-const arrowFunction = (): void => {};
-
-vi.mock('$lib/stores', () => ({
-	localeStore: {
-		subscribe: vi.fn((callback) => {
-			callback('de');
-			return arrowFunction;
-		})
-	}
-}));
+function registerMocks(): void {
+	vi.mock('$lib/stores', () => ({
+		localeStore: {
+			subscribe: vi.fn((callback) => {
+				callback('de');
+				return vi.fn();
+			})
+		}
+	}));
+}
 
 describe('formatter.utility', () => {
 	beforeEach(() => {
+		registerMocks();
 		vi.clearAllMocks();
 	});
 
@@ -44,7 +45,7 @@ describe('formatter.utility', () => {
 		it('should handle large numbers', () => {
 			const result = formatter.currency(123_456_789);
 			expect(result).toBeTruthy();
-			expect(result.replaceAll('D', '')).toContain('1234567');
+			expect(result.replaceAll('.', '').replaceAll(',', '')).toContain('1234567');
 		});
 
 		it('should round cents appropriately when showCents is false', () => {
