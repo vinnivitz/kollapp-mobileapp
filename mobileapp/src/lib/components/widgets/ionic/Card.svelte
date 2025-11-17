@@ -44,7 +44,7 @@
 	void id;
 	void icon;
 
-	const borderClass = $derived(border ? `border border-(--ion-color-${border})` : '');
+	const borderStyle = $derived(border ? `1px solid var(--ion-color-${border})` : '0px solid transparent');
 </script>
 
 {#if !!clicked}
@@ -52,17 +52,17 @@
 		onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && clicked?.()}
 		role="button"
 		tabindex="0"
-		style={`pointer-events: ${readonly ? 'none' : 'auto'};`}
+		style={`pointer-events: ${readonly ? 'none' : 'auto'}; border: ${borderStyle}`}
 		{id}
 		{color}
 		button
-		class={`${borderClass} ${classList}`}
+		class={classList}
 		onclick={clicked}
 	>
 		{@render content()}
 	</ion-card>
 {:else}
-	<ion-card {id} {color} class={`${borderClass} ${classList}`}>
+	<ion-card {id} {color} class={`${borderStyle} ${classList}`}>
 		{@render content()}
 	</ion-card>
 {/if}

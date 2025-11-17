@@ -248,12 +248,11 @@
 	async function deleteActivity(): Promise<void> {
 		const loader = await loadingController.create({});
 		await loader.present();
-		if (!($organizationStore?.id && activity?.id)) return showAlert('No organization or activity found');
-		await activityResource.remove($organizationStore.id, activity?.id);
-		await organizationStore.update($organizationStore.id);
+		await activityResource.remove($organizationStore?.id!, activity?.id!);
+		await organizationStore.update($organizationStore?.id!);
 		updateActivityModalOpen = false;
 		await loader.dismiss();
-		goto(resolve('/organization/activities'));
+		await goto(resolve('/organization/activities'));
 	}
 
 	function getTransactionItemSlidingOptions(posting: PostingTO): ItemSlidingOption[] {
@@ -414,6 +413,7 @@
 		toFilterDate = getMaxPostingDate(postings);
 		filteredMemberFilterItems = memberFilterItems;
 		selectedPostingTypes = ['DEBIT', 'CREDIT'];
+		filterOpen = false;
 	}
 
 	function setAccountPostingType(type: PostingType): void {
@@ -639,7 +639,12 @@
 	</div>
 	{#if filteredPostings.length === 0}
 		<div class="mt-3 text-center">
-			<ion-note>No transactions found.</ion-note>
+			<div class="mb-2">
+				<ion-note>No transactions found.</ion-note>
+			</div>
+			{#if postings.length > 0}
+				<Button icon={refreshOutline} label="Reset filters" clicked={resetFilter} />
+			{/if}
 		</div>
 	{:else}
 		<ion-list>

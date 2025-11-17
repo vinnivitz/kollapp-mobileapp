@@ -411,6 +411,7 @@
 		filteredMemberFilterItems = memberFilterItems;
 		filteredActivityFilterItems = activityFilterItems;
 		selectedPostingTypes = ['DEBIT', 'CREDIT'];
+		filterOpen = false;
 	}
 
 	function onConfirmSelectActivity(): void {
@@ -691,6 +692,9 @@
 			{#if filteredPostings.length === 0}
 				<div class="mt-3 text-center">
 					<ion-note>No transactions found.</ion-note>
+					{#if postings.length > 0}
+						<Button icon={refreshOutline} label="Reset filters" clicked={resetFilter} />
+					{/if}
 				</div>
 			{:else}
 				<ion-list>

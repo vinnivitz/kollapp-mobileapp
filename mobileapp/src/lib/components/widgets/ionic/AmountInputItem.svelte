@@ -3,7 +3,7 @@
 	import type { InputInputEventDetail } from '@ionic/core';
 
 	import { cashOutline } from 'ionicons/icons';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { get } from 'svelte/store';
 
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
@@ -338,6 +338,8 @@
 		}
 	});
 
+	let intervalId: ReturnType<typeof setInterval> | undefined;
+
 	onMount(async () => {
 		const native = await element?.getInputElement();
 		if (native) {
@@ -350,6 +352,21 @@
 						: onPasteToState(native.value);
 			}
 		}
+
+		intervalId = setInterval(async () => {
+			const native = await element?.getInputElement();
+			if (native && native.value !== plain) {
+				const parsedState = onPasteToState(native.value);
+				if (parsedState.cents !== edit.cents) {
+					edit = parsedState;
+					changed?.(edit.cents);
+				}
+			}
+		}, 100);
+	});
+
+	onDestroy(() => {
+		if (intervalId) clearInterval(intervalId);
 	});
 
 	function getDecimalSeparator(): string {
@@ -370,43 +387,66 @@
 		if (!native) return;
 		applyNativeMaskStyles(native);
 
-		const inputEvent = _event.detail.event as InputEvent | undefined;
-		if (inputEvent && (inputEvent.inputType === 'insertText' || inputEvent.inputType === 'deleteContentBackward')) {
-			setCaretScripted(native);
-			return;
+		if (handleInsertText(_event, native)) return;
+		if (handleValueMatch(native)) return;
+		handleValueMismatch(native);
+	}
+
+	function handleInsertText(event: CustomEvent<InputInputEventDetail>, native: HTMLInputElement): boolean {
+		const inputEvent = event.detail.event as InputEvent | undefined;
+		if (!inputEvent || (inputEvent.inputType !== 'insertText' && inputEvent.inputType !== 'deleteContentBackward')) {
+			return false;
 		}
 
-		if (native.value === plain) {
-			setCaretScripted(native);
-			return;
-		}
-
-		if (native.value !== plain) {
-			const digitsOnly = native.value.replaceAll(/\D/g, '');
-			if (digitsOnly.length === 0) {
-				if (edit.cents !== 0) {
-					edit = createStateFromCents(0);
-				}
-			} else {
-				const parsedState = onPasteToState(native.value);
-				if (parsedState.cents === edit.cents) {
-					// Ionic keeps stripping the value, so we need to force it repeatedly
-					const targetValue = plain;
-					native.value = targetValue;
-					setTimeout(() => {
-						// Force the value again right before setting caret
-						native.value = targetValue;
-						setCaretScripted(native);
-					}, 10);
-					return;
-				} else {
-					edit = parsedState;
-				}
+		if (inputEvent.inputType === 'insertText' && inputEvent.data) {
+			const dec = getDecimalSeparator();
+			if (inputEvent.data === '.' || inputEvent.data === ',' || inputEvent.data === dec) {
+				edit = onSeparator(edit);
+				native.value = plain;
+				native.dispatchEvent(new Event('input', { bubbles: true }));
+				setCaretScripted(native);
+				return true;
 			}
 		}
 
 		setCaretScripted(native);
+		return true;
 	}
+
+	function handleValueMatch(native: HTMLInputElement): boolean {
+		if (native.value !== plain) return false;
+		setCaretScripted(native);
+		return true;
+	}
+
+	function handleValueMismatch(native: HTMLInputElement): void {
+		const digitsOnly = native.value.replaceAll(/\D/g, '');
+
+		if (digitsOnly.length === 0) {
+			if (edit.cents !== 0) {
+				edit = createStateFromCents(0);
+			}
+		} else {
+			const parsedState = onPasteToState(native.value);
+			if (parsedState.cents === edit.cents) {
+				forceNativeValue(native);
+				return;
+			}
+			edit = parsedState;
+		}
+
+		setCaretScripted(native);
+	}
+
+	function forceNativeValue(native: HTMLInputElement): void {
+		const targetValue = plain;
+		native.value = targetValue;
+		setTimeout(() => {
+			native.value = targetValue;
+			setCaretScripted(native);
+		}, 10);
+	}
+
 	async function onKeyDown(event: KeyboardEvent): Promise<void> {
 		const dec = getDecimalSeparator();
 		const native = (await element?.getInputElement()) as HTMLInputElement;
@@ -419,7 +459,6 @@
 			changed?.(edit.cents);
 			native.value = plain;
 			native.dispatchEvent(new Event('input', { bubbles: true }));
-			// Delay caret positioning to avoid race with onIonInput
 			setTimeout(() => setCaretScripted(native), 0);
 			return;
 		}
@@ -502,7 +541,7 @@
 			{label}
 			type="text"
 			pattern="[0-9.,]*"
-			inputmode="numeric"
+			inputmode="decimal"
 			{disabled}
 			helper-text={helperText}
 			value={plain}
