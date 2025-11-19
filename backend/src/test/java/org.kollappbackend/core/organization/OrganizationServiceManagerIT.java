@@ -3,11 +3,7 @@ package org.kollappbackend.core.organization;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.kollappbackend.core.core.BaseIT;
-import org.kollappbackend.organization.application.exception.InvalidInvitationCodeException;
-import org.kollappbackend.organization.application.exception.OrganizationNotFoundException;
-import org.kollappbackend.organization.application.exception.PersonAlreadyHasTargetRoleException;
-import org.kollappbackend.organization.application.exception.PersonAlreadyRegisteredInOrganizationException;
-import org.kollappbackend.organization.application.exception.PersonNotRegisteredInOrganizationException;
+import org.kollappbackend.organization.application.exception.*;
 import org.kollappbackend.organization.application.model.Organization;
 import org.kollappbackend.organization.application.model.OrganizationRole;
 import org.kollappbackend.organization.application.model.PersonOfOrganization;
@@ -33,7 +29,7 @@ import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TES
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(scripts = "/sql/clear.sql",
         executionPhase = AFTER_TEST_METHOD)
-@WithMockUser(username = "nina", authorities = { "ROLE_KOLLAPP_ORGANIZATION_MEMBER" })
+@WithMockUser(username = "nina", authorities = {"ROLE_KOLLAPP_ORGANIZATION_MEMBER"})
 public class OrganizationServiceManagerIT extends BaseIT {
 
     @Autowired
@@ -51,7 +47,7 @@ public class OrganizationServiceManagerIT extends BaseIT {
                 .name("Testorga")
                 .description("Testbeschreibung")
                 .build();
-        Organization organization  = organizationService
+        Organization organization = organizationService
                 .createOrganization(organizationDummy);
         assertThat(organization.getId()).isNotZero();
         assertThat(organization.getName()).isEqualTo("Testorga");
@@ -71,7 +67,7 @@ public class OrganizationServiceManagerIT extends BaseIT {
                 .name("Testorga_updated")
                 .description("Testbeschreibung_updated")
                 .build();
-        Organization organization  = organizationService.updateOrganization(organizationDummy, 1);
+        Organization organization = organizationService.updateOrganization(organizationDummy, 1);
         assertThat(organization.getId()).isEqualTo(1);
         assertThat(organization.getName()).isEqualTo("Testorga_updated");
         assertThat(organization.getDescription()).isEqualTo("Testbeschreibung_updated");
@@ -86,7 +82,7 @@ public class OrganizationServiceManagerIT extends BaseIT {
 
     @Test
     public void deleteUserFromOrganizationShouldDeleteThem() {
-        Organization organization = organizationService.deleteUserFromOrganization(3,1);
+        Organization organization = organizationService.deleteUserFromOrganization(3, 1);
         assertThat(organization.getPersonsOfOrganization().stream().mapToLong(PersonOfOrganization::getId))
                 .doesNotContain(3L);
         KollappUser kollappUser = kollappUserRepository.findById(3L).orElse(new KollappUser());
@@ -97,15 +93,15 @@ public class OrganizationServiceManagerIT extends BaseIT {
     public void deleteWrongUserFromWrongOrganizationShouldThrowException() {
         // existing user in existing organization, but no manager rights
         assertThatExceptionOfType(PersonNotRegisteredInOrganizationException.class)
-                .isThrownBy(() -> organizationService.deleteUserFromOrganization(4,2));
+                .isThrownBy(() -> organizationService.deleteUserFromOrganization(4, 2));
 
         // not existing user in existing organization with manager rights
         assertThatExceptionOfType(PersonNotRegisteredInOrganizationException.class)
-                .isThrownBy(() -> organizationService.deleteUserFromOrganization(5,1));
+                .isThrownBy(() -> organizationService.deleteUserFromOrganization(5, 1));
 
         // not existing organization but existing user
         assertThatExceptionOfType(OrganizationNotFoundException.class)
-                .isThrownBy(() -> organizationService.deleteUserFromOrganization(2,4));
+                .isThrownBy(() -> organizationService.deleteUserFromOrganization(2, 4));
     }
 
     @Test
@@ -139,7 +135,7 @@ public class OrganizationServiceManagerIT extends BaseIT {
         assertThat(organization.getId()).isEqualTo(2);
         assertThat(organization.getName()).isEqualTo("Frequenzfamilie");
         assertThat(organization.getPersonsOfOrganization().size()).isEqualTo(2);
-        Optional<PersonOfOrganization> personOfOrganizationOpt =  organization.getPersonsOfOrganization().stream()
+        Optional<PersonOfOrganization> personOfOrganizationOpt = organization.getPersonsOfOrganization().stream()
                 .filter(p -> p.getUsername().equals("nina"))
                 .findFirst();
         assertThat(personOfOrganizationOpt).isPresent();
@@ -152,7 +148,7 @@ public class OrganizationServiceManagerIT extends BaseIT {
     @Test
     public void enterOrganizationWithWrongInvitationCodeShouldThrowException() {
         assertThatExceptionOfType(InvalidInvitationCodeException.class).isThrownBy(
-                () ->  organizationService.enterOrganizationByInvitationCode("asdfjkl")
+                () -> organizationService.enterOrganizationByInvitationCode("asdfjkl")
         );
     }
 
@@ -189,11 +185,11 @@ public class OrganizationServiceManagerIT extends BaseIT {
     @Test
     public void leaveOrganizationWithWrongIdShouldThrowException() {
         assertThatExceptionOfType(PersonNotRegisteredInOrganizationException.class).isThrownBy(
-                () ->  organizationService.leaveOrganization(2)
+                () -> organizationService.leaveOrganization(2)
         );
 
         assertThatExceptionOfType(OrganizationNotFoundException.class).isThrownBy(
-                () ->  organizationService.leaveOrganization(4)
+                () -> organizationService.leaveOrganization(4)
         );
     }
 
@@ -211,7 +207,7 @@ public class OrganizationServiceManagerIT extends BaseIT {
     @Test
     public void grantRoleToPersonOfOrganizationShouldGrantRole() {
         Organization organization = organizationService
-                .grantRoleToPersonOfOrganization(1, 3, "ROLE_ORGANIZATION_MEMBER");
+                .grantRoleToPersonOfOrganization(1, 3, OrganizationRole.ROLE_ORGANIZATION_MEMBER);
         PersonOfOrganization personOfOrganization = organization.getPersonsOfOrganization()
                 .stream()
                 .filter(p -> p.getUserId() == 3)
@@ -225,19 +221,19 @@ public class OrganizationServiceManagerIT extends BaseIT {
     public void grantRoleToWrongPersonOfOrganizationShouldThrowException() {
         assertThatExceptionOfType(PersonNotRegisteredInOrganizationException.class)
                 .isThrownBy(() -> organizationService
-                        .grantRoleToPersonOfOrganization(1, 4, "ROLE_ORGANIZATION_MEMBER"));
+                        .grantRoleToPersonOfOrganization(1, 4, OrganizationRole.ROLE_ORGANIZATION_MEMBER));
 
         assertThatExceptionOfType(PersonNotRegisteredInOrganizationException.class)
                 .isThrownBy(() -> organizationService
-                        .grantRoleToPersonOfOrganization(2, 4, "ROLE_ORGANIZATION_MEMBER"));
+                        .grantRoleToPersonOfOrganization(2, 4, OrganizationRole.ROLE_ORGANIZATION_MEMBER));
 
         assertThatExceptionOfType(OrganizationNotFoundException.class)
                 .isThrownBy(() -> organizationService
-                        .grantRoleToPersonOfOrganization(4, 3, "ROLE_ORGANIZATION_MEMBER"));
+                        .grantRoleToPersonOfOrganization(4, 3, OrganizationRole.ROLE_ORGANIZATION_MEMBER));
 
         assertThatExceptionOfType(PersonAlreadyHasTargetRoleException.class)
                 .isThrownBy(() -> organizationService
-                        .grantRoleToPersonOfOrganization(1, 3, "ROLE_ORGANIZATION_MANAGER"));
+                        .grantRoleToPersonOfOrganization(1, 3, OrganizationRole.ROLE_ORGANIZATION_MANAGER));
     }
 
     @Test

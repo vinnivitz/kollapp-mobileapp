@@ -1,7 +1,8 @@
-package org.kollappbackend.user.adapters.view;
+package org.kollappbackend.user.adapters.primary.view;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
 import org.kollappbackend.core.config.TemplateView;
 import org.kollappbackend.core.util.UrlBuilderUtil;
 import org.kollappbackend.user.application.service.KollappUserService;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequestMapping("/api/public/user")
 @Slf4j
+@PrimaryAdapter
 public class UnauthorizedKollappUserViewController {
 
     @Autowired

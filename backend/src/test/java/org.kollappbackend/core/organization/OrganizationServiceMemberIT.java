@@ -132,7 +132,7 @@ public class OrganizationServiceMemberIT extends BaseIT {
     @Test
     public void grantRoleToPersonOfOrganizationShouldThrowAuthException() {
         assertThatExceptionOfType(OrganizationAuthorizationException.class)
-                .isThrownBy(() -> organizationService.grantRoleToPersonOfOrganization(1,2,"ROLE"));
+                .isThrownBy(() -> organizationService.grantRoleToPersonOfOrganization(1,2,null));
     }
 
     @Test

@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 @Sql(scripts = "/sql/organization/base_data_organization_kollapp_user.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 @Sql(scripts = "/sql/clear.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_CLASS)
-@WithMockUser(username = "nina", authorities = { "ROLE_KOLLAPP_USER" })
+@WithMockUser(username = "nina", authorities = {"ROLE_KOLLAPP_USER"})
 public class OrganizationServiceKollappUserIT extends BaseIT {
 
     @Autowired
@@ -34,7 +34,7 @@ public class OrganizationServiceKollappUserIT extends BaseIT {
                 .name("Testorga")
                 .description("Testbeschreibung")
                 .build();
-        Organization organization  = organizationService
+        Organization organization = organizationService
                 .createOrganization(organizationDummy);
         assertThat(organization.getId()).isNotZero();
         assertThat(organization.getName()).isEqualTo("Testorga");
@@ -54,7 +54,7 @@ public class OrganizationServiceKollappUserIT extends BaseIT {
     @Test
     public void deleteUserFromOrganizationShouldThrowAuthException() {
         assertThatExceptionOfType(AuthorizationDeniedException.class)
-                .isThrownBy(() -> organizationService.deleteUserFromOrganization(1,1));
+                .isThrownBy(() -> organizationService.deleteUserFromOrganization(1, 1));
     }
 
     @Test
@@ -70,7 +70,7 @@ public class OrganizationServiceKollappUserIT extends BaseIT {
         assertThat(organization.getId()).isEqualTo(1);
         assertThat(organization.getName()).isEqualTo("NMS");
         assertThat(organization.getPersonsOfOrganization().size()).isEqualTo(1);
-        PersonOfOrganization personOfOrganization =  organization.getPersonsOfOrganization().getFirst();
+        PersonOfOrganization personOfOrganization = organization.getPersonsOfOrganization().getFirst();
         assertThat(personOfOrganization.getUsername()).isEqualTo("nina");
         assertThat(personOfOrganization.getOrganizationRole()).isEqualTo(OrganizationRole.ROLE_ORGANIZATION_MEMBER);
         assertThat(personOfOrganization.getStatus()).isEqualTo(PersonOfOrganizationStatus.PENDING);
@@ -79,7 +79,7 @@ public class OrganizationServiceKollappUserIT extends BaseIT {
     @Test
     public void enterOrganizationWithWrongInvitationCodeShouldThrowException() {
         assertThatExceptionOfType(InvalidInvitationCodeException.class).isThrownBy(
-                () ->  organizationService.enterOrganizationByInvitationCode("asdfjkl")
+                () -> organizationService.enterOrganizationByInvitationCode("asdfjkl")
         );
     }
 
@@ -92,13 +92,13 @@ public class OrganizationServiceKollappUserIT extends BaseIT {
     @Test
     public void updatePersonOfOrganizationOfUserShouldThrowAuthException() {
         assertThatExceptionOfType(AuthorizationDeniedException.class)
-                .isThrownBy(() -> organizationService.updatePersonOfOrganizationsOfUser(1,"test"));
+                .isThrownBy(() -> organizationService.updatePersonOfOrganizationsOfUser(1, "test"));
     }
 
     @Test
     public void grantRoleToPersonOfOrganizationShouldThrowAuthException() {
         assertThatExceptionOfType(AuthorizationDeniedException.class)
-                .isThrownBy(() -> organizationService.grantRoleToPersonOfOrganization(1,2,"ROLE"));
+                .isThrownBy(() -> organizationService.grantRoleToPersonOfOrganization(1, 2, null));
     }
 
     @Test
