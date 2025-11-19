@@ -81,12 +81,21 @@ public class OrganizationServiceManagerIT extends BaseIT {
     }
 
     @Test
-    public void deleteUserFromOrganizationShouldDeleteThem() {
+    public void deleteUserFromTheirLastOrganizationShouldDowngradeRoleAndDeleteThemFromOrganization() {
         Organization organization = organizationService.deleteUserFromOrganization(3, 1);
         assertThat(organization.getPersonsOfOrganization().stream().mapToLong(PersonOfOrganization::getId))
                 .doesNotContain(3L);
         KollappUser kollappUser = kollappUserRepository.findById(3L).orElse(new KollappUser());
         assertThat(kollappUser.getRole()).isEqualTo(SystemRole.ROLE_KOLLAPP_USER);
+    }
+
+    @Test
+    public void deleteUserFromOrganizationShouldDeleteThemFromOrganization() {
+        Organization organization = organizationService.deleteUserFromOrganization(2, 1);
+        assertThat(organization.getPersonsOfOrganization().stream().mapToLong(PersonOfOrganization::getId))
+                .doesNotContain(2L);
+        KollappUser kollappUser = kollappUserRepository.findById(2L).orElse(new KollappUser());
+        assertThat(kollappUser.getRole()).isEqualTo(SystemRole.ROLE_KOLLAPP_ORGANIZATION_MEMBER);
     }
 
     @Test
