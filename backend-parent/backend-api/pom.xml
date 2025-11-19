@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.kollapp.backend</groupId>
         <artifactId>backend-parent</artifactId>
-        <version>0.7.1</version>
+        <version>0.8.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>backend-api</artifactId>
