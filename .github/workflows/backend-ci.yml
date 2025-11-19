@@ -47,9 +47,9 @@ jobs:
           git tag -a v${{ github.event.inputs.releaseVersion }} -m "Release ${{ github.event.inputs.releaseVersion }}"
           git push origin v${{ github.event.inputs.releaseVersion }}
 
-      - name: Build Release Version
+      - name: Build Release Version and publish API types
         run: |
-          mvn -B clean install --file backend-parent/pom.xml -DskipTests -Djqassistant.skip=true
+          mvn -B clean install --file backend-parent/pom.xml -DskipTests -Djqassistant.skip=true -Pgenerate-client-api-types
 
       - name: Log in to Docker registry
         uses: docker/login-action@v3
