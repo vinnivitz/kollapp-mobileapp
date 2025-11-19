@@ -12,7 +12,6 @@ import org.kollappbackend.user.application.service.KollappUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,12 +29,6 @@ public class UnauthorizedKollappUserController {
 
     @Autowired
     private KollappUserService kollappUserService;
-
-    @GetMapping("/confirmation")
-    public ResponseEntity<ResponseTO> confirmKollappUser(@RequestParam("confirmationToken") String confirmationToken) {
-        kollappUserService.activateKollappUser(confirmationToken);
-        return ResponseEntity.ok(new MessageResponseTO("success.confirmation", messageSource));
-    }
 
     @PostMapping("/forgot-password")
     public ResponseEntity<ResponseTO> forgotPassword(@Valid @RequestBody ForgotPasswordRequestTO forgotPasswordTo) {

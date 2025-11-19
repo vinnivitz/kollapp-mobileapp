@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -46,6 +47,7 @@ public class ActivityServiceImpl implements ActivityService {
         Organization organization = organizationRepository.findById(organizationId)
                 .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
         activity.setOrganization(organization);
+        activity.setActivityPostings(new ArrayList<>());
         activityRepository.save(activity);
         organization.addActivityOfOrganization(activity);
         return activity;
@@ -55,8 +57,8 @@ public class ActivityServiceImpl implements ActivityService {
     @RequiresKollappOrganizationMemberRole
     public Activity updateActivity(long organizationId, long activityId, Activity activity) {
         organizationRoleHelper.verifyOrganizationManager(organizationId);
-        Activity activityToBeUpdated =
-                activityRepository.findById(activityId).orElseThrow(() -> new ActivityNotFoundException(messageSource));
+        Activity activityToBeUpdated = activityRepository.findByIdAndOrganizationId(activityId, organizationId)
+                .orElseThrow(() -> new ActivityNotFoundException(messageSource));
         activityToBeUpdated.setName(activity.getName());
         activityToBeUpdated.setLocation(activity.getLocation());
         return activityToBeUpdated;
@@ -68,9 +70,8 @@ public class ActivityServiceImpl implements ActivityService {
         organizationRoleHelper.verifyOrganizationManager(organizationId);
         Organization organization = organizationRepository.findById(organizationId)
                 .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
-        Activity activity =
-                organization.getActivities().stream().filter(activity1 -> activity1.getId() == activityId).findFirst()
-                        .orElseThrow(() -> new ActivityNotFoundException(messageSource));
+        Activity activity = activityRepository.findByIdAndOrganizationId(activityId, organizationId)
+                .orElseThrow(() -> new ActivityNotFoundException(messageSource));
         organization.getActivities().remove(activity);
         ActivityDeletedEvent activityDeletedEvent = new ActivityDeletedEvent(this, activity.getId());
         organizationPublisher.publishActivityDeletedEvent(activityDeletedEvent);

@@ -31,6 +31,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,6 +68,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     public Organization createOrganization(Organization organization) {
         KollappUser user = kollappUserService.getLoggedInKollappUser();
         user.setRole(SystemRole.ROLE_KOLLAPP_ORGANIZATION_MEMBER);
+        organization.setOrganizationPostings(new ArrayList<>());
         Organization persistedOrganization = organizationRepository.save(organization);
         OrganizationInvitationCode invitationCode =
                 persistedOrganization.generateNewInvitationCode(applicationProperties.getOrganizationInvitationValidityDays());
@@ -231,7 +233,7 @@ public class OrganizationServiceImpl implements OrganizationService {
                 .findById(id)
                 .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
         organization.initChildren();
-        return organizationRepository.findById(id).orElseThrow(() -> new OrganizationNotFoundException(messageSource));
+        return organization;
     }
 
     @Override
