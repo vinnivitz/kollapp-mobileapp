@@ -10,8 +10,8 @@
 !.env.test
 
 # Backend
-/backend/**/target
-/backend/db
+/backend-parent/**/target
+/backend-parent/db
 
 # Mobile App
 /mobileapp/node_modules
