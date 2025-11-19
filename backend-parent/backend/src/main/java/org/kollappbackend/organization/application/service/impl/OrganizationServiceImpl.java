@@ -3,19 +3,8 @@ package org.kollappbackend.organization.application.service.impl;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.kollappbackend.core.config.properties.ApplicationProperties;
-import org.kollappbackend.organization.application.exception.InvalidInvitationCodeException;
-import org.kollappbackend.organization.application.exception.OrganizationNotFoundException;
-import org.kollappbackend.organization.application.exception.PersonAlreadyHasTargetRoleException;
-import org.kollappbackend.organization.application.exception.PersonAlreadyRegisteredInOrganizationException;
-import org.kollappbackend.organization.application.exception.PersonNotRegisteredInOrganizationException;
-import org.kollappbackend.organization.application.exception.PersonOfOrganizationIsNotApprovedYetException;
-import org.kollappbackend.organization.application.model.Organization;
-import org.kollappbackend.organization.application.model.OrganizationCreatedEvent;
-import org.kollappbackend.organization.application.model.OrganizationDeletedEvent;
-import org.kollappbackend.organization.application.model.OrganizationInvitationCode;
-import org.kollappbackend.organization.application.model.OrganizationRole;
-import org.kollappbackend.organization.application.model.PersonOfOrganization;
-import org.kollappbackend.organization.application.model.PersonOfOrganizationStatus;
+import org.kollappbackend.organization.application.exception.*;
+import org.kollappbackend.organization.application.model.*;
 import org.kollappbackend.organization.application.publisher.OrganizationPublisher;
 import org.kollappbackend.organization.application.repository.OrganizationInvitationCodeRepository;
 import org.kollappbackend.organization.application.repository.OrganizationRepository;
@@ -162,6 +151,10 @@ public class OrganizationServiceImpl implements OrganizationService {
     public void deleteUserFromAllOrganizations(long userId) {
         List<PersonOfOrganization> personsToBeDeleted = personOfOrganizationRepository.findByUserId(userId);
         for (PersonOfOrganization personOfOrganization : personsToBeDeleted) {
+            if (personOfOrganization.getOrganizationRole().equals(OrganizationRole.ROLE_ORGANIZATION_MANAGER)
+                    && personOfOrganization.getOrganization().hasOnlyOneManagerLeft()) {
+                throw new LastManagerException(messageSource);
+            }
             personOfOrganizationRepository.deleteById(personOfOrganization.getId());
         }
     }
