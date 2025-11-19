@@ -1,6 +1,6 @@
 {
   "name": "@kollapp/api-types",
-  "version": "1.0.0",
+  "version": "${project.version}",
   "publishConfig": {
     "registry": "https://npm.kollapp.org"
   }
