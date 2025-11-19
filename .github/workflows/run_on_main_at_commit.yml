@@ -20,10 +20,10 @@ jobs:
           cache: maven
       - name: Maven Verify
         run: |
-          mvn -f backend/pom.xml -B clean verify
-#      - name: Publish backend quality analysis results to SonarQube
-#        run: |
-#          mvn -f backend/pom.xml -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=kollapp-backend -Dsonar.projectName='kollapp-backend' -Dsonar.host.url=${{ secrets.SONARQUBE_SERVER }} -Dsonar.token=${{ secrets.SONARQUBE_TOKEN }} -Dsonar.java.coveragePlugin=jacoco -Dsonar.dynamicAnalysis=reuseReports -Dsonar.jacoco.reportPath=./backend/target/jacoco.exec
+          mvn -f backend-parent/pom.xml -B clean verify
+      #      - name: Publish backend quality analysis results to SonarQube
+      #        run: |
+      #          mvn -f backend/pom.xml -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=kollapp-backend -Dsonar.projectName='kollapp-backend' -Dsonar.host.url=${{ secrets.SONARQUBE_SERVER }} -Dsonar.token=${{ secrets.SONARQUBE_TOKEN }} -Dsonar.java.coveragePlugin=jacoco -Dsonar.dynamicAnalysis=reuseReports -Dsonar.jacoco.reportPath=./backend/target/jacoco.exec
       - name: Setup Node 22.9
         uses: actions/setup-node@v4
         with:
@@ -36,11 +36,11 @@ jobs:
           pnpm --prefix mobileapp test
           pnpm --prefix mobileapp test:coverage
           pnpm --prefix mobileapp build
-#      - name: Publish frontend quality analysis results to SonarQube
-#        run: |
-#          wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-7.2.0.5079-linux-x64.zip
-#          unzip sonar-scanner-cli-7.2.0.5079-linux-x64.zip
-#          sonar-scanner-7.2.0.5079-linux-x64/bin/sonar-scanner -Dsonar.projectKey=kollapp-frontend -Dsonar.sources=mobileapp -Dsonar.host.url=https://sonar.kollapp.org -Dsonar.token=sqp_5015e2eb160ff406830b5f1a66828cbdb8fe8c74 -Dsonar.javascript.lcov.reportPaths=./mobileapp/coverage/lcov.info
+      #      - name: Publish frontend quality analysis results to SonarQube
+      #        run: |
+      #          wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-7.2.0.5079-linux-x64.zip
+      #          unzip sonar-scanner-cli-7.2.0.5079-linux-x64.zip
+      #          sonar-scanner-7.2.0.5079-linux-x64/bin/sonar-scanner -Dsonar.projectKey=kollapp-frontend -Dsonar.sources=mobileapp -Dsonar.host.url=https://sonar.kollapp.org -Dsonar.token=sqp_5015e2eb160ff406830b5f1a66828cbdb8fe8c74 -Dsonar.javascript.lcov.reportPaths=./mobileapp/coverage/lcov.info
       - name: Dump Docker container logs
         if: failure()
         run: |
