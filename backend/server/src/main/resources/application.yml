@@ -43,8 +43,6 @@ spring:
 server:
   port: ${BACKEND_PORT:8080}
   shutdown: graceful
-
-spring:
   lifecycle:
     timeout-per-shutdown-phase: 30s
 
@@ -86,18 +84,6 @@ kollapp:
     resetPasswordSecret: ${BACKEND_JWT_RESET_PASSWORD_SECRET}
     resetPasswordExpirationInSeconds: ${BACKEND_JWT_RESET_PASSWORD_EXPIRATION_IN_SECONDS:3600}
 
-spring:
-  config:
-    activate:
-      on-profile: production
-
-kollapp:
-  jwt:
-    authSecret: ${BACKEND_JWT_AUTH_SECRET}
-    refreshSecret: ${BACKEND_JWT_REFRESH_SECRET}
-    confirmationSecret: ${BACKEND_JWT_CONFIRMATION_SECRET}
-    resetPasswordSecret: ${BACKEND_JWT_RESET_PASSWORD_SECRET}
-
 ---
 # Management and Actuator configuration
 management:
@@ -130,12 +116,19 @@ management:
   server:
     port: 8080
 
-# Production observability overrides
 ---
+# Production observability overrides
 spring:
   config:
     activate:
       on-profile: production
+
+kollapp:
+  jwt:
+    authSecret: ${BACKEND_JWT_AUTH_SECRET}
+    refreshSecret: ${BACKEND_JWT_REFRESH_SECRET}
+    confirmationSecret: ${BACKEND_JWT_CONFIRMATION_SECRET}
+    resetPasswordSecret: ${BACKEND_JWT_RESET_PASSWORD_SECRET}
 
 management:
   endpoints:
