@@ -1,19 +1,20 @@
-test-results
-node_modules
+# Dependencies
+node_modules/
 
-# Output
-.output
-.vercel
-.netlify
-.wrangler
-/.svelte-kit
-/build
+# Build outputs
+.output/
+.vercel/
+.netlify/
+.wrangler/
+.svelte-kit/
+build/
+dist/
 
-# OS
-.DS_Store
-Thumbs.db
+# Testing
+test-results/
+coverage/
 
-# Env
+# Environment
 .env
 .env.*
 !.env.example
