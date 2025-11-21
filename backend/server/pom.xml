@@ -364,7 +364,7 @@
                 <version>${spotless.version}</version>
                 <configuration>
                     <java>
-                        <removeUnusedImports/>
+                        <removeUnusedImports />
                         <googleJavaFormat>
                             <version>${google-java-format.version}</version>
                             <style>AOSP</style>
@@ -372,8 +372,8 @@
                         <importOrder>
                             <order>java,javax,jakarta,lombok,org,com,\#,org.kollapp,\#org.kollapp</order>
                         </importOrder>
-                        <trimTrailingWhitespace/>
-                        <endWithNewline/>
+                        <trimTrailingWhitespace />
+                        <endWithNewline />
                     </java>
                 </configuration>
                 <executions>
@@ -409,7 +409,7 @@
     </build>
     <profiles>
         <profile>
-            <id>generate-client-api-types</id>
+            <!-- <id>generate-client-api-types</id>
             <pluginRepositories>
                 <pluginRepository>
                     <id>nexus-releases</id>
@@ -446,6 +446,59 @@
                                     </customTypeMappings>
                                     <mapDate>asString</mapDate>
                                     <mapEnum>asUnion</mapEnum>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build> -->
+            <id>generate-client-api-types</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>cz.habarta.typescript-generator</groupId>
+                        <artifactId>typescript-generator-maven-plugin</artifactId>
+                        <version>${typescript-generator.version}</version>
+                        <executions>
+                            <execution>
+                                <id>generate-typescript-dtos</id>
+                                <phase>process-classes</phase>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                                <configuration>
+                                    <jsonLibrary>jackson2</jsonLibrary>
+                                    <classPatterns>
+                                        <classPattern>
+                                            org.kollappbackend.**.adapters.primary.rest.model.*</classPattern>
+                                    </classPatterns>
+                                    <excludeClasses>
+                                        <excludeClass>
+                                            org.kollappbackend.core.adapters.primary.rest.model.DataResponseTO
+                                        </excludeClass>
+                                    </excludeClasses>
+                                    <outputKind>module</outputKind>
+                                    <outputFile>../backend-api/ts/index.d.ts</outputFile>
+                                    <outputFileType>declarationFile</outputFileType>
+                                    <customTypeMappings>
+                                        <customTypeMapping>long:number</customTypeMapping>
+                                        <customTypeMapping>java.lang.Long:number</customTypeMapping>
+                                        <customTypeMapping>java.time.LocalDate:string</customTypeMapping>
+                                    </customTypeMappings>
+                                    <mapDate>asString</mapDate>
+                                    <mapMap>asRecord</mapMap>
+                                    <mapEnum>asUnion</mapEnum>
+                                    <noEslintDisable>true</noEslintDisable>
+                                    <noTslintDisable>true</noTslintDisable>
+                                    <generateJaxrsApplicationClient>false</generateJaxrsApplicationClient>
+                                    <noFileComment>true</noFileComment>
+                                    <optionalProperties>useSpecifiedAnnotations</optionalProperties>
+                                    <requiredAnnotations>
+                                        <annotation>jakarta.validation.constraints.NotNull</annotation>
+                                        <annotation>jakarta.validation.constraints.NotBlank</annotation>
+                                        <annotation>jakarta.validation.constraints.NotEmpty</annotation>
+                                    </requiredAnnotations>
+                                    <optionalPropertiesDeclaration>questionMark</optionalPropertiesDeclaration>
                                 </configuration>
                             </execution>
                         </executions>
