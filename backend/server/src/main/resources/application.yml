@@ -123,13 +123,6 @@ spring:
     activate:
       on-profile: production
 
-kollapp:
-  jwt:
-    authSecret: ${BACKEND_JWT_AUTH_SECRET}
-    refreshSecret: ${BACKEND_JWT_REFRESH_SECRET}
-    confirmationSecret: ${BACKEND_JWT_CONFIRMATION_SECRET}
-    resetPasswordSecret: ${BACKEND_JWT_RESET_PASSWORD_SECRET}
-
 management:
   endpoints:
     web:
