@@ -10,11 +10,11 @@ end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-# Java files - aligned with Google Java Format and Spotless
+# Java files - aligned with Palantir Java Format and Spotless
 [*.java]
 indent_style = space
-indent_size = 2
-max_line_length = 100
+indent_size = 4
+max_line_length = 120
 trim_trailing_whitespace = true
 
 # XML files (pom.xml, checkstyle, etc.)
