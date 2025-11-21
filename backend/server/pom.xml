@@ -425,7 +425,7 @@
                         <version>${generate-ts-api-types-maven-plugin.version}</version>
                         <executions>
                             <execution>
-                                <id>generate-abstract-ts-client</id>
+                                <id>generate-ts-api-types</id>
                                 <phase>process-classes</phase>
                                 <goals>
                                     <goal>generate-abstract-ts</goal>
