@@ -38,15 +38,13 @@ Architecture validation is enforced using jQAssistant with jMolecules.
 3. **Build and run**:
    ```bash
    ./mvnw clean install
-   cd server
-   ./mvnw spring-boot:run
+   ./mvnw spring-boot:run -pl server
    ```
 
 4. **Access the application**:
    - API: http://localhost:8080
    - OpenAPI Docs: http://localhost:8080/swagger-ui.html
    - Actuator Health: http://localhost:8080/actuator/health
-   - Metrics: http://localhost:8080/actuator/prometheus
    - MailHog UI: http://localhost:8025
 
 ## Testing
@@ -65,8 +63,6 @@ Architecture validation is enforced using jQAssistant with jMolecules.
 # Architecture validation
 ./mvnw jqassistant:analyze
 ```
-
-**Note**: Minimum code coverage is enforced at **80% line coverage** and **75% branch coverage**.
 
 ## Code Quality
 
@@ -92,7 +88,7 @@ Architecture validation is enforced using jQAssistant with jMolecules.
 ### Build Image
 ```bash
 cd server
-docker build -t kollapp-backend:latest .
+docker build -t kollapp/backend:latest .
 ```
 
 The Dockerfile uses:
@@ -105,7 +101,7 @@ The Dockerfile uses:
 ```bash
 docker run -p 8080:8080 \
   --env-file ../backend/.env \
-  kollapp-backend:latest
+  kollapp/backend:latest
 ```
 
 ## Security
