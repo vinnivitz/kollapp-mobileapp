@@ -11,8 +11,8 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <groupId>org.kollapp.backend</groupId>
-    <artifactId>backend</artifactId>
+    <groupId>org.kollapp</groupId>
+    <artifactId>backend-parent</artifactId>
     <version>0.8.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 

@@ -147,7 +147,7 @@ backend/
 ├── pom.xml                 # Parent POM
 ├── server/                 # Main application
 │   ├── src/main/java/
-│   │   └── org/kollappbackend/
+│   │   └── org/kollapp/
 │   │       ├── core/       # Shared infrastructure
 │   │       ├── user/       # User bounded context
 │   │       └── organization/ # Organization bounded context

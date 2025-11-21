@@ -3,7 +3,7 @@ target/
 pom.xml.versionsBackup
 
 # Database
-db/
+/db
 
 # JQAssistant
 jqassistant/report*/

@@ -4,8 +4,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.kollapp.backend</groupId>
-        <artifactId>backend</artifactId>
+        <groupId>org.kollapp</groupId>
+        <artifactId>backend-parent</artifactId>
         <version>0.8.0-SNAPSHOT</version>
     </parent>
 
@@ -369,7 +369,9 @@
                             <version>${google-java-format.version}</version>
                             <style>AOSP</style>
                         </googleJavaFormat>
-                        <importOrder/>
+                        <importOrder>
+                            <order>java,javax,jakarta,lombok,org,com,\#,org.kollapp,\#org.kollapp</order>
+                        </importOrder>
                         <trimTrailingWhitespace/>
                         <endWithNewline/>
                     </java>
@@ -418,7 +420,7 @@
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.kollappbackend</groupId>
+                        <groupId>org.kollapp</groupId>
                         <artifactId>generate-ts-api-types-maven-plugin</artifactId>
                         <version>${generate-ts-api-types-maven-plugin.version}</version>
                         <executions>
@@ -432,9 +434,9 @@
                                     <jsonLibrary>jackson2</jsonLibrary>
                                     <classPatterns>
                                         <classPattern>
-                                            org.kollappbackend.**.adapters.primary.rest.*Controller</classPattern>
+                                            org.kollapp.**.adapters.primary.rest.*Controller</classPattern>
                                         <classPattern>
-                                            org.kollappbackend.**.adapters.primary.rest.dto.*</classPattern>
+                                            org.kollapp.**.adapters.primary.rest.dto.*</classPattern>
                                     </classPatterns>
                                     <outputFile>${project.basedir}/../api-types/ts/index.d.ts</outputFile>
                                     <customTypeMappings>
