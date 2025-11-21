@@ -22,8 +22,7 @@ COPY --from=builder --chown=spring:spring /build/app.jar app.jar
 
 USER spring:spring
 
-ENV JAVA_OPTS="-XX:+UseContainerSupport \
-    -XX:MaxRAMPercentage=75.0 \
+ENV JAVA_OPTS="-XX:MaxRAMPercentage=75.0 \
     -XX:InitialRAMPercentage=50.0 \
     -XX:+ExitOnOutOfMemoryError \
     -Djava.security.egd=file:/dev/./urandom"
