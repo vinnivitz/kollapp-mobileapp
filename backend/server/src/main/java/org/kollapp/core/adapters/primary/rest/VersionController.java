@@ -22,15 +22,16 @@ import io.swagger.v3.oas.annotations.Operation;
 @AllArgsConstructor
 public class VersionController {
 
-    @Autowired private final ApplicationProperties applicationProperties;
+    @Autowired
+    private final ApplicationProperties applicationProperties;
 
-    @Autowired private final MessageSource messageSource;
+    @Autowired
+    private final MessageSource messageSource;
 
     @GetMapping()
     @Operation(summary = "Get the api version")
     public ResponseEntity<DataResponseTO<ApiVersionTO>> getVersion() {
         ApiVersionTO apiVersionTO = new ApiVersionTO(applicationProperties.getVersion());
-        return ResponseEntity.ok(
-                new DataResponseTO<>(apiVersionTO, "success.apiversion.get", messageSource));
+        return ResponseEntity.ok(new DataResponseTO<>(apiVersionTO, "success.apiversion.get", messageSource));
     }
 }

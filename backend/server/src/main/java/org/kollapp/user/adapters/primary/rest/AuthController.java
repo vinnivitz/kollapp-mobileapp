@@ -28,29 +28,26 @@ import io.swagger.v3.oas.annotations.Operation;
 @Slf4j
 @PrimaryAdapter
 public class AuthController {
-    @Autowired private MessageSource messageSource;
+    @Autowired
+    private MessageSource messageSource;
 
-    @Autowired private AuthService authService;
+    @Autowired
+    private AuthService authService;
 
     @PostMapping("/signin")
     @Operation(summary = "Sign in a kollapp user")
     public ResponseEntity<DataResponseTO<AuthenticatedKollappUser>> authenticateKollappUser(
             @Valid @RequestBody LoginRequestTO loginRequestTO) {
         AuthenticatedKollappUser authenticatedKollappUser =
-                authService.authenticate(
-                        loginRequestTO.getUsername(), loginRequestTO.getPassword());
-        return ResponseEntity.ok(
-                new DataResponseTO<>(
-                        authenticatedKollappUser, "success.user.signin", messageSource));
+                authService.authenticate(loginRequestTO.getUsername(), loginRequestTO.getPassword());
+        return ResponseEntity.ok(new DataResponseTO<>(authenticatedKollappUser, "success.user.signin", messageSource));
     }
 
     @GetMapping("/refresh")
     @Operation(summary = "Refresh the access token")
-    public ResponseEntity<DataResponseTO<AuthToken>> refreshAccessToken(
-            @RequestParam("token") String refreshToken) {
+    public ResponseEntity<DataResponseTO<AuthToken>> refreshAccessToken(@RequestParam("token") String refreshToken) {
         String accessToken = authService.refresh(refreshToken);
         return ResponseEntity.ok(
-                new DataResponseTO<>(
-                        new AuthToken(accessToken), "success.user.refresh-token", messageSource));
+                new DataResponseTO<>(new AuthToken(accessToken), "success.user.refresh-token", messageSource));
     }
 }

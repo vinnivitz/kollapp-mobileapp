@@ -17,7 +17,8 @@ import org.kollapp.organization.application.publisher.OrganizationPublisher;
 @Slf4j
 public class OrganizationPublisherImpl implements OrganizationPublisher {
 
-    @Autowired private ApplicationEventPublisher applicationEventPublisher;
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     public void publishOrganizationCreatedEvent(OrganizationCreatedEvent organizationCreatedEvent) {

@@ -24,16 +24,15 @@ import org.kollapp.core.adapters.primary.rest.dto.ValidationFailureResponseTO;
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    @Autowired private MessageSource messageSource;
+    @Autowired
+    private MessageSource messageSource;
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ResponseTO> handleValidationExceptions(
-            MethodArgumentNotValidException exception) {
+    public ResponseEntity<ResponseTO> handleValidationExceptions(MethodArgumentNotValidException exception) {
         List<FieldError> fieldErrors = exception.getBindingResult().getFieldErrors();
         FieldError firstError = fieldErrors.getFirst();
         String message = firstError.getDefaultMessage();
-        ValidationFailureResponseTO responseTO =
-                new ValidationFailureResponseTO(message, firstError.getField());
+        ValidationFailureResponseTO responseTO = new ValidationFailureResponseTO(message, firstError.getField());
         return ResponseEntity.badRequest().body(responseTO);
     }
 
@@ -45,8 +44,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<ResponseTO> handleMethodNotAllowed(
-            HttpRequestMethodNotSupportedException ex) {
+    public ResponseEntity<ResponseTO> handleMethodNotAllowed(HttpRequestMethodNotSupportedException ex) {
         log.error(ex.getMessage());
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
                 .body(new ErrorResponseTO("error.method-not-allowed", messageSource));
@@ -55,8 +53,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NoSuchMessageException.class)
     public ResponseEntity<ResponseTO> handleNoSuchMessage(NoSuchMessageException ex) {
         log.error(ex.getMessage());
-        return ResponseEntity.internalServerError()
-                .body(new ErrorResponseTO("error.generic", messageSource));
+        return ResponseEntity.internalServerError().body(new ErrorResponseTO("error.generic", messageSource));
     }
 
     @ExceptionHandler(AuthorizationDeniedException.class)

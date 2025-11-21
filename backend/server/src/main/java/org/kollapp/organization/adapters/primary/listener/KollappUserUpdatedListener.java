@@ -12,11 +12,11 @@ import org.kollapp.user.application.model.KollappUserUpdatedEvent;
 @PrimaryAdapter
 public class KollappUserUpdatedListener implements ApplicationListener<KollappUserUpdatedEvent> {
 
-    @Autowired private OrganizationService organizationService;
+    @Autowired
+    private OrganizationService organizationService;
 
     @Override
     public void onApplicationEvent(KollappUserUpdatedEvent event) {
-        organizationService.updatePersonOfOrganizationsOfUser(
-                event.getUserId(), event.getUsername());
+        organizationService.updatePersonOfOrganizationsOfUser(event.getUserId(), event.getUsername());
     }
 }

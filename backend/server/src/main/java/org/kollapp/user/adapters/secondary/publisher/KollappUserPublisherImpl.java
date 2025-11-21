@@ -16,7 +16,8 @@ import org.kollapp.user.application.publisher.KollappUserPublisher;
 @Slf4j
 public class KollappUserPublisherImpl implements KollappUserPublisher {
 
-    @Autowired private ApplicationEventPublisher applicationEventPublisher;
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     public void publishUserDeletedEvent(KollappUserDeletedEvent kollappUserDeletedEvent) {

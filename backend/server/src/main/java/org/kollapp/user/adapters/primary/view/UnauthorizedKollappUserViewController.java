@@ -22,25 +22,25 @@ import org.kollapp.user.application.service.KollappUserService;
 @PrimaryAdapter
 public class UnauthorizedKollappUserViewController {
 
-    @Autowired private KollappUserService kollappUserService;
-    @Autowired private UrlBuilderUtil urlBuilderUtil;
-    @Autowired private MessageSource messageSource;
+    @Autowired
+    private KollappUserService kollappUserService;
+
+    @Autowired
+    private UrlBuilderUtil urlBuilderUtil;
+
+    @Autowired
+    private MessageSource messageSource;
 
     @GetMapping(value = "/confirmation", produces = MediaType.TEXT_HTML_VALUE)
-    public String confirmKollappUser(
-            @RequestParam("confirmationToken") String confirmationToken, Model model) {
+    public String confirmKollappUser(@RequestParam("confirmationToken") String confirmationToken, Model model) {
         kollappUserService.activateKollappUser(confirmationToken);
 
-        model.addAttribute(
-                "title", messageSource.getMessage("view.account-confirmed.title", null, null));
-        model.addAttribute(
-                "header", messageSource.getMessage("view.account-confirmed.header", null, null));
+        model.addAttribute("title", messageSource.getMessage("view.account-confirmed.title", null, null));
+        model.addAttribute("header", messageSource.getMessage("view.account-confirmed.header", null, null));
         model.addAttribute("logoUrl", urlBuilderUtil.buildServerUrl("/logo.png"));
-        model.addAttribute(
-                "text", messageSource.getMessage("view.account-confirmed.text", null, null));
+        model.addAttribute("text", messageSource.getMessage("view.account-confirmed.text", null, null));
         model.addAttribute("downloadAppUrl", "https://kollapp.org");
-        model.addAttribute(
-                "button", messageSource.getMessage("view.account-confirmed.button", null, null));
+        model.addAttribute("button", messageSource.getMessage("view.account-confirmed.button", null, null));
 
         return TemplateView.ACCOUNT_CONFIRMED.getViewName();
     }

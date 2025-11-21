@@ -21,7 +21,8 @@ import org.kollapp.organization.application.service.ActivityService;
         authorities = {"ROLE_KOLLAPP_USER"})
 public class ActivityServiceKollappUserIT extends BaseIT {
 
-    @Autowired private ActivityService activityService;
+    @Autowired
+    private ActivityService activityService;
 
     @Test
     public void getActivitiesOfOrganizationShouldThrowException() {

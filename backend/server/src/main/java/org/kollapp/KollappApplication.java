@@ -15,7 +15,8 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 
 @SpringBootApplication
 public class KollappApplication {
-    @Autowired private ApplicationProperties applicationProperties;
+    @Autowired
+    private ApplicationProperties applicationProperties;
 
     /** Main method to run the Spring Boot application. */
     public static void main(String[] args) {
@@ -26,19 +27,17 @@ public class KollappApplication {
     @Bean
     OpenAPI openAPI() {
         return new OpenAPI()
-                .info(
-                        new Info()
-                                .title("Kollapp Backend API")
-                                .description("API Documentation for Kollapp Backend")
-                                .version(applicationProperties.getVersion()))
+                .info(new Info()
+                        .title("Kollapp Backend API")
+                        .description("API Documentation for Kollapp Backend")
+                        .version(applicationProperties.getVersion()))
                 .addSecurityItem(new SecurityRequirement().addList("bearer-key"))
-                .components(
-                        new Components()
-                                .addSecuritySchemes(
-                                        "bearer-key",
-                                        new SecurityScheme()
-                                                .type(SecurityScheme.Type.HTTP)
-                                                .scheme("bearer")
-                                                .bearerFormat("JWT")));
+                .components(new Components()
+                        .addSecuritySchemes(
+                                "bearer-key",
+                                new SecurityScheme()
+                                        .type(SecurityScheme.Type.HTTP)
+                                        .scheme("bearer")
+                                        .bearerFormat("JWT")));
     }
 }

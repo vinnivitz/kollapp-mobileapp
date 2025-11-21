@@ -41,8 +41,7 @@ public class OrganizationExceptionHandler {
     }
 
     @ExceptionHandler(InvalidInvitationCodeException.class)
-    public ResponseEntity<ResponseTO> handleInvalidInvitationCode(
-            InvalidInvitationCodeException ex) {
+    public ResponseEntity<ResponseTO> handleInvalidInvitationCode(InvalidInvitationCodeException ex) {
         return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
     }
 
@@ -53,9 +52,7 @@ public class OrganizationExceptionHandler {
     }
 
     @ExceptionHandler(OrganizationAuthorizationException.class)
-    public ResponseEntity<ResponseTO> handleOrganizationAuthorizationException(
-            OrganizationAuthorizationException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(new ErrorResponseTO(ex.getMessage()));
+    public ResponseEntity<ResponseTO> handleOrganizationAuthorizationException(OrganizationAuthorizationException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponseTO(ex.getMessage()));
     }
 }

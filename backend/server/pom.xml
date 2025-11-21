@@ -41,7 +41,7 @@
         <google-findbugs.version>3.0.2</google-findbugs.version>
         <checkstyle.version>3.6.0</checkstyle.version>
         <spotless.version>2.43.0</spotless.version>
-        <google-java-format.version>1.18.1</google-java-format.version>
+        <palantir-java-format.version>2.50.0</palantir-java-format.version>
         <spring-boot-starter-actuator.version>3.4.3</spring-boot-starter-actuator.version>
         <jacoco.version>0.8.13</jacoco.version>
     </properties>
@@ -365,10 +365,9 @@
                 <configuration>
                     <java>
                         <removeUnusedImports />
-                        <googleJavaFormat>
-                            <version>${google-java-format.version}</version>
-                            <style>AOSP</style>
-                        </googleJavaFormat>
+                        <palantirJavaFormat>
+                            <version>${palantir-java-format.version}</version>
+                        </palantirJavaFormat>
                         <importOrder>
                             <order>java,javax,jakarta,lombok,org,com,\#,org.kollapp,\#org.kollapp</order>
                         </importOrder>

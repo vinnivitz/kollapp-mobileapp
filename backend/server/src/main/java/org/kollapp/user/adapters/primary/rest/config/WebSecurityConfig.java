@@ -34,11 +34,14 @@ import org.kollapp.user.application.service.impl.KollappUserDetailsServiceImpl;
 @EnableWebSecurity
 @EnableAspectJAutoProxy
 public class WebSecurityConfig {
-    @Autowired private KollappUserDetailsServiceImpl userDetailsService;
+    @Autowired
+    private KollappUserDetailsServiceImpl userDetailsService;
 
-    @Autowired private AuthEntryPointJwt unauthorizedHandler;
+    @Autowired
+    private AuthEntryPointJwt unauthorizedHandler;
 
-    @Autowired private CorsProperties corsProperties;
+    @Autowired
+    private CorsProperties corsProperties;
 
     /**
      * It intercepts the incoming requests and validates the JWT token.
@@ -72,8 +75,7 @@ public class WebSecurityConfig {
      * @return the authentication manager
      */
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig)
-            throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
 
@@ -101,9 +103,12 @@ public class WebSecurityConfig {
             configuration.addAllowedOriginPattern(allowedPattern);
         }
 
-        configuration.setAllowedMethods(List.of(corsProperties.getAllowedMethods().split(",")));
-        configuration.setAllowedHeaders(List.of(corsProperties.getAllowedHeaders().split(",")));
-        configuration.setExposedHeaders(List.of(corsProperties.getExposedHeaders().split(",")));
+        configuration.setAllowedMethods(
+                List.of(corsProperties.getAllowedMethods().split(",")));
+        configuration.setAllowedHeaders(
+                List.of(corsProperties.getAllowedHeaders().split(",")));
+        configuration.setExposedHeaders(
+                List.of(corsProperties.getExposedHeaders().split(",")));
         configuration.setAllowCredentials(Boolean.valueOf(corsProperties.getAllowCredentials()));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -121,42 +126,27 @@ public class WebSecurityConfig {
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.headers(
-                headers ->
-                        headers.xssProtection(
-                                        xss ->
-                                                xss.headerValue(
-                                                        XXssProtectionHeaderWriter.HeaderValue
-                                                                .ENABLED_MODE_BLOCK))
-                                .contentTypeOptions(withDefaults())
-                                .frameOptions(frame -> frame.sameOrigin())
-                                .httpStrictTransportSecurity(
-                                        hsts ->
-                                                hsts.includeSubDomains(true)
-                                                        .maxAgeInSeconds(31536000))
-                                .contentSecurityPolicy(
-                                        csp ->
-                                                csp.policyDirectives(
-                                                        "default-src 'self'; img-src 'self' data:; script-src"
-                                                                + " 'self'; style-src 'self';")));
+        http.headers(headers -> headers.xssProtection(
+                        xss -> xss.headerValue(XXssProtectionHeaderWriter.HeaderValue.ENABLED_MODE_BLOCK))
+                .contentTypeOptions(withDefaults())
+                .frameOptions(frame -> frame.sameOrigin())
+                .httpStrictTransportSecurity(
+                        hsts -> hsts.includeSubDomains(true).maxAgeInSeconds(31536000))
+                .contentSecurityPolicy(csp -> csp.policyDirectives(
+                        "default-src 'self'; img-src 'self' data:; script-src" + " 'self'; style-src 'self';")));
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
-                .exceptionHandling(
-                        exception -> exception.authenticationEntryPoint(unauthorizedHandler))
-                .sessionManagement(
-                        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(
-                        auth ->
-                                auth.requestMatchers("/api/public/**")
-                                        .permitAll()
-                                        .requestMatchers("/api/**")
-                                        .authenticated()
-                                        .anyRequest()
-                                        .permitAll());
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/api/public/**")
+                        .permitAll()
+                        .requestMatchers("/api/**")
+                        .authenticated()
+                        .anyRequest()
+                        .permitAll());
 
         http.authenticationProvider(authenticationProvider());
-        http.addFilterBefore(
-                authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

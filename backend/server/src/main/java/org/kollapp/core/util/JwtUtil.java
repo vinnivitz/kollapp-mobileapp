@@ -64,8 +64,7 @@ public class JwtUtil {
         Key signingKey = generateSigningKey(jwtProperties.getConfirmationSecret());
         return Jwts.builder()
                 .setSubject(subject)
-                .setExpiration(
-                        generateExpirationDate(jwtProperties.getConfirmationExpirationInSeconds()))
+                .setExpiration(generateExpirationDate(jwtProperties.getConfirmationExpirationInSeconds()))
                 .signWith(signingKey, SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -80,8 +79,7 @@ public class JwtUtil {
         Key signingKey = generateSigningKey(jwtProperties.getRefreshSecret());
         return Jwts.builder()
                 .setSubject(subject)
-                .setExpiration(
-                        generateExpirationDate(jwtProperties.getRefreshExpirationInSeconds()))
+                .setExpiration(generateExpirationDate(jwtProperties.getRefreshExpirationInSeconds()))
                 .signWith(signingKey, SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -96,8 +94,7 @@ public class JwtUtil {
         Key signingKey = generateSigningKey(jwtProperties.getResetPasswordSecret());
         return Jwts.builder()
                 .setSubject(subject)
-                .setExpiration(
-                        generateExpirationDate(jwtProperties.getResetPasswordExpirationInSeconds()))
+                .setExpiration(generateExpirationDate(jwtProperties.getResetPasswordExpirationInSeconds()))
                 .signWith(signingKey, SignatureAlgorithm.HS256)
                 .compact();
     }

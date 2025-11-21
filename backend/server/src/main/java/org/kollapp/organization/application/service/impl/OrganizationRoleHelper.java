@@ -21,11 +21,14 @@ import org.kollapp.user.application.service.KollappUserService;
 @Service
 class OrganizationRoleHelper {
 
-    @Autowired private KollappUserService kollappUserService;
+    @Autowired
+    private KollappUserService kollappUserService;
 
-    @Autowired private OrganizationRepository organizationRepository;
+    @Autowired
+    private OrganizationRepository organizationRepository;
 
-    @Autowired private MessageSource messageSource;
+    @Autowired
+    private MessageSource messageSource;
 
     protected void verifyOrganizationMember(Long organizationId) {
         KollappUser currentUser = kollappUserService.getLoggedInKollappUser();
@@ -52,27 +55,20 @@ class OrganizationRoleHelper {
     }
 
     private boolean isMemberOfOrganization(KollappUser currentUser, Organization organization) {
-        PersonOfOrganization personOfOrganization =
-                getPersonOfOrganization(currentUser, organization);
+        PersonOfOrganization personOfOrganization = getPersonOfOrganization(currentUser, organization);
         if (personOfOrganization.getStatus().equals(PersonOfOrganizationStatus.PENDING)) {
             throw new PersonOfOrganizationIsNotApprovedYetException(messageSource);
         }
-        return personOfOrganization
-                        .getOrganizationRole()
-                        .equals(OrganizationRole.ROLE_ORGANIZATION_MEMBER)
+        return personOfOrganization.getOrganizationRole().equals(OrganizationRole.ROLE_ORGANIZATION_MEMBER)
                 || isManagerOfOrganization(currentUser, organization);
     }
 
     private boolean isManagerOfOrganization(KollappUser currentUser, Organization organization) {
-        PersonOfOrganization personOfOrganization =
-                getPersonOfOrganization(currentUser, organization);
-        return personOfOrganization
-                .getOrganizationRole()
-                .equals(OrganizationRole.ROLE_ORGANIZATION_MANAGER);
+        PersonOfOrganization personOfOrganization = getPersonOfOrganization(currentUser, organization);
+        return personOfOrganization.getOrganizationRole().equals(OrganizationRole.ROLE_ORGANIZATION_MANAGER);
     }
 
-    private PersonOfOrganization getPersonOfOrganization(
-            KollappUser currentUser, Organization organization) {
+    private PersonOfOrganization getPersonOfOrganization(KollappUser currentUser, Organization organization) {
         return organization.getPersonsOfOrganization().stream()
                 .filter(p -> p.getUserId() == currentUser.getId())
                 .findFirst()

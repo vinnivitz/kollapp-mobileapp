@@ -16,7 +16,8 @@ import org.kollapp.organization.application.repository.PersonOfOrganizationRepos
 @Repository
 public class PersonOfOrganizationRepositoryImpl implements PersonOfOrganizationRepository {
 
-    @Autowired private PersonOfOrganizationJpaRepository personOfOrganizationJpaRepository;
+    @Autowired
+    private PersonOfOrganizationJpaRepository personOfOrganizationJpaRepository;
 
     @Override
     public PersonOfOrganization save(PersonOfOrganization personOfOrganization) {
@@ -29,8 +30,7 @@ public class PersonOfOrganizationRepositoryImpl implements PersonOfOrganizationR
     }
 
     @Override
-    public Optional<PersonOfOrganization> findByUserIdAndOrganization(
-            long userId, Organization organization) {
+    public Optional<PersonOfOrganization> findByUserIdAndOrganization(long userId, Organization organization) {
         return personOfOrganizationJpaRepository.findByUserIdAndOrganization(userId, organization);
     }
 
@@ -45,8 +45,7 @@ public class PersonOfOrganizationRepositoryImpl implements PersonOfOrganizationR
     }
 
     @Override
-    public Optional<PersonOfOrganization> findByIdAndOrganization(
-            long id, Organization organization) {
+    public Optional<PersonOfOrganization> findByIdAndOrganization(long id, Organization organization) {
         return personOfOrganizationJpaRepository.findByIdAndOrganization(id, organization);
     }
 }

@@ -13,20 +13,21 @@ import org.kollapp.core.config.properties.ClientProperties;
 
 @Component
 public class UrlBuilderUtil {
-    @Autowired private ApplicationProperties applicationProperties;
+    @Autowired
+    private ApplicationProperties applicationProperties;
 
-    @Autowired private ClientProperties clientProperties;
+    @Autowired
+    private ClientProperties clientProperties;
 
     public String buildServerUrl(String path, Map<String, String> queryMap) {
-        String baseUrl =
-                "http"
-                        + (Boolean.parseBoolean(applicationProperties.getProduction()) ? "s" : "")
-                        + "://"
-                        + applicationProperties.getHost()
-                        + (Boolean.parseBoolean(applicationProperties.getProduction())
-                                ? ""
-                                : (":" + applicationProperties.getPort()))
-                        + (path != null ? path : "");
+        String baseUrl = "http"
+                + (Boolean.parseBoolean(applicationProperties.getProduction()) ? "s" : "")
+                + "://"
+                + applicationProperties.getHost()
+                + (Boolean.parseBoolean(applicationProperties.getProduction())
+                        ? ""
+                        : (":" + applicationProperties.getPort()))
+                + (path != null ? path : "");
 
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(baseUrl);
 
@@ -51,8 +52,7 @@ public class UrlBuilderUtil {
         return buildServerUrl(null, queryMap);
     }
 
-    public String buildClientUrl(
-            ClientPlatform clientPlatform, String path, Map<String, String> queryMap) {
+    public String buildClientUrl(ClientPlatform clientPlatform, String path, Map<String, String> queryMap) {
         String baseUrl = getClientBaseUrl(clientPlatform);
 
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(baseUrl + path);

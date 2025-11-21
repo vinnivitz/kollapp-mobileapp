@@ -40,28 +40,16 @@ public class Organization {
 
     private String place;
 
-    @OneToMany(
-            cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY,
-            mappedBy = "organization",
-            orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "organization", orphanRemoval = true)
     private List<PersonOfOrganization> personsOfOrganization;
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "organization", orphanRemoval = true)
     private OrganizationInvitationCode organizationInvitationCode;
 
-    @OneToMany(
-            cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY,
-            mappedBy = "organization",
-            orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "organization", orphanRemoval = true)
     private List<Activity> activities;
 
-    @OneToMany(
-            cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY,
-            mappedBy = "organization",
-            orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "organization", orphanRemoval = true)
     private List<OrganizationPosting> organizationPostings;
 
     public void addPersonOfOrganization(PersonOfOrganization personOfOrganization) {
@@ -82,10 +70,7 @@ public class Organization {
 
     public List<PersonOfOrganization> getManagers() {
         return personsOfOrganization.stream()
-                .filter(
-                        p ->
-                                p.getOrganizationRole()
-                                        .equals(OrganizationRole.ROLE_ORGANIZATION_MANAGER))
+                .filter(p -> p.getOrganizationRole().equals(OrganizationRole.ROLE_ORGANIZATION_MANAGER))
                 .toList();
     }
 
@@ -97,12 +82,11 @@ public class Organization {
         String code = generateInvitationCode();
         String expirationDate = LocalDate.now().plusDays(validityDays).toString();
         if (getOrganizationInvitationCode() == null) {
-            organizationInvitationCode =
-                    OrganizationInvitationCode.builder()
-                            .code(code)
-                            .expirationDate(expirationDate)
-                            .organization(this)
-                            .build();
+            organizationInvitationCode = OrganizationInvitationCode.builder()
+                    .code(code)
+                    .expirationDate(expirationDate)
+                    .organization(this)
+                    .build();
         } else {
             organizationInvitationCode.setCode(code);
             organizationInvitationCode.setExpirationDate(expirationDate);

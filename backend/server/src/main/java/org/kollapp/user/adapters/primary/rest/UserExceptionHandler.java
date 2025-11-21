@@ -23,65 +23,52 @@ import org.kollapp.user.application.exception.UsernameNotFoundException;
 
 @ControllerAdvice(basePackages = {"org.kollapp.user"})
 public class UserExceptionHandler {
-    @Autowired private MessageSource messageSource;
+    @Autowired
+    private MessageSource messageSource;
 
     @ExceptionHandler(UsernameExistsException.class)
-    public ResponseEntity<ValidationFailureResponseTO> handleUsernameExists(
-            UsernameExistsException ex) {
-        return ResponseEntity.badRequest()
-                .body(new ValidationFailureResponseTO(ex.getMessage(), "username"));
+    public ResponseEntity<ValidationFailureResponseTO> handleUsernameExists(UsernameExistsException ex) {
+        return ResponseEntity.badRequest().body(new ValidationFailureResponseTO(ex.getMessage(), "username"));
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<ValidationFailureResponseTO> handleUsernameNotFound(
-            UsernameNotFoundException ex) {
-        return ResponseEntity.badRequest()
-                .body(new ValidationFailureResponseTO(ex.getMessage(), "username"));
+    public ResponseEntity<ValidationFailureResponseTO> handleUsernameNotFound(UsernameNotFoundException ex) {
+        return ResponseEntity.badRequest().body(new ValidationFailureResponseTO(ex.getMessage(), "username"));
     }
 
     @ExceptionHandler(EmailExistsException.class)
     public ResponseEntity<ValidationFailureResponseTO> handleEmailExists(EmailExistsException ex) {
-        return ResponseEntity.badRequest()
-                .body(new ValidationFailureResponseTO(ex.getMessage(), "email"));
+        return ResponseEntity.badRequest().body(new ValidationFailureResponseTO(ex.getMessage(), "email"));
     }
 
     @ExceptionHandler(EmailIsAlreadyConfirmedException.class)
     public ResponseEntity<ValidationFailureResponseTO> handleEmailIsAlreadyConfirmed(
             EmailIsAlreadyConfirmedException ex) {
-        return ResponseEntity.badRequest()
-                .body(new ValidationFailureResponseTO(ex.getMessage(), "email"));
+        return ResponseEntity.badRequest().body(new ValidationFailureResponseTO(ex.getMessage(), "email"));
     }
 
     @ExceptionHandler(EmailIsNotConfirmedException.class)
-    public ResponseEntity<ValidationFailureResponseTO> handleEmailIsNotConfirmed(
-            EmailIsNotConfirmedException ex) {
-        return ResponseEntity.badRequest()
-                .body(new ValidationFailureResponseTO(ex.getMessage(), "email"));
+    public ResponseEntity<ValidationFailureResponseTO> handleEmailIsNotConfirmed(EmailIsNotConfirmedException ex) {
+        return ResponseEntity.badRequest().body(new ValidationFailureResponseTO(ex.getMessage(), "email"));
     }
 
     @ExceptionHandler(EmailNotFoundException.class)
-    public ResponseEntity<ValidationFailureResponseTO> handleEmailNotFound(
-            EmailNotFoundException ex) {
-        return ResponseEntity.badRequest()
-                .body(new ValidationFailureResponseTO(ex.getMessage(), "email"));
+    public ResponseEntity<ValidationFailureResponseTO> handleEmailNotFound(EmailNotFoundException ex) {
+        return ResponseEntity.badRequest().body(new ValidationFailureResponseTO(ex.getMessage(), "email"));
     }
 
     @ExceptionHandler(IncorrectPasswordException.class)
-    public ResponseEntity<ValidationFailureResponseTO> handleIncorrectPassword(
-            IncorrectPasswordException ex) {
-        return ResponseEntity.badRequest()
-                .body(new ValidationFailureResponseTO(ex.getMessage(), "password"));
+    public ResponseEntity<ValidationFailureResponseTO> handleIncorrectPassword(IncorrectPasswordException ex) {
+        return ResponseEntity.badRequest().body(new ValidationFailureResponseTO(ex.getMessage(), "password"));
     }
 
     @ExceptionHandler(InvalidConfirmationLinkException.class)
-    public ResponseEntity<ErrorResponseTO> handleInvalidConfirmationLink(
-            InvalidConfirmationLinkException ex) {
+    public ResponseEntity<ErrorResponseTO> handleInvalidConfirmationLink(InvalidConfirmationLinkException ex) {
         return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
     }
 
     @ExceptionHandler(InvalidRefreshTokenException.class)
-    public ResponseEntity<ErrorResponseTO> handleInvalidRefreshToken(
-            InvalidRefreshTokenException ex) {
+    public ResponseEntity<ErrorResponseTO> handleInvalidRefreshToken(InvalidRefreshTokenException ex) {
         return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
     }
 
@@ -91,15 +78,11 @@ public class UserExceptionHandler {
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ValidationFailureResponseTO> handleBadCredentials(
-            BadCredentialsException ex) {
+    public ResponseEntity<ValidationFailureResponseTO> handleBadCredentials(BadCredentialsException ex) {
         return ResponseEntity.badRequest()
-                .body(
-                        new ValidationFailureResponseTO(
-                                messageSource.getMessage(
-                                        "validation.password.incorrect",
-                                        null,
-                                        LocaleContextHolder.getLocale()),
-                                "password"));
+                .body(new ValidationFailureResponseTO(
+                        messageSource.getMessage(
+                                "validation.password.incorrect", null, LocaleContextHolder.getLocale()),
+                        "password"));
     }
 }

@@ -30,16 +30,16 @@ import org.kollapp.organization.application.service.OrganizationService;
         authorities = {"ROLE_KOLLAPP_USER"})
 public class OrganizationServiceKollappUserIT extends BaseIT {
 
-    @Autowired private OrganizationService organizationService;
+    @Autowired
+    private OrganizationService organizationService;
 
     @Test
     public void createOrganizationShouldCreateOrganization() {
-        Organization organizationDummy =
-                Organization.builder()
-                        .place("Testort")
-                        .name("Testorga")
-                        .description("Testbeschreibung")
-                        .build();
+        Organization organizationDummy = Organization.builder()
+                .place("Testort")
+                .name("Testorga")
+                .description("Testbeschreibung")
+                .build();
         Organization organization = organizationService.createOrganization(organizationDummy);
         assertThat(organization.getId()).isNotZero();
         assertThat(organization.getName()).isEqualTo("Testorga");
@@ -72,16 +72,14 @@ public class OrganizationServiceKollappUserIT extends BaseIT {
     @Test
     @Transactional
     public void enterOrganizationByInvitationCodeShouldReturnEnteredOrganization() {
-        Organization organization =
-                organizationService.enterOrganizationByInvitationCode("asdfjklo");
+        Organization organization = organizationService.enterOrganizationByInvitationCode("asdfjklo");
         assertThat(organization.getId()).isEqualTo(1);
         assertThat(organization.getName()).isEqualTo("NMS");
         assertThat(organization.getPersonsOfOrganization().size()).isEqualTo(1);
         PersonOfOrganization personOfOrganization =
                 organization.getPersonsOfOrganization().getFirst();
         assertThat(personOfOrganization.getUsername()).isEqualTo("nina");
-        assertThat(personOfOrganization.getOrganizationRole())
-                .isEqualTo(OrganizationRole.ROLE_ORGANIZATION_MEMBER);
+        assertThat(personOfOrganization.getOrganizationRole()).isEqualTo(OrganizationRole.ROLE_ORGANIZATION_MEMBER);
         assertThat(personOfOrganization.getStatus()).isEqualTo(PersonOfOrganizationStatus.PENDING);
     }
 

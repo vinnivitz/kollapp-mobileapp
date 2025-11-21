@@ -27,17 +27,20 @@ import org.kollapp.core.util.ResponseUtil;
 @Slf4j
 @Component
 public class AuthTokenFilter extends OncePerRequestFilter {
-    @Autowired private JwtUtil jwtUtil;
+    @Autowired
+    private JwtUtil jwtUtil;
 
-    @Autowired private UserDetailsService userDetailsService;
+    @Autowired
+    private UserDetailsService userDetailsService;
 
-    @Autowired private MessageSource messageSource;
+    @Autowired
+    private MessageSource messageSource;
 
-    @Autowired private ResponseUtil responseUtil;
+    @Autowired
+    private ResponseUtil responseUtil;
 
     @Override
-    protected void doFilterInternal(
-            HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
             String jwt = parseJwt(request);
@@ -46,19 +49,15 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                     String username = jwtUtil.getSubjectFromAuthenticationToken(jwt);
                     UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                     UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(
-                                    userDetails, null, userDetails.getAuthorities());
-                    authentication.setDetails(
-                            new WebAuthenticationDetailsSource().buildDetails(request));
+                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 } else {
                     responseUtil.createMessageResponse(
                             response,
                             HttpServletResponse.SC_UNAUTHORIZED,
                             messageSource.getMessage(
-                                    "error.jwt.authentication.invalid",
-                                    null,
-                                    LocaleContextHolder.getLocale()));
+                                    "error.jwt.authentication.invalid", null, LocaleContextHolder.getLocale()));
                     return;
                 }
             }
@@ -66,8 +65,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             responseUtil.createMessageResponse(
                     response,
                     HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    messageSource.getMessage(
-                            e.getMessage(), null, LocaleContextHolder.getLocale()));
+                    messageSource.getMessage(e.getMessage(), null, LocaleContextHolder.getLocale()));
         }
         filterChain.doFilter(request, response);
     }

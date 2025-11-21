@@ -20,7 +20,8 @@ import org.kollapp.organization.application.service.BudgetAccountService;
         authorities = {"ROLE_KOLLAPP_USER"})
 public class BudgetAccountServiceKollappUserIT extends BaseIT {
 
-    @Autowired private BudgetAccountService budgetAccountService;
+    @Autowired
+    private BudgetAccountService budgetAccountService;
 
     @Test
     public void addOrganizationPostingShouldThrowException() {

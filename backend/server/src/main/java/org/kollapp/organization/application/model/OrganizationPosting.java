@@ -21,11 +21,7 @@ public class OrganizationPosting extends Posting {
     private Organization organization;
 
     public OrganizationPosting(
-            PostingType type,
-            long amountInCents,
-            String date,
-            String purpose,
-            Organization organization) {
+            PostingType type, long amountInCents, String date, String purpose, Organization organization) {
         super(type, amountInCents, date, purpose);
         this.organization = organization;
     }

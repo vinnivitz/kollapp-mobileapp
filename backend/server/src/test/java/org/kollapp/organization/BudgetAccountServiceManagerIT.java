@@ -35,16 +35,17 @@ import org.kollapp.organization.application.service.BudgetAccountService;
         authorities = {"ROLE_KOLLAPP_ORGANIZATION_MEMBER"})
 public class BudgetAccountServiceManagerIT extends BaseIT {
 
-    @Autowired private BudgetAccountService budgetAccountService;
+    @Autowired
+    private BudgetAccountService budgetAccountService;
 
-    @Autowired private OrganizationRepository organizationRepository;
+    @Autowired
+    private OrganizationRepository organizationRepository;
 
     @Test
     public void addOrganizationPostingShouldAddOrganizationPosting() {
         OrganizationPosting organizationPosting =
                 new OrganizationPosting(PostingType.CREDIT, 10000L, "2025-09-11", "Test", null);
-        Posting persistedPosting =
-                budgetAccountService.addOrganizationPosting(1, organizationPosting);
+        Posting persistedPosting = budgetAccountService.addOrganizationPosting(1, organizationPosting);
         assertThat(persistedPosting.getId()).isNotZero();
         assertThat(persistedPosting.getDate()).isEqualTo(organizationPosting.getDate());
         assertThat(persistedPosting.getType()).isEqualTo(organizationPosting.getType());
@@ -56,44 +57,33 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
     @Test
     public void addOrganizationPostingForNonExistingOrganizationShouldThrowException() {
         assertThatExceptionOfType(OrganizationNotFoundException.class)
-                .isThrownBy(
-                        () ->
-                                budgetAccountService.addOrganizationPosting(
-                                        4, new OrganizationPosting()));
+                .isThrownBy(() -> budgetAccountService.addOrganizationPosting(4, new OrganizationPosting()));
     }
 
     @Test
     public void editOrganizationPostingShouldThrowException() {
         OrganizationPosting organizationPosting =
-                new OrganizationPosting(
-                        PostingType.CREDIT, 1000L, "2025-09-11", "Test_updated", null);
-        Posting updatedPosting =
-                budgetAccountService.editOrganizationPosting(1, 2, organizationPosting);
+                new OrganizationPosting(PostingType.CREDIT, 1000L, "2025-09-11", "Test_updated", null);
+        Posting updatedPosting = budgetAccountService.editOrganizationPosting(1, 2, organizationPosting);
         assertThat(updatedPosting.getId()).isEqualTo(2);
         assertThat(updatedPosting.getDate()).isEqualTo(organizationPosting.getDate());
         assertThat(updatedPosting.getType()).isEqualTo(organizationPosting.getType());
         assertThat(updatedPosting.getPurpose()).isEqualTo(organizationPosting.getPurpose());
-        assertThat(updatedPosting.getAmountInCents())
-                .isEqualTo(organizationPosting.getAmountInCents());
-        assertThat(((OrganizationPosting) updatedPosting).getOrganization().getId()).isEqualTo(1L);
+        assertThat(updatedPosting.getAmountInCents()).isEqualTo(organizationPosting.getAmountInCents());
+        assertThat(((OrganizationPosting) updatedPosting).getOrganization().getId())
+                .isEqualTo(1L);
     }
 
     @Test
     public void editOrganizationPostingForNonExistingOrganizationShouldThrowException() {
         assertThatExceptionOfType(OrganizationNotFoundException.class)
-                .isThrownBy(
-                        () ->
-                                budgetAccountService.editOrganizationPosting(
-                                        4, 1, new OrganizationPosting()));
+                .isThrownBy(() -> budgetAccountService.editOrganizationPosting(4, 1, new OrganizationPosting()));
     }
 
     @Test
     public void editOrganizationPostingForNonExistingPostingShouldThrowException() {
         assertThatExceptionOfType(PostingDoesNotExistException.class)
-                .isThrownBy(
-                        () ->
-                                budgetAccountService.editOrganizationPosting(
-                                        1, 1, new OrganizationPosting()));
+                .isThrownBy(() -> budgetAccountService.editOrganizationPosting(1, 1, new OrganizationPosting()));
     }
 
     @Test
@@ -119,10 +109,8 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
 
     @Test
     public void addActivityPostingShouldCreateActivityPosting() {
-        ActivityPosting activityPosting =
-                new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test", null);
-        Posting persistedActivityPosting =
-                budgetAccountService.addActivityPosting(1, 1, activityPosting);
+        ActivityPosting activityPosting = new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test", null);
+        Posting persistedActivityPosting = budgetAccountService.addActivityPosting(1, 1, activityPosting);
         assertThat(persistedActivityPosting.getId()).isNotZero();
         assertThat(persistedActivityPosting.getDate()).isEqualTo(activityPosting.getDate());
         assertThat(persistedActivityPosting.getType()).isEqualTo(activityPosting.getType());
@@ -134,56 +122,44 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
     @Test
     public void addActivityPostingForNonExistingOrganizationShouldThrowException() {
         assertThatExceptionOfType(OrganizationNotFoundException.class)
-                .isThrownBy(
-                        () -> budgetAccountService.addActivityPosting(4, 1, new ActivityPosting()));
+                .isThrownBy(() -> budgetAccountService.addActivityPosting(4, 1, new ActivityPosting()));
     }
 
     @Test
     public void addActivityPostingForNonExistingActivityShouldThrowException() {
         assertThatExceptionOfType(ActivityNotFoundException.class)
-                .isThrownBy(
-                        () -> budgetAccountService.addActivityPosting(1, 2, new ActivityPosting()));
+                .isThrownBy(() -> budgetAccountService.addActivityPosting(1, 2, new ActivityPosting()));
     }
 
     @Test
     public void editActivityPostingShouldEditActivityPosting() {
         ActivityPosting activityPosting =
-                new ActivityPosting(
-                        PostingType.CREDIT, 10000L, "2025-09-11", "test_bearbeitet", null);
-        Posting editedActivityPosting =
-                budgetAccountService.editActivityPosting(1, 1, 1, activityPosting);
+                new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test_bearbeitet", null);
+        Posting editedActivityPosting = budgetAccountService.editActivityPosting(1, 1, 1, activityPosting);
         assertThat(editedActivityPosting.getId()).isEqualTo(1);
         assertThat(editedActivityPosting.getDate()).isEqualTo(activityPosting.getDate());
         assertThat(editedActivityPosting.getType()).isEqualTo(activityPosting.getType());
         assertThat(editedActivityPosting.getPurpose()).isEqualTo(activityPosting.getPurpose());
-        assertThat(((ActivityPosting) editedActivityPosting).getActivity().getId()).isEqualTo(1L);
+        assertThat(((ActivityPosting) editedActivityPosting).getActivity().getId())
+                .isEqualTo(1L);
     }
 
     @Test
     public void editActivityPostingForNonExistingOrganizationShouldThrowException() {
         assertThatExceptionOfType(OrganizationNotFoundException.class)
-                .isThrownBy(
-                        () ->
-                                budgetAccountService.editActivityPosting(
-                                        4, 1, 1, new ActivityPosting()));
+                .isThrownBy(() -> budgetAccountService.editActivityPosting(4, 1, 1, new ActivityPosting()));
     }
 
     @Test
     public void editActivityPostingForNonExistingActivityShouldThrowException() {
         assertThatExceptionOfType(ActivityNotFoundException.class)
-                .isThrownBy(
-                        () ->
-                                budgetAccountService.editActivityPosting(
-                                        1, 3, 1, new ActivityPosting()));
+                .isThrownBy(() -> budgetAccountService.editActivityPosting(1, 3, 1, new ActivityPosting()));
     }
 
     @Test
     public void editActivityPostingForNonExistingPostingShouldThrowException() {
         assertThatExceptionOfType(PostingDoesNotExistException.class)
-                .isThrownBy(
-                        () ->
-                                budgetAccountService.editActivityPosting(
-                                        1, 1, 2, new ActivityPosting()));
+                .isThrownBy(() -> budgetAccountService.editActivityPosting(1, 1, 2, new ActivityPosting()));
     }
 
     @Test

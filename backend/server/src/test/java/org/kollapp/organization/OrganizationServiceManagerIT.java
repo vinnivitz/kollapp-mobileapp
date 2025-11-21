@@ -40,19 +40,23 @@ import org.kollapp.user.application.repository.KollappUserRepository;
         authorities = {"ROLE_KOLLAPP_ORGANIZATION_MEMBER"})
 public class OrganizationServiceManagerIT extends BaseIT {
 
-    @Autowired private OrganizationService organizationService;
-    @Autowired private KollappUserRepository kollappUserRepository;
-    @Autowired private OrganizationRepository organizationRepository;
+    @Autowired
+    private OrganizationService organizationService;
+
+    @Autowired
+    private KollappUserRepository kollappUserRepository;
+
+    @Autowired
+    private OrganizationRepository organizationRepository;
 
     @Test
     public void createOrganizationShouldCreateOrganization() {
         LocalDate now = LocalDate.now();
-        Organization organizationDummy =
-                Organization.builder()
-                        .place("Testort")
-                        .name("Testorga")
-                        .description("Testbeschreibung")
-                        .build();
+        Organization organizationDummy = Organization.builder()
+                .place("Testort")
+                .name("Testorga")
+                .description("Testbeschreibung")
+                .build();
         Organization organization = organizationService.createOrganization(organizationDummy);
         assertThat(organization.getId()).isNotZero();
         assertThat(organization.getName()).isEqualTo("Testorga");
@@ -68,12 +72,11 @@ public class OrganizationServiceManagerIT extends BaseIT {
 
     @Test
     public void updateOrganizationShouldReturnUpdatedOrganization() {
-        Organization organizationDummy =
-                Organization.builder()
-                        .place("Testort_updated")
-                        .name("Testorga_updated")
-                        .description("Testbeschreibung_updated")
-                        .build();
+        Organization organizationDummy = Organization.builder()
+                .place("Testort_updated")
+                .name("Testorga_updated")
+                .description("Testbeschreibung_updated")
+                .build();
         Organization organization = organizationService.updateOrganization(organizationDummy, 1);
         assertThat(organization.getId()).isEqualTo(1);
         assertThat(organization.getName()).isEqualTo("Testorga_updated");
@@ -88,12 +91,9 @@ public class OrganizationServiceManagerIT extends BaseIT {
     }
 
     @Test
-    public void
-            deleteUserFromTheirLastOrganizationShouldDowngradeRoleAndDeleteThemFromOrganization() {
+    public void deleteUserFromTheirLastOrganizationShouldDowngradeRoleAndDeleteThemFromOrganization() {
         Organization organization = organizationService.deleteUserFromOrganization(3, 1);
-        assertThat(
-                        organization.getPersonsOfOrganization().stream()
-                                .mapToLong(PersonOfOrganization::getId))
+        assertThat(organization.getPersonsOfOrganization().stream().mapToLong(PersonOfOrganization::getId))
                 .doesNotContain(3L);
         KollappUser kollappUser = kollappUserRepository.findById(3L).orElse(new KollappUser());
         assertThat(kollappUser.getRole()).isEqualTo(SystemRole.ROLE_KOLLAPP_USER);
@@ -102,9 +102,7 @@ public class OrganizationServiceManagerIT extends BaseIT {
     @Test
     public void deleteUserFromOrganizationShouldDeleteThemFromOrganization() {
         Organization organization = organizationService.deleteUserFromOrganization(2, 1);
-        assertThat(
-                        organization.getPersonsOfOrganization().stream()
-                                .mapToLong(PersonOfOrganization::getId))
+        assertThat(organization.getPersonsOfOrganization().stream().mapToLong(PersonOfOrganization::getId))
                 .doesNotContain(2L);
         KollappUser kollappUser = kollappUserRepository.findById(2L).orElse(new KollappUser());
         assertThat(kollappUser.getRole()).isEqualTo(SystemRole.ROLE_KOLLAPP_ORGANIZATION_MEMBER);
@@ -128,15 +126,13 @@ public class OrganizationServiceManagerIT extends BaseIT {
     @Test
     public void generateNewOrganizationInvitationCodeShouldReturnNewCode() {
         LocalDate now = LocalDate.now();
-        String currentInvitationCode =
-                organizationService
-                        .getOrganizationById(1)
-                        .getOrganizationInvitationCode()
-                        .getCode();
+        String currentInvitationCode = organizationService
+                .getOrganizationById(1)
+                .getOrganizationInvitationCode()
+                .getCode();
         Organization organization = organizationService.generateNewOrganizationInvitationCode(1);
         assertThat(organization.getOrganizationInvitationCode().getCode()).isNotNull();
-        assertThat(organization.getOrganizationInvitationCode().getCode())
-                .isNotEqualTo(currentInvitationCode);
+        assertThat(organization.getOrganizationInvitationCode().getCode()).isNotEqualTo(currentInvitationCode);
         assertThat(organization.getOrganizationInvitationCode().getExpirationDate())
                 .isEqualTo(now.plusDays(3).toString());
     }
@@ -155,20 +151,17 @@ public class OrganizationServiceManagerIT extends BaseIT {
     @Test
     @Transactional
     public void enterOrganizationByInvitationCodeShouldReturnEnteredOrganization() {
-        Organization organization =
-                organizationService.enterOrganizationByInvitationCode("asdfjklo");
+        Organization organization = organizationService.enterOrganizationByInvitationCode("asdfjklo");
         assertThat(organization.getId()).isEqualTo(2);
         assertThat(organization.getName()).isEqualTo("Frequenzfamilie");
         assertThat(organization.getPersonsOfOrganization().size()).isEqualTo(2);
-        Optional<PersonOfOrganization> personOfOrganizationOpt =
-                organization.getPersonsOfOrganization().stream()
-                        .filter(p -> p.getUsername().equals("nina"))
-                        .findFirst();
+        Optional<PersonOfOrganization> personOfOrganizationOpt = organization.getPersonsOfOrganization().stream()
+                .filter(p -> p.getUsername().equals("nina"))
+                .findFirst();
         assertThat(personOfOrganizationOpt).isPresent();
         PersonOfOrganization personOfOrganization = personOfOrganizationOpt.get();
         assertThat(personOfOrganization.getUsername()).isEqualTo("nina");
-        assertThat(personOfOrganization.getOrganizationRole())
-                .isEqualTo(OrganizationRole.ROLE_ORGANIZATION_MEMBER);
+        assertThat(personOfOrganization.getOrganizationRole()).isEqualTo(OrganizationRole.ROLE_ORGANIZATION_MEMBER);
         assertThat(personOfOrganization.getStatus()).isEqualTo(PersonOfOrganizationStatus.PENDING);
     }
 
@@ -181,8 +174,7 @@ public class OrganizationServiceManagerIT extends BaseIT {
     @Test
     public void enterOrganizationWithInvitationCodeTwiceShouldThrowException() {
         assertThatExceptionOfType(PersonAlreadyRegisteredInOrganizationException.class)
-                .isThrownBy(
-                        () -> organizationService.enterOrganizationByInvitationCode("asdfjkloe"));
+                .isThrownBy(() -> organizationService.enterOrganizationByInvitationCode("asdfjkloe"));
     }
 
     @Test
@@ -191,12 +183,10 @@ public class OrganizationServiceManagerIT extends BaseIT {
         organizationService.leaveOrganization(1);
         Organization organization = organizationRepository.findById(1).orElseThrow();
         assertThat(organization.getPersonsOfOrganization().size()).isEqualTo(2);
-        List<String> remainingUsernamesInOrganization =
-                organization.getPersonsOfOrganization().stream()
-                        .map(PersonOfOrganization::getUsername)
-                        .toList();
-        assertThat(remainingUsernamesInOrganization)
-                .containsExactlyInAnyOrder("orgamanager", "orgamember");
+        List<String> remainingUsernamesInOrganization = organization.getPersonsOfOrganization().stream()
+                .map(PersonOfOrganization::getUsername)
+                .toList();
+        assertThat(remainingUsernamesInOrganization).containsExactlyInAnyOrder("orgamanager", "orgamember");
     }
 
     @Test
@@ -206,8 +196,7 @@ public class OrganizationServiceManagerIT extends BaseIT {
         organizationService.leaveOrganization(3);
         assertThatExceptionOfType(OrganizationNotFoundException.class)
                 .isThrownBy(() -> organizationService.getOrganizationById(3));
-        KollappUser kollappUser =
-                kollappUserRepository.findByUsername("nina").orElse(new KollappUser());
+        KollappUser kollappUser = kollappUserRepository.findByUsername("nina").orElse(new KollappUser());
         assertThat(kollappUser.getRole()).isEqualTo(SystemRole.ROLE_KOLLAPP_USER);
     }
 
@@ -225,53 +214,41 @@ public class OrganizationServiceManagerIT extends BaseIT {
     public void updatePersonOfOrganizationOfUserShouldUpdatePersonOfOrganization() {
         organizationService.updatePersonOfOrganizationsOfUser(1, "ninaa");
         Organization organization = organizationRepository.findById(1).orElseThrow();
-        assertThat(
-                        organization.getPersonsOfOrganization().stream()
-                                .filter(p -> p.getUsername().equals("ninaa"))
-                                .toList())
+        assertThat(organization.getPersonsOfOrganization().stream()
+                        .filter(p -> p.getUsername().equals("ninaa"))
+                        .toList())
                 .isNotEmpty();
     }
 
     @Test
     public void grantRoleToPersonOfOrganizationShouldGrantRole() {
         Organization organization =
-                organizationService.grantRoleToPersonOfOrganization(
-                        1, 3, OrganizationRole.ROLE_ORGANIZATION_MEMBER);
-        PersonOfOrganization personOfOrganization =
-                organization.getPersonsOfOrganization().stream()
-                        .filter(p -> p.getUserId() == 3)
-                        .findFirst()
-                        .orElse(new PersonOfOrganization());
-        assertThat(personOfOrganization.getOrganizationRole())
-                .isEqualTo(OrganizationRole.ROLE_ORGANIZATION_MEMBER);
+                organizationService.grantRoleToPersonOfOrganization(1, 3, OrganizationRole.ROLE_ORGANIZATION_MEMBER);
+        PersonOfOrganization personOfOrganization = organization.getPersonsOfOrganization().stream()
+                .filter(p -> p.getUserId() == 3)
+                .findFirst()
+                .orElse(new PersonOfOrganization());
+        assertThat(personOfOrganization.getOrganizationRole()).isEqualTo(OrganizationRole.ROLE_ORGANIZATION_MEMBER);
         assertThat(organization.getManagers().size()).isEqualTo(1);
     }
 
     @Test
     public void grantRoleToWrongPersonOfOrganizationShouldThrowException() {
         assertThatExceptionOfType(PersonNotRegisteredInOrganizationException.class)
-                .isThrownBy(
-                        () ->
-                                organizationService.grantRoleToPersonOfOrganization(
-                                        1, 4, OrganizationRole.ROLE_ORGANIZATION_MEMBER));
+                .isThrownBy(() -> organizationService.grantRoleToPersonOfOrganization(
+                        1, 4, OrganizationRole.ROLE_ORGANIZATION_MEMBER));
 
         assertThatExceptionOfType(PersonNotRegisteredInOrganizationException.class)
-                .isThrownBy(
-                        () ->
-                                organizationService.grantRoleToPersonOfOrganization(
-                                        2, 4, OrganizationRole.ROLE_ORGANIZATION_MEMBER));
+                .isThrownBy(() -> organizationService.grantRoleToPersonOfOrganization(
+                        2, 4, OrganizationRole.ROLE_ORGANIZATION_MEMBER));
 
         assertThatExceptionOfType(OrganizationNotFoundException.class)
-                .isThrownBy(
-                        () ->
-                                organizationService.grantRoleToPersonOfOrganization(
-                                        4, 3, OrganizationRole.ROLE_ORGANIZATION_MEMBER));
+                .isThrownBy(() -> organizationService.grantRoleToPersonOfOrganization(
+                        4, 3, OrganizationRole.ROLE_ORGANIZATION_MEMBER));
 
         assertThatExceptionOfType(PersonAlreadyHasTargetRoleException.class)
-                .isThrownBy(
-                        () ->
-                                organizationService.grantRoleToPersonOfOrganization(
-                                        1, 3, OrganizationRole.ROLE_ORGANIZATION_MANAGER));
+                .isThrownBy(() -> organizationService.grantRoleToPersonOfOrganization(
+                        1, 3, OrganizationRole.ROLE_ORGANIZATION_MANAGER));
     }
 
     @Test

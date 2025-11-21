@@ -28,7 +28,8 @@ import org.kollapp.organization.application.service.ActivityService;
         authorities = {"ROLE_KOLLAPP_ORGANIZATION_MEMBER"})
 public class ActivityServiceMemberIT extends BaseIT {
 
-    @Autowired private ActivityService activityService;
+    @Autowired
+    private ActivityService activityService;
 
     @Test
     public void getActivitiesOfOrganizationShouldReturnActivities() {

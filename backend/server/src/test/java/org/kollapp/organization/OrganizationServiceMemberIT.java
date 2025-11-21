@@ -35,18 +35,19 @@ import org.kollapp.organization.application.service.OrganizationService;
         authorities = {"ROLE_KOLLAPP_ORGANIZATION_MEMBER"})
 public class OrganizationServiceMemberIT extends BaseIT {
 
-    @Autowired private OrganizationService organizationService;
+    @Autowired
+    private OrganizationService organizationService;
 
-    @Autowired private OrganizationRepository organizationRepository;
+    @Autowired
+    private OrganizationRepository organizationRepository;
 
     @Test
     public void createOrganizationShouldCreateOrganization() {
-        Organization organizationDummy =
-                Organization.builder()
-                        .place("Testort")
-                        .name("Testorga")
-                        .description("Testbeschreibung")
-                        .build();
+        Organization organizationDummy = Organization.builder()
+                .place("Testort")
+                .name("Testorga")
+                .description("Testbeschreibung")
+                .build();
         Organization organization = organizationService.createOrganization(organizationDummy);
         assertThat(organization.getId()).isNotZero();
         assertThat(organization.getName()).isEqualTo("Testorga");
@@ -79,16 +80,14 @@ public class OrganizationServiceMemberIT extends BaseIT {
     @Test
     @Transactional
     public void enterOrganizationByInvitationCodeShouldReturnEnteredOrganization() {
-        Organization organization =
-                organizationService.enterOrganizationByInvitationCode("asdfjklo");
+        Organization organization = organizationService.enterOrganizationByInvitationCode("asdfjklo");
         assertThat(organization.getId()).isEqualTo(2);
         assertThat(organization.getName()).isEqualTo("Frequenzfamilie");
         assertThat(organization.getPersonsOfOrganization().size()).isEqualTo(1);
         PersonOfOrganization personOfOrganization =
                 organization.getPersonsOfOrganization().getFirst();
         assertThat(personOfOrganization.getUsername()).isEqualTo("nina");
-        assertThat(personOfOrganization.getOrganizationRole())
-                .isEqualTo(OrganizationRole.ROLE_ORGANIZATION_MEMBER);
+        assertThat(personOfOrganization.getOrganizationRole()).isEqualTo(OrganizationRole.ROLE_ORGANIZATION_MEMBER);
         assertThat(personOfOrganization.getStatus()).isEqualTo(PersonOfOrganizationStatus.PENDING);
     }
 
@@ -101,8 +100,7 @@ public class OrganizationServiceMemberIT extends BaseIT {
     @Test
     public void enterOrganizationWithInvitationCodeTwiceShouldThrowException() {
         assertThatExceptionOfType(PersonAlreadyRegisteredInOrganizationException.class)
-                .isThrownBy(
-                        () -> organizationService.enterOrganizationByInvitationCode("asdfjkloe"));
+                .isThrownBy(() -> organizationService.enterOrganizationByInvitationCode("asdfjkloe"));
     }
 
     @Test
@@ -128,10 +126,9 @@ public class OrganizationServiceMemberIT extends BaseIT {
     public void updatePersonOfOrganizationOfUserShouldUpdatePersonOfOrganization() {
         organizationService.updatePersonOfOrganizationsOfUser(1, "ninaa");
         Organization organization = organizationRepository.findById(1).orElseThrow();
-        assertThat(
-                        organization.getPersonsOfOrganization().stream()
-                                .filter(p -> p.getUsername().equals("ninaa"))
-                                .toList())
+        assertThat(organization.getPersonsOfOrganization().stream()
+                        .filter(p -> p.getUsername().equals("ninaa"))
+                        .toList())
                 .isNotEmpty();
     }
 

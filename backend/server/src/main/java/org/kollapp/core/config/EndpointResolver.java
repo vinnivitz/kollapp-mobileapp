@@ -12,9 +12,7 @@ public class EndpointResolver {
     private final RequestMappingHandlerMapping requestMapping;
 
     @Autowired
-    public EndpointResolver(
-            @Qualifier("requestMappingHandlerMapping")
-                    RequestMappingHandlerMapping handlerMapping) {
+    public EndpointResolver(@Qualifier("requestMappingHandlerMapping") RequestMappingHandlerMapping handlerMapping) {
         this.requestMapping = handlerMapping;
     }
 

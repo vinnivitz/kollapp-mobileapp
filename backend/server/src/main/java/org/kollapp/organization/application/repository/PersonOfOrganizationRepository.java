@@ -16,8 +16,7 @@ public interface PersonOfOrganizationRepository {
 
     List<PersonOfOrganization> findByUserId(long userId);
 
-    Optional<PersonOfOrganization> findByUserIdAndOrganization(
-            long userId, Organization organization);
+    Optional<PersonOfOrganization> findByUserIdAndOrganization(long userId, Organization organization);
 
     void deleteById(long id);
 

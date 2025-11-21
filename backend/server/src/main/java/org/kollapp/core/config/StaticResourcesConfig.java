@@ -12,18 +12,15 @@ import org.kollapp.core.config.properties.ApplicationProperties;
 
 @Configuration
 public class StaticResourcesConfig implements WebMvcConfigurer {
-    @Autowired private ApplicationProperties applicationProperties;
+    @Autowired
+    private ApplicationProperties applicationProperties;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/resources/**")
                 .addResourceLocations("classpath:/static/")
-                .setCacheControl(
-                        CacheControl.maxAge(
-                                Duration.ofDays(applicationProperties.getStaticCacheDays())));
-        registry.addResourceHandler("/swagger-ui/**")
-                .addResourceLocations("classpath:/META-INF/resources/webjars/");
-        registry.addResourceHandler("/v3/api-docs/**")
-                .addResourceLocations("classpath:/META-INF/resources/");
+                .setCacheControl(CacheControl.maxAge(Duration.ofDays(applicationProperties.getStaticCacheDays())));
+        registry.addResourceHandler("/swagger-ui/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
+        registry.addResourceHandler("/v3/api-docs/**").addResourceLocations("classpath:/META-INF/resources/");
     }
 }

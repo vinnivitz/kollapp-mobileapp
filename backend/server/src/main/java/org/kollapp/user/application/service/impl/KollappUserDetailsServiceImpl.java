@@ -19,17 +19,17 @@ import org.kollapp.user.application.repository.KollappUserRepository;
 @Service
 @Slf4j
 public class KollappUserDetailsServiceImpl implements UserDetailsService {
-    @Autowired private MessageSource messageSource;
+    @Autowired
+    private MessageSource messageSource;
 
-    @Autowired private KollappUserRepository userRepository;
+    @Autowired
+    private KollappUserRepository userRepository;
 
     @Override
-    public org.springframework.security.core.userdetails.UserDetails loadUserByUsername(
-            String username) throws UsernameNotFoundException {
+    public org.springframework.security.core.userdetails.UserDetails loadUserByUsername(String username)
+            throws UsernameNotFoundException {
         KollappUser kollappUser =
-                userRepository
-                        .findByUsername(username)
-                        .orElseThrow(() -> new UsernameNotFoundException(messageSource));
+                userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(messageSource));
         List<GrantedAuthority> authorities =
                 List.of(new SimpleGrantedAuthority(kollappUser.getRole().name()));
         return KollappUserDetails.builder()

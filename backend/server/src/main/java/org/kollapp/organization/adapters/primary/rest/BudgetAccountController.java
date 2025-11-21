@@ -35,11 +35,14 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 @AllArgsConstructor
 public class BudgetAccountController {
 
-    @Autowired private PostingMapper postingMapper;
+    @Autowired
+    private PostingMapper postingMapper;
 
-    @Autowired private BudgetAccountService budgetAccountService;
+    @Autowired
+    private BudgetAccountService budgetAccountService;
 
-    @Autowired private MessageSource messageSource;
+    @Autowired
+    private MessageSource messageSource;
 
     @PostMapping("/{organization-id}/posting")
     @Operation(
@@ -50,11 +53,9 @@ public class BudgetAccountController {
             @RequestBody @Valid PostingCreateUpdateRequestTO postingCreateUpdateRequestTO) {
         OrganizationPosting postingToBeAdded =
                 postingMapper.mapPostingTOToOrganizationPosting(postingCreateUpdateRequestTO);
-        Posting addedPosting =
-                budgetAccountService.addOrganizationPosting(organizationId, postingToBeAdded);
+        Posting addedPosting = budgetAccountService.addOrganizationPosting(organizationId, postingToBeAdded);
         PostingTO response = postingMapper.mapPostingToPostingTO(addedPosting);
-        return ResponseEntity.ok(
-                new DataResponseTO<>(response, "success.posting.create", messageSource));
+        return ResponseEntity.ok(new DataResponseTO<>(response, "success.posting.create", messageSource));
     }
 
     @PutMapping("/{organization-id}/posting/{posting-id}")
@@ -65,14 +66,11 @@ public class BudgetAccountController {
             @PathVariable("organization-id") long organizationId,
             @PathVariable("posting-id") long postingId,
             @RequestBody @Valid PostingCreateUpdateRequestTO postingUpdateRequestTO) {
-        OrganizationPosting postingToBeEdited =
-                postingMapper.mapPostingTOToOrganizationPosting(postingUpdateRequestTO);
+        OrganizationPosting postingToBeEdited = postingMapper.mapPostingTOToOrganizationPosting(postingUpdateRequestTO);
         Posting editedPosting =
-                budgetAccountService.editOrganizationPosting(
-                        organizationId, postingId, postingToBeEdited);
+                budgetAccountService.editOrganizationPosting(organizationId, postingId, postingToBeEdited);
         PostingTO response = postingMapper.mapPostingToPostingTO(editedPosting);
-        return ResponseEntity.ok(
-                new DataResponseTO<>(response, "success.posting.update", messageSource));
+        return ResponseEntity.ok(new DataResponseTO<>(response, "success.posting.update", messageSource));
     }
 
     @DeleteMapping("/{organization-id}/posting/{posting-id}")
@@ -80,8 +78,7 @@ public class BudgetAccountController {
             summary = "Delete an existing organization posting.",
             security = {@SecurityRequirement(name = "bearer-key")})
     public ResponseEntity<MessageResponseTO> deleteOrganizationPosting(
-            @PathVariable("organization-id") long organizationId,
-            @PathVariable("posting-id") long postingId) {
+            @PathVariable("organization-id") long organizationId, @PathVariable("posting-id") long postingId) {
         budgetAccountService.deleteOrganizationPosting(organizationId, postingId);
         return ResponseEntity.ok(new MessageResponseTO("success.posting.delete", messageSource));
     }
@@ -94,14 +91,10 @@ public class BudgetAccountController {
             @PathVariable("organization-id") long organizationId,
             @PathVariable("activity-id") long activityId,
             @RequestBody @Valid PostingCreateUpdateRequestTO postingCreateUpdateRequestTO) {
-        ActivityPosting postingToBeAdded =
-                postingMapper.mapPostingTOToActivityPosting(postingCreateUpdateRequestTO);
-        Posting addedPosting =
-                budgetAccountService.addActivityPosting(
-                        organizationId, activityId, postingToBeAdded);
+        ActivityPosting postingToBeAdded = postingMapper.mapPostingTOToActivityPosting(postingCreateUpdateRequestTO);
+        Posting addedPosting = budgetAccountService.addActivityPosting(organizationId, activityId, postingToBeAdded);
         PostingTO response = postingMapper.mapPostingToPostingTO(addedPosting);
-        return ResponseEntity.ok(
-                new DataResponseTO<>(response, "success.posting.create", messageSource));
+        return ResponseEntity.ok(new DataResponseTO<>(response, "success.posting.create", messageSource));
     }
 
     @PutMapping("/{organization-id}/{activity-id}/posting/{posting-id}")
@@ -113,14 +106,11 @@ public class BudgetAccountController {
             @PathVariable("activity-id") long activityId,
             @PathVariable("posting-id") long postingId,
             @RequestBody @Valid PostingCreateUpdateRequestTO postingUpdateRequestTO) {
-        ActivityPosting postingToBeEdited =
-                postingMapper.mapPostingTOToActivityPosting(postingUpdateRequestTO);
+        ActivityPosting postingToBeEdited = postingMapper.mapPostingTOToActivityPosting(postingUpdateRequestTO);
         Posting editedPosting =
-                budgetAccountService.editActivityPosting(
-                        organizationId, activityId, postingId, postingToBeEdited);
+                budgetAccountService.editActivityPosting(organizationId, activityId, postingId, postingToBeEdited);
         PostingTO response = postingMapper.mapPostingToPostingTO(editedPosting);
-        return ResponseEntity.ok(
-                new DataResponseTO<>(response, "success.posting.update", messageSource));
+        return ResponseEntity.ok(new DataResponseTO<>(response, "success.posting.update", messageSource));
     }
 
     @DeleteMapping("/{organization-id}/{activity-id}/posting/{posting-id}")

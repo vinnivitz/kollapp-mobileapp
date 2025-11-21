@@ -13,7 +13,8 @@ import org.kollapp.user.application.repository.KollappUserRepository;
 @Repository
 @SecondaryAdapter
 public class KollappUserRepositoryImpl implements KollappUserRepository {
-    @Autowired private KollappUserJpaRepository jpaRepository;
+    @Autowired
+    private KollappUserJpaRepository jpaRepository;
 
     @Override
     public Optional<KollappUser> findByUsername(String username) {

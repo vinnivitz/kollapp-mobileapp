@@ -16,11 +16,9 @@ public interface PostingMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "organization", ignore = true)
-    OrganizationPosting mapPostingTOToOrganizationPosting(
-            PostingCreateUpdateRequestTO postingCreateUpdateRequestTO);
+    OrganizationPosting mapPostingTOToOrganizationPosting(PostingCreateUpdateRequestTO postingCreateUpdateRequestTO);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "activity", ignore = true)
-    ActivityPosting mapPostingTOToActivityPosting(
-            PostingCreateUpdateRequestTO postingCreateUpdateRequestTO);
+    ActivityPosting mapPostingTOToActivityPosting(PostingCreateUpdateRequestTO postingCreateUpdateRequestTO);
 }

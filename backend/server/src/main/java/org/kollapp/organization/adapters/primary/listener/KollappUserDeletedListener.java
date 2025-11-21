@@ -15,7 +15,8 @@ import org.kollapp.user.application.model.KollappUserDeletedEvent;
 @Slf4j
 public class KollappUserDeletedListener implements ApplicationListener<KollappUserDeletedEvent> {
 
-    @Autowired private OrganizationService organizationService;
+    @Autowired
+    private OrganizationService organizationService;
 
     @Override
     public void onApplicationEvent(KollappUserDeletedEvent kollappUserDeletedEvent) {

@@ -13,7 +13,8 @@ import org.kollapp.organization.application.repository.OrganizationRepository;
 @Repository
 @SecondaryAdapter
 public class OrganizationRepositoryImpl implements OrganizationRepository {
-    @Autowired private OrganizationJpaRepository jpaRepository;
+    @Autowired
+    private OrganizationJpaRepository jpaRepository;
 
     @Override
     public Optional<Organization> findById(long id) {

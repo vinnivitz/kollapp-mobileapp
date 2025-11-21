@@ -26,22 +26,22 @@ import org.kollapp.user.application.service.KollappUserService;
 @PrimaryAdapter
 public class UnauthorizedKollappUserController {
 
-    @Autowired private MessageSource messageSource;
+    @Autowired
+    private MessageSource messageSource;
 
-    @Autowired private KollappUserService kollappUserService;
+    @Autowired
+    private KollappUserService kollappUserService;
 
     @PostMapping("/forgot-password")
     public ResponseEntity<MessageResponseTO> forgotPassword(
             @Valid @RequestBody ForgotPasswordRequestTO forgotPasswordTo) {
         kollappUserService.forgotPassword(forgotPasswordTo.getEmail());
-        return ResponseEntity.ok(
-                new MessageResponseTO("success.email.reset-password", messageSource));
+        return ResponseEntity.ok(new MessageResponseTO("success.email.reset-password", messageSource));
     }
 
     @PostMapping("/reset-password")
     public ResponseEntity<MessageResponseTO> resetPassword(
-            @RequestParam("token") String token,
-            @Valid @RequestBody ResetPasswordRequestTO resetPasswordTo) {
+            @RequestParam("token") String token, @Valid @RequestBody ResetPasswordRequestTO resetPasswordTo) {
         kollappUserService.resetPassword(token, resetPasswordTo.getPassword());
         return ResponseEntity.ok(new MessageResponseTO("success.password.reset", messageSource));
     }
@@ -49,8 +49,7 @@ public class UnauthorizedKollappUserController {
     @PostMapping("/signup")
     public ResponseEntity<MessageResponseTO> registerKollappUser(
             @Valid @RequestBody KollappUserSignupRequest signUpRequest) {
-        kollappUserService.register(
-                signUpRequest.getUsername(), signUpRequest.getEmail(), signUpRequest.getPassword());
+        kollappUserService.register(signUpRequest.getUsername(), signUpRequest.getEmail(), signUpRequest.getPassword());
         return ResponseEntity.ok(new MessageResponseTO("success.registration", messageSource));
     }
 }

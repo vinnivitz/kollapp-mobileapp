@@ -32,11 +32,14 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 @Slf4j
 @PrimaryAdapter
 public class AuthorizedKollappUserController {
-    @Autowired private MessageSource messageSource;
+    @Autowired
+    private MessageSource messageSource;
 
-    @Autowired private KollappUserService kollappUserService;
+    @Autowired
+    private KollappUserService kollappUserService;
 
-    @Autowired private KollappUserMapper kollappUserMapper;
+    @Autowired
+    private KollappUserMapper kollappUserMapper;
 
     @GetMapping
     @Operation(
@@ -45,18 +48,15 @@ public class AuthorizedKollappUserController {
     public ResponseEntity<DataResponseTO<KollappUserTO>> getKollappUser() {
         KollappUser kollappUser = kollappUserService.getLoggedInKollappUser();
         KollappUserTO kollappUserTO = kollappUserMapper.userToUserTO(kollappUser);
-        return ResponseEntity.ok(
-                new DataResponseTO<>(kollappUserTO, "success.user.get-data", messageSource));
+        return ResponseEntity.ok(new DataResponseTO<>(kollappUserTO, "success.user.get-data", messageSource));
     }
 
     @PatchMapping("/change-password")
     @Operation(
             summary = "Change the password of the logged in user",
             security = {@SecurityRequirement(name = "bearer-key")})
-    public ResponseEntity<MessageResponseTO> changePassword(
-            @RequestBody PasswordChangeRequestTO changeRequestTo) {
-        kollappUserService.changePassword(
-                changeRequestTo.getCurrentPassword(), changeRequestTo.getNewPassword());
+    public ResponseEntity<MessageResponseTO> changePassword(@RequestBody PasswordChangeRequestTO changeRequestTo) {
+        kollappUserService.changePassword(changeRequestTo.getCurrentPassword(), changeRequestTo.getNewPassword());
         return ResponseEntity.ok(new MessageResponseTO("success.password.changed", messageSource));
     }
 
@@ -67,11 +67,9 @@ public class AuthorizedKollappUserController {
     public ResponseEntity<DataResponseTO<KollappUserTO>> updateUser(
             @Valid @RequestBody KollappUserUpdateRequestTO updateRequestTO) {
         KollappUser updatedUser =
-                kollappUserService.updateKollappUser(
-                        updateRequestTO.getUsername(), updateRequestTO.getEmail());
+                kollappUserService.updateKollappUser(updateRequestTO.getUsername(), updateRequestTO.getEmail());
         KollappUserTO updatedUserTO = kollappUserMapper.userToUserTO(updatedUser);
-        return ResponseEntity.ok(
-                new DataResponseTO<>(updatedUserTO, "success.user.update-data", messageSource));
+        return ResponseEntity.ok(new DataResponseTO<>(updatedUserTO, "success.user.update-data", messageSource));
     }
 
     @DeleteMapping

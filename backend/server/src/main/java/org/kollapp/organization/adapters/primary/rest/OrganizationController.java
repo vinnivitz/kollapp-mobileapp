@@ -41,26 +41,25 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 @PrimaryAdapter
 public class OrganizationController {
 
-    @Autowired private OrganizationService organizationService;
+    @Autowired
+    private OrganizationService organizationService;
 
-    @Autowired private OrganizationMapper organizationMapper;
+    @Autowired
+    private OrganizationMapper organizationMapper;
 
-    @Autowired private MessageSource messageSource;
+    @Autowired
+    private MessageSource messageSource;
 
     @GetMapping
     @Operation(
             summary = "Get the organizations of the logged in user",
             security = {@SecurityRequirement(name = "bearer-key")})
-    public ResponseEntity<DataResponseTO<List<OrganizationMinifiedTO>>>
-            getOrganizationOfLoggedInUser() {
+    public ResponseEntity<DataResponseTO<List<OrganizationMinifiedTO>>> getOrganizationOfLoggedInUser() {
         List<Organization> organizations = organizationService.getOrganizationsByLoggedInUser();
-        List<OrganizationMinifiedTO> organizationBaseTOs =
-                organizations.stream()
-                        .map(o -> organizationMapper.organizationToOrganizationMinifiedTO(o))
-                        .toList();
-        return ResponseEntity.ok(
-                new DataResponseTO<>(
-                        organizationBaseTOs, "success.organization.get", messageSource));
+        List<OrganizationMinifiedTO> organizationBaseTOs = organizations.stream()
+                .map(o -> organizationMapper.organizationToOrganizationMinifiedTO(o))
+                .toList();
+        return ResponseEntity.ok(new DataResponseTO<>(organizationBaseTOs, "success.organization.get", messageSource));
     }
 
     @GetMapping("/{organization-id}")
@@ -70,26 +69,19 @@ public class OrganizationController {
     public ResponseEntity<DataResponseTO<OrganizationTO>> getOrganizationById(
             @PathVariable("organization-id") long organizationId) {
         Organization organization = organizationService.getOrganizationById(organizationId);
-        OrganizationTO organizationTO =
-                organizationMapper.organizationToOrganizationTO(organization);
-        return ResponseEntity.ok(
-                new DataResponseTO<>(organizationTO, "success.organization.get", messageSource));
+        OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(organization);
+        return ResponseEntity.ok(new DataResponseTO<>(organizationTO, "success.organization.get", messageSource));
     }
 
     @GetMapping("/invitation/{invitation-code}")
     @Operation(
             summary = "Get the basic information of the organization by its invitation code",
             security = {@SecurityRequirement(name = "bearer-key")})
-    public ResponseEntity<DataResponseTO<OrganizationBaseTO>>
-            getOrganizationBaseInformationByInvitationCode(
-                    @PathVariable("invitation-code") String invitationCode) {
-        Organization organization =
-                organizationService.getOrganizationByInvitationCode(invitationCode);
-        OrganizationBaseTO organizationBaseTO =
-                organizationMapper.organizationToOrganizationBaseTO(organization);
-        return ResponseEntity.ok(
-                new DataResponseTO<>(
-                        organizationBaseTO, "success.organization.get", messageSource));
+    public ResponseEntity<DataResponseTO<OrganizationBaseTO>> getOrganizationBaseInformationByInvitationCode(
+            @PathVariable("invitation-code") String invitationCode) {
+        Organization organization = organizationService.getOrganizationByInvitationCode(invitationCode);
+        OrganizationBaseTO organizationBaseTO = organizationMapper.organizationToOrganizationBaseTO(organization);
+        return ResponseEntity.ok(new DataResponseTO<>(organizationBaseTO, "success.organization.get", messageSource));
     }
 
     @PostMapping("/invitation/{invitation-code}")
@@ -98,12 +90,9 @@ public class OrganizationController {
             security = {@SecurityRequirement(name = "bearer-key")})
     public ResponseEntity<DataResponseTO<OrganizationTO>> enterOrganizationBasedOnInvitationCode(
             @PathVariable("invitation-code") String invitationCode) {
-        Organization organization =
-                organizationService.enterOrganizationByInvitationCode(invitationCode);
-        OrganizationTO organizationTO =
-                organizationMapper.organizationToOrganizationTO(organization);
-        return ResponseEntity.ok(
-                new DataResponseTO<>(organizationTO, "success.organization.get", messageSource));
+        Organization organization = organizationService.enterOrganizationByInvitationCode(invitationCode);
+        OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(organization);
+        return ResponseEntity.ok(new DataResponseTO<>(organizationTO, "success.organization.get", messageSource));
     }
 
     @PatchMapping("/{organization-id}/person/{person-id}/grant-role")
@@ -114,13 +103,10 @@ public class OrganizationController {
             @PathVariable("organization-id") long organizationId,
             @PathVariable("person-id") long personId,
             @RequestBody PersonOfOrganizationPatchRoleRequestTO patchRoleRequestTO) {
-        Organization organization =
-                organizationService.grantRoleToPersonOfOrganization(
-                        organizationId, personId, patchRoleRequestTO.getRole());
-        OrganizationTO organizationTO =
-                organizationMapper.organizationToOrganizationTO(organization);
-        return ResponseEntity.ok(
-                new DataResponseTO<>(organizationTO, "success.organization.get", messageSource));
+        Organization organization = organizationService.grantRoleToPersonOfOrganization(
+                organizationId, personId, patchRoleRequestTO.getRole());
+        OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(organization);
+        return ResponseEntity.ok(new DataResponseTO<>(organizationTO, "success.organization.get", messageSource));
     }
 
     @PatchMapping("/{organization-id}/invitation-code")
@@ -129,12 +115,9 @@ public class OrganizationController {
             security = {@SecurityRequirement(name = "bearer-key")})
     public ResponseEntity<DataResponseTO<OrganizationTO>> updateOrganizationInvitationCode(
             @PathVariable("organization-id") long organizationId) {
-        Organization organization =
-                organizationService.generateNewOrganizationInvitationCode(organizationId);
-        OrganizationTO organizationTO =
-                organizationMapper.organizationToOrganizationTO(organization);
-        return ResponseEntity.ok(
-                new DataResponseTO<>(organizationTO, "success.organization.update", messageSource));
+        Organization organization = organizationService.generateNewOrganizationInvitationCode(organizationId);
+        OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(organization);
+        return ResponseEntity.ok(new DataResponseTO<>(organizationTO, "success.organization.update", messageSource));
     }
 
     @PostMapping
@@ -143,13 +126,10 @@ public class OrganizationController {
             security = {@SecurityRequirement(name = "bearer-key")})
     public ResponseEntity<DataResponseTO<OrganizationTO>> createOrganization(
             @Valid @RequestBody OrganizationCreationRequestTO creationRequestTO) {
-        Organization organization =
-                organizationMapper.organizationCreationRequestToOrganization(creationRequestTO);
+        Organization organization = organizationMapper.organizationCreationRequestToOrganization(creationRequestTO);
         Organization persistedOrganization = organizationService.createOrganization(organization);
-        OrganizationTO organizationTO =
-                organizationMapper.organizationToOrganizationTO(persistedOrganization);
-        return ResponseEntity.ok(
-                new DataResponseTO<>(organizationTO, "success.organization.create", messageSource));
+        OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(persistedOrganization);
+        return ResponseEntity.ok(new DataResponseTO<>(organizationTO, "success.organization.create", messageSource));
     }
 
     @PutMapping("/{organization-id}")
@@ -159,25 +139,19 @@ public class OrganizationController {
     public ResponseEntity<DataResponseTO<OrganizationTO>> updateOrganization(
             @Valid @RequestBody OrganizationUpdateRequestTO updateRequestTO,
             @PathVariable("organization-id") long organizationId) {
-        Organization organization =
-                organizationMapper.organizationUpdateRequestToOrganization(updateRequestTO);
-        Organization updatedOrganization =
-                organizationService.updateOrganization(organization, organizationId);
-        OrganizationTO organizationTO =
-                organizationMapper.organizationToOrganizationTO(updatedOrganization);
-        return ResponseEntity.ok(
-                new DataResponseTO<>(organizationTO, "success.organization.update", messageSource));
+        Organization organization = organizationMapper.organizationUpdateRequestToOrganization(updateRequestTO);
+        Organization updatedOrganization = organizationService.updateOrganization(organization, organizationId);
+        OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(updatedOrganization);
+        return ResponseEntity.ok(new DataResponseTO<>(organizationTO, "success.organization.update", messageSource));
     }
 
     @DeleteMapping("/{organization-id}")
     @Operation(
             summary = "Leave the organization, deletion if last manager",
             security = {@SecurityRequirement(name = "bearer-key")})
-    public ResponseEntity<MessageResponseTO> leaveOrganization(
-            @PathVariable("organization-id") long organizationId) {
+    public ResponseEntity<MessageResponseTO> leaveOrganization(@PathVariable("organization-id") long organizationId) {
         organizationService.leaveOrganization(organizationId);
-        return ResponseEntity.ok(
-                new MessageResponseTO("success.organization.delete", messageSource));
+        return ResponseEntity.ok(new MessageResponseTO("success.organization.delete", messageSource));
     }
 
     @DeleteMapping("/{organization-id}/person/{person-of-organization-id}")
@@ -188,10 +162,8 @@ public class OrganizationController {
             @PathVariable("person-of-organization-id") long personOfOrganizationId,
             @PathVariable("organization-id") long organizationId) {
         Organization organization =
-                organizationService.deleteUserFromOrganization(
-                        personOfOrganizationId, organizationId);
+                organizationService.deleteUserFromOrganization(personOfOrganizationId, organizationId);
         OrganizationTO orgaTo = organizationMapper.organizationToOrganizationTO(organization);
-        return ResponseEntity.ok(
-                new DataResponseTO<>(orgaTo, "success.organization.user.delete", messageSource));
+        return ResponseEntity.ok(new DataResponseTO<>(orgaTo, "success.organization.user.delete", messageSource));
     }
 }

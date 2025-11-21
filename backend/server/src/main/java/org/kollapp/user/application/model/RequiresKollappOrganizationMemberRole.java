@@ -8,7 +8,5 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
-@PreAuthorize(
-        "hasRole(T(org.kollapp.user.application.model.SystemRole)"
-                + ".ROLE_KOLLAPP_ORGANIZATION_MEMBER.name())")
+@PreAuthorize("hasRole(T(org.kollapp.user.application.model.SystemRole)" + ".ROLE_KOLLAPP_ORGANIZATION_MEMBER.name())")
 public @interface RequiresKollappOrganizationMemberRole {}

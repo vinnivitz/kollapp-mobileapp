@@ -31,11 +31,14 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 @AllArgsConstructor
 public class ActivityController {
 
-    @Autowired private ActivityService activityService;
+    @Autowired
+    private ActivityService activityService;
 
-    @Autowired private ActivityMapper activityMapper;
+    @Autowired
+    private ActivityMapper activityMapper;
 
-    @Autowired private MessageSource messageSource;
+    @Autowired
+    private MessageSource messageSource;
 
     @PostMapping("/{organization-id}/activity")
     @Operation(
@@ -44,13 +47,10 @@ public class ActivityController {
     public ResponseEntity<DataResponseTO<ActivityTO>> createNewActivity(
             @PathVariable("organization-id") long organizationId,
             @RequestBody ActivityCreationRequestTO activityCreationRequestTO) {
-        Activity activity =
-                activityMapper.activityCreationRequestTOToActivity(activityCreationRequestTO);
-        Activity persistedActivity =
-                activityService.createActivityForOrganization(organizationId, activity);
+        Activity activity = activityMapper.activityCreationRequestTOToActivity(activityCreationRequestTO);
+        Activity persistedActivity = activityService.createActivityForOrganization(organizationId, activity);
         ActivityTO activityTO = activityMapper.activityToActivityTO(persistedActivity);
-        return ResponseEntity.ok(
-                new DataResponseTO<>(activityTO, "success.activity.create", messageSource));
+        return ResponseEntity.ok(new DataResponseTO<>(activityTO, "success.activity.create", messageSource));
     }
 
     @PostMapping("/{organization-id}/activity/{activity-id}")
@@ -61,13 +61,10 @@ public class ActivityController {
             @PathVariable("organization-id") long organizationId,
             @PathVariable("activity-id") long activityId,
             @RequestBody ActivityUpdateRequestTO activityUpdateRequestTO) {
-        Activity activityToBeUpdated =
-                activityMapper.activityUpdateTOToActivity(activityUpdateRequestTO);
-        Activity updatedActivity =
-                activityService.updateActivity(organizationId, activityId, activityToBeUpdated);
+        Activity activityToBeUpdated = activityMapper.activityUpdateTOToActivity(activityUpdateRequestTO);
+        Activity updatedActivity = activityService.updateActivity(organizationId, activityId, activityToBeUpdated);
         ActivityTO activityTO = activityMapper.activityToActivityTO(updatedActivity);
-        return ResponseEntity.ok(
-                new DataResponseTO<>(activityTO, "success.activity.update", messageSource));
+        return ResponseEntity.ok(new DataResponseTO<>(activityTO, "success.activity.update", messageSource));
     }
 
     @DeleteMapping("/{organization-id}/activity/{activity-id}")
@@ -75,8 +72,7 @@ public class ActivityController {
             summary = "Delete activity of organization",
             security = {@SecurityRequirement(name = "bearer-key")})
     public ResponseEntity<MessageResponseTO> deleteActivityOfOrganization(
-            @PathVariable("organization-id") long organizationId,
-            @PathVariable("activity-id") long activityId) {
+            @PathVariable("organization-id") long organizationId, @PathVariable("activity-id") long activityId) {
         activityService.deleteActivity(organizationId, activityId);
         return ResponseEntity.ok(new MessageResponseTO("success.activity.delete", messageSource));
     }

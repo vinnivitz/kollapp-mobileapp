@@ -23,8 +23,7 @@ public class LocaleConfig {
      */
     @Bean
     public MessageSource messageSource() {
-        ReloadableResourceBundleMessageSource messageSource =
-                new ReloadableResourceBundleMessageSource();
+        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
         messageSource.setBasename("classpath:i18n/messages");
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;
@@ -54,8 +53,7 @@ public class LocaleConfig {
         }
 
         @Override
-        public void setLocale(
-                HttpServletRequest request, HttpServletResponse response, Locale locale) {
+        public void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale) {
             throw new UnsupportedOperationException("Cannot change HTTP header 'Accept-Language'");
         }
     }

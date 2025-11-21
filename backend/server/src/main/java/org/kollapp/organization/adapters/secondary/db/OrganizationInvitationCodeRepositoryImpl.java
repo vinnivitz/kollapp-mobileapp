@@ -12,15 +12,14 @@ import org.kollapp.organization.application.repository.OrganizationInvitationCod
 
 @SecondaryAdapter
 @Repository
-public class OrganizationInvitationCodeRepositoryImpl
-        implements OrganizationInvitationCodeRepository {
+public class OrganizationInvitationCodeRepositoryImpl implements OrganizationInvitationCodeRepository {
 
-    @Autowired private OrganizationInvitationCodeJpaRepository jpaRepository;
+    @Autowired
+    private OrganizationInvitationCodeJpaRepository jpaRepository;
 
     @Override
     public Optional<OrganizationInvitationCode> findByInvitationCodeAndExpirationDateIsAfter(
             String invitationCode, String currentDateMinusOneDay) {
-        return jpaRepository.findByCodeAndExpirationDateIsAfter(
-                invitationCode, currentDateMinusOneDay);
+        return jpaRepository.findByCodeAndExpirationDateIsAfter(invitationCode, currentDateMinusOneDay);
     }
 }

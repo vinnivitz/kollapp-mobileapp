@@ -13,8 +13,7 @@ import org.kollapp.core.util.ClientPlatformContext;
 public class ClientPlatformFilter extends OncePerRequestFilter {
 
     @Override
-    protected void doFilterInternal(
-            HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws java.io.IOException, jakarta.servlet.ServletException {
         String userAgent = request.getHeader("User-Agent");
         ClientPlatform clientPlatform = determineClientPlatform(userAgent);

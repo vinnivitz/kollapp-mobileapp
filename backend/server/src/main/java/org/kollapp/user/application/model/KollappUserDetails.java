@@ -23,6 +23,9 @@ public class KollappUserDetails implements UserDetails {
     private String username;
     private String email;
     private boolean isActivated;
-    @JsonIgnore private String password;
+
+    @JsonIgnore
+    private String password;
+
     private Collection<? extends GrantedAuthority> authorities;
 }

@@ -31,6 +31,5 @@ public interface OrganizationService {
 
     void updatePersonOfOrganizationsOfUser(long userId, String username);
 
-    Organization grantRoleToPersonOfOrganization(
-            long organizationId, long personId, OrganizationRole role);
+    Organization grantRoleToPersonOfOrganization(long organizationId, long personId, OrganizationRole role);
 }

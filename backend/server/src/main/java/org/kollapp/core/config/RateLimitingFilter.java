@@ -25,8 +25,12 @@ import io.github.bucket4j.Refill;
 @Component
 public class RateLimitingFilter extends OncePerRequestFilter {
     private final Bucket bucket;
-    @Autowired private MessageSource messageSource;
-    @Autowired private ResponseUtil responseUtil;
+
+    @Autowired
+    private MessageSource messageSource;
+
+    @Autowired
+    private ResponseUtil responseUtil;
 
     /**
      * Constructor for RateLimitingFilter.
@@ -35,10 +39,8 @@ public class RateLimitingFilter extends OncePerRequestFilter {
      * @return a new RateLimitingFilter instance
      */
     public RateLimitingFilter(RateLimitProperties rateLimitProperties) {
-        Refill refill =
-                Refill.intervally(
-                        rateLimitProperties.getRequests(),
-                        Duration.ofSeconds(rateLimitProperties.getSeconds()));
+        Refill refill = Refill.intervally(
+                rateLimitProperties.getRequests(), Duration.ofSeconds(rateLimitProperties.getSeconds()));
         Bandwidth limit = Bandwidth.classic(rateLimitProperties.getRequests(), refill);
         this.bucket = Bucket.builder().addLimit(limit).build();
     }
@@ -54,15 +56,13 @@ public class RateLimitingFilter extends OncePerRequestFilter {
      * @throws IOException if an I/O exception occurs
      */
     @Override
-    public void doFilterInternal(
-            HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+    public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         if (!bucket.tryConsume(1)) {
             responseUtil.createMessageResponse(
                     response,
                     HttpStatus.TOO_MANY_REQUESTS.value(),
-                    messageSource.getMessage(
-                            "error.ratelimit", null, LocaleContextHolder.getLocale()));
+                    messageSource.getMessage("error.ratelimit", null, LocaleContextHolder.getLocale()));
             return;
         }
         chain.doFilter(request, response);

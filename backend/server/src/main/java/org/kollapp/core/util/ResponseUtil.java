@@ -16,8 +16,7 @@ import org.kollapp.core.adapters.primary.rest.dto.ErrorResponseTO;
 @Slf4j
 @Component
 public class ResponseUtil {
-    public void createMessageResponse(HttpServletResponse response, int code, String message)
-            throws IOException {
+    public void createMessageResponse(HttpServletResponse response, int code, String message) throws IOException {
         log.error("Error response: " + message);
         response.setStatus(code);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

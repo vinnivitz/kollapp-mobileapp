@@ -10,12 +10,10 @@ import org.kollapp.organization.application.model.Organization;
 import org.kollapp.organization.application.model.PersonOfOrganization;
 
 @Repository
-public interface PersonOfOrganizationJpaRepository
-        extends JpaRepository<PersonOfOrganization, Long> {
+public interface PersonOfOrganizationJpaRepository extends JpaRepository<PersonOfOrganization, Long> {
     List<PersonOfOrganization> findByUserId(long userId);
 
-    Optional<PersonOfOrganization> findByUserIdAndOrganization(
-            long userId, Organization organization);
+    Optional<PersonOfOrganization> findByUserIdAndOrganization(long userId, Organization organization);
 
     Optional<PersonOfOrganization> findByIdAndOrganization(long id, Organization organization);
 }
