@@ -35,13 +35,13 @@ fi
 
 if echo "$STAGED_FILES" | grep -q '^backend/'; then
   echo "Running backend spotless check..."
-  mvn -f backend/pom.xml spotless:check || {
+  ./backend/mvnw -f backend/pom.xml spotless:check -pl server || {
     echo "Code formatting check failed. Run 'mvn spotless:apply' to fix."
     exit 1
   }
     
   echo "Running backend checkstyle..."
-  mvn -f backend/pom.xml checkstyle:check || {
+  ./backend/mvnw -f backend/pom.xml checkstyle:check || {
     echo "Linting backend failed. Aborting commit."
     exit 1
   }
