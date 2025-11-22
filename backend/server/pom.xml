@@ -14,8 +14,6 @@
     <packaging>jar</packaging>
 
     <properties>
-        <node.version>v22.9.0</node.version>
-        <npm.version>10.8.3</npm.version>
         <frontend-maven-plugin.version>1.12.1</frontend-maven-plugin.version>
         <typescript-generator.version>3.2.1263</typescript-generator.version>
         <generate-ts-api-types-maven-plugin.version>1.0.0</generate-ts-api-types-maven-plugin.version>
