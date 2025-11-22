@@ -13,6 +13,7 @@ import org.kollappbackend.organization.application.service.OrganizationService;
 import org.kollappbackend.user.application.model.KollappUser;
 import org.kollappbackend.user.application.model.SystemRole;
 import org.kollappbackend.user.application.repository.KollappUserRepository;
+import org.kollappbackend.user.application.service.KollappUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
@@ -34,6 +35,8 @@ public class OrganizationServiceManagerIT extends BaseIT {
 
     @Autowired
     private OrganizationService organizationService;
+    @Autowired
+    private KollappUserService kollappUserService;
     @Autowired
     private KollappUserRepository kollappUserRepository;
     @Autowired
@@ -279,7 +282,27 @@ public class OrganizationServiceManagerIT extends BaseIT {
     public void getOrganizationByWrongInvitationCodeShouldThrowException() {
         assertThatExceptionOfType(InvalidInvitationCodeException.class)
                 .isThrownBy(() -> organizationService.getOrganizationByInvitationCode("asdfjkloo"));
-
     }
+
+    @Test
+    public void deleteUserFromAllOrganizationsShouldThrowExceptionIfLastManager() {
+        assertThatExceptionOfType(LastManagerException.class)
+                .isThrownBy(() -> kollappUserService.deleteKollappUser());
+    }
+
+    @Test
+    @WithMockUser(username = "member", authorities = {"ROLE_KOLLAPP_ORGANIZATION_MEMBER"})
+    @Transactional
+    public void deleteUserFromAllOrganizationsShouldDeleteUser() {
+        kollappUserService.deleteKollappUser();
+        assertThat(kollappUserRepository.findByUsername("member")).isEmpty();
+        Optional<Organization> organization1 = organizationRepository.findById(1);
+        Optional<Organization> organization3 = organizationRepository.findById(3);
+        assertThat(organization1.isPresent()).isTrue();
+        assertThat(organization3.isPresent()).isTrue();
+        assertThat(organization1.get().getPersonsOfOrganization().size()).isEqualTo(2);
+        assertThat(organization3.get().getPersonsOfOrganization().size()).isEqualTo(1);
+    }
+
 
 }

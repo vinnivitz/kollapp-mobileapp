@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.kollappbackend.core.config.properties.ApplicationProperties;
 import org.kollappbackend.organization.application.exception.InvalidInvitationCodeException;
+import org.kollappbackend.organization.application.exception.LastManagerException;
 import org.kollappbackend.organization.application.exception.OrganizationNotFoundException;
 import org.kollappbackend.organization.application.exception.PersonAlreadyHasTargetRoleException;
 import org.kollappbackend.organization.application.exception.PersonAlreadyRegisteredInOrganizationException;
@@ -162,6 +163,10 @@ public class OrganizationServiceImpl implements OrganizationService {
     public void deleteUserFromAllOrganizations(long userId) {
         List<PersonOfOrganization> personsToBeDeleted = personOfOrganizationRepository.findByUserId(userId);
         for (PersonOfOrganization personOfOrganization : personsToBeDeleted) {
+            if (personOfOrganization.getOrganizationRole().equals(OrganizationRole.ROLE_ORGANIZATION_MANAGER)
+                    && personOfOrganization.getOrganization().hasOnlyOneManagerLeft()) {
+                throw new LastManagerException(messageSource);
+            }
             personOfOrganizationRepository.deleteById(personOfOrganization.getId());
         }
     }
