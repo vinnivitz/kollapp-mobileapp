@@ -1,8 +1,8 @@
-package org.kollappbackend.organization.application.exception;
+package org.kollapp.organization.application.exception;
 
 import org.springframework.context.MessageSource;
 
-import org.kollappbackend.core.application.exceptions.AbstractLocalizedException;
+import org.kollapp.core.application.exceptions.AbstractLocalizedException;
 
 public class LastManagerException extends AbstractLocalizedException {
     public LastManagerException(MessageSource messageSource) {

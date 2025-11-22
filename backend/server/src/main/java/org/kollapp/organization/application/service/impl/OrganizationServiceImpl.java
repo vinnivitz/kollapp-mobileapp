@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import org.kollapp.core.config.properties.ApplicationProperties;
 import org.kollapp.organization.application.exception.InvalidInvitationCodeException;
+import org.kollapp.organization.application.exception.LastManagerException;
 import org.kollapp.organization.application.exception.OrganizationNotFoundException;
 import org.kollapp.organization.application.exception.PersonAlreadyHasTargetRoleException;
 import org.kollapp.organization.application.exception.PersonAlreadyRegisteredInOrganizationException;

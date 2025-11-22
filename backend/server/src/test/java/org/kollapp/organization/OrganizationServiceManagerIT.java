@@ -17,6 +17,7 @@ import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TES
 
 import org.kollapp.core.BaseIT;
 import org.kollapp.organization.application.exception.InvalidInvitationCodeException;
+import org.kollapp.organization.application.exception.LastManagerException;
 import org.kollapp.organization.application.exception.OrganizationNotFoundException;
 import org.kollapp.organization.application.exception.PersonAlreadyHasTargetRoleException;
 import org.kollapp.organization.application.exception.PersonAlreadyRegisteredInOrganizationException;
@@ -30,6 +31,7 @@ import org.kollapp.organization.application.service.OrganizationService;
 import org.kollapp.user.application.model.KollappUser;
 import org.kollapp.user.application.model.SystemRole;
 import org.kollapp.user.application.repository.KollappUserRepository;
+import org.kollapp.user.application.service.KollappUserService;
 
 @Sql(
         scripts = "/sql/organization/base_data_organization_kollapp_orga_manager.sql",

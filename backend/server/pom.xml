@@ -469,11 +469,11 @@
                                     <jsonLibrary>jackson2</jsonLibrary>
                                     <classPatterns>
                                         <classPattern>
-                                            org.kollappbackend.**.adapters.primary.rest.model.*</classPattern>
+                                            org.kollapp.**.adapters.primary.rest.model.*</classPattern>
                                     </classPatterns>
                                     <excludeClasses>
                                         <excludeClass>
-                                            org.kollappbackend.core.adapters.primary.rest.model.DataResponseTO
+                                            org.kollapp.core.adapters.primary.rest.model.DataResponseTO
                                         </excludeClass>
                                     </excludeClasses>
                                     <outputKind>module</outputKind>
