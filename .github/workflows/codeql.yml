@@ -46,7 +46,7 @@ jobs:
     - name: Build with Maven
       run: |
         cd backend
-        mvn clean compile -DskipTests -B
+        ./mvnw clean compile -DskipTests -B
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3

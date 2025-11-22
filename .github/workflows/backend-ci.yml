@@ -41,11 +41,11 @@ jobs:
           node-version-file: '.nvmrc'
 
       - name: Maven Verify
-        run: mvn clean verify -B --file backend/pom.xml
+        run: ./backend/mvnw clean verify -B --file backend/pom.xml
 
       - name: Prepare Release
         run: |
-          mvn --file backend/pom.xml versions:set -DnewVersion=${{ github.event.inputs.releaseVersion }}
+          ./backend/mvnw --file backend/pom.xml versions:set -DnewVersion=${{ github.event.inputs.releaseVersion }}
           git add backend
           git commit -m "[GitHubActions] set release version to ${{ github.event.inputs.releaseVersion }}"
           git push
@@ -56,7 +56,7 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          mvn -B clean install --file backend/pom.xml -DskipTests -Djqassistant.skip=true -Pgenerate-client-api-types
+          ./backend/mvnw -B clean install --file backend/pom.xml -DskipTests -Djqassistant.skip=true -Pgenerate-client-api-types
 
       - name: Log in to Docker registry
         uses: docker/login-action@v3
@@ -72,7 +72,7 @@ jobs:
 
       - name: Setup new development version
         run: |
-          mvn --file backend/pom.xml versions:set -DnewVersion=${{ github.event.inputs.developmentVersion }}
+          ./backend/mvnw --file backend/pom.xml versions:set -DnewVersion=${{ github.event.inputs.developmentVersion }}
           git add backend/
           git commit -m "[GitHubActions] set release version to ${{ github.event.inputs.developmentVersion }}"
           git push
