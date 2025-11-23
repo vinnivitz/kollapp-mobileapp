@@ -202,6 +202,22 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     @RequiresKollappOrganizationMemberRole
+    public Organization approveNewMemberRequest(long organizationId, long personId) {
+        organizationRoleHelper.verifyOrganizationManager(organizationId);
+        Organization organization = organizationRepository.findById(organizationId)
+                .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
+        PersonOfOrganization personOfOrganization = personOfOrganizationRepository.findByIdAndOrganization(personId, organization)
+                .orElseThrow(() -> new PersonNotRegisteredInOrganizationException(messageSource));
+        personOfOrganization.setStatus(PersonOfOrganizationStatus.APPROVED);
+        // send email to person
+        KollappUser kollappUser = kollappUserService.findById(personOfOrganization.getUserId());
+        kollappUser.setRole(SystemRole.ROLE_KOLLAPP_ORGANIZATION_MEMBER);
+        organization.initChildren();
+        return organization;
+    }
+
+    @Override
+    @RequiresKollappOrganizationMemberRole
     public Organization grantRoleToPersonOfOrganization(long organizationId, long personId, OrganizationRole role) {
         organizationRoleHelper.verifyOrganizationManager(organizationId);
         Organization organization = organizationRepository.findById(organizationId)

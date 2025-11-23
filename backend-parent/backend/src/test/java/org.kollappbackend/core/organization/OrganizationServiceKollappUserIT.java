@@ -120,4 +120,10 @@ public class OrganizationServiceKollappUserIT extends BaseIT {
         assertThat(organization.getId()).isEqualTo(1);
         assertThat(organization.getName()).isEqualTo("NMS");
     }
+
+    @Test
+    public void approveNewMemberShouldThrowAuthException() {
+        assertThatExceptionOfType(AuthorizationDeniedException.class)
+                .isThrownBy(() -> organizationService.approveNewMemberRequest(1, 1));
+    }
 }
