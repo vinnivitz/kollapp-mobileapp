@@ -100,6 +100,16 @@ public class OrganizationController {
         return ResponseEntity.ok(new DataResponseTO(organizationTO, "success.organization.get", messageSource));
     }
 
+    @PatchMapping("/{organization-id}/person/{person-id}/approve")
+    @Operation(summary = "Approve a request of a new member to join the organization.", security = {
+            @SecurityRequirement(name = "bearer-key")})
+    public ResponseEntity<ResponseTO> approveMemberRequest(@PathVariable("organization-id") long organizationId,
+                                                           @PathVariable("person-id") long personId) {
+        Organization organization = organizationService.approveNewMemberRequest(organizationId, personId);
+        OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(organization);
+        return ResponseEntity.ok(new DataResponseTO(organizationTO, "success.organization.get", messageSource));
+    }
+
     @PatchMapping("/{organization-id}/invitation-code")
     @Operation(summary = "Renew the invitation code of the organization.", security = {
             @SecurityRequirement(name = "bearer-key")})
@@ -136,7 +146,7 @@ public class OrganizationController {
             @SecurityRequirement(name = "bearer-key")})
     public ResponseEntity<ResponseTO> leaveOrganization(@PathVariable("organization-id") long organizationId) {
         organizationService.leaveOrganization(organizationId);
-        return ResponseEntity.ok(new MessageResponseTO("success.organization.delete", messageSource));
+        return ResponseEntity.ok(new MessageResponseTO("success.organization.user.delete", messageSource));
     }
 
     @DeleteMapping("/{organization-id}/person/{person-of-organization-id}")

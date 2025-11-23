@@ -3,7 +3,12 @@ package org.kollappbackend.core.organization;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.kollappbackend.core.core.BaseIT;
-import org.kollappbackend.organization.application.exception.*;
+import org.kollappbackend.organization.application.exception.InvalidInvitationCodeException;
+import org.kollappbackend.organization.application.exception.LastManagerException;
+import org.kollappbackend.organization.application.exception.OrganizationNotFoundException;
+import org.kollappbackend.organization.application.exception.PersonAlreadyHasTargetRoleException;
+import org.kollappbackend.organization.application.exception.PersonAlreadyRegisteredInOrganizationException;
+import org.kollappbackend.organization.application.exception.PersonNotRegisteredInOrganizationException;
 import org.kollappbackend.organization.application.model.Organization;
 import org.kollappbackend.organization.application.model.OrganizationRole;
 import org.kollappbackend.organization.application.model.PersonOfOrganization;
@@ -302,6 +307,22 @@ public class OrganizationServiceManagerIT extends BaseIT {
         assertThat(organization3.isPresent()).isTrue();
         assertThat(organization1.get().getPersonsOfOrganization().size()).isEqualTo(2);
         assertThat(organization3.get().getPersonsOfOrganization().size()).isEqualTo(1);
+    }
+
+    @Test
+    @Transactional
+    public void approveNewMemberShouldApproveNewMember() {
+        organizationService.approveNewMemberRequest(1,2);
+        KollappUser approvedUser = kollappUserService.findById(2L);
+        assertThat(approvedUser.getRole()).isEqualTo(SystemRole.ROLE_KOLLAPP_ORGANIZATION_MEMBER);
+        Organization organization = organizationService.getOrganizationById(1);
+        assertThat(organization.getPersonsOfOrganization().size()).isEqualTo(3);
+        Optional<PersonOfOrganization> personOpt = organization.getPersonsOfOrganization().stream()
+                .filter(p -> p.getUserId() == 2)
+                .findFirst();
+        assertThat(personOpt.isPresent()).isTrue();
+        assertThat(personOpt.get().getStatus()).isEqualTo(PersonOfOrganizationStatus.APPROVED);
+
     }
 
 
