@@ -66,7 +66,8 @@ public class OrganizationServiceKollappUserIT extends BaseIT {
     @Test
     @Transactional
     public void enterOrganizationByInvitationCodeShouldReturnEnteredOrganization() {
-        Organization organization = organizationService.enterOrganizationByInvitationCode("asdfjklo");
+        organizationService.enterOrganizationByInvitationCode("asdfjklo");
+        Organization organization = organizationService.getOrganizationByInvitationCode("asdfjklo");
         assertThat(organization.getId()).isEqualTo(1);
         assertThat(organization.getName()).isEqualTo("NMS");
         assertThat(organization.getPersonsOfOrganization().size()).isEqualTo(1);
