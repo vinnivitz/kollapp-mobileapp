@@ -1,28 +1,5 @@
 package org.kollappbackend.core.organization;
 
-import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.Test;
-import org.kollappbackend.core.core.BaseIT;
-import org.kollappbackend.organization.application.exception.InvalidInvitationCodeException;
-import org.kollappbackend.organization.application.exception.LastManagerException;
-import org.kollappbackend.organization.application.exception.OrganizationNotFoundException;
-import org.kollappbackend.organization.application.exception.PersonAlreadyHasTargetRoleException;
-import org.kollappbackend.organization.application.exception.PersonAlreadyRegisteredInOrganizationException;
-import org.kollappbackend.organization.application.exception.PersonNotRegisteredInOrganizationException;
-import org.kollappbackend.organization.application.model.Organization;
-import org.kollappbackend.organization.application.model.OrganizationRole;
-import org.kollappbackend.organization.application.model.PersonOfOrganization;
-import org.kollappbackend.organization.application.model.PersonOfOrganizationStatus;
-import org.kollappbackend.organization.application.repository.OrganizationRepository;
-import org.kollappbackend.organization.application.service.OrganizationService;
-import org.kollappbackend.user.application.model.KollappUser;
-import org.kollappbackend.user.application.model.SystemRole;
-import org.kollappbackend.user.application.repository.KollappUserRepository;
-import org.kollappbackend.user.application.service.KollappUserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.jdbc.Sql;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -55,6 +32,23 @@ import org.kollapp.user.application.model.KollappUser;
 import org.kollapp.user.application.model.SystemRole;
 import org.kollapp.user.application.repository.KollappUserRepository;
 import org.kollapp.user.application.service.KollappUserService;
+import org.kollappbackend.core.core.BaseIT;
+import org.kollappbackend.organization.application.exception.InvalidInvitationCodeException;
+import org.kollappbackend.organization.application.exception.LastManagerException;
+import org.kollappbackend.organization.application.exception.OrganizationNotFoundException;
+import org.kollappbackend.organization.application.exception.PersonAlreadyHasTargetRoleException;
+import org.kollappbackend.organization.application.exception.PersonAlreadyRegisteredInOrganizationException;
+import org.kollappbackend.organization.application.exception.PersonNotRegisteredInOrganizationException;
+import org.kollappbackend.organization.application.model.Organization;
+import org.kollappbackend.organization.application.model.OrganizationRole;
+import org.kollappbackend.organization.application.model.PersonOfOrganization;
+import org.kollappbackend.organization.application.model.PersonOfOrganizationStatus;
+import org.kollappbackend.organization.application.repository.OrganizationRepository;
+import org.kollappbackend.organization.application.service.OrganizationService;
+import org.kollappbackend.user.application.model.KollappUser;
+import org.kollappbackend.user.application.model.SystemRole;
+import org.kollappbackend.user.application.repository.KollappUserRepository;
+import org.kollappbackend.user.application.service.KollappUserService;
 
 @Sql(
         scripts = "/sql/organization/base_data_organization_kollapp_orga_manager.sql",

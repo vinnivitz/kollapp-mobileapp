@@ -208,9 +208,11 @@ public class OrganizationServiceImpl implements OrganizationService {
     @RequiresKollappOrganizationMemberRole
     public Organization approveNewMemberRequest(long organizationId, long personId) {
         organizationRoleHelper.verifyOrganizationManager(organizationId);
-        Organization organization = organizationRepository.findById(organizationId)
+        Organization organization = organizationRepository
+                .findById(organizationId)
                 .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
-        PersonOfOrganization personOfOrganization = personOfOrganizationRepository.findByIdAndOrganization(personId, organization)
+        PersonOfOrganization personOfOrganization = personOfOrganizationRepository
+                .findByIdAndOrganization(personId, organization)
                 .orElseThrow(() -> new PersonNotRegisteredInOrganizationException(messageSource));
         personOfOrganization.setStatus(PersonOfOrganizationStatus.APPROVED);
         // send email to person
