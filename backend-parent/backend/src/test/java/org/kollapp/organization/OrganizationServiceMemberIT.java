@@ -166,4 +166,10 @@ public class OrganizationServiceMemberIT extends BaseIT {
         assertThat(organization.getId()).isEqualTo(2);
         assertThat(organization.getName()).isEqualTo("Frequenzfamilie");
     }
+
+    @Test
+    public void approveNewMemberShouldThrowAuthException() {
+        assertThatExceptionOfType(OrganizationAuthorizationException.class)
+                .isThrownBy(() -> organizationService.approveNewMemberRequest(1, 1));
+    }
 }
