@@ -35,7 +35,7 @@ fi
 
 if echo "$STAGED_FILES" | grep -q '^backend/'; then
   echo "Running backend spotless check..."
-  ./backend/mvnw -f backend/pom.xml spotless:check -pl server || {
+  ./backend/mvnw -f backend/pom.xml spotless:check -pl backend || {
     echo "Code formatting check failed. Run 'mvn spotless:apply' to fix."
     exit 1
   }

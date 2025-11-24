@@ -9,8 +9,8 @@
         <version>0.8.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>server</artifactId>
-    <description>Kollapp Server</description>
+    <artifactId>backend</artifactId>
+    <description>Kollapp Backend</description>
     <packaging>jar</packaging>
 
     <properties>
@@ -292,18 +292,6 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
             <plugin>
-                <groupId>com.buschmais.jqassistant</groupId>
-                <artifactId>jqassistant-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>scan</goal>
-                            <goal>analyze</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <executions>
@@ -434,7 +422,7 @@
                                         <classPattern>
                                             org.kollapp.**.adapters.primary.rest.dto.*</classPattern>
                                     </classPatterns>
-                                    <outputFile>${project.basedir}/../api-types/ts/index.d.ts</outputFile>
+                                    <outputFile>${project.basedir}/../backend-api/ts/index.d.ts</outputFile>
                                     <customTypeMappings>
                                         <customTypeMapping>long:number</customTypeMapping>
                                         <customTypeMapping>java.lang.Long:number</customTypeMapping>

@@ -10,7 +10,8 @@
         <version>0.8.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>api-types</artifactId>
+    <artifactId>backend-api</artifactId>
+    <description>Kollapp Backend API</description>
 
     <properties>
         <npm.registry>https://npm.kollapp.org</npm.registry>

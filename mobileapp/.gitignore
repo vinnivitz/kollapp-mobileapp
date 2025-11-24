@@ -14,12 +14,6 @@ visualize/
 test-results/
 coverage/
 
-# Environment
-.env
-.env.*
-!.env.example
-!.env.test
-
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*

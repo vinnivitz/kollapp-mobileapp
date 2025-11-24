@@ -30,6 +30,7 @@ Architecture validation is enforced using jQAssistant with jMolecules.
 
 2. **Configure environment**:
    ```bash
+   cd backend
    # Copy and edit environment variables
    cp .env.example .env
    # Edit .env with your local settings
@@ -38,7 +39,7 @@ Architecture validation is enforced using jQAssistant with jMolecules.
 3. **Build and run**:
    ```bash
    ./mvnw clean install
-   ./mvnw spring-boot:run -pl server
+   ./mvnw spring-boot:run -pl backend
    ```
 
 4. **Access the application**:
@@ -60,7 +61,7 @@ Architecture validation is enforced using jQAssistant with jMolecules.
 ./mvnw clean verify
 # Coverage report: target/site/jacoco/index.html
 
-# Architecture validation
+# Architecture validation for backend
 ./mvnw jqassistant:analyze
 ```
 
@@ -68,9 +69,8 @@ Architecture validation is enforced using jQAssistant with jMolecules.
 
 - **Formatting**: Google Java Format (AOSP style) via Spotless
 - **Linting**: Checkstyle with Sun checks
-- **Code Coverage**: JaCoCo (80% minimum)
+- **Code Coverage**: JaCoCo
 - **Architecture Tests**: jQAssistant
-- **Security Scanning**: CodeQL (GitHub Actions)
 
 ```bash
 # Check code formatting
@@ -87,7 +87,7 @@ Architecture validation is enforced using jQAssistant with jMolecules.
 
 ### Build Image
 ```bash
-cd server
+cd backend
 docker build -t kollapp/backend:latest .
 ```
 
@@ -118,13 +118,13 @@ OpenAPI 3.0 documentation is auto-generated and available at:
 - Swagger UI: http://localhost:8080/swagger-ui.html
 - OpenAPI JSON: http://localhost:8080/v3/api-docs
 
-TypeScript type definitions are generated for frontend JS clients in the `api-types` module.
+TypeScript type definitions are generated for frontend JS clients in the `backend-api` module.
 
 ## Configuration
 
 Key configuration files:
-- `application.yml` - Main Spring Boot configuration
-- `.env` - Environment-specific variables (local development)
+- `backend/src/main/resources/srcapplication.yml` - Main Spring Boot configuration
+- `backend/.env` - Environment-specific variables (local development)
 - `.jqassistant.yml` - Architecture rules
 
 ### Environment Variables
@@ -136,21 +136,6 @@ Required for production:
 - `BACKEND_DB_*` - Database credentials
 - `BACKEND_PRODUCTION=true`
 
-## Project Structure
-
-```
-backend/
-├── pom.xml                 # Parent POM
-├── server/                 # Main application
-│   ├── src/main/java/
-│   │   └── org/kollapp/
-│   │       ├── core/       # Shared infrastructure
-│   │       ├── user/       # User bounded context
-│   │       └── organization/ # Organization bounded context
-│   └── src/main/resources/
-└── api-types/              # TypeScript type generation
-```
-
 ## Deployment
 
 ### CI/CD
@@ -158,16 +143,15 @@ backend/
 GitHub Actions workflows:
 - `backend-ci.yml` - Build, test, and deploy releases
 - `run_on_main_at_commit.yml` - Run tests on every commit
-- `codeql.yml` - Security scanning
 
 ## Tech Stack
 
 - **Framework**: Spring Boot 3.3.5
 - **Java**: 21
-- **Database**: MySQL 8.4 (with HikariCP)
+- **Database**: MySQL 8.4.7 (with HikariCP)
 - **Security**: Spring Security + JWT
 - **ORM**: Spring Data JPA + Hibernate
 - **API Docs**: SpringDoc OpenAPI
 - **Testing**: JUnit 5, Testcontainers, Spring Security Test
-- **Monitoring**: Micrometer, Prometheus, Spring Boot Actuator
+- **Monitoring**: Spring Boot Actuator
 - **Architecture**: jMolecules, jQAssistant
