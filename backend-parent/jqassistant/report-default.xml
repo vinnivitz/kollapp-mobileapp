@@ -1,0 +1,49 @@
+<jqassistant-rules xmlns="http://schema.jqassistant.org/rule/v1.10">
+    <group id="kollapp-report:Default">
+        <includeConcept refId="kollapp-report:BoundedContextDependencies"/>
+    </group>
+
+    <concept id="kollapp-report:BoundedContextDependencies">
+        <requiresConcept refId="jmolecules-ddd:BoundedContextDependency"/>
+        <description>Express Bounded Context dependencies as graph</description>
+        <cypher><![CDATA[
+            MATCH
+              (boundedContext1:JMolecules:DDD:BoundedContext),
+              (boundedContext2:JMolecules:DDD:BoundedContext),
+              (boundedContext1)-[d:DEPENDS_ON]->(boundedContext2)
+            WITH
+              boundedContext1, boundedContext2, d as Weight
+            RETURN
+              boundedContext1 AS Source, Weight, boundedContext2 AS Target
+        ]]></cypher>
+        <report type="plantuml-component-diagram"/>
+    </concept>
+
+    <concept id="kollapp:DefinedBoundedContextDependencies">
+        <providesConcept refId="jmolecules-ddd:AllowedBoundedContextDependency"/>
+        <description>Propagates the allowed Bounded Context dependencies</description>
+        <cypher><![CDATA[
+            WITH
+                [
+                    {upstream: 'Core', downstream: 'Organization'},
+                    {upstream: 'Core', downstream: 'User'},
+                    {upstream: 'Core', downstream: 'Accounting'},
+                    {upstream: 'User', downstream: 'Organization'},
+                    {upstream: 'User', downstream: 'Accounting'},
+                    {upstream: 'Organization', downstream: 'Accounting'}
+                ] as allowedDependencies
+            UNWIND
+                allowedDependencies as allowedDependency
+            MATCH
+                (upstreamBC:JMolecules:DDD {name: allowedDependency.upstream})
+            MATCH
+                (downstreamBC:JMolecules:DDD {name: allowedDependency.downstream})
+            MERGE
+                (downstreamBC)-[:DEFINES_DEPENDENCY]->(upstreamBC)
+            RETURN
+                downstreamBC.name AS downstream,
+                upstreamBC.name AS upstream
+        ]]></cypher>
+    </concept>
+
+</jqassistant-rules>

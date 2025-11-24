@@ -1,10 +1,22 @@
-# Kollapp Backend
+# Kollapp Backend Parent
 
-A Spring Boot backend application using hexagonal architecture with DDD principles.
+Multi-module Maven project for the Kollapp backend application.
+
+## Project Structure
+
+This is a Maven parent project containing the following modules:
+
+- **`backend/`** - Main Spring Boot application (server module)
+  - REST API, business logic, persistence
+  - Uses hexagonal architecture with DDD principles
+  - Packaged as executable JAR
+- **`backend-api/`** - TypeScript API type definitions
+  - Auto-generated types for frontend clients
+  - Published as npm package
 
 ## Architecture
 
-This project follows **Hexagonal Architecture** (Ports & Adapters) with **Domain-Driven Design** principles:
+The `backend` module follows **Hexagonal Architecture** (Ports & Adapters) with **Domain-Driven Design** principles:
 
 - **Core Domain**: Business logic isolated from infrastructure
 - **Primary Adapters**: REST Controllers, Event Listeners
@@ -36,13 +48,17 @@ Architecture validation is enforced using jQAssistant with jMolecules.
    # Edit .env with your local settings
    ```
 
-3. **Build and run**:
+3. **Build project**:
    ```bash
    ./mvnw clean install
+   ```
+
+4. **Run the backend application**:
+   ```bash
    ./mvnw spring-boot:run -pl backend
    ```
 
-4. **Access the application**:
+4. **Access backend application**:
    - API: http://localhost:8080
    - OpenAPI Docs: http://localhost:8080/swagger-ui.html
    - Actuator Health: http://localhost:8080/actuator/health
@@ -50,19 +66,18 @@ Architecture validation is enforced using jQAssistant with jMolecules.
 
 ## Testing
 
-```bash
-# Run unit tests
-./mvnw test
+Run from the parent directory:
 
-# Run integration tests
+```bash
+# Run tests
 ./mvnw verify
 
-# Run with coverage
+# Run with coverage report
 ./mvnw clean verify
-# Coverage report: target/site/jacoco/index.html
+# Coverage report: backend/target/site/jacoco/index.html
 
-# Architecture validation for backend
-./mvnw jqassistant:analyze
+# Architecture validation
+./mvnw jqassistant:analyze -pl backend
 ```
 
 ## Code Quality
@@ -123,9 +138,11 @@ TypeScript type definitions are generated for frontend JS clients in the `backen
 ## Configuration
 
 Key configuration files:
-- `backend/src/main/resources/srcapplication.yml` - Main Spring Boot configuration
+- `pom.xml` - Parent POM with dependency management
+- `backend/pom.xml` - Backend module configuration
+- `backend/src/main/resources/application.yml` - Spring Boot configuration
 - `backend/.env` - Environment-specific variables (local development)
-- `.jqassistant.yml` - Architecture rules
+- `jqassistant/` - Architecture validation rules
 
 ### Environment Variables
 
@@ -135,6 +152,25 @@ Required for production:
 - `BACKEND_JWT_*_SECRET` - JWT signing secrets
 - `BACKEND_DB_*` - Database credentials
 - `BACKEND_PRODUCTION=true`
+
+## Module Details
+
+### Backend Module (`backend/`)
+
+The main Spring Boot application server. See `backend/README.md` for module-specific documentation.
+
+Build artifact: `backend/target/server-{version}.jar`
+
+### Backend API Module (`backend-api/`)
+
+Contains auto-generated TypeScript type definitions from Java DTOs.
+
+Generate types:
+```bash
+./mvnw process-classes -pl backend -P generate-client-api-types
+```
+
+Output: `backend-api/ts/index.d.ts`
 
 ## Deployment
 
