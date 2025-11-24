@@ -20,7 +20,7 @@ jobs:
           cache: maven
       - name: Maven Verify
         run: |
-          ./backend/mvnw -f backend/pom.xml -B clean verify
+          ./backend-parent/mvnw -f backend-parent/pom.xml -B clean verify
       #      - name: Publish backend quality analysis results to SonarQube
       #        run: |
       #          mvn -f backend/pom.xml -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=kollapp-backend -Dsonar.projectName='kollapp-backend' -Dsonar.host.url=${{ secrets.SONARQUBE_SERVER }} -Dsonar.token=${{ secrets.SONARQUBE_TOKEN }} -Dsonar.java.coveragePlugin=jacoco -Dsonar.dynamicAnalysis=reuseReports -Dsonar.jacoco.reportPath=./backend/target/jacoco.exec
