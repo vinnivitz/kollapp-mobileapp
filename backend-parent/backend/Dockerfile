@@ -28,7 +28,7 @@ ENV JAVA_OPTS="-XX:MaxRAMPercentage=75.0 \
     -Djava.security.egd=file:/dev/./urandom"
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=60s --retries=3 \
-    CMD wget --spider http://localhost:8080/actuator/health || exit 1
+    CMD wget --spider http://localhost:8080/actuator/health/liveness || exit 1
 
 EXPOSE 8080
 

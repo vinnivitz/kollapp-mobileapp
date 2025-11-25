@@ -90,31 +90,18 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics,prometheus,loggers
+        include: health
       base-path: /actuator
   endpoint:
     health:
-      show-details: when-authorized
+      show-details: never
       probes:
         enabled: true
-    metrics:
-      enabled: true
-    prometheus:
-      enabled: true
-  metrics:
-    export:
-      prometheus:
-        enabled: true
-    tags:
-      application: ${spring.application.name}
-      environment: ${spring.profiles.active}
   health:
     livenessState:
       enabled: true
     readinessState:
       enabled: true
-  server:
-    port: ${BACKEND_PORT:8080}
 
 ---
 # Production observability overrides
@@ -122,12 +109,3 @@ spring:
   config:
     activate:
       on-profile: production
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,metrics,prometheus
-  endpoint:
-    health:
-      show-details: never
