@@ -6,6 +6,7 @@ import org.kollappbackend.organization.application.exception.ActivityNotFoundExc
 import org.kollappbackend.organization.application.exception.InvalidInvitationCodeException;
 import org.kollappbackend.organization.application.exception.OrganizationAuthorizationException;
 import org.kollappbackend.organization.application.exception.OrganizationNotFoundException;
+import org.kollappbackend.organization.application.exception.PersonAlreadyRegisteredInOrganizationException;
 import org.kollappbackend.organization.application.exception.PersonNotRegisteredInOrganizationException;
 import org.kollappbackend.organization.application.exception.PersonOfOrganizationIsNotApprovedYetException;
 import org.kollappbackend.organization.application.exception.PostingDoesNotExistException;
@@ -26,6 +27,12 @@ public class OrganizationExceptionHandler {
     @ExceptionHandler(PersonNotRegisteredInOrganizationException.class)
     public ResponseEntity<ResponseTO> handlePersonNotRegisteredInOrganization(
             PersonNotRegisteredInOrganizationException ex) {
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
+    }
+
+    @ExceptionHandler(PersonAlreadyRegisteredInOrganizationException.class)
+    public ResponseEntity<ResponseTO> handlePersonAlreadyRegisteredInOrganization(
+            PersonAlreadyRegisteredInOrganizationException ex) {
         return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
     }
 
