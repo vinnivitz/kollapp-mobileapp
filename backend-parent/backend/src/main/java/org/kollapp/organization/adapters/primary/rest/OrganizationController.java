@@ -92,18 +92,17 @@ public class OrganizationController {
             @PathVariable("organization-id") long organizationId, @PathVariable("person-id") long personId) {
         Organization organization = organizationService.approveNewMemberRequest(organizationId, personId);
         OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(organization);
-        return ResponseEntity.ok(new DataResponseTO(organizationTO, "success.organization.get", messageSource));
+        return ResponseEntity.ok(new DataResponseTO<>(organizationTO, "success.organization.get", messageSource));
     }
 
     @PostMapping("/invitation/{invitation-code}")
     @Operation(
             summary = "Enter an organization based on its invitation code.",
             security = {@SecurityRequirement(name = "bearer-key")})
-    public ResponseEntity<DataResponseTO<OrganizationTO>> enterOrganizationBasedOnInvitationCode(
+    public ResponseEntity<MessageResponseTO> enterOrganizationBasedOnInvitationCode(
             @PathVariable("invitation-code") String invitationCode) {
-        Organization organization = organizationService.enterOrganizationByInvitationCode(invitationCode);
-        OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(organization);
-        return ResponseEntity.ok(new DataResponseTO<>(organizationTO, "success.organization.get", messageSource));
+        organizationService.enterOrganizationByInvitationCode(invitationCode);
+        return ResponseEntity.ok(new MessageResponseTO("success.organization.applied", messageSource));
     }
 
     @PatchMapping("/{organization-id}/person/{person-id}/grant-role")

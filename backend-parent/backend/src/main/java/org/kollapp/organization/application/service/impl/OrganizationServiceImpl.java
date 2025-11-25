@@ -121,6 +121,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         if (userIsNoOrganizationMember(kollappUser.getId())) {
             kollappUser.setRole(SystemRole.ROLE_KOLLAPP_USER);
         }
+        organization.initChildren();
         return organization;
     }
 
@@ -138,7 +139,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     @RequiresKollappUserRole
-    public Organization enterOrganizationByInvitationCode(String invitationCode) {
+    public void enterOrganizationByInvitationCode(String invitationCode) {
         String currentDatePlusOneDay = LocalDate.now().minusDays(1).toString();
         KollappUser currentUser = kollappUserService.getLoggedInKollappUser();
         OrganizationInvitationCode organizationInvitationCode = organizationInvitationCodeRepository
@@ -159,7 +160,6 @@ public class OrganizationServiceImpl implements OrganizationService {
         if (userIsNoOrganizationMember(currentUser.getId())) {
             currentUser.setRole(SystemRole.ROLE_KOLLAPP_ORGANIZATION_MEMBER);
         }
-        return organization;
     }
 
     @Override
