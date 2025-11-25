@@ -1,4 +1,4 @@
-package org.kollapp.core.organization;
+package org.kollapp.organization;
 
 import java.time.LocalDate;
 import java.util.List;
