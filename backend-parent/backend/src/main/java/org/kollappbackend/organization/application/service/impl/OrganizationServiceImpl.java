@@ -69,6 +69,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     public Organization createOrganization(Organization organization) {
         KollappUser user = kollappUserService.getLoggedInKollappUser();
         user.setRole(SystemRole.ROLE_KOLLAPP_ORGANIZATION_MEMBER);
+        organization.setActivities(new ArrayList<>());
         organization.setOrganizationPostings(new ArrayList<>());
         Organization persistedOrganization = organizationRepository.save(organization);
         OrganizationInvitationCode invitationCode =
