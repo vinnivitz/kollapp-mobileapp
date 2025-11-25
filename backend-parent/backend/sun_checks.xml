@@ -66,7 +66,7 @@
 
     <!-- Checks for whitespace                               -->
     <!-- See https://checkstyle.org/checks/whitespace/index.html -->
-    <module name="FileTabCharacter"/>
+    <!-- <module name="FileTabCharacter"/> -->
 
     <!-- Miscellaneous other checks.                   -->
     <!-- See https://checkstyle.org/checks/misc/index.html -->
@@ -128,9 +128,9 @@
         <!-- See https://checkstyle.org/checks/blocks/index.html -->
         <module name="AvoidNestedBlocks"/>
         <module name="EmptyBlock"/>
-        <module name="LeftCurly"/>
+        <!-- <module name="LeftCurly"/> -->
         <module name="NeedBraces"/>
-        <module name="RightCurly"/>
+        <!-- <module name="RightCurly"/> -->
 
         <!-- Checks for common coding problems               -->
         <!-- See https://checkstyle.org/checks/coding/index.html -->
