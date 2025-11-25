@@ -32,6 +32,12 @@ public class OrganizationExceptionHandler {
         return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
     }
 
+    @ExceptionHandler(PersonAlreadyRegisteredInOrganizationException.class)
+    public ResponseEntity<ResponseTO> handlePersonAlreadyRegisteredInOrganization(
+            PersonAlreadyRegisteredInOrganizationException ex) {
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
+    }
+
     @ExceptionHandler(ActivityNotFoundException.class)
     public ResponseEntity<ResponseTO> handleActivityNotFound(ActivityNotFoundException ex) {
         return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));

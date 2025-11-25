@@ -1,7 +1,10 @@
 package org.kollappbackend.organization.application.service.impl;
 
-import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.kollappbackend.core.config.properties.ApplicationProperties;
 import org.kollappbackend.organization.application.exception.InvalidInvitationCodeException;
 import org.kollappbackend.organization.application.exception.LastManagerException;
@@ -31,10 +34,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
 @Transactional
 @Slf4j
@@ -69,6 +70,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     public Organization createOrganization(Organization organization) {
         KollappUser user = kollappUserService.getLoggedInKollappUser();
         user.setRole(SystemRole.ROLE_KOLLAPP_ORGANIZATION_MEMBER);
+        organization.setActivities(new ArrayList<>());
         organization.setOrganizationPostings(new ArrayList<>());
         Organization persistedOrganization = organizationRepository.save(organization);
         OrganizationInvitationCode invitationCode =
@@ -135,10 +137,10 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     @RequiresKollappUserRole
     public void enterOrganizationByInvitationCode(String invitationCode) {
-        String currentDatePlusOneDay = LocalDate.now().minusDays(1).toString();
+        String currentDateMinusOneDay = LocalDate.now().minusDays(1).toString();
         KollappUser currentUser = kollappUserService.getLoggedInKollappUser();
         OrganizationInvitationCode organizationInvitationCode = organizationInvitationCodeRepository
-                .findByInvitationCodeAndExpirationDateIsAfter(invitationCode, currentDatePlusOneDay)
+                .findByInvitationCodeAndExpirationDateIsAfter(invitationCode, currentDateMinusOneDay)
                 .orElseThrow(() -> new InvalidInvitationCodeException(messageSource));
         Organization organization = organizationInvitationCode.getOrganization();
         if (organization.getPersonsOfOrganization().stream()
@@ -181,7 +183,7 @@ public class OrganizationServiceImpl implements OrganizationService {
                 .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
         PersonOfOrganization personOfOrganization = personOfOrganizationRepository
                 .findByUserIdAndOrganization(loggedInUser.getId(), organization)
-                .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
+                .orElseThrow(() -> new PersonNotRegisteredInOrganizationException(messageSource));
         if (personOfOrganization.getOrganizationRole().equals(OrganizationRole.ROLE_ORGANIZATION_MANAGER)
                 && organization.hasOnlyOneManagerLeft()) {
             deleteOrganization(loggedInUser, organization);
