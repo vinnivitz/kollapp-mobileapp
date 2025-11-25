@@ -1,7 +1,7 @@
 package org.kollappbackend.user.application.service.impl;
 
-import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Map;
+
 import org.kollappbackend.core.config.ClientPlatform;
 import org.kollappbackend.core.util.JwtUtil;
 import org.kollappbackend.core.util.UrlBuilderUtil;
@@ -31,7 +31,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -142,7 +143,6 @@ public class KollappUserServiceImpl implements KollappUserService {
             String confirmationToken = jwtUtil.generateConfirmationToken(username);
             String confirmationBaseUrl = createConfirmationBaseUrl(confirmationToken);
             emailService.sendConfirmationMail(kollappUser.getEmail(), confirmationBaseUrl);
-            kollappUser.setEmail(email);
         }
         KollappUserUpdatedEvent updatedEvent = new KollappUserUpdatedEvent(
                 this,
