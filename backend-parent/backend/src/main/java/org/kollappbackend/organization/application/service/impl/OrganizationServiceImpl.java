@@ -135,10 +135,10 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     @RequiresKollappUserRole
     public void enterOrganizationByInvitationCode(String invitationCode) {
-        String currentDatePlusOneDay = LocalDate.now().minusDays(1).toString();
+        String currentDateMinusOneDay = LocalDate.now().minusDays(1).toString();
         KollappUser currentUser = kollappUserService.getLoggedInKollappUser();
         OrganizationInvitationCode organizationInvitationCode = organizationInvitationCodeRepository
-                .findByInvitationCodeAndExpirationDateIsAfter(invitationCode, currentDatePlusOneDay)
+                .findByInvitationCodeAndExpirationDateIsAfter(invitationCode, currentDateMinusOneDay)
                 .orElseThrow(() -> new InvalidInvitationCodeException(messageSource));
         Organization organization = organizationInvitationCode.getOrganization();
         if (organization.getPersonsOfOrganization().stream()
