@@ -131,6 +131,16 @@ public class KollappUserServiceImpl implements KollappUserService {
     }
 
     @Override
+    public void resendConfirmationMail(String email) {
+        KollappUser kollappUser = getKollappUserByEmail(email);
+        if (kollappUser.isActivated()) {
+            throw new EmailIsAlreadyConfirmedException(messageSource);
+        }
+        String confirmationToken = jwtUtil.generateConfirmationToken(kollappUser.getUsername());
+        emailService.sendConfirmationMail(kollappUser.getEmail(), createConfirmationBaseUrl(confirmationToken));
+    }
+
+    @Override
     @RequiresKollappUserRole
     public KollappUser updateKollappUser(@Nullable String username, @Nullable String email) {
         KollappUser kollappUser = getLoggedInKollappUser();
