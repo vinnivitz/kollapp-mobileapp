@@ -22,7 +22,7 @@ public interface OrganizationService {
 
     Organization generateNewOrganizationInvitationCode(long organizationId);
 
-    Organization enterOrganizationByInvitationCode(String invitationCode);
+    void enterOrganizationByInvitationCode(String invitationCode);
 
     void deleteUserFromAllOrganizations(long personOfOrganizationId);
 
