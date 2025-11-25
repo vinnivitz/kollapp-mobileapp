@@ -3,7 +3,12 @@ package org.kollappbackend.core.organization;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.kollappbackend.core.core.BaseIT;
-import org.kollappbackend.organization.application.exception.*;
+import org.kollappbackend.organization.application.exception.InvalidInvitationCodeException;
+import org.kollappbackend.organization.application.exception.LastManagerException;
+import org.kollappbackend.organization.application.exception.OrganizationNotFoundException;
+import org.kollappbackend.organization.application.exception.PersonAlreadyHasTargetRoleException;
+import org.kollappbackend.organization.application.exception.PersonAlreadyRegisteredInOrganizationException;
+import org.kollappbackend.organization.application.exception.PersonNotRegisteredInOrganizationException;
 import org.kollappbackend.organization.application.model.Organization;
 import org.kollappbackend.organization.application.model.OrganizationRole;
 import org.kollappbackend.organization.application.model.PersonOfOrganization;
@@ -13,6 +18,7 @@ import org.kollappbackend.organization.application.service.OrganizationService;
 import org.kollappbackend.user.application.model.KollappUser;
 import org.kollappbackend.user.application.model.SystemRole;
 import org.kollappbackend.user.application.repository.KollappUserRepository;
+import org.kollappbackend.user.application.service.KollappUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
@@ -34,6 +40,8 @@ public class OrganizationServiceManagerIT extends BaseIT {
 
     @Autowired
     private OrganizationService organizationService;
+    @Autowired
+    private KollappUserService kollappUserService;
     @Autowired
     private KollappUserRepository kollappUserRepository;
     @Autowired
@@ -140,7 +148,8 @@ public class OrganizationServiceManagerIT extends BaseIT {
     @Test
     @Transactional
     public void enterOrganizationByInvitationCodeShouldReturnEnteredOrganization() {
-        Organization organization = organizationService.enterOrganizationByInvitationCode("asdfjklo");
+        organizationService.enterOrganizationByInvitationCode("asdfjklo");
+        Organization organization = organizationService.getOrganizationByInvitationCode("asdfjklo");
         assertThat(organization.getId()).isEqualTo(2);
         assertThat(organization.getName()).isEqualTo("Frequenzfamilie");
         assertThat(organization.getPersonsOfOrganization().size()).isEqualTo(2);
@@ -279,7 +288,43 @@ public class OrganizationServiceManagerIT extends BaseIT {
     public void getOrganizationByWrongInvitationCodeShouldThrowException() {
         assertThatExceptionOfType(InvalidInvitationCodeException.class)
                 .isThrownBy(() -> organizationService.getOrganizationByInvitationCode("asdfjkloo"));
+    }
+
+    @Test
+    public void deleteUserFromAllOrganizationsShouldThrowExceptionIfLastManager() {
+        assertThatExceptionOfType(LastManagerException.class)
+                .isThrownBy(() -> kollappUserService.deleteKollappUser());
+    }
+
+    @Test
+    @WithMockUser(username = "member", authorities = {"ROLE_KOLLAPP_ORGANIZATION_MEMBER"})
+    @Transactional
+    public void deleteUserFromAllOrganizationsShouldDeleteUser() {
+        kollappUserService.deleteKollappUser();
+        assertThat(kollappUserRepository.findByUsername("member")).isEmpty();
+        Optional<Organization> organization1 = organizationRepository.findById(1);
+        Optional<Organization> organization3 = organizationRepository.findById(3);
+        assertThat(organization1.isPresent()).isTrue();
+        assertThat(organization3.isPresent()).isTrue();
+        assertThat(organization1.get().getPersonsOfOrganization().size()).isEqualTo(2);
+        assertThat(organization3.get().getPersonsOfOrganization().size()).isEqualTo(1);
+    }
+
+    @Test
+    @Transactional
+    public void approveNewMemberShouldApproveNewMember() {
+        organizationService.approveNewMemberRequest(1,2);
+        KollappUser approvedUser = kollappUserService.findById(2L);
+        assertThat(approvedUser.getRole()).isEqualTo(SystemRole.ROLE_KOLLAPP_ORGANIZATION_MEMBER);
+        Organization organization = organizationService.getOrganizationById(1);
+        assertThat(organization.getPersonsOfOrganization().size()).isEqualTo(3);
+        Optional<PersonOfOrganization> personOpt = organization.getPersonsOfOrganization().stream()
+                .filter(p -> p.getUserId() == 2)
+                .findFirst();
+        assertThat(personOpt.isPresent()).isTrue();
+        assertThat(personOpt.get().getStatus()).isEqualTo(PersonOfOrganizationStatus.APPROVED);
 
     }
+
 
 }

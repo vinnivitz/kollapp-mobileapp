@@ -1,9 +1,13 @@
 package org.kollappbackend.organization.application.service.impl;
 
-import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.kollappbackend.core.config.properties.ApplicationProperties;
 import org.kollappbackend.organization.application.exception.InvalidInvitationCodeException;
+import org.kollappbackend.organization.application.exception.LastManagerException;
 import org.kollappbackend.organization.application.exception.OrganizationNotFoundException;
 import org.kollappbackend.organization.application.exception.PersonAlreadyHasTargetRoleException;
 import org.kollappbackend.organization.application.exception.PersonAlreadyRegisteredInOrganizationException;
@@ -30,10 +34,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
 @Transactional
 @Slf4j
@@ -68,6 +70,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     public Organization createOrganization(Organization organization) {
         KollappUser user = kollappUserService.getLoggedInKollappUser();
         user.setRole(SystemRole.ROLE_KOLLAPP_ORGANIZATION_MEMBER);
+        organization.setActivities(new ArrayList<>());
         organization.setOrganizationPostings(new ArrayList<>());
         Organization persistedOrganization = organizationRepository.save(organization);
         OrganizationInvitationCode invitationCode =
@@ -116,6 +119,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         if (userIsNoOrganizationMember(kollappUser.getId())) {
             kollappUser.setRole(SystemRole.ROLE_KOLLAPP_USER);
         }
+        organization.initChildren();
         return organization;
     }
 
@@ -132,11 +136,11 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     @RequiresKollappUserRole
-    public Organization enterOrganizationByInvitationCode(String invitationCode) {
-        String currentDatePlusOneDay = LocalDate.now().minusDays(1).toString();
+    public void enterOrganizationByInvitationCode(String invitationCode) {
+        String currentDateMinusOneDay = LocalDate.now().minusDays(1).toString();
         KollappUser currentUser = kollappUserService.getLoggedInKollappUser();
         OrganizationInvitationCode organizationInvitationCode = organizationInvitationCodeRepository
-                .findByInvitationCodeAndExpirationDateIsAfter(invitationCode, currentDatePlusOneDay)
+                .findByInvitationCodeAndExpirationDateIsAfter(invitationCode, currentDateMinusOneDay)
                 .orElseThrow(() -> new InvalidInvitationCodeException(messageSource));
         Organization organization = organizationInvitationCode.getOrganization();
         if (organization.getPersonsOfOrganization().stream()
@@ -154,7 +158,6 @@ public class OrganizationServiceImpl implements OrganizationService {
         if (userIsNoOrganizationMember(currentUser.getId())) {
             currentUser.setRole(SystemRole.ROLE_KOLLAPP_ORGANIZATION_MEMBER);
         }
-        return organization;
     }
 
     @Override
@@ -162,6 +165,10 @@ public class OrganizationServiceImpl implements OrganizationService {
     public void deleteUserFromAllOrganizations(long userId) {
         List<PersonOfOrganization> personsToBeDeleted = personOfOrganizationRepository.findByUserId(userId);
         for (PersonOfOrganization personOfOrganization : personsToBeDeleted) {
+            if (personOfOrganization.getOrganizationRole().equals(OrganizationRole.ROLE_ORGANIZATION_MANAGER)
+                    && personOfOrganization.getOrganization().hasOnlyOneManagerLeft()) {
+                throw new LastManagerException(messageSource);
+            }
             personOfOrganizationRepository.deleteById(personOfOrganization.getId());
         }
     }
@@ -176,7 +183,7 @@ public class OrganizationServiceImpl implements OrganizationService {
                 .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
         PersonOfOrganization personOfOrganization = personOfOrganizationRepository
                 .findByUserIdAndOrganization(loggedInUser.getId(), organization)
-                .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
+                .orElseThrow(() -> new PersonNotRegisteredInOrganizationException(messageSource));
         if (personOfOrganization.getOrganizationRole().equals(OrganizationRole.ROLE_ORGANIZATION_MANAGER)
                 && organization.hasOnlyOneManagerLeft()) {
             deleteOrganization(loggedInUser, organization);
@@ -193,6 +200,22 @@ public class OrganizationServiceImpl implements OrganizationService {
     public void updatePersonOfOrganizationsOfUser(long userId, String username) {
         List<PersonOfOrganization> personsToBeUpdated = personOfOrganizationRepository.findByUserId(userId);
         personsToBeUpdated.forEach(person -> person.setUsername(username));
+    }
+
+    @Override
+    @RequiresKollappOrganizationMemberRole
+    public Organization approveNewMemberRequest(long organizationId, long personId) {
+        organizationRoleHelper.verifyOrganizationManager(organizationId);
+        Organization organization = organizationRepository.findById(organizationId)
+                .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
+        PersonOfOrganization personOfOrganization = personOfOrganizationRepository.findByIdAndOrganization(personId, organization)
+                .orElseThrow(() -> new PersonNotRegisteredInOrganizationException(messageSource));
+        personOfOrganization.setStatus(PersonOfOrganizationStatus.APPROVED);
+        // send email to person
+        KollappUser kollappUser = kollappUserService.findById(personOfOrganization.getUserId());
+        kollappUser.setRole(SystemRole.ROLE_KOLLAPP_ORGANIZATION_MEMBER);
+        organization.initChildren();
+        return organization;
     }
 
     @Override

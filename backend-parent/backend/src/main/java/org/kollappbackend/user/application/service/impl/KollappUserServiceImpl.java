@@ -1,7 +1,7 @@
 package org.kollappbackend.user.application.service.impl;
 
-import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Map;
+
 import org.kollappbackend.core.config.ClientPlatform;
 import org.kollappbackend.core.util.JwtUtil;
 import org.kollappbackend.core.util.UrlBuilderUtil;
@@ -31,7 +31,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -130,19 +131,34 @@ public class KollappUserServiceImpl implements KollappUserService {
     }
 
     @Override
+    public void resendConfirmationMail(String email) {
+        KollappUser kollappUser = getKollappUserByEmail(email);
+        if (kollappUser.isActivated()) {
+            throw new EmailIsAlreadyConfirmedException(messageSource);
+        }
+        String confirmationToken = jwtUtil.generateConfirmationToken(kollappUser.getUsername());
+        emailService.sendConfirmationMail(kollappUser.getEmail(), createConfirmationBaseUrl(confirmationToken));
+    }
+
+    @Override
     @RequiresKollappUserRole
     public KollappUser updateKollappUser(@Nullable String username, @Nullable String email) {
         KollappUser kollappUser = getLoggedInKollappUser();
         if (username != null && !kollappUser.getUsername().equals(username)) {
+            if (userRepo.existsByUsername(username)) {
+                throw new UsernameExistsException(messageSource);
+            }
             kollappUser.setUsername(username);
         }
         if (email != null && !kollappUser.getEmail().equals(email)) {
+            if (userRepo.existsByEmail(email)) {
+                throw new EmailExistsException(messageSource);
+            }
             kollappUser.setActivated(false);
             kollappUser.setEmail(email);
-            String confirmationToken = jwtUtil.generateConfirmationToken(username);
+            String confirmationToken = jwtUtil.generateConfirmationToken(kollappUser.getUsername());
             String confirmationBaseUrl = createConfirmationBaseUrl(confirmationToken);
             emailService.sendConfirmationMail(kollappUser.getEmail(), confirmationBaseUrl);
-            kollappUser.setEmail(email);
         }
         KollappUserUpdatedEvent updatedEvent = new KollappUserUpdatedEvent(
                 this,

@@ -22,13 +22,15 @@ public interface OrganizationService {
 
     Organization generateNewOrganizationInvitationCode(long organizationId);
 
-    Organization enterOrganizationByInvitationCode(String invitationCode);
+    void enterOrganizationByInvitationCode(String invitationCode);
 
     void deleteUserFromAllOrganizations(long personOfOrganizationId);
 
     void leaveOrganization(long organizationId);
 
     void updatePersonOfOrganizationsOfUser(long userId, String username);
+
+    Organization approveNewMemberRequest(long organizationId, long personId);
 
     Organization grantRoleToPersonOfOrganization(long organizationId, long personId, OrganizationRole role);
 }

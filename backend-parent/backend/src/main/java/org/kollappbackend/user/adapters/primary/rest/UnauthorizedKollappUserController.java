@@ -7,6 +7,7 @@ import org.kollappbackend.core.adapters.primary.rest.model.MessageResponseTO;
 import org.kollappbackend.core.adapters.primary.rest.model.ResponseTO;
 import org.kollappbackend.user.adapters.primary.rest.model.ForgotPasswordRequestTO;
 import org.kollappbackend.user.adapters.primary.rest.model.KollappUserSignupRequest;
+import org.kollappbackend.user.adapters.primary.rest.model.ResendConfirmationRequestTO;
 import org.kollappbackend.user.adapters.primary.rest.model.ResetPasswordRequestTO;
 import org.kollappbackend.user.application.service.KollappUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,5 +49,11 @@ public class UnauthorizedKollappUserController {
             @Valid @RequestBody KollappUserSignupRequest signUpRequest) {
         kollappUserService.register(signUpRequest.getUsername(), signUpRequest.getEmail(), signUpRequest.getPassword());
         return ResponseEntity.ok(new MessageResponseTO("success.registration", messageSource));
+    }
+
+    @PostMapping("/resend-confirmation")
+    public ResponseEntity<MessageResponseTO> resendConfirmation(@Valid @RequestBody ResendConfirmationRequestTO resendConfirmationTo) {
+        kollappUserService.resendConfirmationMail(resendConfirmationTo.getEmail());
+        return ResponseEntity.ok(new MessageResponseTO("success.email.confirmation-resent", messageSource));
     }
 }
