@@ -88,7 +88,7 @@ public class OrganizationController {
     @Operation(
             summary = "Approve a request of a new member to join the organization.",
             security = {@SecurityRequirement(name = "bearer-key")})
-    public ResponseEntity<ResponseTO> approveMemberRequest(
+    public ResponseEntity<DataResponseTO<OrganizationTO>> approveMemberRequest(
             @PathVariable("organization-id") long organizationId, @PathVariable("person-id") long personId) {
         Organization organization = organizationService.approveNewMemberRequest(organizationId, personId);
         OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(organization);
