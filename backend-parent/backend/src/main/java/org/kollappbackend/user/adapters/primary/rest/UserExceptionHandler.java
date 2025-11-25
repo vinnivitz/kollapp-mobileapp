@@ -15,6 +15,7 @@ import org.kollappbackend.user.application.exception.UsernameNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -47,7 +48,8 @@ public class UserExceptionHandler {
 
     @ExceptionHandler(EmailIsNotConfirmedException.class)
     public ResponseEntity<ValidationFailureResponseTO> handleEmailIsNotConfirmed(EmailIsNotConfirmedException ex) {
-        return ResponseEntity.badRequest().body(new ValidationFailureResponseTO(ex.getMessage(), "email"));
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new ValidationFailureResponseTO(ex.getMessage(), "email"));
     }
 
     @ExceptionHandler(EmailNotFoundException.class)
