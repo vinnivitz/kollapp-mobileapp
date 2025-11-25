@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { PageData } from './$types';
+	import type { ResetPasswordRequestTO } from '@kollapp/api-types';
 
 	import { keyOutline, keySharp } from 'ionicons/icons';
 
@@ -14,7 +15,7 @@
 	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import { t } from '$lib/locales';
 	import { Form } from '$lib/models/ui';
-	import { customForm, showAlert } from '$lib/utility';
+	import { customForm, passwordConfirmationValidator, showAlert } from '$lib/utility';
 
 	const { data }: { data: PageData } = $props();
 
@@ -27,6 +28,9 @@
 
 	const form = new Form({
 		completed: async () => goto(resolve('/auth/login')),
+		customValidators: [
+			passwordConfirmationValidator<ResetPasswordRequestTO & { confirmPassword: string }>('password', 'confirmPassword')
+		],
 		request: async (model) => {
 			return publicUserResource.resetPassword(model, data.token!);
 		},

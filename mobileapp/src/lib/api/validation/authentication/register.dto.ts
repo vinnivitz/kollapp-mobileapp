@@ -1,20 +1,18 @@
 import type { KollappUserSignupRequestTO } from '@kollapp/api-types';
 
 import { get } from 'svelte/store';
-import { type AnyObject, object, ObjectSchema, ref, string } from 'yup';
+import { type AnyObject, object, ObjectSchema, string } from 'yup';
 
 import { t } from '$lib/locales';
 
 /**
  * Creates a schema for validating the `KollappUserSignupRequest`.
- * @returns {ObjectSchema<KollappUserSignupRequestTO>} The schema for validating the `KollappUserSignupRequest`.
+ * @returns {ObjectSchema<KollappUserSignupRequestTO & { confirmPassword: string }>} The schema for validating the `KollappUserSignupRequest`.
  */
-export const registerSchema = (): ObjectSchema<KollappUserSignupRequestTO> => {
+export const registerSchema = (): ObjectSchema<KollappUserSignupRequestTO & { confirmPassword: string }> => {
 	const $t = get(t);
 	return object({
-		confirmPassword: string()
-			.default('')
-			.oneOf([ref('password')], $t('api.dto.register.schema.validation.confirm-password.no-match')),
+		confirmPassword: string().default(''),
 		email: string()
 			.default('')
 			.trim()

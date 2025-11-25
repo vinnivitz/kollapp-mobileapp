@@ -561,7 +561,8 @@
               "required": "Password is required"
             },
             "confirm-password": {
-              "no-match": "Must match the password"
+              "no-match": "Must match the password",
+              "required": "Password confirmation is required"
             }
           }
         }

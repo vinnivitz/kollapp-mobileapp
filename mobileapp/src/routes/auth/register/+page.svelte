@@ -13,13 +13,12 @@
 	import Welcome from '$lib/components/widgets/Welcome.svelte';
 	import { t } from '$lib/locales';
 	import { Form } from '$lib/models/ui';
-	import { customForm } from '$lib/utility';
+	import { customForm, passwordConfirmationValidator } from '$lib/utility';
 
 	const form = new Form({
 		completed: async () => goto(resolve('/auth/login')),
-		request: async (model) => {
-			return publicUserResource.register(model);
-		},
+		customValidators: [passwordConfirmationValidator('password', 'confirmPassword')],
+		request: async (model) => publicUserResource.register(model),
 		schema: registerSchema()
 	});
 </script>
