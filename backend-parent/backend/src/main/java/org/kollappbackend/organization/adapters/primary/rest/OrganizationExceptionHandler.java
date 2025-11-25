@@ -4,6 +4,8 @@ import org.kollappbackend.core.adapters.primary.rest.model.ErrorResponseTO;
 import org.kollappbackend.core.adapters.primary.rest.model.ResponseTO;
 import org.kollappbackend.organization.application.exception.ActivityNotFoundException;
 import org.kollappbackend.organization.application.exception.InvalidInvitationCodeException;
+import org.kollappbackend.organization.application.exception.InvalidOrganizationRoleException;
+import org.kollappbackend.organization.application.exception.InvalidPostingTypeException;
 import org.kollappbackend.organization.application.exception.OrganizationAuthorizationException;
 import org.kollappbackend.organization.application.exception.OrganizationNotFoundException;
 import org.kollappbackend.organization.application.exception.PersonNotRegisteredInOrganizationException;
@@ -53,5 +55,15 @@ public class OrganizationExceptionHandler {
     @ExceptionHandler(OrganizationAuthorizationException.class)
     public ResponseEntity<ResponseTO> handleOrganizationAuthorizationException(OrganizationAuthorizationException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponseTO(ex.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidOrganizationRoleException.class)
+    public ResponseEntity<ResponseTO> handleInvalidOrganizationRole(InvalidOrganizationRoleException ex) {
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidPostingTypeException.class)
+    public ResponseEntity<ResponseTO> handleInvalidPostingType(InvalidPostingTypeException ex) {
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
     }
 }
