@@ -6,6 +6,8 @@
 
 	type Properties = {
 		children: Snippet;
+		badge?: string;
+		badgeColor?: Colors;
 		card?: boolean;
 		classList?: string;
 		color?: Colors | undefined;
@@ -23,6 +25,8 @@
 	};
 
 	let {
+		badge,
+		badgeColor = 'danger',
 		card,
 		children,
 		classList = '',
@@ -64,43 +68,56 @@
 {/if}
 
 {#snippet item()}
-	<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-	<ion-item
-		onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && clicked?.()}
-		{disabled}
-		{id}
-		data-card={card}
-		button={!!clicked}
-		role={clicked ? 'button' : undefined}
-		tabindex={clicked ? 0 : undefined}
-		{color}
-		detail={!!(clicked || slidingOptions) && !iconEnd}
-		data-transparent={transparent}
-		onclick={() => (slidingOptions ? ionItemSlidingElement?.open('end') : clicked?.())}
-		class={classList}
-		style="--ion-color-shade: var(--border-color) !important;"
-	>
-		{#if icon}
-			<ion-icon {icon} slot="start" color={iconColor}></ion-icon>
+	<div class="relative">
+		<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+		<ion-item
+			onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && clicked?.()}
+			{disabled}
+			{id}
+			data-card={card}
+			button={!!clicked}
+			role={clicked ? 'button' : undefined}
+			tabindex={clicked ? 0 : undefined}
+			{color}
+			detail={!!(clicked || slidingOptions) && !iconEnd}
+			data-transparent={transparent}
+			onclick={() => (slidingOptions ? ionItemSlidingElement?.open('end') : clicked?.())}
+			class={classList}
+			style="--ion-color-shade: var(--border-color) !important;"
+		>
+			{#if icon}
+				<ion-icon {icon} slot="start" color={iconColor}></ion-icon>
+			{/if}
+			{#if note}
+				<ion-note slot="end">{note}</ion-note>
+			{/if}
+			{#if iconEnd}
+				<ion-button
+					onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && clicked?.()}
+					role="button"
+					tabindex="0"
+					class="ms-0"
+					fill="clear"
+					slot="end"
+					onclick={iconClick}
+				>
+					<ion-icon icon={iconEnd} color="secondary" slot="icon-only" size="large"></ion-icon>
+				</ion-button>
+			{/if}
+			{@render children()}
+		</ion-item>
+		{#if badge}
+			{@render badgeIcon()}
 		{/if}
-		{#if note}
-			<ion-note slot="end">{note}</ion-note>
-		{/if}
-		{#if iconEnd}
-			<ion-button
-				onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && clicked?.()}
-				role="button"
-				tabindex="0"
-				class="ms-0"
-				fill="clear"
-				slot="end"
-				onclick={iconClick}
-			>
-				<ion-icon icon={iconEnd} color="secondary" slot="icon-only" size="large"></ion-icon>
-			</ion-button>
-		{/if}
-		{@render children()}
-	</ion-item>
+	</div>
+{/snippet}
+
+{#snippet badgeIcon()}
+	<div class="absolute top-1 left-1 opacity-90" style="z-index: 90;">
+		<ion-badge color={badgeColor}>
+			{badge}
+		</ion-badge>
+	</div>
 {/snippet}
 
 <style>

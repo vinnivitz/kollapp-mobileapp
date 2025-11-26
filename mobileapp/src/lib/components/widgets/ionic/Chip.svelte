@@ -8,13 +8,24 @@
 		classList?: string;
 		color?: Colors;
 		icon?: string;
+		iconColor?: Colors;
 		iconEnd?: string;
 		indexed?: RouteId;
 		selected?: boolean;
 		clicked?: () => void;
 	};
 
-	let { classList = '', clicked, color = 'secondary', icon, iconEnd, indexed, label, selected }: Properties = $props();
+	let {
+		classList = '',
+		clicked,
+		color = 'secondary',
+		icon,
+		iconColor,
+		iconEnd,
+		indexed,
+		label,
+		selected
+	}: Properties = $props();
 
 	// workaround to avoid reference linting error
 	void indexed;
@@ -32,11 +43,11 @@
 >
 	<div class="flex items-center justify-between gap-2">
 		{#if icon}
-			<ion-icon class="ps-0 text-xs" {icon}></ion-icon>
+			<ion-icon color={iconColor} class="ps-0 text-xs" {icon}></ion-icon>
 		{/if}
 		{label}
 		{#if iconEnd}
-			<ion-icon class="p-0 text-xs" icon={iconEnd}></ion-icon>
+			<ion-icon color={iconColor} class="p-0 text-xs" icon={iconEnd}></ion-icon>
 		{/if}
 	</div>
 </ion-chip>

@@ -13,6 +13,7 @@
 		logoAndroid,
 		logoApple,
 		moonOutline,
+		notificationsOutline,
 		refreshOutline,
 		sunnyOutline,
 		trashOutline
@@ -113,6 +114,12 @@
 {#snippet accountList()}
 	<ion-list inset>
 		<ion-list-header>{$t('routes.account.list.account.title')}</ion-list-header>
+		<LabeledItem
+			indexed="/account/notifications"
+			clicked={() => goto(resolve('/account/notifications'))}
+			icon={notificationsOutline}
+			label={$t('routes.account.list.account.button.notifications')}
+		/>
 		<LabeledItem
 			indexed="/account/update-data"
 			clicked={() => goto(resolve('/account/update-data'))}

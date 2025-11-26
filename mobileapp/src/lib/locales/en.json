@@ -145,7 +145,8 @@
           "button": {
             "update-data": "Update user data",
             "delete-account": "Delete account",
-            "privacy-and-security": "Privacy and security"
+            "privacy-and-security": "Privacy and security",
+            "notifications": "Notifications"
           },
           "privacy-and-security": {
             "button": {

@@ -12,7 +12,7 @@
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
 	import { t } from '$lib/locales';
-	import { featureNotImplementedAlert, triggerClickByLabel } from '$lib/utility';
+	import { triggerClickByLabel } from '$lib/utility';
 
 	type Properties = {
 		children: Snippet;
@@ -58,13 +58,12 @@
 				>
 				</ion-searchbar>
 				<Button
-					badge="2"
 					fill="clear"
 					size="large"
 					classList="m-0"
 					color="light"
 					icon={notificationsOutline}
-					clicked={featureNotImplementedAlert}
+					clicked={() => navigate('/account/notifications')}
 				/>
 			</div>
 		</ion-toolbar>

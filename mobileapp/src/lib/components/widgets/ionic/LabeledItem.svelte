@@ -9,6 +9,7 @@
 	type Properties = {
 		label: string;
 		accessible?: OrganizationRole;
+		badge?: string;
 		card?: boolean;
 		classList?: string;
 		color?: Colors | undefined;
@@ -19,6 +20,7 @@
 
 	let {
 		accessible,
+		badge,
 		card,
 		classList = '',
 		clicked,
@@ -36,7 +38,7 @@
 	const labelColor = $derived(color === 'light' || color === 'white' ? 'dark' : 'white');
 </script>
 
-<CustomItem {clicked} {card} {color} {transparent} {icon} {classList}>
+<CustomItem {clicked} {card} {color} {transparent} {icon} {classList} {badge}>
 	{#if label}
 		<ion-label class="ms-4" color={labelColor}>{label}</ion-label>
 	{/if}
