@@ -102,6 +102,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             organization.setPlace(updatedOrganization.getPlace());
             organization.setDescription(updatedOrganization.getDescription());
         }
+        organization.initChildren();
         return organization;
     }
 
