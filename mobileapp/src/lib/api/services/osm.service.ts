@@ -69,4 +69,4 @@ class OsmResource {
 	}
 }
 
-export const osmResource = new OsmResource();
+export const osmService = new OsmResource();

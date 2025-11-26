@@ -229,7 +229,7 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 		const parser = data.config.parsers?.[key as keyof T];
 		const parsed = parser ? parser(value) : value;
 		onUpdate(key, parsed as T[keyof T]);
-		data.config.onChange?.(key, parsed as T[keyof T]);
+		data.config.onChange?.({ key, value: parsed as T[keyof T] });
 	}
 
 	async function onSubmit(event?: Event): Promise<void> {

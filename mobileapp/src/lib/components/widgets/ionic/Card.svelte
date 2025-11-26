@@ -62,19 +62,21 @@
 		{@render content()}
 	</ion-card>
 {:else}
-	<ion-card {id} {color} class={`${borderStyle} ${classList}`}>
+	<ion-card {id} {color} class={classList} style={`border: ${borderStyle}`}>
 		{@render content()}
 	</ion-card>
 {/if}
 
 {#snippet content()}
-	{#if title || subtitle}
+	{#if title || subtitle || titleIconStart || titleIconEnd}
 		<ion-card-header>
 			<ion-card-title class="flex items-center justify-center gap-2 text-center text-2xl">
 				{#if titleIconStart}
 					<ion-icon icon={titleIconStart}></ion-icon>
 				{/if}
-				<ion-text>{title}</ion-text>
+				{#if title}
+					<ion-text>{title}</ion-text>
+				{/if}
 				{#if titleIconEnd}
 					<ion-icon icon={titleIconEnd}></ion-icon>
 				{/if}

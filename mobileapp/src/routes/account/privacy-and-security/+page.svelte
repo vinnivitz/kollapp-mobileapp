@@ -15,7 +15,7 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
-	import { authenticationResource } from '$lib/api/resources';
+	import { authenticationService } from '$lib/api/services';
 	import { loginSchema } from '$lib/api/validation/authentication';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
@@ -47,7 +47,7 @@
 		completed: async ({ model }) => onPasswordConfirmed($userStore?.username!, model.password),
 		exposedActions: (exposedActions) => (actions = exposedActions),
 		hiddenFields: { username: $userStore?.username! },
-		request: async (model: LoginRequestTO) => authenticationResource.login(model),
+		request: async (model: LoginRequestTO) => authenticationService.login(model),
 		schema: loginSchema()
 	});
 

@@ -8,7 +8,7 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
-	import { organizationResource } from '$lib/api/resources';
+	import { organizationService } from '$lib/api/services';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
@@ -21,7 +21,7 @@
 
 	onMount(async () => {
 		if (data.invitationCode) {
-			const response = await organizationResource.getByInvitationCode(data.invitationCode);
+			const response = await organizationService.getByInvitationCode(data.invitationCode);
 			if (StatusCheck.isOK(response.status)) {
 				organization = response.data;
 			}

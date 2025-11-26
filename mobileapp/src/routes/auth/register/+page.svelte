@@ -4,7 +4,7 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
-	import { publicUserResource } from '$lib/api/resources';
+	import { publicUserService } from '$lib/api/services';
 	import { registerSchema } from '$lib/api/validation/authentication';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
@@ -18,7 +18,7 @@
 	const form = new Form({
 		completed: async () => goto(resolve('/auth/login')),
 		customValidators: [passwordConfirmationValidator('password', 'confirmPassword')],
-		request: async (model) => publicUserResource.register(model),
+		request: async (model) => publicUserService.register(model),
 		schema: registerSchema()
 	});
 </script>

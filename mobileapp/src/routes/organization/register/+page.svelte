@@ -6,7 +6,7 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
-	import { organizationResource } from '$lib/api/resources';
+	import { organizationService } from '$lib/api/services';
 	import { createOrganizationSchema } from '$lib/api/validation/organization';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
@@ -25,7 +25,7 @@
 			await organizationStore.update(response.id);
 			await goto(resolve('/organization'));
 		},
-		request: async (model: OrganizationCreationRequestTO) => organizationResource.create(model),
+		request: async (model: OrganizationCreationRequestTO) => organizationService.create(model),
 		schema: createOrganizationSchema()
 	});
 </script>

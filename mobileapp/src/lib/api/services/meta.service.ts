@@ -60,4 +60,4 @@ class MetaResource {
 	}
 }
 
-export const metaResource = new MetaResource();
+export const metaService = new MetaResource();

@@ -12,7 +12,7 @@
 		color?: Colors;
 		disabled?: boolean;
 		name?: string;
-		clicked: () => void;
+		clicked?: () => void;
 	};
 
 	let { children, classList = '', clicked, color, disabled, icon, label }: Properties = $props();

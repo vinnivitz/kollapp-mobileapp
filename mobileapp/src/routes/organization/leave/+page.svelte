@@ -5,7 +5,7 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
-	import { organizationResource } from '$lib/api/resources';
+	import { organizationService } from '$lib/api/services';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
@@ -37,7 +37,7 @@
 		await loader.present();
 		const organizationId = $organizationStore?.id;
 		if (organizationId) {
-			await organizationResource.leave(organizationId);
+			await organizationService.leave(organizationId);
 			await organizationStore.init();
 		}
 		await loader.dismiss();

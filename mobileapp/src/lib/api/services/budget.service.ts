@@ -106,4 +106,4 @@ class BudgetResource {
 	}
 }
 
-export const budgetResource = new BudgetResource();
+export const budgetService = new BudgetResource();

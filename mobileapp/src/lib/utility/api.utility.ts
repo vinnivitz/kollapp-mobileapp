@@ -8,7 +8,7 @@ import { get } from 'svelte/store';
 
 import { dev } from '$app/environment';
 
-import { authenticationResource, metaResource } from '$lib/api/resources';
+import { authenticationService, metaService } from '$lib/api/services';
 import environment from '$lib/environment';
 import { Locale, t } from '$lib/locales';
 import {
@@ -188,7 +188,7 @@ export function hasSystemRole(role: SystemRole): boolean {
  */
 export async function checkMaintenance(): Promise<void> {
 	const $t = get(t);
-	const response = await metaResource.getMaintenanceInfo();
+	const response = await metaService.getMaintenanceInfo();
 	if (StatusCheck.isOK(response.status)) {
 		const schedule = new TZDate(response.data.scheduled);
 		if (!response.data.scheduled || schedule <= new TZDate()) {
@@ -210,7 +210,7 @@ export async function checkMaintenance(): Promise<void> {
 
 async function handleAuthenticationError(): Promise<ResponseBody> {
 	const $t = get(t);
-	await authenticationResource.logout();
+	await authenticationService.logout();
 	return createErrorResponse(StatusCode.UNAUTHORIZED, $t('api.unauthorized'), true);
 }
 
@@ -275,7 +275,7 @@ async function getNewAuthenticationToken(): Promise<string | undefined> {
 			return;
 		}
 
-		const body = await authenticationResource.refresh(refreshToken);
+		const body = await authenticationService.refresh(refreshToken);
 		if (StatusCheck.isOK(body.status)) {
 			const accessToken = body.data.token;
 			await authenticationStore.set({ accessToken, refreshToken });
@@ -298,7 +298,7 @@ async function createErrorResponse(status: number, message: string, silent: bool
 	if (dev) {
 		console.warn(log);
 	} else if (!StatusCheck.isUnauthorized(status)) {
-		metaResource.reportErrorLog(log);
+		metaService.reportErrorLog(log);
 	}
 	return { data: {} as never, message, status };
 }

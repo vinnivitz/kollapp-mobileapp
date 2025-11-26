@@ -35,4 +35,4 @@ class SearchableResource {
 	}
 }
 
-export const searchableResource = new SearchableResource();
+export const searchableService = new SearchableResource();

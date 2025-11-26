@@ -3,7 +3,7 @@
 
 	import { mailOutline, personOutline, saveOutline } from 'ionicons/icons';
 
-	import { userResource } from '$lib/api/resources';
+	import { userService } from '$lib/api/services';
 	import { updateUserDataSchema } from '$lib/api/validation/user';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
@@ -35,7 +35,7 @@
 			});
 		},
 		onTouched: () => (touched = true),
-		request: async (model: KollappUserUpdateRequestTO) => userResource.update(model),
+		request: async (model: KollappUserUpdateRequestTO) => userService.update(model),
 		schema: updateUserDataSchema()
 	});
 </script>

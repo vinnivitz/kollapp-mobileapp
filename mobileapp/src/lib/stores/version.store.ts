@@ -3,7 +3,7 @@ import type { ApiVersionTO } from '@kollapp/api-types';
 
 import { writable } from 'svelte/store';
 
-import { metaResource } from '$lib/api/resources';
+import { metaService } from '$lib/api/services';
 import { PreferencesKey } from '$lib/models/preferences';
 import { removeStoredValue, StatusCheck, storeValue } from '$lib/utility';
 
@@ -11,7 +11,7 @@ function createStore(): VersionStore {
 	const { set, subscribe } = writable<ApiVersionTO | undefined>();
 
 	async function init(): Promise<void> {
-		const response = await metaResource.getApiVersion();
+		const response = await metaService.getApiVersion();
 		await (StatusCheck.isOK(response.status) ? _set(response.data) : _set());
 	}
 	async function _set(value?: ApiVersionTO): Promise<void> {

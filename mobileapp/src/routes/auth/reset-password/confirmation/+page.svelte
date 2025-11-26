@@ -7,7 +7,7 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
-	import { publicUserResource } from '$lib/api/resources';
+	import { publicUserService } from '$lib/api/services';
 	import { resetPasswordSchema } from '$lib/api/validation/authentication';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
@@ -32,7 +32,7 @@
 			passwordConfirmationValidator<ResetPasswordRequestTO & { confirmPassword: string }>('password', 'confirmPassword')
 		],
 		request: async (model) => {
-			return publicUserResource.resetPassword(model, data.token!);
+			return publicUserService.resetPassword(model, data.token!);
 		},
 		schema: resetPasswordSchema()
 	});

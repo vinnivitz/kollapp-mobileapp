@@ -7,7 +7,7 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
-	import { organizationResource } from '$lib/api/resources';
+	import { organizationService } from '$lib/api/services';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
@@ -21,7 +21,7 @@
 			const result = await CapacitorBarcodeScanner.scanBarcode({ hint: CapacitorBarcodeScannerTypeHint.QR_CODE });
 			const code = result.ScanResult;
 			if (code.length === 8) {
-				const response = await organizationResource.joinByInvitationCode(code);
+				const response = await organizationService.joinByInvitationCode(code);
 				if (StatusCheck.isOK(response.status)) {
 					await Haptics.vibrate({ duration: 1000 });
 					await organizationStore.update(response.data.id);

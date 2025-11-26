@@ -45,4 +45,4 @@ class PublicUserResource {
 	}
 }
 
-export const publicUserResource = new PublicUserResource();
+export const publicUserService = new PublicUserResource();

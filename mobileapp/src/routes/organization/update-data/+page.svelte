@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { accessibilityOutline, readerOutline, saveOutline } from 'ionicons/icons';
 
-	import { organizationResource } from '$lib/api/resources';
+	import { organizationService } from '$lib/api/services';
 	import { updateOrganizationSchema } from '$lib/api/validation/organization';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
@@ -34,8 +34,9 @@
 			name: $organizationStore!.name,
 			place: $organizationStore!.place
 		},
+		onChange: ({ value }) => console.log('changed', value),
 		onTouched: () => (touched = true),
-		request: async (model) => organizationResource.update($organizationStore?.id!, model),
+		request: async (model) => organizationService.update($organizationStore?.id!, model),
 		schema: updateOrganizationSchema()
 	});
 </script>

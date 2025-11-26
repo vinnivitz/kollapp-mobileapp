@@ -26,7 +26,7 @@
 	import { SvelteMap } from 'svelte/reactivity';
 	import { fade } from 'svelte/transition';
 
-	import { organizationResource } from '$lib/api/resources';
+	import { organizationService } from '$lib/api/services';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
@@ -67,7 +67,7 @@
 	async function onRemoveUser(userId: number): Promise<void> {
 		const organizationId = $organizationStore?.id;
 		if (!organizationId) return;
-		const response = await organizationResource.removeUser(organizationId, userId);
+		const response = await organizationService.removeUser(organizationId, userId);
 		if (StatusCheck.isOK(response.status)) {
 			await organizationStore.update(organizationId);
 		}
@@ -97,7 +97,7 @@
 	}
 
 	async function grantOrganizationRole(userId: number, organizationId: number, role: OrganizationRole): Promise<void> {
-		await organizationResource.grantRole(userId, organizationId, role);
+		await organizationService.grantRole(userId, organizationId, role);
 	}
 
 	function getGroupedMembers(members: PersonOfOrganizationTO[]): [string, PersonOfOrganizationTO[]][] {
@@ -139,7 +139,7 @@
 	async function onRenewCode(): Promise<void> {
 		const organizationId = $organizationStore?.id;
 		if (organizationId) {
-			const response = await organizationResource.renewInvitationCode(organizationId);
+			const response = await organizationService.renewInvitationCode(organizationId);
 			if (StatusCheck.isOK(response.status)) {
 				await organizationStore.update(organizationId);
 			}

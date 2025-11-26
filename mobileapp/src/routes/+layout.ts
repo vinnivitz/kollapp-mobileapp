@@ -13,7 +13,7 @@ export const ssr = false;
 
 let initialized = false;
 
-export const load: LayoutLoad = async ({ url }) => {
+export const load: LayoutLoad = async ({ route, url }) => {
 	if (!initialized) {
 		initialized = true;
 		await appStateStore.initialize();
@@ -22,20 +22,29 @@ export const load: LayoutLoad = async ({ url }) => {
 	}
 
 	const authenticated = await isAuthenticated();
-	const shouldRedirect = await handleRouting(url.pathname, authenticated);
+	const shouldRedirect = await handleRouting(url.pathname, authenticated, route.id as RouteId);
 
 	if (shouldRedirect) {
 		await new Promise(() => {});
 	}
 };
 
-async function handleRouting(pathname: string, authenticated: boolean): Promise<boolean> {
-	const isAuthPath = pathname.startsWith('/auth' satisfies RouteId);
+async function handleRouting(pathname: string, authenticated: boolean, routeId: RouteId): Promise<boolean> {
+	if (routeId === ('/auth/organization/[slug]' as RouteId)) return false;
+
+	const isAuthPath = pathname.startsWith('/auth' as RouteId);
 
 	if (authenticated && isAuthPath) {
 		await goto(resolve('/'));
 		return true;
-	} else if (!authenticated && !isAuthPath) {
+	}
+
+	if (!authenticated && !isAuthPath) {
+		await goto(resolve('/auth/login'));
+		return true;
+	}
+
+	if (!authenticated && ['/auth' as RouteId, '/auth/organization' as RouteId].includes(routeId)) {
 		await goto(resolve('/auth/login'));
 		return true;
 	}

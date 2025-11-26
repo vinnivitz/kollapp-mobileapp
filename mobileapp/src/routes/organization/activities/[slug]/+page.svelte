@@ -39,7 +39,7 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
-	import { activityResource, budgetResource } from '$lib/api/resources';
+	import { activityService, budgetService } from '$lib/api/services';
 	import { createPostingSchema } from '$lib/api/validation/budget';
 	import { updateActivitySchema } from '$lib/api/validation/organization';
 	import Layout from '$lib/components/layout/Layout.svelte';
@@ -141,7 +141,7 @@
 		exposedActions: (exposedActions) => (createAccountPostingFormActions = exposedActions),
 		formatters: { amountInCents: formatter.currency, date: formatter.date },
 		parsers: { amountInCents: parser.currency, date: parser.date },
-		request: (model) => budgetResource.createActivityPosting($organizationStore?.id!, activity?.id!, model),
+		request: (model) => budgetService.createActivityPosting($organizationStore?.id!, activity?.id!, model),
 		schema: createPostingSchema()
 	});
 
@@ -156,7 +156,7 @@
 		onTouched: () => (updateAccountPostingModelTouched = true),
 		parsers: { amountInCents: parser.currency, date: parser.date },
 		request: async (model) =>
-			budgetResource.updateActivityPosting($organizationStore?.id!, activity?.id!, selectedPosting?.id!, model),
+			budgetService.updateActivityPosting($organizationStore?.id!, activity?.id!, selectedPosting?.id!, model),
 		schema: createPostingSchema()
 	});
 
@@ -168,7 +168,7 @@
 		},
 		exposedActions: (actions) => (updateActivityFormActions = actions),
 		onTouched: () => (updateActivityModelTouched = true),
-		request: async (model) => await activityResource.update($organizationStore?.id!, activity?.id!, model),
+		request: async (model) => await activityService.update($organizationStore?.id!, activity?.id!, model),
 		schema: updateActivitySchema()
 	});
 
@@ -248,7 +248,7 @@
 	async function deleteActivity(): Promise<void> {
 		const loader = await loadingController.create({});
 		await loader.present();
-		await activityResource.remove($organizationStore?.id!, activity?.id!);
+		await activityService.remove($organizationStore?.id!, activity?.id!);
 		await organizationStore.update($organizationStore?.id!);
 		updateActivityModalOpen = false;
 		await loader.dismiss();
@@ -383,7 +383,7 @@
 		const organizationId = $organizationStore?.id;
 		if (organizationId) {
 			const result = getValidationResult(
-				await budgetResource.removeActivityPosting(organizationId, activity?.id!, postingId)
+				await budgetService.removeActivityPosting(organizationId, activity?.id!, postingId)
 			);
 			if (result.valid) {
 				await organizationStore.update(organizationId);

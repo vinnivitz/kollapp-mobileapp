@@ -45,4 +45,4 @@ class UserResource {
 	}
 }
 
-export const userResource = new UserResource();
+export const userService = new UserResource();

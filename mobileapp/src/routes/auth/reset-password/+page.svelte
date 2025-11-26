@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { mailOutline, refreshOutline } from 'ionicons/icons';
 
-	import { publicUserResource } from '$lib/api/resources';
+	import { publicUserService } from '$lib/api/services';
 	import { forgotPasswordSchema } from '$lib/api/validation/authentication';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
@@ -12,7 +12,7 @@
 	import { customForm } from '$lib/utility';
 
 	const form = new Form({
-		request: async (model) => publicUserResource.forgotPassword(model),
+		request: async (model) => publicUserService.forgotPassword(model),
 		schema: forgotPasswordSchema()
 	});
 </script>

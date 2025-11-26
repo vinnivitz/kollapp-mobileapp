@@ -2,7 +2,7 @@ import { fireEvent, render, waitFor } from '@testing-library/svelte';
 import { LatLng, Map as LeafletMap, Marker as LeafletMarker } from 'leaflet';
 import { beforeAll, beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
 
-import { osmResource } from '$lib/api/resources';
+import { osmService } from '$lib/api/services';
 import LeafletMapComponent from '$lib/components/widgets/LeafletMap.svelte';
 
 type MockMap = {
@@ -60,7 +60,7 @@ function registerMocks(): void {
 		};
 	});
 
-	vi.mock('$lib/api/resources', () => ({
+	vi.mock('$lib/api/services', () => ({
 		osmResource: {
 			getLocationByLatLng: vi.fn().mockResolvedValue({
 				locality: 'Testville',
@@ -92,8 +92,8 @@ describe('LeafletMap', () => {
 
 		(LeafletMap as unknown as Mock).mockClear();
 		(LeafletMarker as unknown as Mock).mockClear();
-		(osmResource.getLocationByLatLng as Mock).mockClear();
-		(osmResource.getLocationsByQuery as Mock).mockClear();
+		(osmService.getLocationByLatLng as Mock).mockClear();
+		(osmService.getLocationsByQuery as Mock).mockClear();
 	});
 
 	it('renders the map container', () => {
@@ -168,7 +168,7 @@ describe('LeafletMap', () => {
 
 		await waitFor(
 			() => {
-				expect(osmResource.getLocationByLatLng).toHaveBeenCalled();
+				expect(osmService.getLocationByLatLng).toHaveBeenCalled();
 			},
 			{ timeout: 2000 }
 		);
@@ -199,7 +199,7 @@ describe('LeafletMap', () => {
 		mockSearchbarSetFocus(searchbar);
 
 		await fireEvent(searchbar, new CustomEvent('ionInput', { detail: { value: '40.0, 10.0' } }));
-		await waitFor(() => expect(osmResource.getLocationByLatLng).toHaveBeenCalledTimes(1), { timeout: 2000 });
+		await waitFor(() => expect(osmService.getLocationByLatLng).toHaveBeenCalledTimes(1), { timeout: 2000 });
 
 		await fireEvent(searchbar, new CustomEvent('ionInput', { detail: { value: '41.0, 11.0' } }));
 
@@ -263,7 +263,7 @@ describe('LeafletMap', () => {
 		render(LeafletMapComponent, { props: { value: 'Some Address' } });
 
 		await waitFor(() => {
-			expect(osmResource.getLocationsByQuery).toHaveBeenCalledWith('Some Address');
+			expect(osmService.getLocationsByQuery).toHaveBeenCalledWith('Some Address');
 		});
 
 		const markerInstances = (LeafletMarker as unknown as Mock).mock.results.map((r) => r.value).filter(Boolean);
@@ -290,12 +290,12 @@ describe('LeafletMap', () => {
 		await clickHandler({ latlng: new LatLng(3, 4) });
 
 		await waitFor(() => {
-			expect(osmResource.getLocationByLatLng).toHaveBeenCalledWith(expect.any(LatLng));
+			expect(osmService.getLocationByLatLng).toHaveBeenCalledWith(expect.any(LatLng));
 		});
 	});
 
 	it('formats address: street without number -> "Street, ZIP Locality"', async () => {
-		vi.mocked(osmResource.getLocationByLatLng).mockResolvedValueOnce({
+		vi.mocked(osmService.getLocationByLatLng).mockResolvedValueOnce({
 			countryCode: 'DE',
 			latlng: new LatLng(10, 20),
 			locality: 'Nonum City',
@@ -322,7 +322,7 @@ describe('LeafletMap', () => {
 	});
 
 	it('formats address: only locality (no street) -> "Locality, ZIP"', async () => {
-		vi.mocked(osmResource.getLocationByLatLng).mockResolvedValueOnce({
+		vi.mocked(osmService.getLocationByLatLng).mockResolvedValueOnce({
 			countryCode: 'DE',
 			latlng: new LatLng(30, 40),
 			locality: 'OnlyTown',
@@ -349,7 +349,7 @@ describe('LeafletMap', () => {
 	});
 
 	it('formats address: only locality without zip -> "Locality"', async () => {
-		vi.mocked(osmResource.getLocationByLatLng).mockResolvedValueOnce({
+		vi.mocked(osmService.getLocationByLatLng).mockResolvedValueOnce({
 			countryCode: 'DE',
 			latlng: new LatLng(50, 60),
 			locality: 'JustLocality',
@@ -371,7 +371,7 @@ describe('LeafletMap', () => {
 	});
 
 	it('formats address: neither street nor locality -> empty string', async () => {
-		vi.mocked(osmResource.getLocationByLatLng).mockResolvedValueOnce({
+		vi.mocked(osmService.getLocationByLatLng).mockResolvedValueOnce({
 			countryCode: 'DE',
 			latlng: new LatLng(50, 60),
 			locality: '',

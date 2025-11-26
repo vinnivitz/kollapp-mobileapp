@@ -3,7 +3,7 @@ import type { OrganizationMinifiedTO, OrganizationTO } from '@kollapp/api-types'
 
 import { writable } from 'svelte/store';
 
-import { organizationResource } from '$lib/api/resources';
+import { organizationService } from '$lib/api/services';
 import { PreferencesKey } from '$lib/models/preferences';
 import { deduplicateRequest, getStoredValue, removeStoredValue, StatusCheck, storeValue } from '$lib/utility';
 
@@ -25,7 +25,7 @@ function createStore(): OrganizationStore {
 				loadedCache.set(true);
 			}
 
-			const response = await organizationResource.getAll();
+			const response = await organizationService.getAll();
 
 			if (StatusCheck.isOK(response.status)) {
 				const allOrganizations = response.data;
@@ -54,7 +54,7 @@ function createStore(): OrganizationStore {
 
 	async function update(id: number): Promise<void> {
 		return deduplicateRequest(ORGANIZATION_STORE_UPDATE_REQUEST_KEY(id), async () => {
-			const response = await organizationResource.getById(id);
+			const response = await organizationService.getById(id);
 			if (StatusCheck.isOK(response.status)) {
 				await _set(response.data);
 			}

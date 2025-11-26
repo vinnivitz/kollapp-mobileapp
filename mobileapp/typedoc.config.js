@@ -11,7 +11,7 @@ const config = {
 		'./src/lib/models/osm',
 		'./src/lib/stores',
 		'./src/lib/locales',
-		'./src/lib/api/resources',
+		'./src/lib/api/services',
 		'./src/lib/api/dto/client/accounting',
 		'./src/lib/api/dto/client/auth',
 		'./src/lib/api/dto/client/organization',

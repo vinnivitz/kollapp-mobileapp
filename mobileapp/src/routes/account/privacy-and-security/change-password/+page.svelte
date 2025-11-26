@@ -6,7 +6,7 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
-	import { userResource } from '$lib/api/resources';
+	import { userService } from '$lib/api/services';
 	import { changePasswordSchema } from '$lib/api/validation/user';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
@@ -28,7 +28,7 @@
 			}
 			goto(resolve('/account'));
 		},
-		request: async (model: PasswordChangeRequestTO) => userResource.changePassword(model),
+		request: async (model: PasswordChangeRequestTO) => userService.changePassword(model),
 		schema: changePasswordSchema()
 	});
 </script>

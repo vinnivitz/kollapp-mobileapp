@@ -46,4 +46,4 @@ class AuthenticationResource {
 	}
 }
 
-export const authenticationResource = new AuthenticationResource();
+export const authenticationService = new AuthenticationResource();

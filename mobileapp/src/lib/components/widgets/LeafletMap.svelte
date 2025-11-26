@@ -6,7 +6,7 @@
 	import { LatLng, type LeafletMouseEvent, Map, Marker, TileLayer } from 'leaflet';
 	import { onDestroy, onMount } from 'svelte';
 
-	import { osmResource } from '$lib/api/resources';
+	import { osmService } from '$lib/api/services';
 	import environment from '$lib/environment';
 	import { t } from '$lib/locales';
 	import { PreferencesKey } from '$lib/models/preferences';
@@ -49,7 +49,7 @@
 
 	async function updateMarkerFromValue(value: string): Promise<void> {
 		if (!map) return;
-		const response = await osmResource.getLocationsByQuery(value);
+		const response = await osmService.getLocationsByQuery(value);
 		const item = response[0];
 		if (item) {
 			await setMarker(item.latlng);
@@ -96,7 +96,7 @@
 		marker?.removeFrom(map!);
 		marker = new Marker(latlng).addTo(map!);
 		map?.setView(latlng, 16);
-		const address = await osmResource.getLocationByLatLng(latlng);
+		const address = await osmService.getLocationByLatLng(latlng);
 		if (address) {
 			const tooltip = formatAddress(address);
 			marker
@@ -120,7 +120,7 @@
 			await setMarker(latlng);
 			return;
 		}
-		const response = await osmResource.getLocationsByQuery(query);
+		const response = await osmService.getLocationsByQuery(query);
 		searchItems = response.map((item) => ({
 			latlng: item.latlng as LatLng,
 			name: formatAddress(item)

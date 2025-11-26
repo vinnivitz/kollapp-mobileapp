@@ -8,7 +8,7 @@
 	import { goto } from '$app/navigation';
 	import type { RouteId } from '$app/types';
 
-	import { authenticationResource, searchableResource } from '$lib/api/resources';
+	import { authenticationService, searchableService } from '$lib/api/services';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
 	import { t } from '$lib/locales';
@@ -35,12 +35,12 @@
 	}
 
 	async function logout(): Promise<void> {
-		await authenticationResource.logout();
+		await authenticationService.logout();
 	}
 
 	async function onSearch(event: CustomEvent): Promise<void> {
 		searchValue = event.detail.value;
-		searchedItems = await searchableResource.filter(searchValue.toLowerCase());
+		searchedItems = await searchableService.filter(searchValue.toLowerCase());
 	}
 </script>
 

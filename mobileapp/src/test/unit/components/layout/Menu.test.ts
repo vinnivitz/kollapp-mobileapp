@@ -4,7 +4,7 @@ import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { goto } from '$app/navigation';
 
-import { authenticationResource } from '$lib/api/resources';
+import { authenticationService } from '$lib/api/services';
 import Menu from '$lib/components/layout/Menu.svelte';
 import { triggerClickByLabel } from '$lib/utility';
 
@@ -14,11 +14,11 @@ const properties = { children: createRawSnippet(() => ({ render: () => `<p>${chi
 const searchItem = vi.hoisted(() => ({ icon: 'logOutOutline', id: '1', label: 'Test Item', route: '/test' }));
 
 function registerMocks(): void {
-	vi.mock('$lib/api/resources', () => ({
-		authenticationResource: {
+	vi.mock('$lib/api/services', () => ({
+		authenticationService: {
 			logout: vi.fn()
 		},
-		searchableResource: {
+		searchableService: {
 			filter: vi.fn().mockResolvedValue([searchItem])
 		}
 	}));
@@ -102,7 +102,7 @@ describe('Menu Component', () => {
 		const logoutButton = container.querySelectorAll('ion-button').item(1) as HTMLIonButtonElement;
 		expect(logoutButton).toBeTruthy();
 		await fireEvent.click(logoutButton);
-		await waitFor(() => expect(authenticationResource.logout).toHaveBeenCalled());
+		await waitFor(() => expect(authenticationService.logout).toHaveBeenCalled());
 	});
 
 	it('does not render showcase menu item when dev is false', () => {

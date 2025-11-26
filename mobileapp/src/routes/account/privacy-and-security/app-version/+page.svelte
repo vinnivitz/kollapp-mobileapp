@@ -3,13 +3,13 @@
 
 	import { onMount } from 'svelte';
 
-	import { metaResource } from '$lib/api/resources';
+	import { metaService } from '$lib/api/services';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 
 	let releaseNotes = $state<ReleaseNotesDto[]>([]);
 
-	onMount(async () => (releaseNotes = await metaResource.getReleaseNotes()));
+	onMount(async () => (releaseNotes = await metaService.getReleaseNotes()));
 </script>
 
 <Layout title="App version" showBackButton>

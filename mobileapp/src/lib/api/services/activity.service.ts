@@ -46,4 +46,4 @@ class ActivityResource {
 	}
 }
 
-export const activityResource = new ActivityResource();
+export const activityService = new ActivityResource();

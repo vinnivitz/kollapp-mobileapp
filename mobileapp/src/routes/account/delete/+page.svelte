@@ -4,7 +4,7 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
-	import { authenticationResource, organizationResource, userResource } from '$lib/api/resources';
+	import { authenticationService, organizationService, userService } from '$lib/api/services';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
@@ -16,7 +16,7 @@
 
 	const lastManagerOrganizations = $derived(
 		$organizations.filter(async (baseOrganization) => {
-			const organizationResult = await organizationResource.getById(baseOrganization.id);
+			const organizationResult = await organizationService.getById(baseOrganization.id);
 			if (!StatusCheck.isOK(organizationResult.status)) {
 				return false;
 			}
@@ -29,9 +29,9 @@
 	);
 
 	async function onDeleteAccount(): Promise<void> {
-		const response = await userResource.remove();
+		const response = await userService.remove();
 		if (StatusCheck.isOK(response.status)) {
-			await authenticationResource.logout();
+			await authenticationService.logout();
 			goto(resolve('/auth/login'));
 		}
 	}

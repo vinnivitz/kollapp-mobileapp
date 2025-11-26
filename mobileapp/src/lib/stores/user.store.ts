@@ -3,7 +3,7 @@ import type { KollappUserTO } from '@kollapp/api-types';
 
 import { writable } from 'svelte/store';
 
-import { userResource } from '$lib/api/resources';
+import { userService } from '$lib/api/services';
 import { PreferencesKey } from '$lib/models/preferences';
 import { deduplicateRequest, getStoredValue, removeStoredValue, StatusCheck, storeValue } from '$lib/utility';
 
@@ -22,7 +22,7 @@ function createStore(): UserStore {
 				loadedCache.set(true);
 			}
 
-			const response = await userResource.get();
+			const response = await userService.get();
 
 			if (StatusCheck.isOK(response.status)) {
 				await _set(response.data);

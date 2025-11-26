@@ -14,6 +14,7 @@
 		iconEnd?: string;
 		maxlength?: number;
 		placeholder?: string;
+		readonly?: boolean;
 		value?: string;
 		change?: (value: string) => void;
 		inputIconClicked?: () => void;
@@ -30,6 +31,7 @@
 		maxlength,
 		name,
 		placeholder,
+		readonly,
 		value
 	}: Properties = $props();
 
@@ -40,6 +42,7 @@
 
 <CustomItem {color} {icon} {iconEnd} iconClick={inputIconClicked} {card}>
 	<ion-textarea
+		{readonly}
 		{name}
 		{label}
 		{placeholder}

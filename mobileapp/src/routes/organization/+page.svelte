@@ -41,7 +41,7 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
-	import { budgetResource } from '$lib/api/resources';
+	import { budgetService } from '$lib/api/services';
 	import { createPostingSchema } from '$lib/api/validation/budget';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import AmountInputItem from '$lib/components/widgets/ionic/AmountInputItem.svelte';
@@ -154,8 +154,8 @@
 		parsers: { amountInCents: parser.currency, date: parser.date },
 		request: async (model) => {
 			return selectedActivityId > 0
-				? budgetResource.createActivityPosting($organizationStore?.id!, selectedActivityId, model)
-				: budgetResource.createOrganizationPosting($organizationStore?.id!, model);
+				? budgetService.createActivityPosting($organizationStore?.id!, selectedActivityId, model)
+				: budgetService.createOrganizationPosting($organizationStore?.id!, model);
 		},
 		schema: createPostingSchema()
 	});
@@ -171,7 +171,7 @@
 		onTouched: () => (updatePostingModelTouched = true),
 		parsers: { amountInCents: parser.currency, date: parser.date },
 		request: async (model) =>
-			budgetResource.updateOrganizationPosting($organizationStore?.id!, selectedPosting?.id!, model),
+			budgetService.updateOrganizationPosting($organizationStore?.id!, selectedPosting?.id!, model),
 		schema: createPostingSchema()
 	});
 
@@ -346,7 +346,7 @@
 		await loader.present();
 		const organizationId = $organizationStore?.id;
 		if (organizationId) {
-			const result = getValidationResult(await budgetResource.removeOrganizationPosting(organizationId, postingId));
+			const result = getValidationResult(await budgetService.removeOrganizationPosting(organizationId, postingId));
 			if (result.valid) {
 				await organizationStore.update(organizationId);
 			}

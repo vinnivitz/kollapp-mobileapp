@@ -7,7 +7,7 @@ import type {
 	OrganizationUpdateRequestTO
 } from '@kollapp/api-types';
 
-import { RequestMethod, type ResponseBody } from '$lib/models/api';
+import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/models/api';
 import { customFetch } from '$lib/utility';
 
 class OrganizationResource {
@@ -111,7 +111,11 @@ class OrganizationResource {
 	 * @returns {Promise<ResponseBody<OrganizationBaseTO>>} The organization.
 	 */
 	async getByInvitationCode(code: string): Promise<ResponseBody<OrganizationBaseTO>> {
-		return customFetch(`${this.ENDPOINT}/invitation/${code}`, { silentOnSuccess: true });
+		return customFetch(`${this.ENDPOINT}/invitation/${code}`, {
+			authorizationType: AuthorizationType.NONE,
+			silentOnError: true,
+			silentOnSuccess: true
+		});
 	}
 
 	/**
@@ -126,4 +130,4 @@ class OrganizationResource {
 	}
 }
 
-export const organizationResource = new OrganizationResource();
+export const organizationService = new OrganizationResource();

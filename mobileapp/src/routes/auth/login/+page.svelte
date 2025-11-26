@@ -19,7 +19,7 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
-	import { authenticationResource } from '$lib/api/resources';
+	import { authenticationService } from '$lib/api/services';
 	import { loginSchema } from '$lib/api/validation/authentication';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
@@ -44,7 +44,7 @@
 
 	const form = new Form({
 		completed: async ({ response }) => await handleLogin(response),
-		request: async (model: LoginRequestTO) => await authenticationResource.login(model),
+		request: async (model: LoginRequestTO) => await authenticationService.login(model),
 		schema: loginSchema()
 	});
 
@@ -59,7 +59,7 @@
 		const loading = await loadingController.create({});
 		await loading.present();
 
-		const response = await authenticationResource.login({
+		const response = await authenticationService.login({
 			password: credentials.password,
 			username: credentials.username
 		} satisfies LoginRequestTO);

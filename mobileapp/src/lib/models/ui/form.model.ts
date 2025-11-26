@@ -42,7 +42,7 @@ export type FormConfig<T, R> = {
 	exposedActions?: (actions: FormActions<T>) => void;
 	failed?: (result: ValidationResult<T>) => void;
 	onBlur?: (key: keyof T) => void;
-	onChange?: (key: keyof T, value: T[keyof T]) => void;
+	onChange?: (options: { key: keyof T; value: T[keyof T] }) => void;
 	onTouched?: () => void;
 };
 
