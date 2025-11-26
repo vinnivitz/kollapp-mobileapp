@@ -71,8 +71,8 @@
 
 	type Balance = {
 		balance: string;
-		income: string;
-		spent: string;
+		credit: string;
+		debit: string;
 	};
 
 	type ActivityFilterValue = {
@@ -229,6 +229,15 @@
 		];
 	}
 
+	function setSelectedPostingType(type: PostingType): void {
+		selectedPostingType = type;
+		updatePostingFormActions?.setModel({
+			...updatePostingForm.model,
+			type: selectedPostingType
+		});
+		updatePostingModelTouched = true;
+	}
+
 	function filterPostings(): void {
 		filteredPostings = postings.filter((posting) => {
 			const matchesType = selectedPostingTypes.includes(posting.type);
@@ -263,14 +272,14 @@
 		let totalIncome = 0,
 			totalExpense = 0;
 		for (const posting of postings) {
-			if (posting.type === 'DEBIT') totalIncome += posting.amountInCents;
-			else if (posting.type === 'CREDIT') totalExpense += posting.amountInCents;
+			if (posting.type === 'CREDIT') totalIncome += posting.amountInCents;
+			else if (posting.type === 'DEBIT') totalExpense += posting.amountInCents;
 		}
 		const balance = totalIncome - totalExpense;
 		return {
 			balance: formatter.currency(balance, true),
-			income: formatter.currency(totalIncome, true),
-			spent: formatter.currency(totalExpense, true)
+			credit: formatter.currency(totalIncome, true),
+			debit: formatter.currency(totalExpense, true)
 		};
 	}
 
@@ -301,8 +310,8 @@
 
 	function getCreatePostingTitle(type: PostingType): string {
 		return type === 'DEBIT'
-			? $t('routes.organization.page.activity.page.slug.modal.create-posting.title.income')
-			: $t('routes.organization.page.activity.page.slug.modal.create-posting.title.expense');
+			? $t('routes.organization.page.activity.page.slug.modal.create-posting.title.expense')
+			: $t('routes.organization.page.activity.page.slug.modal.create-posting.title.income');
 	}
 
 	async function onSearchPostings(event: CustomEvent): Promise<void> {
@@ -527,7 +536,7 @@
 			icon={peopleOutline}
 			label={$t('routes.organization.list.organization.members')}
 		/>
-		{#if !hasOrganizationRole('ROLE_ORGANIZATION_MANAGER')}
+		{#if hasOrganizationRole('ROLE_ORGANIZATION_MANAGER')}
 			<LabeledItem
 				indexed="/organization/update-data"
 				accessible="ROLE_ORGANIZATION_MANAGER"
@@ -574,16 +583,16 @@
 			<ion-text class="text-xl font-bold">{balance?.balance}</ion-text>
 			<div class="flex items-center justify-center gap-2">
 				<ion-icon color="success" icon={trendingUpOutline}></ion-icon>
-				<ion-text class="text-sm text-gray-500">Total incoming: {balance?.income}</ion-text>
+				<ion-text class="text-sm text-gray-500">Total incoming: {balance?.credit}</ion-text>
 			</div>
 			<div class="flex items-center justify-center gap-2">
 				<ion-icon color="danger" icon={trendingDownOutline}></ion-icon>
-				<ion-text class="text-sm text-gray-500">Total expense: {balance?.spent}</ion-text>
+				<ion-text class="text-sm text-gray-500">Total expense: {balance?.debit}</ion-text>
 			</div>
 		</div>
 		<div class="mt-3 flex items-center justify-center gap-2">
-			<Button label="Add income" color="primary" icon={cashOutline} clicked={() => onOpenCreatePosting('DEBIT')} />
-			<Button label="Add expense" color="tertiary" icon={walletOutline} clicked={() => onOpenCreatePosting('CREDIT')} />
+			<Button label="Add income" color="primary" icon={cashOutline} clicked={() => onOpenCreatePosting('CREDIT')} />
+			<Button label="Add expense" color="tertiary" icon={walletOutline} clicked={() => onOpenCreatePosting('DEBIT')} />
 		</div>
 		<Button
 			icon={listOutline}
@@ -596,19 +605,62 @@
 	</Card>
 {/snippet}
 
+{#snippet transactionItem(posting: PostingTO)}
+	<CustomItem
+		slidingOptions={getTransactionItemSlidingOptions(posting)}
+		iconColor={posting.type === 'CREDIT' ? 'success' : 'danger'}
+		icon={posting.type === 'CREDIT' ? trendingUpOutline : trendingDownOutline}
+	>
+		<div class="ms-1 mt-1 flex w-full flex-col justify-center" style="padding-left: 0px !important;">
+			<div class="flex gap-2">
+				<ion-text class="truncate">
+					{posting.purpose}
+				</ion-text>
+				{#if isActivityPosting(posting.id)}
+					<ion-text color="medium" class="flex items-center justify-center gap-1">
+						<ion-icon icon={flashOutline}></ion-icon>
+						<div class="truncate">
+							{getActivityPosting(posting.id)?.name}
+						</div>
+					</ion-text>
+				{/if}
+			</div>
+			<div class="flex w-full flex-wrap items-start justify-between gap-1 text-sm">
+				<ion-text color="medium" class="flex items-center justify-center gap-1">
+					<ion-icon icon={personOutline}></ion-icon>
+					<div class="truncate">{$userStore?.username}</div>
+				</ion-text>
+				<ion-text color="medium" class="flex items-center justify-center gap-1">
+					<ion-icon icon={calendarClearOutline}></ion-icon>
+					<div>{format(new TZDate(posting.date), 'PPP')}</div>
+				</ion-text>
+				<ion-text color="medium" class="flex items-center justify-center gap-1">
+					<ion-icon icon={cashOutline}></ion-icon>
+					<div>
+						{posting.type === 'CREDIT' ? '+' : '-'}{formatter.currency(posting.amountInCents)}
+					</div>
+				</ion-text>
+			</div>
+		</div>
+	</CustomItem>
+{/snippet}
+
+<!-- Modals -->
+
+<!-- Create Posting Modal -->
 <Modal open={createPostingModalOpen} dismissed={() => (createPostingModalOpen = false)}>
 	<Card title={getCreatePostingTitle(selectedPostingType)}>
 		<form use:customForm={createPostingForm}>
 			<div class="mb-3 flex items-center justify-center gap-2">
 				<Chip
 					selected={selectedPostingType === 'DEBIT'}
-					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.income')}
-					clicked={() => (selectedPostingType = 'DEBIT')}
+					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.expense')}
+					clicked={() => setSelectedPostingType('DEBIT')}
 				/>
 				<Chip
 					selected={selectedPostingType === 'CREDIT'}
 					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.expense')}
-					clicked={() => (selectedPostingType = 'CREDIT')}
+					clicked={() => setSelectedPostingType('CREDIT')}
 				/>
 			</div>
 			<TextInputItem name="purpose" label="Purpose" icon={documentOutline} />
@@ -631,6 +683,7 @@
 	</Card>
 </Modal>
 
+<!-- Select Activity Modal -->
 <Modal
 	open={updatePostingModalOpen}
 	touched={updatePostingModelTouched}
@@ -641,13 +694,13 @@
 			<div class="mb-3 flex items-center justify-center gap-2">
 				<Chip
 					selected={selectedPostingType === 'DEBIT'}
-					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.income')}
-					clicked={() => (selectedPostingType = 'DEBIT')}
+					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.expense')}
+					clicked={() => setSelectedPostingType('DEBIT')}
 				/>
 				<Chip
 					selected={selectedPostingType === 'CREDIT'}
-					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.expense')}
-					clicked={() => (selectedPostingType = 'CREDIT')}
+					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.income')}
+					clicked={() => setSelectedPostingType('CREDIT')}
 				/>
 			</div>
 			<TextInputItem name="purpose" label="Purpose" icon={documentOutline} />
@@ -670,6 +723,7 @@
 	</Card>
 </Modal>
 
+<!-- Transaction History Modal -->
 <Modal
 	open={transactionHistoryModalOpen}
 	initialBreakPoint={0.75}
@@ -707,6 +761,7 @@
 	{/if}
 </Modal>
 
+<!-- Filter Popover Modal -->
 <Popover extended open={filterOpen} dismissed={() => (filterOpen = false)} lazy>
 	<Card title="Filters" classList="m-0">
 		<div class="flex items-center justify-center gap-2">
@@ -757,46 +812,7 @@
 	</Card>
 </Popover>
 
-{#snippet transactionItem(posting: PostingTO)}
-	<CustomItem
-		slidingOptions={getTransactionItemSlidingOptions(posting)}
-		iconColor={posting.type === 'CREDIT' ? 'danger' : 'success'}
-		icon={posting.type === 'CREDIT' ? trendingDownOutline : trendingUpOutline}
-	>
-		<div class="ms-1 mt-1 flex w-full flex-col justify-center" style="padding-left: 0px !important;">
-			<div class="flex gap-2">
-				<ion-text class="truncate">
-					{posting.purpose}
-				</ion-text>
-				{#if isActivityPosting(posting.id)}
-					<ion-text color="medium" class="flex items-center justify-center gap-1">
-						<ion-icon icon={flashOutline}></ion-icon>
-						<div class="truncate">
-							{getActivityPosting(posting.id)?.name}
-						</div>
-					</ion-text>
-				{/if}
-			</div>
-			<div class="flex w-full flex-wrap items-start justify-between gap-1 text-sm">
-				<ion-text color="medium" class="flex items-center justify-center gap-1">
-					<ion-icon icon={personOutline}></ion-icon>
-					<div class="truncate">{$userStore?.username}</div>
-				</ion-text>
-				<ion-text color="medium" class="flex items-center justify-center gap-1">
-					<ion-icon icon={calendarClearOutline}></ion-icon>
-					<div>{format(new TZDate(posting.date), 'PPP')}</div>
-				</ion-text>
-				<ion-text color="medium" class="flex items-center justify-center gap-1">
-					<ion-icon icon={cashOutline}></ion-icon>
-					<div>
-						{posting.type === 'CREDIT' ? '-' : '+'}{formatter.currency(posting.amountInCents)}
-					</div>
-				</ion-text>
-			</div>
-		</div>
-	</CustomItem>
-{/snippet}
-
+<!-- Filter Members Modal -->
 <Modal open={filterMembersModalOpen} dismissed={() => (filterMembersModalOpen = false)} informational lazy>
 	<ion-searchbar class="w-full" debounce={100} placeholder="Search members..." onionInput={onSearchMembers}>
 	</ion-searchbar>
@@ -820,6 +836,7 @@
 	</ion-list>
 </Modal>
 
+<!-- Filter Activities Modal -->
 <Modal open={filterActivitiesModalOpen} dismissed={() => (filterActivitiesModalOpen = false)} informational lazy>
 	<ion-searchbar class="w-full" debounce={100} placeholder="Search activities..." onionInput={onSearchActivities}>
 	</ion-searchbar>
@@ -853,6 +870,7 @@
 	</ion-list>
 </Modal>
 
+<!-- Select Activity Modal -->
 <Modal
 	open={selectActivityModalOpen}
 	title="Select Event"

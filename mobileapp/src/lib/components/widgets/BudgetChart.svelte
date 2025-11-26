@@ -18,15 +18,16 @@
 
 	let { postings }: { postings?: PostingTO[] } = $props();
 
+	const MINIMAL_POSTINGS_FOR_INTERACTION = 3;
+
 	let selectedChart = $state<ChartType>(ChartType.ALL);
 	let chartSeries = $state<ApexAxisChartSeries | ApexNonAxisChartSeries>();
 	let labels = $state<string[]>();
 	let colors = $state<string[]>();
 	let selectedChartDataId = $state<number>();
 
-	const hasSomeDebit = $derived((postings?.filter((posting) => posting.type === 'DEBIT') ?? []).length > 2);
-
-	const hasSomeCredit = $derived((postings?.filter((posting) => posting.type === 'CREDIT') ?? []).length > 2);
+	const debits = $derived(postings?.filter((posting) => posting.type === 'DEBIT').length ?? 0);
+	const credits = $derived(postings?.filter((posting) => posting.type === 'CREDIT').length ?? 0);
 
 	function getTotalAmountByType(type: PostingType): number {
 		return (
@@ -75,10 +76,10 @@
 			default: {
 				const credits = postings?.filter((posting) => posting.type === 'CREDIT') ?? [];
 				const debits = postings?.filter((posting) => posting.type === 'DEBIT') ?? [];
-				chartSeries = [
-					credits.reduce((accumulator, credit) => accumulator + credit.amountInCents, 0),
-					debits.reduce((accumulator, debit) => accumulator + debit.amountInCents, 0)
-				];
+				const creditTotal = credits.reduce((accumulator, credit) => accumulator + credit.amountInCents, 0);
+				const debitTotal = debits.reduce((accumulator, debit) => accumulator + debit.amountInCents, 0);
+
+				chartSeries = [creditTotal, debitTotal];
 				colors = ['var(--ion-color-success-tint)', 'var(--ion-color-danger-tint)'];
 				labels = ['Income', 'Expenses'];
 				break;
@@ -89,31 +90,35 @@
 	const chartOptions = $derived<ApexOptions>({
 		chart: {
 			events: {
-				dataPointSelection: (_event, _chartContext, options) => {
-					const clickedIndex = options.dataPointIndex ?? 0;
+				dataPointSelection:
+					credits > 2 || debits > 2
+						? (_event, _chartContext, options) => {
+								const clickedIndex = options.dataPointIndex ?? 0;
 
-					const metaType = options?.w?.config?.series?.[0]?.data?.[clickedIndex]?.meta?.type as PostingType | undefined;
+								const metaType = options?.w?.config?.series?.[0]?.data?.[clickedIndex]?.meta?.type as
+									| PostingType
+									| undefined;
 
-					if (selectedChart !== ChartType.ALL) return;
+								if (selectedChart !== ChartType.ALL) return;
 
-					let target: ChartType | undefined;
+								let target: ChartType | undefined;
 
-					if (metaType === 'CREDIT' || metaType === 'DEBIT') {
-						target = metaType === 'CREDIT' ? ChartType.CREDIT : ChartType.DEBIT;
-					} else if (clickedIndex === 0) {
-						target = ChartType.CREDIT;
-					} else if (clickedIndex === 1) {
-						target = ChartType.DEBIT;
-					}
+								if (metaType === 'CREDIT' || metaType === 'DEBIT') {
+									target = metaType === 'CREDIT' ? ChartType.CREDIT : ChartType.DEBIT;
+								} else if (clickedIndex === 0) {
+									target = ChartType.CREDIT;
+								} else if (clickedIndex === 1) {
+									target = ChartType.DEBIT;
+								}
 
-					if (target !== undefined) {
-						const allowed =
-							(target === ChartType.CREDIT && hasSomeCredit) || (target === ChartType.DEBIT && hasSomeDebit);
-						if (allowed) {
-							setTimeout(() => setSelectedChart(target as ChartType));
-						}
-					}
-				}
+								if (target !== undefined) {
+									const allowed = (target === ChartType.CREDIT && credits) || (target === ChartType.DEBIT && debits);
+									if (allowed) {
+										setTimeout(() => setSelectedChart(target as ChartType));
+									}
+								}
+							}
+						: undefined
 			},
 			height: 350,
 			toolbar: { show: false },
@@ -133,7 +138,7 @@
 		},
 		series: chartSeries,
 		states:
-			hasSomeCredit || hasSomeDebit
+			credits > 0 || debits > 0
 				? { active: { filter: { type: 'none' } }, hover: { filter: { type: 'none' } } }
 				: undefined,
 		tooltip:
@@ -151,12 +156,16 @@
 							const amount = dataPoint.y;
 							const date = new TZDate(dataPoint.meta.date);
 							const id = dataPoint.meta.id;
+							const tooltip = document.querySelector('.apexcharts-tooltip') as HTMLDivElement;
 
 							if (id === selectedChartDataId) {
 								selectedChartDataId = undefined;
+								tooltip.style.display = 'none';
+
 								return ``;
 							}
 
+							tooltip.style.display = 'block';
 							selectedChartDataId = id;
 
 							return `
@@ -185,7 +194,7 @@
 <div class="mt-5 mb-2 text-center text-2xl">Budget overview</div>
 {#if postings && postings.length > 0}
 	<div class="flex items-center justify-center gap-2">
-		{#if hasSomeCredit || hasSomeDebit}
+		{#if credits >= MINIMAL_POSTINGS_FOR_INTERACTION || debits >= MINIMAL_POSTINGS_FOR_INTERACTION}
 			<Chip
 				icon={cashOutline}
 				label="All"
@@ -193,7 +202,7 @@
 				selected={selectedChart === ChartType.ALL}
 				clicked={() => setSelectedChart(ChartType.ALL)}
 			/>
-			{#if hasSomeCredit}
+			{#if credits}
 				<Chip
 					icon={trendingUp}
 					label="Income"
@@ -202,7 +211,7 @@
 					clicked={() => setSelectedChart(ChartType.CREDIT)}
 				/>
 			{/if}
-			{#if hasSomeDebit}
+			{#if debits}
 				<Chip
 					icon={trendingDown}
 					label="Expenses"
@@ -219,9 +228,11 @@
 				{formatter.currency(getTotalBudget())}
 			</ion-text>
 		{/if}
-		{#key selectedChart}
-			<Chart options={chartOptions}></Chart>
-		{/key}
+		{#if chartSeries}
+			{#key selectedChart}
+				<Chart options={chartOptions}></Chart>
+			{/key}
+		{/if}
 	</div>
 {:else}
 	<div class="text-medium mt-5 text-center"><ion-note>No budget postings available.</ion-note></div>

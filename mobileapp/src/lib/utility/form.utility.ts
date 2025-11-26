@@ -262,6 +262,7 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 			data.config.completed?.({ actions, model: data.model, response: response.data });
 			setModel(getObjectFromSchema(data.config.schema));
 		} else {
+			setModel(data.config.initialModel ?? data.model);
 			data.config.failed?.(validationResult);
 			applyValidationFeedback(validationResult);
 		}

@@ -31,6 +31,7 @@ export type FormConfig<T, R> = {
 	)[];
 	formatters?: { [K in keyof T]?: (value: T[K]) => string };
 	hiddenFields?: { [K in keyof T]?: T[K] };
+	initialModel?: T;
 	keyEventHandlers?: {
 		[K in keyof T]?: (_event: KeyboardEvent, value: T[K], onUpdate: (value: T[K]) => void) => void;
 	};

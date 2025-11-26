@@ -77,8 +77,8 @@
 
 	type AccountBalance = {
 		balance: string;
-		income: string;
-		spent: string;
+		credit: string;
+		debit: string;
 	};
 
 	const { data }: { data: PageData } = $props();
@@ -279,14 +279,14 @@
 		let totalIncome = 0,
 			totalExpense = 0;
 		for (const posting of postings) {
-			if (posting.type === 'DEBIT') totalIncome += posting.amountInCents;
-			else if (posting.type === 'CREDIT') totalExpense += posting.amountInCents;
+			if (posting.type === 'CREDIT') totalIncome += posting.amountInCents;
+			else if (posting.type === 'DEBIT') totalExpense += posting.amountInCents;
 		}
 		const balance = totalIncome - totalExpense;
 		return {
 			balance: formatter.currency(balance, true),
-			income: formatter.currency(totalIncome, true),
-			spent: formatter.currency(totalExpense, true)
+			credit: formatter.currency(totalIncome, true),
+			debit: formatter.currency(totalExpense, true)
 		};
 	}
 
@@ -302,8 +302,8 @@
 
 	function getCreatePostingTitle(type: PostingType): string {
 		return type === 'DEBIT'
-			? $t('routes.organization.page.activity.page.slug.modal.create-posting.title.income')
-			: $t('routes.organization.page.activity.page.slug.modal.create-posting.title.expense');
+			? $t('routes.organization.page.activity.page.slug.modal.create-posting.title.expense')
+			: $t('routes.organization.page.activity.page.slug.modal.create-posting.title.income');
 	}
 
 	async function onOpenLocation(_event?: MouseEvent): Promise<void> {
@@ -473,11 +473,11 @@
 			<ion-text class="text-xl font-bold">{accountBalance?.balance}</ion-text>
 			<div class="flex items-center justify-center gap-2">
 				<ion-icon color="success" icon={trendingUpOutline}></ion-icon>
-				<ion-text class="text-sm text-gray-500">Total incoming: {accountBalance?.income}</ion-text>
+				<ion-text class="text-sm text-gray-500">Total incoming: {accountBalance?.credit}</ion-text>
 			</div>
 			<div class="flex items-center justify-center gap-2">
 				<ion-icon color="danger" icon={trendingDownOutline}></ion-icon>
-				<ion-text class="text-sm text-gray-500">Total expense: {accountBalance?.spent}</ion-text>
+				<ion-text class="text-sm text-gray-500">Total expense: {accountBalance?.debit}</ion-text>
 			</div>
 		</div>
 		<div class="mt-3 flex items-center justify-center gap-2">
@@ -511,8 +511,8 @@
 {#snippet transactionItem(posting: PostingTO)}
 	<CustomItem
 		slidingOptions={getTransactionItemSlidingOptions(posting)}
-		iconColor={posting.type === 'CREDIT' ? 'danger' : 'success'}
-		icon={posting.type === 'CREDIT' ? trendingDownOutline : trendingUpOutline}
+		iconColor={posting.type === 'CREDIT' ? 'success' : 'danger'}
+		icon={posting.type === 'CREDIT' ? trendingUpOutline : trendingDownOutline}
 	>
 		<div class="mt-1 flex w-full flex-col justify-center">
 			<ion-text class="truncate">
@@ -530,7 +530,7 @@
 				<ion-text color="medium" class="flex items-center justify-center gap-1">
 					<ion-icon icon={cashOutline}></ion-icon>
 					<div>
-						{posting.type === 'CREDIT' ? '-' : '+'}{formatter.currency(posting.amountInCents)}
+						{posting.type === 'CREDIT' ? '+' : '-'}{formatter.currency(posting.amountInCents)}
 					</div>
 				</ion-text>
 			</div>
@@ -570,12 +570,12 @@
 			<div class="mb-3 flex items-center justify-center gap-2">
 				<Chip
 					selected={selectedPostingType === 'DEBIT'}
-					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.income')}
+					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.expense')}
 					clicked={() => (selectedPostingType = 'DEBIT')}
 				/>
 				<Chip
 					selected={selectedPostingType === 'CREDIT'}
-					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.expense')}
+					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.income')}
 					clicked={() => (selectedPostingType = 'CREDIT')}
 				/>
 			</div>
@@ -600,7 +600,7 @@
 			<div class="mb-3 flex items-center justify-center gap-2">
 				<Chip
 					selected={selectedPostingType === 'DEBIT'}
-					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.income')}
+					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.expense')}
 					clicked={() => setAccountPostingType('DEBIT')}
 				/>
 				<Chip

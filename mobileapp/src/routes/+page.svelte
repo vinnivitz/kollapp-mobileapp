@@ -25,7 +25,14 @@
 	import { featureNotImplementedAlert, getDateFnsLocale } from '$lib/utility';
 
 	const activity = $derived($organizationStore?.activities && $organizationStore.activities[0]);
-	const postings = $derived($organizationStore ? $organizationStore.activities.flatMap((a) => a.activityPostings) : []);
+	const postings = $derived(
+		$organizationStore
+			? [
+					...$organizationStore.organizationPostings,
+					...$organizationStore.activities.flatMap((activity) => activity.activityPostings)
+				]
+			: []
+	);
 
 	function onNavigateEvent(): void {
 		if ($organizationStore?.activities[0]?.id) {

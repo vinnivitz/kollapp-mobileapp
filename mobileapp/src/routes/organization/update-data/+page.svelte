@@ -28,6 +28,12 @@
 				place: $organizationStore!.place
 			});
 		},
+		failed: () => (touched = false),
+		initialModel: {
+			description: $organizationStore!.description,
+			name: $organizationStore!.name,
+			place: $organizationStore!.place
+		},
 		onTouched: () => (touched = true),
 		request: async (model) => organizationResource.update($organizationStore?.id!, model),
 		schema: updateOrganizationSchema()
