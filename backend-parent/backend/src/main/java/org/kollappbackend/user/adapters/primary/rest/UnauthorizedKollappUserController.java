@@ -52,7 +52,8 @@ public class UnauthorizedKollappUserController {
     }
 
     @PostMapping("/resend-confirmation")
-    public ResponseEntity<MessageResponseTO> resendConfirmation(@Valid @RequestBody ResendConfirmationRequestTO resendConfirmationTo) {
+    public ResponseEntity<MessageResponseTO> resendConfirmation(@Valid @RequestBody
+                                                                    ResendConfirmationRequestTO resendConfirmationTo) {
         kollappUserService.resendConfirmationMail(resendConfirmationTo.getEmail());
         return ResponseEntity.ok(new MessageResponseTO("success.email.confirmation-resent", messageSource));
     }
