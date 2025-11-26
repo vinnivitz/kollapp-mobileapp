@@ -1,4 +1,4 @@
-import type { SearchableItemDto } from '$lib/api/dtos';
+import type { SearchableItemTO } from '$lib/api/dtos';
 import type { OrganizationRole } from '@kollapp/api-types';
 import type { Expression, Identifier, MemberExpression } from 'estree';
 
@@ -19,7 +19,7 @@ const ROLE_PREFIX = 'ROLE_ORGANIZATION_';
 /**
  * Global array to store found items and a simple counter for ID assignment.
  */
-const searchableItems: SearchableItemDto[] = [];
+const searchableItems: SearchableItemTO[] = [];
 let idCounter = 0;
 
 /**

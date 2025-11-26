@@ -8,13 +8,21 @@
 	import { resolve } from '$app/paths';
 
 	import { organizationService } from '$lib/api/services';
+	import { joinOrganizationSchema } from '$lib/api/validation/organization/join-organization.validation';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import { t } from '$lib/locales';
+	import { Form } from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';
-	import { showAlert, StatusCheck } from '$lib/utility';
+	import { customForm, showAlert, StatusCheck } from '$lib/utility';
+
+	const form = new Form({
+		completed: async () => goto(resolve('/organization')),
+		request: async (model) => organizationService.joinByInvitationCode(model.code),
+		schema: joinOrganizationSchema()
+	});
 
 	async function onCodeScan(): Promise<void> {
 		try {
@@ -46,8 +54,10 @@
 
 <Layout title={$t('routes.organization.page.join.title')} showBackButton>
 	<Card title={$t('routes.organization.page.join.form.title')}>
-		<form>
+		<form use:customForm={form}>
 			<TextInputItem
+				uppercase
+				maxlength={8}
 				name="code"
 				label={$t('routes.organization.page.join.form.code')}
 				helperText="Get it from a collective admin."

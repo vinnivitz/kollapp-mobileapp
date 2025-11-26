@@ -194,6 +194,8 @@
 	{/if}
 </Layout>
 
+<!-- Snippets-->
+
 {#snippet memberItem(member: PersonOfOrganizationTO)}
 	<CustomItem slidingOptions={getSlidingOptions(member)}>
 		<ion-avatar class="mb-1">
@@ -203,6 +205,9 @@
 	</CustomItem>
 {/snippet}
 
+<!-- Modals -->
+
+<!-- Invitation Code Modal -->
 <Modal open={invitationCodeModalOpen} informational dismissed={() => (invitationCodeModalOpen = false)} lazy>
 	<Card title="Invitation Code">
 		<div class="flex flex-col">
@@ -244,6 +249,7 @@
 	</Card>
 </Modal>
 
+<!-- QR Code Modal -->
 <Popover extended open={qrModalOpen} dismissed={() => (qrModalOpen = false)}>
 	<div class="pt-2 text-center">
 		<ion-label class="font-bold">Join a collective by scanning this QR-Code</ion-label>

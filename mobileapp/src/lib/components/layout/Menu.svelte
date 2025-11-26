@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { SearchableItemDto } from '$lib/api/dtos';
+	import type { SearchableItemTO } from '$lib/api/dtos';
 	import type { Snippet } from 'svelte';
 
 	import * as icons from 'ionicons/icons';
@@ -20,7 +20,7 @@
 
 	let { children }: Properties = $props();
 
-	let searchedItems = $state<SearchableItemDto[]>([]);
+	let searchedItems = $state<SearchableItemTO[]>([]);
 	let searchValue = $state('');
 	let menuController: HTMLIonMenuElement;
 

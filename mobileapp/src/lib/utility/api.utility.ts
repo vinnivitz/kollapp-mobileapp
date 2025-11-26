@@ -108,7 +108,7 @@ export async function customFetch<T = never>(url: string, config?: CustomFetchCo
 
 		connectionStore.check();
 
-		return getResponseBody<T>(response, silentOnSuccess, silentOnError);
+		return getResponseBody<T>(response, silentOnSuccess, silentOnError, config?.silentOnSpecificStatus);
 	} catch (error) {
 		let message = $t('api.error');
 		let status = StatusCode.SERVICE_UNAVAILABLE;
@@ -154,6 +154,7 @@ export function getValidationResult<TField = unknown, TData = unknown>(
  * Checks if http status code is in the given range.
  */
 export const StatusCheck = {
+	isForbidden: (status: number): boolean => status === StatusCode.FORBIDDEN,
 	isOK: (status: number): boolean => status >= 200 && status < 300,
 	isUnauthorized: (status: number): boolean => status === StatusCode.UNAUTHORIZED,
 	serverNotReachable: (status: number): boolean => status === StatusCode.SERVICE_UNAVAILABLE
@@ -221,7 +222,8 @@ function getUrl(endpoint: string): string {
 async function getResponseBody<T>(
 	response: Response,
 	silentOnSuccess: boolean,
-	silentOnError: boolean
+	silentOnError: boolean,
+	silentOnSpecificStatus?: StatusCode[]
 ): Promise<ResponseBody<T>> {
 	const $t = get(t);
 	const status = response.status;
@@ -237,7 +239,7 @@ async function getResponseBody<T>(
 	message = body.message ?? (response.ok ? message : $t('api.error'));
 	data = body.data ?? data;
 	const { validationField } = body;
-	if (!silent && !validationField) {
+	if (!silent && !validationField && !silentOnSpecificStatus?.includes(status)) {
 		await showAlert(message, { type: response.ok ? AlertType.SUCCESS : AlertType.ERROR });
 	}
 	// only triggered in dev mode

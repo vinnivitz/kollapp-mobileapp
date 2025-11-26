@@ -1,4 +1,4 @@
-import type { AuthorizationType, RequestMethod } from '$lib/models/api';
+import type { AuthorizationType, RequestMethod, StatusCode } from '$lib/models/api';
 
 /**
  * Custom fetch configuration
@@ -10,6 +10,7 @@ export type CustomFetchConfig =
 			method?: RequestMethod.DELETE | RequestMethod.GET;
 			query?: Record<string, string>;
 			silentOnError?: boolean;
+			silentOnSpecificStatus?: StatusCode[];
 			silentOnSuccess?: boolean;
 	  }
 	| {
@@ -18,5 +19,6 @@ export type CustomFetchConfig =
 			body?: unknown;
 			query?: Record<string, string>;
 			silentOnError?: boolean;
+			silentOnSpecificStatus?: StatusCode[];
 			silentOnSuccess?: boolean;
 	  };

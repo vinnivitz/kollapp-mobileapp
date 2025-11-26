@@ -120,8 +120,7 @@
 			></Button>
 			<Button
 				label="Icon right"
-				iconPosition="end"
-				icon={addOutline}
+				iconEnd={addOutline}
 				clicked={async () => await showAlert('Button clicked', { type: AlertType.SUCCESS })}
 			></Button>
 			<Button

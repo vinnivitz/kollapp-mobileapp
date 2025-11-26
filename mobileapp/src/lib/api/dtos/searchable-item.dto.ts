@@ -5,7 +5,7 @@ import type { RouteId } from '$app/types';
 /**
  * Data Transfer Object for searchable item information.
  */
-export type SearchableItemDto = {
+export type SearchableItemTO = {
 	id: number;
 	label: string;
 	route: RouteId;

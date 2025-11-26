@@ -35,7 +35,8 @@
 		trashBinOutline,
 		trendingDownOutline,
 		trendingUpOutline,
-		walletOutline
+		walletOutline,
+		warningOutline
 	} from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
@@ -449,6 +450,9 @@
 </script>
 
 <Layout title={$t('routes.organization.title')}>
+	{#if !$organizationStore && $organizations.length > 0}
+		{@render pendingOrganizationJoinRequestCard()}
+	{/if}
 	{#if $organizationStore}
 		{#if $organizationStore.activities.length > 0}
 			{@render changeCollective($organizationStore)}
@@ -459,9 +463,19 @@
 		{/if}
 		{@render eventsList()}
 		{@render collectiveList()}
+	{:else if $organizations.length === 0}
+		{@render noCollectiveCard()}
 	{/if}
 	{@render generalList()}
 </Layout>
+
+<!-- Snippets -->
+
+{#snippet noCollectiveCard()}
+	<Card border="warning" classList="text-center">
+		<ion-note>You are not part of any collective.</ion-note>
+	</Card>
+{/snippet}
 
 {#snippet upcomingEvent(activities: ActivityTO[])}
 	<Card
@@ -643,6 +657,19 @@
 			</div>
 		</div>
 	</CustomItem>
+{/snippet}
+
+{#snippet pendingOrganizationJoinRequestCard()}
+	<Card border="warning">
+		<div class="flex items-center justify-center gap-2">
+			<ion-avatar class="flex items-center justify-center">
+				<ion-icon color="warning" icon={warningOutline} size="large"></ion-icon>
+			</ion-avatar>
+			<ion-text>
+				You have a pending request for joining <span class="font-bold">{$organizations[0]?.name}</span>
+			</ion-text>
+		</div>
+	</Card>
 {/snippet}
 
 <!-- Modals -->

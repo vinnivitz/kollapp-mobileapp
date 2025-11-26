@@ -93,6 +93,11 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 	}
 
 	function addPasswordIcon(input: HTMLIonInputElement): void {
+		const existingIcon = input.nextElementSibling;
+		if (existingIcon?.tagName === 'ION-ICON' && existingIcon.getAttribute('slot') === 'end') {
+			existingIcon.remove();
+		}
+
 		const icon = document.createElement('ion-icon') as HTMLIonIconElement;
 		icon.setAttribute('slot', 'end');
 		icon.setAttribute('icon', eye);

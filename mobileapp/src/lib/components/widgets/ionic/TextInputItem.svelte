@@ -2,6 +2,8 @@
 	import type { Colors } from '$lib/models/ui';
 	import type { InputInputEventDetail } from '@ionic/core';
 
+	import { onMount } from 'svelte';
+
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
 
 	type InputType = 'date' | 'email' | 'number' | 'password' | 'text';
@@ -10,6 +12,7 @@
 		label: string;
 		name: string;
 		card?: boolean;
+		classList?: string;
 		color?: Colors;
 		disabled?: boolean;
 		helperText?: string;
@@ -20,6 +23,7 @@
 		pattern?: string;
 		readonly?: boolean;
 		type?: InputType;
+		uppercase?: boolean;
 		value?: null | number | string;
 		changed?: (value: string) => void;
 		clicked?: () => void;
@@ -30,6 +34,7 @@
 	let {
 		card,
 		changed,
+		classList,
 		clicked,
 		color,
 		disabled,
@@ -45,6 +50,7 @@
 		pattern,
 		readonly,
 		type = 'text',
+		uppercase,
 		value
 	}: Properties = $props();
 
@@ -52,6 +58,13 @@
 
 	$effect(() => {
 		if (element) inputElement?.(element);
+	});
+
+	onMount(async () => {
+		const nativeElement = await element?.getInputElement();
+		if (nativeElement && uppercase) {
+			nativeElement.style.textTransform = 'uppercase';
+		}
 	});
 </script>
 
@@ -66,6 +79,7 @@
 		counter={!!maxlength}
 		{name}
 		{label}
+		class={classList}
 		type={type === 'date' ? 'text' : type}
 		{value}
 		{disabled}

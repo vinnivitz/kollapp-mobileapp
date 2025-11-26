@@ -1,4 +1,4 @@
-import type { SearchableItemDto } from '$lib/api/dtos';
+import type { SearchableItemTO } from '$lib/api/dtos';
 
 import { get } from 'svelte/store';
 
@@ -13,14 +13,14 @@ const $t = get(t);
 class SearchableResource {
 	/** Filters searchable items based on a search term.
 	 * @param value The search term.
-	 * @returns {Promise<SearchableItemDto[]>} The filtered searchable items.
+	 * @returns {Promise<SearchableItemTO[]>} The filtered searchable items.
 	 */
-	async filter(value: string): Promise<SearchableItemDto[]> {
+	async filter(value: string): Promise<SearchableItemTO[]> {
 		const response = await fetch('/data/searchables.json');
-		const items: SearchableItemDto[] = await response.json();
+		const items: SearchableItemTO[] = await response.json();
 		const organization = get(organizationStore);
 		return items
-			.filter((item: SearchableItemDto) => {
+			.filter((item: SearchableItemTO) => {
 				const hasTerm = $t(item.label).toLowerCase().includes(value.toLowerCase());
 				const validRole = item.accessible ? hasOrganizationRole(item.accessible) : true;
 				const accessible =

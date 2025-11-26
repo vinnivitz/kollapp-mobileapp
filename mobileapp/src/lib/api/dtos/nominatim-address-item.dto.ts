@@ -1,7 +1,7 @@
 /**
  * Data Transfer Object for Nominatim address information.
  */
-export type NominatimAddressItemDto = {
+export type NominatimAddressItemTO = {
 	city: string;
 	city_district: string;
 	country: string;

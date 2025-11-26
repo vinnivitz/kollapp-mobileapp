@@ -40,6 +40,12 @@
 		</div>
 	</div>
 	<div class="mt-5 text-center">
-		<ion-note>No notifications found.</ion-note>
+		{#if notificationFilter === NotificationFilter.UNREAD}
+			<ion-note>No unread notifications.</ion-note>
+		{:else if notificationFilter === NotificationFilter.ALL}
+			<ion-note>No notifications found.</ion-note>
+		{:else}
+			<ion-note>No notifications found.</ion-note>
+		{/if}
 	</div>
 </Layout>

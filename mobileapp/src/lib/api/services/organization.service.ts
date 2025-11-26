@@ -7,7 +7,7 @@ import type {
 	OrganizationUpdateRequestTO
 } from '@kollapp/api-types';
 
-import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/models/api';
+import { AuthorizationType, RequestMethod, type ResponseBody, StatusCode } from '$lib/models/api';
 import { customFetch } from '$lib/utility';
 
 class OrganizationResource {
@@ -19,7 +19,10 @@ class OrganizationResource {
 	 * @returns {Promise<ResponseBody<OrganizationTO>>} The organization.
 	 */
 	async getById(id: number): Promise<ResponseBody<OrganizationTO>> {
-		return customFetch(`${this.ENDPOINT}/${id}`, { silentOnSuccess: true });
+		return customFetch(`${this.ENDPOINT}/${id}`, {
+			silentOnSpecificStatus: [StatusCode.FORBIDDEN],
+			silentOnSuccess: true
+		});
 	}
 
 	/**

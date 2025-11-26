@@ -1,4 +1,4 @@
-import type { ReleaseNotesDto } from '../dtos';
+import type { ReleaseNotesTO } from '$lib/api/dtos';
 import type { ApiVersionTO } from '@kollapp/api-types';
 
 import { TZDate } from '@date-fns/tz';
@@ -41,9 +41,9 @@ class MetaResource {
 	}
 
 	/** Fetches the release notes from the server.
-	 * @returns {Promise<ReleaseNotesDto[]>} The release notes.
+	 * @returns {Promise<ReleaseNotesTO[]>} The release notes.
 	 */
-	async getReleaseNotes(): Promise<ReleaseNotesDto[]> {
+	async getReleaseNotes(): Promise<ReleaseNotesTO[]> {
 		try {
 			const response = await fetch('/data/release-notes.json');
 

@@ -10,7 +10,8 @@
 		calendarOutline,
 		flashOutline,
 		notificationsOffOutline,
-		peopleOutline
+		peopleOutline,
+		warningOutline
 	} from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
@@ -22,7 +23,7 @@
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import { t } from '$lib/locales';
 	import { localeStore, organizationStore, userStore } from '$lib/stores';
-	import { featureNotImplementedAlert, getDateFnsLocale } from '$lib/utility';
+	import { getDateFnsLocale } from '$lib/utility';
 
 	const activity = $derived($organizationStore?.activities && $organizationStore.activities[0]);
 	const postings = $derived(
@@ -33,6 +34,7 @@
 				]
 			: []
 	);
+	const organizations = $derived(organizationStore.organizations);
 
 	function onNavigateEvent(): void {
 		if ($organizationStore?.activities[0]?.id) {
@@ -43,15 +45,20 @@
 
 <Layout title={$t('routes.home.title')}>
 	{#if $userStore}
+		{#if !$organizationStore && $organizations.length > 0}
+			{@render pendingOrganizationJoinRequestCard()}
+		{/if}
+
 		{@render accountCard($userStore)}
+
 		{#if $organizationStore}
 			{#if activity}
 				{@render upcomingEventCard(activity)}
 			{/if}
 			{@render organizationCard($organizationStore)}
 			{@render budgetChartCard()}
-		{:else}
-			{@render noCollectiveCards()}
+		{:else if $organizations.length === 0}
+			{@render noCollectivesCard()}
 		{/if}
 	{/if}
 </Layout>
@@ -71,7 +78,7 @@
 			size="small"
 			icon={notificationsOffOutline}
 			label={$t('routes.home.card.notifications.no-notes')}
-			clicked={featureNotImplementedAlert}
+			clicked={() => goto(resolve('/account/notifications'))}
 		/>
 	</Card>
 {/snippet}
@@ -125,22 +132,38 @@
 	</Card>
 {/snippet}
 
-{#snippet noCollectiveCards()}
-	<Card title={$t('routes.home.card.register-organization.title')} classList="text-center">
-		<Button
-			clicked={() => goto(resolve('/organization/register'))}
-			fill="outline"
-			icon={accessibilityOutline}
-			label={$t('routes.home.card.organization.register')}
-		/>
+{#snippet noCollectivesCard()}
+	<Card border="warning" classList="text-center">
+		<ion-note>You are not part of any collective yet.</ion-note>
+		<div class="mt-3 flex flex-col gap-3">
+			<Button
+				expand="block"
+				clicked={() => goto(resolve('/organization/register'))}
+				icon={accessibilityOutline}
+				iconEnd={arrowForwardOutline}
+				label={$t('routes.home.card.organization.register')}
+			/>
+			<Button
+				expand="block"
+				clicked={() => goto(resolve('/organization/join'))}
+				icon={accessibilityOutline}
+				iconEnd={arrowForwardOutline}
+				label={$t('routes.home.card.organization.join')}
+			/>
+		</div>
 	</Card>
-	<Card title={$t('routes.home.card.join-organization.title')} classList="text-center">
-		<Button
-			clicked={() => goto(resolve('/organization/join'))}
-			fill="outline"
-			icon={accessibilityOutline}
-			label={$t('routes.home.card.organization.join')}
-		/>
+{/snippet}
+
+{#snippet pendingOrganizationJoinRequestCard()}
+	<Card border="warning">
+		<div class="flex items-center justify-center gap-2">
+			<ion-avatar class="flex items-center justify-center">
+				<ion-icon color="warning" icon={warningOutline} size="large"></ion-icon>
+			</ion-avatar>
+			<ion-text>
+				You have a pending request for joining <span class="font-bold">{$organizations[0]?.name}</span>
+			</ion-text>
+		</div>
 	</Card>
 {/snippet}
 

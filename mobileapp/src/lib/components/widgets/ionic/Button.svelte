@@ -10,7 +10,7 @@
 		expand?: 'block' | 'full' | undefined;
 		fill?: 'clear' | 'default' | 'outline' | 'solid' | undefined;
 		icon?: string;
-		iconPosition?: 'end' | 'start';
+		iconEnd?: string;
 		iconSize?: 'large' | 'small' | undefined;
 		indexed?: string;
 		label?: string;
@@ -37,7 +37,7 @@
 		expand,
 		fill,
 		icon,
-		iconPosition = 'start',
+		iconEnd,
 		iconSize,
 		indexed,
 		label,
@@ -78,11 +78,12 @@
 </ion-button>
 
 {#snippet content()}
-	{#if icon}
+	{#if icon || iconEnd}
 		{#if label}
-			{#if iconPosition === 'start'}
+			{#if icon}
 				{@render startIcon()}
-			{:else}
+			{/if}
+			{#if iconEnd}
 				{@render endIcon()}
 			{/if}
 		{:else}
@@ -104,7 +105,7 @@
 {/snippet}
 
 {#snippet endIcon()}
-	<ion-icon slot="end" color={labelColor} {icon} size={size === 'large' ? 'large' : iconSize}></ion-icon>
+	<ion-icon slot="end" color={labelColor} icon={iconEnd} size={size === 'large' ? 'large' : iconSize}></ion-icon>
 {/snippet}
 
 {#snippet iconOnly()}

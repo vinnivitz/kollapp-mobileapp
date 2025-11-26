@@ -9,7 +9,6 @@ describe('Button Component', () => {
 			clicked: vi.fn(),
 			fill: 'outline' as const,
 			icon: 'test-icon',
-			iconPosition: 'start' as const,
 			label: 'Click Me',
 			size: 'large' as const
 		};
@@ -25,12 +24,11 @@ describe('Button Component', () => {
 		expect(startIcon?.getAttribute('size')).toBe('large');
 	});
 
-	it('renders label and end icon when iconPosition is "end"', () => {
+	it('renders label and end icon when iconEnd is provided', () => {
 		const properties = {
 			clicked: vi.fn(),
 			fill: 'default' as const,
-			icon: 'test-icon',
-			iconPosition: 'end' as const,
+			iconEnd: 'test-icon',
 			label: 'Submit',
 			size: 'large' as const
 		};
@@ -43,7 +41,7 @@ describe('Button Component', () => {
 		expect(ionText?.textContent).toBe(properties.label);
 		expect(ionText?.classList.contains('font-medium')).toBeTruthy();
 		expect(endIcon).toBeTruthy();
-		expect(endIcon?.getAttribute('icon')).toBe(properties.icon);
+		expect(endIcon?.getAttribute('icon')).toBe(properties.iconEnd);
 		expect(endIcon?.getAttribute('size')).toBe('large');
 	});
 
@@ -106,8 +104,7 @@ describe('Button Component', () => {
 
 		const properties3 = {
 			clicked: vi.fn(),
-			icon: 'icon-only-test',
-			iconPosition: 'end' as const,
+			iconEnd: 'icon-only-test',
 			iconSize: 'small' as const,
 			label: 'Press Me'
 		};
