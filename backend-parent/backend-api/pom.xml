@@ -51,6 +51,8 @@
                         <configuration>
                             <installDirectory>target</installDirectory>
                             <workingDirectory>ts</workingDirectory>
+                            <nodeVersion>{nodeVersion}</nodeVersion>
+                            <npmVersion>{npmVersion}</npmVersion>
                         </configuration>
                     </plugin>
                 </plugins>

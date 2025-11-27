@@ -55,6 +55,8 @@ kollapp:
     host: ${BACKEND_HOST:localhost}
     production: ${BACKEND_PRODUCTION:false}
     version: "@project.version@"
+    nodeVersion: ${NODE_VERSION:v24.11.1}
+    npmVersion: ${NPM_VERSION:11.6.2}
     port: ${BACKEND_PORT:8080}
     staticCacheDays: ${BACKEND_STATIC_CACHE_DAYS:356}
     organizationInvitationValidityDays: ${BACKEND_ORGANIZATION_INVITATION_VALIDITY_DAYS:3}
