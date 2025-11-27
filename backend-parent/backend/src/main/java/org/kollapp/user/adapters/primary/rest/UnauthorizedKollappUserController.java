@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.kollapp.core.adapters.primary.rest.dto.MessageResponseTO;
 import org.kollapp.user.adapters.primary.rest.dto.ForgotPasswordRequestTO;
 import org.kollapp.user.adapters.primary.rest.dto.KollappUserSignupRequest;
+import org.kollapp.user.adapters.primary.rest.dto.ResendConfirmationRequestTO;
 import org.kollapp.user.adapters.primary.rest.dto.ResetPasswordRequestTO;
 import org.kollapp.user.application.service.KollappUserService;
 
@@ -54,8 +55,8 @@ public class UnauthorizedKollappUserController {
     }
 
     @PostMapping("/resend-confirmation")
-    public ResponseEntity<MessageResponseTO> resendConfirmation(@Valid @RequestBody
-                                                                    ResendConfirmationRequestTO resendConfirmationTo) {
+    public ResponseEntity<MessageResponseTO> resendConfirmation(
+            @Valid @RequestBody ResendConfirmationRequestTO resendConfirmationTo) {
         kollappUserService.resendConfirmationMail(resendConfirmationTo.getEmail());
         return ResponseEntity.ok(new MessageResponseTO("success.email.confirmation-resent", messageSource));
     }

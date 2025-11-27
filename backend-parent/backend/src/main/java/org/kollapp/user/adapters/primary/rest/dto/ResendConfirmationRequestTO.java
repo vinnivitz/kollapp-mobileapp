@@ -1,7 +1,8 @@
-package org.kollappbackend.user.adapters.primary.rest.model;
+package org.kollapp.user.adapters.primary.rest.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

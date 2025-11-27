@@ -16,8 +16,7 @@ public abstract class BaseIT {
 
     static {
         String version = System.getenv().getOrDefault("MYSQL_VERSION", "8.4.4");
-        MY_SQL_CONTAINER = new MySQLContainer<>("mysql:" + version)
-                .withReuse(false);
+        MY_SQL_CONTAINER = new MySQLContainer<>("mysql:" + version).withReuse(false);
         MY_SQL_CONTAINER.start();
     }
 

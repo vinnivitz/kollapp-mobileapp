@@ -1,9 +1,9 @@
 package org.kollapp.organization.application.model;
 
+import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.security.SecureRandom;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
