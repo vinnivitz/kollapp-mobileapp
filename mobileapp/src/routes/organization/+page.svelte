@@ -30,7 +30,6 @@
 		peopleOutline,
 		personAddOutline,
 		personOutline,
-		readerOutline,
 		refreshOutline,
 		ribbonOutline,
 		saveOutline,
@@ -148,10 +147,20 @@
 	const allActivityFilterItemsToggleActive = $derived(
 		filteredActivityFilterItems.length === filteredActivityFilterItems.filter((activity) => activity.selected).length
 	);
+	const pendingMembersCount = $derived(
+		$organizationStore?.personsOfOrganization.filter(
+			(personOfOrganization) => personOfOrganization.status === 'PENDING'
+		).length ?? 0
+	);
 
 	let selectActivityModalOpen = $state(false);
 	let selectedActivityId = $state<number>(0);
 	let selectedActivity = $state<ActivityTO>();
+	let organizationDescriptionNote = $state<HTMLIonNoteElement>();
+
+	const organizationDescriptionNoteTruncated = $derived(
+		organizationDescriptionNote && organizationDescriptionNote?.scrollWidth > organizationDescriptionNote?.clientWidth
+	);
 
 	const createPostingForm = new Form({
 		completed: async () => {
@@ -286,9 +295,9 @@
 		}
 		const balance = totalIncome - totalExpense;
 		return {
-			balance: formatter.currency(balance, true),
-			credit: formatter.currency(totalIncome, true),
-			debit: formatter.currency(totalExpense, true)
+			balance: formatter.currency(balance),
+			credit: formatter.currency(totalIncome),
+			debit: formatter.currency(totalExpense)
 		};
 	}
 
@@ -543,26 +552,27 @@
 {/snippet}
 
 {#snippet collectiveInfo()}
-	<Card classList="text-center cursor-pointer" clicked={() => (descriptionExpanded = !descriptionExpanded)}>
+	<Card
+		classList="text-center cursor-pointer"
+		clicked={organizationDescriptionNoteTruncated ? () => (descriptionExpanded = !descriptionExpanded) : undefined}
+	>
 		<div class="flex flex-col items-center justify-center gap-3">
-			<div class="flex w-full flex-row items-start justify-center gap-1">
-				<ion-icon icon={readerOutline} class="mt-1 shrink-0" class:hidden={descriptionExpanded}></ion-icon>
-				<ion-note
-					class:max-h-screen={descriptionExpanded}
-					class:whitespace-pre-line={descriptionExpanded}
-					class="max-h-6 overflow-hidden text-ellipsis whitespace-nowrap transition-all duration-500 ease-in-out"
-				>
-					{$organizationStore?.description}
-				</ion-note>
-			</div>
+			<ion-text
+				bind:this={organizationDescriptionNote}
+				class:max-h-screen={descriptionExpanded}
+				class:whitespace-pre-line={descriptionExpanded}
+				class="max-h-6 overflow-hidden text-ellipsis whitespace-nowrap transition-all duration-500 ease-in-out"
+			>
+				{$organizationStore?.description}
+			</ion-text>
 			<div class="flex flex-row items-center justify-center gap-1">
-				<ion-icon icon={locationOutline}></ion-icon>
-				<ion-note>{$organizationStore?.place}</ion-note>
+				<ion-icon class="mb-1" icon={locationOutline}></ion-icon>
+				<ion-text>{$organizationStore?.place}</ion-text>
 			</div>
 		</div>
 		<div class="mt-3 flex flex-row items-center justify-center gap-1">
 			<ion-icon icon={ribbonOutline}></ion-icon>
-			<ion-text color="dark">You are a <span class="">{getRoleTranslationFromRole(organizationRole!)}</span></ion-text>
+			<ion-text class="font-semibold">You are a {getRoleTranslationFromRole(organizationRole!)}</ion-text>
 		</div>
 	</Card>
 {/snippet}
@@ -571,6 +581,7 @@
 	<ion-list inset>
 		<ion-list-header>{$t('routes.organization.list.current-collective.title')}</ion-list-header>
 		<LabeledItem
+			badge={pendingMembersCount > 0 ? `${pendingMembersCount}` : undefined}
 			indexed="/organization/members"
 			clicked={() => goto(resolve('/organization/members'))}
 			icon={peopleOutline}
@@ -631,20 +642,27 @@
 			<ion-text class="text-xl font-bold">{balance?.balance}</ion-text>
 			<div class="flex items-center justify-center gap-2">
 				<ion-icon color="success" icon={trendingUpOutline}></ion-icon>
-				<ion-text class="text-sm text-gray-500">Total incoming: {balance?.credit}</ion-text>
+				<ion-text class="text-sm" color="medium">Total income: {balance?.credit}</ion-text>
 			</div>
 			<div class="flex items-center justify-center gap-2">
 				<ion-icon color="danger" icon={trendingDownOutline}></ion-icon>
-				<ion-text class="text-sm text-gray-500">Total expense: {balance?.debit}</ion-text>
+				<ion-text class="text-sm" color="medium">Total expense: {balance?.debit}</ion-text>
 			</div>
 		</div>
-		<div class="mt-3 flex items-center justify-center gap-2">
-			<Button label="Add income" color="primary" icon={cashOutline} clicked={() => onOpenCreatePosting('CREDIT')} />
-			<Button label="Add expense" color="tertiary" icon={walletOutline} clicked={() => onOpenCreatePosting('DEBIT')} />
-		</div>
+		{#if hasOrganizationRole('ROLE_ORGANIZATION_MANAGER')}
+			<div class="mt-3 flex items-center justify-center gap-2">
+				<Button label="Add income" color="primary" icon={cashOutline} clicked={() => onOpenCreatePosting('CREDIT')} />
+				<Button
+					label="Add expense"
+					color="tertiary"
+					icon={walletOutline}
+					clicked={() => onOpenCreatePosting('DEBIT')}
+				/>
+			</div>
+		{/if}
 		<Button
 			icon={listOutline}
-			classList="mx-2"
+			classList="mx-2 mt-3"
 			expand="block"
 			fill="outline"
 			label="Transaction history"
@@ -655,7 +673,9 @@
 
 {#snippet transactionItem(posting: PostingTO)}
 	<CustomItem
-		slidingOptions={getTransactionItemSlidingOptions(posting)}
+		slidingOptions={hasOrganizationRole('ROLE_ORGANIZATION_MANAGER')
+			? getTransactionItemSlidingOptions(posting)
+			: undefined}
 		iconColor={posting.type === 'CREDIT' ? 'success' : 'danger'}
 		icon={posting.type === 'CREDIT' ? trendingUpOutline : trendingDownOutline}
 	>
@@ -714,14 +734,14 @@
 		<form use:customForm={createPostingForm}>
 			<div class="mb-3 flex items-center justify-center gap-2">
 				<Chip
+					selected={selectedPostingType === 'CREDIT'}
+					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.income')}
+					clicked={() => setSelectedPostingType('CREDIT')}
+				/>
+				<Chip
 					selected={selectedPostingType === 'DEBIT'}
 					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.expense')}
 					clicked={() => setSelectedPostingType('DEBIT')}
-				/>
-				<Chip
-					selected={selectedPostingType === 'CREDIT'}
-					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.expense')}
-					clicked={() => setSelectedPostingType('CREDIT')}
 				/>
 			</div>
 			<TextInputItem name="purpose" label="Purpose" icon={documentOutline} />

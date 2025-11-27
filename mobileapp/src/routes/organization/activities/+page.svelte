@@ -35,7 +35,7 @@
 	import { t } from '$lib/locales';
 	import { Form } from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';
-	import { customForm } from '$lib/utility';
+	import { customForm, hasOrganizationRole } from '$lib/utility';
 
 	enum ActivityView {
 		ACTIVITIES = 'activities',
@@ -113,6 +113,8 @@
 	{@render activitySegmentView()}
 </Layout>
 
+<!-- Snippets -->
+
 {#snippet activitySegmentsHeader()}
 	<div class="text-center">
 		<div class="mb-2 flex items-center justify-center gap-3 rounded-full bg-(--ion-background-color-step-50) px-5 py-1">
@@ -139,12 +141,14 @@
 	<div in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
 		<div class={activityView === ActivityView.ACTIVITIES ? 'flex h-full flex-col pb-6' : ''}>
 			{#if activityView === ActivityView.ACTIVITIES}
-				<FabButton
-					label={$t('routes.organization.page.activity.create')}
-					clicked={() => onCreateActivity(format(new TZDate(), 'yyyy-MM-dd'))}
-					icon={createOutline}
-					indexed="/organization/activities"
-				></FabButton>
+				{#if hasOrganizationRole('ROLE_ORGANIZATION_MANAGER')}
+					<FabButton
+						label={$t('routes.organization.page.activity.create')}
+						clicked={() => onCreateActivity(format(new TZDate(), 'yyyy-MM-dd'))}
+						icon={createOutline}
+						indexed="/organization/activities"
+					/>
+				{/if}
 
 				<div class="flex items-center justify-between gap-2">
 					<ion-searchbar
@@ -224,6 +228,9 @@
 	</Card>
 {/snippet}
 
+<!-- Modals -->
+
+<!-- Filters -->
 <Popover open={showFilters} dismissed={() => (showFilters = false)} lazy>
 	<Card title={$t('routes.organization.page.activity.filters.title')} classList="m-0">
 		<div class="flex flex-wrap items-center justify-center gap-2">
@@ -234,6 +241,7 @@
 	</Card>
 </Popover>
 
+<!-- Create Activity -->
 <Modal
 	open={createActivityModalOpen}
 	dismissed={() => (createActivityModalOpen = false)}

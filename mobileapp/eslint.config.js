@@ -130,6 +130,7 @@ export default ts.config(
 				HTMLIonLoadingElement: 'readonly',
 				HTMLIonMenuElement: 'readonly',
 				HTMLIonModalElement: 'readonly',
+				HTMLIonNoteElement: 'readonly',
 				HTMLIonRefresherElement: 'readonly',
 				HTMLIonSearchbarElement: 'readonly',
 				HTMLIonTabsElement: 'readonly',

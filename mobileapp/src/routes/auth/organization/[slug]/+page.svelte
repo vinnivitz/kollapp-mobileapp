@@ -35,7 +35,7 @@
 	async function onJoinCollective(): Promise<void> {
 		const result = await organizationService.joinByInvitationCode(data.code);
 		if (StatusCheck.isOK(result.status)) {
-			await organizationStore.update(result.data.id);
+			await organizationStore.update($organizationStore?.id!);
 			await goto(resolve('/organization'));
 		}
 	}

@@ -26,7 +26,7 @@ describe('formatter.utility', () => {
 		});
 
 		it('should format cents to currency with cents when showCents is true', () => {
-			const result = formatter.currency(12_345, true);
+			const result = formatter.currency(12_345);
 			expect(result).toContain('123');
 			expect(result).toContain('45');
 		});
@@ -37,7 +37,7 @@ describe('formatter.utility', () => {
 		});
 
 		it('should format negative values correctly', () => {
-			const result = formatter.currency(-5000, true);
+			const result = formatter.currency(-5000);
 			expect(result).toContain('50');
 			expect(result).toContain('-');
 		});
@@ -49,7 +49,7 @@ describe('formatter.utility', () => {
 		});
 
 		it('should round cents appropriately when showCents is false', () => {
-			const result = formatter.currency(12_399, false);
+			const result = formatter.currency(12_399);
 			expect(result).toContain('123');
 		});
 	});

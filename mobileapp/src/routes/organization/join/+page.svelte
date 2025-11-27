@@ -1,7 +1,4 @@
 <script lang="ts">
-	import type { JoinOrganizationTO } from '$lib/api/dtos';
-	import type { OrganizationTO } from '@kollapp/api-types';
-
 	import { CapacitorBarcodeScanner, CapacitorBarcodeScannerTypeHint } from '@capacitor/barcode-scanner';
 	import { Haptics } from '@capacitor/haptics';
 	import { alertController } from '@ionic/core';
@@ -21,8 +18,8 @@
 	import { organizationStore } from '$lib/stores';
 	import { customForm, showAlert, StatusCheck } from '$lib/utility';
 
-	const form = new Form<JoinOrganizationTO, OrganizationTO>({
-		completed: async ({ response }) => await onCompleted(response),
+	const form = new Form({
+		completed: async ({ model }) => await onCompleted(model.code),
 		request: async (model) => organizationService.joinByInvitationCode(model.code),
 		schema: joinOrganizationSchema()
 	});
@@ -35,7 +32,7 @@
 				const response = await organizationService.joinByInvitationCode(code);
 				if (StatusCheck.isOK(response.status)) {
 					await Haptics.vibrate({ duration: 1000 });
-					await onCompleted(response.data);
+					await onCompleted(code);
 				}
 			} else {
 				await showAlert('QR code is not valid.');
@@ -46,9 +43,11 @@
 		}
 	}
 
-	async function onCompleted(organization: OrganizationTO): Promise<void> {
+	async function onCompleted(code: string): Promise<void> {
 		await organizationStore.init();
-		await organizationStore.update(organization.id);
+		const organizationResponse = await organizationService.getByInvitationCode(code);
+		if (!StatusCheck.isOK(organizationResponse.status)) return;
+		const organization = organizationResponse.data;
 		const alert = await alertController.create({
 			buttons: ['Ok'],
 			header: `Join request sent`,

@@ -79,9 +79,9 @@
 				const creditTotal = credits.reduce((accumulator, credit) => accumulator + credit.amountInCents, 0);
 				const debitTotal = debits.reduce((accumulator, debit) => accumulator + debit.amountInCents, 0);
 
-				chartSeries = [debitTotal, creditTotal];
-				colors = ['var(--ion-color-danger-tint)', 'var(--ion-color-success-tint)'];
-				labels = ['Expenses', 'Income'];
+				chartSeries = [creditTotal, debitTotal];
+				colors = ['var(--ion-color-success-tint)', 'var(--ion-color-danger-tint)'];
+				labels = ['Income', 'Expenses'];
 				break;
 			}
 		}

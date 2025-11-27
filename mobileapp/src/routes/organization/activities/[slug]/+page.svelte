@@ -284,9 +284,9 @@
 		}
 		const balance = totalIncome - totalExpense;
 		return {
-			balance: formatter.currency(balance, true),
-			credit: formatter.currency(totalIncome, true),
-			debit: formatter.currency(totalExpense, true)
+			balance: formatter.currency(balance),
+			credit: formatter.currency(totalIncome),
+			debit: formatter.currency(totalExpense)
 		};
 	}
 
@@ -485,13 +485,13 @@
 				label="Add income"
 				color="primary"
 				icon={cashOutline}
-				clicked={() => onOpenCreateAccountPosting('DEBIT')}
+				clicked={() => onOpenCreateAccountPosting('CREDIT')}
 			/>
 			<Button
 				label="Add expense"
 				color="tertiary"
 				icon={walletOutline}
-				clicked={() => onOpenCreateAccountPosting('CREDIT')}
+				clicked={() => onOpenCreateAccountPosting('DEBIT')}
 			/>
 		</div>
 		<Button
@@ -569,14 +569,14 @@
 		<form use:customForm={createAccountPostingForm!}>
 			<div class="mb-3 flex items-center justify-center gap-2">
 				<Chip
-					selected={selectedPostingType === 'DEBIT'}
-					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.expense')}
-					clicked={() => (selectedPostingType = 'DEBIT')}
-				/>
-				<Chip
 					selected={selectedPostingType === 'CREDIT'}
 					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.income')}
 					clicked={() => (selectedPostingType = 'CREDIT')}
+				/>
+				<Chip
+					selected={selectedPostingType === 'DEBIT'}
+					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.expense')}
+					clicked={() => (selectedPostingType = 'DEBIT')}
 				/>
 			</div>
 			<TextInputItem name="purpose" label="Purpose" icon={documentOutline} />
@@ -589,7 +589,7 @@
 	</Card>
 </Modal>
 
-<!-- Update Account Posting Modal -->
+<!-- Update Activity Posting -->
 <Modal
 	open={updateAccountPostingModalOpen}
 	dismissed={() => (updateAccountPostingModalOpen = false)}
@@ -599,14 +599,14 @@
 		<form use:customForm={updateAccountPostingForm}>
 			<div class="mb-3 flex items-center justify-center gap-2">
 				<Chip
+					selected={selectedPostingType === 'CREDIT'}
+					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.income')}
+					clicked={() => setAccountPostingType('CREDIT')}
+				/>
+				<Chip
 					selected={selectedPostingType === 'DEBIT'}
 					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.expense')}
 					clicked={() => setAccountPostingType('DEBIT')}
-				/>
-				<Chip
-					selected={selectedPostingType === 'CREDIT'}
-					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.expense')}
-					clicked={() => setAccountPostingType('CREDIT')}
 				/>
 			</div>
 			<TextInputItem name="purpose" label="Purpose" icon={documentOutline} />

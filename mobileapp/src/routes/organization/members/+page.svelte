@@ -245,23 +245,23 @@
 	}
 </script>
 
-<Layout title={$t('routes.organization.page.members.title')} showBackButton>
+<Layout title="Members" showBackButton>
 	{#if hasOrganizationRole('ROLE_ORGANIZATION_MANAGER')}
 		<FabButton label="Invite member" icon={personAddOutline} clicked={() => (invitationCodeModalOpen = true)} />
+
+		{#if pendingMembers.length > 0}
+			<Card title="Pending members" border="secondary" classList="mt-5">
+				{#each pendingMembers as member (member.id)}
+					{@render pendingMemberItem(member)}
+				{/each}
+			</Card>
+		{/if}
 	{/if}
 
-	{#if pendingMembers.length > 0}
-		<Card title="Pending members" border="secondary" classList="mt-5">
-			{#each pendingMembers as member (member.id)}
-				{@render pendingMemberItem(member)}
-			{/each}
-		</Card>
-	{/if}
-
-	{#if members.length === 0}
-		{@render noMembers()}
-	{:else}
+	{#if members.length > 0}
 		{@render memberList()}
+	{:else}
+		{@render noMembers()}
 	{/if}
 </Layout>
 
@@ -291,7 +291,9 @@
 {/snippet}
 
 {#snippet memberItem(member: PersonOfOrganizationTO)}
-	<CustomItem slidingOptions={getMemberSlidingOptions(member)}>
+	<CustomItem
+		slidingOptions={hasOrganizationRole('ROLE_ORGANIZATION_MANAGER') ? getMemberSlidingOptions(member) : undefined}
+	>
 		<ion-avatar class="mb-2">
 			<ion-icon icon={personCircleOutline} class="h-10 w-10" color="medium"></ion-icon>
 		</ion-avatar>

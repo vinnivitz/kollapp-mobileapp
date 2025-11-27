@@ -124,9 +124,9 @@ class OrganizationResource {
 	/**
 	 * Joins an organization by invitation code.
 	 * @param code The invitation code.
-	 * @returns {Promise<ResponseBody<OrganizationTO>>} The organization.
+	 * @returns {Promise<ResponseBody>} The response body.
 	 */
-	async joinByInvitationCode(code: string): Promise<ResponseBody<OrganizationTO>> {
+	async joinByInvitationCode(code: string): Promise<ResponseBody> {
 		return customFetch(`${this.ENDPOINT}/invitation/${code}`, {
 			method: RequestMethod.POST
 		});
