@@ -7,7 +7,6 @@ COPY package.json pnpm-lock.yaml .npmrc ./
 RUN pnpm install --frozen-lockfile
 ENV VITE_API_URL=https://api.kollapp.org/api
 COPY . .
-RUN pnpm validate
 RUN pnpm build-web
 
 FROM base AS runner

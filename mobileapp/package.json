@@ -3,7 +3,7 @@
 	"version": "1.0.0",
 	"scripts": {
 		"dev": "vite dev",
-		"build": "npm run indexing && npm run sync-ionic-types && vite build --mode production",
+		"build": "npm run indexing && npm run sync-ionic-types && npm run validate && vite build --mode production",
 		"preview": "vite preview --mode production",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"format": "prettier --write . && eslint . --fix",
