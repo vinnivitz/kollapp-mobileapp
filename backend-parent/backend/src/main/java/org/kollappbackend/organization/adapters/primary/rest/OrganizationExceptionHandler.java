@@ -6,8 +6,11 @@ import org.kollappbackend.organization.application.exception.ActivityNotFoundExc
 import org.kollappbackend.organization.application.exception.InvalidInvitationCodeException;
 import org.kollappbackend.organization.application.exception.InvalidOrganizationRoleException;
 import org.kollappbackend.organization.application.exception.InvalidPostingTypeException;
+import org.kollappbackend.organization.application.exception.LastManagerException;
 import org.kollappbackend.organization.application.exception.OrganizationAuthorizationException;
 import org.kollappbackend.organization.application.exception.OrganizationNotFoundException;
+import org.kollappbackend.organization.application.exception.PersonAlreadyHasTargetRoleException;
+import org.kollappbackend.organization.application.exception.PersonAlreadyRegisteredInOrganizationException;
 import org.kollappbackend.organization.application.exception.PersonNotRegisteredInOrganizationException;
 import org.kollappbackend.organization.application.exception.PersonOfOrganizationIsNotApprovedYetException;
 import org.kollappbackend.organization.application.exception.PostingDoesNotExistException;
@@ -28,6 +31,12 @@ public class OrganizationExceptionHandler {
     @ExceptionHandler(PersonNotRegisteredInOrganizationException.class)
     public ResponseEntity<ResponseTO> handlePersonNotRegisteredInOrganization(
             PersonNotRegisteredInOrganizationException ex) {
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
+    }
+
+    @ExceptionHandler(PersonAlreadyRegisteredInOrganizationException.class)
+    public ResponseEntity<ResponseTO> handlePersonAlreadyRegisteredInOrganization(
+            PersonAlreadyRegisteredInOrganizationException ex) {
         return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
     }
 
@@ -64,6 +73,16 @@ public class OrganizationExceptionHandler {
 
     @ExceptionHandler(InvalidPostingTypeException.class)
     public ResponseEntity<ResponseTO> handleInvalidPostingType(InvalidPostingTypeException ex) {
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
+    }
+
+    @ExceptionHandler(LastManagerException.class)
+    public ResponseEntity<ResponseTO> handleLastManager(LastManagerException ex) {
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
+    }
+
+    @ExceptionHandler(PersonAlreadyHasTargetRoleException.class)
+    public ResponseEntity<ResponseTO> handlePersonAlreadyHasTargetRole(PersonAlreadyHasTargetRoleException ex) {
         return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
     }
 }

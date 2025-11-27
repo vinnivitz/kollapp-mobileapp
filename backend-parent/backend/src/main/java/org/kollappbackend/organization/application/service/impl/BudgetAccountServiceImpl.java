@@ -48,7 +48,7 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
                 .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
         OrganizationPosting postingToBeEdited =
                 organization.getOrganizationPostings().stream().filter(f -> f.getId() == postingId).findFirst()
-                        .orElseThrow(PostingDoesNotExistException::new);
+                        .orElseThrow(() -> new PostingDoesNotExistException(messageSource));
         postingToBeEdited.setDate(updatedPosting.getDate());
         postingToBeEdited.setPurpose(updatedPosting.getPurpose());
         postingToBeEdited.setAmountInCents(updatedPosting.getAmountInCents());
@@ -64,7 +64,7 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
                 .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
         Posting postingToBeRemoved =
                 organization.getOrganizationPostings().stream().filter(p -> p.getId() == postingId).findFirst()
-                        .orElseThrow(PostingDoesNotExistException::new);
+                        .orElseThrow(() -> new PostingDoesNotExistException(messageSource));
         organization.getOrganizationPostings().remove(postingToBeRemoved);
     }
 
@@ -92,7 +92,7 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
                 .orElseThrow(() -> new ActivityNotFoundException(messageSource));
         ActivityPosting postingToBeEdited =
                 activity.getActivityPostings().stream().filter(p -> p.getId() == postingId).findFirst()
-                        .orElseThrow(PostingDoesNotExistException::new);
+                        .orElseThrow(() -> new PostingDoesNotExistException(messageSource));
         postingToBeEdited.setDate(updatedPosting.getDate());
         postingToBeEdited.setPurpose(updatedPosting.getPurpose());
         postingToBeEdited.setAmountInCents(updatedPosting.getAmountInCents());
@@ -110,7 +110,7 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
                 .orElseThrow(() -> new ActivityNotFoundException(messageSource));
         Posting postingToBeRemoved =
                 activity.getActivityPostings().stream().filter(p -> p.getId() == postingId).findFirst()
-                        .orElseThrow(PostingDoesNotExistException::new);
+                        .orElseThrow(() -> new PostingDoesNotExistException(messageSource));
         activity.getActivityPostings().remove(postingToBeRemoved);
     }
 
