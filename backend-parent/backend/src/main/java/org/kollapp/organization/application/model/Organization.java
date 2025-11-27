@@ -3,7 +3,7 @@ package org.kollapp.organization.application.model;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import java.security.SecureRandom;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -98,7 +98,7 @@ public class Organization {
         int leftLimit = 48; // numeral '0'
         int rightLimit = 122; // letter 'z'
         int targetStringLength = 8;
-        Random random = new Random();
+        SecureRandom random = new SecureRandom();
 
         return random.ints(leftLimit, rightLimit + 1)
                 .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))

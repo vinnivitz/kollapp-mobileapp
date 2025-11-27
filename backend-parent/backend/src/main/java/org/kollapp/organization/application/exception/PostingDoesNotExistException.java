@@ -1,7 +1,10 @@
 package org.kollapp.organization.application.exception;
 
-public class PostingDoesNotExistException extends RuntimeException {
-    public PostingDoesNotExistException() {
-        super("No posting with this id exists");
+import org.kollappbackend.core.application.exceptions.AbstractLocalizedException;
+import org.springframework.context.MessageSource;
+
+public class PostingDoesNotExistException extends AbstractLocalizedException {
+    public PostingDoesNotExistException(MessageSource messageSource) {
+        super(messageSource, "error.organization.posting.not-found");
     }
 }

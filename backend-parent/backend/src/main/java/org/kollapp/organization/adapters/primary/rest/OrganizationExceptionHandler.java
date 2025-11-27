@@ -30,6 +30,12 @@ public class OrganizationExceptionHandler {
         return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
     }
 
+    @ExceptionHandler(PersonAlreadyRegisteredInOrganizationException.class)
+    public ResponseEntity<ResponseTO> handlePersonAlreadyRegisteredInOrganization(
+            PersonAlreadyRegisteredInOrganizationException ex) {
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
+    }
+
     @ExceptionHandler(ActivityNotFoundException.class)
     public ResponseEntity<ResponseTO> handleActivityNotFound(ActivityNotFoundException ex) {
         return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
@@ -54,5 +60,15 @@ public class OrganizationExceptionHandler {
     @ExceptionHandler(OrganizationAuthorizationException.class)
     public ResponseEntity<ResponseTO> handleOrganizationAuthorizationException(OrganizationAuthorizationException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponseTO(ex.getMessage()));
+    }
+
+    @ExceptionHandler(LastManagerException.class)
+    public ResponseEntity<ResponseTO> handleLastManager(LastManagerException ex) {
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
+    }
+
+    @ExceptionHandler(PersonAlreadyHasTargetRoleException.class)
+    public ResponseEntity<ResponseTO> handlePersonAlreadyHasTargetRole(PersonAlreadyHasTargetRoleException ex) {
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
     }
 }

@@ -21,6 +21,8 @@ public interface KollappUserService {
 
     void register(String username, String email, String password);
 
+    void resendConfirmationMail(String email);
+
     KollappUser updateKollappUser(@Nullable String username, @Nullable String email);
 
     void deleteKollappUser();

@@ -52,4 +52,11 @@ public class UnauthorizedKollappUserController {
         kollappUserService.register(signUpRequest.getUsername(), signUpRequest.getEmail(), signUpRequest.getPassword());
         return ResponseEntity.ok(new MessageResponseTO("success.registration", messageSource));
     }
+
+    @PostMapping("/resend-confirmation")
+    public ResponseEntity<MessageResponseTO> resendConfirmation(@Valid @RequestBody
+                                                                    ResendConfirmationRequestTO resendConfirmationTo) {
+        kollappUserService.resendConfirmationMail(resendConfirmationTo.getEmail());
+        return ResponseEntity.ok(new MessageResponseTO("success.email.confirmation-resent", messageSource));
+    }
 }
