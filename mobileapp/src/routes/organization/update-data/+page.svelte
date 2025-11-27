@@ -34,7 +34,6 @@
 			name: $organizationStore!.name,
 			place: $organizationStore!.place
 		},
-		onChange: ({ value }) => console.log('changed', value),
 		onTouched: () => (touched = true),
 		request: async (model) => organizationService.update($organizationStore?.id!, model),
 		schema: updateOrganizationSchema()

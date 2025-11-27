@@ -235,5 +235,5 @@
 		{/if}
 	</div>
 {:else}
-	<div class="text-medium mt-5 text-center"><ion-note>No budget postings available.</ion-note></div>
+	<div class="text-medium mt-5 text-center"><ion-note>No postings found.</ion-note></div>
 {/if}

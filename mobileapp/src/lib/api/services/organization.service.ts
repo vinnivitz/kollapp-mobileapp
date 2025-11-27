@@ -69,28 +69,28 @@ class OrganizationResource {
 
 	/**
 	 * Removes user from the organization.
-	 * @param userId The user id.
+	 * @param personOfOrganizationId The id of the person of organization.
 	 * @returns {Promise<ResponseBody<OrganizationTO>>} The response body.
 	 */
-	async removeUser(organizationId: number, userId: number): Promise<ResponseBody<OrganizationTO>> {
-		return customFetch(`${this.ENDPOINT}/${organizationId}/person/${userId}`, {
+	async removeUser(organizationId: number, personOfOrganizationId: number): Promise<ResponseBody<OrganizationTO>> {
+		return customFetch(`${this.ENDPOINT}/${organizationId}/person/${personOfOrganizationId}`, {
 			method: RequestMethod.DELETE
 		});
 	}
 
 	/**
 	 * Grants a organization a role in the organization.
-	 * @param userId The user id.
+	 * @param personOfOrganizationId The id of the person of organization.
 	 * @param organizationId The organization id.
 	 * @param role The role to grant.
 	 * @returns {Promise<ResponseBody<OrganizationTO>>} The response body.
 	 */
 	async grantRole(
-		userId: number,
 		organizationId: number,
+		personOfOrganizationId: number,
 		role: OrganizationRole
 	): Promise<ResponseBody<OrganizationTO>> {
-		return customFetch(`${this.ENDPOINT}/${organizationId}/person/${userId}/grant-role`, {
+		return customFetch(`${this.ENDPOINT}/${organizationId}/person/${personOfOrganizationId}/grant-role`, {
 			body: { role },
 			method: RequestMethod.PATCH
 		});
@@ -129,6 +129,18 @@ class OrganizationResource {
 	async joinByInvitationCode(code: string): Promise<ResponseBody<OrganizationTO>> {
 		return customFetch(`${this.ENDPOINT}/invitation/${code}`, {
 			method: RequestMethod.POST
+		});
+	}
+
+	/**
+	 * Approves a user to join the organization.
+	 * @param organizationId The organization id.
+	 * @param userId The user id.
+	 * @returns {Promise<ResponseBody<OrganizationTO>>} The response body.
+	 */
+	async approveUser(organizationId: number, userId: number): Promise<ResponseBody<OrganizationTO>> {
+		return customFetch(`${this.ENDPOINT}/${organizationId}/person/${userId}/approve`, {
+			method: RequestMethod.PATCH
 		});
 	}
 }

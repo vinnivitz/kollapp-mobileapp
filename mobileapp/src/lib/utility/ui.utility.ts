@@ -1,3 +1,4 @@
+import type { OrganizationRole } from '@kollapp/api-types';
 import type { AnyObject, ObjectSchema } from 'yup';
 
 import { type Locale as DateFnsLocale, de, enUS } from 'date-fns/locale';
@@ -26,6 +27,25 @@ export function clickableElement(node: HTMLElement, callback: () => void): { des
 			node.removeEventListener('click', onClick);
 		}
 	};
+}
+
+/**
+ * Gets the role translation from the organization role
+ * @param role organization role
+ * @returns {string} role translation
+ */
+export function getRoleTranslationFromRole(role: OrganizationRole): string {
+	switch (role) {
+		case 'ROLE_ORGANIZATION_MANAGER': {
+			return 'Manager';
+		}
+		case 'ROLE_ORGANIZATION_MEMBER': {
+			return 'Member';
+		}
+		default: {
+			return role;
+		}
+	}
 }
 
 /**

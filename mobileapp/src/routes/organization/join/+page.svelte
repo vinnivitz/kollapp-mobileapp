@@ -1,4 +1,7 @@
 <script lang="ts">
+	import type { JoinOrganizationTO } from '$lib/api/dtos';
+	import type { OrganizationTO } from '@kollapp/api-types';
+
 	import { CapacitorBarcodeScanner, CapacitorBarcodeScannerTypeHint } from '@capacitor/barcode-scanner';
 	import { Haptics } from '@capacitor/haptics';
 	import { alertController } from '@ionic/core';
@@ -18,8 +21,8 @@
 	import { organizationStore } from '$lib/stores';
 	import { customForm, showAlert, StatusCheck } from '$lib/utility';
 
-	const form = new Form({
-		completed: async () => goto(resolve('/organization')),
+	const form = new Form<JoinOrganizationTO, OrganizationTO>({
+		completed: async ({ response }) => await onCompleted(response),
 		request: async (model) => organizationService.joinByInvitationCode(model.code),
 		schema: joinOrganizationSchema()
 	});
@@ -32,15 +35,7 @@
 				const response = await organizationService.joinByInvitationCode(code);
 				if (StatusCheck.isOK(response.status)) {
 					await Haptics.vibrate({ duration: 1000 });
-					await organizationStore.update(response.data.id);
-					const alert = await alertController.create({
-						buttons: ['Ok'],
-						header: `Join request sent`,
-						message: `Your request to join ${response.data.name} has been sent. You will be notified once it is approved.`
-					});
-					await alert.present();
-					await alert.onDidDismiss();
-					return goto(resolve('/organization'));
+					await onCompleted(response.data);
 				}
 			} else {
 				await showAlert('QR code is not valid.');
@@ -49,6 +44,19 @@
 			console.error('Error scanning QR code:', error);
 			await showAlert('An error occurred while scanning the QR code. Please try again.');
 		}
+	}
+
+	async function onCompleted(organization: OrganizationTO): Promise<void> {
+		await organizationStore.init();
+		await organizationStore.update(organization.id);
+		const alert = await alertController.create({
+			buttons: ['Ok'],
+			header: `Join request sent`,
+			message: `Your request to join ${organization.name} has been sent. You will be notified once it is approved.`
+		});
+		await alert.present();
+		await alert.onDidDismiss();
+		return goto(resolve('/organization'));
 	}
 </script>
 

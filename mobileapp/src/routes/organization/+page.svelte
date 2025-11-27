@@ -25,11 +25,14 @@
 		flashOffOutline,
 		flashOutline,
 		listOutline,
+		locationOutline,
 		logOutOutline,
 		peopleOutline,
 		personAddOutline,
 		personOutline,
+		readerOutline,
 		refreshOutline,
+		ribbonOutline,
 		saveOutline,
 		swapHorizontalOutline,
 		trashBinOutline,
@@ -64,6 +67,7 @@
 		customForm,
 		formatter,
 		getDateFnsLocale,
+		getRoleTranslationFromRole,
 		getValidationResult,
 		hasOrganizationRole,
 		parser,
@@ -93,6 +97,9 @@
 		...($organizationStore?.activities.flatMap((activity) => activity.activityPostings) ?? [])
 	]);
 	const balance = $derived(calculateBalance(postings ?? []));
+	const organizationRole = $derived(
+		$organizationStore?.personsOfOrganization.find((person) => person.userId === $userStore?.id)?.organizationRole
+	);
 
 	let createPostingFormActions = $state<FormActions<PostingCreateUpdateRequestTO>>();
 	let updatePostingFormActions = $state<FormActions<PostingCreateUpdateRequestTO>>();
@@ -111,6 +118,7 @@
 
 	let selectedPosting = $state<PostingTO>();
 	let selectedPostingType = $state<PostingType>('DEBIT');
+	let descriptionExpanded = $state(false);
 
 	let fromFilterDate = $state(format(new TZDate(), 'yyyy-MM-dd'));
 	let toFilterDate = $state(format(new TZDate(), 'yyyy-MM-dd'));
@@ -285,8 +293,6 @@
 	}
 
 	async function onOrganizationSelect(): Promise<void> {
-		if ($organizations.length <= 1) return;
-
 		const actionSheet = await actionSheetController.create({
 			buttons: $organizations.map((organization) => ({
 				handler: () => organizationStore.update(organization.id),
@@ -454,9 +460,8 @@
 		{@render pendingOrganizationJoinRequestCard()}
 	{/if}
 	{#if $organizationStore}
-		{#if $organizationStore.activities.length > 0}
-			{@render changeCollective($organizationStore)}
-		{/if}
+		{@render collectiveName($organizationStore)}
+		{@render collectiveInfo()}
 		{@render budgetCard()}
 		{#if $organizationStore.activities.length > 0}
 			{@render upcomingEvent($organizationStore.activities)}
@@ -472,8 +477,13 @@
 <!-- Snippets -->
 
 {#snippet noCollectiveCard()}
-	<Card border="warning" classList="text-center">
-		<ion-note>You are not part of any collective.</ion-note>
+	<Card border="warning">
+		<div class="flex items-center justify-center gap-2">
+			<ion-avatar class="flex items-center justify-center">
+				<ion-icon color="warning" icon={warningOutline} size="large"></ion-icon>
+			</ion-avatar>
+			<ion-note>You are not part of any collective.</ion-note>
+		</div>
 	</Card>
 {/snippet}
 
@@ -523,20 +533,36 @@
 	</ion-list>
 {/snippet}
 
-{#snippet changeCollective(model: OrganizationTO)}
-	<Card
-		color="transparent"
-		id={$t('routes.organization.change-organization.action-sheet.title')}
-		icon={swapHorizontalOutline}
-		clicked={onOrganizationSelect}
-		indexed="/organization"
-		readonly={$organizations.length === 1}
-	>
-		<div class="flex items-center justify-center gap-4 text-2xl">
-			<ion-text color="dark">{model.name}</ion-text>
-			{#if $organizations.length > 1}
-				<ion-icon color="secondary" icon={swapHorizontalOutline}></ion-icon>
-			{/if}
+{#snippet collectiveName(model: OrganizationTO)}
+	<div class="flex items-center justify-center gap-4 text-2xl">
+		<ion-text class="font-bold">{model.name}</ion-text>
+		{#if $organizations.length > 1}
+			<Button fill="outline" clicked={onOrganizationSelect} icon={swapHorizontalOutline} />
+		{/if}
+	</div>
+{/snippet}
+
+{#snippet collectiveInfo()}
+	<Card classList="text-center cursor-pointer" clicked={() => (descriptionExpanded = !descriptionExpanded)}>
+		<div class="flex flex-col items-center justify-center gap-3">
+			<div class="flex w-full flex-row items-start justify-center gap-1">
+				<ion-icon icon={readerOutline} class="mt-1 shrink-0" class:hidden={descriptionExpanded}></ion-icon>
+				<ion-note
+					class:max-h-screen={descriptionExpanded}
+					class:whitespace-pre-line={descriptionExpanded}
+					class="max-h-6 overflow-hidden text-ellipsis whitespace-nowrap transition-all duration-500 ease-in-out"
+				>
+					{$organizationStore?.description}
+				</ion-note>
+			</div>
+			<div class="flex flex-row items-center justify-center gap-1">
+				<ion-icon icon={locationOutline}></ion-icon>
+				<ion-note>{$organizationStore?.place}</ion-note>
+			</div>
+		</div>
+		<div class="mt-3 flex flex-row items-center justify-center gap-1">
+			<ion-icon icon={ribbonOutline}></ion-icon>
+			<ion-text color="dark">You are a <span class="">{getRoleTranslationFromRole(organizationRole!)}</span></ion-text>
 		</div>
 	</Card>
 {/snippet}
@@ -557,6 +583,14 @@
 				clicked={() => goto(resolve('/organization/update-data'))}
 				icon={buildOutline}
 				label={$t('routes.organization.list.update-info.update-info')}
+			/>
+		{/if}
+		{#if $organizations.length > 1}
+			<LabeledItem
+				indexed="/organization"
+				clicked={onOrganizationSelect}
+				icon={swapHorizontalOutline}
+				label="Change collective"
 			/>
 		{/if}
 		<LabeledItem
@@ -910,7 +944,6 @@
 	<ion-searchbar class="w-full" debounce={100} placeholder="Search activities..." onionInput={onSearchActivities}>
 	</ion-searchbar>
 	<ion-radio-group value={selectedActivityId}>
-		{console.log('selected activity id:', selectedActivityId)}
 		{#each filteredActivityFilterItems as activity (activity.data.id)}
 			<CustomItem>
 				<!-- svelte-ignore a11y_click_events_have_key_events -->

@@ -259,7 +259,7 @@ async function getResponseBody<T>(
 }
 
 function hasRequestBody(method: RequestMethod): boolean {
-	return method === RequestMethod.POST || method === RequestMethod.PUT;
+	return method === RequestMethod.POST || method === RequestMethod.PUT || method === RequestMethod.PATCH;
 }
 
 async function getEnhancedUrl(url: string, query: Record<string, string> | undefined): Promise<string> {

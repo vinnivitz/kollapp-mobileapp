@@ -11,6 +11,7 @@
 		flashOutline,
 		notificationsOffOutline,
 		peopleOutline,
+		personAddOutline,
 		warningOutline
 	} from 'ionicons/icons';
 
@@ -66,9 +67,9 @@
 <!-- Snippets -->
 
 {#snippet accountCard(user: KollappUserTO)}
-	<Card color="transparent" classList="text-center" clicked={() => goto(resolve('/account'))}>
+	<div class="text-center">
 		<div class="truncate">
-			<ion-text class="text-2xl" color="dark">
+			<ion-text class="text-2xl font-bold">
 				{$t('routes.home.card.user.title', { value: user.username })}
 			</ion-text>
 		</div>
@@ -80,7 +81,7 @@
 			label={$t('routes.home.card.notifications.no-notes')}
 			clicked={() => goto(resolve('/account/notifications'))}
 		/>
-	</Card>
+	</div>
 {/snippet}
 
 {#snippet upcomingEventCard(activity: ActivityModel)}
@@ -146,7 +147,7 @@
 			<Button
 				expand="block"
 				clicked={() => goto(resolve('/organization/join'))}
-				icon={accessibilityOutline}
+				icon={personAddOutline}
 				iconEnd={arrowForwardOutline}
 				label={$t('routes.home.card.organization.join')}
 			/>

@@ -20,7 +20,7 @@
 
 	const isLastMember = $derived($organizationStore?.personsOfOrganization.length === 1);
 
-	async function onLeaveOrganization(): Promise<void> {
+	async function onLeaveOrganizationPrompt(): Promise<void> {
 		const alert = await alertController.create({
 			buttons: [
 				{ role: 'cancel', text: 'Cancel' },
@@ -54,7 +54,7 @@
 				expand="block"
 				label={$t('routes.organization.page.leave.card.button')}
 				icon={trashOutline}
-				clicked={onLeaveOrganization}
+				clicked={onLeaveOrganizationPrompt}
 			/>
 			<ion-text>{$t('routes.organization.page.leave.card.note')}</ion-text>
 		</div>

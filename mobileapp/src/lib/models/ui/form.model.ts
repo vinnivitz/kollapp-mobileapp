@@ -49,7 +49,7 @@ export type FormConfig<T, R> = {
 /**
  * Custom form class that can be used to create forms with validation and feedback.
  */
-export class Form<T, R> extends AbstractForm<T, R> {
+export class Form<T, R = unknown> extends AbstractForm<T, R> {
 	model: T;
 	config: FormConfig<T, R>;
 

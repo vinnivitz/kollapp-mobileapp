@@ -4,12 +4,13 @@
 	import { Clipboard } from '@capacitor/clipboard';
 	import { Share } from '@capacitor/share';
 	import { TZDate } from '@date-fns/tz';
-	import { actionSheetController } from '@ionic/core';
+	import { actionSheetController, alertController } from '@ionic/core';
 	import QRCode from '@svelte-put/qr/svg/QR.svelte';
 	import { EmailComposer } from 'capacitor-email-composer';
 	import { formatDistanceToNow } from 'date-fns';
 	import {
 		accessibilityOutline,
+		checkmarkOutline,
 		clipboardOutline,
 		logOutOutline,
 		mailOutline,
@@ -21,7 +22,8 @@
 		qrCodeOutline,
 		refreshCircleOutline,
 		ribbonOutline,
-		shareOutline
+		shareOutline,
+		trashOutline
 	} from 'ionicons/icons';
 	import { SvelteMap } from 'svelte/reactivity';
 	import { fade } from 'svelte/transition';
@@ -34,40 +36,93 @@
 	import FabButton from '$lib/components/widgets/ionic/FabButton.svelte';
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
 	import Popover from '$lib/components/widgets/ionic/Popover.svelte';
+	import environment from '$lib/environment';
 	import { t } from '$lib/locales';
 	import { AlertType, type ItemSlidingOption } from '$lib/models/ui';
 	import { localeStore, organizationStore, userStore } from '$lib/stores';
-	import { getDateFnsLocale, hasOrganizationRole, showAlert, StatusCheck } from '$lib/utility';
+	import {
+		getDateFnsLocale,
+		getRoleTranslationFromRole,
+		hasOrganizationRole,
+		showAlert,
+		StatusCheck
+	} from '$lib/utility';
 
 	let invitationCodeModalOpen = $state(false);
 	let qrModalOpen = $state(false);
-
-	function getSlidingOptions(member: PersonOfOrganizationTO): ItemSlidingOption[] {
-		return [
-			{ color: 'tertiary', handler: () => onSelectRole(member), icon: ribbonOutline },
-			{ color: 'danger', handler: () => onRemoveUser(member.id), icon: logOutOutline }
-		];
-	}
 
 	const userId = $derived($userStore?.id);
 
 	const invitationCodeExpiration = $derived(
 		new TZDate($organizationStore?.organizationInvitationCode.expirationDate ?? '')
 	);
-	const inviationCode = $derived($organizationStore?.organizationInvitationCode.code ?? '');
+	const invitationCode = $derived($organizationStore?.organizationInvitationCode.code ?? '');
 
 	const members = $derived(
 		($organizationStore?.personsOfOrganization ?? [])
 			.toSorted((a, b) => a.username.localeCompare(b.username))
-			.filter((member) => member.userId !== userId)
+			.filter((member) => member.userId !== userId && member.status === 'APPROVED')
+	);
+
+	const pendingMembers = $derived(
+		($organizationStore?.personsOfOrganization ?? []).filter((member) => member.status === 'PENDING')
 	);
 
 	const memberGroups = $derived(getGroupedMembers(members));
 
-	async function onRemoveUser(userId: number): Promise<void> {
+	const isExpired = $derived(invitationCodeExpiration.getTime() <= Date.now());
+
+	function getMemberSlidingOptions(member: PersonOfOrganizationTO): ItemSlidingOption[] {
+		return [
+			{ color: 'tertiary', handler: () => onSelectRole(member), icon: ribbonOutline },
+			{ color: 'danger', handler: () => onRemoveUserPrompt(member.id), icon: logOutOutline }
+		];
+	}
+
+	function getPendingMemberSlidingOptions(member: PersonOfOrganizationTO): ItemSlidingOption[] {
+		return [
+			{ color: 'success', handler: () => onApproveUserPrompt(member.id), icon: checkmarkOutline },
+			{ color: 'danger', handler: () => onRemoveUserPrompt(member.id), icon: trashOutline }
+		];
+	}
+
+	async function onApproveUserPrompt(memberId: number): Promise<void> {
+		const alert = await alertController.create({
+			buttons: [
+				{ role: 'cancel', text: 'Cancel' },
+				{ handler: async () => await approveUser(memberId), text: 'Approve' }
+			],
+			header: `Approve member?`,
+			message: `User will be granted access to the collective.`
+		});
+		await alert.present();
+	}
+
+	async function onRemoveUserPrompt(memberId: number): Promise<void> {
+		const alert = await alertController.create({
+			buttons: [
+				{ role: 'cancel', text: 'Cancel' },
+				{ handler: async () => await removeUser(memberId), text: 'Remove' }
+			],
+			header: `Are you sure?`,
+			message: `User will be removed from the collective.`
+		});
+		await alert.present();
+	}
+
+	async function approveUser(memberId: number): Promise<void> {
 		const organizationId = $organizationStore?.id;
 		if (!organizationId) return;
-		const response = await organizationService.removeUser(organizationId, userId);
+		const response = await organizationService.approveUser(organizationId, memberId);
+		if (StatusCheck.isOK(response.status)) {
+			await organizationStore.update(organizationId);
+		}
+	}
+
+	async function removeUser(memberId: number): Promise<void> {
+		const organizationId = $organizationStore?.id;
+		if (!organizationId) return;
+		const response = await organizationService.removeUser(organizationId, memberId);
 		if (StatusCheck.isOK(response.status)) {
 			await organizationStore.update(organizationId);
 		}
@@ -78,13 +133,13 @@
 		const actionsheet = await actionSheetController.create({
 			buttons: [
 				{
-					handler: () => grantOrganizationRole(member.id, organizationId, 'ROLE_ORGANIZATION_MANAGER'),
+					handler: () => onGrantOrganizationRolePrompt(member.id, organizationId, 'ROLE_ORGANIZATION_MANAGER'),
 					icon: medalOutline,
 					role: member.organizationRole === 'ROLE_ORGANIZATION_MANAGER' ? 'selected' : undefined,
 					text: $t('routes.organization.page.members.select-user-role.role.manager')
 				},
 				{
-					handler: () => grantOrganizationRole(member.id, organizationId, 'ROLE_ORGANIZATION_MEMBER'),
+					handler: () => onGrantOrganizationRolePrompt(member.id, organizationId, 'ROLE_ORGANIZATION_MEMBER'),
 					icon: personOutline,
 					role: member.organizationRole === 'ROLE_ORGANIZATION_MEMBER' ? 'selected' : undefined,
 					text: $t('routes.organization.page.members.select-user-role.role.user')
@@ -96,8 +151,31 @@
 		await actionsheet.present();
 	}
 
-	async function grantOrganizationRole(userId: number, organizationId: number, role: OrganizationRole): Promise<void> {
-		await organizationService.grantRole(userId, organizationId, role);
+	async function onGrantOrganizationRolePrompt(
+		memberId: number,
+		organizationId: number,
+		role: OrganizationRole
+	): Promise<void> {
+		if (role === members.find((member) => member.id === memberId)?.organizationRole) {
+			return;
+		}
+		const alert = await alertController.create({
+			buttons: [
+				{ role: 'cancel', text: 'Cancel' },
+				{ handler: async () => await grantOrganizationRole(memberId, organizationId, role), text: 'Confirm' }
+			],
+			header: `Change user role?`,
+			message: `User will be granted the role of ${getRoleTranslationFromRole(role)}.`
+		});
+		await alert.present();
+	}
+
+	async function grantOrganizationRole(
+		memberId: number,
+		organizationId: number,
+		role: OrganizationRole
+	): Promise<void> {
+		await organizationService.grantRole(organizationId, memberId, role);
 	}
 
 	function getGroupedMembers(members: PersonOfOrganizationTO[]): [string, PersonOfOrganizationTO[]][] {
@@ -128,8 +206,8 @@
 			const organizationCode = $organizationStore?.organizationInvitationCode.code;
 			await Share.share({
 				text: `Join ${organizationName} using this invitation code: ${organizationCode}`,
-				title: `Invite to join ${organizationName} on Kollapp!`,
-				url: `https://api.kollapp.org/api/organization/invitation/${organizationCode}`
+				title: `Join ${organizationName} on Kollapp!`,
+				url: `${environment.apiUrl}/organization/invitation/${organizationCode}`
 			});
 		} else {
 			await showAlert($t('routes.organization.page.members.share.not-supported'));
@@ -172,36 +250,61 @@
 		<FabButton label="Invite member" icon={personAddOutline} clicked={() => (invitationCodeModalOpen = true)} />
 	{/if}
 
-	{#if members.length === 0}
-		<div class="mt-5 flex flex-col items-center justify-center gap-5">
-			<ion-note>No other members found.</ion-note>
-			<Button icon={personAddOutline} label="Invite person" clicked={() => (invitationCodeModalOpen = true)} />
-		</div>
-	{:else}
-		<ion-list in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
-			{#each memberGroups as [letter, memberGroup] (letter)}
-				<ion-item-group>
-					<ion-item-divider class="bg-transparent">
-						<ion-label>{letter}</ion-label>
-					</ion-item-divider>
-
-					{#each memberGroup as member (member.id)}
-						{@render memberItem(member)}
-					{/each}
-				</ion-item-group>
+	{#if pendingMembers.length > 0}
+		<Card title="Pending members" border="secondary" classList="mt-5">
+			{#each pendingMembers as member (member.id)}
+				{@render pendingMemberItem(member)}
 			{/each}
-		</ion-list>
+		</Card>
+	{/if}
+
+	{#if members.length === 0}
+		{@render noMembers()}
+	{:else}
+		{@render memberList()}
 	{/if}
 </Layout>
 
 <!-- Snippets-->
 
+{#snippet noMembers()}
+	<div class="mt-5 flex flex-col items-center justify-center gap-5">
+		<ion-note>No other members found.</ion-note>
+		<Button icon={personAddOutline} label="Invite person" clicked={() => (invitationCodeModalOpen = true)} />
+	</div>
+{/snippet}
+
+{#snippet memberList()}
+	<ion-list in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
+		{#each memberGroups as [letter, memberGroup] (letter)}
+			<ion-item-group>
+				<ion-item-divider class="bg-transparent">
+					<ion-label>{letter}</ion-label>
+				</ion-item-divider>
+
+				{#each memberGroup as member (member.id)}
+					{@render memberItem(member)}
+				{/each}
+			</ion-item-group>
+		{/each}
+	</ion-list>
+{/snippet}
+
 {#snippet memberItem(member: PersonOfOrganizationTO)}
-	<CustomItem slidingOptions={getSlidingOptions(member)}>
-		<ion-avatar class="mb-1">
+	<CustomItem slidingOptions={getMemberSlidingOptions(member)}>
+		<ion-avatar class="mb-2">
 			<ion-icon icon={personCircleOutline} class="h-10 w-10" color="medium"></ion-icon>
 		</ion-avatar>
 		<ion-label class="ms-6">{member.username}</ion-label>
+	</CustomItem>
+{/snippet}
+
+{#snippet pendingMemberItem(member: PersonOfOrganizationTO)}
+	<CustomItem slidingOptions={getPendingMemberSlidingOptions(member)}>
+		<ion-avatar class="mb-2">
+			<ion-icon icon={personCircleOutline} class="h-10 w-10" color="medium"></ion-icon>
+		</ion-avatar>
+		<ion-label class="my-0 ms-6">{member.username}</ion-label>
 	</CustomItem>
 {/snippet}
 
@@ -213,11 +316,11 @@
 		<div class="flex flex-col">
 			<div class="mx-12 rounded border border-(--ion-color-primary) p-2 text-center font-extrabold">
 				<ion-note color="tertiary" class="text-2xl">
-					{inviationCode.toUpperCase()}
+					{invitationCode.toUpperCase()}
 				</ion-note>
 			</div>
 			<div class="mt-2 text-center">
-				{#if invitationCodeExpiration.getTime() <= Date.now()}
+				{#if isExpired}
 					<ion-note color="danger">
 						{$t('routes.organization.page.members.modal.invitation-code.is-expired')}
 					</ion-note>
@@ -233,10 +336,10 @@
 				{/if}
 			</div>
 			<div class="mx-14 mt-2 flex items-center justify-between gap-2">
-				<Button shape="round" icon={shareOutline} clicked={onShare}></Button>
-				<Button shape="round" icon={clipboardOutline} clicked={onWriteToClipboard}></Button>
-				<Button shape="round" icon={mailOutline} clicked={onSendMail}></Button>
-				<Button shape="round" icon={qrCode} clicked={showQRCode}></Button>
+				<Button disabled={isExpired} shape="round" icon={shareOutline} clicked={onShare}></Button>
+				<Button disabled={isExpired} shape="round" icon={clipboardOutline} clicked={onWriteToClipboard}></Button>
+				<Button disabled={isExpired} shape="round" icon={mailOutline} clicked={onSendMail}></Button>
+				<Button disabled={isExpired} shape="round" icon={qrCode} clicked={showQRCode}></Button>
 			</div>
 			<Button
 				icon={refreshCircleOutline}

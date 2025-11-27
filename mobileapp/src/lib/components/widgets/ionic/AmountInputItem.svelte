@@ -548,7 +548,6 @@
 			helper-text={helperText}
 			value={plain}
 			onfocus={async () => {
-				console.log('focus');
 				const inputElement = await element?.getInputElement();
 				if (inputElement) setCaretScripted(inputElement);
 			}}
