@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+.output/
+.vercel/
+.svelte-kit/
+build/
+dist/
+docs/
+visualize/
+
+# Testing
+test-results/
+coverage/
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*

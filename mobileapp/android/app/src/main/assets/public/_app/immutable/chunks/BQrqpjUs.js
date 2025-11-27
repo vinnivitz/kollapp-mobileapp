@@ -1,0 +1,1 @@
+import{b2 as s,b3 as n}from"./Cxs3aTIT.js";var i=(r=>(r.EUR="EUR",r))(i||{});function f(r,a,e){const t=s(r,e?.in);return isNaN(a)?n(e?.in||r,NaN):(a&&t.setDate(t.getDate()+a),t)}export{i as C,f as a};

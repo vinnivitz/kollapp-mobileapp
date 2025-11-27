@@ -33,4 +33,4 @@ jobs:
           context: ./mobileapp
           platforms: linux/amd64
           push: true
-          tags: registry.kollapp.org/mobileapp:latest
+          tags: registry.kollapp.org/kollapp/mobileapp:latest

@@ -1,4 +1,7 @@
 jqassistant:
+  maven:
+    module:
+      skip: true
   plugins:
     - group-id: org.jqassistant.plugin
       artifact-id: jqassistant-jmolecules-plugin
