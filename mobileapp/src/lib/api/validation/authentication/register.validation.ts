@@ -16,20 +16,20 @@ export const registerSchema = (): ObjectSchema<KollappUserSignupRequestTO & { co
 		email: string()
 			.default('')
 			.trim()
-			.email($t('api.dto.register.schema.validation.email.email'))
-			.max(50, $t('api.dto.register.schema.validation.email.max'))
-			.required($t('api.dto.register.schema.validation.email.required')),
+			.email($t('email-is-invalid'))
+			.max(50, $t('api.validation.email.max'))
+			.required($t('api.validation.email.required')),
 		password: string()
 			.default('')
-			.min(8, $t('api.dto.register.schema.validation.password.min'))
-			.max(255, $t('api.dto.register.schema.validation.password.max'))
-			.matches(/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, $t('api.dto.register.schema.validation.password.matches'))
-			.required($t('api.dto.register.schema.validation.password.required')),
+			.min(8, $t('api.validation.password.min'))
+			.max(255, $t('api.validation.password.max'))
+			.matches(/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, $t('api.validation.password.pattern'))
+			.required($t('api.validation.password.required')),
 		username: string()
 			.default('')
 			.trim()
-			.min(2, $t('api.dto.register.schema.validation.username.min'))
-			.max(255, $t('api.dto.register.schema.validation.username.max'))
-			.required($t('api.dto.register.schema.validation.username.required'))
+			.min(2, $t('api.validation.username.min'))
+			.max(20, $t('api.validation.username.max'))
+			.required($t('api.validation.username.required'))
 	} satisfies Record<keyof KollappUserSignupRequestTO & { confirmPassword: string }, AnyObject>);
 };

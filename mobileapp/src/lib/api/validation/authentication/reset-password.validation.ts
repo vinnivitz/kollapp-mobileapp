@@ -15,9 +15,9 @@ export const resetPasswordSchema = (): ObjectSchema<ResetPasswordRequestTO & { c
 		confirmPassword: string().default(''),
 		password: string()
 			.default('')
-			.min(8, $t('api.dto.reset-password.schema.validation.newPassword.min'))
-			.max(255, $t('api.dto.reset-password.schema.validation.newPassword.max'))
-			.matches(/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, $t('api.dto.reset-password.schema.validation.newPassword.matches'))
-			.required($t('api.dto.reset-password.schema.validation.newPassword.required'))
+			.min(8, $t('api.validation.password.min'))
+			.max(255, $t('api.validation.password.max'))
+			.matches(/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, $t('api.validation.password.pattern'))
+			.required($t('api.validation.password.required'))
 	} satisfies Record<keyof ResetPasswordRequestTO & { confirmPassword: string }, AnyObject>);
 };

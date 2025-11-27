@@ -18,12 +18,12 @@ export const createPostingSchema = (): ObjectSchema<PostingCreateUpdateRequestTO
 	return object({
 		amountInCents: number()
 			.default(0)
-			.min(1, $t('api.dto.budget.create-posting.schema.amount.min'))
-			.max(10_000_000, $t('api.dto.budget.create-posting.schema.amount.max'))
-			.required($t('api.dto.budget.create-posting.schema.amount.required')),
+			.min(1, $t('api.validation.amount.min'))
+			.max(10_000_000, $t('api.validation.amount.max'))
+			.required($t('api.validation.amount.required')),
 		date: string()
 			.default(format(new TZDate(), 'yyyy-MM-dd'))
-			.required($t('api.dto.budget.create-posting.schema.date.required')),
+			.required($t('api.validation.date.required')),
 		purpose: string()
 			.default('')
 			.trim()
