@@ -46,7 +46,7 @@
                                 </goals>
                                 <phase>install</phase>
                                 <configuration>
-                                    <arguments>publish --registry ${npm.registry} --tag snapshot</arguments>
+                                    <arguments>publish --registry ${npm.registry}</arguments>
                                 </configuration>
                             </execution>
                         </executions>
