@@ -14,7 +14,7 @@
     <description>Kollapp Backend API</description>
 
     <properties>
-        <npm.registry>https://npm.kollapp.org</npm.registry>
+        <npm.registry>https://nexus.kollapp.org/repository/npm</npm.registry>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <frontend-maven-plugin.version>1.15.4</frontend-maven-plugin.version>
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
@@ -46,7 +46,7 @@
                                 </goals>
                                 <phase>install</phase>
                                 <configuration>
-                                    <arguments>publish --registry ${npm.registry}</arguments>
+                                    <arguments>publish --registry ${npm.registry} --tag snapshot</arguments>
                                 </configuration>
                             </execution>
                         </executions>
