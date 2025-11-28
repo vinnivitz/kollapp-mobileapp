@@ -1,0 +1,43 @@
+package org.kollapp;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+
+import org.kollapp.core.config.properties.ApplicationProperties;
+
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+
+@SpringBootApplication
+public class KollappApplication {
+    @Autowired
+    private ApplicationProperties applicationProperties;
+
+    /** Main method to run the Spring Boot application. */
+    public static void main(String[] args) {
+        SpringApplication.run(KollappApplication.class, args);
+    }
+
+    /** Configure OpenAPI documentation with a bearer token security scheme. */
+    @Bean
+    OpenAPI openAPI() {
+        return new OpenAPI()
+                .info(new Info()
+                        .title("Kollapp Backend API")
+                        .description("API Documentation for Kollapp Backend")
+                        .version(applicationProperties.getVersion()))
+                .addSecurityItem(new SecurityRequirement().addList("bearer-key"))
+                .components(new Components()
+                        .addSecuritySchemes(
+                                "bearer-key",
+                                new SecurityScheme()
+                                        .type(SecurityScheme.Type.HTTP)
+                                        .scheme("bearer")
+                                        .bearerFormat("JWT")));
+    }
+}

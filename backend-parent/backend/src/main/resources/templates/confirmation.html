@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
+
 <head>
+    <title th:text="${title}">Account Confirmation</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -50,14 +52,16 @@
         }
     </style>
 </head>
+
 <body>
-<div class="container">
-    <div class="logo">
-        <img alt="Kollapp Logo" th:src="${logoUrl}" width="120"/>
+    <div class="container">
+        <div class="logo">
+            <img alt="Kollapp Logo" th:src="${logoUrl}" width="120" />
+        </div>
+        <h1 th:text="${title}">Welcome to Kollapp</h1>
+        <p th:text="${text}">Finish your registration by clicking the button below.</p>
+        <a class="button" th:href="${confirmationUrl}" th:text="${button}">Confirm registration</a>
     </div>
-    <h1 th:text="${title}">Welcome to Kollapp</h1>
-    <p th:text="${text}">Finish your registration by clicking the button below.</p>
-    <a class="button" th:href="${confirmationUrl}" th:text="${button}">Confirm registration</a>
-</div>
 </body>
+
 </html>

@@ -1,3 +1,6 @@
+# Generated TypeScript files
 ts/package.json
 ts/index.d.ts
+
+# Maven
 target/

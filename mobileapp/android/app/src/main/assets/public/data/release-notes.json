@@ -1,0 +1,11 @@
+[
+	{
+		"version": "1.0.0",
+		"date": "2025-06-13",
+		"changes": [
+			"Added organization and activities management features.",
+			"Implemented user authentication and account settings.",
+			"Introduced privacy and security settings with biometrical login."
+		]
+	}
+]
