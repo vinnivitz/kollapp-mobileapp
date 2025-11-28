@@ -15,7 +15,7 @@ export const forgotPasswordSchema = (): ObjectSchema<ForgotPasswordRequestTO> =>
 		email: string()
 			.default('')
 			.trim()
-			.email($t('api.validation.email.invalid'))
-			.required($t('api.validation.email.required'))
+			.email($t('api.validation.authentication.forgot-password.email.invalid'))
+			.required($t('api.validation.authentication.forgot-password.email.required'))
 	} satisfies Record<keyof ForgotPasswordRequestTO, AnyObject>);
 };

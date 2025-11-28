@@ -16,14 +16,14 @@ export const updateUserDataSchema = (): ObjectSchema<KollappUserUpdateRequestTO>
 		email: string()
 			.default('')
 			.trim()
-			.email($t('api.dto.register.schema.validation.email.email'))
-			.max(50, $t('api.dto.register.schema.validation.email.max'))
-			.required($t('api.dto.register.schema.validation.email.required')),
+			.email($t('api.validation.user.update-user-data.email.invalid'))
+			.max(50, $t('api.validation.user.update-user-data.email.max'))
+			.required($t('api.validation.user.update-user-data.email.required')),
 		username: string()
 			.default('')
 			.trim()
-			.min(2, $t('api.dto.register.schema.validation.username.min'))
-			.max(255, $t('api.dto.register.schema.validation.username.max'))
-			.required($t('api.dto.register.schema.validation.username.required'))
+			.min(2, $t('api.validation.user.update-user-data.username.min'))
+			.max(50, $t('api.validation.user.update-user-data.username.max'))
+			.required($t('api.validation.user.update-user-data.username.required'))
 	} satisfies Record<keyof KollappUserUpdateRequestTO, AnySchema>);
 };

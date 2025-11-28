@@ -15,17 +15,17 @@ export const updateOrganizationSchema = (): ObjectSchema<OrganizationUpdateReque
 		description: string()
 			.default('')
 			.trim()
-			.max(500, $t('api.dto.update-organization.schema.validation.description.max'))
+			.max(500, $t('api.validation.organization.update-organization.description.max'))
 			.optional(),
 		name: string()
 			.default('')
 			.trim()
-			.max(50, $t('api.dto.update-organization.schema.validation.name.max'))
-			.required($t('api.dto.update-organization.schema.validation.name.required')),
+			.max(50, $t('api.validation.organization.update-organization.name.max'))
+			.required($t('api.validation.organization.update-organization.name.required')),
 		place: string()
 			.default('')
 			.trim()
-			.max(50, $t('api.dto.update-organization.schema.validation.place.max'))
-			.required($t('api.dto.update-organization.schema.validation.place.required'))
+			.max(50, $t('api.validation.organization.update-organization.place.max'))
+			.required($t('api.validation.organization.update-organization.place.required'))
 	} satisfies Record<keyof OrganizationUpdateRequestTO, AnyObject>);
 };

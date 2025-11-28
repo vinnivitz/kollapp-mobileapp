@@ -15,17 +15,17 @@ export const createOrganizationSchema = (): ObjectSchema<OrganizationCreationReq
 		description: string()
 			.default('')
 			.trim()
-			.max(500, $t('api.dto.register-organization.schema.validation.description.max'))
+			.max(500, $t('api.validation.organization.create-organization.description.max'))
 			.optional(),
 		name: string()
 			.default('')
 			.trim()
-			.max(50, $t('api.dto.register-organization.schema.validation.name.max'))
-			.required($t('api.dto.register-organization.schema.validation.name.required')),
+			.max(50, $t('api.validation.organization.create-organization.name.max'))
+			.required($t('api.validation.organization.create-organization.name.required')),
 		place: string()
 			.default('')
 			.trim()
-			.max(50, $t('api.dto.register-organization.schema.validation.place.max'))
-			.required($t('api.dto.register-organization.schema.validation.place.required'))
+			.max(50, $t('api.validation.organization.create-organization.place.max'))
+			.required($t('api.validation.organization.create-organization.place.required'))
 	} satisfies Record<keyof OrganizationCreationRequestTO, AnyObject>);
 };

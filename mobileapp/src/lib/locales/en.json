@@ -1,1 +1,180 @@
-{}
+{
+  "api": {
+    "validation": {
+      "authentication": {
+        "forgot-password": {
+          "email": {
+            "invalid": "Email is not valid",
+            "required": "Email is required"
+          }
+        },
+        "login": {
+          "password": {
+            "required": "Password is required"
+          },
+          "username": {
+            "required": "Username is required"
+          }
+        },
+        "register": {
+          "email": {
+            "invalid": "Email is invalid",
+            "max": "Email exceeds maximum length of 50 characters",
+            "required": "Email is required"
+          },
+          "password": {
+            "min": "Password must be at least 8 characters long",
+            "max": "Password exceed maximum length of 255 characters",
+            "pattern": "Password has to contain at least a number and an uppercase letter",
+            "required": "Password is required"
+          },
+          "username": {
+            "min": "Username must be at least two characters long",
+            "max": "Username exceeds maximum length of 20 characters",
+            "required": "Username is required"
+          }
+        },
+        "resend-confirmation": {
+          "email": {
+            "invalid": "Email is invalid",
+            "required": "Email is required"
+          }
+        },
+        "reset-password": {
+          "password": {
+            "min": "Password must be at least 8 characters long",
+            "max": "Password exceeds maximum length of 255 characters",
+            "pattern": "Password should contain at least a number and an uppercase letter",
+            "required": "Password is required"
+          }
+        }
+      },
+      "budget": {
+        "create-posting": {
+          "amount": {
+            "min": "Amount should be a positive value",
+            "max": "Amount exceeds maximum value of 10,000,000",
+            "required": "Amount is required"
+          },
+          "date": {
+            "required": "Date is required"
+          },
+          "purpose": {
+            "max": "Purpose exceeds maximum of 200 characters",
+            "required": "Purpose is required"
+          }
+        },
+        "update-posting": {
+          "amount": {
+            "min": "Amount should be a positive value",
+            "max": "Amount exceeds maximum of 10,000,000",
+            "required": "Amount is required"
+          },
+          "date": {
+            "required": "Date is required"
+          },
+          "purpose": {
+            "required": "Purpose is required",
+            "max": "Purpose exceed maximum of 200 characters"
+          }
+        }
+      },
+      "organization": {
+        "create-activity": {
+          "location": {
+            "max": "Location exceeds maximum of 50 characters",
+            "required": "Location is required"
+          },
+          "name": {
+            "max": "Name exceeds maximum of 50 characters",
+            "required": "Name is required"
+          }
+        },
+        "create-organization": {
+          "description": {
+            "max": "Description exceeds maximum of 500 characters"
+          },
+          "name": {
+            "max": "Name exceeds maximum of 50 characters",
+            "required": "Name is required"
+          },
+          "place": {
+            "max": "Place exceeds maximum of 50 characters",
+            "required": "Place is required"
+          }
+        },
+        "join-organization": {
+          "code": {
+            "length": "Code must be exactly 8 characters long",
+            "required": "Code is required"
+          }
+        },
+        "update-activity": {
+          "location": {
+            "max": "Location exceeds maximum of 50 characters",
+            "required": "Location is required"
+          },
+          "name": {
+            "max": "Name exceeds maximum of 50 characters",
+            "required": "Name is required"
+          }
+        },
+        "update-organization": {
+          "description": {
+            "max": "Description exceeds maximum of 500 characters"
+          },
+          "name": {
+            "max": "Name exceeds maximum of 50 characters",
+            "required": "Name is required"
+          },
+          "place": {
+            "max": "Place exceeds maximum of 50 characters",
+            "required": "Place is required"
+          }
+        }
+      },
+      "user": {
+        "change-password": {
+          "current-password": {
+            "required": "Current password is required"
+          },
+          "new-password": {
+            "min": "New password must be at least 8 characters long",
+            "max": "New password exceeds 255 characters",
+            "matches": "New password should contain at least a number and a uppercase letter",
+            "required": "New password is required"
+          }
+        },
+        "update-user-data": {
+          "email": {
+            "invalid": "Email is not valid",
+            "max": "Email exceeds maximum of 50 characters",
+            "required": "Email is required"
+          },
+          "username": {
+            "min": "Username should be at least 2 characters long",
+            "max": "Username exceeds maximum of 50 characters",
+            "required": "Username is required"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "layout": {
+      "menu": {
+        "list": {
+          "account": {
+            "label": "Account"
+          },
+          "activities": {
+            "label": "Activities"
+          },
+          "collective": {
+            "label": "Collective"
+          }
+        }
+      }
+    }
+  }
+}

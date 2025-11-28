@@ -20,7 +20,7 @@ export const resendConfirmationSchema = (): ObjectSchema<RensendConfirmationDto>
 		email: string()
 			.default('')
 			.trim()
-			.email($t('api.validation.email.invalid'))
-			.required($t('api.validation.email.required'))
+			.email($t('api.validation.authentication.resend-confirmation.email.invalid'))
+			.required($t('api.validation.authentication.resend-confirmation.email.required'))
 	} satisfies Record<keyof RensendConfirmationDto, AnyObject>);
 };

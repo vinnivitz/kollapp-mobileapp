@@ -15,14 +15,12 @@ export const updateActivitySchema = (): ObjectSchema<ActivityUpdateRequestTO> =>
 		location: string()
 			.default('')
 			.trim()
-			.min(1, $t('api.dto.client.organization.update-activity.schema.validation.location.min'))
-			.max(50, $t('api.dto.client.organization.update-activity.schema.validation.location.max'))
-			.required($t('api.dto.client.organization.update-activity.schema.validation.location.required')),
+			.max(50, $t('api.validation.organization.update-activity.location.max'))
+			.required($t('api.validation.organization.update-activity.location.required')),
 		name: string()
 			.default('')
 			.trim()
-			.min(1, $t('api.dto.client.organization.update-activity.schema.validation.name.min'))
-			.max(50, $t('api.dto.client.organization.update-activity.schema.validation.name.max'))
-			.required($t('api.dto.client.organization.update-activity.schema.validation.name.required'))
+			.max(50, $t('api.validation.organization.update-activity.name.max'))
+			.required($t('api.validation.organization.update-activity.name.required'))
 	} satisfies Record<keyof ActivityUpdateRequestTO, AnyObject>);
 };

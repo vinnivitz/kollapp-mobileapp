@@ -1,6 +1,4 @@
 <script lang="ts">
-	import type { PasswordChangeRequestTO } from '@kollapp/api-types';
-
 	import { keyOutline, keySharp, saveOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
@@ -18,6 +16,7 @@
 		customForm,
 		isBiometricAvailable,
 		isBiometricEnabled,
+		passwordConfirmationValidator,
 		updatePasswordBiometricCredentials
 	} from '$lib/utility';
 
@@ -28,7 +27,8 @@
 			}
 			goto(resolve('/account'));
 		},
-		request: async (model: PasswordChangeRequestTO) => userService.changePassword(model),
+		customValidators: [passwordConfirmationValidator('newPassword', 'confirmNewPassword')],
+		request: async (model) => userService.changePassword(model),
 		schema: changePasswordSchema()
 	});
 </script>

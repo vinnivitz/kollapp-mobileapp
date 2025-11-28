@@ -18,17 +18,17 @@ export const createPostingSchema = (): ObjectSchema<PostingCreateUpdateRequestTO
 	return object({
 		amountInCents: number()
 			.default(0)
-			.min(1, $t('api.validation.amount.min'))
-			.max(10_000_000, $t('api.validation.amount.max'))
-			.required($t('api.validation.amount.required')),
+			.positive($t('api.validation.budget.create-posting.amount.min'))
+			.max(10_000_000, $t('api.validation.budget.create-posting.amount.max'))
+			.required($t('api.validation.budget.create-posting.amount.required')),
 		date: string()
 			.default(format(new TZDate(), 'yyyy-MM-dd'))
-			.required($t('api.validation.date.required')),
+			.required($t('api.validation.budget.create-posting.date.required')),
 		purpose: string()
 			.default('')
 			.trim()
-			.max(200, $t('api.dto.budget.create-posting.schema.purpose.max'))
-			.required($t('api.dto.budget.create-posting.schema.purpose.required')),
+			.max(200, $t('api.validation.budget.create-posting.purpose.max'))
+			.required($t('api.validation.budget.create-posting.purpose.required')),
 		type: string().oneOf(Object.values(types)).default('CREDIT')
 	} satisfies Record<keyof PostingCreateUpdateRequestTO, AnyObject>);
 };

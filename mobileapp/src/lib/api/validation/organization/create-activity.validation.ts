@@ -15,12 +15,12 @@ export const createActivitySchema = (): ObjectSchema<ActivityCreationRequestTO> 
 		location: string()
 			.default('')
 			.trim()
-			.max(50, $t('api.dto.client.organization.create-activity.schema.validation.location.max'))
-			.required($t('api.dto.client.organization.create-activity.schema.validation.location.required')),
+			.max(50, $t('api.validation.organization.create-activity.location.max'))
+			.required($t('api.validation.organization.create-activity.location.required')),
 		name: string()
 			.default('')
 			.trim()
-			.max(50, $t('api.dto.client.organization.create-activity.schema.validation.name.max'))
-			.required($t('api.dto.client.organization.create-activity.schema.validation.name.required'))
+			.max(50, $t('api.validation.organization.create-activity.name.max'))
+			.required($t('api.validation.organization.create-activity.name.required'))
 	} satisfies Record<keyof ActivityCreationRequestTO, AnyObject>);
 };

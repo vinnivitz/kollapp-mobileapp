@@ -53,19 +53,19 @@
 				transparent
 				clicked={() => menuComponent?.navigate('/account')}
 				icon={personOutline}
-				label={$t('components.layout.header.button.account')}
+				label={$t('components.layout.menu.list.account.label')}
 			/>
 			<LabeledItem
 				transparent
 				clicked={() => menuComponent?.navigate('/organization/activities')}
 				icon={flashOutline}
-				label={$t('components.layout.header.button.activities')}
+				label={$t('components.layout.menu.list.activities.label')}
 			/>
 			<LabeledItem
 				transparent
 				clicked={() => menuComponent?.navigate('/organization')}
 				icon={accessibilityOutline}
-				label={$t('components.layout.menu.list.organization')}
+				label={$t('components.layout.menu.list.collective.label')}
 			/>
 			{#if dev}
 				<LabeledItem
