@@ -41,22 +41,24 @@ jobs:
           node-version-file: '.nvmrc'
 
       - name: Maven Verify
-        run: ./backend-parent/mvnw clean verify -B --file backend-parent/pom.xml
+        working-directory: backend-parent
+        run: ./mvnw clean verify -B
 
       - name: Prepare Release
+        working-directory: backend-parent
         run: |
-          ./backend-parent/mvnw --file backend-parent/pom.xml versions:set -DnewVersion=${{ github.event.inputs.releaseVersion }}
-          git add backend-parent
+          ./mvnw versions:set -DnewVersion=${{ github.event.inputs.releaseVersion }}
+          git add .
           git commit -m "[GitHubActions] set release version to ${{ github.event.inputs.releaseVersion }}"
           git push
           git tag -a v${{ github.event.inputs.releaseVersion }} -m "Release ${{ github.event.inputs.releaseVersion }}"
           git push origin v${{ github.event.inputs.releaseVersion }}
 
       - name: Build Release Version and publish API types
+        working-directory: backend-parent
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          ./backend-parent/mvnw -B clean install --file backend-parent/pom.xml -DskipTests -Djqassistant.skip=true -Pgenerate-client-api-types
+        run: ./mvnw -B clean install -DskipTests -Djqassistant.skip=true -Pgenerate-client-api-types
 
       - name: Log in to Docker registry
         uses: docker/login-action@v3
@@ -66,11 +68,20 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and Push Docker Image
-        run: docker buildx build --push --tag registry.kollapp.org/kollapp/backend:v${{ github.event.inputs.releaseVersion }} --tag registry.kollapp.org/kollapp/backend:v${{ github.event.inputs.releaseVersion }} ./backend-parent/backend
+        uses: docker/build-push-action@v5
+        with:
+          context: backend-parent
+          file: backend-parent/backend/Dockerfile
+          push: true
+          platforms: linux/amd64
+          tags: |
+            registry.kollapp.org/kollapp/backend:v${{ github.event.inputs.releaseVersion }}
+            registry.kollapp.org/kollapp/backend:latest
 
       - name: Setup new development version
+        working-directory: backend-parent
         run: |
-          ./backend-parent/mvnw --file backend-parent/pom.xml versions:set -DnewVersion=${{ github.event.inputs.developmentVersion }}
-          git add backend-parent/
-          git commit -m "[GitHubActions] set release version to ${{ github.event.inputs.developmentVersion }}"
+          ./mvnw versions:set -DnewVersion=${{ github.event.inputs.developmentVersion }}
+          git add .
+          git commit -m "[GitHubActions] set development version to ${{ github.event.inputs.developmentVersion }}"
           git push

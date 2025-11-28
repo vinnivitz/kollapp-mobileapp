@@ -3,13 +3,15 @@ FROM eclipse-temurin:21-jdk-alpine AS builder
 WORKDIR /build
 
 COPY .mvn/ .mvn/
-COPY ../mvnw pom.xml ./
+COPY mvnw ./
+COPY pom.xml ./
+COPY backend/pom.xml ./backend-pom.xml
 
-RUN ./mvnw dependency:go-offline -B
+RUN ./mvnw dependency:go-offline -B -f backend-pom.xml
 
-COPY src ./src
+COPY backend/src ./src
 
-RUN ./mvnw clean package -DskipTests -B && \
+RUN ./mvnw clean package -DskipTests -B -f backend-pom.xml && \
     mv target/*.jar app.jar
 
 FROM eclipse-temurin:21-jre-alpine
