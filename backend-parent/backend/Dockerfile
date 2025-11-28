@@ -3,7 +3,7 @@ FROM eclipse-temurin:21-jdk-alpine AS builder
 WORKDIR /build
 
 COPY .mvn/ .mvn/
-COPY mvnw pom.xml ./
+COPY ../mvnw pom.xml ./
 
 RUN ./mvnw dependency:go-offline -B
 
