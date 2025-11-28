@@ -66,9 +66,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and Push Docker Image
-        run: |
-          cd backend-parent/backend
-          docker buildx build --push --tag registry.kollapp.org/kollapp/backend:v${{ github.event.inputs.releaseVersion }} --tag registry.kollapp.org/kollapp/backend:latest .
+        run: docker buildx build --push --tag registry.kollapp.org/kollapp/backend:v${{ github.event.inputs.releaseVersion }} --tag registry.kollapp.org/kollapp/backend:latest ./backend-parent/backend
 
       - name: Setup new development version
         run: |
