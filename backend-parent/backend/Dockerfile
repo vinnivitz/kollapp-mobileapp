@@ -8,11 +8,12 @@ COPY pom.xml ./
 
 COPY backend/pom.xml backend/pom.xml
 COPY backend/src backend/src
+COPY backend/sun_checks.xml backend/sun_checks.xml
 
 WORKDIR /build/backend
 
 RUN ../mvnw -B -q dependency:go-offline
-RUN ../mvnw -B -DskipTests clean package && mv target/*.jar /build/app.jar
+RUN ../mvnw -B -DskipTests -Djqassistant.skip=true clean package && mv target/*.jar /build/app.jar
 
 FROM eclipse-temurin:21-jre-alpine
 
