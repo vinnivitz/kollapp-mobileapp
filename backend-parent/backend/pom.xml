@@ -1,28 +1,26 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.kollapp.backend</groupId>
+        <groupId>org.kollapp</groupId>
         <artifactId>backend-parent</artifactId>
-        <version>0.8.0-SNAPSHOT</version>
+        <version>0.9.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>backend</artifactId>
-    <description>Kollapp backend</description>
+    <description>Kollapp Backend</description>
     <packaging>jar</packaging>
 
     <properties>
-        <java.version>21</java.version>
-        <node.version>v22.9.0</node.version>
-        <npm.version>10.8.3</npm.version>
         <frontend-maven-plugin.version>1.12.1</frontend-maven-plugin.version>
         <typescript-generator.version>3.2.1263</typescript-generator.version>
+        <generate-ts-api-types-maven-plugin.version>1.0.0</generate-ts-api-types-maven-plugin.version>
         <maven-javadoc.version>3.12.0</maven-javadoc.version>
         <xml-doclet.version>1.0.5</xml-doclet.version>
         <jsonwebtoken.version>0.11.5</jsonwebtoken.version>
-        <lombok.version>1.18.30</lombok.version>
+        <lombok.version>1.18.42</lombok.version>
         <springdoc.version>2.6.0</springdoc.version>
         <mysql-connector.version>8.2.0</mysql-connector.version>
         <jmolecules.version>1.10.0</jmolecules.version>
@@ -39,9 +37,12 @@
         <maven-failsafe-plugin.version>3.5.2</maven-failsafe-plugin.version>
         <google-findbugs.version>3.0.2</google-findbugs.version>
         <checkstyle.version>3.6.0</checkstyle.version>
+        <spotless.version>2.43.0</spotless.version>
+        <palantir-java-format.version>2.50.0</palantir-java-format.version>
         <spring-boot-starter-actuator.version>3.4.3</spring-boot-starter-actuator.version>
         <jacoco.version>0.8.13</jacoco.version>
     </properties>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -289,18 +290,9 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>com.buschmais.jqassistant</groupId>
-                <artifactId>jqassistant-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>scan</goal>
-                            <goal>analyze</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <configuration>
+                    <jvmArguments>-XX:+EnableDynamicAgentLoading</jvmArguments>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
@@ -353,6 +345,35 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <argLine>-XX:+EnableDynamicAgentLoading</argLine>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>${spotless.version}</version>
+                <configuration>
+                    <java>
+                        <removeUnusedImports />
+                        <palantirJavaFormat>
+                            <version>${palantir-java-format.version}</version>
+                        </palantirJavaFormat>
+                        <importOrder>
+                            <order>java,javax,jakarta,lombok,org,com,\#,org.kollapp,\#org.kollapp</order>
+                        </importOrder>
+                        <trimTrailingWhitespace />
+                        <endWithNewline />
+                    </java>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <phase>validate</phase>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -378,6 +399,49 @@
     </build>
     <profiles>
         <profile>
+            <!-- <id>generate-client-api-types</id>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>nexus-releases</id>
+                    <name>Kollapp Nexus Releases</name>
+                    <url>https://nexus.kollapp.org/repository/maven-releases/</url>
+                </pluginRepository>
+            </pluginRepositories>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.kollapp</groupId>
+                        <artifactId>generate-ts-api-types-maven-plugin</artifactId>
+                        <version>${generate-ts-api-types-maven-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>generate-ts-api-types</id>
+                                <phase>process-classes</phase>
+                                <goals>
+                                    <goal>generate-abstract-ts</goal>
+                                </goals>
+                                <configuration>
+                                    <jsonLibrary>jackson2</jsonLibrary>
+                                    <classPatterns>
+                                        <classPattern>
+                                            org.kollapp.**.adapters.primary.rest.*Controller</classPattern>
+                                        <classPattern>
+                                            org.kollapp.**.adapters.primary.rest.dto.*</classPattern>
+                                    </classPatterns>
+                                    <outputFile>${project.basedir}/../backend-api/ts/index.d.ts</outputFile>
+                                    <customTypeMappings>
+                                        <customTypeMapping>long:number</customTypeMapping>
+                                        <customTypeMapping>java.lang.Long:number</customTypeMapping>
+                                        <customTypeMapping>java.time.LocalDate:string</customTypeMapping>
+                                    </customTypeMappings>
+                                    <mapDate>asString</mapDate>
+                                    <mapEnum>asUnion</mapEnum>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build> -->
             <id>generate-client-api-types</id>
             <build>
                 <plugins>
@@ -395,11 +459,12 @@
                                 <configuration>
                                     <jsonLibrary>jackson2</jsonLibrary>
                                     <classPatterns>
-                                        <classPattern>org.kollappbackend.**.adapters.primary.rest.model.*</classPattern>
+                                        <classPattern>
+                                            org.kollapp.**.adapters.primary.rest.dto.*</classPattern>
                                     </classPatterns>
                                     <excludeClasses>
                                         <excludeClass>
-                                            org.kollappbackend.core.adapters.primary.rest.model.DataResponseTO
+                                            org.kollapp.core.adapters.primary.rest.dto.DataResponseTO
                                         </excludeClass>
                                     </excludeClasses>
                                     <outputKind>module</outputKind>

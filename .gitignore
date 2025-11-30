@@ -1,35 +1,17 @@
-# Default ignored files
-.idea
-.vscode
+# IDE
+.idea/
+.vscode/
 *.iml
+*.swp
+*.swo
+*~
 
-# Env
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
 .env
 .env.*
-
-# Backend
-/backend-parent/**/target
-/backend-parent/db
-
-# Mobile App
-/mobileapp/node_modules
-/mobileapp/test-results
-/mobileapp/coverage
-
-/mobileapp/.svelte-kit
-/mobileapp/build
-/mobileapp/docs
-/mobileapp/visualize
-
-/mobileapp/.DS_Store
-/mobileapp/Thumbs.db
-
-/mobileapp/vite.config.js.timestamp-*
-/mobileapp/vite.config.ts.timestamp-*
-
-/mobileapp/src/lib/locales/de.json
-/mobileapp/src/lib/locales/en.json
-
-# Web App
-/webapp/.svelte-kit
-/webapp/node_modules
+!.env.example
+!.env.test

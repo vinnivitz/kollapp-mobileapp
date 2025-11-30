@@ -5,12 +5,20 @@ spring:
     url: jdbc:mysql://${BACKEND_DB_HOST:localhost}:${BACKEND_DB_PORT:3306}/kollapp?allowPublicKeyRetrieval=true&useSSL=false
     username: ${BACKEND_DB_USER:admin}
     password: ${BACKEND_DB_PASSWORD:pass}
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      leak-detection-threshold: 60000
+      pool-name: KollappHikariCP
   jpa:
     hibernate:
       ddl-auto: update
     open-in-view: false
   profiles:
-    active: ${BACKEND_PROFILE:default}
+    active: development
 
   mail:
     host: ${BACKEND_MAIL_HOST:localhost}
@@ -34,6 +42,9 @@ spring:
 
 server:
   port: ${BACKEND_PORT:8080}
+  shutdown: graceful
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
 
 i18n:
   baseName: i18n/messages
@@ -54,7 +65,7 @@ kollapp:
 
   cors:
     allowedOriginPattern: ${BACKEND_CORS_URL:http://localhost:*}
-    allowedMethods: ${BACKEND_CORS_METHODS:GET,POST,PUT,DELETE,OPTIONS}
+    allowedMethods: ${BACKEND_CORS_METHODS:GET,POST,PUT,PATCH,DELETE,OPTIONS}
     allowedHeaders: ${BACKEND_CORS_HEADERS:Content-Type,Authorization,Accept,X-Requested-With}
     exposedHeaders: ${BACKEND_CORS_EXPOSED_HEADERS:Authorization,Content-Disposition}
     allowCredentials: ${BACKEND_CORS_CREDENTIALS:true}
@@ -64,11 +75,37 @@ kollapp:
     seconds: ${BACKEND_RATE_LIMIT_TIME:60}
 
   jwt:
-    authSecret: ${BACKEND_JWT_AUTH_SECRET:3YBsUJWIZWjvoxGOmwtHYJ4oBKisuSzKxkdLOqyouA926uO2kW}
+    authSecret: ${BACKEND_JWT_AUTH_SECRET}
     authExpirationInSeconds: ${BACKEND_JWT_AUTH_EXPIRATION_IN_SECONDS:86400}
-    refreshSecret: ${BACKEND_JWT_REFRESH_SECRET:oeuBZfbz5nUD7kMeKvCWSf9231uXuHVEm5EUjsIrrfLVMaj86h}
+    refreshSecret: ${BACKEND_JWT_REFRESH_SECRET}
     refreshExpirationInSeconds: ${BACKEND_JWT_REFRESH_EXPIRATION_IN_SECONDS:2592000}
-    confirmationSecret: ${BACKEND_JWT_CONFIRMATION_SECRET:H4WyGZBZMbUsADzq71DLLQjGwut2fa6zYP6fJ2AEjvpegFEpQV}
+    confirmationSecret: ${BACKEND_JWT_CONFIRMATION_SECRET}
     confirmationExpirationInSeconds: ${BACKEND_JWT_CONFIRMATION_EXPIRATION_IN_SECONDS:3600}
-    resetPasswordSecret: ${BACKEND_JWT_RESET_PASSWORD_SECRET:363KNcnu8e2hPYImKLcLIofgDfAeQBPEVYtphCONRL1jac2vkr}
+    resetPasswordSecret: ${BACKEND_JWT_RESET_PASSWORD_SECRET}
     resetPasswordExpirationInSeconds: ${BACKEND_JWT_RESET_PASSWORD_EXPIRATION_IN_SECONDS:3600}
+
+---
+# Management and Actuator configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: never
+      probes:
+        enabled: true
+  health:
+    livenessState:
+      enabled: true
+    readinessState:
+      enabled: true
+
+---
+# Production observability overrides
+spring:
+  config:
+    activate:
+      on-profile: production
