@@ -37,7 +37,7 @@
 		getValidationResult,
 		isBiometricAvailable,
 		isBiometricEnabled,
-		requestBiometricAuthentication,
+		promptBiometricAuthentication,
 		showAlert,
 		storeValue
 	} from '$lib/utility';
@@ -53,7 +53,7 @@
 	async function performBiometricVerification(): Promise<void> {
 		if (dev || !(await isBiometricAvailable()) || !(await isBiometricEnabled()) || $authenticationStore) return;
 
-		const credentials = await requestBiometricAuthentication();
+		const credentials = await promptBiometricAuthentication();
 		if (!credentials) return;
 
 		const loading = await loadingController.create({});
@@ -67,7 +67,7 @@
 		await (result.valid
 			? handleLogin(response.data)
 			: Promise.all([
-					showAlert('Could not log in with biometrics. Wrong credentials provided.'),
+					showAlert($t('routes.auth.login.page.biometrics.wrong-credentials')),
 					storeValue(PreferencesKey.BIOMETRICS_ENABLED, false)
 				]));
 		await loading.dismiss();
@@ -79,12 +79,12 @@
 			refreshToken: model.refreshToken
 		};
 		await authenticationStore.set(authenticationModel);
-		await appStateStore.initializeUserData();
+		await appStateStore.initializeBaseData();
 		await goto(resolve('/'));
 	}
 </script>
 
-<Layout title={$t('routes.auth.login.title')} hideLayout>
+<Layout>
 	<div class="mb-6">
 		<Welcome />
 	</div>
@@ -95,18 +95,18 @@
 
 {#snippet loginForm()}
 	<form use:customForm={form}>
-		<TextInputItem name="username" label={$t('routes.auth.login.form.input.username')} icon={personOutline} />
+		<TextInputItem name="username" label={$t('routes.auth.login.page.form.username')} icon={personOutline} />
 		<TextInputItem
 			name="password"
 			type="password"
-			label={$t('routes.auth.login.form.input.password')}
+			label={$t('routes.auth.login.page.form.password')}
 			icon={keyOutline}
 		/>
 		<Button
 			classList="mt-3"
 			expand="block"
 			type="submit"
-			label={$t('routes.auth.login.form.submit')}
+			label={$t('routes.auth.login.page.form.submit')}
 			icon={logInOutline}
 		/>
 	</form>
@@ -116,7 +116,7 @@
 				fill="outline"
 				expand="block"
 				icon={fingerPrintOutline}
-				label={$t('routes.auth.login.biometrics')}
+				label={$t('routes.auth.login.page.login-with-biometrics')}
 				clicked={performBiometricVerification}
 			/>
 		{/if}
@@ -129,12 +129,16 @@
 			<Button color="tertiary" size="large" fill="outline" icon={logoGithub} clicked={featureNotImplementedAlert} />
 		</div>
 	{/if}
-	<Card color="light" clicked={() => goto(resolve('/auth/register'))} classList="text-center">
-		{$t('routes.auth.login.register.text')}
-		<ion-text color="secondary">{$t('routes.auth.login.register.link')}</ion-text>
+	<Card color="light" clicked={() => goto(resolve('/auth/register'))} classList="text-center flex flex-wrap gap-1">
+		<ion-text>{$t('routes.auth.login.page.register.question')}</ion-text>
+		<ion-text color="secondary">{$t('routes.auth.login.page.register.link')}</ion-text>
 	</Card>
-	<Card color="light" clicked={() => goto(resolve('/auth/reset-password'))} classList="text-center">
-		{$t('routes.auth.login.forgot-password.text')}
-		<ion-text color="secondary">{$t('routes.auth.login.forgot-password.link')}</ion-text>
+	<Card
+		color="light"
+		clicked={() => goto(resolve('/auth/reset-password'))}
+		classList="text-center flex flex-wrap gap-1"
+	>
+		<ion-text>{$t('routes.auth.login.page.forgot-password.question')}</ion-text>
+		<ion-text color="secondary">{$t('routes.auth.login.page.forgot-password.link')}</ion-text>
 	</Card>
 {/snippet}

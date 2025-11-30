@@ -23,6 +23,7 @@
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import TextareaInputItem from '$lib/components/widgets/ionic/TextareaInputItem.svelte';
 	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
+	import { t } from '$lib/locales';
 	import { organizationStore } from '$lib/stores';
 	import { isAuthenticated, StatusCheck } from '$lib/utility';
 
@@ -53,36 +54,52 @@
 	});
 </script>
 
-<Layout title="Collective" showBackButton {loading} hideMenu={!authenticated}>
+<Layout title={$t('routes.auth.organization.slug.page.title')} showBackButton {loading} hideMenu={!authenticated}>
 	{#if organization}
-		<Card title="Collective Details">
+		<Card title={$t('routes.auth.organization.slug.page.card.join.title')}>
 			<form>
-				<TextInputItem readonly name="name" label="Name" icon={accessibilityOutline} value={organization?.name}
+				<TextInputItem
+					readonly
+					name="name"
+					label={$t('routes.auth.organization.slug.page.card.join.form.name')}
+					icon={accessibilityOutline}
+					value={organization?.name}
 				></TextInputItem>
 				<TextareaInputItem
 					readonly
 					name="description"
-					label="Description"
+					label={$t('routes.auth.organization.slug.page.card.join.form.description')}
 					icon={readerOutline}
 					value={organization?.description}
 				></TextareaInputItem>
-				<TextInputItem readonly name="place" label="Place" icon={locationOutline} value={organization?.place}
+				<TextInputItem
+					readonly
+					name="place"
+					label={$t('routes.auth.organization.slug.page.card.join.form.place')}
+					icon={locationOutline}
+					value={organization?.place}
 				></TextInputItem>
 				<div class="mt-3 text-center">
 					{#if organization.name !== $organizationStore?.name}
 						{#if authenticated}
-							<Button icon={addOutline} label="Join Collective" clicked={() => onJoinCollective()} />
+							<Button
+								icon={addOutline}
+								label={$t('routes.auth.organization.slug.page.card.join.form.submit')}
+								clicked={() => onJoinCollective()}
+							/>
 						{:else}
 							<div class="flex flex-col">
 								<Button label="Log in" icon={logInOutline} clicked={() => goto(resolve('/auth/login'))} />
-								<ion-note>You need to be logged in to join a collective.</ion-note>
+								<ion-note>{$t('routes.auth.organization.slug.page.card.join.form.info.not-authenticated')}</ion-note>
 							</div>
 						{/if}
 					{:else}
 						<Card border="success">
 							<div class="flex flex-row items-center justify-center gap-3">
 								<ion-icon size="large" icon={checkboxOutline} color="success"></ion-icon>
-								<ion-note color="success">You are already a member of this collective.</ion-note>
+								<ion-note color="success">
+									{$t('routes.auth.organization.slug.page.card.join.form.info.already-member')}
+								</ion-note>
 							</div>
 						</Card>
 					{/if}
@@ -90,9 +107,13 @@
 			</form>
 		</Card>
 	{:else}
-		<Card title="Invalid Code" titleIconStart={bugOutline} border="danger">
+		<Card
+			title={$t('routes.auth.organization.slug.page.card.invalid-code.title')}
+			titleIconStart={bugOutline}
+			border="danger"
+		>
 			<div class="flex flex-col items-center justify-center gap-4">
-				<ion-text class="text-center">The provided code is invalid. Please ask the collective admin.</ion-text>
+				<ion-text class="text-center">{$t('routes.auth.organization.slug.page.card.invalid-code.info')}</ion-text>
 				<Button icon={homeOutline} label="Go back" clicked={() => goto(resolve('/'))} />
 			</div>
 		</Card>

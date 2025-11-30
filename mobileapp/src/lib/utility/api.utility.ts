@@ -92,7 +92,7 @@ export async function customFetch<T = never>(url: string, config?: CustomFetchCo
 		if (authorizationType === AuthorizationType.BEARER) {
 			const token = get(authenticationStore)?.accessToken;
 			if (!token) {
-				return handleAuthenticationError();
+				return handleAuthorizationError();
 			}
 			headers.set(HeaderKey.AUTHORIZATION, getBearerToken(token));
 		}
@@ -102,7 +102,7 @@ export async function customFetch<T = never>(url: string, config?: CustomFetchCo
 
 		const handled = await handleUnauthorizedResponse(response, enhancedUrl, headers);
 		if (!handled) {
-			return handleAuthenticationError();
+			return handleAuthorizationError();
 		}
 		response = handled;
 
@@ -110,10 +110,10 @@ export async function customFetch<T = never>(url: string, config?: CustomFetchCo
 
 		return getResponseBody<T>(response, silentOnSuccess, silentOnError, config?.silentOnSpecificStatus);
 	} catch (error) {
-		let message = $t('api.error');
+		let message = $t('utility.api.error.generic');
 		let status = StatusCode.SERVICE_UNAVAILABLE;
 		if (error instanceof Error) {
-			message = error.message === 'Failed to fetch' ? $t('api.not-available') : error.message;
+			message = error.message === 'Failed to fetch' ? $t('utility.api.server-not-reachable') : error.message;
 		} else if (error instanceof Response) {
 			status = error.status;
 		}
@@ -143,7 +143,7 @@ export function getValidationResult<TField = unknown, TData = unknown>(
 		errors: [
 			{
 				field: body.validationField as keyof TField,
-				message: body.message ?? $t('api.error')
+				message: body.message ?? $t('utility.api.error.generic')
 			}
 		],
 		valid: StatusCheck.isOK(body.status)
@@ -199,8 +199,8 @@ export async function checkMaintenance(): Promise<void> {
 			if (!storedSchedule || schedule !== storedSchedule) {
 				const alert = await alertController.create({
 					buttons: ['Ok'],
-					header: $t('stores.maintenance.header'),
-					message: $t('stores.maintenance.alert', { value: format(schedule, 'PPP p') })
+					header: $t('utility.api.maintenance.alert.header'),
+					message: $t('utility.api.maintenance.message', { value: format(schedule, 'PPP p') })
 				});
 				await alert.present();
 				storeValue(PreferencesKey.MAINTENANCE_SCHEDULE, schedule);
@@ -209,10 +209,10 @@ export async function checkMaintenance(): Promise<void> {
 	}
 }
 
-async function handleAuthenticationError(): Promise<ResponseBody> {
+async function handleAuthorizationError(): Promise<ResponseBody> {
 	const $t = get(t);
 	await authenticationService.logout();
-	return createErrorResponse(StatusCode.UNAUTHORIZED, $t('api.unauthorized'), true);
+	return createErrorResponse(StatusCode.UNAUTHORIZED, $t('utility.api.error.authorization'), true);
 }
 
 function getUrl(endpoint: string): string {
@@ -227,27 +227,26 @@ async function getResponseBody<T>(
 ): Promise<ResponseBody<T>> {
 	const $t = get(t);
 	const status = response.status;
-	let message = $t('api.success');
+	let message = $t('utility.api.request-successful');
 	let data = {} as T;
 	const contentType = response.headers.get(HeaderKey.CONTENT_TYPE);
 	const silent = response.ok ? silentOnSuccess : silentOnError;
 	if (!contentType?.includes(ContentType.JSON)) {
-		message = contentType?.includes(ContentType.TEXT) ? $t('api.error') : await response.text();
+		message = contentType?.includes(ContentType.TEXT) ? $t('utility.api.error.generic') : await response.text();
 		return { data, message, status };
 	}
 	const body = (await response.json()) as ResponseBody<T>;
-	message = body.message ?? (response.ok ? message : $t('api.error'));
+	message = body.message ?? (response.ok ? message : $t('utility.api.error.generic'));
 	data = body.data ?? data;
 	const { validationField } = body;
 	if (!silent && !validationField && !silentOnSpecificStatus?.includes(status)) {
 		await showAlert(message, { type: response.ok ? AlertType.SUCCESS : AlertType.ERROR });
 	}
-	// only triggered in dev mode
 	if (dev) {
 		if (response.ok) {
 			console.info(message);
 		} else {
-			console.warn(`status: ${response.status}, msg: ${message}`);
+			console.warn(`status: ${response.status}, message: ${message}`);
 		}
 	}
 	return {
@@ -296,7 +295,7 @@ async function createErrorResponse(status: number, message: string, silent: bool
 	if (!silent) {
 		await showAlert(message);
 	}
-	const log = `status: ${status}, msg: ${message}`;
+	const log = `status: ${status}, message: ${message}`;
 	if (dev) {
 		console.warn(log);
 	} else if (!StatusCheck.isUnauthorized(status)) {

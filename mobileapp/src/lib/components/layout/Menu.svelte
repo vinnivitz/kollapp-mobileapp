@@ -52,7 +52,7 @@
 					class="pt-5"
 					color="light"
 					debounce={100}
-					placeholder={$t('components.layout.menu.searchbar.placeholder')}
+					placeholder={$t('components.menu.header.toolbar.searchbar.placeholder')}
 					onionInput={onSearch}
 					value={searchValue}
 				>
@@ -73,9 +73,9 @@
 			<ion-list>
 				<ion-list-header>
 					{#if searchedItems.length > 0}
-						{$t('components.layout.menu.searchbar.title.found', { value: searchValue })}
+						{($t('components.menu.search-results.found'), { value: searchValue })}
 					{:else}
-						{$t('components.layout.menu.searchbar.title.not-found', { value: searchValue })}
+						{($t('components.menu.search-results.not-found'), { value: searchValue })}
 					{/if}
 				</ion-list-header>
 				{#each searchedItems as item (item.id)}
@@ -96,7 +96,7 @@
 				fill="outline"
 				clicked={logout}
 				icon={icons.logOutOutline}
-				label={$t('components.layout.header.button.logout')}
+				label={$t('components.menu.button.logout')}
 			/>
 			<hr class="my-3" />
 		{/if}

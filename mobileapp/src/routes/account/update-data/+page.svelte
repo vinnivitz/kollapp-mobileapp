@@ -40,19 +40,19 @@
 	});
 </script>
 
-<Layout title={$t('routes.account.update-data.title')} showBackButton>
+<Layout title={$t('routes.account.update-data.page.title')} showBackButton>
 	{#if form}
-		<Card title={$t('routes.account.update-data.card.title')}>
+		<Card title={$t('routes.account.update-data.page.card.title')}>
 			<form use:customForm={form}>
 				<TextInputItem
 					name="username"
-					label={$t('routes.account.update-data.card.form.username')}
+					label={$t('routes.account.update-data.page.card.form.username')}
 					icon={personOutline}
 				/>
 				<TextInputItem
 					name="email"
 					inputmode="email"
-					label={$t('routes.account.update-data.card.form.email')}
+					label={$t('routes.account.update-data.page.card.form.email')}
 					icon={mailOutline}
 					type="email"
 				/>
@@ -61,7 +61,7 @@
 					expand="block"
 					type="submit"
 					disabled={!touched}
-					label={$t('routes.account.update-data.card.form.button.submit')}
+					label={$t('routes.account.update-data.page.card.form.submit')}
 					icon={saveOutline}
 				/>
 			</form>

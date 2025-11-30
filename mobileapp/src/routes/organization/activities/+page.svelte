@@ -31,9 +31,10 @@
 	import LocationInputItem from '$lib/components/widgets/ionic/LocationInputItem.svelte';
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
 	import Popover from '$lib/components/widgets/ionic/Popover.svelte';
+	import SegmentItem from '$lib/components/widgets/ionic/SegmentItem.svelte';
 	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import { t } from '$lib/locales';
-	import { Form } from '$lib/models/ui';
+	import { Form, type SegmentConfig } from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';
 	import { customForm, hasOrganizationRole } from '$lib/utility';
 
@@ -54,6 +55,25 @@
 		type: ActivityFilterType;
 	};
 
+	let activityView = $state<ActivityView>(ActivityView.ACTIVITIES);
+
+	const segmentConfig = $derived<SegmentConfig[]>([
+		{
+			class: 'flex h-full flex-col pb-6',
+			clicked: () => (activityView = ActivityView.ACTIVITIES),
+			icon: flashOutline,
+			label: $t('routes.organization.page.activity.segments.activities'),
+			selected: activityView === ActivityView.ACTIVITIES
+		},
+		{
+			clicked: () => (activityView = ActivityView.CALENDAR),
+			icon: calendarOutline,
+			indexed: '/organization/activities',
+			label: $t('routes.organization.page.activity.segments.calendar'),
+			selected: activityView === ActivityView.CALENDAR
+		}
+	]);
+
 	const activityItems = $derived($organizationStore?.activities ?? []);
 
 	const activityFilters = $state<ActivityFilter[]>([
@@ -70,8 +90,6 @@
 			type: ActivityFilterType.archived
 		}
 	]);
-
-	let activityView = $state(ActivityView.ACTIVITIES);
 
 	let showFilters = $state(false);
 
@@ -109,63 +127,10 @@
 	showBackButton
 	scrollable={activityView === ActivityView.CALENDAR}
 >
-	{@render activitySegmentsHeader()}
-	{@render activitySegmentView()}
-</Layout>
-
-<!-- Snippets -->
-
-{#snippet activitySegmentsHeader()}
-	<div class="text-center">
-		<div class="mb-2 flex items-center justify-center gap-3 rounded-full bg-(--ion-background-color-step-50) px-5 py-1">
-			<Chip
-				color="dark"
-				label={$t('routes.organization.page.activity.segments.activities')}
-				icon={flashOutline}
-				selected={activityView === ActivityView.ACTIVITIES}
-				clicked={() => (activityView = ActivityView.ACTIVITIES)}
-			/>
-			<Chip
-				color="dark"
-				label={$t('routes.organization.page.activity.segments.calendar')}
-				icon={calendarOutline}
-				selected={activityView === ActivityView.CALENDAR}
-				clicked={() => (activityView = ActivityView.CALENDAR)}
-				indexed="/organization/activities"
-			/>
-		</div>
-	</div>
-{/snippet}
-
-{#snippet activitySegmentView()}
-	<div in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
+	<SegmentItem config={segmentConfig}>
 		<div class={activityView === ActivityView.ACTIVITIES ? 'flex h-full flex-col pb-6' : ''}>
 			{#if activityView === ActivityView.ACTIVITIES}
-				{#if hasOrganizationRole('ROLE_ORGANIZATION_MANAGER')}
-					<FabButton
-						label={$t('routes.organization.page.activity.create')}
-						clicked={() => onCreateActivity(format(new TZDate(), 'yyyy-MM-dd'))}
-						icon={createOutline}
-						indexed="/organization/activities"
-					/>
-				{/if}
-
-				<div class="flex items-center justify-between gap-2">
-					<ion-searchbar
-						color="light"
-						show-clear-button="always"
-						debounce={100}
-						placeholder={$t('routes.organization.page.activity.search.placeholder')}
-						onionInput={onSearchEvents}
-						value={searchActivityValue}
-					></ion-searchbar>
-					<Button icon={filterOutline} clicked={() => (showFilters = true)}></Button>
-				</div>
-				{@render activityFilter()}
-
-				<div class="scroll-viewport">
-					{@render activityList()}
-				</div>
+				{@render activitiesView()}
 			{:else if activityView === ActivityView.CALENDAR}
 				<Datetime
 					applied={onCreateActivity}
@@ -174,6 +139,36 @@
 				></Datetime>
 			{/if}
 		</div>
+	</SegmentItem>
+</Layout>
+
+<!-- Snippets -->
+
+{#snippet activitiesView()}
+	{#if hasOrganizationRole('ROLE_ORGANIZATION_MANAGER')}
+		<FabButton
+			label={$t('routes.organization.page.activity.create')}
+			clicked={() => onCreateActivity(format(new TZDate(), 'yyyy-MM-dd'))}
+			icon={createOutline}
+			indexed="/organization/activities"
+		/>
+	{/if}
+
+	<div class="flex items-center justify-between gap-2">
+		<ion-searchbar
+			color="light"
+			show-clear-button="always"
+			debounce={100}
+			placeholder={$t('routes.organization.page.activity.search.placeholder')}
+			onionInput={onSearchEvents}
+			value={searchActivityValue}
+		></ion-searchbar>
+		<Button icon={filterOutline} clicked={() => (showFilters = true)} />
+	</div>
+	{@render activityFilter()}
+
+	<div class="scroll-viewport">
+		{@render activityList()}
 	</div>
 {/snippet}
 

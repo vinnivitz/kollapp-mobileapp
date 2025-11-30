@@ -175,6 +175,380 @@
           }
         }
       }
+    },
+    "menu": {
+      "header": {
+        "toolbar": {
+          "searchbar": {
+            "placeholder": "Search the app..."
+          }
+        }
+      },
+      "search-results": {
+        "found": "Search results for \"{{value}}\"",
+        "not-found": "No results found for \"{0}"
+      },
+      "button": {
+        "logout": "Log out"
+      }
+    },
+    "widgets": {
+      "ionic": {
+        "datetime": {
+          "apply": "Apply",
+          "dismiss": "Dismiss"
+        },
+        "modal": {
+          "cancel": "Cancel",
+          "confirm": "Confirm"
+        }
+      },
+      "budget-card": {
+        "heading": "Budget overview",
+        "no-postings": "No postings found."
+      },
+      "leaflet-map": {
+        "searchbar": {
+          "placeholder": "Search location"
+        }
+      },
+      "page-not-found": {
+        "title": "Page not found",
+        "button": {
+          "back-to-home": "Back to home"
+        }
+      },
+      "welcome": {
+        "heading": "Welcome to Kollapp!",
+        "subheading": "The app for all the collectives out there."
+      }
+    }
+  },
+  "stores": {
+    "app-state": {
+      "error": "An error occurred during app initialization."
+    },
+    "connection": {
+      "offline": "You are offline",
+      "online": "You are online"
+    }
+  },
+  "utility": {
+    "alert": {
+      "feature-not-implemented": "Feature is not implemented yet"
+    },
+    "api": {
+      "server-not-reachable": "Server not reachable",
+      "maintenance": {
+        "alert": {
+          "header": "Maintenance"
+        },
+        "message": "The app will probably be unavailable on {{value}} for some minutes."
+      },
+      "error": {
+        "authorization": "Authorization error",
+        "generic": "An error occurred"
+      },
+      "request-successful": "Request successful"
+    },
+    "biometrics": {
+      "not-available": "Biometrics not available",
+      "prompt": {
+        "cancel": "Cancel",
+        "subtitle": "Authenticate with biometrics",
+        "title": "Log in to Kollapp"
+      }
+    },
+    "form-validators": {
+      "password-confirmation": {
+        "no-match": "Must match the password"
+      }
+    },
+    "preferences": {
+      "failure": {
+        "store": "Failed to store value",
+        "retreive": "Failed to retrieve value",
+        "remove": "Failed to remove value"
+      }
+    }
+  },
+  "routes": {
+    "account": {
+      "delete": {
+        "page": {
+          "title": "Delete account",
+          "card": {
+            "title": "Are you sure?",
+            "submit": "Delete account",
+            "note": "This cannot be undone.",
+            "manager-hint": {
+              "heading": "You are the last manager of the following collectives:",
+              "message": "Deleting the account will delete these collectives."
+            }
+          },
+          "modal": {
+            "confirm": "Delete account",
+            "cancel": "Cancel",
+            "header": "All your data will be deleted.",
+            "message": "This action cannot be undone."
+          }
+        }
+      },
+      "notifications": {
+        "page": {
+          "title": "Notifications",
+          "no-unread": "No unread notifications.",
+          "no-notifications": "No notifications found."
+        }
+      },
+      "privacy-and-security": {
+        "app-version": {
+          "page": {
+            "title": "App version",
+            "card": {
+              "title": "Version {{value}}"
+            }
+          }
+        },
+        "change-password": {
+          "page": {
+            "title": "Change password",
+            "card": {
+              "title": "Update your password",
+              "form": {
+                "current-password": "Current password",
+                "new-password": "New password",
+                "confirm-new-password": "Confirm password",
+                "submit": "Update password"
+              }
+            }
+          }
+        },
+        "legal": {
+          "page": {
+            "title": "Legal",
+            "card": {
+              "disclaimer": {
+                "title": "Disclaimer",
+                "liability-for-content": {
+                  "heading": "Liability for content",
+                  "content": "It is generally possible to use our website without providing any personal data.\\\\n\\\\n\\\\nAs far as personal data (e.g. name, address or e-mail addresses) is collected on our pages, this is always done on a voluntary basis, as far as possible.\\\\n\\\\n\\\\nThis data will not be passed on to third parties without your express consent.\\\\n\\\\n\\\\nWe would like to point out that data transmission over the Internet (e.g. when communicating via email) can have security gaps.\\\\n\\\\n\\\\nComplete protection of data from access by third parties is not possible.\\\\n\\\\n\\\\nThe use of contact details published as part of the imprint obligation by third parties to send unsolicited advertising and information materials is hereby expressly prohibited.\\\\n\\\\n\\\\nThe site operators expressly reserve the right to take legal action in the event of unsolicited advertising being sent, such as spam emails."
+                },
+                "liability-for-links": {
+                  "heading": "Liability for links",
+                  "content": "Our offer contains links to external third-party websites, the content of which we have no influence on. Therefore we cannot assume any liability for this external content. The respective provider or operator of the pages is always responsible for the content of the linked pages. The linked pages were checked for possible legal violations at the time of linking. Illegal content was not recognizable at the time of linking. However, a permanent control of the content of the linked pages is not reasonable without concrete evidence of an infringement. As soon as we become aware of legal violations, we will remove such links immediately."
+                },
+                "copyright": {
+                  "heading": "Copyright",
+                  "content": "The content and works on these application created by the application operators are subject to German copyright law. The duplication, editing, distribution and any kind of exploitation outside the limits of copyright require the written consent of the respective author or creator. Downloads and copies of this site are only permitted for private, non-commercial use. Insofar as the content on this application was not created by the operator, the copyrights of third parties are observed. In particular contents of third parties are marked as such. Should you nevertheless become aware of a copyright infringement, we ask that you inform us accordingly. As soon as we become aware of legal violations, we will remove such content immediately."
+                }
+              },
+              "privacy": {
+                "title": "Privacy",
+                "content": "Our application can usually be used without providing any personal data. Insofar as personal data (e.g. name, address or e-mail addresses) is collected on our application, this is always done on a voluntary basis as far as possible. This data will not be passed on to third parties without your express consent. We would like to point out that data transmission on the Internet (e.g. when communicating by e-mail) can have security gaps. A complete protection of the data against access by third parties is not possible. The use of contact data published as part of the imprint obligation by third parties for the purpose of sending unsolicited advertising and information material is hereby expressly prohibited. The site operators expressly reserve the right to take legal action in the event of unsolicited advertising being sent, such as spam e-mails."
+              },
+              "credits": {
+                "title": "Credits"
+              }
+            }
+          }
+        },
+        "page": {
+          "title": "Privacy and security",
+          "list": {
+            "privacy": {
+              "header": "Privacy",
+              "notifications": "Notifications",
+              "legal": "Legal"
+            },
+            "security": {
+              "header": "Security",
+              "change-password": "Change password",
+              "login-with-biometrics": "Log in with biometrics"
+            }
+          },
+          "modal": {
+            "password": {
+              "card": {
+                "title": "Confirm your password",
+                "form": {
+                  "password": "Password",
+                  "submit": "Confirm"
+                }
+              }
+            }
+          }
+        }
+      },
+      "update-data": {
+        "page": {
+          "title": "Update my data",
+          "card": {
+            "title": "My data",
+            "form": {
+              "username": "Username",
+              "email": "Email",
+              "submit": "Update"
+            }
+          }
+        }
+      },
+      "page": {
+        "modal": {
+          "language": {
+            "title": "Change language",
+            "german": "German",
+            "english": "English"
+          },
+          "layout": {
+            "title": "Change layout",
+            "md": "Android (Material Design)",
+            "ios": "iOS (Human Interface Guidelines)"
+          },
+          "color-theme": {
+            "title": "Change color theme",
+            "system": "System",
+            "light": "Light",
+            "dark": "Dark",
+            "grayscale": "Black and white"
+          }
+        },
+        "title": "Account",
+        "list": {
+          "personal": {
+            "header": "Personal",
+            "notifications": "Notifications",
+            "my-data": "My data",
+            "privacy-and-security": "Privacy and security",
+            "delete-account": "Delete account"
+          },
+          "application": {
+            "header": "Application",
+            "language": "Change Language",
+            "color-theme": "Change color theme",
+            "layout": "Change layout",
+            "restore-defaults": "Restore default"
+          },
+          "miscellaneous": {
+            "header": "Miscellaneous",
+            "app-version": "App version",
+            "report-bug": "Report bug"
+          }
+        }
+      }
+    },
+    "auth": {
+      "login": {
+        "page": {
+          "biometrics": {
+            "wrong-credentials": "Could not log in with biometrics. Wrong credentials provided."
+          },
+          "form": {
+            "username": "Username",
+            "password": "Password",
+            "submit": "Log in"
+          },
+          "login-with-biometrics": "Log in with biometrics",
+          "register": {
+            "question": "You are not registered yet?",
+            "link": "Register"
+          },
+          "forgot-password": {
+            "question": "Forgot your password?",
+            "link": "Reset"
+          }
+        }
+      },
+      "organization": {
+        "slug": {
+          "page": {
+            "title": "Collective",
+            "card": {
+              "join": {
+                "title": "Collective Details",
+                "form": {
+                  "description": "Description",
+                  "name": "Name",
+                  "place": "Place",
+                  "submit": "Join Collective",
+                  "info": {
+                    "not-authenticated": "You need to be logged in to join a collective.",
+                    "already-member": "You are already a member of this collective."
+                  }
+                }
+              },
+              "invalid-code": {
+                "title": "Invalid Code",
+                "info": "The provided code is invalid. Please ask the collective admin to provide you a new one."
+              }
+            }
+          }
+        }
+      },
+      "register": {
+        "page": {
+          "card": {
+            "join": {
+              "title": "Join a Collective?",
+              "content": "Contact a collective admin to provide you with the invitation code to join their collective."
+            },
+            "register": {
+              "title": "Register to Kollapp",
+              "form": {
+                "username": "Username",
+                "email": "Email",
+                "password": "Password",
+                "confirm-password": "Confirm Password",
+                "submit": "Register"
+              },
+              "card": {
+                "login": {
+                  "content": "You are already registered?",
+                  "link": "Log&nbsp;in"
+                }
+              }
+            }
+          }
+        }
+      },
+      "resend-confirmation": {
+        "page": {
+          "title": "Resend confirmation",
+          "card": {
+            "title": "Enter you email",
+            "form": {
+              "email": "Email",
+              "submit": "Send confirmation email"
+            }
+          }
+        }
+      },
+      "reset-password": {
+        "confirmation": {
+          "page": {
+            "no-token": "Authentication token not found",
+            "title": "Update your password",
+            "card": {
+              "form": {
+                "password": "Password",
+                "confirm-password": "Confirm password",
+                "submit": "Update password"
+              },
+              "title": "Enter a new password"
+            }
+          }
+        },
+        "page": {
+          "title": "Reset password",
+          "card": {
+            "title": "Ender your email to reset your password",
+            "form": {
+              "email": "Email",
+              "submit": "Get email for password reset"
+            }
+          }
+        }
+      }
     }
   }
 }

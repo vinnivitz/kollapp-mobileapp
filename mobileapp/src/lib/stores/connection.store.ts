@@ -1,6 +1,8 @@
 import { type ConnectionStatus, Network } from '@capacitor/network';
 import { get, writable } from 'svelte/store';
 
+import { dev } from '$app/environment';
+
 import { t } from '$lib/locales';
 import { PreferencesKey } from '$lib/models/preferences';
 import { type ConnectionStore } from '$lib/models/stores';
@@ -24,11 +26,11 @@ function createStore(): ConnectionStore {
 			const isOnline = status.connected;
 
 			if (!isOnline && wasOnline) {
-				await showAlert($t('api.offline'));
-				console.info($t('api.offline'));
+				await showAlert($t('stores.connection.offline'));
+				if (dev) console.info('User is offline.');
 			} else if (isOnline && wasOnline === false) {
-				await showAlert($t('api.online'), { type: AlertType.SUCCESS });
-				console.info($t('api.online'));
+				await showAlert($t('stores.connection.online'), { type: AlertType.SUCCESS });
+				if (dev) console.info('User is online.');
 			}
 
 			await _set(isOnline);
@@ -52,11 +54,11 @@ function createStore(): ConnectionStore {
 		const wasOnline = get(connectionStore);
 
 		if (!isOnline && wasOnline) {
-			await showAlert($t('api.offline'));
-			console.info($t('api.offline'));
+			await showAlert($t('stores.connection.offline'));
+			if (dev) console.info('User is offline.');
 		} else if (isOnline && wasOnline === false) {
-			await showAlert($t('api.online'), { type: AlertType.SUCCESS });
-			console.info($t('api.online'));
+			await showAlert($t('stores.connection.online'), { type: AlertType.SUCCESS });
+			if (dev) console.info('User is online.');
 		}
 
 		if (status.connected !== wasOnline) {

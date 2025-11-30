@@ -1,1 +1,13 @@
-{}
+{
+  "routes": {
+    "account": {
+      "privacy-and-security": {
+        "legal": {
+          "page": {
+            "title": "Rechtliches"
+          }
+        }
+      }
+    }
+  }
+}

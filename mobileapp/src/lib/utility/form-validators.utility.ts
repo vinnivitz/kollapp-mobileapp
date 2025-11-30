@@ -29,7 +29,7 @@ export function passwordConfirmationValidator<T>(
 				errors: [
 					{
 						field: confirmPasswordField,
-						message: $t('api.dto.register.schema.validation.confirm-password.no-match')
+						message: $t('utility.form-validators.password-confirmation.no-match')
 					}
 				],
 				valid: false

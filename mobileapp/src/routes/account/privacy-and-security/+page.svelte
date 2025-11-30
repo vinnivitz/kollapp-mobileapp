@@ -1,14 +1,7 @@
 <script lang="ts">
 	import type { LoginRequestTO } from '@kollapp/api-types';
 
-	import {
-		bugOutline,
-		constructOutline,
-		fingerPrintOutline,
-		keyOutline,
-		notificationsOutline,
-		receiptOutline
-	} from 'ionicons/icons';
+	import { fingerPrintOutline, keyOutline, notificationsOutline, receiptOutline } from 'ionicons/icons';
 	import { onMount } from 'svelte';
 
 	import { dev } from '$app/environment';
@@ -92,40 +85,33 @@
 	}
 </script>
 
-<Layout title={$t('routes.account.page.privacy-and-security.title')} showBackButton>
+<Layout title={$t('routes.account.privacy-and-security.page.title')} showBackButton>
 	<ion-list inset>
-		<ion-list-header>{$t('routes.account.page.privacy-and-security.list.privacy')}</ion-list-header>
+		<ion-list-header>{$t('routes.account.privacy-and-security.page.list.privacy.header')}</ion-list-header>
 		<LabeledItem
 			clicked={() => featureNotImplementedAlert()}
 			icon={notificationsOutline}
-			label={$t('routes.account.list.account.privacy-and-security.button.notifications')}
+			label={$t('routes.account.privacy-and-security.page.list.privacy.notifications')}
 		/>
 		<LabeledItem
-			label={$t('routes.account.page.privacy-and-security.security.list.legal')}
+			label={$t('routes.account.privacy-and-security.page.list.privacy.legal')}
 			icon={receiptOutline}
 			indexed="/account/privacy-and-security/legal"
 			clicked={() => goto(resolve('/account/privacy-and-security/legal'))}
 		/>
-		<LabeledItem
-			label="App version"
-			icon={constructOutline}
-			clicked={() => goto(resolve('/account/privacy-and-security/app-version'))}
-			indexed="/account/privacy-and-security/app-version"
-		/>
-		<LabeledItem label="Report bug" icon={bugOutline} clicked={() => featureNotImplementedAlert()} />
 	</ion-list>
 	<ion-list inset>
-		<ion-list-header>{$t('routes.account.page.privacy-and-security.list.security')}</ion-list-header>
+		<ion-list-header>{$t('routes.account.privacy-and-security.page.list.security.header')}</ion-list-header>
 		<LabeledItem
 			indexed="/account/privacy-and-security/change-password"
 			clicked={() => goto(resolve('/account/privacy-and-security/change-password'))}
 			icon={keyOutline}
-			label={$t('routes.account.list.account.privacy-and-security.button.change-password')}
+			label={$t('routes.account.privacy-and-security.page.list.security.change-password')}
 		/>
 		{#await isBiometricAvailable() then isAvailable}
 			<CustomItem
 				icon={fingerPrintOutline}
-				id={$t('routes.account.list.account.privacy-and-security.button.biometrics')}
+				indexLabel={$t('routes.account.privacy-and-security.page.list.security.login-with-biometrics')}
 				indexed="/account/privacy-and-security"
 			>
 				<ion-toggle
@@ -136,7 +122,7 @@
 					disabled={!isAvailable}
 					onionChange={() => onToggleBiometrics()}
 				>
-					{$t('routes.account.list.account.privacy-and-security.button.biometrics')}
+					{$t('routes.account.privacy-and-security.page.list.security.login-with-biometrics')}
 				</ion-toggle>
 			</CustomItem>
 		{/await}
@@ -144,19 +130,19 @@
 </Layout>
 
 <Popover extended open={showPasswordPrompt} dismissed={onPasswordPromptDismiss}>
-	<Card title="Enter your password">
+	<Card title={$t('routes.account.privacy-and-security.page.modal.password.card.title')}>
 		<form use:customForm={form}>
 			<TextInputItem
 				name="password"
 				type="password"
-				label={$t('routes.account.list.account.privacy-and-security.form.input.password')}
+				label={$t('routes.account.privacy-and-security.page.modal.password.card.form.password')}
 				icon={keyOutline}
 			/>
 			<Button
 				classList="mt-3"
 				expand="block"
 				type="submit"
-				label={$t('routes.account.list.account.privacy-and-security.form.submit')}
+				label={$t('routes.account.privacy-and-security.page.modal.password.card.form.submit')}
 				icon={keyOutline}
 			/>
 		</form>

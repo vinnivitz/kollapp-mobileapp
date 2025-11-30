@@ -28,11 +28,11 @@
 	let {
 		breakpoints = true,
 		cancelIcon = trashBinOutline,
-		cancelLabel = $t('components.widgets.modal.button.cancel'),
+		cancelLabel = $t('components.widgets.ionic.modal.cancel'),
 		children,
 		confirmed,
 		confirmIcon = saveOutline,
-		confirmLabel = $t('components.widgets.modal.button.confirm'),
+		confirmLabel = $t('components.widgets.ionic.modal.confirm'),
 		dismissed,
 		informational,
 		initialBreakPoint = 0.75,

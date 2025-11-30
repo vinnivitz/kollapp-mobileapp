@@ -21,7 +21,7 @@
 
 	$effect(() => {
 		if (!data.token) {
-			showAlert($t('routes.auth.reset-password.confirmation.no-token'));
+			showAlert($t('routes.auth.reset-password.confirmation.page.no-token'));
 			goto(resolve('/auth/login'));
 		}
 	});
@@ -38,26 +38,26 @@
 	});
 </script>
 
-<Layout title={$t('routes.auth.reset-password.confirmation.title')} showBackButton>
-	<Card title={$t('routes.auth.reset-password.confirmation.form.title')}>
+<Layout title={$t('routes.auth.reset-password.confirmation.page.title')} showBackButton>
+	<Card title={$t('routes.auth.reset-password.confirmation.page.card.title')}>
 		<form use:customForm={form}>
 			<TextInputItem
 				name="password"
 				type="password"
-				label={$t('routes.auth.reset-password.confirmation.form.input.password')}
+				label={$t('routes.auth.reset-password.confirmation.page.card.form.password')}
 				icon={keyOutline}
 			/>
 			<TextInputItem
 				name="confirmPassword"
 				type="password"
-				label={$t('routes.auth.reset-password.confirmation.form.input.confirm-password')}
+				label={$t('routes.auth.reset-password.confirmation.page.card.form.confirm-password')}
 				icon={keySharp}
 			/>
 			<Button
 				classList="mt-3"
 				expand="block"
 				type="submit"
-				label={$t('routes.auth.reset-password.confirmation.form.submit')}
+				label={$t('routes.auth.reset-password.confirmation.page.card.form.submit')}
 			/>
 		</form>
 	</Card>

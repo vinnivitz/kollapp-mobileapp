@@ -338,10 +338,10 @@
 				{/if}
 			</div>
 			<div class="mx-14 mt-2 flex items-center justify-between gap-2">
-				<Button disabled={isExpired} shape="round" icon={shareOutline} clicked={onShare}></Button>
-				<Button disabled={isExpired} shape="round" icon={clipboardOutline} clicked={onWriteToClipboard}></Button>
-				<Button disabled={isExpired} shape="round" icon={mailOutline} clicked={onSendMail}></Button>
-				<Button disabled={isExpired} shape="round" icon={qrCode} clicked={showQRCode}></Button>
+				<Button disabled={isExpired} shape="round" icon={shareOutline} clicked={onShare} />
+				<Button disabled={isExpired} shape="round" icon={clipboardOutline} clicked={onWriteToClipboard} />
+				<Button disabled={isExpired} shape="round" icon={mailOutline} clicked={onSendMail} />
+				<Button disabled={isExpired} shape="round" icon={qrCode} clicked={showQRCode} />
 			</div>
 			<Button
 				icon={refreshCircleOutline}
@@ -349,7 +349,7 @@
 				classList="mx-8 mt-5"
 				label="Renew invitation code"
 				clicked={onRenewCode}
-			></Button>
+			/>
 		</div>
 	</Card>
 </Modal>

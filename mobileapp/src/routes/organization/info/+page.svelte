@@ -49,7 +49,7 @@
 				<ion-text class="text-center" color="medium"
 					>Ask the collective admin to provide you a new invitation code.</ion-text
 				>
-				<Button label="Back to home" icon={homeOutline} fill="outline" clicked={() => goto(resolve('/'))}></Button>
+				<Button label="Back to home" icon={homeOutline} fill="outline" clicked={() => goto(resolve('/'))} />
 			</div>
 		</Card>
 	{/if}

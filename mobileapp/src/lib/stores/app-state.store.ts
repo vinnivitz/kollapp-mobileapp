@@ -4,6 +4,7 @@ import { get, writable } from 'svelte/store';
 
 import { dev } from '$app/environment';
 
+import { t } from '$lib/locales';
 import { AlertType, AppStateType } from '$lib/models/ui';
 import {
 	authenticationStore,
@@ -18,6 +19,7 @@ import { clearRequestCache, showAlert } from '$lib/utility';
 
 function createAppStateStore(): AppStateStore {
 	const { set, subscribe } = writable<AppStateType>(AppStateType.UNINITIALIZED);
+	const $t = get(t);
 
 	let isInitialized = false;
 
@@ -43,9 +45,9 @@ function createAppStateStore(): AppStateStore {
 			const isAuthenticated = !!get(authenticationStore);
 
 			if (isAuthenticated) {
-				set(AppStateType.INITIALIZING_USER_DATA);
+				set(AppStateType.INITIALIZING_BASE_DATA);
 				await Promise.all([userStore.init(), organizationStore.init()]);
-				if (dev) console.info('User data stores initialized.');
+				if (dev) console.info('Base data stores initialized.');
 			} else {
 				await Promise.all([userStore.reset(), organizationStore.reset()]);
 			}
@@ -53,7 +55,7 @@ function createAppStateStore(): AppStateStore {
 			set(AppStateType.READY);
 		} catch (error) {
 			set(AppStateType.ERROR);
-			await showAlert('An error occurred during app initialization.', { type: AlertType.ERROR });
+			await showAlert($t('stores.app-state.error'), { type: AlertType.ERROR });
 			if (dev) console.warn('AppStateStore initialization error:', error);
 		}
 	}
@@ -65,22 +67,22 @@ function createAppStateStore(): AppStateStore {
 		isInitialized = false;
 	}
 
-	async function initializeUserData(): Promise<void> {
+	async function initializeBaseData(): Promise<void> {
 		try {
-			set(AppStateType.INITIALIZING_USER_DATA);
+			set(AppStateType.INITIALIZING_BASE_DATA);
 			await Promise.all([userStore.init(), organizationStore.init()]);
-			if (dev) console.info('User data stores initialized.');
+			if (dev) console.info('Base data stores initialized.');
 			set(AppStateType.READY);
 		} catch (error) {
 			set(AppStateType.ERROR);
-			await showAlert('An error occurred while loading user data.', { type: AlertType.ERROR });
-			if (dev) console.warn('AppStateStore user data initialization error:', error);
+			await showAlert($t('stores.app-state.error'), { type: AlertType.ERROR });
+			if (dev) console.warn('AppStateStore base data initialization error:', error);
 		}
 	}
 
 	return {
 		initialize,
-		initializeUserData,
+		initializeBaseData,
 		reset,
 		subscribe
 	};

@@ -38,13 +38,13 @@
 
 	<ion-tab-bar slot="bottom">
 		{#each tabs as tab, index (tab.tab)}
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<ion-tab-button
 				tab={tab.tab}
 				role="tab"
 				tabindex={index}
 				class:tab-selected={tab.tab === currentTabName}
 				onclick={() => onTabSelect(tab.tab)}
+				onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && onTabSelect(tab.tab)}
 			>
 				<ion-label>{tab.label}</ion-label>
 				<ion-icon icon={tab.icon}></ion-icon>

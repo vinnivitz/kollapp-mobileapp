@@ -6,6 +6,6 @@ import type { Readable } from 'svelte/store';
  */
 export type AppStateStore = Readable<AppStateType> & {
 	initialize: () => Promise<void>;
-	initializeUserData: () => Promise<void>;
+	initializeBaseData: () => Promise<void>;
 	reset: () => Promise<void>;
 };

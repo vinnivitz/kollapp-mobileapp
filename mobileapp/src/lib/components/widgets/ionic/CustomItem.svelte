@@ -15,8 +15,8 @@
 		icon?: string;
 		iconColor?: Colors;
 		iconEnd?: string;
-		id?: string;
 		indexed?: string;
+		indexLabel?: string;
 		note?: string;
 		slidingOptions?: ItemSlidingOption[];
 		transparent?: boolean;
@@ -37,8 +37,8 @@
 		iconClick,
 		iconColor = color === 'light' || color === 'white' ? 'medium' : 'white',
 		iconEnd,
-		id,
 		indexed,
+		indexLabel,
 		note,
 		slidingOptions,
 		transparent
@@ -73,7 +73,7 @@
 		<ion-item
 			onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && clicked?.()}
 			{disabled}
-			{id}
+			id={indexLabel}
 			data-card={card}
 			button={!!clicked}
 			role={clicked ? 'button' : undefined}

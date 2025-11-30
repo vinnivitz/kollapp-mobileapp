@@ -22,20 +22,20 @@
 	});
 </script>
 
-<Layout title={$t('routes.auth.resend-confirmation.title')} showBackButton>
-	<Card title={$t('routes.auth.resend-confirmation.card.title')}>
+<Layout title={$t('routes.auth.resend-confirmation.page.title')} showBackButton>
+	<Card title={$t('routes.auth.resend-confirmation.page.card.title')}>
 		<form use:customForm={form}>
 			<TextInputItem
 				name="email"
 				inputmode="email"
-				label={$t('routes.auth.reset-password.form.email')}
+				label={$t('routes.auth.resend-confirmation.page.card.form.email')}
 				icon={mailOutline}
 			/>
 			<Button
 				classList="mt-3"
 				expand="block"
 				type="submit"
-				label={$t('routes.auth.resend-confirmation.form.buttons.send')}
+				label={$t('routes.auth.resend-confirmation.page.card.form.submit')}
 			/>
 		</form>
 	</Card>

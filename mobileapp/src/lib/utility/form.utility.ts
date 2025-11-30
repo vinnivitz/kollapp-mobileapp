@@ -353,5 +353,5 @@ async function validate<T>(schema: ObjectSchema<T & AnyObject>, data: T): Promis
 }
 
 function isIonInputElement(element: HTMLIonInputElement | HTMLIonTextareaElement): element is HTMLIonInputElement {
-	return 'type' in element;
+	return element.tagName === 'ION-INPUT';
 }

@@ -25,10 +25,10 @@
 
 	let {
 		applied,
-		applyText = $t('components.widgets.calendar.done-button.label'),
+		applyText = $t('components.widgets.ionic.datetime.apply'),
 		color = 'secondary',
 		dismissed,
-		dismissText = $t('components.widgets.calendar.dismiss-button.label'),
+		dismissText = $t('components.widgets.ionic.datetime.dismiss'),
 		max = format(addYears(new TZDate(), 10), 'yyyy-MM-dd'),
 		min,
 		showButtons = true,

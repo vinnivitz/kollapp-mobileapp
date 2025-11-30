@@ -12,19 +12,17 @@
 	import { initializationStore, organizationStore, userStore } from '$lib/stores';
 
 	type Properties = {
-		title: string;
 		children?: Snippet;
-		hideLayout?: boolean;
 		hideMenu?: boolean;
 		loading?: boolean;
 		scrollable?: boolean;
 		showBackButton?: boolean;
+		title?: string;
 		onRefresh?: () => Promise<void>;
 	};
 
 	let {
 		children,
-		hideLayout,
 		hideMenu,
 		loading = false,
 		onRefresh,
@@ -46,7 +44,7 @@
 	}
 </script>
 
-{#if !hideLayout && !hideMenu}
+{#if title && !hideMenu}
 	<Menu bind:this={menuComponent}>
 		<ion-list>
 			<LabeledItem
@@ -80,7 +78,7 @@
 {/if}
 
 <div class="ion-page" id="menu">
-	{#if !hideLayout}
+	{#if title}
 		<Header {title} {showBackButton} {loading}></Header>
 	{/if}
 	{#if loaded && !loading}

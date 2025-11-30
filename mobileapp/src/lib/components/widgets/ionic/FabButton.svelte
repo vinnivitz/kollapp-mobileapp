@@ -12,8 +12,8 @@
 		classList?: string;
 		color?: Colors;
 		horizontal?: 'center' | 'end' | 'start';
-		id?: string;
 		indexed?: RouteId;
+		indexLabel?: string;
 		vertical?: 'bottom' | 'center' | 'top';
 		clicked?: () => void;
 	};
@@ -25,8 +25,8 @@
 		color = 'secondary',
 		horizontal = 'end',
 		icon,
-		id,
 		indexed,
+		indexLabel,
 		label,
 		vertical = 'bottom'
 	}: Properties = $props();
@@ -42,7 +42,7 @@
 	class={`fixed ${classList}`}
 	{vertical}
 	{horizontal}
-	{id}
+	id={indexLabel}
 	aria-label={label}
 	use:clickOutside
 	onblur={fabButtonElement?.close}

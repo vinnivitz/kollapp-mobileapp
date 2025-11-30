@@ -103,38 +103,37 @@
 				fill="outline"
 				icon={addOutline}
 				clicked={async () => await showAlert('Button clicked', { type: AlertType.SUCCESS })}
-			></Button>
+			/>
 			<Button
 				label="Clear"
 				fill="clear"
 				icon={addOutline}
 				clicked={async () => await showAlert('Button clicked', { type: AlertType.SUCCESS })}
-			></Button>
-			<Button icon={addOutline} clicked={async () => await showAlert('Button clicked', { type: AlertType.SUCCESS })}
-			></Button>
+			/>
+			<Button icon={addOutline} clicked={async () => await showAlert('Button clicked', { type: AlertType.SUCCESS })} />
 			<Button
 				label="Disabled"
 				disabled
 				icon={addOutline}
 				clicked={async () => await showAlert('Button clicked', { type: AlertType.SUCCESS })}
-			></Button>
+			/>
 			<Button
 				label="Icon right"
 				iconEnd={addOutline}
 				clicked={async () => await showAlert('Button clicked', { type: AlertType.SUCCESS })}
-			></Button>
+			/>
 			<Button
 				label="Icon big"
 				iconSize="large"
 				icon={addOutline}
 				clicked={async () => await showAlert('Button clicked', { type: AlertType.SUCCESS })}
-			></Button>
+			/>
 			<Button
 				label="Button large"
 				size="large"
 				icon={addOutline}
 				clicked={async () => await showAlert('Button clicked', { type: AlertType.SUCCESS })}
-			></Button>
+			/>
 		</div>
 	</Card>
 	<Card title="Toggle">
@@ -188,8 +187,7 @@
 		<CustomItem card>
 			<div class="flex w-full items-center justify-between gap-4">
 				<ion-label>Custom item</ion-label>
-				<Button clicked={async () => await showAlert('Button clicked', { type: AlertType.SUCCESS })} label="Click me"
-				></Button>
+				<Button clicked={async () => await showAlert('Button clicked', { type: AlertType.SUCCESS })} label="Click me" />
 			</div>
 		</CustomItem>
 		<LabeledItem card label="Labeled item"></LabeledItem>
@@ -229,7 +227,7 @@
 	</Card>
 	<Card title="Modal">
 		<div class="text-center">
-			<Button label="Open modal" clicked={() => (modalOpen = true)}></Button>
+			<Button label="Open modal" clicked={() => (modalOpen = true)} />
 		</div>
 	</Card>
 	<Card title="Map">

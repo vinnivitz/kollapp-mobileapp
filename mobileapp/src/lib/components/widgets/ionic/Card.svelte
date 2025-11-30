@@ -11,8 +11,8 @@
 		classList?: string;
 		color?: Colors | undefined;
 		icon?: string;
-		id?: string;
 		indexed?: string;
+		indexLabel?: string;
 		readonly?: boolean;
 		subtitle?: string;
 		title?: string;
@@ -29,8 +29,8 @@
 		clicked,
 		color = border ? 'transparent' : 'light',
 		icon,
-		id,
 		indexed,
+		indexLabel,
 		readonly,
 		subtitle,
 		title,
@@ -41,7 +41,6 @@
 	// workaround to avoid reference linting error
 	void indexed;
 	void accessible;
-	void id;
 	void icon;
 
 	const borderStyle = $derived(border ? `1px solid var(--ion-color-${border})` : '0px solid transparent');
@@ -53,7 +52,7 @@
 		role="button"
 		tabindex="0"
 		style={`pointer-events: ${readonly ? 'none' : 'auto'}; border: ${borderStyle}`}
-		{id}
+		id={indexLabel}
 		{color}
 		button
 		class={classList}
@@ -62,7 +61,7 @@
 		{@render content()}
 	</ion-card>
 {:else}
-	<ion-card {id} {color} class={classList} style={`border: ${borderStyle}`}>
+	<ion-card id={indexLabel} {color} class={classList} style={`border: ${borderStyle}`}>
 		{@render content()}
 	</ion-card>
 {/if}

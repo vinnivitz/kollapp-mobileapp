@@ -20,7 +20,7 @@ export async function isBiometricAvailable(): Promise<boolean> {
 	try {
 		const result = await NativeBiometric.isAvailable();
 		if (result.errorCode) {
-			await showAlert($t('utils.biometrics.not-available'));
+			await showAlert($t('utility.biometrics.not-available'));
 		}
 		return result.isAvailable;
 	} catch {
@@ -45,7 +45,7 @@ export async function getBiometricCredentials(): Promise<LoginRequestTO | undefi
 		const result = await NativeBiometric.getCredentials({ server: BIOMETRICS_SERVER });
 		return { password: result.password, username: result.username } satisfies LoginRequestTO;
 	} catch {
-		await showAlert($t('utils.biometrics.not-available'));
+		await showAlert($t('utility.biometrics.not-available'));
 		return undefined;
 	}
 }
@@ -65,7 +65,7 @@ export async function storeBiometricCredentials(username: string, password: stri
 		});
 		await storeValue(PreferencesKey.BIOMETRICS_ENABLED, true);
 	} catch {
-		await showAlert($t('utils.biometrics.not-available'));
+		await showAlert($t('utility.biometrics.not-available'));
 	}
 }
 
@@ -83,7 +83,7 @@ export async function updateUsernameBiometricCredentials(username: string): Prom
 			username
 		});
 	} catch {
-		await showAlert($t('utils.biometrics.not-available'));
+		await showAlert($t('utility.biometrics.not-available'));
 	}
 }
 
@@ -101,7 +101,7 @@ export async function updatePasswordBiometricCredentials(password: string): Prom
 			username: result.username
 		});
 	} catch {
-		await showAlert($t('utils.biometrics.not-available'));
+		await showAlert($t('utility.biometrics.not-available'));
 	}
 }
 
@@ -114,20 +114,20 @@ export async function deleteBiometricCredentials(): Promise<void> {
 		await NativeBiometric.deleteCredentials({ server: BIOMETRICS_SERVER });
 		await storeValue(PreferencesKey.BIOMETRICS_ENABLED, false);
 	} catch {
-		await showAlert($t('utils.biometrics.not-available'));
+		await showAlert($t('utility.biometrics.not-available'));
 	}
 }
 
 /**
- * Requests biometric authentication from the user.
+ * Prompts biometric authentication from the user.
  * @returns {Promise<LoginRequestTO | undefined>} - Returns the credentials if authentication is successful, otherwise undefined.
  */
-export async function requestBiometricAuthentication(): Promise<LoginRequestTO | undefined> {
+export async function promptBiometricAuthentication(): Promise<LoginRequestTO | undefined> {
 	await NativeBiometric.verifyIdentity({
 		maxAttempts: environment.maxBiometricAuthRetries,
-		negativeButtonText: $t('utils.biometrics.cancel'),
-		subtitle: $t('utils.biometrics.subtitle'),
-		title: $t('utils.biometrics.title')
+		negativeButtonText: $t('utility.biometrics.prompt.cancel'),
+		subtitle: $t('utility.biometrics.prompt.subtitle'),
+		title: $t('utility.biometrics.prompt.title')
 	});
 	return getBiometricCredentials();
 }

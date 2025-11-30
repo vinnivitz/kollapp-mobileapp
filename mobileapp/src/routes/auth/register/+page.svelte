@@ -23,55 +23,65 @@
 	});
 </script>
 
-<Layout title={$t('routes.auth.register.title')} hideLayout>
+<Layout>
 	<div class="mb-6">
 		<Welcome />
 	</div>
-	<Card title={$t('routes.auth.register.card.join-organization.title')}>
+	{@render joinCard()}
+	{@render registerCard()}
+</Layout>
+
+<!-- Snippets -->
+
+{#snippet joinCard()}
+	<Card title={$t('routes.auth.register.page.card.join.title')}>
 		<div class="flex items-center gap-4">
 			<ion-icon icon={mailOpenOutline} size="large" class="flex-none"></ion-icon>
 			<ion-text class="flex-auto">
-				{$t('routes.auth.register.card.join-organization.content')}
+				{$t('routes.auth.register.page.card.join.content')}
 			</ion-text>
 		</div>
 	</Card>
-	<Card title={$t('routes.auth.register.card.register-organization.title')}>
-		{@render registerForm()}
-	</Card>
-</Layout>
+{/snippet}
 
-{#snippet registerForm()}
-	<form use:customForm={form}>
-		<TextInputItem name="username" label={$t('routes.auth.register.form.input.username')} icon={personCircleOutline} />
-		<TextInputItem
-			name="email"
-			inputmode="email"
-			type="email"
-			label={$t('routes.auth.register.form.input.email')}
-			icon={mailOutline}
-		/>
-		<TextInputItem
-			name="password"
-			type="password"
-			label={$t('routes.auth.register.form.input.password')}
-			icon={keyOutline}
-		/>
-		<TextInputItem
-			name="confirmPassword"
-			type="password"
-			label={$t('routes.auth.register.form.input.confirm-password')}
-			icon={keySharp}
-		/>
-		<Button
-			classList="mt-3"
-			expand="block"
-			type="submit"
-			label={$t('routes.auth.register.form.submit')}
-			icon={saveOutline}
-		/>
-	</form>
-	<Card clicked={() => goto(resolve('/auth/login'))} classList="text-center">
-		{$t('routes.auth.register.login.text')}
-		<ion-text color="secondary">{$t('routes.auth.register.login.link')}</ion-text>
+{#snippet registerCard()}
+	<Card title={$t('routes.auth.register.page.card.register.title')}>
+		<form use:customForm={form}>
+			<TextInputItem
+				name="username"
+				label={$t('routes.auth.register.page.card.register.form.username')}
+				icon={personCircleOutline}
+			/>
+			<TextInputItem
+				name="email"
+				inputmode="email"
+				type="email"
+				label={$t('routes.auth.register.page.card.register.form.email')}
+				icon={mailOutline}
+			/>
+			<TextInputItem
+				name="password"
+				type="password"
+				label={$t('routes.auth.register.page.card.register.form.password')}
+				icon={keyOutline}
+			/>
+			<TextInputItem
+				name="confirmPassword"
+				type="password"
+				label={$t('routes.auth.register.page.card.register.form.confirm-password')}
+				icon={keySharp}
+			/>
+			<Button
+				classList="mt-3"
+				expand="block"
+				type="submit"
+				label={$t('routes.auth.register.page.card.register.form.submit')}
+				icon={saveOutline}
+			/>
+		</form>
+		<Card clicked={() => goto(resolve('/auth/login'))} classList="text-center flex flex-wrap gap-1">
+			<ion-text>{$t('routes.auth.register.page.card.register.card.login.content')}</ion-text>
+			<ion-text color="secondary">{$t('routes.auth.register.page.card.register.card.login.link')}</ion-text>
+		</Card>
 	</Card>
 {/snippet}

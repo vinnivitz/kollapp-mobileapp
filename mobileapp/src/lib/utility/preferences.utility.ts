@@ -1,9 +1,13 @@
 import type { PreferencesKey } from '$lib/models/preferences';
 
 import { Preferences } from '@capacitor/preferences';
+import { get } from 'svelte/store';
 
 import environment from '$lib/environment';
+import { t } from '$lib/locales';
 import { showAlert } from '$lib/utility';
+
+const $t = get(t);
 
 /**
  * Stores a value in the preferences store
@@ -15,7 +19,7 @@ export async function storeValue<T>(key: PreferencesKey, value: T): Promise<void
 	try {
 		await Preferences.set({ key: getKey(key), value: JSON.stringify(value) });
 	} catch {
-		await showAlert('Failed to store value');
+		await showAlert($t('utility.preferences.failure.store'));
 	}
 }
 
@@ -35,7 +39,7 @@ export async function getStoredValue<T = string>(key: PreferencesKey): Promise<T
 			return value as T;
 		}
 	} catch {
-		await showAlert('Failed to retrieve value');
+		await showAlert($t('utility.preferences.failure.retreive'));
 	}
 }
 
@@ -48,7 +52,7 @@ export async function removeStoredValue(key: PreferencesKey): Promise<void> {
 	try {
 		await Preferences.remove({ key: getKey(key) });
 	} catch {
-		await showAlert('Failed to remove value');
+		await showAlert($t('utility.preferences.failure.remove'));
 	}
 }
 

@@ -33,32 +33,32 @@
 	});
 </script>
 
-<Layout title={$t('routes.auth.change-password.confirmation.title')} showBackButton>
-	<Card title={$t('routes.auth.change-password.confirmation.form.title')}>
+<Layout title={$t('routes.account.privacy-and-security.change-password.page.title')} showBackButton>
+	<Card title={$t('routes.account.privacy-and-security.change-password.page.card.title')}>
 		<form use:customForm={form}>
 			<TextInputItem
 				name="currentPassword"
 				type="password"
-				label={$t('routes.account.change-password.form.input.current-password')}
+				label={$t('routes.account.privacy-and-security.change-password.page.card.form.current-password')}
 				icon={keyOutline}
 			/>
 			<TextInputItem
 				name="newPassword"
 				type="password"
-				label={$t('routes.account.change-password.form.input.new-password')}
+				label={$t('routes.account.privacy-and-security.change-password.page.card.form.new-password')}
 				icon={keySharp}
 			/>
 			<TextInputItem
 				name="confirmNewPassword"
 				type="password"
-				label={$t('routes.auth.reset-password.confirmation.form.input.confirm-password')}
+				label={$t('routes.account.privacy-and-security.change-password.page.card.form.confirm-new-password')}
 				icon={keySharp}
 			/>
 			<Button
 				classList="mt-3"
 				expand="block"
 				type="submit"
-				label={$t('routes.account.change-password.form.submit')}
+				label={$t('routes.account.privacy-and-security.change-password.page.card.form.submit')}
 				icon={saveOutline}
 			/>
 		</form>

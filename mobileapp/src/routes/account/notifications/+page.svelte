@@ -1,8 +1,11 @@
 <script lang="ts">
+	import type { SegmentConfig } from '$lib/models/ui';
+
 	import { notificationsCircleOutline, notificationsOffOutline, notificationsOutline } from 'ionicons/icons';
 
 	import Layout from '$lib/components/layout/Layout.svelte';
-	import Chip from '$lib/components/widgets/ionic/Chip.svelte';
+	import SegmentItem from '$lib/components/widgets/ionic/SegmentItem.svelte';
+	import { t } from '$lib/locales';
 
 	enum NotificationFilter {
 		ALL = 'all',
@@ -10,42 +13,41 @@
 		UNREAD = 'unread'
 	}
 
-	let notificationFilter = $state(NotificationFilter.UNREAD);
+	let notificationFilter = $state<NotificationFilter>(NotificationFilter.UNREAD);
+
+	const segmentConfig: SegmentConfig[] = $derived([
+		{
+			clicked: () => (notificationFilter = NotificationFilter.UNREAD),
+			color: 'danger',
+			icon: notificationsCircleOutline,
+			label: 'Unread',
+			selected: notificationFilter === NotificationFilter.UNREAD
+		},
+		{
+			clicked: () => (notificationFilter = NotificationFilter.ALL),
+			color: 'secondary',
+			icon: notificationsOutline,
+			label: 'All',
+			selected: notificationFilter === NotificationFilter.ALL
+		},
+		{
+			clicked: () => (notificationFilter = NotificationFilter.READ),
+			color: 'medium',
+			icon: notificationsOffOutline,
+			label: 'Read',
+			selected: notificationFilter === NotificationFilter.READ
+		}
+	]);
 </script>
 
-<Layout showBackButton title="Notifications">
-	<div class="text-center">
-		<div class="mb-2 flex items-center justify-center gap-3 rounded-full bg-(--ion-background-color-step-50) px-5 py-1">
-			<Chip
-				color="danger"
-				label="Unread"
-				icon={notificationsCircleOutline}
-				selected={notificationFilter === NotificationFilter.UNREAD}
-				clicked={() => (notificationFilter = NotificationFilter.UNREAD)}
-			/>
-			<Chip
-				color="secondary"
-				label="All"
-				icon={notificationsOutline}
-				selected={notificationFilter === NotificationFilter.ALL}
-				clicked={() => (notificationFilter = NotificationFilter.ALL)}
-			/>
-			<Chip
-				color="medium"
-				label="Read"
-				icon={notificationsOffOutline}
-				selected={notificationFilter === NotificationFilter.READ}
-				clicked={() => (notificationFilter = NotificationFilter.READ)}
-			/>
-		</div>
-	</div>
-	<div class="mt-5 text-center">
+<Layout showBackButton title={$t('routes.account.notifications.page.title')}>
+	<SegmentItem config={segmentConfig} classList="text-center mt-5">
 		{#if notificationFilter === NotificationFilter.UNREAD}
-			<ion-note>No unread notifications.</ion-note>
+			<ion-note>{$t('routes.account.notifications.page.no-unread')}</ion-note>
 		{:else if notificationFilter === NotificationFilter.ALL}
-			<ion-note>No notifications found.</ion-note>
+			<ion-note>{$t('routes.account.notifications.page.no-notifications')}</ion-note>
 		{:else}
-			<ion-note>No notifications found.</ion-note>
+			<ion-note>{$t('routes.account.notifications.page.no-notifications')}</ion-note>
 		{/if}
-	</div>
+	</SegmentItem>
 </Layout>

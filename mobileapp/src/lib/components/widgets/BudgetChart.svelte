@@ -8,6 +8,7 @@
 	import { calendarOutline, cashOutline, trendingDown, trendingUp } from 'ionicons/icons';
 
 	import Chip from '$lib/components/widgets/ionic/Chip.svelte';
+	import { t } from '$lib/locales';
 	import { formatter } from '$lib/utility';
 
 	enum ChartType {
@@ -191,7 +192,7 @@
 	}
 </script>
 
-<div class="mt-5 mb-2 text-center text-2xl">Budget overview</div>
+<h1 class="mt-5 mb-2 text-center">{$t('components.widgets.budget-card.heading')}</h1>
 {#if postings && postings.length > 0}
 	<div class="flex items-center justify-center gap-2">
 		{#if credits >= MINIMAL_POSTINGS_FOR_INTERACTION || debits >= MINIMAL_POSTINGS_FOR_INTERACTION}
@@ -235,5 +236,7 @@
 		{/if}
 	</div>
 {:else}
-	<div class="text-medium mt-5 text-center"><ion-note>No postings found.</ion-note></div>
+	<div class="text-medium mt-5 text-center">
+		<ion-note>{$t('components.widgets.budget-card.no-postings')}</ion-note>
+	</div>
 {/if}

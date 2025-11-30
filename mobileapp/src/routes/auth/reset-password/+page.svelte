@@ -17,13 +17,13 @@
 	});
 </script>
 
-<Layout title={$t('routes.auth.reset-password.title')} showBackButton hideMenu>
-	<Card title={$t('routes.auth.reset-password.card.title')}>
+<Layout title={$t('routes.auth.reset-password.page.title')} showBackButton hideMenu>
+	<Card title={$t('routes.auth.reset-password.page.card.title')}>
 		<form use:customForm={form}>
 			<TextInputItem
 				name="email"
 				inputmode="email"
-				label={$t('routes.auth.reset-password.form.email')}
+				label={$t('routes.auth.reset-password.page.card.form.email')}
 				icon={mailOutline}
 			/>
 			<Button
@@ -31,7 +31,7 @@
 				classList="mt-3"
 				expand="block"
 				type="submit"
-				label={$t('routes.auth.reset-password.form.buttons.send')}
+				label={$t('routes.auth.reset-password.page.card.form.submit')}
 			/>
 		</form>
 	</Card>

@@ -74,7 +74,7 @@ export async function showAlert(message: string, config?: AlertConfig): Promise<
 		appState === AppStateType.UNINITIALIZED ||
 		appState === AppStateType.INITIALIZING_CORE ||
 		appState === AppStateType.INITIALIZING_AUTH ||
-		appState === AppStateType.INITIALIZING_USER_DATA
+		appState === AppStateType.INITIALIZING_BASE_DATA
 	) {
 		queuedAlerts.push({ config, message });
 		return;
@@ -89,7 +89,7 @@ export async function showAlert(message: string, config?: AlertConfig): Promise<
  */
 export async function featureNotImplementedAlert(): Promise<void> {
 	const $t = get(t);
-	const message = $t('utils.alert.feature-not-implemented');
+	const message = $t('utility.alert.feature-not-implemented');
 	await showAlert(message);
 }
 
