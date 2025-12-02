@@ -356,7 +356,7 @@
             },
             "event-summary": {
               "add-to-calendar": "Zum Kalender hinzufügen",
-              "open-in-map": "In der Karte öffnen"
+              "open-in-map": "Karte öffnen"
             },
             "fab": {
               "archieve": "Archiviere Veranstaltung",
@@ -676,7 +676,7 @@
         "title": "Kollektiv",
         "upcoming-event": {
           "card": {
-            "title": "Kommende Veranstaltung"
+            "title": "Nächste Veranstaltung"
           }
         }
       },
@@ -738,7 +738,7 @@
         "title": "Kollapp",
         "upcoming-event-card": {
           "card": {
-            "title": "Kommende Veranstaltung"
+            "title": "Nächste Veranstaltung"
           }
         }
       }
