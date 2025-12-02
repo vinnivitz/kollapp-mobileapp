@@ -10,7 +10,7 @@
 	import { AppLauncher } from '@capacitor/app-launcher';
 	import { TZDate } from '@date-fns/tz';
 	import { CalendarPermissionScope, CapacitorCalendar } from '@ebarooni/capacitor-calendar';
-	import { alertController, isPlatform, loadingController } from '@ionic/core';
+	import { isPlatform, loadingController } from '@ionic/core';
 	import { addDays, format, formatDistanceToNow } from 'date-fns';
 	import {
 		addOutline,
@@ -50,22 +50,23 @@
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
 	import DatetimeInputItem from '$lib/components/widgets/ionic/DatetimeInputItem.svelte';
 	import FabButton from '$lib/components/widgets/ionic/FabButton.svelte';
+	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import LocationInputItem from '$lib/components/widgets/ionic/LocationInputItem.svelte';
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
+	import MultiSelectItem from '$lib/components/widgets/ionic/MultiSelectItem.svelte';
 	import Popover from '$lib/components/widgets/ionic/Popover.svelte';
-	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
-	import ToggleItem from '$lib/components/widgets/ionic/ToggleItem.svelte';
 	import { t } from '$lib/locales';
 	import {
 		type FabButtonButtons,
-		type FilterItem,
 		Form,
 		type FormActions,
-		type ItemSlidingOption
+		type ItemSlidingOption,
+		type SelectItem
 	} from '$lib/models/ui';
 	import { localeStore, organizationStore, userStore } from '$lib/stores';
 	import {
 		clone,
+		confirmationModal,
 		customForm,
 		featureNotImplementedAlert,
 		formatter,
@@ -75,7 +76,7 @@
 		showAlert
 	} from '$lib/utility';
 
-	type AccountBalance = {
+	type PostingBalance = {
 		balance: string;
 		credit: string;
 		debit: string;
@@ -86,74 +87,81 @@
 	const activity = $derived($organizationStore?.activities.find((activity) => activity.id === data.activityId));
 	const postings = $derived($organizationStore?.activities.flatMap((activity) => activity.activityPostings) ?? []);
 
-	const accountBalance = $derived(calculateAccountBalance(postings ?? []));
+	const postingBalance = $derived(calculateBalance(postings ?? []));
 
 	const activityEventButtons: FabButtonButtons[] = [
 		{
 			color: 'danger',
 			handler: onDeleteActivity,
 			icon: trashOutline,
-			label: 'Delete event'
+			label: $t('routes.organization.activities.slug.page.fab.delete')
 		},
-		{ color: 'tertiary', handler: featureNotImplementedAlert, icon: archiveOutline, label: 'Archieve event' },
-		{ color: 'primary', handler: onOpenActivityModal, icon: createOutline, label: 'Edit event' }
+		{
+			color: 'tertiary',
+			handler: featureNotImplementedAlert,
+			icon: archiveOutline,
+			label: $t('routes.organization.activities.slug.page.fab.archieve')
+		},
+		{
+			color: 'primary',
+			handler: onOpenActivityModal,
+			icon: createOutline,
+			label: $t('routes.organization.activities.slug.page.fab.edit')
+		}
 	];
 
-	let createAccountPostingFormActions: FormActions<PostingCreateUpdateRequestTO>;
-	let updateAccountPostingFormActions: FormActions<PostingCreateUpdateRequestTO>;
+	let createPostingFormActions: FormActions<PostingCreateUpdateRequestTO>;
+	let updatePostingFormActions: FormActions<PostingCreateUpdateRequestTO>;
 	let updateActivityFormActions: FormActions<ActivityUpdateRequestTO>;
 
-	let createAccountPostingModalOpen = $state(false);
-	let updateAccountPostingModalOpen = $state(false);
-	let updateActivityModalOpen = $state(false);
-	let transactionHistoryModalOpen = $state(false);
+	let createPostingModalOpen = $state<boolean>(false);
+	let updatePostingModalOpen = $state<boolean>(false);
+	let updateActivityModalOpen = $state<boolean>(false);
+	let transactionHistoryModalOpen = $state<boolean>(false);
 
-	let updateAccountPostingModelTouched = $state(false);
-	let updateActivityModelTouched = $state(false);
+	let updatePostingModelTouched = $state<boolean>(false);
+	let updateActivityModelTouched = $state<boolean>(false);
 
 	let filteredPostings = $state<PostingTO[]>([]);
-	let postingsSearchValue = $state('');
-	let selectedPostingTypes: PostingType[] = $state(['DEBIT', 'CREDIT']);
+	let postingsSearchValue = $state<string>('');
+	let selectedPostingTypes = $state<PostingType[]>(['DEBIT', 'CREDIT']);
 
-	let filterOpen = $state(false);
+	let filterOpen = $state<boolean>(false);
 
 	let selectedPosting = $state<PostingTO>();
 	let selectedPostingType = $state<PostingType>('DEBIT');
 
-	let fromFilterDate = $state(format(new TZDate(), 'yyyy-MM-dd'));
-	let toFilterDate = $state(format(new TZDate(), 'yyyy-MM-dd'));
+	let fromFilterDate = $state<string>(format(new TZDate(), 'yyyy-MM-dd'));
+	let toFilterDate = $state<string>(format(new TZDate(), 'yyyy-MM-dd'));
 
-	let filterMembersModalOpen = $state(false);
-	const memberFilterItems = $derived<FilterItem[]>(
-		$organizationStore?.personsOfOrganization.map((member) => ({ data: member.username, selected: true })) ?? []
-	);
-	let filteredMemberFilterItems = $state<FilterItem[]>([]);
-	const displayedFilteredMembers = $derived(getDisplayedFilteredMembers(filteredMemberFilterItems));
-	const allMemberFilterItemsToggleActive = $derived(
-		filteredMemberFilterItems.length === filteredMemberFilterItems.filter((member) => member.selected).length
+	let memberFilterItems = $derived<SelectItem[]>(
+		$organizationStore?.personsOfOrganization.map((member) => ({
+			data: { id: member.id, label: member.username },
+			selected: true
+		})) ?? []
 	);
 
-	const createAccountPostingForm = new Form({
+	const createPostingForm = new Form({
 		completed: async () => {
 			await organizationStore.update($organizationStore?.id!);
-			createAccountPostingModalOpen = false;
+			createPostingModalOpen = false;
 		},
-		exposedActions: (exposedActions) => (createAccountPostingFormActions = exposedActions),
+		exposedActions: (exposedActions) => (createPostingFormActions = exposedActions),
 		formatters: { amountInCents: formatter.currency, date: formatter.date },
 		parsers: { amountInCents: parser.currency, date: parser.date },
 		request: (model) => budgetService.createActivityPosting($organizationStore?.id!, activity?.id!, model),
 		schema: createPostingSchema()
 	});
 
-	const updateAccountPostingForm = new Form({
+	const updatePostingForm = new Form({
 		completed: async () => {
 			await organizationStore.update($organizationStore?.id!);
-			updateAccountPostingModalOpen = false;
-			updateAccountPostingModelTouched = false;
+			updatePostingModalOpen = false;
+			updatePostingModelTouched = false;
 		},
-		exposedActions: (exposedActions) => (updateAccountPostingFormActions = exposedActions),
+		exposedActions: (exposedActions) => (updatePostingFormActions = exposedActions),
 		formatters: { amountInCents: formatter.currency, date: formatter.date },
-		onTouched: () => (updateAccountPostingModelTouched = true),
+		onTouched: () => (updatePostingModelTouched = true),
 		parsers: { amountInCents: parser.currency, date: parser.date },
 		request: async (model) =>
 			budgetService.updateActivityPosting($organizationStore?.id!, activity?.id!, selectedPosting?.id!, model),
@@ -180,21 +188,12 @@
 	});
 
 	$effect(() => {
-		if (memberFilterItems) filteredMemberFilterItems = memberFilterItems;
-	});
-
-	$effect(() => {
 		if (postings) filterPostings();
 	});
 
 	$effect(() => {
 		if ($organizationStore && !activity) goto(resolve('/organization/activities'));
 	});
-
-	function onSearchMembers(event: CustomEvent): void {
-		const value = event.detail.value;
-		filteredMemberFilterItems = memberFilterItems.filter((member) => member.data.toLowerCase().includes(value));
-	}
 
 	function getMinPostingDate(postings: PostingTO[]): string {
 		return postings.length > 0
@@ -223,26 +222,13 @@
 		});
 	}
 
-	function getDisplayedFilteredMembers(members: FilterItem[]): string {
-		const filtered = members.filter((member) => member.selected);
-		if (filtered.length === members.length) {
-			return 'All members';
-		} else if (filtered.length === 0) {
-			return 'None selected';
-		}
-		return filtered.map((member) => member.data).join(', ');
-	}
-
 	async function onDeleteActivity(): Promise<void> {
-		const alert = await alertController.create({
-			buttons: [
-				{ role: 'cancel', text: 'Cancel' },
-				{ handler: deleteActivity, text: 'Delete event' }
-			],
-			header: `Are you sure?`,
-			message: `This action cannot be undone.`
+		await confirmationModal({
+			confirmText: $t('routes.organization.activities.slug.page.modal.delete-activity.confirm'),
+			handler: deleteActivity,
+			header: $t('routes.organization.activities.slug.page.modal.delete-activity.header'),
+			message: $t('routes.organization.activities.slug.page.modal.delete-activity.message')
 		});
-		await alert.present();
 	}
 
 	async function deleteActivity(): Promise<void> {
@@ -275,7 +261,7 @@
 		updateActivityModalOpen = true;
 	}
 
-	function calculateAccountBalance(postings: PostingTO[]): AccountBalance {
+	function calculateBalance(postings: PostingTO[]): PostingBalance {
 		let totalIncome = 0,
 			totalExpense = 0;
 		for (const posting of postings) {
@@ -290,20 +276,20 @@
 		};
 	}
 
-	async function onOpenCreateAccountPosting(type: PostingType): Promise<void> {
+	async function onOpenCreatePosting(type: PostingType): Promise<void> {
 		selectedPostingType = type;
-		createAccountPostingFormActions.setModel(
+		createPostingFormActions.setModel(
 			createPostingSchema().cast({
 				type: selectedPostingType
 			} satisfies Partial<PostingCreateUpdateRequestTO>)
 		);
-		createAccountPostingModalOpen = true;
+		createPostingModalOpen = true;
 	}
 
 	function getCreatePostingTitle(type: PostingType): string {
 		return type === 'DEBIT'
-			? $t('routes.organization.page.activity.page.slug.modal.create-posting.title.expense')
-			: $t('routes.organization.page.activity.page.slug.modal.create-posting.title.income');
+			? $t('routes.organization.activities.slug.page.create-posting.title.debit')
+			: $t('routes.organization.activities.slug.page.create-posting.title.credit');
 	}
 
 	async function onOpenLocation(_event?: MouseEvent): Promise<void> {
@@ -316,7 +302,7 @@
 
 	async function onAddToCalendar(_event?: MouseEvent): Promise<void> {
 		_event?.stopPropagation();
-		if (!(await requestCalendarPermission()) || !activity) return;
+		if (!(await promptCalendarPermissionRequest()) || !activity) return;
 		await CapacitorCalendar.createEventWithPrompt({
 			alerts: [30],
 			endDate: addDays(Date.now(), 1).getTime(),
@@ -328,7 +314,7 @@
 		});
 	}
 
-	async function requestCalendarPermission(): Promise<boolean> {
+	async function promptCalendarPermissionRequest(): Promise<boolean> {
 		try {
 			let permission = await CapacitorCalendar.checkPermission({ scope: CalendarPermissionScope.WRITE_CALENDAR });
 			if (permission.result === 'granted') {
@@ -343,10 +329,10 @@
 					return true;
 				}
 			}
-			await showAlert($t('routes.organization.page.activity.page.slug.card.summary.add-to-calendar.permission-denied'));
+			await showAlert($t('routes.organization.activities.slug.page.calendar-request-prompt.denied'));
 			return false;
 		} catch {
-			await showAlert($t('routes.organization.page.activity.page.slug.card.summary.add-to-calendar.error'));
+			await showAlert($t('routes.organization.activities.slug.page.calendar-request-prompt.error'));
 			return false;
 		}
 	}
@@ -356,25 +342,19 @@
 		filterPostings();
 	}
 
-	function toggleAccountPostingTypeSelected(type: PostingType): void {
+	function togglePostingTypeSelected(type: PostingType): void {
 		selectedPostingTypes = selectedPostingTypes.includes(type)
 			? selectedPostingTypes.filter((_type) => _type !== type)
 			: [...selectedPostingTypes, type];
 	}
 
 	async function onDeletePosting(postingId: number): Promise<void> {
-		const alert = await alertController.create({
-			buttons: [
-				{ role: 'cancel', text: 'Cancel' },
-				{
-					handler: () => deletePosting(postingId),
-					text: 'Delete transaction'
-				}
-			],
-			header: `Are you sure?`,
-			message: `This action cannot be undone.`
+		await confirmationModal({
+			confirmText: $t('routes.organization.activities.slug.page.modal.delete-posting.modal.confirm'),
+			handler: () => deletePosting(postingId),
+			header: $t('routes.organization.activities.slug.page.modal.delete-posting.modal.header'),
+			message: $t('routes.organization.activities.slug.page.modal.delete-posting.modal.message')
 		});
-		await alert.present();
 	}
 
 	async function deletePosting(postingId: number): Promise<void> {
@@ -395,8 +375,8 @@
 	async function onOpenUpdatePostingModal(posting: PostingTO): Promise<void> {
 		selectedPosting = posting;
 		selectedPostingType = posting.type;
-		updateAccountPostingFormActions.setModel(clone(selectedPosting));
-		updateAccountPostingModalOpen = true;
+		updatePostingFormActions.setModel(clone(selectedPosting));
+		updatePostingModalOpen = true;
 	}
 
 	function onApplyFromFilterDate(date: string): void {
@@ -404,34 +384,33 @@
 		filterPostings();
 	}
 
-	function toggleMemberFilterItemsSelection(value?: boolean): void {
-		filteredMemberFilterItems = filteredMemberFilterItems.map((member) => ({ ...member, selected: value ?? false }));
-	}
-
 	function resetFilter(): void {
 		fromFilterDate = getMinPostingDate(postings);
 		toFilterDate = getMaxPostingDate(postings);
-		filteredMemberFilterItems = memberFilterItems;
+		memberFilterItems = [...memberFilterItems];
 		selectedPostingTypes = ['DEBIT', 'CREDIT'];
 		filterOpen = false;
 	}
 
-	function setAccountPostingType(type: PostingType): void {
+	function setPostingType(type: PostingType): void {
 		selectedPostingType = type;
-		updateAccountPostingModelTouched = true;
+		updatePostingModelTouched = true;
 	}
 </script>
 
-<Layout title="Event Details" showBackButton>
-	{@render eventSummary()}
-	{@render activityAccountSummary()}
-	{@render actionButton()}
+<Layout title={$t('routes.organization.activities.slug.page.title')} showBackButton>
+	{@render activitySummary()}
+	{@render postingsSummary()}
+	<FabButton
+		indexedLabel={$t('routes.organization.activities.slug.page.action-button')}
+		icon={addOutline}
+		buttons={activityEventButtons}
+	/>
 </Layout>
 
 <!-- Snippets -->
 
-{#snippet eventSummary()}
-	<!-- svelte-ignore attribute_quoted -->
+{#snippet activitySummary()}
 	<Card border="secondary" title={activity?.name} classList="mb-5" clicked={onOpenActivityModal}>
 		<div class="flex flex-wrap items-center justify-center gap-3">
 			<div class="flex items-center gap-1">
@@ -450,62 +429,73 @@
 			</div>
 		</div>
 		<div class="mt-2 flex items-center justify-center gap-2">
-			<Button icon={mapOutline} size="small" fill="solid" color="light" label="Open in map" clicked={onOpenLocation} />
+			<Button
+				icon={mapOutline}
+				size="small"
+				fill="solid"
+				color="light"
+				label={$t('routes.organization.activities.slug.page.event-summary.open-in-map')}
+				clicked={onOpenLocation}
+			/>
 			<Button
 				icon={calendarOutline}
 				size="small"
 				fill="solid"
 				color="light"
-				label="Add to calendar"
+				label={$t('routes.organization.activities.slug.page.event-summary.add-to-calendar')}
 				clicked={onAddToCalendar}
 			/>
 		</div>
 	</Card>
 {/snippet}
 
-{#snippet activityAccountSummary()}
+{#snippet postingsSummary()}
 	<Card>
 		<div class="flex flex-col items-center justify-center gap-2">
 			<div class="flex items-center justify-center gap-2">
 				<ion-icon icon={cardOutline} class="text-xl"></ion-icon>
-				<ion-text class="text-lg font-bold">Event balance:</ion-text>
+				<ion-text class="text-lg font-bold">
+					{$t('routes.organization.activities.slug.page.postings-summary.heading')}
+				</ion-text>
 			</div>
-			<ion-text class="text-xl font-bold">{accountBalance?.balance}</ion-text>
+			<ion-text class="text-xl font-bold">{postingBalance?.balance}</ion-text>
 			<div class="flex items-center justify-center gap-2">
 				<ion-icon color="success" icon={trendingUpOutline}></ion-icon>
-				<ion-text class="text-sm text-gray-500">Total incoming: {accountBalance?.credit}</ion-text>
+				<ion-text class="flex flex-wrap gap-2 text-sm text-gray-500">
+					<div>{$t('routes.organization.activities.slug.page.postings-summary.total-credit')}</div>
+					<div>{postingBalance?.credit}</div>
+				</ion-text>
 			</div>
 			<div class="flex items-center justify-center gap-2">
 				<ion-icon color="danger" icon={trendingDownOutline}></ion-icon>
-				<ion-text class="text-sm text-gray-500">Total expense: {accountBalance?.debit}</ion-text>
+				<ion-text class="flex flex-wrap gap-2 text-sm text-gray-500">
+					<div>{$t('routes.organization.activities.slug.page.postings-summary.total-debit')}</div>
+					<div>{postingBalance?.debit}</div>
+				</ion-text>
 			</div>
 		</div>
 		<div class="mt-3 flex items-center justify-center gap-2">
 			<Button
-				label="Add income"
+				label={$t('routes.organization.activities.slug.page.postings-summary.add-credit')}
 				color="primary"
 				icon={cashOutline}
-				clicked={() => onOpenCreateAccountPosting('CREDIT')}
+				clicked={() => onOpenCreatePosting('CREDIT')}
 			/>
 			<Button
-				label="Add expense"
+				label={$t('routes.organization.activities.slug.page.postings-summary.add-debit')}
 				color="tertiary"
 				icon={walletOutline}
-				clicked={() => onOpenCreateAccountPosting('DEBIT')}
+				clicked={() => onOpenCreatePosting('DEBIT')}
 			/>
 		</div>
 		<Button
 			icon={listOutline}
 			expand="block"
 			fill="outline"
-			label="Transaction history"
+			label={$t('routes.organization.activities.slug.page.postings-summary.transaction-history')}
 			clicked={() => (transactionHistoryModalOpen = true)}
 		/>
 	</Card>
-{/snippet}
-
-{#snippet actionButton()}
-	<FabButton label="Event actions" icon={addOutline} buttons={activityEventButtons} />
 {/snippet}
 
 {#snippet transactionItem(posting: PostingTO)}
@@ -529,7 +519,7 @@
 				</ion-text>
 				<ion-text color="medium" class="flex items-center justify-center gap-1">
 					<ion-icon icon={cashOutline}></ion-icon>
-					<div>
+					<div class="whitespace-nowrap">
 						{posting.type === 'CREDIT' ? '+' : '-'}{formatter.currency(posting.amountInCents)}
 					</div>
 				</ion-text>
@@ -545,74 +535,87 @@
 	dismissed={() => (updateActivityModalOpen = false)}
 	touched={updateActivityModelTouched}
 	open={updateActivityModalOpen}
-	confirmLabel={$t('routes.organization.page.activity.edit-modal.button.confirm')}
+	confirmLabel={$t('routes.organization.activities.slug.page.modal.update-activity.confirm')}
 >
-	<Card title={$t('routes.organization.page.activity.edit-modal.card.title')}>
+	<Card title={$t('routes.organization.activities.slug.page.modal.update-activity.card.title')}>
 		<form use:customForm={updateActivityForm}>
-			<TextInputItem
+			<InputItem
 				name="name"
-				label={$t('routes.organization.page.activity.create-modal.card.input.name')}
+				label={$t('routes.organization.activities.slug.page.modal.update-activity.card.form.name')}
 				icon={documentOutline}
 			/>
 			<LocationInputItem
-				label={$t('routes.organization.page.activity.update-modal.card.input.location')}
+				label={$t('routes.organization.activities.slug.page.modal.update-activity.card.form.location')}
 				name="location"
 			/>
-			<DatetimeInputItem label="Date" name="date" />
-		</form>
-	</Card>
-</Modal>
-
-<!-- Create Account Posting Modal -->
-<Modal open={createAccountPostingModalOpen} dismissed={() => (createAccountPostingModalOpen = false)}>
-	<Card title={getCreatePostingTitle(selectedPostingType)}>
-		<form use:customForm={createAccountPostingForm!}>
-			<div class="mb-3 flex items-center justify-center gap-2">
-				<Chip
-					selected={selectedPostingType === 'CREDIT'}
-					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.income')}
-					clicked={() => (selectedPostingType = 'CREDIT')}
-				/>
-				<Chip
-					selected={selectedPostingType === 'DEBIT'}
-					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.expense')}
-					clicked={() => (selectedPostingType = 'DEBIT')}
-				/>
-			</div>
-			<TextInputItem name="purpose" label="Purpose" icon={documentOutline} />
-			<AmountInputItem name="amountInCents" label="Amount" />
 			<DatetimeInputItem
-				label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.date')}
+				label={$t('routes.organization.activities.slug.page.modal.update-activity.card.form.date')}
 				name="date"
 			/>
 		</form>
 	</Card>
 </Modal>
 
-<!-- Update Activity Posting -->
-<Modal
-	open={updateAccountPostingModalOpen}
-	dismissed={() => (updateAccountPostingModalOpen = false)}
-	touched={updateAccountPostingModelTouched}
->
-	<Card title="Update transaction">
-		<form use:customForm={updateAccountPostingForm}>
+<!-- Create Posting Modal -->
+<Modal open={createPostingModalOpen} dismissed={() => (createPostingModalOpen = false)}>
+	<Card title={getCreatePostingTitle(selectedPostingType)}>
+		<form use:customForm={createPostingForm!}>
 			<div class="mb-3 flex items-center justify-center gap-2">
 				<Chip
 					selected={selectedPostingType === 'CREDIT'}
-					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.income')}
-					clicked={() => setAccountPostingType('CREDIT')}
+					label={$t('routes.organization.activities.slug.page.modal.create-posting.form.credit')}
+					clicked={() => (selectedPostingType = 'CREDIT')}
 				/>
 				<Chip
 					selected={selectedPostingType === 'DEBIT'}
-					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.expense')}
-					clicked={() => setAccountPostingType('DEBIT')}
+					label={$t('routes.organization.activities.slug.page.modal.create-posting.form.debit')}
+					clicked={() => (selectedPostingType = 'DEBIT')}
 				/>
 			</div>
-			<TextInputItem name="purpose" label="Purpose" icon={documentOutline} />
-			<AmountInputItem name="amountInCents" label="Amount" />
+			<InputItem name="purpose" label="Purpose" icon={documentOutline} />
+			<AmountInputItem
+				name="amountInCents"
+				label={$t('routes.organization.activities.slug.page.modal.create-posting.form.amount')}
+			/>
 			<DatetimeInputItem
-				label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.date')}
+				label={$t('routes.organization.activities.slug.page.modal.create-posting.form.date')}
+				name="date"
+			/>
+		</form>
+	</Card>
+</Modal>
+
+<!-- Update Posting -->
+<Modal
+	open={updatePostingModalOpen}
+	dismissed={() => (updatePostingModalOpen = false)}
+	touched={updatePostingModelTouched}
+>
+	<Card title={$t('routes.organization.activities.slug.page.modal.update-posting.card.title')}>
+		<form use:customForm={updatePostingForm}>
+			<div class="mb-3 flex items-center justify-center gap-2">
+				<Chip
+					selected={selectedPostingType === 'CREDIT'}
+					label={$t('routes.organization.activities.slug.page.modal.update-posting.card.form.credit')}
+					clicked={() => setPostingType('CREDIT')}
+				/>
+				<Chip
+					selected={selectedPostingType === 'DEBIT'}
+					label={$t('routes.organization.activities.slug.page.modal.update-posting.card.form.debit')}
+					clicked={() => setPostingType('DEBIT')}
+				/>
+			</div>
+			<InputItem
+				name="purpose"
+				label={$t('routes.organization.activities.slug.page.modal.update-posting.card.form.purpose')}
+				icon={documentOutline}
+			/>
+			<AmountInputItem
+				name="amountInCents"
+				label={$t('routes.organization.activities.slug.page.modal.update-posting.card.form.amount')}
+			/>
+			<DatetimeInputItem
+				label={$t('routes.organization.activities.slug.page.modal.update-posting.card.form.date')}
 				name="date"
 			/>
 		</form>
@@ -631,7 +634,7 @@
 		<ion-searchbar
 			class="w-full"
 			debounce={100}
-			placeholder="Search transactions..."
+			placeholder={$t('routes.organization.activities.slug.page.modal.transaction-history.searchbar')}
 			value={postingsSearchValue}
 			onionInput={onSearchPostings}
 		></ion-searchbar>
@@ -640,10 +643,14 @@
 	{#if filteredPostings.length === 0}
 		<div class="mt-3 text-center">
 			<div class="mb-2">
-				<ion-note>No transactions found.</ion-note>
+				<ion-note>{$t('routes.organization.activities.slug.page.modal.transaction-history.no-transactions')}</ion-note>
 			</div>
 			{#if postings.length > 0}
-				<Button icon={refreshOutline} label="Reset filters" clicked={resetFilter} />
+				<Button
+					icon={refreshOutline}
+					label={$t('routes.organization.activities.slug.page.modal.transaction-history.reset-filters')}
+					clicked={resetFilter}
+				/>
 			{/if}
 		</div>
 	{:else}
@@ -657,65 +664,61 @@
 
 <!-- Activity Filters Popover Modal -->
 <Popover extended open={filterOpen} dismissed={() => (filterOpen = false)}>
-	<Card title="Filters" classList="m-0">
+	<Card title={$t('routes.organization.activities.slug.page.modal.activity-filter.card.title')} classList="m-0">
 		<div class="flex items-center justify-center gap-2">
 			<Chip
-				clicked={() => toggleAccountPostingTypeSelected('DEBIT')}
+				clicked={() => togglePostingTypeSelected('DEBIT')}
 				color="success"
 				selected={selectedPostingTypes.includes('DEBIT')}
 				icon={trendingUpOutline}
-				label="Income"
+				label={$t('routes.organization.activities.slug.page.modal.activity-filter.card.credit')}
 			/>
 			<Chip
-				clicked={() => toggleAccountPostingTypeSelected('CREDIT')}
+				clicked={() => togglePostingTypeSelected('CREDIT')}
 				color="danger"
 				selected={selectedPostingTypes.includes('CREDIT')}
 				icon={trendingDownOutline}
-				label="Expense"
+				label={$t('routes.organization.activities.slug.page.modal.activity-filter.card.debit')}
 			/>
 		</div>
-		<DatetimeInputItem max={toFilterDate} label="From" value={fromFilterDate} applied={onApplyFromFilterDate} />
+		<DatetimeInputItem
+			max={toFilterDate}
+			label={$t('routes.organization.activities.slug.page.modal.activity-filter.card.date.from')}
+			value={fromFilterDate}
+			changed={onApplyFromFilterDate}
+		/>
 		<DatetimeInputItem
 			min={fromFilterDate}
-			label="To"
+			label={$t('routes.organization.activities.slug.page.modal.activity-filter.card.date.to')}
 			value={toFilterDate}
-			applied={(value) => (toFilterDate = value)}
+			changed={(value) => (toFilterDate = value)}
 		/>
-		<CustomItem icon={personOutline} clicked={() => (filterMembersModalOpen = true)}>
-			<div class="flex flex-col">
-				<ion-text class="ms-3 pt-2 text-xs">Select members</ion-text>
-				<ion-text class="my-2 ms-4 truncate">
-					{displayedFilteredMembers}
-				</ion-text>
-			</div>
-		</CustomItem>
+		<MultiSelectItem
+			icon={peopleOutline}
+			allSelectedText={$t('routes.organization.activities.slug.page.modal.activity-filter.card.members.all-selected')}
+			noneSelectedText={$t('routes.organization.activities.slug.page.modal.activity-filter.card.members.none-selected')}
+			items={memberFilterItems}
+			label="Select members"
+			searchPlaceholder={$t(
+				'routes.organization.activities.slug.page.modal.activity-filter.card.members.search-placeholder'
+			)}
+			selectAllIcon={peopleOutline}
+			selectAllLabel={$t('routes.organization.activities.slug.page.modal.activity-filter.card.members.select-all')}
+		/>
 		<div class="mt-2 flex items-center justify-center gap-2">
-			<Button label="Reset" color="danger" icon={refreshOutline} fill="outline" clicked={resetFilter} />
-			<Button label="Apply" icon={saveOutline} fill="outline" clicked={() => (filterOpen = false)} />
+			<Button
+				label={$t('routes.organization.activities.slug.page.modal.activity-filter.card.reset')}
+				color="danger"
+				icon={refreshOutline}
+				fill="outline"
+				clicked={resetFilter}
+			/>
+			<Button
+				label={$t('routes.organization.activities.slug.page.modal.activity-filter.card.apply')}
+				icon={saveOutline}
+				fill="outline"
+				clicked={() => (filterOpen = false)}
+			/>
 		</div>
 	</Card>
 </Popover>
-
-<!-- Filter Members Modal -->
-<Modal open={filterMembersModalOpen} dismissed={() => (filterMembersModalOpen = false)} informational>
-	<ion-searchbar class="w-full" debounce={100} placeholder="Search members..." onionInput={onSearchMembers}>
-	</ion-searchbar>
-	<ToggleItem
-		disabled={memberFilterItems.length !== filteredMemberFilterItems.length}
-		checked={allMemberFilterItemsToggleActive}
-		label="All selected"
-		icon={peopleOutline}
-		change={toggleMemberFilterItemsSelection}
-	/>
-	<ion-list>
-		{#each filteredMemberFilterItems as member (member.data)}
-			<CustomItem>
-				<ion-checkbox
-					value={member.data}
-					checked={member.selected}
-					onionChange={() => (member.selected = !member.selected)}>{member.data}</ion-checkbox
-				>
-			</CustomItem>
-		{/each}
-	</ion-list>
-</Modal>

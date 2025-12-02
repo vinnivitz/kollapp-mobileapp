@@ -105,7 +105,7 @@ describe('AmountInputItem', () => {
 
 	it('places caret before trailing unit on focus (e.g., "123 €")', async () => {
 		const { container } = render(AmountInputItem, {
-			props: { label: 'Amount', name: 'amount', value: 12_300 }
+			props: { label: 'Amount', value: 12_300 }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		expect(ion).toBeTruthy();
@@ -121,7 +121,7 @@ describe('AmountInputItem', () => {
 
 	it('keeps caret at end when last char is a digit (e.g., "€ 123")', async () => {
 		const { container } = render(AmountInputItem, {
-			props: { label: 'Amount', name: 'amount', value: 12_300 }
+			props: { label: 'Amount', value: 12_300 }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const native = createMockNative('$123.00');
@@ -163,7 +163,7 @@ describe('AmountInputItem', () => {
 
 	it('skips trailing whitespace before symbol and places caret before spaces/symbol', async () => {
 		const { container } = render(AmountInputItem, {
-			props: { label: 'Amount', name: 'amount', value: 12_300 }
+			props: { label: 'Amount', value: 12_300 }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const native = createMockNative('$123.00');
@@ -177,7 +177,7 @@ describe('AmountInputItem', () => {
 	it('onIonInput propagates changed value and fixes caret twice', async () => {
 		const changed = vi.fn();
 		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', name: 'amount' }
+			props: { changed, label: 'Amount', value: 0 }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const native = createMockNative('123\u00A0€');
@@ -194,7 +194,7 @@ describe('AmountInputItem', () => {
 	it('onIonInput sends empty string when detail.value is falsy', async () => {
 		const changed = vi.fn();
 		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', name: 'amount' }
+			props: { changed, label: 'Amount', value: 0 }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const native = createMockNative('123\u00A0€');
@@ -208,7 +208,7 @@ describe('AmountInputItem', () => {
 	it('onIonInput returns early when native is falsy', async () => {
 		const changed = vi.fn();
 		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', name: 'amount' }
+			props: { changed, label: 'Amount', value: 0 }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const getInputSpy = vi.fn().mockResolvedValue({});
@@ -221,7 +221,7 @@ describe('AmountInputItem', () => {
 	it('onIonInput fixes caret to 0 when native.value is falsy', async () => {
 		const changed = vi.fn();
 		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', name: 'amount' }
+			props: { changed, label: 'Amount', value: 0 }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const native = createMockNative('');
@@ -234,7 +234,7 @@ describe('AmountInputItem', () => {
 		vi.useFakeTimers();
 		const changed = vi.fn();
 		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', name: 'amount', value: 0 }
+			props: { changed, label: 'Amount', value: 0 }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const native = createMockNative('123\u00A0€');
@@ -254,7 +254,7 @@ describe('AmountInputItem', () => {
 		vi.useFakeTimers();
 		const changed = vi.fn();
 		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', name: 'amount', value: 0 }
+			props: { changed, label: 'Amount', value: 0 }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const native = createMockNative('123.\u00A0€');
@@ -274,7 +274,7 @@ describe('AmountInputItem', () => {
 		vi.useFakeTimers();
 		const changed = vi.fn();
 		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', name: 'amount', value: 0 }
+			props: { changed, label: 'Amount', value: 0 }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const native = createMockNative('');
@@ -294,7 +294,7 @@ describe('AmountInputItem', () => {
 		vi.useFakeTimers();
 		const changed = vi.fn();
 		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', name: 'amount', value: 0 }
+			props: { changed, label: 'Amount', value: 0 }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const native = createMockNative('123\u00A0€');
@@ -322,7 +322,7 @@ describe('AmountInputItem', () => {
 
 	it('buildNumberFormat supports unit style', () => {
 		const r = render(AmountInputItem, {
-			props: { label: 'Distance', name: 'dist', style: 'unit', unit: 'kilometer', unitDisplay: 'short', value: 2 }
+			props: { label: 'Distance', style: 'unit', unit: 'kilometer', unitDisplay: 'short', value: 2 }
 		});
 		const ion = r.container.querySelector('ion-input') as HTMLIonInputElement;
 		expect(ion).toBeTruthy();
@@ -333,7 +333,7 @@ describe('AmountInputItem', () => {
 
 	it('buildNumberFormat supports decimal style', () => {
 		const r = render(AmountInputItem, {
-			props: { label: 'Count', name: 'count', style: 'decimal', value: 0 }
+			props: { label: 'Count', style: 'decimal', value: 0 }
 		});
 		const ion = r.container.querySelector('ion-input') as HTMLIonInputElement;
 		expect(ion).toBeTruthy();
@@ -345,7 +345,7 @@ describe('AmountInputItem', () => {
 	it('onKeyDown ignores other keys', async () => {
 		const changed = vi.fn();
 		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', name: 'amount' }
+			props: { changed, label: 'Amount', value: 0 }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const native = createMockNative('123\u00A0€');
@@ -367,7 +367,7 @@ describe('AmountInputItem', () => {
 		r.unmount();
 
 		const value = 1234.5;
-		r = render(AmountInputItem, { props: { label: 'Amount', name: 'amount', value } });
+		r = render(AmountInputItem, { props: { label: 'Amount', value } });
 		ion = r.container.querySelector('ion-input') as HTMLIonInputElement;
 		expect(ion).toBeTruthy();
 		const displayValue = ion.getAttribute('value') ?? ion.value;
@@ -378,7 +378,7 @@ describe('AmountInputItem', () => {
 	it('handles insertText input event with decimal separator', async () => {
 		const changed = vi.fn();
 		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', name: 'amount', value: 12_300 }
+			props: { changed, label: 'Amount', value: 12_300 }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const native = createMockNative('$123.00');
@@ -395,7 +395,7 @@ describe('AmountInputItem', () => {
 	it('handles insertText input event with comma separator', async () => {
 		const changed = vi.fn();
 		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', name: 'amount', value: 12_300 }
+			props: { changed, label: 'Amount', value: 12_300 }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const native = createMockNative('$123.00');
@@ -412,7 +412,7 @@ describe('AmountInputItem', () => {
 	it('handles value mismatch by parsing native value', async () => {
 		const changed = vi.fn();
 		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', name: 'amount', value: 0 }
+			props: { changed, label: 'Amount', value: 0 }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const native = createMockNative('456');
@@ -427,7 +427,7 @@ describe('AmountInputItem', () => {
 	it('handles empty native value by resetting to zero', async () => {
 		const changed = vi.fn();
 		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', name: 'amount', value: 12_300 }
+			props: { changed, label: 'Amount', value: 12_300 }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const native = createMockNative('');
@@ -443,7 +443,7 @@ describe('AmountInputItem', () => {
 		vi.useFakeTimers();
 		const changed = vi.fn();
 		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', name: 'amount', value: 0 }
+			props: { changed, label: 'Amount', value: 0 }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const native = createMockNative('$0.00');
@@ -462,7 +462,7 @@ describe('AmountInputItem', () => {
 	it('handles keydown Backspace', async () => {
 		const changed = vi.fn();
 		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', name: 'amount', value: 12_300 }
+			props: { changed, label: 'Amount', value: 12_300 }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const native = createMockNative('$123.00');
@@ -479,7 +479,7 @@ describe('AmountInputItem', () => {
 
 	it('prevents default for printable characters', async () => {
 		const { container } = render(AmountInputItem, {
-			props: { label: 'Amount', name: 'amount', value: 0 }
+			props: { label: 'Amount', value: 0 }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const native = createMockNative('$0.00');
@@ -493,7 +493,7 @@ describe('AmountInputItem', () => {
 
 	it('prevents default for Arrow keys', async () => {
 		const { container } = render(AmountInputItem, {
-			props: { label: 'Amount', name: 'amount', value: 0 }
+			props: { label: 'Amount', value: 0 }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const native = createMockNative('$0.00');
@@ -507,7 +507,7 @@ describe('AmountInputItem', () => {
 
 	it('prevents default for Delete key', async () => {
 		const { container } = render(AmountInputItem, {
-			props: { label: 'Amount', name: 'amount', value: 0 }
+			props: { label: 'Amount', value: 0 }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const native = createMockNative('$0.00');
@@ -522,7 +522,7 @@ describe('AmountInputItem', () => {
 	it('handles paste event', async () => {
 		const changed = vi.fn();
 		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', name: 'amount', value: 0 }
+			props: { changed, label: 'Amount', value: 0 }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const native = createMockNative('$0.00');
@@ -544,7 +544,7 @@ describe('AmountInputItem', () => {
 
 	it('handles paste event with empty clipboard', async () => {
 		const { container } = render(AmountInputItem, {
-			props: { label: 'Amount', name: 'amount', value: 0 }
+			props: { label: 'Amount', value: 0 }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const native = createMockNative('$0.00');
@@ -563,7 +563,7 @@ describe('AmountInputItem', () => {
 
 	it('skips applying styles when native.style is undefined', async () => {
 		const { container } = render(AmountInputItem, {
-			props: { label: 'Amount', name: 'amount', value: 0 }
+			props: { label: 'Amount', value: 0 }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const native = { dispatchEvent: vi.fn(), setSelectionRange: vi.fn(), value: '$0.00' };
@@ -582,7 +582,7 @@ describe('AmountInputItem', () => {
 		});
 
 		const { container } = render(AmountInputItem, {
-			props: { label: 'Amount', name: 'amount', value: 0 }
+			props: { label: 'Amount', name: 'amount' }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const native = createMockNative('$0.00');
@@ -594,7 +594,7 @@ describe('AmountInputItem', () => {
 
 	it('sets caret for int phase', async () => {
 		const { container } = render(AmountInputItem, {
-			props: { label: 'Amount', name: 'amount', value: 12_300 }
+			props: { label: 'Amount', name: 'amount' }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const native = createMockNative('$123.00');
@@ -606,7 +606,7 @@ describe('AmountInputItem', () => {
 
 	it('handles click event to reposition caret', async () => {
 		const { container } = render(AmountInputItem, {
-			props: { label: 'Amount', name: 'amount', value: 12_300 }
+			props: { label: 'Amount', name: 'amount' }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const native = createMockNative('$123.00');
@@ -618,7 +618,7 @@ describe('AmountInputItem', () => {
 
 	it('handles onionFocus event', async () => {
 		const { container } = render(AmountInputItem, {
-			props: { label: 'Amount', name: 'amount', value: 12_300 }
+			props: { label: 'Amount', name: 'amount' }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const native = createMockNative('$123.00');
@@ -630,14 +630,14 @@ describe('AmountInputItem', () => {
 
 	it('handles value prop changes reactively', async () => {
 		const { container, rerender } = render(AmountInputItem, {
-			props: { label: 'Amount', name: 'amount', value: 0 }
+			props: { label: 'Amount', name: 'amount' }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const native = createMockNative('$0.00');
 		native.dispatchEvent = vi.fn();
 		ion.getInputElement = vi.fn().mockResolvedValue(native);
 
-		await rerender({ label: 'Amount', name: 'amount', value: 50_000 });
+		await rerender({ label: 'Amount', value: 50_000 });
 
 		await waitFor(() => expect(ion.getInputElement).toHaveBeenCalled());
 	});
@@ -645,7 +645,7 @@ describe('AmountInputItem', () => {
 	it('handles deleteContentBackward input type', async () => {
 		const changed = vi.fn();
 		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', name: 'amount', value: 12_300 }
+			props: { changed, label: 'Amount', value: 12_300 }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const native = createMockNative('$123.00');
@@ -661,7 +661,7 @@ describe('AmountInputItem', () => {
 
 	it('handles Ctrl+key combinations without preventing default', async () => {
 		const { container } = render(AmountInputItem, {
-			props: { label: 'Amount', name: 'amount', value: 0 }
+			props: { label: 'Amount', name: 'amount' }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const native = createMockNative('$0.00');
@@ -675,7 +675,7 @@ describe('AmountInputItem', () => {
 
 	it('handles Meta+key combinations without preventing default', async () => {
 		const { container } = render(AmountInputItem, {
-			props: { label: 'Amount', name: 'amount', value: 0 }
+			props: { label: 'Amount', name: 'amount' }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const native = createMockNative('$0.00');
@@ -689,7 +689,7 @@ describe('AmountInputItem', () => {
 
 	it('handles Alt+key combinations without preventing default', async () => {
 		const { container } = render(AmountInputItem, {
-			props: { label: 'Amount', name: 'amount', value: 0 }
+			props: { label: 'Amount', name: 'amount' }
 		});
 		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
 		const native = createMockNative('$0.00');

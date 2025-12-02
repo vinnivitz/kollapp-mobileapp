@@ -15,7 +15,7 @@
 	let { children, tabs }: Properties = $props();
 
 	let controller: HTMLIonTabsElement;
-	let currentTabName = $state(page.route.id ?? ('/' satisfies RouteId));
+	let currentTabName = $state<RouteId>(page.route.id ?? '/');
 
 	$effect(() => {
 		const pathname = navigating?.to?.route.id;

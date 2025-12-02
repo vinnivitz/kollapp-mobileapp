@@ -10,7 +10,7 @@
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
+	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import { t } from '$lib/locales';
 	import { Form } from '$lib/models/ui';
 	import { customForm, featureNotImplementedAlert } from '$lib/utility';
@@ -25,7 +25,7 @@
 <Layout title={$t('routes.auth.resend-confirmation.page.title')} showBackButton>
 	<Card title={$t('routes.auth.resend-confirmation.page.card.title')}>
 		<form use:customForm={form}>
-			<TextInputItem
+			<InputItem
 				name="email"
 				inputmode="email"
 				label={$t('routes.auth.resend-confirmation.page.card.form.email')}

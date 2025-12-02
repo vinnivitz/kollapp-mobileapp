@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { CapacitorBarcodeScanner, CapacitorBarcodeScannerTypeHint } from '@capacitor/barcode-scanner';
 	import { Haptics } from '@capacitor/haptics';
-	import { alertController } from '@ionic/core';
 	import { keyOutline, qrCodeOutline, saveOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
@@ -12,11 +11,11 @@
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
+	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import { t } from '$lib/locales';
 	import { Form } from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';
-	import { customForm, showAlert, StatusCheck } from '$lib/utility';
+	import { customForm, informationModal, showAlert, StatusCheck } from '$lib/utility';
 
 	const form = new Form({
 		completed: async ({ model }) => await onCompleted(model.code),
@@ -35,11 +34,11 @@
 					await onCompleted(code);
 				}
 			} else {
-				await showAlert('QR code is not valid.');
+				await showAlert($t('routes.organization.join.page.qr-code.invalid'));
 			}
 		} catch (error) {
 			console.error('Error scanning QR code:', error);
-			await showAlert('An error occurred while scanning the QR code. Please try again.');
+			await showAlert($t('routes.organization.join.page.qr-code.error'));
 		}
 	}
 
@@ -48,26 +47,29 @@
 		const organizationResponse = await organizationService.getByInvitationCode(code);
 		if (!StatusCheck.isOK(organizationResponse.status)) return;
 		const organization = organizationResponse.data;
-		const alert = await alertController.create({
-			buttons: ['Ok'],
-			header: `Join request sent`,
-			message: `Your request to join ${organization.name} has been sent. You will be notified once it is approved.`
-		});
-		await alert.present();
-		await alert.onDidDismiss();
+		await informationModal(
+			$t('routes.organization.join.page.modal.join.header'),
+			$t('routes.organization.join.page.modal.join.message', { value: organization.name })
+		);
 		return goto(resolve('/organization'));
 	}
 </script>
 
-<Layout title={$t('routes.organization.page.join.title')} showBackButton>
-	<Card title={$t('routes.organization.page.join.form.title')}>
+<Layout title={$t('routes.organization.join.page.title')} showBackButton>
+	{@render joinOrganizationCard()}
+</Layout>
+
+<!-- Snippets -->
+
+{#snippet joinOrganizationCard()}
+	<Card title={$t('routes.organization.join.page.card.title')}>
 		<form use:customForm={form}>
-			<TextInputItem
+			<InputItem
 				uppercase
 				maxlength={8}
 				name="code"
-				label={$t('routes.organization.page.join.form.code')}
-				helperText="Get it from a collective admin."
+				label={$t('routes.organization.join.page.card.form.code')}
+				helperText={$t('routes.organization.join.page.card.form.helper-text')}
 				icon={keyOutline}
 				inputIcon={qrCodeOutline}
 				inputIconClicked={onCodeScan}
@@ -76,9 +78,9 @@
 				classList="mt-3"
 				expand="block"
 				type="submit"
-				label={$t('routes.organization.page.join.form.submit')}
+				label={$t('routes.organization.join.page.card.form.submit')}
 				icon={saveOutline}
 			/>
 		</form>
 	</Card>
-</Layout>
+{/snippet}

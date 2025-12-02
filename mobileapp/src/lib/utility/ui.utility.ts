@@ -1,9 +1,12 @@
+import type { ConfirmModalConfig } from '$lib/models/ui';
 import type { OrganizationRole } from '@kollapp/api-types';
 import type { AnyObject, ObjectSchema } from 'yup';
 
+import { alertController } from '@ionic/core';
 import { type Locale as DateFnsLocale, de, enUS } from 'date-fns/locale';
+import { get } from 'svelte/store';
 
-import { Locale } from '$lib/locales';
+import { Locale, t } from '$lib/locales';
 
 /**
  * Creates a clickable element with a ripple effect
@@ -161,4 +164,46 @@ export function getObjectFromSchema<T>(schema: ObjectSchema<T & AnyObject>): T {
  */
 export function clone<T>(value: T): T {
 	return JSON.parse(JSON.stringify(value)) as T;
+}
+
+/**
+ * Displays a confirmation modal
+ * @param header header of the modal
+ * @param message message of the modal
+ * @param handler handler to execute on confirm
+ */
+export async function confirmationModal(config: ConfirmModalConfig): Promise<void> {
+	const $t = get(t);
+	const alert = await alertController.create({
+		buttons: [
+			{ role: 'cancel', text: $t('utility.ui.confirm-modal.cancel') },
+			{
+				handler: async () => await config.handler(),
+				text: config.confirmText ?? $t('utility.ui.confirm-modal.confirm')
+			}
+		],
+		header: config.header,
+		message: config.message
+	});
+	await alert.present();
+}
+
+/**
+ * Displays an information modal
+ * @param header header of the modal
+ * @param message message of the modal
+ */
+export async function informationModal(header: string, message: string): Promise<void> {
+	const $t = get(t);
+	const alert = await alertController.create({
+		buttons: [{ role: 'confirm', text: $t('utility.ui.information-modal.ok') }],
+		header,
+		message
+	});
+	await alert.present();
+	await alert.onDidDismiss();
+}
+
+export function updateValueByKey<T>(model: T, key: keyof T, value: T[keyof T]): T {
+	return { ...model, [key]: value };
 }

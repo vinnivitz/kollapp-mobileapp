@@ -8,7 +8,7 @@
 	} from '@kollapp/api-types';
 
 	import { TZDate } from '@date-fns/tz';
-	import { actionSheetController, alertController, loadingController } from '@ionic/core';
+	import { actionSheetController, loadingController } from '@ionic/core';
 	import { addDays, format, formatDistanceToNow } from 'date-fns';
 	import {
 		albumsOutline,
@@ -18,7 +18,6 @@
 		calendarOutline,
 		cardOutline,
 		cashOutline,
-		checkmark,
 		createOutline,
 		documentOutline,
 		filterOutline,
@@ -40,6 +39,7 @@
 		walletOutline,
 		warningOutline
 	} from 'ionicons/icons';
+	import { SvelteSet } from 'svelte/reactivity';
 
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
@@ -53,16 +53,17 @@
 	import Chip from '$lib/components/widgets/ionic/Chip.svelte';
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
 	import DatetimeInputItem from '$lib/components/widgets/ionic/DatetimeInputItem.svelte';
+	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
+	import MultiSelectItem from '$lib/components/widgets/ionic/MultiSelectItem.svelte';
 	import Popover from '$lib/components/widgets/ionic/Popover.svelte';
-	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
-	import ToggleItem from '$lib/components/widgets/ionic/ToggleItem.svelte';
 	import { t } from '$lib/locales';
-	import { type FilterItem, Form, type FormActions, type ItemSlidingOption } from '$lib/models/ui';
+	import { Form, type FormActions, type ItemSlidingOption, type SelectItem } from '$lib/models/ui';
 	import { localeStore, organizationStore, userStore } from '$lib/stores';
 	import {
 		clone,
+		confirmationModal,
 		customForm,
 		formatter,
 		getDateFnsLocale,
@@ -79,17 +80,6 @@
 		debit: string;
 	};
 
-	type ActivityFilterValue = {
-		id: number;
-		name: string;
-		icon?: string;
-	};
-
-	type MemberFilterValue = {
-		id: number;
-		username: string;
-	};
-
 	const organizations = $derived(organizationStore.organizations);
 	const postings = $derived([
 		...($organizationStore?.organizationPostings ?? []),
@@ -99,62 +89,42 @@
 	const organizationRole = $derived(
 		$organizationStore?.personsOfOrganization.find((person) => person.userId === $userStore?.id)?.organizationRole
 	);
-
 	let createPostingFormActions = $state<FormActions<PostingCreateUpdateRequestTO>>();
 	let updatePostingFormActions = $state<FormActions<PostingCreateUpdateRequestTO>>();
 
-	let createPostingModalOpen = $state(false);
-	let updatePostingModalOpen = $state(false);
-	let transactionHistoryModalOpen = $state(false);
+	let createPostingModalOpen = $state<boolean>(false);
+	let updatePostingModalOpen = $state<boolean>(false);
+	let transactionHistoryModalOpen = $state<boolean>(false);
 
-	let updatePostingModelTouched = $state(false);
-
+	let updatePostingModelTouched = $state<boolean>(false);
 	let filteredPostings = $state<PostingTO[]>([]);
-	let postingsSearchValue = $state('');
-	let selectedPostingTypes = $state<PostingType[]>(['DEBIT', 'CREDIT']);
+	let postingsSearchValue = $state<string>('');
 
-	let filterOpen = $state(false);
+	let transactionFilterOpen = $state<boolean>(false);
 
 	let selectedPosting = $state<PostingTO>();
 	let selectedPostingType = $state<PostingType>('DEBIT');
-	let descriptionExpanded = $state(false);
+	const selectedPostingTypes = new SvelteSet<PostingType>(['DEBIT', 'CREDIT']);
+	let descriptionExpanded = $state<boolean>(false);
+	let fromFilterDate = $state<string>(format(new TZDate(), 'yyyy-MM-dd'));
+	let toFilterDate = $state<string>(format(new TZDate(), 'yyyy-MM-dd'));
 
-	let fromFilterDate = $state(format(new TZDate(), 'yyyy-MM-dd'));
-	let toFilterDate = $state(format(new TZDate(), 'yyyy-MM-dd'));
-
-	let filterMembersModalOpen = $state(false);
-	let filterActivitiesModalOpen = $state(false);
-	const memberFilterItems = $derived<FilterItem<MemberFilterValue>[]>(
-		$organizationStore?.personsOfOrganization.map((member) => ({
-			data: { id: member.userId, username: member.username },
-			selected: true
-		})) ?? []
-	);
-	const activityFilterItems = $derived<FilterItem<ActivityFilterValue>[]>([
+	const activityFilterItems = $derived<SelectItem[]>([
 		...($organizationStore?.activities.map((activity) => ({
-			data: { id: activity.id, name: activity.name },
+			data: { id: activity.id, label: activity.name },
 			selected: true
 		})) ?? []),
-		{ data: { icon: flashOffOutline, id: 0, name: 'Not assigned to activity' }, selected: true }
+		{ color: 'tertiary', data: { id: 0, label: 'Not assigned to event' }, icon: flashOffOutline, selected: true }
 	]);
-	let filteredMemberFilterItems = $state<FilterItem<MemberFilterValue>[]>([]);
-	let filteredActivityFilterItems = $state<FilterItem<ActivityFilterValue>[]>([]);
-	const displayedFilteredMembers = $derived(getDisplayedFilteredMembers(filteredMemberFilterItems));
-	const displayedFilteredActivities = $derived(getDisplayedFilteredActivities(filteredActivityFilterItems));
-	const allMemberFilterItemsToggleActive = $derived(
-		filteredMemberFilterItems.length === filteredMemberFilterItems.filter((member) => member.selected).length
-	);
-	const allActivityFilterItemsToggleActive = $derived(
-		filteredActivityFilterItems.length === filteredActivityFilterItems.filter((activity) => activity.selected).length
-	);
+
+	let filteredActivityFilterItems = $state<number[]>([]);
+
 	const pendingMembersCount = $derived(
 		$organizationStore?.personsOfOrganization.filter(
 			(personOfOrganization) => personOfOrganization.status === 'PENDING'
 		).length ?? 0
 	);
 
-	let selectActivityModalOpen = $state(false);
-	let selectedActivityId = $state<number>(0);
 	let selectedActivity = $state<ActivityTO>();
 	let organizationDescriptionNote = $state<HTMLIonNoteElement>();
 
@@ -171,8 +141,8 @@
 		formatters: { amountInCents: formatter.currency, date: formatter.date },
 		parsers: { amountInCents: parser.currency, date: parser.date },
 		request: async (model) => {
-			return selectedActivityId > 0
-				? budgetService.createActivityPosting($organizationStore?.id!, selectedActivityId, model)
+			return selectedActivity && selectedActivity.id > 0
+				? budgetService.createActivityPosting($organizationStore?.id!, selectedActivity.id, model)
 				: budgetService.createOrganizationPosting($organizationStore?.id!, model);
 		},
 		schema: createPostingSchema()
@@ -194,22 +164,15 @@
 	});
 
 	$effect(() => {
-		if (postings) {
+		if (postings && activityFilterItems.length > 0 && filteredActivityFilterItems.length === 0) {
 			fromFilterDate = getMinPostingDate(postings);
 			toFilterDate = getMaxPostingDate(postings);
+			filteredActivityFilterItems = activityFilterItems.map((item) => item.data.id);
 		}
 	});
 
 	$effect(() => {
-		if (memberFilterItems) filteredMemberFilterItems = memberFilterItems;
-	});
-
-	$effect(() => {
-		if (activityFilterItems) filteredActivityFilterItems = activityFilterItems;
-	});
-
-	$effect(() => {
-		if (postings) filterPostings();
+		if (postings) filteredPostings = getFilteredPostings();
 	});
 
 	function isActivityPosting(postingId: number): boolean {
@@ -256,33 +219,36 @@
 		updatePostingModelTouched = true;
 	}
 
-	function filterPostings(): void {
-		filteredPostings = postings.filter((posting) => {
-			const matchesType = selectedPostingTypes.includes(posting.type);
-			const matchesPurpose = posting.purpose.toLowerCase().includes(postingsSearchValue.toLowerCase());
-			const matchesActivityName = $organizationStore?.activities
-				.find((activity) => activity.activityPostings.some((activityPosting) => activityPosting.id === posting.id))
-				?.name.toLowerCase()
-				.includes(postingsSearchValue.toLowerCase());
-			const matchesUsername = $userStore?.username.toLowerCase().includes(postingsSearchValue.toLowerCase());
+	function getFilteredPostings(): PostingTO[] {
+		return postings.filter((posting) => {
+			const matchesType = selectedPostingTypes.has(posting.type);
 			const matchesDateRange =
 				new TZDate(posting.date) >= new TZDate(fromFilterDate) && new TZDate(posting.date) <= new TZDate(toFilterDate);
-			const matchesActivities = filteredActivityFilterItems.some(
-				(activityFilterItem) =>
-					activityFilterItem.selected &&
-					($organizationStore?.activities
-						.find((activity) => activity.id === activityFilterItem.data.id)
-						?.activityPostings.some((activityPosting) => activityPosting.id === posting.id) ||
-						$organizationStore?.organizationPostings.some(
-							(organizationPosting) => organizationPosting.id === posting.id
-						))
+
+			const postingActivity = $organizationStore?.activities.find((activity) =>
+				activity.activityPostings.some((activityPosting) => activityPosting.id === posting.id)
 			);
-			return (
-				matchesActivities &&
-				matchesType &&
-				matchesDateRange &&
-				(matchesPurpose || matchesActivityName || matchesUsername)
+			const isOrganizationPosting = $organizationStore?.organizationPostings.some(
+				(organizationPosting) => organizationPosting.id === posting.id
 			);
+
+			const matchesActivities = filteredActivityFilterItems.some((activityId) => {
+				if (activityId === 0) {
+					return isOrganizationPosting;
+				}
+				return postingActivity?.id === activityId;
+			});
+
+			let matchesSearch = true;
+			if (postingsSearchValue.trim() !== '') {
+				const matchesPurpose = posting.purpose.toLowerCase().includes(postingsSearchValue.toLowerCase());
+				const matchesActivityName =
+					postingActivity?.name.toLowerCase().includes(postingsSearchValue.toLowerCase()) ?? false;
+
+				matchesSearch = matchesPurpose || matchesActivityName;
+			}
+
+			return matchesActivities && matchesType && matchesDateRange && matchesSearch;
 		});
 	}
 
@@ -304,7 +270,7 @@
 	async function onOrganizationSelect(): Promise<void> {
 		const actionSheet = await actionSheetController.create({
 			buttons: $organizations.map((organization) => ({
-				handler: () => organizationStore.update(organization.id),
+				handler: async () => await organizationStore.update(organization.id),
 				role: $organizationStore?.id === organization.id ? 'selected' : undefined,
 				text: organization.name
 			})),
@@ -332,29 +298,16 @@
 
 	async function onSearchPostings(event: CustomEvent): Promise<void> {
 		postingsSearchValue = event.detail.value;
-		filterPostings();
-	}
-
-	function togglePostingTypeSelected(type: PostingType): void {
-		selectedPostingTypes = selectedPostingTypes.includes(type)
-			? selectedPostingTypes.filter((_type) => _type !== type)
-			: [...selectedPostingTypes, type];
-		filterPostings();
+		getFilteredPostings();
 	}
 
 	async function onDeletePosting(postingId: number): Promise<void> {
-		const alert = await alertController.create({
-			buttons: [
-				{ role: 'cancel', text: 'Cancel' },
-				{
-					handler: () => deletePosting(postingId),
-					text: 'Delete transaction'
-				}
-			],
-			header: `Are you sure?`,
-			message: `This action cannot be undone.`
+		await confirmationModal({
+			confirmText: 'Delete transaction',
+			handler: () => deletePosting(postingId),
+			header: 'Are you sure?',
+			message: 'This action cannot be undone.'
 		});
-		await alert.present();
 	}
 
 	async function deletePosting(postingId: number): Promise<void> {
@@ -379,88 +332,52 @@
 
 	function onApplyFromFilterDate(date: string): void {
 		fromFilterDate = date;
-		filterPostings();
-	}
-
-	function getDisplayedFilteredActivities(activities: FilterItem<{ id: number; name: string }>[]): string {
-		const filtered = activities.filter((activity) => activity.selected);
-		if (filtered.length === activities.length) {
-			return 'All activities';
-		} else if (filtered.length === 0) {
-			return 'None selected';
-		}
-		return filtered.map((activity) => activity.data.name).join(', ');
-	}
-
-	function getDisplayedFilteredMembers(members: FilterItem<MemberFilterValue>[]): string {
-		const filtered = members.filter((member) => member.selected);
-		if (filtered.length === members.length) {
-			return 'All members';
-		} else if (filtered.length === 0) {
-			return 'None selected';
-		}
-		return filtered.map((member) => member.data).join(', ');
-	}
-
-	function onSearchMembers(event: CustomEvent): void {
-		const value = event.detail.value;
-		filteredMemberFilterItems = memberFilterItems.filter((member) =>
-			member.data.username.toLowerCase().includes(value)
-		);
-	}
-
-	function onSearchActivities(event: CustomEvent): void {
-		const value = event.detail.value;
-		filteredActivityFilterItems = activityFilterItems.filter(
-			(activity) => activity.data.id !== 0 && activity.data.name.toLowerCase().includes(value)
-		);
-		if (!value) {
-			filteredActivityFilterItems = activityFilterItems;
-		}
-	}
-
-	function toggleMemberFilterItemsSelection(value?: boolean): void {
-		filteredMemberFilterItems = filteredMemberFilterItems.map((member) => ({ ...member, selected: value ?? false }));
-	}
-
-	function toggleActivityFiterItemsSelection(value?: boolean): void {
-		filteredActivityFilterItems = filteredActivityFilterItems.map((activity) => ({
-			...activity,
-			selected: value ?? false
-		}));
+		filteredPostings = getFilteredPostings();
 	}
 
 	function resetFilter(): void {
 		fromFilterDate = getMinPostingDate(postings);
 		toFilterDate = getMaxPostingDate(postings);
-		filteredMemberFilterItems = memberFilterItems;
-		filteredActivityFilterItems = activityFilterItems;
-		selectedPostingTypes = ['DEBIT', 'CREDIT'];
-		filterOpen = false;
+		postingsSearchValue = '';
+		selectedPostingTypes.clear();
+		selectedPostingTypes.add('DEBIT');
+		selectedPostingTypes.add('CREDIT');
+		filteredActivityFilterItems = activityFilterItems.map((item) => item.data.id);
+		transactionFilterOpen = false;
 	}
 
-	function onConfirmSelectActivity(): void {
-		selectedActivity = $organizationStore?.activities.find((activity) => activity.id === selectedActivityId);
-		selectActivityModalOpen = false;
+	function onConfirmSelectCreatePostingActivity(ids: number[]): void {
+		selectedActivity = $organizationStore?.activities.find((activity) => activity.id === ids[0]);
 		createPostingFormActions?.setModel({
 			...createPostingForm.model
-		} as PostingCreateUpdateRequestTO);
+		} satisfies PostingCreateUpdateRequestTO);
 	}
 
-	function onDismissSelectActivity(): void {
-		selectActivityModalOpen = false;
-		selectedActivityId = selectedActivity?.id ?? 0;
-	}
-
-	function onOpenSelectActivityModal(): void {
-		selectedActivityId = selectedActivity?.id ?? 0;
-		selectActivityModalOpen = true;
+	function onConfirmSelectUpdatePostingActivity(ids: number[]): void {
+		selectedActivity = $organizationStore?.activities.find((activity) => activity.id === ids[0]);
+		updatePostingFormActions?.setModel({
+			...updatePostingForm.model
+		} satisfies PostingCreateUpdateRequestTO);
 	}
 
 	function getActivityPosting(postingId: number): ActivityTO | undefined {
 		return $organizationStore?.activities.find((activity) =>
 			activity.activityPostings.some((activityPosting) => activityPosting.id === postingId)
 		);
+	}
+
+	function togglePostingTypeSelected(type: PostingType): void {
+		if (selectedPostingTypes.has(type)) {
+			selectedPostingTypes.delete(type);
+		} else {
+			selectedPostingTypes.add(type);
+		}
+		filteredPostings = postings.filter((posting) => selectedPostingTypes.has(posting.type));
+	}
+
+	function onConfirmSelectTransactionActivities(ids: number[]): void {
+		filteredActivityFilterItems = ids;
+		filteredPostings = getFilteredPostings();
 	}
 </script>
 
@@ -565,8 +482,8 @@
 			>
 				{$organizationStore?.description}
 			</ion-text>
-			<div class="flex flex-row items-center justify-center gap-1">
-				<ion-icon class="mb-1" icon={locationOutline}></ion-icon>
+			<div class="flex flex-row items-start justify-center gap-1">
+				<ion-icon icon={locationOutline}></ion-icon>
 				<ion-text>{$organizationStore?.place}</ion-text>
 			</div>
 		</div>
@@ -744,27 +661,29 @@
 					clicked={() => setSelectedPostingType('DEBIT')}
 				/>
 			</div>
-			<TextInputItem name="purpose" label="Purpose" icon={documentOutline} />
+			<InputItem name="purpose" label="Purpose" icon={documentOutline} />
 			<AmountInputItem name="amountInCents" label="Amount" />
 			<DatetimeInputItem
 				name="date"
 				label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.date')}
 			/>
 			{#if $organizationStore && $organizationStore.activities.length > 0}
-				<CustomItem icon={flashOutline} clicked={onOpenSelectActivityModal}>
-					<div class="flex flex-col">
-						<ion-text class="ms-3 pt-2 text-xs">Select event</ion-text>
-						<ion-text class="my-2 ms-4 truncate">
-							{selectedActivity ? selectedActivity.name : 'Not assigned to event'}
-						</ion-text>
-					</div>
-				</CustomItem>
+				<MultiSelectItem
+					changed={onConfirmSelectCreatePostingActivity}
+					allSelectedText="All events selected"
+					icon={flashOutline}
+					multiple={false}
+					label="Select event"
+					noneSelectedText="Not assigned to event"
+					searchPlaceholder="Search events..."
+					items={activityFilterItems}
+				/>
 			{/if}
 		</form>
 	</Card>
 </Modal>
 
-<!-- Select Activity Modal -->
+<!-- Update Posting Modal -->
 <Modal
 	open={updatePostingModalOpen}
 	touched={updatePostingModelTouched}
@@ -784,21 +703,23 @@
 					clicked={() => setSelectedPostingType('CREDIT')}
 				/>
 			</div>
-			<TextInputItem name="purpose" label="Purpose" icon={documentOutline} />
+			<InputItem name="purpose" label="Purpose" icon={documentOutline} />
 			<AmountInputItem name="amountInCents" label="Amount" />
 			<DatetimeInputItem
 				name="date"
 				label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.date')}
 			/>
 			{#if $organizationStore && $organizationStore.activities.length > 0}
-				<CustomItem icon={flashOutline} clicked={onOpenSelectActivityModal}>
-					<div class="flex flex-col">
-						<ion-text class="ms-3 pt-2 text-xs">Select event</ion-text>
-						<ion-text class="my-2 ms-4 truncate">
-							{selectedActivity ? selectedActivity.name : 'Not assigned to event'}
-						</ion-text>
-					</div>
-				</CustomItem>
+				<MultiSelectItem
+					changed={onConfirmSelectUpdatePostingActivity}
+					allSelectedText="All events selected"
+					icon={flashOutline}
+					multiple={false}
+					label="Select event"
+					noneSelectedText="Not assigned to event"
+					searchPlaceholder="Search events..."
+					items={activityFilterItems}
+				/>
 			{/if}
 		</form>
 	</Card>
@@ -812,177 +733,75 @@
 	informational
 	lazy
 >
-	{#if transactionHistoryModalOpen}
-		<div class="relative">
-			<div class="sticky top-0 left-0 z-10 flex items-center justify-center gap-2">
-				<ion-searchbar
-					class="w-full"
-					debounce={100}
-					placeholder="Search transactions..."
-					value={postingsSearchValue}
-					onionInput={onSearchPostings}
-				></ion-searchbar>
-				<Button icon={filterOutline} clicked={() => (filterOpen = true)} />
-			</div>
-			{#if filteredPostings.length === 0}
-				<div class="mt-3 text-center">
-					<ion-note>No transactions found.</ion-note>
-					{#if postings.length > 0}
-						<Button icon={refreshOutline} label="Reset filters" clicked={resetFilter} />
-					{/if}
-				</div>
-			{:else}
-				<ion-list>
-					{#each filteredPostings as posting (posting.id)}
-						{@render transactionItem(posting)}
-					{/each}
-				</ion-list>
-			{/if}
+	<div class="relative">
+		<div class="sticky top-0 left-0 z-10 flex items-center justify-center gap-2">
+			<ion-searchbar
+				class="w-full"
+				debounce={100}
+				placeholder="Search transactions..."
+				value={postingsSearchValue}
+				onionInput={onSearchPostings}
+			></ion-searchbar>
+			<Button icon={filterOutline} clicked={() => (transactionFilterOpen = true)} />
 		</div>
-	{/if}
+		{#if filteredPostings.length === 0}
+			<div class="mt-3 flex flex-col items-center justify-center gap-2 text-center">
+				<ion-note>No transactions found.</ion-note>
+				{#if postings.length > 0}
+					<Button icon={refreshOutline} label="Reset filters" clicked={resetFilter} />
+				{/if}
+			</div>
+		{:else}
+			<ion-list>
+				{#each filteredPostings as posting (posting.id)}
+					{@render transactionItem(posting)}
+				{/each}
+			</ion-list>
+		{/if}
+	</div>
 </Modal>
 
 <!-- Filter Popover Modal -->
-<Popover extended open={filterOpen} dismissed={() => (filterOpen = false)} lazy>
+<Popover extended open={transactionFilterOpen} dismissed={() => (transactionFilterOpen = false)} lazy>
 	<Card title="Filters" classList="m-0">
 		<div class="flex items-center justify-center gap-2">
 			<Chip
 				clicked={() => togglePostingTypeSelected('DEBIT')}
 				color="success"
-				selected={selectedPostingTypes.includes('DEBIT')}
+				selected={selectedPostingTypes.has('DEBIT')}
 				icon={trendingUpOutline}
 				label="Income"
 			/>
 			<Chip
 				clicked={() => togglePostingTypeSelected('CREDIT')}
 				color="danger"
-				selected={selectedPostingTypes.includes('CREDIT')}
+				selected={selectedPostingTypes.has('CREDIT')}
 				icon={trendingDownOutline}
 				label="Expense"
 			/>
 		</div>
-		<DatetimeInputItem max={toFilterDate} label="From" value={fromFilterDate} applied={onApplyFromFilterDate} />
+		<DatetimeInputItem max={toFilterDate} label="From" value={fromFilterDate} changed={onApplyFromFilterDate} />
 		<DatetimeInputItem
 			min={fromFilterDate}
 			label="To"
 			value={toFilterDate}
-			applied={(value) => (toFilterDate = value)}
+			changed={(value) => (toFilterDate = value)}
 		/>
-		<CustomItem icon={personOutline} clicked={() => (filterMembersModalOpen = true)}>
-			<div class="flex flex-col">
-				<ion-text class="ms-3 pt-2 text-xs">Select members</ion-text>
-				<ion-text class="my-2 ms-4 truncate">
-					{displayedFilteredMembers}
-				</ion-text>
-			</div>
-		</CustomItem>
 		{#if $organizationStore && $organizationStore.activities.length > 0}
-			<CustomItem icon={flashOutline} clicked={() => (filterActivitiesModalOpen = true)}>
-				<div class="flex flex-col">
-					<ion-text class="ms-3 pt-2 text-xs">Select events</ion-text>
-					<ion-text class="my-2 ms-4 truncate">
-						{displayedFilteredActivities}
-					</ion-text>
-				</div>
-			</CustomItem>
+			<MultiSelectItem
+				value={filteredActivityFilterItems}
+				changed={onConfirmSelectTransactionActivities}
+				allSelectedText="All events selected"
+				icon={albumsOutline}
+				label="Select event"
+				noneSelectedText="Not assigned to event"
+				searchPlaceholder="Search events..."
+				items={activityFilterItems}
+			/>
 		{/if}
 		<div class="mt-2 flex items-center justify-center gap-2">
 			<Button label="Reset" color="danger" icon={refreshOutline} fill="outline" clicked={resetFilter} />
-			<Button label="Apply" icon={saveOutline} fill="outline" clicked={() => (filterOpen = false)} />
+			<Button label="Apply" icon={saveOutline} fill="outline" clicked={() => (transactionFilterOpen = false)} />
 		</div>
 	</Card>
 </Popover>
-
-<!-- Filter Members Modal -->
-<Modal open={filterMembersModalOpen} dismissed={() => (filterMembersModalOpen = false)} informational lazy>
-	<ion-searchbar class="w-full" debounce={100} placeholder="Search members..." onionInput={onSearchMembers}>
-	</ion-searchbar>
-	<ToggleItem
-		disabled={memberFilterItems.length !== filteredMemberFilterItems.length}
-		checked={allMemberFilterItemsToggleActive}
-		label="All selected"
-		icon={peopleOutline}
-		change={toggleMemberFilterItemsSelection}
-	/>
-	<ion-list>
-		{#each filteredMemberFilterItems as member (member.data)}
-			<CustomItem>
-				<ion-checkbox
-					value={member.data.username}
-					checked={member.selected}
-					onionChange={() => (member.selected = !member.selected)}>{member.data.username}</ion-checkbox
-				>
-			</CustomItem>
-		{/each}
-	</ion-list>
-</Modal>
-
-<!-- Filter Activities Modal -->
-<Modal open={filterActivitiesModalOpen} dismissed={() => (filterActivitiesModalOpen = false)} informational lazy>
-	<ion-searchbar class="w-full" debounce={100} placeholder="Search activities..." onionInput={onSearchActivities}>
-	</ion-searchbar>
-	<ToggleItem
-		disabled={activityFilterItems.length !== filteredActivityFilterItems.length}
-		checked={allActivityFilterItemsToggleActive}
-		label="All selected"
-		icon={albumsOutline}
-		change={toggleActivityFiterItemsSelection}
-	/>
-	<ion-list>
-		{#each filteredActivityFilterItems as activity (activity.data.id)}
-			<CustomItem>
-				<ion-checkbox
-					value={activity.data.name}
-					checked={activity.selected}
-					onionChange={() => (activity.selected = !activity.selected)}
-					color={activity.data.icon ? 'tertiary' : 'primary'}
-				>
-					<div class="flex items-center justify-center gap-2">
-						{#if activity.data.icon}
-							<ion-icon color="tertiary" icon={activity.data.icon}></ion-icon>
-						{/if}
-						<ion-text color={activity.data.icon ? 'tertiary' : 'dark'}>
-							{activity.data.name}
-						</ion-text>
-					</div>
-				</ion-checkbox>
-			</CustomItem>
-		{/each}
-	</ion-list>
-</Modal>
-
-<!-- Select Activity Modal -->
-<Modal
-	open={selectActivityModalOpen}
-	title="Select Event"
-	confirmLabel="Select"
-	confirmIcon={checkmark}
-	confirmed={onConfirmSelectActivity}
-	dismissed={onDismissSelectActivity}
-	lazy
->
-	<ion-searchbar class="w-full" debounce={100} placeholder="Search activities..." onionInput={onSearchActivities}>
-	</ion-searchbar>
-	<ion-radio-group value={selectedActivityId}>
-		{#each filteredActivityFilterItems as activity (activity.data.id)}
-			<CustomItem>
-				<!-- svelte-ignore a11y_click_events_have_key_events -->
-				<!-- svelte-ignore a11y_no_static_element_interactions -->
-				<ion-radio
-					value={activity.data.id}
-					onclick={() => (selectedActivityId = activity.data.id)}
-					color={activity.data.icon ? 'tertiary' : 'primary'}
-				>
-					<div class="flex items-center justify-center gap-2">
-						{#if activity.data.icon}
-							<ion-icon color="tertiary" icon={activity.data.icon}></ion-icon>
-						{/if}
-						<ion-text color={activity.data.icon ? 'tertiary' : 'dark'}>
-							{activity.data.name}
-						</ion-text>
-					</div>
-				</ion-radio>
-			</CustomItem>
-		{/each}
-	</ion-radio-group>
-</Modal>

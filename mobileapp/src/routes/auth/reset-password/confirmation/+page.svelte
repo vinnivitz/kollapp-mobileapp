@@ -12,7 +12,7 @@
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
+	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import { t } from '$lib/locales';
 	import { Form } from '$lib/models/ui';
 	import { customForm, passwordConfirmationValidator, showAlert } from '$lib/utility';
@@ -28,9 +28,12 @@
 
 	const form = new Form({
 		completed: async () => goto(resolve('/auth/login')),
-		customValidators: [
-			passwordConfirmationValidator<ResetPasswordRequestTO & { confirmPassword: string }>('password', 'confirmPassword')
-		],
+		customValidators: {
+			confirmPassword: passwordConfirmationValidator<ResetPasswordRequestTO & { confirmPassword: string }>(
+				'password',
+				'confirmPassword'
+			)
+		},
 		request: async (model) => {
 			return publicUserService.resetPassword(model, data.token!);
 		},
@@ -41,13 +44,13 @@
 <Layout title={$t('routes.auth.reset-password.confirmation.page.title')} showBackButton>
 	<Card title={$t('routes.auth.reset-password.confirmation.page.card.title')}>
 		<form use:customForm={form}>
-			<TextInputItem
+			<InputItem
 				name="password"
 				type="password"
 				label={$t('routes.auth.reset-password.confirmation.page.card.form.password')}
 				icon={keyOutline}
 			/>
-			<TextInputItem
+			<InputItem
 				name="confirmPassword"
 				type="password"
 				label={$t('routes.auth.reset-password.confirmation.page.card.form.confirm-password')}

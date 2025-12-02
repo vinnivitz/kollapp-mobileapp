@@ -18,7 +18,7 @@
 	const loaded = $derived($initializationStore.loadedServer);
 
 	let timer: ReturnType<typeof setTimeout>;
-	let showProgressBar = $state(false);
+	let showProgressBar = $state<boolean>(false);
 
 	$effect(() => {
 		clearTimeout(timer);

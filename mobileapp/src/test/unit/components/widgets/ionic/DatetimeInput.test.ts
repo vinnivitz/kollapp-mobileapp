@@ -46,7 +46,7 @@ describe('DatetimeInput Component', () => {
 		const userApplied = vi.fn();
 
 		const { container } = render(DatetimeInputItem, {
-			props: { applied: userApplied, label: 'Apply date', value: formattedDateYYYYMMDD }
+			props: { changed: userApplied, label: 'Apply date', value: formattedDateYYYYMMDD }
 		});
 
 		await tick();

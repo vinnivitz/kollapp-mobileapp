@@ -14,10 +14,12 @@
 		breakpoints?: boolean;
 		cancelIcon?: string;
 		cancelLabel?: string;
+		classList?: string;
 		confirmIcon?: string;
 		confirmLabel?: string;
 		informational?: boolean;
 		initialBreakPoint?: number;
+		labels?: boolean;
 		lazy?: boolean;
 		title?: string;
 		touched?: boolean;
@@ -30,12 +32,14 @@
 		cancelIcon = trashBinOutline,
 		cancelLabel = $t('components.widgets.ionic.modal.cancel'),
 		children,
+		classList = '',
 		confirmed,
 		confirmIcon = saveOutline,
 		confirmLabel = $t('components.widgets.ionic.modal.confirm'),
 		dismissed,
 		informational,
 		initialBreakPoint = 0.75,
+		labels = true,
 		lazy = false,
 		open,
 		title,
@@ -65,6 +69,7 @@
 	}
 
 	async function onDismiss(): Promise<void> {
+		await _modalController?.dismiss();
 		open = false;
 		dismissed?.();
 	}
@@ -99,6 +104,7 @@
 
 {#if (lazy && open) || !lazy}
 	<ion-modal
+		class={classList}
 		bind:this={_modalController}
 		is-open={open}
 		onwillPresent={onPresent}
@@ -125,13 +131,19 @@
 					</ion-buttons>
 				{:else}
 					<ion-buttons slot="start">
-						<Button type="button" label={cancelLabel} color="white" clicked={onDismiss} icon={cancelIcon} />
+						<Button
+							type="button"
+							label={labels ? cancelLabel : ''}
+							color="white"
+							clicked={onDismiss}
+							icon={cancelIcon}
+						/>
 					</ion-buttons>
 					<ion-buttons slot="end">
 						<Button
 							disabled={!touched}
 							type="button"
-							label={confirmLabel}
+							label={labels ? confirmLabel : ''}
 							color="white"
 							clicked={onConfirm}
 							icon={confirmIcon}

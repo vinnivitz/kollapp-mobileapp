@@ -201,6 +201,11 @@
         "modal": {
           "cancel": "Cancel",
           "confirm": "Confirm"
+        },
+        "location-input-item": {
+          "modal": {
+            "confirm": "Select"
+          }
         }
       },
       "budget-card": {
@@ -269,6 +274,15 @@
         "store": "Failed to store value",
         "retreive": "Failed to retrieve value",
         "remove": "Failed to remove value"
+      }
+    },
+    "ui": {
+      "confirm-modal": {
+        "cancel": "Cancel",
+        "confirm": "Confirm"
+      },
+      "information-modal": {
+        "ok": "Okay"
       }
     }
   },
@@ -545,6 +559,334 @@
             "form": {
               "email": "Email",
               "submit": "Get email for password reset"
+            }
+          }
+        }
+      }
+    },
+    "organization": {
+      "activities": {
+        "slug": {
+          "page": {
+            "fab": {
+              "delete": "Delete event",
+              "archieve": "Archieve event",
+              "edit": "Edit event"
+            },
+            "filter-members": {
+              "all": "All members",
+              "none": "None selected"
+            },
+            "modal": {
+              "delete-activity": {
+                "cancel": "Cancel",
+                "confirm": "Delete event",
+                "header": "Are you sure?",
+                "message": "This action cannot be undone."
+              },
+              "delete-posting": {
+                "modal": {
+                  "cancel": "Cancel",
+                  "confirm": "Delete transaction",
+                  "header": "Are you sure?",
+                  "message": "This action cannot be undone."
+                }
+              },
+              "update-activity": {
+                "confirm": "Update",
+                "card": {
+                  "title": "Update event",
+                  "form": {
+                    "name": "Title",
+                    "location": "Location",
+                    "date": "Date"
+                  }
+                }
+              },
+              "create-posting": {
+                "form": {
+                  "credit": "Income",
+                  "debit": "Expense",
+                  "amount": "Amount",
+                  "date": "Date"
+                }
+              },
+              "update-posting": {
+                "card": {
+                  "title": "Update transaction",
+                  "form": {
+                    "credit": "Income",
+                    "debit": "Expense",
+                    "purpose": "Purpose",
+                    "amount": "Amount",
+                    "date": "Date"
+                  }
+                }
+              },
+              "transaction-history": {
+                "searchbar": "Search transactions...",
+                "no-transactions": "No transactions found.",
+                "reset-filters": "Reset filters"
+              },
+              "activity-filter": {
+                "card": {
+                  "title": "Filters",
+                  "credit": "Income",
+                  "debit": "Expense",
+                  "date": {
+                    "from": "From",
+                    "to": "To"
+                  },
+                  "members": {
+                    "all-selected": "All members selected",
+                    "none-selected": "No members selected",
+                    "search-placeholder": "Search members...",
+                    "select-all": "Select all members"
+                  },
+                  "reset": "Reset",
+                  "apply": "Apply"
+                }
+              }
+            },
+            "create-posting": {
+              "title": {
+                "debit": "Add expense",
+                "credit": "Add income"
+              }
+            },
+            "calendar-request-prompt": {
+              "denied": "Calendar access was denied by user",
+              "error": "Calendar is not available"
+            },
+            "title": "Event Details",
+            "event-summary": {
+              "add-to-calendar": "Add to calendar",
+              "open-in-map": "Open in map"
+            },
+            "posting-summary": {
+              "heading": "Event balance",
+              "total-credit": "Total incoming:",
+              "total-debit": "Total expense",
+              "add-credit": "Add income",
+              "add-debit": "Add expense",
+              "transaction-history": "Transaction history"
+            },
+            "action-button": "Event actions",
+            "postings-summary": {
+              "heading": "Event balance",
+              "total-credit": "Total income:",
+              "total-debit": "Total expense",
+              "add-credit": "Add income",
+              "add-debit": "Add expense",
+              "transaction-history": "Transaction history"
+            }
+          }
+        },
+        "page": {
+          "segments": {
+            "activities": "Events",
+            "calendar": "Calendar"
+          },
+          "filters": {
+            "type": {
+              "pending": "Pending",
+              "archived": "Archived"
+            },
+            "card": {
+              "title": "Filters"
+            }
+          },
+          "title": "Events",
+          "calendar": {
+            "apply": "Create event"
+          },
+          "activities": {
+            "fab": {
+              "create": "Create event"
+            },
+            "search": {
+              "placeholder": "Search events..."
+            },
+            "not-found": "No events found",
+            "no-results": "No results for {{value}}"
+          },
+          "modal": {
+            "create-activity": {
+              "confirm": "Create",
+              "card": {
+                "title": "Create event",
+                "form": {
+                  "name": "Title",
+                  "location": "Location"
+                }
+              }
+            }
+          }
+        }
+      },
+      "info": {
+        "page": {
+          "title": "Collective info",
+          "card": {
+            "invalid-code": {
+              "title": "Code invalid or expired",
+              "content": "Ask the collective admin to provide you a new invitation code."
+            }
+          },
+          "modal": {
+            "join": {
+              "confirm": "Ok"
+            }
+          }
+        }
+      },
+      "join": {
+        "page": {
+          "qr-code": {
+            "invalid": "QR code is not valid.",
+            "error": "An error occurred while scanning the QR code. Please try again."
+          },
+          "modal": {
+            "join": {
+              "header": "Join request sent",
+              "confirm": "Okay",
+              "message": "Your request to join {{value}} has been sent. You will be notified once it is approved."
+            }
+          },
+          "title": "Join collective",
+          "card": {
+            "title": "Join a collective with an invitation code",
+            "form": {
+              "code": "Code",
+              "helper-text": "Get it from a collective admin.",
+              "submit": "{$t('routes.organization.page.join.form.submit')}"
+            }
+          }
+        }
+      },
+      "leave": {
+        "page": {
+          "modal": {
+            "cancel": "Cancel",
+            "confirm": "Leave",
+            "header": "Are you sure?",
+            "message": "This action cannot be undone."
+          },
+          "title": "Leave collective",
+          "card": {
+            "title": "Leave the collective",
+            "submit": "Leave collective",
+            "note": "All personal data related to the collective will be deleted.",
+            "warning": "are the last manager of this organization. Leaving will delete the organization.",
+            "button": {
+              "members": "Grant manager role to another member",
+              "leave": "Leave collective"
+            }
+          }
+        }
+      },
+      "members": {
+        "page": {
+          "modal": {
+            "approve-member": {
+              "cancel": "Cancel",
+              "confirm": "Approve",
+              "header": "Approve member",
+              "message": "User will be granted access to the collective"
+            },
+            "remove-member": {
+              "cancel": "Cancel",
+              "confirm": "Remove",
+              "header": "Are you sure?",
+              "message": "User will be removed from the collective."
+            },
+            "select-role": {
+              "manager": "Manager",
+              "member": "Member",
+              "header": "Select collective role"
+            },
+            "change-role": {
+              "header": "Change user role?",
+              "message": "User will be granted the role of a {{value}}"
+            },
+            "invitation-code": {
+              "card": {
+                "title": "Invitation Code",
+                "note": {
+                  "code-expired": "Code is expired. Please renew.",
+                  "expires-in": "Expires"
+                }
+              }
+            },
+            "qr-code": {
+              "info-text": "Join a collective by scanning this QR-Code",
+              "breadcrumb": {
+                "collective": "Collective",
+                "first": "Collective",
+                "second": "Join Collective"
+              }
+            }
+          },
+          "invitation-code": {
+            "clipboard": {
+              "info": "Invitation code wrote to clipboard"
+            },
+            "share": {
+              "text": "Join {{value}} using this invitation code: {{value2}}",
+              "title": "Join {{value}} on Kollapp!",
+              "error": "Sharing is not supported on this device"
+            },
+            "renew": {
+              "error": "Failed to renew invitation code."
+            },
+            "email": {
+              "body": "User this invitation code to join {{value}}",
+              "subject": "Join {{value}} on Kollapp!",
+              "error": "Default email app is not configured",
+              "unsupported": "Sending email is not supported on this device."
+            }
+          },
+          "title": "Members",
+          "card": {
+            "invite-members": {
+              "title": "Invite member"
+            },
+            "pending-members": {
+              "title": "Pending members"
+            }
+          },
+          "fab": {
+            "invite-members": {
+              "title": "Invite members"
+            }
+          },
+          "no-members": "No other members found."
+        }
+      },
+      "register": {
+        "page": {
+          "title": "Register",
+          "card": {
+            "title": "Register a collective",
+            "form": {
+              "name": "Name",
+              "description": "Description",
+              "place": "Place",
+              "submit": "Register collective"
+            }
+          }
+        }
+      },
+      "update-data": {
+        "page": {
+          "title": "Collective information",
+          "card": {
+            "title": "Update collective information",
+            "form": {
+              "name": "Name",
+              "description": "Description",
+              "place": "Place",
+              "submit": "Update information"
             }
           }
         }

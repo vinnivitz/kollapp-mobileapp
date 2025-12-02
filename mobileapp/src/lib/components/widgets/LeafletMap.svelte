@@ -4,7 +4,6 @@
 
 	import { searchOutline } from 'ionicons/icons';
 	import { LatLng, type LeafletMouseEvent, Map, Marker, TileLayer } from 'leaflet';
-	import { onDestroy, onMount } from 'svelte';
 
 	import { osmService } from '$lib/api/services';
 	import environment from '$lib/environment';
@@ -25,24 +24,36 @@
 	let { classList = '', searchable = true, selected, value }: Properties = $props();
 	let map: Map | undefined;
 	let marker: Marker | undefined;
-	let searchbarOpen = $state(false);
+	let searchbarOpen = $state<boolean>(false);
 	let searchItems = $state<PositionItem[]>([]);
 	let searchbar = $state<HTMLIonSearchbarElement>();
-	let mapInitialized = false;
+	let mapContainer = $state<HTMLDivElement>();
+	let mapInitialized = $state<boolean>(false);
 
-	onMount(() => initializeMap(value));
-
-	onDestroy(() => {
-		if (map) {
-			map.remove();
-			map = undefined;
+	$effect(() => {
+		if (mapContainer && !map && !mapInitialized) {
+			mapInitialized = true;
+			// Small delay to ensure DOM is fully ready
+			setTimeout(() => {
+				if (mapContainer && !map) {
+					initializeMap(value);
+				}
+			}, 0);
 		}
-		mapInitialized = false;
+
+		return () => {
+			if (map) {
+				map.off();
+				map.remove();
+				map = undefined;
+				mapInitialized = false;
+			}
+		};
 	});
 
 	// Re-initialize map when value prop changes
 	$effect(() => {
-		if (value && mapInitialized) {
+		if (value && map) {
 			updateMarkerFromValue(value);
 		}
 	});
@@ -57,24 +68,17 @@
 	}
 
 	async function initializeMap(value?: string): Promise<void> {
-		if (mapInitialized) return;
-
-		const existingContainer = document.querySelector('#map .leaflet-container');
-		if (existingContainer) {
-			existingContainer.remove();
-		}
+		if (!mapContainer) return;
 
 		const coordinates = (await getStoredValue(PreferencesKey.POSITION)) || JSON.parse(environment.defaultPosition);
 		const latlng = new LatLng(coordinates[0], coordinates[1]);
 
-		map = new Map('map', {
+		map = new Map(mapContainer, {
 			center: latlng,
 			doubleClickZoom: true,
 			zoom: 16,
 			zoomControl: true
 		});
-
-		mapInitialized = true;
 
 		map.on('click', handleMapClick);
 		new TileLayer(TILE_LAYER_URL, {
@@ -163,7 +167,7 @@
 		{@render search()}
 	{/if}
 </div>
-<div class="absolute top-0 right-0 bottom-0 left-0 z-0 w-full" id="map"></div>
+<div bind:this={mapContainer} class="absolute top-0 right-0 bottom-0 left-0 z-0 w-full"></div>
 
 {#snippet search()}
 	{#if searchbarOpen}

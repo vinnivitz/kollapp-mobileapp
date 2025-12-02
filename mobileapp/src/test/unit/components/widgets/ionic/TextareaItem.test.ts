@@ -10,7 +10,6 @@ describe('TextareaInputItem Component', () => {
 			icon: 'pencil',
 			label: 'Textarea Label',
 			maxlength: 200,
-			name: 'textareaName',
 			placeholder: 'Enter text here...',
 			value: 'Initial text'
 		};
@@ -20,7 +19,6 @@ describe('TextareaInputItem Component', () => {
 
 		expect(textarea).toBeTruthy();
 		expect(textarea?.getAttribute('label')).toBe(properties.label);
-		expect(textarea?.getAttribute('name')).toBe(properties.name);
 		expect(textarea?.getAttribute('placeholder')).toBe(properties.placeholder);
 		expect(textarea?.getAttribute('value')).toBe(properties.value);
 		expect(textarea?.getAttribute('maxlength')).toBe(properties.maxlength.toString());
@@ -31,8 +29,7 @@ describe('TextareaInputItem Component', () => {
 		const changeMock = vi.fn();
 		const properties = {
 			change: changeMock,
-			label: 'Textarea Label',
-			name: 'textareaName'
+			label: 'Textarea Label'
 		};
 
 		const { container } = render(TextareaInputItem, { props: properties });

@@ -144,7 +144,12 @@
 				: undefined,
 		tooltip:
 			selectedChart === ChartType.ALL
-				? { enabled: true }
+				? {
+						enabled: true,
+						y: {
+							formatter: (value: number) => formatter.currency(value)
+						}
+					}
 				: {
 						custom: ({ dataPointIndex, w }): string => {
 							const dataPoint = w?.config?.series?.[0]?.data?.[dataPointIndex] as {

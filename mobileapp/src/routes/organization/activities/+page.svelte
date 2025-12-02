@@ -15,24 +15,24 @@
 		hourglassOutline,
 		locationOutline
 	} from 'ionicons/icons';
-	import { fade } from 'svelte/transition';
 
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
 	import { activityService } from '$lib/api/services';
 	import { createActivitySchema } from '$lib/api/validation/organization';
+	import FadeInOut from '$lib/components/layout/FadeInOut.svelte';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import Chip from '$lib/components/widgets/ionic/Chip.svelte';
 	import Datetime from '$lib/components/widgets/ionic/Datetime.svelte';
 	import FabButton from '$lib/components/widgets/ionic/FabButton.svelte';
+	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import LocationInputItem from '$lib/components/widgets/ionic/LocationInputItem.svelte';
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
 	import Popover from '$lib/components/widgets/ionic/Popover.svelte';
 	import SegmentItem from '$lib/components/widgets/ionic/SegmentItem.svelte';
-	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import { t } from '$lib/locales';
 	import { Form, type SegmentConfig } from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';
@@ -44,8 +44,8 @@
 	}
 
 	enum ActivityFilterType {
-		archived = 'archived',
-		pending = 'pending'
+		ARCHIVED = 'archived',
+		PENDING = 'pending'
 	}
 
 	type ActivityFilter = {
@@ -62,14 +62,14 @@
 			class: 'flex h-full flex-col pb-6',
 			clicked: () => (activityView = ActivityView.ACTIVITIES),
 			icon: flashOutline,
-			label: $t('routes.organization.page.activity.segments.activities'),
+			label: $t('routes.organization.activities.page.segments.activities'),
 			selected: activityView === ActivityView.ACTIVITIES
 		},
 		{
 			clicked: () => (activityView = ActivityView.CALENDAR),
 			icon: calendarOutline,
 			indexed: '/organization/activities',
-			label: $t('routes.organization.page.activity.segments.calendar'),
+			label: $t('routes.organization.activities.page.segments.calendar'),
 			selected: activityView === ActivityView.CALENDAR
 		}
 	]);
@@ -80,22 +80,22 @@
 		{
 			applied: true,
 			icon: hourglassOutline,
-			label: $t('routes.organization.page.activity.filters.type.pending'),
-			type: ActivityFilterType.pending
+			label: $t('routes.organization.activities.page.filters.type.pending'),
+			type: ActivityFilterType.PENDING
 		},
 		{
 			applied: false,
 			icon: archiveOutline,
-			label: $t('routes.organization.page.activity.filters.type.archived'),
-			type: ActivityFilterType.archived
+			label: $t('routes.organization.activities.page.filters.type.archived'),
+			type: ActivityFilterType.ARCHIVED
 		}
 	]);
 
-	let showFilters = $state(false);
+	let showFilters = $state<boolean>(false);
 
-	let createActivityModalOpen = $state(false);
+	let createActivityModalOpen = $state<boolean>(false);
 
-	let searchActivityValue = $state('');
+	let searchActivityValue = $state<string>('');
 	let filteredActivities = $state<ActivityModel[]>();
 
 	const form = new Form({
@@ -123,7 +123,7 @@
 </script>
 
 <Layout
-	title={$t('routes.organization.page.activity.title')}
+	title={$t('routes.organization.activities.page.title')}
 	showBackButton
 	scrollable={activityView === ActivityView.CALENDAR}
 >
@@ -134,7 +134,7 @@
 			{:else if activityView === ActivityView.CALENDAR}
 				<Datetime
 					applied={onCreateActivity}
-					applyText={$t('routes.organization.page.activity.calendar.done')}
+					applyText={$t('routes.organization.activities.page.calendar.apply')}
 					dismissText=""
 				></Datetime>
 			{/if}
@@ -147,7 +147,7 @@
 {#snippet activitiesView()}
 	{#if hasOrganizationRole('ROLE_ORGANIZATION_MANAGER')}
 		<FabButton
-			label={$t('routes.organization.page.activity.create')}
+			indexedLabel={$t('routes.organization.activities.page.activities.fab.create')}
 			clicked={() => onCreateActivity(format(new TZDate(), 'yyyy-MM-dd'))}
 			icon={createOutline}
 			indexed="/organization/activities"
@@ -159,7 +159,7 @@
 			color="light"
 			show-clear-button="always"
 			debounce={100}
-			placeholder={$t('routes.organization.page.activity.search.placeholder')}
+			placeholder={$t('routes.organization.activities.page.activities.search.placeholder')}
 			onionInput={onSearchEvents}
 			value={searchActivityValue}
 		></ion-searchbar>
@@ -185,19 +185,21 @@
 {#snippet activityList()}
 	{#if filteredActivities}
 		{#if activityItems.length === 0}
-			<div class="mt-4 text-center" in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
-				<ion-note>{$t('routes.organization.page.activity.no-activities')}</ion-note>
-			</div>
+			<FadeInOut classList="mt-4 text-center">
+				<ion-note>{$t('routes.organization.activities.page.activities.not-found')}</ion-note>
+			</FadeInOut>
 		{:else if filteredActivities.length > 0}
-			<ion-list in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
-				{#each filteredActivities as activity (activity.id)}
-					{@render activityCard(activity)}
-				{/each}
-			</ion-list>
+			<FadeInOut>
+				<ion-list>
+					{#each filteredActivities as activity (activity.id)}
+						{@render activityCard(activity)}
+					{/each}
+				</ion-list>
+			</FadeInOut>
 		{:else}
-			<div class="mt-4 text-center" in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
-				{$t('routes.organization.page.activity.no-activities-found', { value: searchActivityValue })}
-			</div>
+			<FadeInOut classList="mt-4 text-center">
+				{$t('routes.organization.activities.page.activities.no-results', { value: searchActivityValue })}
+			</FadeInOut>
 		{/if}
 	{/if}
 {/snippet}
@@ -227,7 +229,7 @@
 
 <!-- Filters -->
 <Popover open={showFilters} dismissed={() => (showFilters = false)} lazy>
-	<Card title={$t('routes.organization.page.activity.filters.title')} classList="m-0">
+	<Card title={$t('routes.organization.activities.page.filters.card.title')} classList="m-0">
 		<div class="flex flex-wrap items-center justify-center gap-2">
 			{#each activityFilters as filter (filter.type)}
 				<Chip clicked={() => (filter.applied = !filter.applied)} label={filter.label} selected={filter.applied} />
@@ -240,21 +242,19 @@
 <Modal
 	open={createActivityModalOpen}
 	dismissed={() => (createActivityModalOpen = false)}
-	confirmLabel={$t('routes.organization.page.activity.create-modal.button.confirm')}
+	confirmLabel={$t('routes.organization.activities.page.modal.create-activity.confirm')}
 >
-	{#if createActivityModalOpen}
-		<Card title={$t('routes.organization.page.activity.create-modal.card.title')}>
-			<form use:customForm={form}>
-				<TextInputItem
-					name="name"
-					label={$t('routes.organization.page.activity.create-modal.card.input.name')}
-					icon={documentOutline}
-				/>
-				<LocationInputItem
-					name="location"
-					label={$t('routes.organization.page.activity.create-modal.card.input.location')}
-				/>
-			</form>
-		</Card>
-	{/if}
+	<Card title={$t('routes.organization.activities.page.modal.create-activity.card.title')}>
+		<form use:customForm={form}>
+			<InputItem
+				name="name"
+				label={$t('routes.organization.activities.page.modal.create-activity.card.form.name')}
+				icon={documentOutline}
+			/>
+			<LocationInputItem
+				name="location"
+				label={$t('routes.organization.activities.page.modal.create-activity.card.form.location')}
+			/>
+		</form>
+	</Card>
 </Modal>

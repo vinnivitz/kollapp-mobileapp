@@ -21,7 +21,7 @@
 	let { children }: Properties = $props();
 
 	let searchedItems = $state<SearchableItemTO[]>([]);
-	let searchValue = $state('');
+	let searchValue = $state<string>('');
 	let menuController: HTMLIonMenuElement;
 
 	export async function navigate(route: RouteId, label?: string): Promise<void> {

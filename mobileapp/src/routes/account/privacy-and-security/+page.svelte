@@ -14,9 +14,9 @@
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
+	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
 	import Popover from '$lib/components/widgets/ionic/Popover.svelte';
-	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import { t } from '$lib/locales';
 	import { PreferencesKey } from '$lib/models/preferences';
 	import { Form, type FormActions } from '$lib/models/ui';
@@ -30,8 +30,8 @@
 		storeBiometricCredentials
 	} from '$lib/utility';
 
-	let showPasswordPrompt = $state(false);
-	let isPasswordConfirmed = $state(false);
+	let showPasswordPrompt = $state<boolean>(false);
+	let isPasswordConfirmed = $state<boolean>(false);
 	let toggle = $state<HTMLIonToggleElement>();
 
 	let actions: FormActions<LoginRequestTO>;
@@ -132,7 +132,7 @@
 <Popover extended open={showPasswordPrompt} dismissed={onPasswordPromptDismiss}>
 	<Card title={$t('routes.account.privacy-and-security.page.modal.password.card.title')}>
 		<form use:customForm={form}>
-			<TextInputItem
+			<InputItem
 				name="password"
 				type="password"
 				label={$t('routes.account.privacy-and-security.page.modal.password.card.form.password')}

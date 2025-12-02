@@ -7,12 +7,12 @@
 
 	type Properties = {
 		icon: string;
-		label: string;
 		buttons?: FabButtonButtons[];
 		classList?: string;
 		color?: Colors;
 		horizontal?: 'center' | 'end' | 'start';
 		indexed?: RouteId;
+		indexedLabel?: string;
 		indexLabel?: string;
 		vertical?: 'bottom' | 'center' | 'top';
 		clicked?: () => void;
@@ -26,8 +26,8 @@
 		horizontal = 'end',
 		icon,
 		indexed,
+		indexedLabel,
 		indexLabel,
-		label,
 		vertical = 'bottom'
 	}: Properties = $props();
 
@@ -43,7 +43,7 @@
 	{vertical}
 	{horizontal}
 	id={indexLabel}
-	aria-label={label}
+	aria-label={indexedLabel}
 	use:clickOutside
 	onblur={fabButtonElement?.close}
 >

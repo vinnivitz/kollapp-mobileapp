@@ -8,7 +8,7 @@
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
+	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import { t } from '$lib/locales';
 	import { Form } from '$lib/models/ui';
 	import { userStore } from '$lib/stores';
@@ -19,7 +19,7 @@
 		updateUsernameBiometricCredentials
 	} from '$lib/utility';
 
-	let touched = $state(false);
+	let touched = $state<boolean>(false);
 
 	const form = new Form({
 		completed: async ({ model }) => {
@@ -44,12 +44,12 @@
 	{#if form}
 		<Card title={$t('routes.account.update-data.page.card.title')}>
 			<form use:customForm={form}>
-				<TextInputItem
+				<InputItem
 					name="username"
 					label={$t('routes.account.update-data.page.card.form.username')}
 					icon={personOutline}
 				/>
-				<TextInputItem
+				<InputItem
 					name="email"
 					inputmode="email"
 					label={$t('routes.account.update-data.page.card.form.email')}

@@ -6,7 +6,6 @@
 
 	type Properties = {
 		label: string;
-		name: string;
 		card?: boolean;
 		color?: Colors;
 		disabled?: boolean;
@@ -15,10 +14,12 @@
 		maxlength?: number;
 		placeholder?: string;
 		readonly?: boolean;
-		value?: string;
-		change?: (value: string) => void;
 		inputIconClicked?: () => void;
-	};
+	} & (
+		| { name: string; change?: never; value?: never }
+		| { name?: never; value?: string; change?: (value: string) => void }
+	);
+
 	let {
 		card,
 		change,

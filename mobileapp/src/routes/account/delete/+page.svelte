@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { alertController } from '@ionic/core';
 	import { trashOutline, warningOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
@@ -11,7 +10,7 @@
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import { t } from '$lib/locales';
 	import { organizationStore } from '$lib/stores';
-	import { StatusCheck } from '$lib/utility';
+	import { confirmationModal, StatusCheck } from '$lib/utility';
 
 	const organizations = $derived(organizationStore.organizations);
 
@@ -30,18 +29,12 @@
 	);
 
 	async function onDeleteAccount(): Promise<void> {
-		const alert = await alertController.create({
-			buttons: [
-				{ role: 'cancel', text: $t('routes.account.delete.page.modal.cancel') },
-				{
-					handler: () => deleteAccount(),
-					text: $t('routes.account.delete.page.modal.confirm')
-				}
-			],
+		await confirmationModal({
+			confirmText: $t('routes.account.delete.page.modal.confirm'),
+			handler: deleteAccount,
 			header: $t('routes.account.delete.page.modal.header'),
 			message: $t('routes.account.delete.page.modal.message')
 		});
-		await alert.present();
 	}
 
 	async function deleteAccount(): Promise<void> {

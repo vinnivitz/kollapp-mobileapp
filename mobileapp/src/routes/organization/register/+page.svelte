@@ -11,9 +11,9 @@
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
+	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import LocationInputItem from '$lib/components/widgets/ionic/LocationInputItem.svelte';
 	import TextareaInputItem from '$lib/components/widgets/ionic/TextareaInputItem.svelte';
-	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import { t } from '$lib/locales';
 	import { Form } from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';
@@ -30,25 +30,25 @@
 	});
 </script>
 
-<Layout title={$t('routes.auth.register.organization.title')} showBackButton>
-	<Card title={$t('routes.auth.register.organization.form.title')}>
+<Layout title={$t('routes.organization.register.page.title')} showBackButton>
+	<Card title={$t('routes.organization.register.page.card.title')}>
 		<form use:customForm={form}>
-			<TextInputItem
+			<InputItem
 				name="name"
-				label={$t('routes.auth.register.organization.form.input.name')}
+				label={$t('routes.organization.register.page.card.form.name')}
 				icon={accessibilityOutline}
 			/>
 			<TextareaInputItem
 				name="description"
 				icon={readerOutline}
-				label={$t('routes.organization.page.register.form.description')}
+				label={$t('routes.organization.register.page.card.form.description')}
 			></TextareaInputItem>
-			<LocationInputItem name="place" label={$t('routes.organization.page.register.form.place')} />
+			<LocationInputItem name="place" label={$t('routes.organization.register.page.card.form.place')} />
 			<Button
 				classList="mt-3"
 				expand="block"
 				type="submit"
-				label={$t('routes.auth.register.organization.form.submit')}
+				label={$t('routes.organization.register.page.card.form.submit')}
 				icon={saveOutline}
 			/>
 		</form>

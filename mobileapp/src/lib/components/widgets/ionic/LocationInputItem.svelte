@@ -1,31 +1,34 @@
 <script lang="ts">
 	import { locationOutline, mapOutline } from 'ionicons/icons';
 
+	import InputItem from './InputItem.svelte';
 	import Modal from './Modal.svelte';
-	import TextInputItem from './TextInputItem.svelte';
 	import LeafletMap from '../LeafletMap.svelte';
 
 	import { t } from '$lib/locales';
 
 	type Properties = {
 		label: string;
-		name: string;
 		card?: boolean;
 		helperText?: string;
 		icon?: string;
-	};
+	} & (
+		| { name: string; changed?: never; value?: never }
+		| { name?: never; value?: string; changed?: (value: string) => void }
+	);
 
-	let { card, helperText, icon = locationOutline, label, name }: Properties = $props();
+	let { card, changed, helperText, icon = locationOutline, label, name, value }: Properties = $props();
 
-	let cachedLocation = $state('');
-	let open = $state(false);
-	let value = $state('');
+	let cachedLocation = $state<string>('');
+	let open = $state<boolean>(false);
+	let internalValue = $state<string>(value ?? '');
 	let inputElement = $state<HTMLIonInputElement>();
 
 	async function onConfirmMap(): Promise<void> {
-		value = cachedLocation;
-		inputElement!.value = value;
+		internalValue = cachedLocation;
+		inputElement!.value = internalValue;
 		inputElement?.dispatchEvent(new CustomEvent('ionInput', { bubbles: true }));
+		changed?.(internalValue);
 		open = false;
 	}
 
@@ -34,12 +37,11 @@
 	}
 </script>
 
-<TextInputItem
+<InputItem
 	{helperText}
 	{card}
-	inputElement={(value) => (inputElement = value)}
-	{value}
-	{name}
+	inputElement={(element) => (inputElement = element)}
+	{...name ? { name } : { value: value ?? '' }}
 	{label}
 	{icon}
 	inputIcon={mapOutline}
@@ -49,7 +51,7 @@
 <Modal
 	{open}
 	informational={!cachedLocation}
-	confirmLabel={$t('routes.organization.page.activity.map-modal.button.confirm')}
+	confirmLabel={$t('components.widgets.ionic.location-input-item.modal.confirm')}
 	dismissed={onDismissMap}
 	confirmed={onConfirmMap}
 	initialBreakPoint={1}

@@ -21,15 +21,15 @@
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
+	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import TextareaInputItem from '$lib/components/widgets/ionic/TextareaInputItem.svelte';
-	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import { t } from '$lib/locales';
 	import { organizationStore } from '$lib/stores';
 	import { isAuthenticated, StatusCheck } from '$lib/utility';
 
-	let loading = $state(true);
+	let loading = $state<boolean>(true);
 	let organization = $state<OrganizationBaseTO>();
-	let authenticated = $state(false);
+	let authenticated = $state<boolean>(false);
 
 	const { data }: { data: PageData } = $props();
 
@@ -57,54 +57,49 @@
 <Layout title={$t('routes.auth.organization.slug.page.title')} showBackButton {loading} hideMenu={!authenticated}>
 	{#if organization}
 		<Card title={$t('routes.auth.organization.slug.page.card.join.title')}>
-			<form>
-				<TextInputItem
-					readonly
-					name="name"
-					label={$t('routes.auth.organization.slug.page.card.join.form.name')}
-					icon={accessibilityOutline}
-					value={organization?.name}
-				></TextInputItem>
-				<TextareaInputItem
-					readonly
-					name="description"
-					label={$t('routes.auth.organization.slug.page.card.join.form.description')}
-					icon={readerOutline}
-					value={organization?.description}
-				></TextareaInputItem>
-				<TextInputItem
-					readonly
-					name="place"
-					label={$t('routes.auth.organization.slug.page.card.join.form.place')}
-					icon={locationOutline}
-					value={organization?.place}
-				></TextInputItem>
-				<div class="mt-3 text-center">
-					{#if organization.name !== $organizationStore?.name}
-						{#if authenticated}
-							<Button
-								icon={addOutline}
-								label={$t('routes.auth.organization.slug.page.card.join.form.submit')}
-								clicked={() => onJoinCollective()}
-							/>
-						{:else}
-							<div class="flex flex-col">
-								<Button label="Log in" icon={logInOutline} clicked={() => goto(resolve('/auth/login'))} />
-								<ion-note>{$t('routes.auth.organization.slug.page.card.join.form.info.not-authenticated')}</ion-note>
-							</div>
-						{/if}
+			<InputItem
+				readonly
+				label={$t('routes.auth.organization.slug.page.card.join.form.name')}
+				icon={accessibilityOutline}
+				value={organization?.name}
+			></InputItem>
+			<TextareaInputItem
+				readonly
+				label={$t('routes.auth.organization.slug.page.card.join.form.description')}
+				icon={readerOutline}
+				value={organization?.description}
+			></TextareaInputItem>
+			<InputItem
+				readonly
+				label={$t('routes.auth.organization.slug.page.card.join.form.place')}
+				icon={locationOutline}
+				value={organization?.place}
+			></InputItem>
+			<div class="mt-3 text-center">
+				{#if organization.name !== $organizationStore?.name}
+					{#if authenticated}
+						<Button
+							icon={addOutline}
+							label={$t('routes.auth.organization.slug.page.card.join.form.submit')}
+							clicked={() => onJoinCollective()}
+						/>
 					{:else}
-						<Card border="success">
-							<div class="flex flex-row items-center justify-center gap-3">
-								<ion-icon size="large" icon={checkboxOutline} color="success"></ion-icon>
-								<ion-note color="success">
-									{$t('routes.auth.organization.slug.page.card.join.form.info.already-member')}
-								</ion-note>
-							</div>
-						</Card>
+						<div class="flex flex-col">
+							<Button label="Log in" icon={logInOutline} clicked={() => goto(resolve('/auth/login'))} />
+							<ion-note>{$t('routes.auth.organization.slug.page.card.join.form.info.not-authenticated')}</ion-note>
+						</div>
 					{/if}
-				</div>
-			</form>
+				{:else}
+					<Card border="success">
+						<div class="flex flex-row items-center justify-center gap-3">
+							<ion-icon size="large" icon={checkboxOutline} color="success"></ion-icon>
+							<ion-note color="success">
+								{$t('routes.auth.organization.slug.page.card.join.form.info.already-member')}
+							</ion-note>
+						</div>
+					</Card>
+				{/if}
+			</div>
 		</Card>
 	{:else}
 		<Card

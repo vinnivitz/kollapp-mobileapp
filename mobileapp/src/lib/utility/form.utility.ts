@@ -18,6 +18,7 @@ import { getObjectFromSchema, getValidationResult } from '$lib/utility';
  */
 export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { destroy(): void } {
 	let dirty = false;
+	let isSubmitting = false;
 	const inputs = [...node.querySelectorAll('ion-input'), ...node.querySelectorAll('ion-textarea')];
 	const fields: Record<string, HTMLIonInputElement | HTMLIonTextareaElement> = {};
 	for (const input of inputs) {
@@ -25,15 +26,17 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 	}
 	const customInputs = [...node.querySelectorAll('[data-name]')] as HTMLElement[];
 	const keys = Object.keys(data.model as object);
-	const passwordIcons: HTMLIonIconElement[] = [];
+	const passwordIcons: Map<HTMLIonInputElement, HTMLIonIconElement> = new Map();
 	const teardowns: Array<() => void> = [];
 
 	const actions: FormActions<T> = {
 		applyValidationFeedback,
 		applyValidationFeedbackByKey,
+		getModel,
 		onSubmit,
 		onUpdate,
-		setModel
+		setModel,
+		updateModelByKey
 	};
 
 	data.config.exposedActions?.(actions);
@@ -49,9 +52,23 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 		}
 	});
 
-	addListener(node, 'ionBlur', async (event) =>
-		data.config.onBlur?.((event.target as HTMLInputElement).name as keyof T)
-	);
+	addListener(node, 'customChange', (event) => {
+		const customEvent = event as CustomEvent;
+		const key = customEvent.detail.key as keyof T;
+		const value = customEvent.detail.value as T[keyof T];
+		if (keys.includes(key as string)) {
+			onCustomChange(key, value);
+		}
+	});
+
+	addListener(node, 'ionBlur', async (event) => {
+		const key = (event.target as HTMLInputElement).name as keyof T;
+
+		data.config.onBlur?.({
+			key,
+			value: data.model[key]
+		});
+	});
 
 	node.noValidate = true;
 	addListener(node, 'submit', onSubmit);
@@ -60,11 +77,16 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 		if (!data.config.keyEventHandlers) return;
 
 		for (const key of Object.keys(data.config.keyEventHandlers) as Array<keyof T>) {
-			const handler = data.config.keyEventHandlers[key];
+			const handlers = data.config.keyEventHandlers[key];
 			const input = fields[key as string];
-			if (handler && input) {
-				addListener(input, 'keydown', (_event) => {
-					handler(_event as KeyboardEvent, data.model[key], onUpdate.bind(undefined, key));
+			if (handlers && input) {
+				addListener(input, 'keydown', (event) => {
+					const keyboardEvent = event as KeyboardEvent;
+					const handler = handlers[keyboardEvent.key];
+					if (handler) {
+						keyboardEvent.preventDefault();
+						handler(data.model[key], onUpdate.bind(undefined, key));
+					}
 				});
 			}
 		}
@@ -80,19 +102,51 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 
 	function initializeInputs(): void {
 		for (const input of inputs) {
-			input.classList.add('ion-touched');
-			const formatter = data.config.formatters?.[input.name as keyof T];
-			input.value = (
-				formatter ? formatter(data.model[input.name as keyof T]) : data.model[input.name as keyof T]
-			) as string;
-			if (isIonInputElement(input) && input.type === 'password') {
-				input.clearOnEdit = false;
-				addPasswordIcon(input);
-			}
+			initializeNativeInput(input);
+		}
+
+		for (const customInput of customInputs) {
+			initializeCustomInput(customInput);
+		}
+	}
+
+	function initializeNativeInput(input: HTMLIonInputElement | HTMLIonTextareaElement): void {
+		input.classList.add('ion-touched');
+		const key = input.name as keyof T;
+		const value = data.model[key];
+		const formatter = data.config.formatters?.[key];
+
+		if (typeof value === 'string' && formatter) {
+			input.value = formatter(value as T[keyof T]) as string;
+		} else if (typeof value === 'string') {
+			input.value = value;
+		} else {
+			input.value = value ? String(value) : '';
+		}
+
+		if (isIonInputElement(input) && input.type === 'password') {
+			input.clearOnEdit = false;
+			addPasswordIcon(input);
+		}
+	}
+
+	function initializeCustomInput(customInput: HTMLElement): void {
+		const key = customInput.dataset.name as keyof T;
+		if (key && data.model[key] !== undefined) {
+			customInput.dispatchEvent(
+				new CustomEvent('modelUpdate', {
+					bubbles: true,
+					detail: { value: data.model[key] }
+				})
+			);
 		}
 	}
 
 	function addPasswordIcon(input: HTMLIonInputElement): void {
+		if (passwordIcons.has(input)) {
+			return;
+		}
+
 		const existingIcon = input.nextElementSibling;
 		if (existingIcon?.tagName === 'ION-ICON' && existingIcon.getAttribute('slot') === 'end') {
 			existingIcon.remove();
@@ -103,34 +157,125 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 		icon.setAttribute('icon', eye);
 		icon.classList.add('invisible');
 		input.after(icon);
-		input.addEventListener('input', (event) =>
-			icon.classList.toggle('invisible', (event.target as HTMLInputElement).value?.length === 0)
-		);
-		icon.addEventListener('click', () => {
+
+		const inputHandler = (event: Event): boolean =>
+			icon.classList.toggle('invisible', (event.target as HTMLInputElement).value?.length === 0);
+		const clickHandler = (): void => {
 			input.type = input.type === 'password' ? 'text' : 'password';
 			icon.setAttribute('icon', input.type === 'password' ? eye : eyeOff);
-		});
-		passwordIcons.push(icon);
+		};
+
+		addListener(input, 'input', inputHandler);
+		addListener(icon, 'click', clickHandler);
+		passwordIcons.set(input, icon);
 	}
 
 	function setModel(model?: T): void {
 		data.model = model ?? (data.config.schema.cast({}) as T);
-		initializeHiddenFields();
-		initializeInputs();
-		resetInputsValidation();
+
+		resetInputValidations();
+
+		for (const input of inputs) {
+			if (isIonInputElement(input) && (input.type === 'password' || input.type === 'text')) {
+				const icon = input.nextElementSibling as HTMLIonIconElement;
+				if (icon?.tagName === 'ION-ICON' && icon.getAttribute('slot') === 'end') {
+					icon.classList.toggle('invisible', !input.value);
+				}
+			}
+		}
+
 		for (const input of customInputs) {
 			removeCustomValidationFeedback(input);
+			const key = input.dataset.name as keyof T;
+			if (key && data.model[key] !== undefined) {
+				input.dispatchEvent(
+					new CustomEvent('modelUpdate', {
+						bubbles: true,
+						detail: { value: data.model[key] }
+					})
+				);
+			}
+		}
+
+		onTouched();
+	}
+
+	function getModel(): T {
+		return data.model;
+	}
+
+	async function updateModelByKey(key: keyof T, value: T[keyof T]): Promise<void> {
+		data.model[key as keyof T] = value;
+
+		const input = fields[key as string];
+
+		if (input) {
+			updateNativeInput(input, key, value);
+		} else {
+			updateCustomInput(key, value);
+		}
+
+		onTouched();
+
+		data.config.onChange?.({
+			key,
+			value: data.model[key]
+		});
+
+		if (dirty) {
+			const validationResult = await runCustomValidators(await validate(data.config.schema, data.model));
+			applyValidationFeedbackByKey(key, validationResult);
 		}
 	}
 
-	function resetInputsValidation(): void {
+	function updateNativeInput(
+		input: HTMLIonInputElement | HTMLIonTextareaElement,
+		key: keyof T,
+		value: T[keyof T]
+	): void {
+		if (typeof value === 'string') {
+			const formatter = data.config.formatters?.[key as keyof T];
+			const formattedValue = formatter ? (formatter(value as T[keyof T]) as string) : value;
+			input.value = formattedValue;
+			updatePasswordIconVisibility(input, formattedValue);
+		}
+	}
+
+	function updateCustomInput(key: keyof T, value: T[keyof T]): void {
+		const customInput = customInputs.find((ci) => ci.dataset.name === key);
+		if (customInput) {
+			customInput.dispatchEvent(
+				new CustomEvent('modelUpdate', {
+					bubbles: true,
+					detail: { value }
+				})
+			);
+		}
+	}
+
+	function updatePasswordIconVisibility(input: HTMLIonInputElement | HTMLIonTextareaElement, value?: string): void {
+		if (isIonInputElement(input) && (input.type === 'password' || input.type === 'text')) {
+			const icon = input.nextElementSibling as HTMLIonIconElement | null;
+			if (icon?.tagName === 'ION-ICON' && icon.getAttribute('slot') === 'end') {
+				icon.classList.toggle('invisible', !value || value.length === 0);
+			}
+		}
+	}
+
+	function resetInputValidations(): void {
 		for (const input of inputs) {
 			input.classList.remove('ion-invalid');
 			input.errorText = '';
 			const key = input.name as keyof T;
-			input.value = data.config.formatters?.[key]
-				? data.config.formatters[key](data.model[key])
-				: (data.model[key] as string);
+			const value = data.model[key];
+			const formatter = data.config.formatters?.[key];
+			if (typeof value === 'string' && formatter) {
+				input.value = formatter(value as T[keyof T]) as string;
+			} else if (typeof value === 'string') {
+				input.value = value;
+			} else {
+				input.value = value == undefined ? '' : String(value);
+			}
 		}
 	}
 
@@ -157,10 +302,10 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 
 	async function onUpdate(key: keyof T, value: T[keyof T]): Promise<void> {
 		const formatter = data.config.formatters?.[key as keyof T];
-		if (formatter) {
+		if (typeof value === 'string' && formatter) {
 			const input = fields[key as string];
 			if (input) {
-				input.value = formatter(value) as string;
+				input.value = formatter(value as T[keyof T]) as string;
 			}
 		}
 		_onUpdate(key, value);
@@ -168,6 +313,7 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 
 	async function _onUpdate(key: keyof T, value: T[keyof T]): Promise<void> {
 		data.model[key as keyof T] = value;
+
 		onTouched();
 		if (dirty) {
 			const validationResult = await runCustomValidators(await validate(data.config.schema, data.model));
@@ -218,11 +364,18 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 	}
 
 	async function runCustomValidators(validationResult: ValidationResult<T>): Promise<ValidationResult<T>> {
-		for (const validator of data.config.customValidators || []) {
-			const result = await validator(data.model);
-			if (!result.valid) {
-				validationResult.errors = [...(validationResult.errors || []), ...(result.errors || [])];
-				validationResult.valid = false;
+		if (!data.config.customValidators) {
+			return validationResult;
+		}
+
+		for (const key of Object.keys(data.config.customValidators) as Array<keyof T>) {
+			const validator = data.config.customValidators[key];
+			if (validator) {
+				const result = await validator(data.model);
+				if (!result.valid) {
+					validationResult.errors = [...(validationResult.errors || []), ...(result.errors || [])];
+					validationResult.valid = false;
+				}
 			}
 		}
 		return validationResult;
@@ -234,12 +387,27 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 		const parser = data.config.parsers?.[key as keyof T];
 		const parsed = parser ? parser(value) : value;
 		onUpdate(key, parsed as T[keyof T]);
-		data.config.onChange?.({ key, value: parsed as T[keyof T] });
+		data.config.onChange?.({
+			key,
+			value: parsed as T[keyof T]
+		});
+	}
+
+	function onCustomChange(key: keyof T, value: T[keyof T]): void {
+		onUpdate(key, value);
+		data.config.onChange?.({
+			key,
+			value
+		});
 	}
 
 	async function onSubmit(event?: Event): Promise<void> {
 		dirty = true;
 		event?.preventDefault();
+
+		if (isSubmitting) {
+			return;
+		}
 
 		const validationResult = await validateForm();
 		if (!validationResult.valid) {
@@ -258,21 +426,27 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 	}
 
 	async function submitForm(): Promise<void> {
+		isSubmitting = true;
 		const loading = await loadingController.create({});
 		await loading.present();
-		const response = await data.submit();
-		const validationResult = getValidationResult<T>(response);
 
-		if (validationResult.valid) {
-			data.config.completed?.({ actions, model: data.model, response: response.data });
-			setModel(getObjectFromSchema(data.config.schema));
-		} else {
-			setModel(data.config.initialModel ?? data.model);
-			data.config.failed?.(validationResult);
-			applyValidationFeedback(validationResult);
+		try {
+			const response = await data.submit();
+			const validationResult = getValidationResult<T>(response);
+
+			if (validationResult.valid) {
+				data.config.completed?.({ actions, model: data.model, response: response.data });
+				if (data.config.resetOnSubmit) {
+					setModel(data.config.initialModel ?? getObjectFromSchema(data.config.schema));
+				}
+			} else {
+				data.config.failed?.(validationResult);
+				applyValidationFeedback(validationResult);
+			}
+		} finally {
+			await loading.dismiss();
+			isSubmitting = false;
 		}
-
-		await loading.dismiss();
 	}
 
 	function applyCustomValidationFeedback(element: HTMLElement, message: string): void {
@@ -307,7 +481,7 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 	function destroy(): void {
 		for (const teardown of teardowns) teardown();
 
-		for (const icon of passwordIcons) icon.remove();
+		for (const icon of passwordIcons.values()) icon.remove();
 
 		for (const input of customInputs) {
 			removeCustomValidationFeedback(input);
@@ -317,9 +491,11 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 			const emptyActions: FormActions<T> = {
 				applyValidationFeedback: () => {},
 				applyValidationFeedbackByKey: () => {},
-				onSubmit: async () => {},
+				getModel: () => data.model,
+				onSubmit: () => {},
 				onUpdate: async () => {},
-				setModel: () => {}
+				setModel: () => {},
+				updateModelByKey: async () => {}
 			};
 			data.config.exposedActions(emptyActions);
 		}
@@ -337,6 +513,7 @@ async function validate<T>(schema: ObjectSchema<T & AnyObject>, data: T): Promis
 	} catch (error) {
 		let errors: CustomValidationError<T>[] = [];
 		if (error instanceof ValidationError) {
+			const seen = new Set<number | string | symbol>();
 			errors = error.inner
 				.map(
 					(error_) =>
@@ -345,8 +522,15 @@ async function validate<T>(schema: ObjectSchema<T & AnyObject>, data: T): Promis
 							message: error_.message
 						}) as CustomValidationError<T>
 				)
-				.toReversed()
-				.filter((item, index, array) => array.findIndex((t) => t.field === item.field) === index);
+				.filter((item) => {
+					if (item.field && seen.has(item.field)) {
+						return false;
+					}
+					if (item.field) {
+						seen.add(item.field);
+					}
+					return true;
+				});
 		}
 		return { errors, valid: false };
 	}

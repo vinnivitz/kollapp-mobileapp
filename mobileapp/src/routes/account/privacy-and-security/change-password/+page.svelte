@@ -9,7 +9,7 @@
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
+	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import { t } from '$lib/locales';
 	import { Form } from '$lib/models/ui';
 	import {
@@ -27,7 +27,9 @@
 			}
 			goto(resolve('/account'));
 		},
-		customValidators: [passwordConfirmationValidator('newPassword', 'confirmNewPassword')],
+		customValidators: {
+			confirmNewPassword: passwordConfirmationValidator('newPassword', 'confirmNewPassword')
+		},
 		request: async (model) => userService.changePassword(model),
 		schema: changePasswordSchema()
 	});
@@ -36,19 +38,19 @@
 <Layout title={$t('routes.account.privacy-and-security.change-password.page.title')} showBackButton>
 	<Card title={$t('routes.account.privacy-and-security.change-password.page.card.title')}>
 		<form use:customForm={form}>
-			<TextInputItem
+			<InputItem
 				name="currentPassword"
 				type="password"
 				label={$t('routes.account.privacy-and-security.change-password.page.card.form.current-password')}
 				icon={keyOutline}
 			/>
-			<TextInputItem
+			<InputItem
 				name="newPassword"
 				type="password"
 				label={$t('routes.account.privacy-and-security.change-password.page.card.form.new-password')}
 				icon={keySharp}
 			/>
-			<TextInputItem
+			<InputItem
 				name="confirmNewPassword"
 				type="password"
 				label={$t('routes.account.privacy-and-security.change-password.page.card.form.confirm-new-password')}

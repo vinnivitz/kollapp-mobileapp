@@ -2,11 +2,17 @@
 	import type { SegmentConfig } from '$lib/models/ui';
 	import type { Snippet } from 'svelte';
 
-	import { fade } from 'svelte/transition';
-
 	import Chip from './Chip.svelte';
 
-	let { children, classList, config }: { children: Snippet; config: SegmentConfig[]; classList?: string } = $props();
+	import FadeInOut from '$lib/components/layout/FadeInOut.svelte';
+
+	type Properties = {
+		config: SegmentConfig[];
+		children?: Snippet;
+		classList?: string;
+	};
+
+	let { children, classList, config }: Properties = $props();
 
 	const selectedClass = $derived(config.find((item) => item.selected)?.class ?? '');
 </script>
@@ -24,10 +30,4 @@
 		{/each}
 	</div>
 </div>
-<div
-	class={`${classList} ${selectedClass}`}
-	in:fade={{ delay: 150, duration: 100 }}
-	out:fade={{ delay: 0, duration: 100 }}
->
-	{@render children?.()}
-</div>
+<FadeInOut classList={`${classList} ${selectedClass}`}>{@render children?.()}</FadeInOut>

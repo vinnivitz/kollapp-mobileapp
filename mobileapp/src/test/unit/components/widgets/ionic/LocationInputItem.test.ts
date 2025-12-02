@@ -247,7 +247,7 @@ describe('LocationInputItem Component', () => {
 		expect(ionContent).toBeTruthy();
 	});
 
-	it('passes correct props to TextInputItem', async () => {
+	it('passes correct props to InputItem', async () => {
 		const helperText = 'Please enter a valid location';
 		const customIcon = 'pin-outline';
 
@@ -271,7 +271,7 @@ describe('LocationInputItem Component', () => {
 		expect(helperAttribute).toBe(helperText);
 	});
 
-	it('handles inputElement callback from TextInputItem', async () => {
+	it('handles inputElement callback from InputItem', async () => {
 		const { container } = render(LocationInputItem, {
 			props: {
 				label: 'Location',

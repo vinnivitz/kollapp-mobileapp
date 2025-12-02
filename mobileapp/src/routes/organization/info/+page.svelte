@@ -12,11 +12,12 @@
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
+	import { t } from '$lib/locales';
 	import { StatusCheck } from '$lib/utility';
 
 	let { data }: { data: PageData } = $props();
 
-	let loading = $state(true);
+	let loading = $state<boolean>(true);
 	let organization = $state<OrganizationBaseTO>();
 
 	onMount(async () => {
@@ -30,27 +31,37 @@
 	});
 </script>
 
-<Layout title="Collective info" {loading} showBackButton>
+<Layout title={$t('routes.organization.info.page.title')} {loading} showBackButton>
 	{#if organization}
-		<Card title={organization.name} classList="text-center">
-			<div class="flex flex-col items-center justify-center gap-2">
-				{#if organization.description}
-					<ion-text>{organization.description}</ion-text>
-				{/if}
-				<ion-text color="medium" class="flex items-center justify-center gap-2">
-					<ion-icon icon={locationOutline}></ion-icon>
-					<div>{organization.place}</div>
-				</ion-text>
-			</div>
-		</Card>
+		{@render infoCard(organization)}
 	{:else}
-		<Card title="Code invalid or expired">
-			<div class="flex flex-col items-center justify-center gap-2">
-				<ion-text class="text-center" color="medium"
-					>Ask the collective admin to provide you a new invitation code.</ion-text
-				>
-				<Button label="Back to home" icon={homeOutline} fill="outline" clicked={() => goto(resolve('/'))} />
-			</div>
-		</Card>
+		{@render invalidCodeCard()}
 	{/if}
 </Layout>
+
+<!-- Snippets -->
+
+{#snippet infoCard(organization: OrganizationBaseTO)}
+	<Card title={organization.name} classList="text-center">
+		<div class="flex flex-col items-center justify-center gap-2">
+			{#if organization.description}
+				<ion-text>{organization.description}</ion-text>
+			{/if}
+			<ion-text color="medium" class="flex items-center justify-center gap-2">
+				<ion-icon icon={locationOutline}></ion-icon>
+				<div>{organization.place}</div>
+			</ion-text>
+		</div>
+	</Card>
+{/snippet}
+
+{#snippet invalidCodeCard()}
+	<Card title={$t('routes.organization.info.page.card.invalid-code.title')}>
+		<div class="flex flex-col items-center justify-center gap-2">
+			<ion-text class="text-center" color="medium">
+				{$t('routes.organization.info.page.card.invalid-code.content')}
+			</ion-text>
+			<Button label="Back to home" icon={homeOutline} fill="outline" clicked={() => goto(resolve('/'))} />
+		</div>
+	</Card>
+{/snippet}

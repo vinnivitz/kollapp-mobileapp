@@ -1,30 +1,95 @@
 <script lang="ts">
 	import type { Colors } from '$lib/models/ui';
-	import type { Snippet } from 'svelte';
+	import type { InputInputEventDetail } from '@ionic/core';
 
-	import CustomItem from './CustomItem.svelte';
+	import { onMount } from 'svelte';
+
+	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
+
+	type InputType = 'date' | 'email' | 'number' | 'password' | 'text';
 
 	type Properties = {
-		children: Snippet;
-		icon: string;
 		label: string;
+		card?: boolean;
 		classList?: string;
 		color?: Colors;
 		disabled?: boolean;
-		name?: string;
-		clicked?: () => void;
-	};
+		helperText?: string;
+		icon?: string;
+		inputIcon?: string;
+		inputmode?: 'decimal' | 'email' | 'none' | 'numeric' | 'search' | 'tel' | 'text' | 'url' | undefined;
+		maxlength?: number;
+		pattern?: string;
+		readonly?: boolean;
+		type?: InputType;
+		uppercase?: boolean;
+		inputElement?: (element: HTMLIonInputElement) => void;
+		inputIconClicked?: () => void;
+	} & (
+		| { name: string; changed?: never; value?: never }
+		| { name?: never; value?: number | string; changed?: (value: string) => void }
+	);
 
-	let { children, classList = '', clicked, color, disabled, icon, label }: Properties = $props();
+	let {
+		card,
+		changed,
+		classList = '',
+		color,
+		disabled,
+		helperText,
+		icon,
+		inputElement,
+		inputIcon,
+		inputIconClicked,
+		inputmode = 'text',
+		label,
+		maxlength,
+		name,
+		pattern,
+		readonly,
+		type = 'text',
+		uppercase,
+		value
+	}: Properties = $props();
+
+	let element = $state<HTMLIonInputElement>();
+
+	$effect(() => {
+		if (element) inputElement?.(element);
+	});
+
+	onMount(async () => {
+		const nativeElement = await element?.getInputElement();
+		if (nativeElement && uppercase) {
+			nativeElement.style.textTransform = 'uppercase';
+		}
+	});
 </script>
 
-<CustomItem {icon} {clicked} {classList} {color} {disabled}>
-	<div class="flex flex-col">
-		<ion-text class="ms-3 pt-2 text-xs">
-			{label}
-		</ion-text>
-		<div class="my-2 ms-4">
-			{@render children()}
-		</div>
-	</div>
+<CustomItem {card} {color} {icon} iconEnd={inputIcon} iconClick={inputIconClicked}>
+	<ion-input
+		{inputmode}
+		bind:this={element}
+		{readonly}
+		{pattern}
+		label-placement="floating"
+		{maxlength}
+		counter={!!maxlength}
+		{name}
+		{label}
+		class={classList}
+		type={type === 'date' ? 'text' : type}
+		{value}
+		{disabled}
+		helper-text={helperText}
+		onionInput={(event: CustomEvent<InputInputEventDetail>) => changed?.(event.detail.value || '')}
+	>
+	</ion-input>
 </CustomItem>
+
+<style>
+	ion-input {
+		--highlight-color-focused: var(--ion-color-secondary);
+		--color: var(--ion-color-dark);
+	}
+</style>

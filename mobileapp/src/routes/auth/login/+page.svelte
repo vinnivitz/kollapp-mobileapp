@@ -24,7 +24,7 @@
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
+	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import Welcome from '$lib/components/widgets/Welcome.svelte';
 	import { t } from '$lib/locales';
 	import { PreferencesKey } from '$lib/models/preferences';
@@ -95,13 +95,8 @@
 
 {#snippet loginForm()}
 	<form use:customForm={form}>
-		<TextInputItem name="username" label={$t('routes.auth.login.page.form.username')} icon={personOutline} />
-		<TextInputItem
-			name="password"
-			type="password"
-			label={$t('routes.auth.login.page.form.password')}
-			icon={keyOutline}
-		/>
+		<InputItem name="username" label={$t('routes.auth.login.page.form.username')} icon={personOutline} />
+		<InputItem name="password" type="password" label={$t('routes.auth.login.page.form.password')} icon={keyOutline} />
 		<Button
 			classList="mt-3"
 			expand="block"

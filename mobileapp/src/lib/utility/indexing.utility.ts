@@ -125,7 +125,7 @@ function exploreChildNodes(node: ASTComponent): void {
 
 function addSearchableItem(node: ASTComponent): void {
 	const route = getAttributeValue(node, 'indexed') as RouteId;
-	const label = getAttributeValue(node, 'label') ?? getAttributeValue(node, 'id');
+	const label = getAttributeValue(node, 'label') ?? getAttributeValue(node, 'indexedLabel');
 	const icon = getAttributeValue(node, 'icon');
 	const accessible = getAttributeValue(node, 'accessible') as OrganizationRole;
 
@@ -198,7 +198,6 @@ function parseExpression(expression: Expression): string | undefined {
 			return expression.name;
 		}
 		case 'CallExpression': {
-			// Handle $t('key') calls - extract the translation key
 			const firstArgument = expression.arguments[0];
 			if (firstArgument && firstArgument.type === 'Literal') {
 				return firstArgument.value as string;

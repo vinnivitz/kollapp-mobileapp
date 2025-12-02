@@ -15,9 +15,11 @@ abstract class AbstractForm<T, R> {
 export type FormActions<T = object> = {
 	applyValidationFeedback: (result: ValidationResult<T>) => void;
 	applyValidationFeedbackByKey: (key: keyof T, result: ValidationResult<T>) => void;
+	getModel: () => T;
 	onSubmit: () => void;
-	onUpdate: (key: keyof T, value: T[keyof T]) => void;
+	onUpdate: (key: keyof T, value: T[keyof T]) => Promise<void>;
 	setModel: (model?: T) => void;
+	updateModelByKey: (key: keyof T, value: T[keyof T]) => Promise<void>;
 };
 
 /**
@@ -25,15 +27,16 @@ export type FormActions<T = object> = {
  */
 export type FormConfig<T, R> = {
 	schema: ObjectSchema<T & AnyObject>;
-	customValidators?: (
-		| (() => Promise<ValidationResult<T>> | ValidationResult<T>)
-		| ((model: T) => Promise<ValidationResult<T>> | ValidationResult<T>)
-	)[];
+	customValidators?: {
+		[K in keyof T]?:
+			| (() => Promise<ValidationResult<T>> | ValidationResult<T>)
+			| ((model: T) => Promise<ValidationResult<T>> | ValidationResult<T>);
+	};
 	formatters?: { [K in keyof T]?: (value: T[K]) => string };
 	hiddenFields?: { [K in keyof T]?: T[K] };
 	initialModel?: T;
 	keyEventHandlers?: {
-		[K in keyof T]?: (_event: KeyboardEvent, value: T[K], onUpdate: (value: T[K]) => void) => void;
+		[K in keyof T]?: Record<string, (value: T[K], onUpdate: (value: T[K]) => void) => Promise<void> | void>;
 	};
 	parsers?: { [K in keyof T]?: (value: string) => T[K] };
 	resetOnSubmit?: boolean;
@@ -41,7 +44,7 @@ export type FormConfig<T, R> = {
 	completed?: (options: { actions: FormActions<T>; model: T; response: R }) => void;
 	exposedActions?: (actions: FormActions<T>) => void;
 	failed?: (result: ValidationResult<T>) => void;
-	onBlur?: (key: keyof T) => void;
+	onBlur?: (options: { key: keyof T; value: T[keyof T] }) => void;
 	onChange?: (options: { key: keyof T; value: T[keyof T] }) => void;
 	onTouched?: () => void;
 };

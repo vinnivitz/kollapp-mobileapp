@@ -2,7 +2,6 @@ import type { AuthenticationModel } from '$lib/models/models';
 import type { OrganizationRole, SystemRole } from '@kollapp/api-types';
 
 import { TZDate } from '@date-fns/tz';
-import { alertController } from '@ionic/core';
 import { format } from 'date-fns';
 import { get } from 'svelte/store';
 
@@ -30,7 +29,7 @@ import {
 	organizationStore,
 	userStore
 } from '$lib/stores';
-import { getStoredValue, removeStoredValue, showAlert, storeValue } from '$lib/utility';
+import { getStoredValue, informationModal, removeStoredValue, showAlert, storeValue } from '$lib/utility';
 
 let refreshPromise: Promise<string | undefined> | undefined;
 
@@ -197,13 +196,13 @@ export async function checkMaintenance(): Promise<void> {
 		} else {
 			const storedSchedule = await getStoredValue<Date>(PreferencesKey.MAINTENANCE_SCHEDULE);
 			if (!storedSchedule || schedule !== storedSchedule) {
-				const alert = await alertController.create({
-					buttons: ['Ok'],
-					header: $t('utility.api.maintenance.alert.header'),
-					message: $t('utility.api.maintenance.message', { value: format(schedule, 'PPP p') })
-				});
-				await alert.present();
-				storeValue(PreferencesKey.MAINTENANCE_SCHEDULE, schedule);
+				Promise.all([
+					informationModal(
+						$t('utility.api.maintenance.alert.header'),
+						$t('utility.api.maintenance.message', { value: format(schedule, 'PPP p') })
+					),
+					storeValue(PreferencesKey.MAINTENANCE_SCHEDULE, schedule)
+				]);
 			}
 		}
 	}

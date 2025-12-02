@@ -49,7 +49,6 @@
 
 	type Properties = {
 		label: string;
-		name: string;
 		card?: boolean;
 		classList?: string;
 		color?: Colors;
@@ -64,18 +63,17 @@
 		style?: NumberStyle;
 		unit?: string;
 		unitDisplay?: 'long' | 'narrow' | 'short';
-		value?: number;
-		changed?: (value: number) => void;
-		clicked?: () => void;
 		inputElement?: (element: HTMLIonInputElement) => void;
 		inputIconClicked?: () => void;
-	};
+	} & (
+		| { name: string; changed?: never; value?: never }
+		| { value: number; name?: never; changed?: (value: number) => void }
+	);
 
 	let {
 		card,
 		changed,
 		classList = '',
-		clicked,
 		color,
 		currency = Currency.EUR,
 		disabled,
@@ -94,8 +92,25 @@
 	const MAX_INT_DIGITS = 7;
 
 	let element = $state<HTMLIonInputElement>();
+	let containerElement = $state<HTMLDivElement>();
 
-	let edit = $state(createStateFromCents(value ?? 0));
+	function notifyChange(cents: number, native?: HTMLInputElement): void {
+		if (name && containerElement) {
+			containerElement.dispatchEvent(
+				new CustomEvent('customChange', {
+					bubbles: true,
+					detail: { key: name, value: cents }
+				})
+			);
+		} else {
+			changed?.(cents);
+			if (native) {
+				native.dispatchEvent(new Event('input', { bubbles: true }));
+			}
+		}
+	}
+
+	let edit = $state<AmountEditState>(createStateFromCents(value ?? 0));
 	let tokens = $derived(
 		formatAmountTokens({
 			cents: edit.cents,
@@ -359,7 +374,7 @@
 				const parsedState = onPasteToState(native.value);
 				if (parsedState.cents !== edit.cents) {
 					edit = parsedState;
-					changed?.(edit.cents);
+					notifyChange(edit.cents);
 				}
 			}
 		}, 100);
@@ -457,9 +472,8 @@
 		if (isDigit) {
 			event.preventDefault();
 			edit = onDigit(edit, event.key);
-			changed?.(edit.cents);
 			native.value = plain;
-			native.dispatchEvent(new Event('input', { bubbles: true }));
+			notifyChange(edit.cents, native);
 			setTimeout(() => setCaretScripted(native), 0);
 			return;
 		}
@@ -473,9 +487,8 @@
 		if (event.key === 'Backspace') {
 			event.preventDefault();
 			edit = onBackspace(edit);
-			changed?.(edit.cents);
 			native.value = plain;
-			native.dispatchEvent(new Event('input', { bubbles: true }));
+			notifyChange(edit.cents, native);
 			setCaretScripted(native);
 			return;
 		}
@@ -499,10 +512,9 @@
 		if (native) {
 			applyNativeMaskStyles(native);
 			native.value = plain;
-			native.dispatchEvent(new Event('input', { bubbles: true }));
 			setCaretScripted(native);
+			notifyChange(edit.cents, native);
 		}
-		changed?.(edit.cents);
 	}
 
 	function applyNativeMaskStyles(native: HTMLInputElement): void {
@@ -528,46 +540,48 @@
 	}
 </script>
 
-<CustomItem {card} {color} {icon} iconEnd={inputIcon} {clicked} iconClick={inputIconClicked} {classList}>
-	<div class="relative">
-		<div class="ghost absolute inset-0 top-7 flex items-center" aria-hidden="true">
-			{#each tokens as token (token)}
-				<span class:grey={token.grey}>{token.text}</span>
-			{/each}
+<div bind:this={containerElement}>
+	<CustomItem {card} {color} {icon} iconEnd={inputIcon} iconClick={inputIconClicked} {classList}>
+		<div class="relative">
+			<div class="ghost absolute inset-0 top-7 flex items-center" aria-hidden="true">
+				{#each tokens as token (token)}
+					<span class:grey={token.grey}>{token.text}</span>
+				{/each}
+			</div>
+			<ion-input
+				bind:this={element}
+				{readonly}
+				label-placement="floating"
+				{name}
+				{label}
+				type="text"
+				pattern="[0-9.,]*"
+				inputmode="decimal"
+				{disabled}
+				helper-text={helperText}
+				value={plain}
+				onfocus={async () => {
+					const inputElement = await element?.getInputElement();
+					if (inputElement) setCaretScripted(inputElement);
+				}}
+				onionFocus={async () => {
+					const inputElement = await element?.getInputElement();
+					if (inputElement) setCaretScripted(inputElement);
+				}}
+				onclick={async () => {
+					const inputElement = await element?.getInputElement();
+					if (inputElement) setCaretScripted(inputElement);
+				}}
+				onkeydown={onKeyDown}
+				onpaste={onPaste}
+				onionInput={onIonInput}
+				role="menuitem"
+				tabindex="0"
+			>
+			</ion-input>
 		</div>
-		<ion-input
-			bind:this={element}
-			{readonly}
-			label-placement="floating"
-			{name}
-			{label}
-			type="text"
-			pattern="[0-9.,]*"
-			inputmode="decimal"
-			{disabled}
-			helper-text={helperText}
-			value={plain}
-			onfocus={async () => {
-				const inputElement = await element?.getInputElement();
-				if (inputElement) setCaretScripted(inputElement);
-			}}
-			onionFocus={async () => {
-				const inputElement = await element?.getInputElement();
-				if (inputElement) setCaretScripted(inputElement);
-			}}
-			onclick={async () => {
-				const inputElement = await element?.getInputElement();
-				if (inputElement) setCaretScripted(inputElement);
-			}}
-			onkeydown={onKeyDown}
-			onpaste={onPaste}
-			onionInput={onIonInput}
-			role="menuitem"
-			tabindex="0"
-		>
-		</ion-input>
-	</div>
-</CustomItem>
+	</CustomItem>
+</div>
 
 <style>
 	ion-input {

@@ -9,7 +9,7 @@
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
+	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import Welcome from '$lib/components/widgets/Welcome.svelte';
 	import { t } from '$lib/locales';
 	import { Form } from '$lib/models/ui';
@@ -17,7 +17,9 @@
 
 	const form = new Form({
 		completed: async () => goto(resolve('/auth/login')),
-		customValidators: [passwordConfirmationValidator('password', 'confirmPassword')],
+		customValidators: {
+			confirmPassword: passwordConfirmationValidator('password', 'confirmPassword')
+		},
 		request: async (model) => publicUserService.register(model),
 		schema: registerSchema()
 	});
@@ -47,25 +49,25 @@
 {#snippet registerCard()}
 	<Card title={$t('routes.auth.register.page.card.register.title')}>
 		<form use:customForm={form}>
-			<TextInputItem
+			<InputItem
 				name="username"
 				label={$t('routes.auth.register.page.card.register.form.username')}
 				icon={personCircleOutline}
 			/>
-			<TextInputItem
+			<InputItem
 				name="email"
 				inputmode="email"
 				type="email"
 				label={$t('routes.auth.register.page.card.register.form.email')}
 				icon={mailOutline}
 			/>
-			<TextInputItem
+			<InputItem
 				name="password"
 				type="password"
 				label={$t('routes.auth.register.page.card.register.form.password')}
 				icon={keyOutline}
 			/>
-			<TextInputItem
+			<InputItem
 				name="confirmPassword"
 				type="password"
 				label={$t('routes.auth.register.page.card.register.form.confirm-password')}

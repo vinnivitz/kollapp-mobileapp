@@ -10,12 +10,12 @@
 	import Calendar from '$lib/components/widgets/ionic/Datetime.svelte';
 	import DatetimeInputItem from '$lib/components/widgets/ionic/DatetimeInputItem.svelte';
 	import FabButton from '$lib/components/widgets/ionic/FabButton.svelte';
+	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
 	import LocationInputItem from '$lib/components/widgets/ionic/LocationInputItem.svelte';
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
 	import Popover from '$lib/components/widgets/ionic/Popover.svelte';
 	import TextareaInputItem from '$lib/components/widgets/ionic/TextareaInputItem.svelte';
-	import TextInputItem from '$lib/components/widgets/ionic/TextInputItem.svelte';
 	import ToggleItem from '$lib/components/widgets/ionic/ToggleItem.svelte';
 	import LeafletMap from '$lib/components/widgets/LeafletMap.svelte';
 	import { Locale } from '$lib/locales';
@@ -23,8 +23,8 @@
 	import { layoutStore, localeStore, themeStore } from '$lib/stores';
 	import { showAlert } from '$lib/utility';
 
-	let modalOpen = $state(false);
-	let popoverOpened = $state(false);
+	let modalOpen = $state<boolean>(false);
+	let popoverOpened = $state<boolean>(false);
 
 	function onFilter(event: CustomEvent): void {
 		const value = event.detail.value as string;
@@ -160,7 +160,7 @@
 			<FabButton
 				horizontal="center"
 				icon={addOutline}
-				label="Add"
+				indexedLabel="Add"
 				buttons={[
 					{
 						handler: async () => await showAlert('Add clicked', { type: AlertType.SUCCESS }),
@@ -197,17 +197,17 @@
 			label="Clickable labeled item"
 			clicked={async () => await showAlert('Item clicked', { type: AlertType.SUCCESS })}
 		></LabeledItem>
-		<LabeledItem card label="Labeled item with icon" icon={documentOutline}></LabeledItem>
-		<TextInputItem card label="Input item" name="value"></TextInputItem>
-		<TextInputItem card label="Input item" name="value" helperText="With helper text"></TextInputItem>
-		<TextInputItem card label="Input item with icon" name="value" icon={personOutline}></TextInputItem>
-		<TextInputItem
+		<LabeledItem card label="Labeled item with icon" icon={documentOutline} />
+		<InputItem card label="Input item" name="value" />
+		<InputItem card label="Input item" name="value" helperText="With helper text" />
+		<InputItem card label="Input item with icon" name="value" icon={personOutline} />
+		<InputItem
 			card
 			label="Input item with clickable icon"
 			name="value"
 			inputIcon={attachOutline}
 			inputIconClicked={async () => await showAlert('Item clicked', { type: AlertType.SUCCESS })}
-		></TextInputItem>
+		/>
 	</Card>
 	<Card title="Custom Input Items">
 		<AmountInputItem

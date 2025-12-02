@@ -5,10 +5,11 @@ import { get } from 'svelte/store';
 import { t } from '$lib/locales';
 
 /**
- * Validates that a password confirmation field matches the password field
+ * Creates a password confirmation validator for a specific confirmation field
+ * This validator should be assigned to the confirmPassword field in customValidators
  * @param passwordField The name of the password field to match against
  * @param confirmPasswordField The name of the confirmation password field
- * @returns A validator function that can be used in FormConfig.customValidators
+ * @returns {(model: T) => ValidationResult<T>} A validator function that can be used in FormConfig.customValidators
  */
 export function passwordConfirmationValidator<T>(
 	passwordField: keyof T,
@@ -16,10 +17,24 @@ export function passwordConfirmationValidator<T>(
 ): (model: T) => ValidationResult<T> {
 	return (model: T): ValidationResult<T> => {
 		const password = model[passwordField];
-		const confirmPassword = model[confirmPasswordField];
+		const confirmFieldKey = confirmPasswordField;
+		const confirmPassword = model[confirmFieldKey];
 
-		if (!password || !confirmPassword) {
+		if (!password && !confirmPassword) {
 			return { valid: true };
+		}
+
+		if (password && !confirmPassword) {
+			const $t = get(t);
+			return {
+				errors: [
+					{
+						field: confirmFieldKey,
+						message: $t('utility.form-validators.password-confirmation.no-match')
+					}
+				],
+				valid: false
+			};
 		}
 
 		// eslint-disable-next-line security/detect-possible-timing-attacks
@@ -28,7 +43,7 @@ export function passwordConfirmationValidator<T>(
 			return {
 				errors: [
 					{
-						field: confirmPasswordField,
+						field: confirmFieldKey,
 						message: $t('utility.form-validators.password-confirmation.no-match')
 					}
 				],

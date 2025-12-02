@@ -17,6 +17,7 @@
 		iconEnd?: string;
 		indexed?: string;
 		indexLabel?: string;
+		name?: string;
 		note?: string;
 		slidingOptions?: ItemSlidingOption[];
 		transparent?: boolean;
@@ -39,6 +40,7 @@
 		iconEnd,
 		indexed,
 		indexLabel,
+		name,
 		note,
 		slidingOptions,
 		transparent
@@ -71,6 +73,7 @@
 	<div class="relative">
 		<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 		<ion-item
+			data-name={name}
 			onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && clicked?.()}
 			{disabled}
 			id={indexLabel}
