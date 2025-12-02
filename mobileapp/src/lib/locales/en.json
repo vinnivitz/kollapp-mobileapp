@@ -173,7 +173,7 @@
             "label": "Account"
           },
           "activities": {
-            "label": "Activities"
+            "label": "Events"
           },
           "collective": {
             "label": "Collective"
@@ -191,7 +191,7 @@
       },
       "search-results": {
         "found": "Search results for \"{{value}}\"",
-        "not-found": "No results found for \"{0}"
+        "not-found": "No results found for \"{{value}}\""
       },
       "button": {
         "logout": "Log out"
@@ -771,7 +771,7 @@
             "form": {
               "code": "Code",
               "helper-text": "Get it from a collective admin.",
-              "submit": "{$t('routes.organization.page.join.form.submit')}"
+              "submit": "Join Collective"
             }
           }
         }
@@ -1044,7 +1044,7 @@
         "organization-card": {
           "card": {
             "members": "{{value}} members",
-            "activities": "{{value}} activities"
+            "activities": "{{value}} events"
           }
         },
         "no-collectives-card": {
