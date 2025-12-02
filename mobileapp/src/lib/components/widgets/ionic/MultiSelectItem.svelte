@@ -8,6 +8,8 @@
 	import Modal from './Modal.svelte';
 	import ToggleItem from './ToggleItem.svelte';
 
+	import { t } from '$lib/locales';
+
 	type Properties = {
 		icon: string;
 		label: string;
@@ -26,18 +28,18 @@
 	);
 
 	let {
-		allSelectedText = 'All selected',
+		allSelectedText = $t('components.widgets.ionic.multi-select-item.all-selected'),
 		changed,
 		icon,
 		items = [],
 		label,
 		multiple = true,
 		name,
-		noneSelectedText = 'None selected',
+		noneSelectedText = $t('components.widgets.ionic.multi-select-item.none-selected'),
 		search = true,
-		searchPlaceholder = 'Search...',
+		searchPlaceholder = $t('components.widgets.ionic.multi-select-item.search-placeholder'),
 		selectAllIcon,
-		selectAllLabel = 'All selected',
+		selectAllLabel = $t('components.widgets.ionic.multi-select-item.select-all'),
 		value = []
 	}: Properties = $props();
 

@@ -56,61 +56,79 @@
 
 <Layout title={$t('routes.auth.organization.slug.page.title')} showBackButton {loading} hideMenu={!authenticated}>
 	{#if organization}
-		<Card title={$t('routes.auth.organization.slug.page.card.join.title')}>
-			<InputItem
-				readonly
-				label={$t('routes.auth.organization.slug.page.card.join.form.name')}
-				icon={accessibilityOutline}
-				value={organization?.name}
-			></InputItem>
-			<TextareaInputItem
-				readonly
-				label={$t('routes.auth.organization.slug.page.card.join.form.description')}
-				icon={readerOutline}
-				value={organization?.description}
-			></TextareaInputItem>
-			<InputItem
-				readonly
-				label={$t('routes.auth.organization.slug.page.card.join.form.place')}
-				icon={locationOutline}
-				value={organization?.place}
-			></InputItem>
-			<div class="mt-3 text-center">
-				{#if organization.name !== $organizationStore?.name}
-					{#if authenticated}
-						<Button
-							icon={addOutline}
-							label={$t('routes.auth.organization.slug.page.card.join.form.submit')}
-							clicked={() => onJoinCollective()}
-						/>
-					{:else}
-						<div class="flex flex-col">
-							<Button label="Log in" icon={logInOutline} clicked={() => goto(resolve('/auth/login'))} />
-							<ion-note>{$t('routes.auth.organization.slug.page.card.join.form.info.not-authenticated')}</ion-note>
-						</div>
-					{/if}
-				{:else}
-					<Card border="success">
-						<div class="flex flex-row items-center justify-center gap-3">
-							<ion-icon size="large" icon={checkboxOutline} color="success"></ion-icon>
-							<ion-note color="success">
-								{$t('routes.auth.organization.slug.page.card.join.form.info.already-member')}
-							</ion-note>
-						</div>
-					</Card>
-				{/if}
-			</div>
-		</Card>
+		{@render collectiveDetails(organization)}
 	{:else}
-		<Card
-			title={$t('routes.auth.organization.slug.page.card.invalid-code.title')}
-			titleIconStart={bugOutline}
-			border="danger"
-		>
-			<div class="flex flex-col items-center justify-center gap-4">
-				<ion-text class="text-center">{$t('routes.auth.organization.slug.page.card.invalid-code.info')}</ion-text>
-				<Button icon={homeOutline} label="Go back" clicked={() => goto(resolve('/'))} />
-			</div>
-		</Card>
+		{@render invalidCode()}
 	{/if}
 </Layout>
+
+<!-- Snippets -->
+
+{#snippet collectiveDetails(organization: OrganizationBaseTO)}
+	<Card title={$t('routes.auth.organization.slug.page.card.join.title')}>
+		<InputItem
+			readonly
+			label={$t('routes.auth.organization.slug.page.card.join.form.name')}
+			icon={accessibilityOutline}
+			value={organization?.name}
+		></InputItem>
+		<TextareaInputItem
+			readonly
+			label={$t('routes.auth.organization.slug.page.card.join.form.description')}
+			icon={readerOutline}
+			value={organization?.description}
+		></TextareaInputItem>
+		<InputItem
+			readonly
+			label={$t('routes.auth.organization.slug.page.card.join.form.place')}
+			icon={locationOutline}
+			value={organization?.place}
+		></InputItem>
+		<div class="mt-3 text-center">
+			{#if organization.name !== $organizationStore?.name}
+				{#if authenticated}
+					<Button
+						icon={addOutline}
+						label={$t('routes.auth.organization.slug.page.card.join.form.submit')}
+						clicked={() => onJoinCollective()}
+					/>
+				{:else}
+					<div class="flex flex-col">
+						<Button
+							label={$t('routes.auth.organization.slug.page.card.join.form.login')}
+							icon={logInOutline}
+							clicked={() => goto(resolve('/auth/login'))}
+						/>
+						<ion-note>{$t('routes.auth.organization.slug.page.card.join.form.info.not-authenticated')}</ion-note>
+					</div>
+				{/if}
+			{:else}
+				<Card border="success">
+					<div class="flex flex-row items-center justify-center gap-3">
+						<ion-icon size="large" icon={checkboxOutline} color="success"></ion-icon>
+						<ion-note color="success">
+							{$t('routes.auth.organization.slug.page.card.join.form.info.already-member')}
+						</ion-note>
+					</div>
+				</Card>
+			{/if}
+		</div>
+	</Card>
+{/snippet}
+
+{#snippet invalidCode()}
+	<Card
+		title={$t('routes.auth.organization.slug.page.card.invalid-code.title')}
+		titleIconStart={bugOutline}
+		border="danger"
+	>
+		<div class="flex flex-col items-center justify-center gap-4">
+			<ion-text class="text-center">{$t('routes.auth.organization.slug.page.card.invalid-code.info')}</ion-text>
+			<Button
+				icon={homeOutline}
+				label={$t('routes.auth.organization.slug.page.card.invalid-code.button.go-back')}
+				clicked={() => goto(resolve('/'))}
+			/>
+		</div>
+	</Card>
+{/snippet}

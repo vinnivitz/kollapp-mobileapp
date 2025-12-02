@@ -38,12 +38,13 @@ export function clickableElement(node: HTMLElement, callback: () => void): { des
  * @returns {string} role translation
  */
 export function getRoleTranslationFromRole(role: OrganizationRole): string {
+	const $t = get(t);
 	switch (role) {
 		case 'ROLE_ORGANIZATION_MANAGER': {
-			return 'Manager';
+			return $t('utility.ui.get-role-translation.manager');
 		}
 		case 'ROLE_ORGANIZATION_MEMBER': {
-			return 'Member';
+			return $t('utility.ui.get-role-translation.member');
 		}
 		default: {
 			return role;
@@ -182,8 +183,8 @@ export async function confirmationModal(config: ConfirmModalConfig): Promise<voi
 				text: config.confirmText ?? $t('utility.ui.confirm-modal.confirm')
 			}
 		],
-		header: config.header,
-		message: config.message
+		header: config.header ?? $t('utility.ui.confirm-modal.header'),
+		message: config.message ?? $t('utility.ui.confirm-modal.message')
 	});
 	await alert.present();
 }

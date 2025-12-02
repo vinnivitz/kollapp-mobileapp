@@ -36,13 +36,13 @@
 	$effect(() => {
 		if (initialized) {
 			tabs = [
-				{ icon: home, label: $t('common.page-routes.home'), tab: '/' },
+				{ icon: home, label: $t('routes.layout.page.tabs.home'), tab: '/' },
 				{
 					icon: accessibility,
-					label: $t('common.page-routes.organization'),
+					label: $t('routes.layout.page.tabs.organization'),
 					tab: '/organization'
 				},
-				{ icon: person, label: $t('common.page-routes.account'), tab: '/account' }
+				{ icon: person, label: $t('routes.layout.page.tabs.account'), tab: '/account' }
 			];
 		}
 	});
@@ -60,7 +60,7 @@
 </script>
 
 <svelte:head>
-	<title>Kollapp - Die Kollektiv App</title>
+	<title>{$t('routes.layout.page.title')}</title>
 </svelte:head>
 
 {#key $layoutStore}
@@ -77,8 +77,8 @@
 		{:else if $appStateStore === AppStateType.ERROR}
 			<div class="flex h-full items-center justify-center p-4">
 				<div class="text-center">
-					<h2 class="mb-2 text-xl font-bold">Initialization Error</h2>
-					<p class="text-gray-600">An error occurred while starting the app.</p>
+					<h2 class="mb-2 text-xl font-bold">{$t('routes.layout.page.error.heading')}</h2>
+					<p class="text-gray-600">{$t('routes.layout.page.error.content')}</p>
 				</div>
 			</div>
 		{/if}

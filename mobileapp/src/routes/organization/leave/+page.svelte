@@ -24,9 +24,7 @@
 	async function onLeaveOrganizationPrompt(): Promise<void> {
 		await confirmationModal({
 			confirmText: $t('routes.organization.leave.page.modal.confirm'),
-			handler: leaveOrganization,
-			header: $t('routes.organization.leave.page.modal.header'),
-			message: $t('routes.organization.leave.page.modal.message')
+			handler: leaveOrganization
 		});
 	}
 

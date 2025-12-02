@@ -206,11 +206,20 @@
           "modal": {
             "confirm": "Select"
           }
+        },
+        "multi-select-item": {
+          "all-selected": "All selected",
+          "none-selected": "None selected",
+          "search-placeholder": "Search...",
+          "select-all": "Select all events"
         }
       },
       "budget-card": {
         "heading": "Budget overview",
-        "no-postings": "No postings found."
+        "no-postings": "No postings found.",
+        "all": "All",
+        "credit": "Income",
+        "debit": "Expense"
       },
       "leaflet-map": {
         "searchbar": {
@@ -279,10 +288,16 @@
     "ui": {
       "confirm-modal": {
         "cancel": "Cancel",
-        "confirm": "Confirm"
+        "confirm": "Confirm",
+        "header": "Are you sure?",
+        "message": "This action cannot be undone."
       },
       "information-modal": {
         "ok": "Okay"
+      },
+      "get-role-translation": {
+        "manager": "Manager",
+        "member": "Member"
       }
     }
   },
@@ -488,12 +503,16 @@
                   "info": {
                     "not-authenticated": "You need to be logged in to join a collective.",
                     "already-member": "You are already a member of this collective."
-                  }
+                  },
+                  "login": "Log in"
                 }
               },
               "invalid-code": {
                 "title": "Invalid Code",
-                "info": "The provided code is invalid. Please ask the collective admin to provide you a new one."
+                "info": "The provided code is invalid. Please ask the collective admin to provide you a new one.",
+                "button": {
+                  "go-back": "Go back"
+                }
               }
             }
           }
@@ -608,7 +627,8 @@
                   "credit": "Income",
                   "debit": "Expense",
                   "amount": "Amount",
-                  "date": "Date"
+                  "date": "Date",
+                  "purpose": "Purpose"
                 }
               },
               "update-posting": {
@@ -641,7 +661,8 @@
                     "all-selected": "All members selected",
                     "none-selected": "No members selected",
                     "search-placeholder": "Search members...",
-                    "select-all": "Select all members"
+                    "select-all": "Select all members",
+                    "label": "Select members"
                   },
                   "reset": "Reset",
                   "apply": "Apply"
@@ -674,8 +695,8 @@
             "action-button": "Event actions",
             "postings-summary": {
               "heading": "Event balance",
-              "total-credit": "Total income:",
-              "total-debit": "Total expense",
+              "total-credit": "Total income: {{value}}",
+              "total-debit": "Total expense: {{value}}",
               "add-credit": "Add income",
               "add-debit": "Add expense",
               "transaction-history": "Transaction history"
@@ -730,7 +751,10 @@
           "card": {
             "invalid-code": {
               "title": "Code invalid or expired",
-              "content": "Ask the collective admin to provide you a new invitation code."
+              "content": "Ask the collective admin to provide you a new invitation code.",
+              "button": {
+                "back-to-home": "Back to home"
+              }
             }
           },
           "modal": {
@@ -815,6 +839,9 @@
                 "note": {
                   "code-expired": "Code is expired. Please renew.",
                   "expires-in": "Expires"
+                },
+                "button": {
+                  "renew": "Renew invitation code"
                 }
               }
             },
@@ -860,7 +887,8 @@
               "title": "Invite members"
             }
           },
-          "no-members": "No other members found."
+          "no-members": "No other members found.",
+          "invite": "Invite person"
         }
       },
       "register": {
@@ -888,6 +916,173 @@
               "place": "Place",
               "submit": "Update information"
             }
+          }
+        }
+      },
+      "page": {
+        "activity-filter-item": {
+          "not-assigned-to-activity": "Not assigned to event"
+        },
+        "modal": {
+          "select-organization": {
+            "header": "Change collective"
+          },
+          "delete-posting": {
+            "confirm-text": "Delete transaction"
+          },
+          "create-posting": {
+            "credit": "Income",
+            "debit": "Expense",
+            "date": "Date",
+            "activities": {
+              "all-selected": "All events selected",
+              "select": "Select event",
+              "none-selected": "None selected",
+              "search": "Search events..."
+            },
+            "purpose": "Purpose",
+            "amount": "Amount"
+          },
+          "update-posting": {
+            "card": {
+              "credit": "Income",
+              "debit": "Expense",
+              "purpose": "Purpose",
+              "amount": "Amount",
+              "date": "Date",
+              "activities": {
+                "all-selected": "All events selected",
+                "select": "Select event",
+                "search": "Search events..."
+              },
+              "title": "Update posting"
+            }
+          },
+          "postings-history": {
+            "search": "Search transactions...",
+            "not-found": "No transactions found.",
+            "reset-filters": "Reset filters"
+          },
+          "postings-filter": {
+            "card": {
+              "credit": "Income",
+              "debit": "Expense",
+              "title": "Filters",
+              "from": "From",
+              "to": "To",
+              "activities": {
+                "all-selected": "All events selected",
+                "select": "Select event",
+                "search": "Search events..."
+              },
+              "reset": "Reset filters",
+              "apply": "Apply filters"
+            }
+          }
+        },
+        "posting-translation": {
+          "debit": "Expense",
+          "cedit": "Income"
+        },
+        "title": "Collective",
+        "no-collective": {
+          "note": "You are not part of any collective."
+        },
+        "event-list": {
+          "list": {
+            "create-event": "Create event",
+            "header": "Events",
+            "manage-events": "Manage events"
+          }
+        },
+        "collective-list": {
+          "list": {
+            "header": "Collective",
+            "members": "Manage members",
+            "update-info": "Update collective info",
+            "leave": "Leave collective",
+            "change-collective": "Change collective"
+          }
+        },
+        "general": {
+          "list": {
+            "header": "General",
+            "register": "Register new collective",
+            "join": "Join a collective"
+          }
+        },
+        "budget-card": {
+          "card": {
+            "collective-balance": "Collective balance",
+            "total-credit": "Total income: {{value}}",
+            "total-debit": "Total expense: {{value}}",
+            "add-credit": "Add income",
+            "add-debit": "Add expense",
+            "transaction-history": "Transaction history",
+            "postings-history": "Transaction history"
+          }
+        },
+        "pending-organization-join-request-card": {
+          "card": {
+            "info": "You have a pending request for joining"
+          }
+        },
+        "upcoming-event": {
+          "card": {
+            "title": "Upcoming event"
+          }
+        }
+      }
+    },
+    "error": {
+      "page": {
+        "title": "Kollapp"
+      }
+    },
+    "layout": {
+      "page": {
+        "tabs": {
+          "home": "Home",
+          "organization": "Collective",
+          "account": "Account"
+        },
+        "title": "Kollapp - The collective app",
+        "error": {
+          "heading": "Initialization Error",
+          "content": "An error occurred while starting the app."
+        }
+      }
+    },
+    "page": {
+      "page": {
+        "title": "Kollapp",
+        "account-card": {
+          "greetings": "Hello {{value}}",
+          "notifications": {
+            "no-notes": "No new notifications"
+          }
+        },
+        "upcoming-event-card": {
+          "card": {
+            "title": "Upcoming event"
+          }
+        },
+        "organization-card": {
+          "card": {
+            "members": "{{value}} members",
+            "activities": "{{value}} activities"
+          }
+        },
+        "no-collectives-card": {
+          "card": {
+            "note": "You are not part of any collective yet.",
+            "register": "Register a new collective",
+            "join": "Join a collective"
+          }
+        },
+        "pending-organization-join-request-card": {
+          "card": {
+            "note": "You have a pending request for joining {{value}}"
           }
         }
       }

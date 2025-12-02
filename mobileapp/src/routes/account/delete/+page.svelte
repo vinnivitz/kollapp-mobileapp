@@ -32,8 +32,7 @@
 		await confirmationModal({
 			confirmText: $t('routes.account.delete.page.modal.confirm'),
 			handler: deleteAccount,
-			header: $t('routes.account.delete.page.modal.header'),
-			message: $t('routes.account.delete.page.modal.message')
+			header: $t('routes.account.delete.page.modal.header')
 		});
 	}
 

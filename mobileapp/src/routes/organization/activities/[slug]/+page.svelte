@@ -225,9 +225,7 @@
 	async function onDeleteActivity(): Promise<void> {
 		await confirmationModal({
 			confirmText: $t('routes.organization.activities.slug.page.modal.delete-activity.confirm'),
-			handler: deleteActivity,
-			header: $t('routes.organization.activities.slug.page.modal.delete-activity.header'),
-			message: $t('routes.organization.activities.slug.page.modal.delete-activity.message')
+			handler: deleteActivity
 		});
 	}
 
@@ -351,9 +349,7 @@
 	async function onDeletePosting(postingId: number): Promise<void> {
 		await confirmationModal({
 			confirmText: $t('routes.organization.activities.slug.page.modal.delete-posting.modal.confirm'),
-			handler: () => deletePosting(postingId),
-			header: $t('routes.organization.activities.slug.page.modal.delete-posting.modal.header'),
-			message: $t('routes.organization.activities.slug.page.modal.delete-posting.modal.message')
+			handler: () => deletePosting(postingId)
 		});
 	}
 
@@ -461,16 +457,18 @@
 			<ion-text class="text-xl font-bold">{postingBalance?.balance}</ion-text>
 			<div class="flex items-center justify-center gap-2">
 				<ion-icon color="success" icon={trendingUpOutline}></ion-icon>
-				<ion-text class="flex flex-wrap gap-2 text-sm text-gray-500">
-					<div>{$t('routes.organization.activities.slug.page.postings-summary.total-credit')}</div>
-					<div>{postingBalance?.credit}</div>
+				<ion-text class="text-sm" color="medium">
+					{$t('routes.organization.activities.slug.page.postings-summary.total-credit', {
+						value: postingBalance?.credit
+					})}
 				</ion-text>
 			</div>
 			<div class="flex items-center justify-center gap-2">
 				<ion-icon color="danger" icon={trendingDownOutline}></ion-icon>
-				<ion-text class="flex flex-wrap gap-2 text-sm text-gray-500">
-					<div>{$t('routes.organization.activities.slug.page.postings-summary.total-debit')}</div>
-					<div>{postingBalance?.debit}</div>
+				<ion-text class="text-sm" color="medium">
+					{$t('routes.organization.activities.slug.page.postings-summary.total-debit', {
+						value: postingBalance?.debit
+					})}
 				</ion-text>
 			</div>
 		</div>
@@ -572,7 +570,11 @@
 					clicked={() => (selectedPostingType = 'DEBIT')}
 				/>
 			</div>
-			<InputItem name="purpose" label="Purpose" icon={documentOutline} />
+			<InputItem
+				name="purpose"
+				label={$t('routes.organization.activities.slug.page.modal.create-posting.form.purpose')}
+				icon={documentOutline}
+			/>
 			<AmountInputItem
 				name="amountInCents"
 				label={$t('routes.organization.activities.slug.page.modal.create-posting.form.amount')}
@@ -698,7 +700,7 @@
 			allSelectedText={$t('routes.organization.activities.slug.page.modal.activity-filter.card.members.all-selected')}
 			noneSelectedText={$t('routes.organization.activities.slug.page.modal.activity-filter.card.members.none-selected')}
 			items={memberFilterItems}
-			label="Select members"
+			label={$t('routes.organization.activities.slug.page.modal.activity-filter.card.members.label')}
 			searchPlaceholder={$t(
 				'routes.organization.activities.slug.page.modal.activity-filter.card.members.search-placeholder'
 			)}

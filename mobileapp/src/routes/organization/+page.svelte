@@ -28,7 +28,6 @@
 		logOutOutline,
 		peopleOutline,
 		personAddOutline,
-		personOutline,
 		refreshOutline,
 		ribbonOutline,
 		saveOutline,
@@ -94,13 +93,13 @@
 
 	let createPostingModalOpen = $state<boolean>(false);
 	let updatePostingModalOpen = $state<boolean>(false);
-	let transactionHistoryModalOpen = $state<boolean>(false);
+	let postingsHistoryModalOpen = $state<boolean>(false);
 
 	let updatePostingModelTouched = $state<boolean>(false);
 	let filteredPostings = $state<PostingTO[]>([]);
 	let postingsSearchValue = $state<string>('');
 
-	let transactionFilterOpen = $state<boolean>(false);
+	let postingsFilterOpen = $state<boolean>(false);
 
 	let selectedPosting = $state<PostingTO>();
 	let selectedPostingType = $state<PostingType>('DEBIT');
@@ -114,7 +113,12 @@
 			data: { id: activity.id, label: activity.name },
 			selected: true
 		})) ?? []),
-		{ color: 'tertiary', data: { id: 0, label: 'Not assigned to event' }, icon: flashOffOutline, selected: true }
+		{
+			color: 'tertiary',
+			data: { id: 0, label: $t('routes.organization.page.activity-filter-item.not-assigned-to-activity') },
+			icon: flashOffOutline,
+			selected: true
+		}
 	]);
 
 	let filteredActivityFilterItems = $state<number[]>([]);
@@ -195,7 +199,7 @@
 			: new TZDate().toISOString();
 	}
 
-	function getTransactionItemSlidingOptions(posting: PostingTO): ItemSlidingOption[] {
+	function getPostingItemSlidingOptions(posting: PostingTO): ItemSlidingOption[] {
 		return [
 			{
 				color: 'danger',
@@ -274,7 +278,7 @@
 				role: $organizationStore?.id === organization.id ? 'selected' : undefined,
 				text: organization.name
 			})),
-			header: $t('routes.organization.change-organization.action-sheet.title')
+			header: $t('routes.organization.page.modal.select-organization.header')
 		});
 
 		await actionSheet.present();
@@ -290,10 +294,10 @@
 		createPostingModalOpen = true;
 	}
 
-	function getCreatePostingTitle(type: PostingType): string {
+	function getPostingTranslation(type: PostingType): string {
 		return type === 'DEBIT'
-			? $t('routes.organization.page.activity.page.slug.modal.create-posting.title.expense')
-			: $t('routes.organization.page.activity.page.slug.modal.create-posting.title.income');
+			? $t('routes.organization.page.posting-translation.debit')
+			: $t('routes.organization.page.posting-translation.cedit');
 	}
 
 	async function onSearchPostings(event: CustomEvent): Promise<void> {
@@ -303,10 +307,8 @@
 
 	async function onDeletePosting(postingId: number): Promise<void> {
 		await confirmationModal({
-			confirmText: 'Delete transaction',
-			handler: () => deletePosting(postingId),
-			header: 'Are you sure?',
-			message: 'This action cannot be undone.'
+			confirmText: $t('routes.organization.page.modal.delete-posting.confirm-text'),
+			handler: () => deletePosting(postingId)
 		});
 	}
 
@@ -343,7 +345,7 @@
 		selectedPostingTypes.add('DEBIT');
 		selectedPostingTypes.add('CREDIT');
 		filteredActivityFilterItems = activityFilterItems.map((item) => item.data.id);
-		transactionFilterOpen = false;
+		postingsFilterOpen = false;
 	}
 
 	function onConfirmSelectCreatePostingActivity(ids: number[]): void {
@@ -375,13 +377,13 @@
 		filteredPostings = postings.filter((posting) => selectedPostingTypes.has(posting.type));
 	}
 
-	function onConfirmSelectTransactionActivities(ids: number[]): void {
+	function onConfirmSelectPostingActivities(ids: number[]): void {
 		filteredActivityFilterItems = ids;
 		filteredPostings = getFilteredPostings();
 	}
 </script>
 
-<Layout title={$t('routes.organization.title')}>
+<Layout title={$t('routes.organization.page.title')}>
 	{#if !$organizationStore && $organizations.length > 0}
 		{@render pendingOrganizationJoinRequestCard()}
 	{/if}
@@ -408,7 +410,7 @@
 			<ion-avatar class="flex items-center justify-center">
 				<ion-icon color="warning" icon={warningOutline} size="large"></ion-icon>
 			</ion-avatar>
-			<ion-note>You are not part of any collective.</ion-note>
+			<ion-note>{$t('routes.organization.page.no-collective.note')}</ion-note>
 		</div>
 	</Card>
 {/snippet}
@@ -416,7 +418,7 @@
 {#snippet upcomingEvent(activities: ActivityTO[])}
 	<Card
 		border="secondary"
-		title="Upcoming event"
+		title={$t('routes.organization.page.upcoming-event.card.title')}
 		classList="mt-5"
 		clicked={() => goto(resolve('/organization/activities/[slug]', { slug: activities[0]!.id.toString() }))}
 		titleIconEnd={arrowForwardOutline}
@@ -441,17 +443,17 @@
 
 {#snippet eventsList()}
 	<ion-list inset class="mt-0 pt-0">
-		<ion-list-header>Events</ion-list-header>
+		<ion-list-header>{$t('routes.organization.page.event-list.list.header')}</ion-list-header>
 		<LabeledItem
-			label={$t('routes.organization.list.activities.create-activity')}
+			label={$t('routes.organization.page.event-list.list.create-event')}
 			icon={flashOutline}
 			clicked={async () => {
 				await goto(resolve('/organization/activities'));
-				triggerClickByLabel($t('routes.organization.page.activity.create'));
+				triggerClickByLabel($t('routes.organization.page.event-list.list.create-event'));
 			}}
 		/>
 		<LabeledItem
-			label={$t('routes.organization.list.organization.activity.label')}
+			label={$t('routes.organization.page.event-list.list.manage-events')}
 			icon={calendarOutline}
 			indexed="/organization/activities"
 			clicked={() => goto(resolve('/organization/activities'))}
@@ -496,13 +498,13 @@
 
 {#snippet collectiveList()}
 	<ion-list inset>
-		<ion-list-header>{$t('routes.organization.list.current-collective.title')}</ion-list-header>
+		<ion-list-header>{$t('routes.organization.page.collective-list.list.header')}</ion-list-header>
 		<LabeledItem
 			badge={pendingMembersCount > 0 ? `${pendingMembersCount}` : undefined}
 			indexed="/organization/members"
 			clicked={() => goto(resolve('/organization/members'))}
 			icon={peopleOutline}
-			label={$t('routes.organization.list.organization.members')}
+			label={$t('routes.organization.page.collective-list.list.members')}
 		/>
 		{#if hasOrganizationRole('ROLE_ORGANIZATION_MANAGER')}
 			<LabeledItem
@@ -510,7 +512,7 @@
 				accessible="ROLE_ORGANIZATION_MANAGER"
 				clicked={() => goto(resolve('/organization/update-data'))}
 				icon={buildOutline}
-				label={$t('routes.organization.list.update-info.update-info')}
+				label={$t('routes.organization.page.collective-list.list.update-info')}
 			/>
 		{/if}
 		{#if $organizations.length > 1}
@@ -518,33 +520,33 @@
 				indexed="/organization"
 				clicked={onOrganizationSelect}
 				icon={swapHorizontalOutline}
-				label="Change collective"
+				label={$t('routes.organization.page.collective-list.list.change-collective')}
 			/>
 		{/if}
 		<LabeledItem
 			indexed="/organization/leave"
 			clicked={() => goto(resolve('/organization/leave'))}
 			icon={logOutOutline}
-			label={$t('routes.organization.list.organization.leave.label')}
+			label={$t('routes.organization.page.collective-list.list.leave')}
 		/>
 	</ion-list>
 {/snippet}
 
 {#snippet generalList()}
 	<ion-list inset>
-		<ion-list-header>{$t('routes.organization.list.general.title')}</ion-list-header>
+		<ion-list-header>{$t('routes.organization.page.general.list.header')}</ion-list-header>
 
 		<LabeledItem
 			indexed="/organization/register"
 			clicked={() => goto(resolve('/organization/register'))}
 			icon={createOutline}
-			label={$t('routes.organization.list.general.register.label')}
+			label={$t('routes.organization.page.general.list.register')}
 		/>
 		<LabeledItem
 			indexed="/organization/join"
 			clicked={() => goto(resolve('/organization/join'))}
 			icon={personAddOutline}
-			label={$t('routes.organization.list.general.join.label')}
+			label={$t('routes.organization.page.general.list.join')}
 		/>
 	</ion-list>
 {/snippet}
@@ -554,23 +556,34 @@
 		<div class="flex flex-col items-center justify-center gap-2">
 			<div class="flex items-center justify-center gap-2">
 				<ion-icon icon={cardOutline} class="text-xl"></ion-icon>
-				<ion-text class="text-lg font-bold">Collective balance:</ion-text>
+				<ion-text class="text-lg font-bold">
+					{$t('routes.organization.page.budget-card.card.collective-balance')}
+				</ion-text>
 			</div>
 			<ion-text class="text-xl font-bold">{balance?.balance}</ion-text>
 			<div class="flex items-center justify-center gap-2">
 				<ion-icon color="success" icon={trendingUpOutline}></ion-icon>
-				<ion-text class="text-sm" color="medium">Total income: {balance?.credit}</ion-text>
+				<ion-text class="text-sm" color="medium">
+					{$t('routes.organization.page.budget-card.card.total-credit', { value: balance?.credit })}
+				</ion-text>
 			</div>
 			<div class="flex items-center justify-center gap-2">
 				<ion-icon color="danger" icon={trendingDownOutline}></ion-icon>
-				<ion-text class="text-sm" color="medium">Total expense: {balance?.debit}</ion-text>
+				<ion-text class="text-sm" color="medium">
+					{$t('routes.organization.page.budget-card.card.total-debit', { value: balance?.debit })}:
+				</ion-text>
 			</div>
 		</div>
 		{#if hasOrganizationRole('ROLE_ORGANIZATION_MANAGER')}
 			<div class="mt-3 flex items-center justify-center gap-2">
-				<Button label="Add income" color="primary" icon={cashOutline} clicked={() => onOpenCreatePosting('CREDIT')} />
 				<Button
-					label="Add expense"
+					label={$t('routes.organization.page.budget-card.card.add-credit')}
+					color="primary"
+					icon={cashOutline}
+					clicked={() => onOpenCreatePosting('CREDIT')}
+				/>
+				<Button
+					label={$t('routes.organization.page.budget-card.card.add-debit')}
 					color="tertiary"
 					icon={walletOutline}
 					clicked={() => onOpenCreatePosting('DEBIT')}
@@ -582,16 +595,16 @@
 			classList="mx-2 mt-3"
 			expand="block"
 			fill="outline"
-			label="Transaction history"
-			clicked={() => (transactionHistoryModalOpen = true)}
+			label={$t('routes.organization.page.budget-card.card.postings-history')}
+			clicked={() => (postingsHistoryModalOpen = true)}
 		/>
 	</Card>
 {/snippet}
 
-{#snippet transactionItem(posting: PostingTO)}
+{#snippet postingItem(posting: PostingTO)}
 	<CustomItem
 		slidingOptions={hasOrganizationRole('ROLE_ORGANIZATION_MANAGER')
-			? getTransactionItemSlidingOptions(posting)
+			? getPostingItemSlidingOptions(posting)
 			: undefined}
 		iconColor={posting.type === 'CREDIT' ? 'success' : 'danger'}
 		icon={posting.type === 'CREDIT' ? trendingUpOutline : trendingDownOutline}
@@ -611,10 +624,6 @@
 				{/if}
 			</div>
 			<div class="flex w-full flex-wrap items-start justify-between gap-1 text-sm">
-				<ion-text color="medium" class="flex items-center justify-center gap-1">
-					<ion-icon icon={personOutline}></ion-icon>
-					<div class="truncate">{$userStore?.username}</div>
-				</ion-text>
 				<ion-text color="medium" class="flex items-center justify-center gap-1">
 					<ion-icon icon={calendarClearOutline}></ion-icon>
 					<div>{format(new TZDate(posting.date), 'PPP')}</div>
@@ -636,8 +645,11 @@
 			<ion-avatar class="flex items-center justify-center">
 				<ion-icon color="warning" icon={warningOutline} size="large"></ion-icon>
 			</ion-avatar>
-			<ion-text>
-				You have a pending request for joining <span class="font-bold">{$organizations[0]?.name}</span>
+			<ion-text class="flex flex-wrap gap-2">
+				<div>
+					{$t('routes.organization.page.pending-organization-join-request-card.card.info')}
+				</div>
+				<div class="font-bold">{$organizations[0]?.name}</div>
 			</ion-text>
 		</div>
 	</Card>
@@ -647,35 +659,35 @@
 
 <!-- Create Posting Modal -->
 <Modal open={createPostingModalOpen} dismissed={() => (createPostingModalOpen = false)}>
-	<Card title={getCreatePostingTitle(selectedPostingType)}>
+	<Card title={getPostingTranslation(selectedPostingType)}>
 		<form use:customForm={createPostingForm}>
 			<div class="mb-3 flex items-center justify-center gap-2">
 				<Chip
 					selected={selectedPostingType === 'CREDIT'}
-					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.income')}
+					label={$t('routes.organization.page.modal.create-posting.credit')}
 					clicked={() => setSelectedPostingType('CREDIT')}
 				/>
 				<Chip
 					selected={selectedPostingType === 'DEBIT'}
-					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.expense')}
+					label={$t('routes.organization.page.modal.create-posting.debit')}
 					clicked={() => setSelectedPostingType('DEBIT')}
 				/>
 			</div>
-			<InputItem name="purpose" label="Purpose" icon={documentOutline} />
-			<AmountInputItem name="amountInCents" label="Amount" />
-			<DatetimeInputItem
-				name="date"
-				label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.date')}
+			<InputItem
+				name="purpose"
+				label={$t('routes.organization.page.modal.create-posting.purpose')}
+				icon={documentOutline}
 			/>
+			<AmountInputItem name="amountInCents" label={$t('routes.organization.page.modal.create-posting.amount')} />
+			<DatetimeInputItem name="date" label={$t('routes.organization.page.modal.create-posting.date')} />
 			{#if $organizationStore && $organizationStore.activities.length > 0}
 				<MultiSelectItem
 					changed={onConfirmSelectCreatePostingActivity}
-					allSelectedText="All events selected"
+					allSelectedText={$t('routes.organization.page.modal.create-posting.activities.all-selected')}
 					icon={flashOutline}
 					multiple={false}
-					label="Select event"
-					noneSelectedText="Not assigned to event"
-					searchPlaceholder="Search events..."
+					label={$t('routes.organization.page.modal.create-posting.activities.select')}
+					searchPlaceholder={$t('routes.organization.page.modal.create-posting.activities.search')}
 					items={activityFilterItems}
 				/>
 			{/if}
@@ -689,35 +701,35 @@
 	touched={updatePostingModelTouched}
 	dismissed={() => (updatePostingModalOpen = false)}
 >
-	<Card title="Update transaction">
+	<Card title={$t('routes.organization.page.modal.update-posting.card.title')}>
 		<form use:customForm={updatePostingForm}>
 			<div class="mb-3 flex items-center justify-center gap-2">
 				<Chip
-					selected={selectedPostingType === 'DEBIT'}
-					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.expense')}
-					clicked={() => setSelectedPostingType('DEBIT')}
-				/>
-				<Chip
 					selected={selectedPostingType === 'CREDIT'}
-					label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.income')}
+					label={$t('routes.organization.page.modal.update-posting.card.credit')}
 					clicked={() => setSelectedPostingType('CREDIT')}
 				/>
+				<Chip
+					selected={selectedPostingType === 'DEBIT'}
+					label={$t('routes.organization.page.modal.update-posting.card.debit')}
+					clicked={() => setSelectedPostingType('DEBIT')}
+				/>
 			</div>
-			<InputItem name="purpose" label="Purpose" icon={documentOutline} />
-			<AmountInputItem name="amountInCents" label="Amount" />
-			<DatetimeInputItem
-				name="date"
-				label={$t('routes.organization.page.activity.page.slug.modal.create-posting.form.date')}
+			<InputItem
+				name="purpose"
+				label={$t('routes.organization.page.modal.update-posting.card.purpose')}
+				icon={documentOutline}
 			/>
+			<AmountInputItem name="amountInCents" label={$t('routes.organization.page.modal.update-posting.card.amount')} />
+			<DatetimeInputItem name="date" label={$t('routes.organization.page.modal.update-posting.card.date')} />
 			{#if $organizationStore && $organizationStore.activities.length > 0}
 				<MultiSelectItem
 					changed={onConfirmSelectUpdatePostingActivity}
-					allSelectedText="All events selected"
+					allSelectedText={$t('routes.organization.page.modal.update-posting.card.activities.all-selected')}
 					icon={flashOutline}
 					multiple={false}
-					label="Select event"
-					noneSelectedText="Not assigned to event"
-					searchPlaceholder="Search events..."
+					label={$t('routes.organization.page.modal.update-posting.card.activities.select')}
+					searchPlaceholder={$t('routes.organization.page.modal.update-posting.card.activities.search')}
 					items={activityFilterItems}
 				/>
 			{/if}
@@ -725,11 +737,11 @@
 	</Card>
 </Modal>
 
-<!-- Transaction History Modal -->
+<!-- Postings History Modal -->
 <Modal
-	open={transactionHistoryModalOpen}
+	open={postingsHistoryModalOpen}
 	initialBreakPoint={0.75}
-	dismissed={() => (transactionHistoryModalOpen = false)}
+	dismissed={() => (postingsHistoryModalOpen = false)}
 	informational
 	lazy
 >
@@ -738,23 +750,27 @@
 			<ion-searchbar
 				class="w-full"
 				debounce={100}
-				placeholder="Search transactions..."
+				placeholder={$t('routes.organization.page.modal.postings-history.search')}
 				value={postingsSearchValue}
 				onionInput={onSearchPostings}
 			></ion-searchbar>
-			<Button icon={filterOutline} clicked={() => (transactionFilterOpen = true)} />
+			<Button icon={filterOutline} clicked={() => (postingsFilterOpen = true)} />
 		</div>
 		{#if filteredPostings.length === 0}
 			<div class="mt-3 flex flex-col items-center justify-center gap-2 text-center">
-				<ion-note>No transactions found.</ion-note>
+				<ion-note>{$t('routes.organization.page.modal.postings-history.not-found')}</ion-note>
 				{#if postings.length > 0}
-					<Button icon={refreshOutline} label="Reset filters" clicked={resetFilter} />
+					<Button
+						icon={refreshOutline}
+						label={$t('routes.organization.page.modal.postings-history.reset-filters')}
+						clicked={resetFilter}
+					/>
 				{/if}
 			</div>
 		{:else}
 			<ion-list>
 				{#each filteredPostings as posting (posting.id)}
-					{@render transactionItem(posting)}
+					{@render postingItem(posting)}
 				{/each}
 			</ion-list>
 		{/if}
@@ -762,46 +778,61 @@
 </Modal>
 
 <!-- Filter Popover Modal -->
-<Popover extended open={transactionFilterOpen} dismissed={() => (transactionFilterOpen = false)} lazy>
-	<Card title="Filters" classList="m-0">
+<Popover extended open={postingsFilterOpen} dismissed={() => (postingsFilterOpen = false)} lazy>
+	<Card title={$t('routes.organization.page.modal.postings-filter.card.title')} classList="m-0">
 		<div class="flex items-center justify-center gap-2">
 			<Chip
 				clicked={() => togglePostingTypeSelected('DEBIT')}
 				color="success"
 				selected={selectedPostingTypes.has('DEBIT')}
 				icon={trendingUpOutline}
-				label="Income"
+				label={$t('routes.organization.page.modal.postings-filter.card.credit')}
 			/>
 			<Chip
 				clicked={() => togglePostingTypeSelected('CREDIT')}
 				color="danger"
 				selected={selectedPostingTypes.has('CREDIT')}
 				icon={trendingDownOutline}
-				label="Expense"
+				label={$t('routes.organization.page.modal.postings-filter.card.debit')}
 			/>
 		</div>
-		<DatetimeInputItem max={toFilterDate} label="From" value={fromFilterDate} changed={onApplyFromFilterDate} />
+		<DatetimeInputItem
+			max={toFilterDate}
+			label={$t('routes.organization.page.modal.postings-filter.card.from')}
+			value={fromFilterDate}
+			changed={onApplyFromFilterDate}
+		/>
 		<DatetimeInputItem
 			min={fromFilterDate}
-			label="To"
+			label={$t('routes.organization.page.modal.postings-filter.card.to')}
 			value={toFilterDate}
 			changed={(value) => (toFilterDate = value)}
 		/>
 		{#if $organizationStore && $organizationStore.activities.length > 0}
 			<MultiSelectItem
 				value={filteredActivityFilterItems}
-				changed={onConfirmSelectTransactionActivities}
-				allSelectedText="All events selected"
+				changed={onConfirmSelectPostingActivities}
+				allSelectedText={$t('routes.organization.page.modal.postings-filter.card.activities.all-selected')}
 				icon={albumsOutline}
-				label="Select event"
-				noneSelectedText="Not assigned to event"
-				searchPlaceholder="Search events..."
+				label={$t('routes.organization.page.modal.postings-filter.card.activities.select')}
+				searchPlaceholder={$t('routes.organization.page.modal.postings-filter.card.activities.search')}
 				items={activityFilterItems}
 			/>
 		{/if}
 		<div class="mt-2 flex items-center justify-center gap-2">
-			<Button label="Reset" color="danger" icon={refreshOutline} fill="outline" clicked={resetFilter} />
-			<Button label="Apply" icon={saveOutline} fill="outline" clicked={() => (transactionFilterOpen = false)} />
+			<Button
+				label={$t('routes.organization.page.modal.postings-filter.card.reset')}
+				color="danger"
+				icon={refreshOutline}
+				fill="outline"
+				clicked={resetFilter}
+			/>
+			<Button
+				label={$t('routes.organization.page.modal.postings-filter.card.apply')}
+				icon={saveOutline}
+				fill="outline"
+				clicked={() => (postingsFilterOpen = false)}
+			/>
 		</div>
 	</Card>
 </Popover>

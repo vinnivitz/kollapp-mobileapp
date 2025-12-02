@@ -203,7 +203,7 @@
 		{#if credits >= MINIMAL_POSTINGS_FOR_INTERACTION || debits >= MINIMAL_POSTINGS_FOR_INTERACTION}
 			<Chip
 				icon={cashOutline}
-				label="All"
+				label={$t('components.widgets.budget-card.all')}
 				color="secondary"
 				selected={selectedChart === ChartType.ALL}
 				clicked={() => setSelectedChart(ChartType.ALL)}
@@ -211,7 +211,7 @@
 			{#if credits}
 				<Chip
 					icon={trendingUp}
-					label="Income"
+					label={$t('components.widgets.budget-card.credit')}
 					color="success"
 					selected={selectedChart === ChartType.CREDIT}
 					clicked={() => setSelectedChart(ChartType.CREDIT)}
@@ -220,7 +220,7 @@
 			{#if debits}
 				<Chip
 					icon={trendingDown}
-					label="Expenses"
+					label={$t('components.widgets.budget-card.debit')}
 					color="danger"
 					selected={selectedChart === ChartType.DEBIT}
 					clicked={() => setSelectedChart(ChartType.DEBIT)}

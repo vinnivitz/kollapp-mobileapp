@@ -61,7 +61,12 @@
 			<ion-text class="text-center" color="medium">
 				{$t('routes.organization.info.page.card.invalid-code.content')}
 			</ion-text>
-			<Button label="Back to home" icon={homeOutline} fill="outline" clicked={() => goto(resolve('/'))} />
+			<Button
+				label={$t('routes.organization.info.page.card.invalid-code.button.back-to-home')}
+				icon={homeOutline}
+				fill="outline"
+				clicked={() => goto(resolve('/'))}
+			/>
 		</div>
 	</Card>
 {/snippet}

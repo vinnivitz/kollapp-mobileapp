@@ -100,7 +100,6 @@
 		return confirmationModal({
 			confirmText: $t('routes.organization.members.page.modal.remove-member.confirm'),
 			handler: async () => await removeUser(memberId),
-			header: $t('routes.organization.members.page.modal.remove-member.header'),
 			message: $t('routes.organization.members.page.modal.remove-member.message')
 		});
 	}
@@ -275,7 +274,11 @@
 {#snippet noMembers()}
 	<div class="mt-5 flex flex-col items-center justify-center gap-5">
 		<ion-note>{$t('routes.organization.members.page.no-members')}</ion-note>
-		<Button icon={personAddOutline} label="Invite person" clicked={() => (invitationCodeModalOpen = true)} />
+		<Button
+			icon={personAddOutline}
+			label={$t('routes.organization.members.page.invite')}
+			clicked={() => (invitationCodeModalOpen = true)}
+		/>
 	</div>
 {/snippet}
 
@@ -354,7 +357,7 @@
 				icon={refreshCircleOutline}
 				fill="outline"
 				classList="mx-8 mt-5"
-				label="Renew invitation code"
+				label={$t('routes.organization.members.page.modal.invitation-code.card.button.renew')}
 				clicked={onRenewCode}
 			/>
 		</div>

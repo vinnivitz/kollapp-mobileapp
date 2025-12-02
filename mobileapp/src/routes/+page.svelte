@@ -44,7 +44,7 @@
 	}
 </script>
 
-<Layout title={$t('routes.home.title')}>
+<Layout title={$t('routes.page.page.title')}>
 	{#if $userStore}
 		{#if !$organizationStore && $organizations.length > 0}
 			{@render pendingOrganizationJoinRequestCard()}
@@ -70,7 +70,7 @@
 	<div class="text-center">
 		<div class="truncate">
 			<ion-text class="text-2xl font-bold">
-				{$t('routes.home.card.user.title', { value: user.username })}
+				{$t('routes.page.page.account-card.greetings', { value: user.username })}
 			</ion-text>
 		</div>
 		<Button
@@ -78,14 +78,19 @@
 			color="medium"
 			size="small"
 			icon={notificationsOffOutline}
-			label={$t('routes.home.card.notifications.no-notes')}
+			label={$t('routes.page.page.account-card.notifications.no-notes')}
 			clicked={() => goto(resolve('/account/notifications'))}
 		/>
 	</div>
 {/snippet}
 
 {#snippet upcomingEventCard(activity: ActivityModel)}
-	<Card title="Upcoming event" border="secondary" clicked={onNavigateEvent} titleIconEnd={arrowForwardOutline}>
+	<Card
+		title={$t('routes.page.page.upcoming-event-card.card.title')}
+		border="secondary"
+		clicked={onNavigateEvent}
+		titleIconEnd={arrowForwardOutline}
+	>
 		<div class="mb-3 flex flex-wrap items-center justify-center gap-5">
 			<div class="flex items-center gap-2">
 				<ion-icon icon={flashOutline}></ion-icon>
@@ -118,12 +123,16 @@
 				fill="solid"
 				color="light"
 				icon={peopleOutline}
-				label={`${organization.personsOfOrganization.length} members`}
+				label={$t('routes.page.page.organization-card.card.members', {
+					value: organization.personsOfOrganization.length
+				})}
 				clicked={() => goto(resolve('/organization/members'))}
 			/>
 			<Button
 				icon={flashOutline}
-				label={`${$organizationStore?.activities.length ?? 0} activities`}
+				label={$t('routes.page.page.organization-card.card.activities', {
+					value: $organizationStore?.activities.length ?? 0
+				})}
 				size="small"
 				fill="solid"
 				color="light"
@@ -135,21 +144,21 @@
 
 {#snippet noCollectivesCard()}
 	<Card border="warning" classList="text-center">
-		<ion-note>You are not part of any collective yet.</ion-note>
+		<ion-note>{$t('routes.page.page.no-collectives-card.card.note')}</ion-note>
 		<div class="mt-3 flex flex-col gap-3">
 			<Button
 				expand="block"
 				clicked={() => goto(resolve('/organization/register'))}
 				icon={accessibilityOutline}
 				iconEnd={arrowForwardOutline}
-				label={$t('routes.home.card.organization.register')}
+				label={$t('routes.page.page.no-collectives-card.card.register')}
 			/>
 			<Button
 				expand="block"
 				clicked={() => goto(resolve('/organization/join'))}
 				icon={personAddOutline}
 				iconEnd={arrowForwardOutline}
-				label={$t('routes.home.card.organization.join')}
+				label={$t('routes.page.page.no-collectives-card.card.join')}
 			/>
 		</div>
 	</Card>
@@ -162,7 +171,7 @@
 				<ion-icon color="warning" icon={warningOutline} size="large"></ion-icon>
 			</ion-avatar>
 			<ion-text>
-				You have a pending request for joining <span class="font-bold">{$organizations[0]?.name}</span>
+				{$t('routes.page.page.pending-organization-join-request-card.card.note', { value: $organizations[0]?.name })}
 			</ion-text>
 		</div>
 	</Card>
