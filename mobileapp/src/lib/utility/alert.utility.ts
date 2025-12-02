@@ -108,7 +108,7 @@ async function showAlertInternal(message: string, config?: AlertConfig): Promise
 		}
 
 		toast = await toastController.create({
-			buttons: [$t('utils.alert.button')],
+			buttons: [$t('utility.alert.toast.button')],
 			color: type,
 			duration: config?.duration ?? environment.toastDuration,
 			icon: type === AlertType.ERROR ? alertCircleOutline : checkmarkCircleSharp,

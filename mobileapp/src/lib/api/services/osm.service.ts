@@ -24,10 +24,11 @@ class OsmResource {
 				const result = (await response.json()) as NominatimItemDto[];
 				return result.map((item) => this.getAddress(item)).filter((item) => !this.isEmptyAddress(item));
 			} else {
-				throw new Error('Failed to fetch locations');
+				await showAlert($t('api.services.osm.location-query-error'), { type: AlertType.ERROR });
+				return [];
 			}
 		} catch {
-			await showAlert($t('components.widgets.map.api.error'), { type: AlertType.ERROR });
+			await showAlert($t('api.services.osm.location-query-error'), { type: AlertType.ERROR });
 			return [];
 		}
 	}
@@ -45,10 +46,10 @@ class OsmResource {
 				const result = (await response.json()) as NominatimItemDto;
 				return this.getAddress(result);
 			} else {
-				await showAlert($t('components.widgets.map.api.location-error'), { type: AlertType.ERROR });
+				await showAlert($t('api.services.osm.location-query-error'), { type: AlertType.ERROR });
 			}
 		} catch {
-			await showAlert($t('components.widgets.map.api.location-error'), { type: AlertType.ERROR });
+			await showAlert($t('api.services.osm.location-query-error'), { type: AlertType.ERROR });
 		}
 	}
 

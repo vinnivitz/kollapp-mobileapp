@@ -64,6 +64,6 @@
 	presentation={type}
 >
 	{#if showTitle}
-		<span slot="title">{$t('routes.organization.page.activity.calendar.title')}</span>
+		<span slot="title">{$t('components.widgets.ionic.datetime.title')}</span>
 	{/if}
 </ion-datetime>

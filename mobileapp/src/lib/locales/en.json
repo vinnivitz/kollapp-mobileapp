@@ -158,6 +158,11 @@
           }
         }
       }
+    },
+    "services": {
+      "osm": {
+        "location-query-error": "Locations could not be queried"
+      }
     }
   },
   "components": {
@@ -196,7 +201,8 @@
       "ionic": {
         "datetime": {
           "apply": "Apply",
-          "dismiss": "Dismiss"
+          "dismiss": "Dismiss",
+          "title": "Select date"
         },
         "modal": {
           "cancel": "Cancel",
@@ -249,7 +255,10 @@
   },
   "utility": {
     "alert": {
-      "feature-not-implemented": "Feature is not implemented yet"
+      "feature-not-implemented": "Feature is not implemented yet",
+      "toast": {
+        "button": "Close"
+      }
     },
     "api": {
       "server-not-reachable": "Server not reachable",
@@ -317,9 +326,7 @@
           },
           "modal": {
             "confirm": "Delete account",
-            "cancel": "Cancel",
-            "header": "All your data will be deleted.",
-            "message": "This action cannot be undone."
+            "header": "All your data will be deleted."
           }
         }
       },
@@ -592,23 +599,14 @@
               "archieve": "Archieve event",
               "edit": "Edit event"
             },
-            "filter-members": {
-              "all": "All members",
-              "none": "None selected"
-            },
+            "filter-members": {},
             "modal": {
               "delete-activity": {
-                "cancel": "Cancel",
-                "confirm": "Delete event",
-                "header": "Are you sure?",
-                "message": "This action cannot be undone."
+                "confirm": "Delete event"
               },
               "delete-posting": {
                 "modal": {
-                  "cancel": "Cancel",
-                  "confirm": "Delete transaction",
-                  "header": "Are you sure?",
-                  "message": "This action cannot be undone."
+                  "confirm": "Delete transaction"
                 }
               },
               "update-activity": {
@@ -684,14 +682,7 @@
               "add-to-calendar": "Add to calendar",
               "open-in-map": "Open in map"
             },
-            "posting-summary": {
-              "heading": "Event balance",
-              "total-credit": "Total incoming:",
-              "total-debit": "Total expense",
-              "add-credit": "Add income",
-              "add-debit": "Add expense",
-              "transaction-history": "Transaction history"
-            },
+            "posting-summary": {},
             "action-button": "Event actions",
             "postings-summary": {
               "heading": "Event balance",
@@ -758,9 +749,7 @@
             }
           },
           "modal": {
-            "join": {
-              "confirm": "Ok"
-            }
+            "join": {}
           }
         }
       },
@@ -773,7 +762,6 @@
           "modal": {
             "join": {
               "header": "Join request sent",
-              "confirm": "Okay",
               "message": "Your request to join {{value}} has been sent. You will be notified once it is approved."
             }
           },
@@ -791,15 +779,11 @@
       "leave": {
         "page": {
           "modal": {
-            "cancel": "Cancel",
-            "confirm": "Leave",
-            "header": "Are you sure?",
-            "message": "This action cannot be undone."
+            "confirm": "Leave"
           },
           "title": "Leave collective",
           "card": {
             "title": "Leave the collective",
-            "submit": "Leave collective",
             "note": "All personal data related to the collective will be deleted.",
             "warning": "are the last manager of this organization. Leaving will delete the organization.",
             "button": {
@@ -813,15 +797,12 @@
         "page": {
           "modal": {
             "approve-member": {
-              "cancel": "Cancel",
               "confirm": "Approve",
               "header": "Approve member",
               "message": "User will be granted access to the collective"
             },
             "remove-member": {
-              "cancel": "Cancel",
               "confirm": "Remove",
-              "header": "Are you sure?",
               "message": "User will be removed from the collective."
             },
             "select-role": {
@@ -848,7 +829,6 @@
             "qr-code": {
               "info-text": "Join a collective by scanning this QR-Code",
               "breadcrumb": {
-                "collective": "Collective",
                 "first": "Collective",
                 "second": "Join Collective"
               }
@@ -863,9 +843,7 @@
               "title": "Join {{value}} on Kollapp!",
               "error": "Sharing is not supported on this device"
             },
-            "renew": {
-              "error": "Failed to renew invitation code."
-            },
+            "renew": {},
             "email": {
               "body": "User this invitation code to join {{value}}",
               "subject": "Join {{value}} on Kollapp!",
@@ -875,9 +853,7 @@
           },
           "title": "Members",
           "card": {
-            "invite-members": {
-              "title": "Invite member"
-            },
+            "invite-members": {},
             "pending-members": {
               "title": "Pending members"
             }
@@ -937,7 +913,6 @@
             "activities": {
               "all-selected": "All events selected",
               "select": "Select event",
-              "none-selected": "None selected",
               "search": "Search events..."
             },
             "purpose": "Purpose",
@@ -1018,7 +993,6 @@
             "total-debit": "Total expense: {{value}}",
             "add-credit": "Add income",
             "add-debit": "Add expense",
-            "transaction-history": "Transaction history",
             "postings-history": "Transaction history"
           }
         },
