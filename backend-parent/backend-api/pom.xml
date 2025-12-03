@@ -7,14 +7,14 @@
     <parent>
         <groupId>org.kollapp</groupId>
         <artifactId>backend-parent</artifactId>
-        <version>0.8.0-SNAPSHOT</version>
+        <version>0.9.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>backend-api</artifactId>
     <description>Kollapp Backend API</description>
 
     <properties>
-        <npm.registry>https://npm.kollapp.org</npm.registry>
+        <npm.registry>https://nexus.kollapp.org/repository/npm</npm.registry>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <frontend-maven-plugin.version>1.15.4</frontend-maven-plugin.version>
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>

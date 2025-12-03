@@ -3,14 +3,17 @@ FROM eclipse-temurin:21-jdk-alpine AS builder
 WORKDIR /build
 
 COPY .mvn/ .mvn/
-COPY mvnw pom.xml ./
+COPY mvnw ./
+COPY pom.xml ./
 
-RUN ./mvnw dependency:go-offline -B
+COPY backend/pom.xml backend/pom.xml
+COPY backend/src backend/src
+COPY backend/sun_checks.xml backend/sun_checks.xml
 
-COPY src ./src
+WORKDIR /build/backend
 
-RUN ./mvnw clean package -DskipTests -B && \
-    mv target/*.jar app.jar
+RUN ../mvnw -B dependency:go-offline
+RUN ../mvnw -B -DskipTests -Djqassistant.skip=true clean package && mv target/*.jar /build/app.jar
 
 FROM eclipse-temurin:21-jre-alpine
 
