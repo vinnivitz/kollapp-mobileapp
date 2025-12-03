@@ -1,4 +1,4 @@
-package org.kollappbackend.organization.application.exception;
+package org.kollapp.organization.application.exception;
 
 public class InvalidPostingTypeException extends RuntimeException {
     public InvalidPostingTypeException() {

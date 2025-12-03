@@ -10,6 +10,8 @@ import org.kollapp.core.adapters.primary.rest.dto.ErrorResponseTO;
 import org.kollapp.core.adapters.primary.rest.dto.ResponseTO;
 import org.kollapp.organization.application.exception.ActivityNotFoundException;
 import org.kollapp.organization.application.exception.InvalidInvitationCodeException;
+import org.kollapp.organization.application.exception.InvalidOrganizationRoleException;
+import org.kollapp.organization.application.exception.InvalidPostingTypeException;
 import org.kollapp.organization.application.exception.LastManagerException;
 import org.kollapp.organization.application.exception.OrganizationAuthorizationException;
 import org.kollapp.organization.application.exception.OrganizationNotFoundException;
