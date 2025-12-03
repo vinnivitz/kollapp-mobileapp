@@ -73,9 +73,9 @@
 			<ion-list>
 				<ion-list-header>
 					{#if searchedItems.length > 0}
-						{($t('components.menu.search-results.found'), { value: searchValue })}
+						{$t('components.menu.search-results.found', { value: searchValue })}
 					{:else}
-						{($t('components.menu.search-results.not-found'), { value: searchValue })}
+						{$t('components.menu.search-results.not-found', { value: searchValue })}
 					{/if}
 				</ion-list-header>
 				{#each searchedItems as item (item.id)}
