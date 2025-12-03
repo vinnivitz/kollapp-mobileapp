@@ -121,10 +121,10 @@ vi.mock('$lib/stores', () => {
 			}
 		},
 		organizationStore: {
-			init: vi.fn().mockResolvedValue()
+			init: vi.fn().mockResolvedValue(vi.fn())
 		},
 		userStore: {
-			init: vi.fn().mockResolvedValue()
+			init: vi.fn().mockResolvedValue(vi.fn())
 		}
 	};
 });
@@ -144,7 +144,7 @@ vi.mock('$app/state', () => ({
 
 vi.mock('$lib/api/services', () => ({
 	authenticationService: {
-		logout: vi.fn().mockResolvedValue()
+		logout: vi.fn().mockResolvedValue(vi.fn())
 	},
 	searchableService: {
 		filter: vi.fn().mockResolvedValue([])
@@ -156,7 +156,7 @@ vi.mock('$lib/utility', () => ({
 	formatter: {
 		currency: (value: number) => `${value}`
 	},
-	navigateBack: vi.fn().mockResolvedValue(),
+	navigateBack: vi.fn().mockResolvedValue(vi.fn()),
 	triggerClickByLabel: vi.fn()
 }));
 
