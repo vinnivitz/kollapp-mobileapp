@@ -2,128 +2,116 @@
   {
     "icon": "notificationsOutline",
     "id": 1,
-    "label": "routes.account.list.account.button.notifications",
+    "label": "routes.account.page.list.personal.notifications",
     "route": "/account/notifications"
   },
   {
     "icon": "buildOutline",
     "id": 2,
-    "label": "routes.account.list.account.button.update-data",
+    "label": "routes.account.page.list.personal.my-data",
     "route": "/account/update-data"
   },
   {
     "icon": "lockClosedOutline",
     "id": 3,
-    "label": "routes.account.list.account.button.privacy-and-security",
+    "label": "routes.account.page.list.personal.privacy-and-security",
     "route": "/account/privacy-and-security"
   },
   {
     "icon": "trashOutline",
     "id": 4,
-    "label": "routes.account.list.account.button.delete-account",
+    "label": "routes.account.page.list.personal.delete-account",
     "route": "/account/delete"
   },
   {
     "icon": "languageOutline",
     "id": 5,
-    "label": "routes.account.app.list.language.button",
+    "label": "routes.account.page.list.application.language",
     "route": "/account"
   },
   {
     "icon": "colorPaletteOutline",
     "id": 6,
-    "label": "routes.account.app.list.theme.button",
+    "label": "routes.account.page.list.application.color-theme",
     "route": "/account"
   },
   {
     "icon": "colorWandOutline",
     "id": 7,
-    "label": "routes.account.app.list.layout.button",
+    "label": "routes.account.page.list.application.layout",
     "route": "/account"
   },
   {
     "icon": "refreshOutline",
     "id": 8,
-    "label": "routes.account.app.list.restore.button",
+    "label": "routes.account.page.list.application.restore-defaults",
     "route": "/account"
   },
   {
-    "icon": "receiptOutline",
+    "icon": "constructOutline",
     "id": 9,
-    "label": "routes.account.page.privacy-and-security.security.list.legal",
-    "route": "/account/privacy-and-security/legal"
+    "label": "routes.account.page.list.miscellaneous.app-version",
+    "route": "/account/privacy-and-security/app-version"
   },
   {
-    "icon": "constructOutline",
+    "icon": "receiptOutline",
     "id": 10,
-    "label": "App version",
-    "route": "/account/privacy-and-security/app-version"
+    "label": "routes.account.privacy-and-security.page.list.privacy.legal",
+    "route": "/account/privacy-and-security/legal"
   },
   {
     "icon": "keyOutline",
     "id": 11,
-    "label": "routes.account.list.account.privacy-and-security.button.change-password",
+    "label": "routes.account.privacy-and-security.page.list.security.change-password",
     "route": "/account/privacy-and-security/change-password"
   },
   {
-    "icon": "fingerPrintOutline",
+    "icon": "calendarClearOutline",
     "id": 12,
-    "label": "routes.account.list.account.privacy-and-security.button.biometrics",
-    "route": "/account/privacy-and-security"
-  },
-  {
-    "icon": "calendarOutline",
-    "id": 13,
-    "label": "routes.organization.list.organization.activity.label",
+    "label": "routes.organization.page.event-list.list.manage-events",
     "route": "/organization/activities"
   },
   {
     "icon": "peopleOutline",
-    "id": 14,
-    "label": "routes.organization.list.organization.members",
+    "id": 13,
+    "label": "routes.organization.page.collective-list.list.members",
     "route": "/organization/members"
   },
   {
     "accessible": "ROLE_ORGANIZATION_MANAGER",
     "icon": "buildOutline",
-    "id": 15,
-    "label": "routes.organization.list.update-info.update-info",
+    "id": 14,
+    "label": "routes.organization.page.collective-list.list.update-info",
     "route": "/organization/update-data"
   },
   {
     "icon": "swapHorizontalOutline",
-    "id": 16,
-    "label": "Change collective",
+    "id": 15,
+    "label": "routes.organization.page.collective-list.list.change-collective",
     "route": "/organization"
   },
   {
     "icon": "logOutOutline",
-    "id": 17,
-    "label": "routes.organization.list.organization.leave.label",
+    "id": 16,
+    "label": "routes.organization.page.collective-list.list.leave",
     "route": "/organization/leave"
   },
   {
     "icon": "createOutline",
-    "id": 18,
-    "label": "routes.organization.list.general.register.label",
+    "id": 17,
+    "label": "routes.organization.page.general.list.register",
     "route": "/organization/register"
   },
   {
     "icon": "personAddOutline",
-    "id": 19,
-    "label": "routes.organization.list.general.join.label",
+    "id": 18,
+    "label": "routes.organization.page.general.list.join",
     "route": "/organization/join"
   },
   {
-    "icon": "calendarOutline",
-    "id": 20,
-    "label": "routes.organization.page.activity.segments.calendar",
-    "route": "/organization/activities"
-  },
-  {
     "icon": "createOutline",
-    "id": 21,
-    "label": "routes.organization.page.activity.create",
+    "id": 19,
+    "label": "routes.organization.activities.page.activities.fab.create",
     "route": "/organization/activities"
   }
 ]

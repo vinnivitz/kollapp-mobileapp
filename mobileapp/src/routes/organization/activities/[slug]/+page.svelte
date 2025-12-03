@@ -16,7 +16,6 @@
 		addOutline,
 		archiveOutline,
 		calendarClearOutline,
-		calendarOutline,
 		cardOutline,
 		cashOutline,
 		createOutline,
@@ -414,7 +413,7 @@
 				<ion-text>{activity?.location}</ion-text>
 			</div>
 			<div class="flex items-center gap-1">
-				<ion-icon icon={calendarOutline}></ion-icon>
+				<ion-icon icon={calendarClearOutline}></ion-icon>
 				<ion-text>
 					{formatDistanceToNow(addDays(new TZDate(), 5), {
 						addSuffix: true,
@@ -434,7 +433,7 @@
 				clicked={onOpenLocation}
 			/>
 			<Button
-				icon={calendarOutline}
+				icon={calendarClearOutline}
 				size="small"
 				fill="solid"
 				color="light"

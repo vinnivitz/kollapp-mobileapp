@@ -5,7 +5,7 @@
 	import { TZDate } from '@date-fns/tz';
 	import Chart from '@edde746/svelte-apexcharts';
 	import { format } from 'date-fns';
-	import { calendarOutline, cashOutline, trendingDown, trendingUp } from 'ionicons/icons';
+	import { calendarClearOutline, cashOutline, trendingDown, trendingUp } from 'ionicons/icons';
 
 	import Chip from '$lib/components/widgets/ionic/Chip.svelte';
 	import { t } from '$lib/locales';
@@ -183,7 +183,7 @@
 									<div>${formatter.currency(amount)}</div>
 								</div>
 								<div class="flex flex-row gap-2 items-center justify-start">
-									<ion-icon icon="${calendarOutline}"></ion-icon>
+									<ion-icon icon="${calendarClearOutline}"></ion-icon>
 									<div>${format(date, 'PPP')}</div>
 								</div>
 								</div>

@@ -305,7 +305,7 @@
             "fab": {
               "create": "Veranstaltung erstellen"
             },
-            "no-results": "Keine Ergebnisse für {{value}}",
+            "no-results": "Keine Ergebnisse für „{{value}}“",
             "not-found": "Keine Veranstaltungen gefunden",
             "search": {
               "placeholder": "Veranstaltungen suchen..."
@@ -327,7 +327,7 @@
             "create-activity": {
               "card": {
                 "form": {
-                  "location": "Standort",
+                  "location": "Ort",
                   "name": "Titel"
                 },
                 "title": "Veranstaltung erstellen"
@@ -410,7 +410,7 @@
                 "card": {
                   "form": {
                     "date": "Datum",
-                    "location": "Standort",
+                    "location": "Ort",
                     "name": "Titel"
                   },
                   "title": "Veranstaltung aktualisieren"
@@ -832,8 +832,8 @@
       "organization": {
         "create-activity": {
           "location": {
-            "max": "Der Standort überschreitet die maximale Länge von 50 Zeichen",
-            "required": "Der Standort ist erforderlich"
+            "max": "Der Ortsname überschreitet die maximale Länge von 50 Zeichen",
+            "required": "Der Ortsname ist erforderlich"
           },
           "name": {
             "max": "Der Name überschreitet maximal 50 Zeichen",
@@ -861,8 +861,8 @@
         },
         "update-activity": {
           "location": {
-            "max": "Der Standort überschreitet die maximale Länge von 50 Zeichen",
-            "required": "Der Standort ist erforderlich"
+            "max": "Der Ortsname überschreitet die maximale Länge von 50 Zeichen",
+            "required": "Der Ortsname ist erforderlich"
           },
           "name": {
             "max": "Der Name überschreitet maximal 50 Zeichen",
@@ -974,7 +974,7 @@
       },
       "leaflet-map": {
         "searchbar": {
-          "placeholder": "Standort suchen"
+          "placeholder": "Ort suchen"
         }
       },
       "page-not-found": {

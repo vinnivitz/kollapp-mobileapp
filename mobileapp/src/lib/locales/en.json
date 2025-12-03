@@ -82,8 +82,8 @@
       "organization": {
         "create-activity": {
           "location": {
-            "max": "Location exceeds maximum of 50 characters",
-            "required": "Location is required"
+            "max": "Name of location exceeds maximum of 50 characters",
+            "required": "Name of location is required"
           },
           "name": {
             "max": "Name exceeds maximum of 50 characters",
@@ -111,8 +111,8 @@
         },
         "update-activity": {
           "location": {
-            "max": "Location exceeds maximum of 50 characters",
-            "required": "Location is required"
+            "max": "Name of location exceeds maximum of 50 characters",
+            "required": "Name of location is required"
           },
           "name": {
             "max": "Name exceeds maximum of 50 characters",
@@ -720,7 +720,7 @@
               "placeholder": "Search events..."
             },
             "not-found": "No events found",
-            "no-results": "No results for {{value}}"
+            "no-results": "No results for \"{{value}}\""
           },
           "modal": {
             "create-activity": {

@@ -4,17 +4,7 @@
 
 	import { TZDate } from '@date-fns/tz';
 	import { format } from 'date-fns';
-	import {
-		archiveOutline,
-		calendarOutline,
-		closeOutline,
-		createOutline,
-		documentOutline,
-		filterOutline,
-		flashOutline,
-		hourglassOutline,
-		locationOutline
-	} from 'ionicons/icons';
+	import { calendarClearOutline, createOutline, documentOutline, flashOutline, locationOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
@@ -23,15 +13,12 @@
 	import { createActivitySchema } from '$lib/api/validation/organization';
 	import FadeInOut from '$lib/components/layout/FadeInOut.svelte';
 	import Layout from '$lib/components/layout/Layout.svelte';
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import Chip from '$lib/components/widgets/ionic/Chip.svelte';
 	import Datetime from '$lib/components/widgets/ionic/Datetime.svelte';
 	import FabButton from '$lib/components/widgets/ionic/FabButton.svelte';
 	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import LocationInputItem from '$lib/components/widgets/ionic/LocationInputItem.svelte';
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
-	import Popover from '$lib/components/widgets/ionic/Popover.svelte';
 	import SegmentItem from '$lib/components/widgets/ionic/SegmentItem.svelte';
 	import { t } from '$lib/locales';
 	import { Form, type SegmentConfig } from '$lib/models/ui';
@@ -42,18 +29,6 @@
 		ACTIVITIES = 'activities',
 		CALENDAR = 'calendar'
 	}
-
-	enum ActivityFilterType {
-		ARCHIVED = 'archived',
-		PENDING = 'pending'
-	}
-
-	type ActivityFilter = {
-		applied: boolean;
-		icon: string;
-		label: string;
-		type: ActivityFilterType;
-	};
 
 	let activityView = $state<ActivityView>(ActivityView.ACTIVITIES);
 
@@ -67,7 +42,7 @@
 		},
 		{
 			clicked: () => (activityView = ActivityView.CALENDAR),
-			icon: calendarOutline,
+			icon: calendarClearOutline,
 			indexed: '/organization/activities',
 			label: $t('routes.organization.activities.page.segments.calendar'),
 			selected: activityView === ActivityView.CALENDAR
@@ -75,23 +50,6 @@
 	]);
 
 	const activityItems = $derived($organizationStore?.activities ?? []);
-
-	const activityFilters = $state<ActivityFilter[]>([
-		{
-			applied: true,
-			icon: hourglassOutline,
-			label: $t('routes.organization.activities.page.filters.type.pending'),
-			type: ActivityFilterType.PENDING
-		},
-		{
-			applied: false,
-			icon: archiveOutline,
-			label: $t('routes.organization.activities.page.filters.type.archived'),
-			type: ActivityFilterType.ARCHIVED
-		}
-	]);
-
-	let showFilters = $state<boolean>(false);
 
 	let createActivityModalOpen = $state<boolean>(false);
 
@@ -163,22 +121,9 @@
 			onionInput={onSearchEvents}
 			value={searchActivityValue}
 		></ion-searchbar>
-		<Button icon={filterOutline} clicked={() => (showFilters = true)} />
 	</div>
-	{@render activityFilter()}
-
 	<div class="scroll-viewport">
 		{@render activityList()}
-	</div>
-{/snippet}
-
-{#snippet activityFilter()}
-	<div class="flex flex-wrap items-center gap-2">
-		{#each activityFilters as filter (filter.type)}
-			{#if filter.applied}
-				<Chip label={filter.label} icon={filter.icon} iconEnd={closeOutline} clicked={() => (filter.applied = false)} />
-			{/if}
-		{/each}
 	</div>
 {/snippet}
 
@@ -213,7 +158,7 @@
 			<ion-text class="truncate">{activity.name}</ion-text>
 			<div class="flex flex-wrap items-center gap-2">
 				<div class="flex items-center justify-center gap-1">
-					<ion-icon icon={calendarOutline} color="medium"></ion-icon>
+					<ion-icon icon={calendarClearOutline} color="medium"></ion-icon>
 					<ion-text color="medium" class="text-xs">{format(new TZDate(), 'PPP')}</ion-text>
 				</div>
 				<div class="flex items-center justify-center gap-1">
@@ -226,17 +171,6 @@
 {/snippet}
 
 <!-- Modals -->
-
-<!-- Filters -->
-<Popover open={showFilters} dismissed={() => (showFilters = false)} lazy>
-	<Card title={$t('routes.organization.activities.page.filters.card.title')} classList="m-0">
-		<div class="flex flex-wrap items-center justify-center gap-2">
-			{#each activityFilters as filter (filter.type)}
-				<Chip clicked={() => (filter.applied = !filter.applied)} label={filter.label} selected={filter.applied} />
-			{/each}
-		</div>
-	</Card>
-</Popover>
 
 <!-- Create Activity -->
 <Modal

@@ -2,21 +2,17 @@ import type { Config } from 'sveltekit-i18n';
 
 import I18n from 'sveltekit-i18n';
 
-import type { RouteId } from '$app/types';
-
 const config: Config<{ value?: number | string; value2?: number | string }> = {
 	loaders: [
 		{
 			key: '',
 			loader: async () => import('./en.json'),
-			locale: 'en',
-			routes: ['/' as RouteId]
+			locale: 'en'
 		},
 		{
 			key: '',
 			loader: async () => import('./de.json'),
-			locale: 'de',
-			routes: ['/' as RouteId]
+			locale: 'de'
 		}
 	]
 };

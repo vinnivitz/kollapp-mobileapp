@@ -15,7 +15,6 @@
 		arrowForwardOutline,
 		buildOutline,
 		calendarClearOutline,
-		calendarOutline,
 		cardOutline,
 		cashOutline,
 		createOutline,
@@ -429,7 +428,7 @@
 				<ion-text>{activities[0]?.name}</ion-text>
 			</div>
 			<div class="flex items-center gap-2">
-				<ion-icon icon={calendarOutline}></ion-icon>
+				<ion-icon icon={calendarClearOutline}></ion-icon>
 				<ion-text>
 					{formatDistanceToNow(addDays(new TZDate(), 5), {
 						addSuffix: true,
@@ -454,7 +453,7 @@
 		/>
 		<LabeledItem
 			label={$t('routes.organization.page.event-list.list.manage-events')}
-			icon={calendarOutline}
+			icon={calendarClearOutline}
 			indexed="/organization/activities"
 			clicked={() => goto(resolve('/organization/activities'))}
 		/>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { TZDate } from '@date-fns/tz';
 	import { format, parse } from 'date-fns';
-	import { calendarClearOutline, calendarOutline } from 'ionicons/icons';
+	import { calendarClearOutline } from 'ionicons/icons';
 
 	import CustomItem from './CustomItem.svelte';
 
@@ -76,7 +76,7 @@
 </script>
 
 <div bind:this={containerElement}>
-	<CustomItem {classList} {card} {icon} iconEnd={calendarOutline} clicked={onOpenDatetimeModal} {name}>
+	<CustomItem {classList} {card} {icon} iconEnd={calendarClearOutline} clicked={onOpenDatetimeModal} {name}>
 		<div class="flex flex-col">
 			<ion-text class="ms-3 pt-2 text-xs">{label}</ion-text>
 			<ion-text class="my-2 ms-4 truncate">

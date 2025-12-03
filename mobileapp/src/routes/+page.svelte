@@ -7,7 +7,7 @@
 	import {
 		accessibilityOutline,
 		arrowForwardOutline,
-		calendarOutline,
+		calendarClearOutline,
 		flashOutline,
 		notificationsOffOutline,
 		peopleOutline,
@@ -97,7 +97,7 @@
 				<ion-text>{activity.name}</ion-text>
 			</div>
 			<div class="flex items-center gap-2">
-				<ion-icon icon={calendarOutline}></ion-icon>
+				<ion-icon icon={calendarClearOutline}></ion-icon>
 				<ion-text>
 					{formatDistanceToNow(addDays(new TZDate(), 5), {
 						addSuffix: true,
