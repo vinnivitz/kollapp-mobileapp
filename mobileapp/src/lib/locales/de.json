@@ -15,7 +15,7 @@
                   "heading": "Copyright"
                 },
                 "liability-for-content": {
-                  "content": "Eine Nutzung unserer Website ist grundsätzlich ohne Angabe personenbezogener Daten möglich.\\\\n\\\\n\\\\nSoweit auf unseren Seiten personenbezogene Daten (beispielsweise Name, Anschrift oder E-Mail-Adressen) erhoben werden, erfolgt dies soweit möglich stets auf freiwilliger Basis.\\\\n\\\\n\\\\nEine Weitergabe dieser Daten an Dritte erfolgt ohne Ihre ausdrückliche Zustimmung nicht.\\\\n\\\\n\\\\nWir weisen Sie darauf hin, dass die Datenübertragung im Internet (z.B. bei der Kommunikation über \nE-Mail) kann Sicherheitslücken aufweisen.\\\\n\\\\n\\\\nEin vollständiger Schutz der Daten vor dem Zugriff Dritter ist nicht möglich.\\\\n\\\\n\\\\nDer Nutzung der im Rahmen der Impressumspflicht veröffentlichten Kontaktdaten durch Dritte zur Übersendung von nicht ausdrücklich angeforderter Werbung und Informationsmaterialien wird hiermit ausdrücklich widersprochen.\\\\n\\\\n\\\\nDie Seitenbetreiber behalten sich ausdrücklich rechtliche Schritte im Falle der unverlangten Zusendung von Werbung, etwa durch Spam-Mails, vor.",
+                  "content": "Eine Nutzung unserer Website ist grundsätzlich ohne Angabe personenbezogener Daten möglich.\n\nSoweit auf unseren Seiten personenbezogene Daten (beispielsweise Name, Anschrift oder E-Mail-Adressen) erhoben werden, erfolgt dies soweit möglich stets auf freiwilliger Basis.\n\nEine Weitergabe dieser Daten an Dritte erfolgt ohne Ihre ausdrückliche Zustimmung nicht.\n\nWir weisen Sie darauf hin, dass die Datenübertragung im Internet (z.B. bei der Kommunikation über \nE-Mail) kann Sicherheitslücken aufweisen.\n\nEin vollständiger Schutz der Daten vor dem Zugriff Dritter ist nicht möglich.\n\nDer Nutzung der im Rahmen der Impressumspflicht veröffentlichten Kontaktdaten durch Dritte zur Übersendung von nicht ausdrücklich angeforderter Werbung und Informationsmaterialien wird hiermit ausdrücklich widersprochen.\n\nDie Seitenbetreiber behalten sich ausdrücklich rechtliche Schritte im Falle der unverlangten Zusendung von Werbung, etwa durch Spam-Mails, vor.",
                   "heading": "Haftung für Inhalte"
                 },
                 "liability-for-links": {
@@ -102,7 +102,10 @@
         "page": {
           "no-notifications": "Keine Benachrichtigungen gefunden.",
           "no-unread": "Keine ungelesenen Benachrichtigungen.",
-          "title": "Benachrichtigungen"
+          "title": "Benachrichtigungen",
+          "all": "Alle",
+          "read": "Gelesen",
+          "unread": "Ungelesen"
         }
       },
       "page": {
@@ -315,13 +318,8 @@
             "apply": "Veranstaltung erstellen"
           },
           "filters": {
-            "card": {
-              "title": "Filter"
-            },
-            "type": {
-              "archived": "Archiviert",
-              "pending": "Ausstehend"
-            }
+            "card": {},
+            "type": {}
           },
           "modal": {
             "create-activity": {
@@ -987,6 +985,9 @@
         "heading": "Willkommen bei Kollapp!",
         "subheading": "Die App für alle Kollektive da draußen."
       }
+    },
+    "header": {
+      "back-button": "Zurück"
     }
   },
   "stores": {

@@ -20,21 +20,21 @@
 			clicked: () => (notificationFilter = NotificationFilter.UNREAD),
 			color: 'danger',
 			icon: notificationsCircleOutline,
-			label: 'Unread',
+			label: $t('routes.account.notifications.page.unread'),
 			selected: notificationFilter === NotificationFilter.UNREAD
 		},
 		{
 			clicked: () => (notificationFilter = NotificationFilter.ALL),
 			color: 'secondary',
 			icon: notificationsOutline,
-			label: 'All',
+			label: $t('routes.account.notifications.page.all'),
 			selected: notificationFilter === NotificationFilter.ALL
 		},
 		{
 			clicked: () => (notificationFilter = NotificationFilter.READ),
 			color: 'medium',
 			icon: notificationsOffOutline,
-			label: 'Read',
+			label: $t('routes.account.notifications.page.read'),
 			selected: notificationFilter === NotificationFilter.READ
 		}
 	]);

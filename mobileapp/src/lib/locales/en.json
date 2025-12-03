@@ -242,6 +242,9 @@
         "heading": "Welcome to Kollapp!",
         "subheading": "The app for all the collectives out there."
       }
+    },
+    "header": {
+      "back-button": "Back"
     }
   },
   "stores": {
@@ -334,7 +337,10 @@
         "page": {
           "title": "Notifications",
           "no-unread": "No unread notifications.",
-          "no-notifications": "No notifications found."
+          "no-notifications": "No notifications found.",
+          "unread": "Unread",
+          "all": "All",
+          "read": "Read"
         }
       },
       "privacy-and-security": {
@@ -368,7 +374,7 @@
                 "title": "Disclaimer",
                 "liability-for-content": {
                   "heading": "Liability for content",
-                  "content": "It is generally possible to use our website without providing any personal data.\\\\n\\\\n\\\\nAs far as personal data (e.g. name, address or e-mail addresses) is collected on our pages, this is always done on a voluntary basis, as far as possible.\\\\n\\\\n\\\\nThis data will not be passed on to third parties without your express consent.\\\\n\\\\n\\\\nWe would like to point out that data transmission over the Internet (e.g. when communicating via email) can have security gaps.\\\\n\\\\n\\\\nComplete protection of data from access by third parties is not possible.\\\\n\\\\n\\\\nThe use of contact details published as part of the imprint obligation by third parties to send unsolicited advertising and information materials is hereby expressly prohibited.\\\\n\\\\n\\\\nThe site operators expressly reserve the right to take legal action in the event of unsolicited advertising being sent, such as spam emails."
+                  "content": "It is generally possible to use our website without providing any personal data.\n\nAs far as personal data (e.g. name, address or e-mail addresses) is collected on our pages, this is always done on a voluntary basis, as far as possible.\n\nThis data will not be passed on to third parties without your express consent.\n\nWe would like to point out that data transmission over the Internet (e.g. when communicating via email) can have security gaps.\n\nComplete protection of data from access by third parties is not possible.\n\nThe use of contact details published as part of the imprint obligation by third parties to send unsolicited advertising and information materials is hereby expressly prohibited.\n\nThe site operators expressly reserve the right to take legal action in the event of unsolicited advertising being sent, such as spam emails."
                 },
                 "liability-for-links": {
                   "heading": "Liability for links",
@@ -555,7 +561,7 @@
         "page": {
           "title": "Resend confirmation",
           "card": {
-            "title": "Enter you email",
+            "title": "Enter your email",
             "form": {
               "email": "Email",
               "submit": "Send confirmation email"
@@ -581,7 +587,7 @@
         "page": {
           "title": "Reset password",
           "card": {
-            "title": "Ender your email to reset your password",
+            "title": "Enter email to reset your password",
             "form": {
               "email": "Email",
               "submit": "Get email for password reset"
@@ -700,13 +706,8 @@
             "calendar": "Calendar"
           },
           "filters": {
-            "type": {
-              "pending": "Pending",
-              "archived": "Archived"
-            },
-            "card": {
-              "title": "Filters"
-            }
+            "type": {},
+            "card": {}
           },
           "title": "Events",
           "calendar": {
