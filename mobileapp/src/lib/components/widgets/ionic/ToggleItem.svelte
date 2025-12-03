@@ -7,26 +7,27 @@
 		label: string;
 		card?: boolean;
 		checked?: boolean;
+		classList?: string;
 		disabled?: boolean;
 		element?: HTMLIonToggleElement;
 		icon?: string;
 		indexed?: string;
-		change: (value?: boolean) => void;
+		changed: (value?: boolean) => void;
 	};
 
-	let { card, change, checked, disabled, element, icon, indexed, label }: Properties = $props();
+	let { card, changed, checked, classList, disabled, element, icon, indexed, label }: Properties = $props();
 
 	// workaround to avoid reference linting error
 	void indexed;
 	void element;
 </script>
 
-<CustomItem {icon} {card}>
+<CustomItem {icon} {card} {classList}>
 	<ion-toggle
 		{disabled}
 		bind:this={element}
 		enable-on-off-labels
-		onionChange={(value: CustomEvent<ToggleChangeEventDetail>) => change(value.detail.checked)}
+		onionChange={(value: CustomEvent<ToggleChangeEventDetail>) => changed(value.detail.checked)}
 		{checked}
 		class="ms-4"
 		justify="space-between">{label}</ion-toggle

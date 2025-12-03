@@ -7,6 +7,7 @@
 	type Properties = {
 		label: string;
 		card?: boolean;
+		classList?: string;
 		color?: Colors;
 		disabled?: boolean;
 		icon?: string;
@@ -16,13 +17,14 @@
 		readonly?: boolean;
 		inputIconClicked?: () => void;
 	} & (
-		| { name: string; change?: never; value?: never }
-		| { name?: never; value?: string; change?: (value: string) => void }
+		| { name: string; changed?: never; value?: never }
+		| { name?: never; value?: string; changed?: (value: string) => void }
 	);
 
 	let {
 		card,
-		change,
+		changed,
+		classList = '',
 		color,
 		disabled = false,
 		icon,
@@ -37,11 +39,11 @@
 	}: Properties = $props();
 
 	function onChange(event: CustomEvent<TextareaInputEventDetail>): void {
-		change?.(event.detail.value || '');
+		changed?.(event.detail.value || '');
 	}
 </script>
 
-<CustomItem {color} {icon} {iconEnd} iconClick={inputIconClicked} {card}>
+<CustomItem {color} {icon} {iconEnd} iconClick={inputIconClicked} {card} {classList}>
 	<ion-textarea
 		{readonly}
 		{name}

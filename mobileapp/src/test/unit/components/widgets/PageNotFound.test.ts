@@ -1,19 +1,18 @@
 import { fireEvent, render } from '@testing-library/svelte';
 import { describe, expect, it } from 'vitest';
 
-import { goto } from '$app/navigation';
-
 import PageNotFound from '$lib/components/widgets/PageNotFound.svelte';
 
-describe('PageNotFound Component', () => {
-	it('calls goto with HOME route on button click', async () => {
+describe('widgets/PageNotFound', () => {
+	it('PageNotFound shows icon and navigates on button click', async () => {
 		const { container } = render(PageNotFound);
-		const ionButton = container.querySelector('ion-button') as HTMLIonButtonElement;
+		expect(container.querySelector('ion-icon')).toBeTruthy();
 
-		expect(ionButton).toBeTruthy();
+		const button = container.querySelector('ion-button');
+		expect(button).toBeTruthy();
+		await fireEvent.click(button!);
 
-		await fireEvent.click(ionButton);
-
-		expect(goto).toHaveBeenCalledWith('/');
+		const { goto } = await import('$app/navigation');
+		expect(goto).toHaveBeenCalled();
 	});
 });

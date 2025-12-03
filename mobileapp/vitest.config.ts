@@ -1,3 +1,4 @@
+import { svelteTesting } from '@testing-library/svelte/vite';
 import { defineConfig, mergeConfig } from 'vitest/config';
 
 import viteConfig from './vite.config';
@@ -5,6 +6,7 @@ import viteConfig from './vite.config';
 export default mergeConfig(
 	viteConfig,
 	defineConfig({
+		plugins: [svelteTesting()],
 		test: {
 			coverage: {
 				enabled: true,

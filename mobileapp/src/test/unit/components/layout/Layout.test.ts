@@ -1,249 +1,136 @@
-/* eslint-disable unicorn/consistent-function-scoping */
-
-import type { Readable } from 'svelte/store';
-
-import { fireEvent, render } from '@testing-library/svelte';
+import { render, waitFor } from '@testing-library/svelte';
 import { createRawSnippet } from 'svelte';
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { goto } from '$app/navigation';
 
 import Layout from '$lib/components/layout/Layout.svelte';
+import { organizationStore, userStore } from '$lib/stores';
 
-let storesInitialized = true;
-let developmentMode = false;
-const navigateMock = vi.hoisted(() => vi.fn());
-const fadeMock = vi.hoisted(() =>
-	vi.fn((_node: Element, options?: { delay?: number; duration?: number }) => ({
-		delay: options?.delay ?? 0,
-		duration: options?.duration ?? 0
-	}))
-);
+const childHtml = 'Content';
 
-const makeReadable = (value: boolean): Readable<boolean> => ({
-	subscribe: (run: (v: boolean) => void) => {
-		run(value);
-		return () => {};
-	}
-});
+const children = createRawSnippet(() => ({ render: () => `<div>${childHtml}</div>` }));
 
-function registerMocks(): void {
-	vi.mock('$app/environment', () => ({
-		get dev() {
-			return developmentMode;
-		}
-	}));
-
-	vi.mock('svelte/transition', () => ({
-		fade: fadeMock
-	}));
-
-	vi.mock('$lib/components/layout/Header.svelte', () => ({
-		default: () => ({
-			$$render: () => `<div data-testid="header-stub"></div>`
-		})
-	}));
-
-	vi.mock('$lib/components/layout/Menu.svelte', () => ({
-		default: () => ({
-			$$render: () => `<div data-testid="menu-stub">Menu</div>`,
-			navigate: navigateMock
-		})
-	}));
-
-	vi.mock('$lib/components/widgets/ionic/LabeledItem.svelte', () => ({
-		default: () => ({
-			$$render: () => `<div data-testid="labeled-item-stub">LabeledItem</div>`
-		})
-	}));
-
-	vi.mock('$lib/stores', () => ({
-		initializationStore: {
-			subscribe: (run: (v: { loadedCache: Readable<boolean>; loadedServer: Readable<boolean> }) => void) => {
-				run({
-					loadedCache: makeReadable(storesInitialized),
-					loadedServer: makeReadable(storesInitialized)
-				});
-				return () => {};
-			}
-		},
-		organizationStore: {
-			init: vi.fn().mockResolvedValue({})
-		},
-		userStore: {
-			init: vi.fn().mockResolvedValue({})
-		}
-	}));
-}
-
-describe('Layout Component', () => {
-	beforeAll(() => registerMocks());
-
+describe('Layout', () => {
 	beforeEach(() => {
-		storesInitialized = true;
-		developmentMode = false;
-		fadeMock.mockClear();
+		vi.clearAllMocks();
+	});
+	afterEach(() => {
+		vi.resetModules();
+	});
+	it('renders children', () => {
+		const { container } = render(Layout, {
+			props: { children, hideMenu: false, loading: false, scrollable: true, title: 'Any' }
+		});
+		const page = container.querySelector('#menu') as HTMLElement;
+		const contentDiv = page.querySelector('ion-content div')?.textContent?.trim();
+		expect(contentDiv).toBe(childHtml);
+	});
+	it('renders Header and Menu when title present and not hidden', () => {
+		const { container } = render(Layout, {
+			props: { children, hideMenu: false, loading: false, scrollable: true, title: 'Any' }
+		});
+
+		expect(container.querySelector('ion-header')).toBeTruthy();
+		expect(container.querySelector('ion-menu')).toBeTruthy();
 	});
 
-	it('renders child content', () => {
-		const childText = 'Hello, world!';
-		const properties = {
-			children: createRawSnippet(() => ({ render: () => `<p>${childText}</p>` })),
-			title: 'Test Title'
-		};
-
-		const { container } = render(Layout, { props: properties });
-		const ionContent = container.querySelector('ion-content');
-
-		expect(ionContent?.textContent).toContain(childText);
+	it('does not render content while loading is true', () => {
+		const { container } = render(Layout, {
+			props: { children, loading: true, title: 'Any' }
+		});
+		const page = container.querySelector('#menu') as HTMLElement;
+		expect(page.querySelector('ion-content')).toBeFalsy();
 	});
 
-	it('applies no-overflow class when scrollable is false', () => {
-		const properties = { scrollable: false, title: 'Test Title' };
-
-		const { container } = render(Layout, { props: properties });
-		const ionContent = container.querySelector('ion-content');
-
-		expect(ionContent?.classList.contains('no-overflow')).toBeTruthy();
+	it('hides Menu when hideMenu is true', () => {
+		const { container } = render(Layout, {
+			props: { children, hideMenu: true, title: 'Any' }
+		});
+		expect(container.querySelector('ion-menu')).toBeFalsy();
 	});
 
-	it('does not render Header when hideLayout is true', () => {
-		const properties = { hideLayout: true, title: 'Test Title' };
-		const { queryByTestId } = render(Layout, { props: properties });
-
-		expect(queryByTestId('header-stub')).toBeFalsy();
+	it('does not render Header when title is missing', () => {
+		const { container } = render(Layout, {
+			props: { children, hideMenu: false, loading: false, scrollable: true }
+		});
+		expect(container.querySelector('ion-header')).toBeFalsy();
 	});
 
-	it('does not render Menu when hideMenu is true', () => {
-		const properties = { hideMenu: true, title: 'Test Title' };
-		const { queryByTestId } = render(Layout, { props: properties });
+	it('renders content only when loaded and not loading', async () => {
+		const { container, rerender } = render(Layout, {
+			props: { children, loading: true, title: 'Any' }
+		});
+		const page = container.querySelector('#menu') as HTMLElement;
+		expect(page.querySelector('ion-content')).toBeFalsy();
 
-		expect(queryByTestId('menu-stub')).toBeFalsy();
+		await rerender({ children, loading: false, title: 'Any' });
+		expect(page.querySelector('ion-content')).toBeTruthy();
 	});
 
-	it('does not render content if stores are not initialized', () => {
-		storesInitialized = false;
-		const properties = { hideLayout: false, hideMenu: false, title: 'Test Title' };
-		const { container } = render(Layout, { props: properties });
-
-		expect(container.querySelector('ion-content')).toBeFalsy();
+	it('applies no-overflow when scrollable=false', () => {
+		const { container } = render(Layout, {
+			props: { children, loading: false, scrollable: false, title: 'Any' }
+		});
+		const content = (container.querySelector('#menu') as HTMLElement).querySelector('ion-content') as HTMLElement;
+		expect(content.className).toContain('no-overflow');
 	});
 
-	it('renders ion-refresher and calls onRefresh when refreshed', async () => {
-		const onRefresh = vi.fn().mockResolvedValue({});
-		const properties = { onRefresh, title: 'Test Title' };
-		const { container } = render(Layout, { props: properties });
-		const refresherElement = container.querySelector('ion-refresher') as HTMLElement;
-
-		expect(refresherElement).toBeTruthy();
-
-		await fireEvent(refresherElement, new CustomEvent('ionRefresh'));
-
-		expect(onRefresh).toHaveBeenCalled();
+	it('does not apply no-overflow when scrollable=true (default)', () => {
+		const { container } = render(Layout, {
+			props: { children, loading: false, title: 'Any' }
+		});
+		const content = (container.querySelector('#menu') as HTMLElement).querySelector('ion-content') as HTMLElement;
+		expect(content.className).not.toContain('no-overflow');
 	});
 
-	it('renders ion-refresher, calls onRefresh, and calls refresher.complete()', async () => {
-		const onRefresh = vi.fn().mockResolvedValue({});
-		const properties = { onRefresh, title: 'Test Title' };
-		const { container } = render(Layout, { props: properties });
-		const refresherElement = container.querySelector('ion-refresher') as HTMLIonRefresherElement;
+	it('fires default refresh: calls user/org init and completes refresher', async () => {
+		const { container } = render(Layout, {
+			props: { children, loading: false, title: 'Any' }
+		});
 
-		expect(refresherElement).toBeTruthy();
+		const refresher = (container.querySelector('#menu') as HTMLElement).querySelector(
+			'ion-refresher'
+		) as HTMLIonRefresherElement;
+		expect(refresher).toBeTruthy();
 
-		refresherElement.complete = vi.fn();
-
-		await fireEvent(refresherElement, new CustomEvent('ionRefresh'));
-
-		expect(onRefresh).toHaveBeenCalled();
-		expect(refresherElement.complete).toHaveBeenCalled();
+		refresher.dispatchEvent(new CustomEvent('ionRefresh', { detail: {} }));
+		await waitFor(() => {
+			expect(userStore.init).toHaveBeenCalled();
+			expect(organizationStore.init).toHaveBeenCalled();
+			expect(refresher.complete).toHaveBeenCalled();
+		});
 	});
 
-	it('does not render content when loading is true', () => {
-		const properties = { loading: true, title: 'Test Title' };
-		const { container } = render(Layout, { props: properties });
-
-		expect(container.querySelector('ion-content')).toBeFalsy();
+	it('clicking menu items triggers navigation via Menu.navigate', async () => {
+		const { container } = render(Layout, {
+			props: { children, hideMenu: false, loading: false, title: 'Any' }
+		});
+		const items = [...container.querySelectorAll('ion-list ion-item')] as HTMLElement[];
+		expect(items.length).toBeGreaterThanOrEqual(3);
+		for (const element of items) {
+			element.click();
+		}
+		await waitFor(() => {
+			expect(goto).toHaveBeenCalled();
+		});
 	});
 
-	it('renders Header when hideLayout is false', () => {
-		const properties = { title: 'Test Title' };
-		const { container } = render(Layout, { props: properties });
+	it('fires custom onRefresh and completes refresher', async () => {
+		const onRefresh = vi.fn().mockResolvedValue(vi.fn());
+		const { container } = render(Layout, {
+			props: { children, loading: false, onRefresh, title: 'Any' }
+		});
 
-		expect(container.querySelector('.ion-page')).toBeTruthy();
-	});
-
-	it('renders showcase menu item when dev is true', () => {
-		developmentMode = true;
-		const properties = { title: 'Test Title' };
-		const { container } = render(Layout, { props: properties });
-
-		expect(container.querySelector('.ion-page')).toBeTruthy();
-	});
-
-	it('does not render showcase menu item when dev is false', () => {
-		developmentMode = false;
-		const properties = { title: 'Test Title' };
-		const { container } = render(Layout, { props: properties });
-
-		expect(container.querySelector('.ion-page')).toBeTruthy();
-	});
-
-	it('renders ion-content when loaded and not loading', () => {
-		storesInitialized = true;
-		const properties = { loading: false, title: 'Test Title' };
-		const { container } = render(Layout, { props: properties });
-
-		const ionContent = container.querySelector('ion-content');
-		expect(ionContent).toBeTruthy();
-	});
-
-	it('renders ion-content with ion-padding class', () => {
-		const properties = { title: 'Test Title' };
-		const { container } = render(Layout, { props: properties });
-
-		const ionContent = container.querySelector('ion-content');
-		expect(ionContent?.classList.contains('ion-padding')).toBeTruthy();
-	});
-
-	it('renders ion-refresher with slot="fixed"', () => {
-		const properties = { title: 'Test Title' };
-		const { container } = render(Layout, { props: properties });
-
-		const refresher = container.querySelector('ion-refresher');
-		expect(refresher?.getAttribute('slot')).toBe('fixed');
-	});
-
-	it('renders children inside ion-content', () => {
-		const childText = 'Test Child Content';
-		const properties = {
-			children: createRawSnippet(() => ({ render: () => `<div class="test-child">${childText}</div>` })),
-			title: 'Test Title'
-		};
-		const { container } = render(Layout, { props: properties });
-
-		const ionContent = container.querySelector('ion-content');
-		expect(ionContent?.textContent).toContain(childText);
-	});
-
-	it('renders Menu only when both hideLayout and hideMenu are false', () => {
-		const properties = { hideLayout: false, hideMenu: false, title: 'Test Title' };
-		const { container } = render(Layout, { props: properties });
-
-		const ionPage = container.querySelector('.ion-page');
-		expect(ionPage).toBeTruthy();
-	});
-
-	it('does not render Menu when hideLayout is true', () => {
-		const properties = { hideLayout: true, hideMenu: false, title: 'Test Title' };
-		const { container } = render(Layout, { props: properties });
-
-		const ionPage = container.querySelector('.ion-page');
-		expect(ionPage).toBeTruthy();
-	});
-
-	it('does not render Menu when hideMenu is true', () => {
-		const properties = { hideLayout: false, hideMenu: true, title: 'Test Title' };
-		const { container } = render(Layout, { props: properties });
-
-		const ionPage = container.querySelector('.ion-page');
-		expect(ionPage).toBeTruthy();
+		const refresher = (container.querySelector('#menu') as HTMLElement).querySelector(
+			'ion-refresher'
+		) as HTMLIonRefresherElement;
+		refresher.dispatchEvent(new CustomEvent('ionRefresh', { detail: {} }));
+		await waitFor(() => {
+			expect(onRefresh).toHaveBeenCalled();
+			expect(userStore.init).not.toHaveBeenCalled();
+			expect(organizationStore.init).not.toHaveBeenCalled();
+			expect(refresher.complete).toHaveBeenCalled();
+		});
 	});
 });

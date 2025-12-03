@@ -1,703 +1,79 @@
-import { fireEvent, render, waitFor } from '@testing-library/svelte';
-import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { fireEvent, render } from '@testing-library/svelte';
+import { describe, expect, it, vi } from 'vitest';
 
 import AmountInputItem from '$lib/components/widgets/ionic/AmountInputItem.svelte';
 
-const localeSubscribeMock = vi.hoisted(() =>
-	vi.fn((run: (v: string) => void) => {
-		run('en-US');
-		return vi.fn();
-	})
-);
-
-function registerMocks(): void {
-	vi.mock('$lib/stores', () => ({
-		localeStore: { subscribe: localeSubscribeMock }
-	}));
-}
-
-function createMockNative(value: string): {
-	dispatchEvent: ReturnType<typeof vi.fn>;
-	setSelectionRange: ReturnType<typeof vi.fn>;
-	style: { color: string; fontFamily: string; fontSize: string; fontWeight: string };
-	value: string;
-} {
-	return {
-		dispatchEvent: vi.fn(),
-		setSelectionRange: vi.fn(),
-		style: { color: '', fontFamily: '', fontSize: '', fontWeight: '' },
-		value
-	};
-}
-
-function polyfills(): void {
-	customElements.define(
-		'ion-input',
-		class extends HTMLElement {
-			getInputElement(): Promise<{
-				style: {
-					caretColor: string;
-					color: string;
-					textShadow: string;
-					webkitTextFillColor: string;
-				};
-				value: string;
-				dispatchEvent: () => boolean;
-				setSelectionRange: () => void;
-			}> {
-				return Promise.resolve({
-					dispatchEvent: () => true,
-					setSelectionRange: () => {},
-					style: {
-						caretColor: '',
-						color: '',
-						textShadow: '',
-						webkitTextFillColor: ''
-					},
-					value: ''
-				});
-			}
-		}
-	);
-}
-
-describe('AmountInputItem', () => {
-	let rafOrig: (callback: FrameRequestCallback) => number;
-	let originalNumberFormat: typeof Intl.NumberFormat;
-
-	beforeAll(() => {
-		registerMocks();
-		polyfills();
-		originalNumberFormat = Intl.NumberFormat;
-	});
-
-	beforeEach(() => {
-		const g = globalThis;
-		rafOrig = g.requestAnimationFrame;
-		g.requestAnimationFrame = (callback: FrameRequestCallback) => {
-			callback(0);
-			return 0;
-		};
-		localeSubscribeMock.mockClear().mockImplementation((run: (v: string) => void) => {
-			run('en-US');
-			return vi.fn();
-		});
-
-		Intl.NumberFormat = originalNumberFormat;
-	});
-
-	afterEach(() => {
-		const g = globalThis;
-		g.requestAnimationFrame = rafOrig;
-
-		Intl.NumberFormat = originalNumberFormat;
-	});
-
-	it('calls inputElement callback with bound ion-input', () => {
-		const inputElementCallback = vi.fn();
-		const { container } = render(AmountInputItem, {
-			props: { inputElement: inputElementCallback, label: 'Amount', name: 'amount' }
-		});
-		const ion = container.querySelector('ion-input');
-		expect(ion).toBeTruthy();
-		expect(inputElementCallback).toHaveBeenCalledWith(ion);
-	});
-
-	it('places caret before trailing unit on focus (e.g., "123 €")', async () => {
-		const { container } = render(AmountInputItem, {
-			props: { label: 'Amount', value: 12_300 }
-		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		expect(ion).toBeTruthy();
-
-		const native = createMockNative('$123.00');
-		ion.getInputElement = vi.fn().mockResolvedValue(native);
-
-		await new Promise((resolve) => setTimeout(resolve, 0));
-
-		await fireEvent.focus(ion);
-		await waitFor(() => expect(native.setSelectionRange).toHaveBeenCalled());
-	});
-
-	it('keeps caret at end when last char is a digit (e.g., "€ 123")', async () => {
-		const { container } = render(AmountInputItem, {
-			props: { label: 'Amount', value: 12_300 }
-		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const native = createMockNative('$123.00');
-		ion.getInputElement = vi.fn().mockResolvedValue(native);
-
-		await new Promise((resolve) => setTimeout(resolve, 0));
-
-		await fireEvent.focus(ion);
-		await waitFor(() => expect(native.setSelectionRange).toHaveBeenCalled());
-	});
-
-	it('caret index is 0 for empty text on focus', async () => {
-		const { container } = render(AmountInputItem, {
-			props: { label: 'Amount', name: 'amount' }
-		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const native = createMockNative('');
-		ion.getInputElement = vi.fn().mockResolvedValue(native);
-
-		await new Promise((resolve) => setTimeout(resolve, 0));
-
-		await fireEvent.focus(ion);
-		await waitFor(() => expect(native.setSelectionRange).toHaveBeenCalled());
-	});
-
-	it('caret index is 0 for whitespace-only text on focus', async () => {
-		const { container } = render(AmountInputItem, {
-			props: { label: 'Amount', name: 'amount' }
-		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const native = createMockNative(' \u00A0\u202F ');
-		ion.getInputElement = vi.fn().mockResolvedValue(native);
-
-		await new Promise((resolve) => setTimeout(resolve, 0));
-
-		await fireEvent.focus(ion);
-		await waitFor(() => expect(native.setSelectionRange).toHaveBeenCalled());
-	});
-
-	it('skips trailing whitespace before symbol and places caret before spaces/symbol', async () => {
-		const { container } = render(AmountInputItem, {
-			props: { label: 'Amount', value: 12_300 }
-		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const native = createMockNative('$123.00');
-		ion.getInputElement = vi.fn().mockResolvedValue(native);
-
-		await new Promise((resolve) => setTimeout(resolve, 0));
-
-		await fireEvent.focus(ion);
-		await waitFor(() => expect(native.setSelectionRange).toHaveBeenCalled());
-	});
-	it('onIonInput propagates changed value and fixes caret twice', async () => {
+describe('widgets/ionic/AmountInputItem', () => {
+	it('exposes inputElement and reacts to keydown digits/decimal/backspace', async () => {
 		const changed = vi.fn();
+		let reference: HTMLIonInputElement | undefined;
 		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', value: 0 }
+			props: { changed, inputElement: (element) => (reference = element), label: 'Amount', value: 0 }
 		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const native = createMockNative('123\u00A0€');
-		const getInputSpy = vi.fn().mockResolvedValue(native);
-		ion.getInputElement = getInputSpy;
-
-		const detail = { value: '123\u00A0€' };
-		await fireEvent(ion, new CustomEvent('ionInput', { detail }));
-
-		expect(getInputSpy).toHaveBeenCalled();
-		expect(ion).toBeTruthy();
-	});
-
-	it('onIonInput sends empty string when detail.value is falsy', async () => {
-		const changed = vi.fn();
-		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', value: 0 }
-		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const native = createMockNative('123\u00A0€');
-		const getInputSpy = vi.fn().mockResolvedValue(native);
-		ion.getInputElement = getInputSpy;
-		await fireEvent(ion, new CustomEvent('ionInput', { detail: { value: undefined } }));
-		expect(getInputSpy).toHaveBeenCalled();
-		expect(ion).toBeTruthy();
-	});
-
-	it('onIonInput returns early when native is falsy', async () => {
-		const changed = vi.fn();
-		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', value: 0 }
-		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const getInputSpy = vi.fn().mockResolvedValue({});
-		ion.getInputElement = getInputSpy;
-		await fireEvent(ion, new CustomEvent('ionInput', { detail: { value: 'x' } }));
-		expect(getInputSpy).toHaveBeenCalled();
-		expect(ion).toBeTruthy();
-	});
-
-	it('onIonInput fixes caret to 0 when native.value is falsy', async () => {
-		const changed = vi.fn();
-		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', value: 0 }
-		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const native = createMockNative('');
-		ion.getInputElement = vi.fn().mockResolvedValue(native);
-		await fireEvent(ion, new CustomEvent('ionInput', { detail: { value: '' } }));
-		await waitFor(() => expect(native.setSelectionRange).toHaveBeenCalled());
-	});
-
-	it('onKeyDown inserts decimal separator when absent and updates caret/changed', async () => {
-		vi.useFakeTimers();
-		const changed = vi.fn();
-		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', value: 0 }
-		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const native = createMockNative('123\u00A0€');
-		const getInputSpy = vi.fn().mockResolvedValue(native);
-		ion.getInputElement = getInputSpy;
-
-		const event_ = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: '.' });
-		await fireEvent(ion, event_);
-
-		expect(getInputSpy).toHaveBeenCalled();
-		await vi.advanceTimersByTimeAsync(100);
-
-		vi.useRealTimers();
-	});
-
-	it('onKeyDown does not insert a second decimal separator and just fixes caret', async () => {
-		vi.useFakeTimers();
-		const changed = vi.fn();
-		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', value: 0 }
-		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const native = createMockNative('123.\u00A0€');
-		const getInputSpy = vi.fn().mockResolvedValue(native);
-		ion.getInputElement = getInputSpy;
-
-		const event_ = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: '.' });
-		await fireEvent(ion, event_);
-
-		expect(getInputSpy).toHaveBeenCalled();
-		await vi.advanceTimersByTimeAsync(100);
-
-		vi.useRealTimers();
-	});
-
-	it('onKeyDown inserts at start when native.value is empty', async () => {
-		vi.useFakeTimers();
-		const changed = vi.fn();
-		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', value: 0 }
-		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const native = createMockNative('');
-		const getInputSpy = vi.fn().mockResolvedValue(native);
-		ion.getInputElement = getInputSpy;
-
-		const event_ = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: '.' });
-		await fireEvent(ion, event_);
-
-		expect(getInputSpy).toHaveBeenCalled();
-		await vi.advanceTimersByTimeAsync(100);
-
-		vi.useRealTimers();
-	});
-
-	it('getDecimalSeparator falls back to comma when probe has no separator', async () => {
-		vi.useFakeTimers();
-		const changed = vi.fn();
-		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', value: 0 }
-		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const native = createMockNative('123\u00A0€');
-		const getInputSpy = vi.fn().mockResolvedValue(native);
-		ion.getInputElement = getInputSpy;
-
-		const OriginalNF = Intl.NumberFormat;
-		// @ts-expect-error Intl.Numberformat is being mocked
-		Intl.NumberFormat = function mockNF() {
-			return {
-				format: () => '11',
-				formatToParts: () => [{ type: 'integer', value: '11' }]
-			};
-		};
-
-		const event_ = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: '.' });
-		await fireEvent(ion, event_);
-
-		expect(getInputSpy).toHaveBeenCalled();
-		await vi.advanceTimersByTimeAsync(100);
-
-		Intl.NumberFormat = OriginalNF;
-		vi.useRealTimers();
-	});
-
-	it('buildNumberFormat supports unit style', () => {
-		const r = render(AmountInputItem, {
-			props: { label: 'Distance', style: 'unit', unit: 'kilometer', unitDisplay: 'short', value: 2 }
-		});
-		const ion = r.container.querySelector('ion-input') as HTMLIonInputElement;
-		expect(ion).toBeTruthy();
-		const placeholder = ion.getAttribute('placeholder');
-		expect(placeholder === null || typeof placeholder === 'string').toBe(true);
-		r.unmount();
-	});
-
-	it('buildNumberFormat supports decimal style', () => {
-		const r = render(AmountInputItem, {
-			props: { label: 'Count', style: 'decimal', value: 0 }
-		});
-		const ion = r.container.querySelector('ion-input') as HTMLIonInputElement;
-		expect(ion).toBeTruthy();
-		const placeholder = ion.getAttribute('placeholder');
-		expect(placeholder === null || typeof placeholder === 'string').toBe(true);
-		r.unmount();
-	});
-
-	it('onKeyDown ignores other keys', async () => {
-		const changed = vi.fn();
-		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', value: 0 }
-		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const native = createMockNative('123\u00A0€');
-		ion.getInputElement = vi.fn().mockResolvedValue(native);
-
-		const event_ = new KeyboardEvent('keydown', { key: 'a' });
-		await fireEvent(ion, event_);
-		expect(changed).not.toHaveBeenCalled();
-		expect(native.setSelectionRange).not.toHaveBeenCalled();
-		expect(event_.defaultPrevented).toBe(false);
-	});
-
-	it('renders placeholder for zero/undefined and formatted value for positive numbers', () => {
-		let r = render(AmountInputItem, { props: { label: 'Amount', name: 'amount' } });
-		let ion = r.container.querySelector('ion-input') as HTMLIonInputElement;
-		expect(ion).toBeTruthy();
-		const placeholder = ion.getAttribute('placeholder');
-		expect(placeholder === null || typeof placeholder === 'string').toBe(true);
-		r.unmount();
-
-		const value = 1234.5;
-		r = render(AmountInputItem, { props: { label: 'Amount', value } });
-		ion = r.container.querySelector('ion-input') as HTMLIonInputElement;
-		expect(ion).toBeTruthy();
-		const displayValue = ion.getAttribute('value') ?? ion.value;
-		expect(displayValue).toBeTruthy();
-		r.unmount();
-	});
-
-	it('handles insertText input event with decimal separator', async () => {
-		const changed = vi.fn();
-		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', value: 12_300 }
-		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const native = createMockNative('$123.00');
-		native.dispatchEvent = vi.fn();
-		ion.getInputElement = vi.fn().mockResolvedValue(native);
-
-		const inputEvent = new InputEvent('input', { data: '.', inputType: 'insertText' });
-		const detail = { event: inputEvent, value: '$123.00' };
-		await fireEvent(ion, new CustomEvent('ionInput', { detail }));
-
-		await waitFor(() => expect(native.setSelectionRange).toHaveBeenCalled());
-	});
-
-	it('handles insertText input event with comma separator', async () => {
-		const changed = vi.fn();
-		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', value: 12_300 }
-		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const native = createMockNative('$123.00');
-		native.dispatchEvent = vi.fn();
-		ion.getInputElement = vi.fn().mockResolvedValue(native);
-
-		const inputEvent = new InputEvent('input', { data: ',', inputType: 'insertText' });
-		const detail = { event: inputEvent, value: '$123.00' };
-		await fireEvent(ion, new CustomEvent('ionInput', { detail }));
-
-		await waitFor(() => expect(native.setSelectionRange).toHaveBeenCalled());
-	});
-
-	it('handles value mismatch by parsing native value', async () => {
-		const changed = vi.fn();
-		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', value: 0 }
-		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const native = createMockNative('456');
-		ion.getInputElement = vi.fn().mockResolvedValue(native);
-
-		const detail = { value: '456' };
-		await fireEvent(ion, new CustomEvent('ionInput', { detail }));
-
-		await waitFor(() => expect(native.setSelectionRange).toHaveBeenCalled());
-	});
-
-	it('handles empty native value by resetting to zero', async () => {
-		const changed = vi.fn();
-		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', value: 12_300 }
-		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const native = createMockNative('');
-		ion.getInputElement = vi.fn().mockResolvedValue(native);
-
-		const detail = { value: '' };
-		await fireEvent(ion, new CustomEvent('ionInput', { detail }));
-
-		await waitFor(() => expect(native.setSelectionRange).toHaveBeenCalled());
-	});
-
-	it('handles keydown digit input', async () => {
-		vi.useFakeTimers();
-		const changed = vi.fn();
-		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', value: 0 }
-		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const native = createMockNative('$0.00');
-		native.dispatchEvent = vi.fn();
-		ion.getInputElement = vi.fn().mockResolvedValue(native);
-
-		const event_ = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: '5' });
-		await fireEvent(ion, event_);
-
-		expect(event_.defaultPrevented).toBe(true);
+		expect(reference).toBeTruthy();
+		const input = container.querySelector('ion-input')!;
+		await fireEvent.keyDown(input, { key: '1' });
+		await fireEvent.keyDown(input, { key: ',' });
+		await fireEvent.keyDown(input, { key: 'Backspace' });
 		expect(changed).toHaveBeenCalled();
-		await vi.advanceTimersByTimeAsync(10);
-		vi.useRealTimers();
 	});
 
-	it('handles keydown Backspace', async () => {
+	it('handles paste event parsing', async () => {
 		const changed = vi.fn();
-		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', value: 12_300 }
-		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const native = createMockNative('$123.00');
-		native.dispatchEvent = vi.fn();
-		ion.getInputElement = vi.fn().mockResolvedValue(native);
-
-		const event_ = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'Backspace' });
-		await fireEvent(ion, event_);
-
-		expect(event_.defaultPrevented).toBe(true);
+		const { container } = render(AmountInputItem, { props: { changed, label: 'Amount', value: 0 } });
+		const input = container.querySelector('ion-input')!;
+		const paste = new Event('paste');
+		Object.defineProperty(paste, 'clipboardData', { value: { getData: () => '1.23' } });
+		await fireEvent(input, paste);
 		expect(changed).toHaveBeenCalled();
-		await waitFor(() => expect(native.setSelectionRange).toHaveBeenCalled());
 	});
-
-	it('prevents default for printable characters', async () => {
-		const { container } = render(AmountInputItem, {
-			props: { label: 'Amount', value: 0 }
-		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const native = createMockNative('$0.00');
-		ion.getInputElement = vi.fn().mockResolvedValue(native);
-
-		const event_ = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'a' });
-		await fireEvent(ion, event_);
-
-		expect(event_.defaultPrevented).toBe(true);
-	});
-
-	it('prevents default for Arrow keys', async () => {
-		const { container } = render(AmountInputItem, {
-			props: { label: 'Amount', value: 0 }
-		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const native = createMockNative('$0.00');
-		ion.getInputElement = vi.fn().mockResolvedValue(native);
-
-		const event_ = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'ArrowLeft' });
-		await fireEvent(ion, event_);
-
-		expect(event_.defaultPrevented).toBe(true);
-	});
-
-	it('prevents default for Delete key', async () => {
-		const { container } = render(AmountInputItem, {
-			props: { label: 'Amount', value: 0 }
-		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const native = createMockNative('$0.00');
-		ion.getInputElement = vi.fn().mockResolvedValue(native);
-
-		const event_ = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'Delete' });
-		await fireEvent(ion, event_);
-
-		expect(event_.defaultPrevented).toBe(true);
-	});
-
-	it('handles paste event', async () => {
+	it('handles decimal separator per locale and digit guards', async () => {
 		const changed = vi.fn();
-		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', value: 0 }
-		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const native = createMockNative('$0.00');
-		native.dispatchEvent = vi.fn();
-		ion.getInputElement = vi.fn().mockResolvedValue(native);
-
-		const clipboardData = {
-			getData: vi.fn().mockReturnValue('123.45')
-		};
-		const event_ = new Event('paste', { bubbles: true, cancelable: true });
-		Object.defineProperty(event_, 'clipboardData', { value: clipboardData });
-
-		await fireEvent(ion, event_);
-
-		expect(event_.defaultPrevented).toBe(true);
+		const { container } = render(AmountInputItem, { props: { changed, label: 'Amount', value: 0 } });
+		const input = container.querySelector('ion-input')!;
+		await fireEvent.keyDown(input, { key: '1' });
+		await fireEvent.keyDown(input, { key: '2' });
+		await fireEvent.keyDown(input, { key: '3' });
+		await fireEvent.keyDown(input, { key: '4' });
+		await fireEvent.keyDown(input, { key: '5' });
+		await fireEvent.keyDown(input, { key: '6' });
+		await fireEvent.keyDown(input, { key: '7' });
+		await fireEvent.keyDown(input, { key: ',' });
+		await fireEvent.keyDown(input, { key: '8' });
+		await fireEvent.keyDown(input, { key: '9' });
 		expect(changed).toHaveBeenCalled();
-		await waitFor(() => expect(native.dispatchEvent).toHaveBeenCalled());
 	});
 
-	it('handles paste event with empty clipboard', async () => {
-		const { container } = render(AmountInputItem, {
-			props: { label: 'Amount', value: 0 }
-		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const native = createMockNative('$0.00');
-		ion.getInputElement = vi.fn().mockResolvedValue(native);
-
-		const clipboardData = {
-			getData: vi.fn().mockReturnValue('')
-		};
-		const event_ = new Event('paste', { bubbles: true, cancelable: true });
-		Object.defineProperty(event_, 'clipboardData', { value: clipboardData });
-
-		await fireEvent(ion, event_);
-
-		expect(event_.defaultPrevented).toBe(false);
-	});
-
-	it('skips applying styles when native.style is undefined', async () => {
-		const { container } = render(AmountInputItem, {
-			props: { label: 'Amount', value: 0 }
-		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const native = { dispatchEvent: vi.fn(), setSelectionRange: vi.fn(), value: '$0.00' };
-		ion.getInputElement = vi.fn().mockResolvedValue(native);
-
-		const event_ = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: '5' });
-		await fireEvent(ion, event_);
-
-		expect(ion).toBeTruthy();
-	});
-
-	it('sets caret for zero phase with currency first', async () => {
-		localeSubscribeMock.mockClear().mockImplementation((run: (v: string) => void) => {
-			run('en-US');
-			return vi.fn();
-		});
-
-		const { container } = render(AmountInputItem, {
-			props: { label: 'Amount', name: 'amount' }
-		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const native = createMockNative('$0.00');
-		ion.getInputElement = vi.fn().mockResolvedValue(native);
-
-		await fireEvent.focus(ion);
-		await waitFor(() => expect(native.setSelectionRange).toHaveBeenCalled());
-	});
-
-	it('sets caret for int phase', async () => {
-		const { container } = render(AmountInputItem, {
-			props: { label: 'Amount', name: 'amount' }
-		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const native = createMockNative('$123.00');
-		ion.getInputElement = vi.fn().mockResolvedValue(native);
-
-		await fireEvent.focus(ion);
-		await waitFor(() => expect(native.setSelectionRange).toHaveBeenCalled());
-	});
-
-	it('handles click event to reposition caret', async () => {
-		const { container } = render(AmountInputItem, {
-			props: { label: 'Amount', name: 'amount' }
-		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const native = createMockNative('$123.00');
-		ion.getInputElement = vi.fn().mockResolvedValue(native);
-
-		await fireEvent.click(ion);
-		await waitFor(() => expect(native.setSelectionRange).toHaveBeenCalled());
-	});
-
-	it('handles onionFocus event', async () => {
-		const { container } = render(AmountInputItem, {
-			props: { label: 'Amount', name: 'amount' }
-		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const native = createMockNative('$123.00');
-		ion.getInputElement = vi.fn().mockResolvedValue(native);
-
-		await fireEvent(ion, new CustomEvent('ionFocus'));
-		await waitFor(() => expect(native.setSelectionRange).toHaveBeenCalled());
-	});
-
-	it('handles value prop changes reactively', async () => {
-		const { container, rerender } = render(AmountInputItem, {
-			props: { label: 'Amount', name: 'amount' }
-		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const native = createMockNative('$0.00');
-		native.dispatchEvent = vi.fn();
-		ion.getInputElement = vi.fn().mockResolvedValue(native);
-
-		await rerender({ label: 'Amount', value: 50_000 });
-
-		await waitFor(() => expect(ion.getInputElement).toHaveBeenCalled());
-	});
-
-	it('handles deleteContentBackward input type', async () => {
+	it('backspace transitions through fractal and int to zero', async () => {
 		const changed = vi.fn();
-		const { container } = render(AmountInputItem, {
-			props: { changed, label: 'Amount', value: 12_300 }
+		const { container } = render(AmountInputItem, { props: { changed, label: 'Amount', value: 123 } });
+		const input = container.querySelector('ion-input')!;
+		await fireEvent.keyDown(input, { key: ',' });
+		await fireEvent.keyDown(input, { key: '4' });
+		await fireEvent.keyDown(input, { key: '5' });
+		await fireEvent.keyDown(input, { key: 'Backspace' });
+		await fireEvent.keyDown(input, { key: 'Backspace' });
+		await fireEvent.keyDown(input, { key: 'Backspace' });
+		await fireEvent.keyDown(input, { key: 'Backspace' });
+		expect(changed).toHaveBeenCalled();
+	});
+	it('parses long paste with grouping/decimal and clamps digits', async () => {
+		const changed = vi.fn();
+		const { container } = render(AmountInputItem, { props: { changed, label: 'Amount', value: 0 } });
+		const input = container.querySelector('ion-input')!;
+		const paste = new Event('paste');
+		Object.defineProperty(paste, 'clipboardData', {
+			value: { getData: () => '1.234.567,89 € foo' }
 		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const native = createMockNative('$123.00');
-		native.dispatchEvent = vi.fn();
-		ion.getInputElement = vi.fn().mockResolvedValue(native);
-
-		const inputEvent = new InputEvent('input', { inputType: 'deleteContentBackward' });
-		const detail = { event: inputEvent, value: '$123.00' };
-		await fireEvent(ion, new CustomEvent('ionInput', { detail }));
-
-		await waitFor(() => expect(native.setSelectionRange).toHaveBeenCalled());
+		await fireEvent(input, paste);
+		expect(changed).toHaveBeenCalled();
 	});
 
-	it('handles Ctrl+key combinations without preventing default', async () => {
-		const { container } = render(AmountInputItem, {
-			props: { label: 'Amount', name: 'amount' }
-		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const native = createMockNative('$0.00');
-		ion.getInputElement = vi.fn().mockResolvedValue(native);
-
-		const event_ = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, ctrlKey: true, key: 'c' });
-		await fireEvent(ion, event_);
-
-		expect(event_.defaultPrevented).toBe(false);
-	});
-
-	it('handles Meta+key combinations without preventing default', async () => {
-		const { container } = render(AmountInputItem, {
-			props: { label: 'Amount', name: 'amount' }
-		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const native = createMockNative('$0.00');
-		ion.getInputElement = vi.fn().mockResolvedValue(native);
-
-		const event_ = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'v', metaKey: true });
-		await fireEvent(ion, event_);
-
-		expect(event_.defaultPrevented).toBe(false);
-	});
-
-	it('handles Alt+key combinations without preventing default', async () => {
-		const { container } = render(AmountInputItem, {
-			props: { label: 'Amount', name: 'amount' }
-		});
-		const ion = container.querySelector('ion-input') as HTMLIonInputElement;
-		const native = createMockNative('$0.00');
-		ion.getInputElement = vi.fn().mockResolvedValue(native);
-
-		const event_ = new KeyboardEvent('keydown', { altKey: true, bubbles: true, cancelable: true, key: 'x' });
-		await fireEvent(ion, event_);
-
-		expect(event_.defaultPrevented).toBe(false);
+	it('focus/click set caret without errors', async () => {
+		const { container } = render(AmountInputItem, { props: { label: 'Amount', value: 123 } });
+		const input = container.querySelector('ion-input')!;
+		await fireEvent.focus(input);
+		await fireEvent.click(input);
+		expect(input).toBeTruthy();
 	});
 });

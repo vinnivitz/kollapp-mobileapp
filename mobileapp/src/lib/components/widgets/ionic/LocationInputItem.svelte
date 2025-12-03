@@ -10,6 +10,7 @@
 	type Properties = {
 		label: string;
 		card?: boolean;
+		classList?: string;
 		helperText?: string;
 		icon?: string;
 	} & (
@@ -17,7 +18,7 @@
 		| { name?: never; value?: string; changed?: (value: string) => void }
 	);
 
-	let { card, changed, helperText, icon = locationOutline, label, name, value }: Properties = $props();
+	let { card, changed, classList = '', helperText, icon = locationOutline, label, name, value }: Properties = $props();
 
 	let cachedLocation = $state<string>('');
 	let open = $state<boolean>(false);
@@ -38,6 +39,7 @@
 </script>
 
 <InputItem
+	{classList}
 	{helperText}
 	{card}
 	inputElement={(element) => (inputElement = element)}

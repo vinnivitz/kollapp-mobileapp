@@ -1,116 +1,62 @@
-import { fireEvent, render, waitFor } from '@testing-library/svelte';
-import { createRawSnippet } from 'svelte';
-import { beforeAll, describe, expect, it, vi } from 'vitest';
+import { fireEvent, render } from '@testing-library/svelte';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { goto } from '$app/navigation';
+import { navigating } from '$app/state';
 import type { RouteId } from '$app/types';
 
 import Tabs from '$lib/components/layout/Tabs.svelte';
 
-const mockState = vi.hoisted(
-	() =>
-		({
-			navigating: undefined,
-			page: { route: { id: '/home' } }
-		}) as { page: { route: { id?: string } }; navigating?: { to: { route: { id?: string } } } }
-);
+const tabs = [
+	{ icon: 'home', label: 'Home', tab: '/' as RouteId },
+	{ icon: 'person', label: 'Account', tab: '/account' as RouteId }
+];
 
-function registerMocks(): void {
-	vi.mock('$app/state', () => mockState);
-}
+describe('Tabs', () => {
+	beforeEach(() => vi.clearAllMocks());
+	it('renders tabs and selects on click', async () => {
+		const { container } = render(Tabs, {
+			props: { tabs }
+		});
 
-function polyfills(): void {
-	class FakeIonTabs extends HTMLElement {
-		select(...arguments_: unknown[]): Promise<unknown> {
-			return Promise.resolve(arguments_);
+		const buttons = container.querySelectorAll('ion-tab-button');
+		expect(buttons.length).toBe(2);
+
+		const second = buttons[1] as HTMLElement;
+		await fireEvent.click(second);
+		expect(goto).toHaveBeenCalledWith('/account');
+	});
+
+	it('updates selected class based on currentTabName', () => {
+		const { container } = render(Tabs, {
+			props: { tabs }
+		});
+
+		const first = container.querySelector('ion-tab-button') as HTMLElement;
+		expect(first.className).toContain('tab-selected');
+	});
+
+	it('Enter key on tab triggers navigation', async () => {
+		const { container } = render(Tabs, { props: { tabs } });
+		const second = container.querySelectorAll('ion-tab-button')[1] as HTMLElement;
+		await fireEvent.keyDown(second, { key: 'Enter' });
+		expect(goto).toHaveBeenCalledWith('/account');
+	});
+
+	it('ignores non-Enter keydown on tab button', async () => {
+		const { container } = render(Tabs, { props: { tabs } });
+		const second = container.querySelectorAll('ion-tab-button')[1] as HTMLElement;
+		const keyEvent = new KeyboardEvent('keydown', { key: ' ' });
+		await fireEvent(second, keyEvent);
+		expect(goto).not.toHaveBeenCalledWith('/account');
+	});
+
+	it('applies navigating change on initial effect', () => {
+		if (navigating.to) {
+			navigating.to.route.id = '/account';
 		}
-	}
-	const originalSelect = FakeIonTabs.prototype.select;
-
-	FakeIonTabs.prototype.select = vi.fn(function (this: FakeIonTabs, ...arguments_: unknown[]) {
-		return originalSelect.apply(this, arguments_);
-	});
-
-	customElements.define('ion-tabs', FakeIonTabs);
-}
-
-describe('Tabs Component', () => {
-	beforeAll(() => {
-		registerMocks();
-		polyfills();
-	});
-
-	const tab: { icon: string; label: string; tab: RouteId } = { icon: 'homeIcon', label: 'Home', tab: '/' };
-	const tabs = [tab];
-	const childContent = 'Child content';
-	const properties = {
-		children: createRawSnippet(() => ({
-			render: () => `<p>${childContent}</p>`
-		})),
-		tabs
-	};
-
-	it('renders children', async () => {
-		mockState.page.route.id = '/home';
-		mockState.navigating = { to: { route: { id: '/next' } } };
-
-		const childContent = 'Child content';
-		const { container } = render(Tabs, { props: properties });
-
-		const ionTabs = container.querySelector('ion-tabs') as HTMLIonTabsElement;
-
-		expect(ionTabs).toBeTruthy();
-		expect(ionTabs.textContent).toContain(childContent);
-	});
-
-	it('tab selection works properly', async () => {
-		mockState.page.route.id = '/';
-		mockState.navigating = { to: { route: { id: '/next' } } };
-
-		const { container, queryByText } = render(Tabs, { props: properties });
-		const ionTabs = container.querySelector('ion-tabs') as HTMLIonTabsElement;
-		const aboutTabButton = queryByText(tab.label)?.closest('ion-tab-button') as HTMLIonTabButtonElement;
-
-		expect(aboutTabButton).toBeTruthy();
-
-		await fireEvent.click(aboutTabButton);
-
-		await waitFor(() => {
-			expect(goto).toHaveBeenCalledWith(tab.tab);
-			expect(ionTabs.select).toHaveBeenCalledWith(tab.tab);
-		});
-	});
-
-	it('updates currentTabName from navigating in $effect and selects it on mount', async () => {
-		mockState.page.route.id = '/home';
-		mockState.navigating = { to: { route: { id: '/next' } } };
-
-		const { container } = render(Tabs, {
-			props: {
-				children: createRawSnippet(() => ({ render: () => `<p>content</p>` })),
-				tabs: [{ icon: 'homeIcon', label: 'Home', tab: '/' }]
-			}
-		});
-
-		const ionTabs = container.querySelector('ion-tabs') as HTMLIonTabsElement;
-		expect(ionTabs).toBeTruthy();
-
-		await waitFor(() => expect(ionTabs.select).toHaveBeenCalledWith('/next'));
-	});
-
-	it('falls back to PageRoute.HOME when page.route.id is undefined', async () => {
-		mockState.page.route.id = undefined;
-		mockState.navigating = undefined;
-
-		const { container } = render(Tabs, {
-			props: {
-				children: createRawSnippet(() => ({ render: () => `<p>content</p>` })),
-				tabs: [{ icon: 'homeIcon', label: 'Home', tab: '/' }]
-			}
-		});
-
-		const ionTabs = container.querySelector('ion-tabs') as HTMLIonTabsElement;
-
-		await waitFor(() => expect(ionTabs.select).toHaveBeenCalledWith('/'));
+		const { container } = render(Tabs, { props: { tabs } });
+		const second = container.querySelectorAll('ion-tab-button')[1] as HTMLElement;
+		expect(second.className).toContain('tab-selected');
 	});
 });

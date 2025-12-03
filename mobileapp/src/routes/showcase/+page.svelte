@@ -141,12 +141,12 @@
 			card
 			icon={personOutline}
 			label="Toggle item with icon"
-			change={async (value) => await showAlert('Toggle changed: ' + value, { type: AlertType.SUCCESS })}
+			changed={async (value) => await showAlert('Toggle changed: ' + value, { type: AlertType.SUCCESS })}
 		/>
 		<ToggleItem
 			card
 			label="Toggle item"
-			change={async (value) => await showAlert('Toggle changed: ' + value, { type: AlertType.SUCCESS })}
+			changed={async (value) => await showAlert('Toggle changed: ' + value, { type: AlertType.SUCCESS })}
 		/>
 	</Card>
 	<Card title="Chips">

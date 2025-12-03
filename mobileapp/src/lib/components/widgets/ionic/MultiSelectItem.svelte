@@ -14,6 +14,7 @@
 		icon: string;
 		label: string;
 		allSelectedText?: string;
+		classList?: string;
 		items?: SelectItem[];
 		multiple?: boolean;
 		noneSelectedText?: string;
@@ -30,6 +31,7 @@
 	let {
 		allSelectedText = $t('components.widgets.ionic.multi-select-item.all-selected'),
 		changed,
+		classList = '',
 		icon,
 		items = [],
 		label,
@@ -167,7 +169,7 @@
 </script>
 
 <div bind:this={containerElement}>
-	<CustomItem {icon} clicked={() => (modalOpen = true)} {name}>
+	<CustomItem {classList} {icon} clicked={() => (modalOpen = true)} {name}>
 		<div class="flex flex-col">
 			<ion-text class="ms-3 pt-2 text-xs">{label}</ion-text>
 			<ion-text class="my-2 ms-4 truncate">
@@ -194,7 +196,7 @@
 			checked={allFilteredItemsSelected}
 			label={selectAllLabel}
 			icon={selectAllIcon}
-			change={toggleFilterItemsSelection}
+			changed={toggleFilterItemsSelection}
 		/>
 	{/if}
 	{#if multiple}

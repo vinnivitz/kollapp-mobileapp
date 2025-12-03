@@ -11,6 +11,7 @@
 	type Properties = {
 		label: string;
 		card?: boolean;
+		classList?: string;
 		icon?: string;
 		max?: string;
 		min?: string;
@@ -23,11 +24,12 @@
 	let {
 		card,
 		changed,
+		classList = '',
 		icon = calendarClearOutline,
 		label,
 		max,
 		min,
-		name = '',
+		name,
 		type = DateTimePickerType.DATE,
 		value
 	}: Properties = $props();
@@ -74,7 +76,7 @@
 </script>
 
 <div bind:this={containerElement}>
-	<CustomItem {card} {icon} iconEnd={calendarOutline} clicked={onOpenDatetimeModal} {name}>
+	<CustomItem {classList} {card} {icon} iconEnd={calendarOutline} clicked={onOpenDatetimeModal} {name}>
 		<div class="flex flex-col">
 			<ion-text class="ms-3 pt-2 text-xs">{label}</ion-text>
 			<ion-text class="my-2 ms-4 truncate">

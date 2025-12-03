@@ -4,7 +4,7 @@
 	import { fade } from 'svelte/transition';
 
 	type Properties = {
-		children?: Snippet;
+		children: Snippet;
 		classList?: string;
 	};
 
