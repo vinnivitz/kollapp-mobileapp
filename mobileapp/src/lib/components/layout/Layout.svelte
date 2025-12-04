@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { accessibilityOutline, diamondOutline, personOutline } from 'ionicons/icons';
+	import { accessibilityOutline, diamondOutline, flashOutline, personOutline } from 'ionicons/icons';
 	import { type Snippet } from 'svelte';
 	import { fade } from 'svelte/transition';
 
@@ -9,37 +9,34 @@
 	import Menu from '$lib/components/layout/Menu.svelte';
 	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
 	import { t } from '$lib/locales';
-	import { PageRoute } from '$lib/models/routing';
 	import { initializationStore, organizationStore, userStore } from '$lib/stores';
 
 	type Properties = {
-		title: string;
 		children?: Snippet;
-		hideLayout?: boolean;
 		hideMenu?: boolean;
+		loading?: boolean;
 		scrollable?: boolean;
 		showBackButton?: boolean;
+		title?: string;
 		onRefresh?: () => Promise<void>;
 	};
 
 	let {
 		children,
-		hideLayout = false,
-		hideMenu = false,
+		hideMenu,
+		loading = false,
 		onRefresh,
 		scrollable = true,
-		showBackButton = false,
+		showBackButton,
 		title
 	}: Properties = $props();
 
-	const loading = $derived(!$initializationStore);
+	const loadedCache = $derived($initializationStore.loadedCache);
+	const loadedServer = $derived($initializationStore.loadedServer);
+	const loaded = $derived($loadedCache || $loadedServer);
 
-	let refresher = $state<HTMLIonRefresherElement | undefined>();
+	let refresher = $state<HTMLIonRefresherElement>();
 	let menuComponent = $state<ReturnType<typeof Menu>>();
-
-	async function navigate(route: string): Promise<void> {
-		menuComponent?.navigate(route);
-	}
 
 	async function doRefresh(): Promise<void> {
 		await (onRefresh ? onRefresh() : Promise.all([userStore.init(), organizationStore.init()]));
@@ -47,36 +44,46 @@
 	}
 </script>
 
-{#if !hideLayout && !hideMenu}
+{#if title && !hideMenu}
 	<Menu bind:this={menuComponent}>
 		<ion-list>
 			<LabeledItem
 				transparent
-				click={() => navigate(PageRoute.ACCOUNT.ROOT)}
+				clicked={() => menuComponent?.navigate('/account')}
 				icon={personOutline}
-				label={$t('components.layout.header.button.account')}
+				label={$t('components.layout.menu.list.account.label')}
 			/>
 			<LabeledItem
 				transparent
-				click={() => navigate(PageRoute.ORGANIZATION.ROOT)}
+				clicked={() => menuComponent?.navigate('/organization/activities')}
+				icon={flashOutline}
+				label={$t('components.layout.menu.list.activities.label')}
+			/>
+			<LabeledItem
+				transparent
+				clicked={() => menuComponent?.navigate('/organization')}
 				icon={accessibilityOutline}
-				label={$t('components.layout.menu.list.organization')}
+				label={$t('components.layout.menu.list.collective.label')}
 			/>
 			{#if dev}
-				<LabeledItem transparent icon={diamondOutline} click={() => navigate('/showcase')} label="Showcase" />
+				<LabeledItem
+					transparent
+					icon={diamondOutline}
+					clicked={() => menuComponent?.navigate('/showcase')}
+					label="Showcase"
+				/>
 			{/if}
 		</ion-list>
 	</Menu>
 {/if}
 
 <div class="ion-page" id="menu">
-	{#if !hideLayout}
-		<Header {title} {showBackButton}></Header>
+	{#if title}
+		<Header {title} {showBackButton} {loading}></Header>
 	{/if}
-	{#if !loading}
+	{#if loaded && !loading}
 		<ion-content class="ion-padding" in:fade={{ delay: 0, duration: 200 }} class:no-overflow={!scrollable}>
-			<!-- svelte-ignore event_directive_deprecated -->
-			<ion-refresher bind:this={refresher} slot="fixed" on:ionRefresh={doRefresh}>
+			<ion-refresher bind:this={refresher} slot="fixed" onionRefresh={doRefresh}>
 				<ion-refresher-content></ion-refresher-content>
 			</ion-refresher>
 			{@render children?.()}

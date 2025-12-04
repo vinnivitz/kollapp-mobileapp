@@ -1,46 +1,48 @@
 <script lang="ts">
-	import { loadingController } from 'ionic-svelte';
+	import type { LoginRequestTO } from '@kollapp/api-types';
+
 	import { fingerPrintOutline, keyOutline, notificationsOutline, receiptOutline } from 'ionicons/icons';
 	import { onMount } from 'svelte';
 
 	import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 
-	import { type LoginDto, type VerifyPasswordDto, verifyPasswordSchema } from '$lib/api/dto/client/auth';
-	import { authResource } from '$lib/api/resources';
+	import { authenticationService } from '$lib/api/services';
+	import { loginSchema } from '$lib/api/validation/authentication';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
 	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
+	import Popover from '$lib/components/widgets/ionic/Popover.svelte';
 	import { t } from '$lib/locales';
 	import { PreferencesKey } from '$lib/models/preferences';
-	import { PageRoute } from '$lib/models/routing';
-	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
+	import { Form, type FormActions } from '$lib/models/ui';
 	import { userStore } from '$lib/stores';
 	import {
 		customForm,
 		deleteBiometricCredentials,
+		featureNotImplementedAlert,
 		getStoredValue,
-		getValidationResult,
 		isBiometricAvailable,
-		showAlert,
 		storeBiometricCredentials
 	} from '$lib/utility';
 
-	let showPasswordPrompt = $state(false);
-	let toggle = $state<HTMLIonToggleElement | undefined>();
-	let isPasswordConfirmed = $state(false);
+	let showPasswordPrompt = $state<boolean>(false);
+	let isPasswordConfirmed = $state<boolean>(false);
+	let toggle = $state<HTMLIonToggleElement>();
 
-	const model = verifyPasswordSchema().cast({}) as VerifyPasswordDto;
-	let actions: FormActions<VerifyPasswordDto>;
-	const config: FormConfig<VerifyPasswordDto> = {
+	let actions: FormActions<LoginRequestTO>;
+
+	const form = new Form({
+		completed: async ({ model }) => onPasswordConfirmed($userStore?.username!, model.password),
 		exposedActions: (exposedActions) => (actions = exposedActions),
-		onSubmit,
-		schema: verifyPasswordSchema()
-	};
-	const form = new Form(model, config);
+		hiddenFields: { username: $userStore?.username! },
+		request: async (model: LoginRequestTO) => authenticationService.login(model),
+		schema: loginSchema()
+	});
 
 	onMount(async () => {
 		if (dev) return;
@@ -57,26 +59,6 @@
 		}
 	}
 
-	async function onSubmit(model: VerifyPasswordDto, result: ValidationResult): Promise<void> {
-		if (result.valid) {
-			const loading = await loadingController.create({});
-			await loading.present();
-			const username = $userStore?.username;
-
-			if (!username) return;
-
-			const loginModel: LoginDto = { password: model.password, username };
-			const body = await authResource.login(loginModel);
-			result = getValidationResult(body);
-			if (result.valid) {
-				onPasswordConfirmed(username, model.password);
-			} else {
-				actions.applyValidationFeedback(result);
-			}
-			await loading.dismiss();
-		}
-	}
-
 	async function onPasswordConfirmed(username: string, password: string): Promise<void> {
 		isPasswordConfirmed = true;
 		await storeBiometricCredentials(username, password);
@@ -85,7 +67,7 @@
 	}
 
 	async function onPasswordPromptDismiss(): Promise<void> {
-		actions.resetModel();
+		actions.setModel();
 		showPasswordPrompt = false;
 		if (!isPasswordConfirmed) {
 			setToggleValue(false);
@@ -103,74 +85,66 @@
 	}
 </script>
 
-<Layout title={$t('routes.account.page.privacy-and-security.title')} showBackButton>
+<Layout title={$t('routes.account.privacy-and-security.page.title')} showBackButton>
 	<ion-list inset>
-		<ion-list-header>{$t('routes.account.page.privacy-and-security.list.privacy')}</ion-list-header>
+		<ion-list-header>{$t('routes.account.privacy-and-security.page.list.privacy.header')}</ion-list-header>
 		<LabeledItem
-			click={() => showAlert('Not implemented yet')}
+			clicked={() => featureNotImplementedAlert()}
 			icon={notificationsOutline}
-			label={$t('routes.account.list.account.privacy-and-security.button.notifications')}
+			label={$t('routes.account.privacy-and-security.page.list.privacy.notifications')}
 		/>
 		<LabeledItem
-			label={$t('routes.account.page.privacy-and-security.security.list.legal')}
+			label={$t('routes.account.privacy-and-security.page.list.privacy.legal')}
 			icon={receiptOutline}
-			searchable={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.LEGAL}
-			click={() => goto(PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.LEGAL)}
-		></LabeledItem>
+			indexed="/account/privacy-and-security/legal"
+			clicked={() => goto(resolve('/account/privacy-and-security/legal'))}
+		/>
 	</ion-list>
 	<ion-list inset>
-		<ion-list-header>{$t('routes.account.page.privacy-and-security.list.security')}</ion-list-header>
+		<ion-list-header>{$t('routes.account.privacy-and-security.page.list.security.header')}</ion-list-header>
 		<LabeledItem
-			searchable={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.CHANGE_PASSWORD}
-			click={() => goto(PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.CHANGE_PASSWORD)}
+			indexed="/account/privacy-and-security/change-password"
+			clicked={() => goto(resolve('/account/privacy-and-security/change-password'))}
 			icon={keyOutline}
-			label={$t('routes.account.list.account.privacy-and-security.button.change-password')}
+			label={$t('routes.account.privacy-and-security.page.list.security.change-password')}
 		/>
 		{#await isBiometricAvailable() then isAvailable}
 			<CustomItem
 				icon={fingerPrintOutline}
-				id={$t('routes.account.list.account.privacy-and-security.button.biometrics')}
-				searchable={PageRoute.ACCOUNT.PRIVACY_AND_SECURITY.ROOT}
+				indexLabel={$t('routes.account.privacy-and-security.page.list.security.login-with-biometrics')}
+				indexed="/account/privacy-and-security"
 			>
-				<!-- svelte-ignore event_directive_deprecated -->
 				<ion-toggle
 					bind:this={toggle}
 					color="secondary"
 					enable-on-off-labels
 					class="ms-4"
 					disabled={!isAvailable}
-					on:ionChange={() => onToggleBiometrics()}
+					onionChange={() => onToggleBiometrics()}
 				>
-					{$t('routes.account.list.account.privacy-and-security.button.biometrics')}
+					{$t('routes.account.privacy-and-security.page.list.security.login-with-biometrics')}
 				</ion-toggle>
 			</CustomItem>
 		{/await}
 	</ion-list>
 </Layout>
 
-<!-- svelte-ignore event_directive_deprecated -->
-<ion-popover class="extended" is-open={showPasswordPrompt} on:didDismiss={onPasswordPromptDismiss}>
-	<Card title="Enter your password">
+<Popover extended open={showPasswordPrompt} dismissed={onPasswordPromptDismiss}>
+	<Card title={$t('routes.account.privacy-and-security.page.modal.password.card.title')}>
 		<form use:customForm={form}>
 			<InputItem
 				name="password"
 				type="password"
-				label={$t('routes.account.list.account.privacy-and-security.form.input.password')}
+				label={$t('routes.account.privacy-and-security.page.modal.password.card.form.password')}
 				icon={keyOutline}
 			/>
 			<Button
 				classList="mt-3"
 				expand="block"
 				type="submit"
-				label={$t('routes.account.list.account.privacy-and-security.form.submit')}
+				label={$t('routes.account.privacy-and-security.page.modal.password.card.form.submit')}
 				icon={keyOutline}
 			/>
 		</form>
 	</Card>
-</ion-popover>
-
-<style>
-	ion-popover.extended {
-		--width: 95%;
-	}
-</style>
+</Popover>

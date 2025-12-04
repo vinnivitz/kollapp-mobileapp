@@ -1,34 +1,41 @@
 <script>
+	import { mailOutline, personOutline } from 'ionicons/icons';
+
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
+	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
 	import { t } from '$lib/locales';
 </script>
 
-<Layout title={$t('routes.account.page.privacy-and-security.page.legal.title')} showBackButton>
-	<Card title={$t('routes.account.page.privacy-and-security.page.legal.list.disclaimer.title')}>
+<Layout title={$t('routes.account.privacy-and-security.legal.page.title')} showBackButton>
+	<Card title={$t('routes.account.privacy-and-security.legal.page.card.disclaimer.title')}>
 		<h2 class="pb-1">
-			{$t('routes.account.page.privacy-and-security.page.legal.list.disclaimer.content.content.title')}
+			{$t('routes.account.privacy-and-security.legal.page.card.disclaimer.liability-for-content.heading')}
 		</h2>
 		<p>
-			{$t('routes.account.page.privacy-and-security.page.legal.list.disclaimer.content.content.content')}
+			{$t('routes.account.privacy-and-security.legal.page.card.disclaimer.liability-for-content.content')}
 		</p>
 
 		<h2 class="pt-4 pb-1">
-			{$t('routes.account.page.privacy-and-security.page.legal.list.disclaimer.content.links.title')}
+			{$t('routes.account.privacy-and-security.legal.page.card.disclaimer.liability-for-links.heading')}
 		</h2>
 		<p>
-			{$t('routes.account.page.privacy-and-security.page.legal.list.disclaimer.content.links.content')}
+			{$t('routes.account.privacy-and-security.legal.page.card.disclaimer.liability-for-links.content')}
 		</p>
 		<h2 class="pt-4 pb-1">
-			{$t('routes.account.page.privacy-and-security.page.legal.list.disclaimer.content.copyright.title')}
+			{$t('routes.account.privacy-and-security.legal.page.card.disclaimer.copyright.heading')}
 		</h2>
 		<p>
-			{$t('routes.account.page.privacy-and-security.page.legal.list.disclaimer.content.copyright.content')}
+			{$t('routes.account.privacy-and-security.legal.page.card.disclaimer.copyright.content')}
 		</p>
 	</Card>
-	<Card title={$t('routes.account.page.privacy-and-security.page.legal.list.privacy.title')}>
+	<Card title={$t('routes.account.privacy-and-security.legal.page.card.privacy.title')}>
 		<p>
-			{$t('routes.account.page.privacy-and-security.page.legal.list.privacy.content')}
+			{$t('routes.account.privacy-and-security.legal.page.card.privacy.content')}
 		</p>
+	</Card>
+	<Card title={$t('routes.account.privacy-and-security.legal.page.card.credits.title')}>
+		<LabeledItem icon={personOutline} label="Vinzenz Fuhrmann" />
+		<LabeledItem icon={mailOutline} label="mail@kollapp.org" />
 	</Card>
 </Layout>

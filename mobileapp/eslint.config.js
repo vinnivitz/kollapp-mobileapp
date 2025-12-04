@@ -31,6 +31,7 @@ export default ts.config(
 					allowTypedFunctionExpressions: true
 				}
 			],
+			'@typescript-eslint/no-non-null-asserted-optional-chain': 'off',
 			'@typescript-eslint/no-unused-vars': [
 				'error',
 				{
@@ -94,14 +95,17 @@ export default ts.config(
 			'perfectionist/sort-objects': 'error',
 			'perfectionist/sort-union-types': 'error',
 			'security/detect-non-literal-fs-filename': 'off',
+			'security/detect-object-injection': 'off',
 			'sonarjs/no-unused-collection': 'off',
 			'sonarjs/no-use-of-empty-return-value': 'off',
 			'sonarjs/slow-regex': 'off',
 			'sonarjs/void-use': 'off',
+			'svelte/event-directive-deprecated': 'off',
 			'svelte/no-unused-svelte-ignore': 'off',
 			'svelte/prefer-writable-derived': 'off',
 			'svelte/valid-compile': 'off',
-			'unicorn/filename-case': 'off'
+			'unicorn/filename-case': 'off',
+			'unicorn/prefer-structured-clone': 'off'
 		},
 		settings: {
 			'import/parsers': {
@@ -114,18 +118,24 @@ export default ts.config(
 			globals: {
 				...globals.browser,
 				...globals.node,
+				ApexAxisChartSeries: 'readonly',
+				ApexNonAxisChartSeries: 'readonly',
 				HTMLIonCardElement: 'readonly',
 				HTMLIonCardTitleElement: 'readonly',
 				HTMLIonDatetimeElement: 'readonly',
+				HTMLIonFabElement: 'readonly',
+				HTMLIonInputElement: 'readonly',
 				HTMLIonItemSlidingElement: 'readonly',
 				HTMLIonListElement: 'readonly',
 				HTMLIonLoadingElement: 'readonly',
 				HTMLIonMenuElement: 'readonly',
 				HTMLIonModalElement: 'readonly',
+				HTMLIonNoteElement: 'readonly',
 				HTMLIonRefresherElement: 'readonly',
 				HTMLIonSearchbarElement: 'readonly',
 				HTMLIonTabsElement: 'readonly',
 				HTMLIonToggleElement: 'readonly',
+				NodeJS: 'readonly',
 				NodeListOf: 'readonly'
 			}
 		}

@@ -1,11 +1,11 @@
 <script lang="ts">
 	import type { AddressModel, PositionItem } from '$lib/models/osm';
+	import type { SearchbarInputEventDetail } from '@ionic/core';
 
 	import { searchOutline } from 'ionicons/icons';
 	import { LatLng, type LeafletMouseEvent, Map, Marker, TileLayer } from 'leaflet';
-	import { onDestroy, onMount } from 'svelte';
 
-	import { osmResource } from '$lib/api/resources';
+	import { osmService } from '$lib/api/services';
 	import environment from '$lib/environment';
 	import { t } from '$lib/locales';
 	import { PreferencesKey } from '$lib/models/preferences';
@@ -13,41 +13,82 @@
 
 	type Properties = {
 		classList?: string;
-		position?: LatLng;
 		searchable?: boolean;
+		value?: string;
 		selected?: (name: string) => void;
 	};
 
-	let { classList, position, searchable = true, selected }: Properties = $props();
+	const TILE_LAYER_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+	const TILE_LAYER_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>';
 
+	let { classList = '', searchable = true, selected, value }: Properties = $props();
 	let map: Map | undefined;
 	let marker: Marker | undefined;
-	let searchbarOpen = $state(false);
+	let searchbarOpen = $state<boolean>(false);
 	let searchItems = $state<PositionItem[]>([]);
-	let searchbar = $state<HTMLIonSearchbarElement | undefined>();
+	let searchbar = $state<HTMLIonSearchbarElement>();
+	let mapContainer = $state<HTMLDivElement>();
+	let mapInitialized = $state<boolean>(false);
 
-	onMount(() => initializeMap(position));
+	$effect(() => {
+		if (mapContainer && !map && !mapInitialized) {
+			mapInitialized = true;
+			// Small delay to ensure DOM is fully ready
+			setTimeout(() => {
+				if (mapContainer && !map) {
+					initializeMap(value);
+				}
+			}, 0);
+		}
 
-	onDestroy(() => map?.remove());
+		return () => {
+			if (map) {
+				map.off();
+				map.remove();
+				map = undefined;
+				mapInitialized = false;
+			}
+		};
+	});
 
-	async function initializeMap(position?: LatLng): Promise<void> {
-		if (map) return;
+	// Re-initialize map when value prop changes
+	$effect(() => {
+		if (value && map) {
+			updateMarkerFromValue(value);
+		}
+	});
+
+	async function updateMarkerFromValue(value: string): Promise<void> {
+		if (!map) return;
+		const response = await osmService.getLocationsByQuery(value);
+		const item = response[0];
+		if (item) {
+			await setMarker(item.latlng);
+		}
+	}
+
+	async function initializeMap(value?: string): Promise<void> {
+		if (!mapContainer) return;
+
 		const coordinates = (await getStoredValue(PreferencesKey.POSITION)) || JSON.parse(environment.defaultPosition);
 		const latlng = new LatLng(coordinates[0], coordinates[1]);
-		map = new Map('map', {
+
+		map = new Map(mapContainer, {
 			center: latlng,
 			doubleClickZoom: true,
 			zoom: 16,
 			zoomControl: true
 		});
+
 		map.on('click', handleMapClick);
-		new TileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-			attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>',
+		new TileLayer(TILE_LAYER_URL, {
+			attribution: TILE_LAYER_ATTRIBUTION,
 			maxNativeZoom: 19,
 			maxZoom: 20
 		}).addTo(map);
-		if (position) {
-			await setMarker(position);
+
+		if (value) {
+			await updateMarkerFromValue(value);
 		}
 	}
 
@@ -59,7 +100,7 @@
 		marker?.removeFrom(map!);
 		marker = new Marker(latlng).addTo(map!);
 		map?.setView(latlng, 16);
-		const address = await osmResource.getLocationByLatLng(latlng);
+		const address = await osmService.getLocationByLatLng(latlng);
 		if (address) {
 			const tooltip = formatAddress(address);
 			marker
@@ -72,7 +113,7 @@
 		}
 	}
 
-	async function onSearch(query: null | string | undefined): Promise<void> {
+	async function onSearch(query: string | undefined): Promise<void> {
 		if (!query) {
 			searchItems = [];
 			return;
@@ -83,7 +124,7 @@
 			await setMarker(latlng);
 			return;
 		}
-		const response = await osmResource.getLocationsByQuery(query);
+		const response = await osmService.getLocationsByQuery(query);
 		searchItems = response.map((item) => ({
 			latlng: item.latlng as LatLng,
 			name: formatAddress(item)
@@ -121,41 +162,48 @@
 	}
 </script>
 
-<!-- svelte-ignore event_directive_deprecated -->
-<div class={`relative ${classList ?? ''}`}>
+<div class={`relative ${classList}`}>
 	{#if searchable}
 		{@render search()}
 	{/if}
 </div>
-<div class="absolute top-0 right-0 bottom-0 left-0 z-0 w-full" id="map"></div>
+<div bind:this={mapContainer} class="absolute top-0 right-0 bottom-0 left-0 z-0 w-full"></div>
 
 {#snippet search()}
 	{#if searchbarOpen}
-		<!-- svelte-ignore event_directive_deprecated -->
-		<div class="absolute top-1 right-1 z-10 w-5/6" use:clickOutside on:blur={closeSearchbar}>
+		<div class="absolute top-1 right-1 z-10 w-5/6" use:clickOutside onblur={closeSearchbar}>
 			<ion-searchbar
 				bind:this={searchbar}
 				debounce={250}
 				class="absolute transition-transform"
 				color="light"
-				placeholder={$t('components.widgets.map.searchbar.placeholder')}
-				on:ionInput={(event_) => onSearch(event_.target.value)}
+				placeholder={$t('components.widgets.leaflet-map.searchbar.placeholder')}
+				onionInput={(event_: CustomEvent<SearchbarInputEventDetail>) => onSearch(event_.detail?.value ?? '')}
 			></ion-searchbar>
 			<ion-list class="absolute top-13 right-3 left-3 mx-auto rounded-xl">
 				{#each searchItems as item (item.latlng)}
-					<!-- svelte-ignore a11y_click_events_have_key_events -->
-					<!-- svelte-ignore a11y_no_static_element_interactions -->
-					<ion-item color="light" on:click={() => onSearchItemSelection(item.latlng)}>
+					<ion-item
+						role="button"
+						tabindex="0"
+						onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && onSearchItemSelection(item.latlng)}
+						color="light"
+						onclick={() => onSearchItemSelection(item.latlng)}
+					>
 						<ion-label>{item.name}</ion-label>
 					</ion-item>
 				{/each}
 			</ion-list>
 		</div>
 	{:else}
-		<!-- svelte-ignore a11y_click_events_have_key_events -->
-		<!-- svelte-ignore a11y_no_static_element_interactions -->
-		<!-- svelte-ignore event_directive_deprecated -->
-		<ion-fab-button size="small" color="light" class="absolute top-1 right-1 z-10" on:click={onOpenSearchbar}>
+		<ion-fab-button
+			role="button"
+			tabindex="0"
+			onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && onOpenSearchbar()}
+			size="small"
+			color="light"
+			class="absolute top-1 right-1 z-10"
+			onclick={onOpenSearchbar}
+		>
 			<ion-icon icon={searchOutline}></ion-icon>
 		</ion-fab-button>
 	{/if}

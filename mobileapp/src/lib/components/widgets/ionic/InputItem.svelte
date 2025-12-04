@@ -1,5 +1,8 @@
 <script lang="ts">
 	import type { Colors } from '$lib/models/ui';
+	import type { InputInputEventDetail } from '@ionic/core';
+
+	import { onMount } from 'svelte';
 
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
 
@@ -7,50 +10,79 @@
 
 	type Properties = {
 		label: string;
-		name: string;
 		card?: boolean;
+		classList?: string;
 		color?: Colors;
 		disabled?: boolean;
 		helperText?: string;
 		icon?: string;
 		inputIcon?: string;
+		inputmode?: 'decimal' | 'email' | 'none' | 'numeric' | 'search' | 'tel' | 'text' | 'url' | undefined;
 		maxlength?: number;
+		pattern?: string;
+		readonly?: boolean;
 		type?: InputType;
-		value?: null | number | string;
-		change?: (value: string) => void;
-		inputIconClick?: () => void;
-	};
+		uppercase?: boolean;
+		inputElement?: (element: HTMLIonInputElement) => void;
+		inputIconClicked?: () => void;
+	} & (
+		| { name: string; changed?: never; value?: never }
+		| { name?: never; value?: number | string; changed?: (value: string) => void }
+	);
 
 	let {
 		card,
-		change,
+		changed,
+		classList = '',
 		color,
 		disabled,
 		helperText,
 		icon,
+		inputElement,
 		inputIcon,
-		inputIconClick,
+		inputIconClicked,
+		inputmode = 'text',
 		label,
 		maxlength,
 		name,
+		pattern,
+		readonly,
 		type = 'text',
+		uppercase,
 		value
 	}: Properties = $props();
+
+	let element = $state<HTMLIonInputElement>();
+
+	$effect(() => {
+		if (element) inputElement?.(element);
+	});
+
+	onMount(async () => {
+		const nativeElement = await element?.getInputElement();
+		if (nativeElement && uppercase) {
+			nativeElement.style.textTransform = 'uppercase';
+		}
+	});
 </script>
 
-<CustomItem {card} {color} {icon} iconEnd={inputIcon} iconClick={inputIconClick}>
-	<!-- svelte-ignore event_directive_deprecated -->
+<CustomItem {card} {color} {icon} iconEnd={inputIcon} iconClick={inputIconClicked}>
 	<ion-input
+		{inputmode}
+		bind:this={element}
+		{readonly}
+		{pattern}
 		label-placement="floating"
 		{maxlength}
 		counter={!!maxlength}
 		{name}
 		{label}
+		class={classList}
 		type={type === 'date' ? 'text' : type}
 		{value}
 		{disabled}
 		helper-text={helperText}
-		on:ionInput={(event) => change?.(event.detail.value || '')}
+		onionInput={(event: CustomEvent<InputInputEventDetail>) => changed?.(event.detail.value || '')}
 	>
 	</ion-input>
 </CustomItem>

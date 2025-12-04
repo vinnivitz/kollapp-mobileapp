@@ -1,47 +1,39 @@
 import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
+import { resolve } from '$app/paths';
 import { page } from '$app/state';
+import type { RouteId } from '$app/types';
 
-import { PageRoute, type PageRoutePaths } from '$lib/models/routing';
 import { modalStore } from '$lib/stores';
 
 /**
  * Navigates back in the browser history if history is present otherwise one hirarchy up.
  */
 export async function navigateBack(): Promise<void> {
-	const hasModal = await modalStore.closeLastIfExists();
+	const hasModal = modalStore.closeLastIfExists();
 	if (hasModal) return;
-	const path = getPath();
-	if (path !== PageRoute.HOME) {
-		const currentPath = path;
-		if (browser) {
-			globalThis.history.back();
-		}
-		if (currentPath === getPath()) {
-			const segments = path.split('/').filter(Boolean); // Split the path and remove any empty segments
-			if (segments.length > 0) {
-				segments.pop();
-				const newPath = `/${segments.join('/')}`;
-				await goto(newPath === '/' ? PageRoute.HOME : newPath);
-			}
-		}
+
+	if (!browser) {
+		return goto(resolve('/'));
 	}
-}
 
-/**
- * Gets the current path.
- * @returns {string} the current path
- */
-function getPath(): string {
-	return (browser && page?.route?.id) || PageRoute.HOME;
-}
+	const currentPathname = page.url.pathname;
 
-/**
- * Builds a specific route with optional parameters.
- * @param {string} route - The route to navigate to.
- * @param {Record<string, string | number>} [parameters] - Optional parameters to replace in the route.
- */
-export function buildRoute(route: PageRoutePaths, parameters: Record<string, number | string>): string {
-	// eslint-disable-next-line security/detect-object-injection
-	return route.replaceAll(/:([a-zA-Z]+)/g, (_, key) => `${parameters[key]}`);
+	if (history.length > 1) {
+		return history.back();
+	}
+
+	const segments = currentPathname.split('/').filter(Boolean);
+	if (segments.length > 0) {
+		segments.pop();
+	}
+
+	const parentPath = (segments.length > 0 ? `/${segments.join('/')}` : '/') as RouteId;
+
+	if (parentPath === '/' && currentPathname === '/') {
+		return;
+	}
+
+	// eslint-disable-next-line svelte/no-navigation-without-resolve
+	await goto(parentPath, { replaceState: true });
 }

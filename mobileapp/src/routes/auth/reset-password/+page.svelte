@@ -1,55 +1,37 @@
 <script lang="ts">
-	import { loadingController } from 'ionic-svelte';
 	import { mailOutline, refreshOutline } from 'ionicons/icons';
 
-	import { type ResetPasswordDto, resetPasswordSchema } from '$lib/api/dto/client/auth';
-	import { publicUserResource } from '$lib/api/resources';
+	import { publicUserService } from '$lib/api/services';
+	import { forgotPasswordSchema } from '$lib/api/validation/authentication';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import { t } from '$lib/locales';
-	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
-	import { customForm, getValidationResult } from '$lib/utility';
+	import { Form } from '$lib/models/ui';
+	import { customForm } from '$lib/utility';
 
-	const model = resetPasswordSchema().cast({}) as ResetPasswordDto;
-	let validationResult: ValidationResult;
-	let actions: FormActions<ResetPasswordDto>;
-
-	const config: FormConfig<ResetPasswordDto> = {
-		exposedActions: (exposedActions) => (actions = exposedActions),
-		onSubmit,
-		schema: resetPasswordSchema()
-	};
-
-	const form = new Form(model, config);
-
-	async function onSubmit(model: ResetPasswordDto, result: ValidationResult): Promise<void> {
-		validationResult = result;
-		if (validationResult.valid) {
-			const loading = await loadingController.create({});
-			await loading.present();
-			const validationResult = getValidationResult(await publicUserResource.forgotPassword(model));
-			await loading.dismiss();
-			if (validationResult.valid) {
-				actions.resetModel();
-			} else {
-				actions.applyValidationFeedback(validationResult);
-			}
-		}
-	}
+	const form = new Form({
+		request: async (model) => publicUserService.forgotPassword(model),
+		schema: forgotPasswordSchema()
+	});
 </script>
 
-<Layout title={$t('routes.auth.reset-password.title')} showBackButton hideMenu>
-	<Card title={$t('routes.auth.reset-password.card.title')}>
+<Layout title={$t('routes.auth.reset-password.page.title')} showBackButton hideMenu>
+	<Card title={$t('routes.auth.reset-password.page.card.title')}>
 		<form use:customForm={form}>
-			<InputItem name="email" label={$t('routes.auth.reset-password.form.email')} icon={mailOutline} />
+			<InputItem
+				name="email"
+				inputmode="email"
+				label={$t('routes.auth.reset-password.page.card.form.email')}
+				icon={mailOutline}
+			/>
 			<Button
 				icon={refreshOutline}
 				classList="mt-3"
 				expand="block"
 				type="submit"
-				label={$t('routes.auth.reset-password.form.buttons.send')}
+				label={$t('routes.auth.reset-password.page.card.form.submit')}
 			/>
 		</form>
 	</Card>

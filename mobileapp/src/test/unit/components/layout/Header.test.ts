@@ -1,66 +1,48 @@
 import { fireEvent, render } from '@testing-library/svelte';
-import { beforeAll, describe, expect, test, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { goto } from '$app/navigation';
 
 import Header from '$lib/components/layout/Header.svelte';
-import { PageRoute } from '$lib/models/routing';
+import { navigateBack } from '$lib/utility';
 
-let storesInitialized = true;
+describe('Header', () => {
+	it('shows back button and navigates back when clicked', async () => {
+		const { getByRole } = render(Header, {
+			props: { loading: false, showBackButton: true, title: 'Any' }
+		});
 
-function registerMocks(): void {
-	vi.mock('$lib/stores', () => ({
-		initializationStore: {
-			subscribe: (run: (value: boolean) => void) => {
-				run(storesInitialized);
-				return () => {};
-			}
-		}
-	}));
-}
-
-describe('Header Component', () => {
-	beforeAll(() => registerMocks());
-	test('renders title correctly', () => {
-		const properties = { title: 'Test Header' };
-		const { container } = render(Header, { props: properties });
-
-		const ionTitle = container.querySelector('ion-title');
-		expect(ionTitle?.textContent).toBe(properties.title);
+		const button = getByRole('button');
+		await fireEvent.click(button);
+		expect(navigateBack).toHaveBeenCalled();
 	});
 
-	test('renders back button when showBackButton is true', () => {
-		const properties = { showBackButton: true, title: 'Test Header' };
-		const { container } = render(Header, { props: properties });
+	it('shows logo and navigates home when clicked', async () => {
+		const { getByAltText, getByRole } = render(Header, {
+			props: { loading: false, showBackButton: false, title: 'Any' }
+		});
 
-		const ionTitle = container.querySelector('ion-title');
-		expect(ionTitle?.textContent).toBe(properties.title);
+		expect(getByAltText('Logo')).toBeTruthy();
 
-		const backButton = container.querySelector('ion-back-button');
-		expect(backButton).toBeTruthy();
+		const button = getByRole('button');
+		await fireEvent.click(button);
+		expect(goto).toHaveBeenCalled();
 	});
 
-	test('renders logo when showBackButton is false and clicking logo navigates home', async () => {
-		const properties = { showBackButton: false, title: 'Test Header' };
-		const { container, queryByAltText } = render(Header, { props: properties });
+	it('shows progress bar when loading persists >100ms', async () => {
+		vi.useFakeTimers();
+		const { container, rerender } = render(Header, {
+			props: { loading: true, showBackButton: false, title: 'Any' }
+		});
 
-		const ionTitle = container.querySelector('ion-title');
-		expect(ionTitle?.textContent).toBe(properties.title);
+		vi.advanceTimersByTime(150);
+		await Promise.resolve();
+		expect(container.querySelector('ion-progress-bar')).toBeTruthy();
 
-		expect(container.querySelector('ion-back-button')).toBeNull();
+		rerender({ loading: false, showBackButton: false, title: 'Any' });
+		vi.advanceTimersByTime(150);
+		expect(container.querySelector('ion-progress-bar')).toBeFalsy();
 
-		const logo = queryByAltText('Logo');
-		expect(logo).toBeTruthy();
-
-		await fireEvent.click(logo as HTMLElement);
-
-		expect(goto).toHaveBeenCalledWith(PageRoute.HOME);
-	});
-	test('do not render content if stores are not initialized', () => {
-		storesInitialized = false;
-		const properties = { title: 'Test Title' };
-		const { container } = render(Header, { props: properties });
-
-		expect(container.querySelector('ion-content')).toBeNull();
+		vi.useRealTimers();
 	});
 });

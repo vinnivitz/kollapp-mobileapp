@@ -2,29 +2,37 @@
 	import { addOutline, attachOutline, documentOutline, personOutline } from 'ionicons/icons';
 
 	import LayoutComponent from '$lib/components/layout/Layout.svelte';
-	import ActivityCard from '$lib/components/widgets/ActivityCard.svelte';
+	import AmountInputItem from '$lib/components/widgets/ionic/AmountInputItem.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
+	import Chip from '$lib/components/widgets/ionic/Chip.svelte';
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
 	import Calendar from '$lib/components/widgets/ionic/Datetime.svelte';
+	import DatetimeInputItem from '$lib/components/widgets/ionic/DatetimeInputItem.svelte';
+	import FabButton from '$lib/components/widgets/ionic/FabButton.svelte';
 	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
+	import LocationInputItem from '$lib/components/widgets/ionic/LocationInputItem.svelte';
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
+	import Popover from '$lib/components/widgets/ionic/Popover.svelte';
+	import TextareaInputItem from '$lib/components/widgets/ionic/TextareaInputItem.svelte';
+	import ToggleItem from '$lib/components/widgets/ionic/ToggleItem.svelte';
 	import LeafletMap from '$lib/components/widgets/LeafletMap.svelte';
 	import { Locale } from '$lib/locales';
 	import { AlertType, Layout, Theme } from '$lib/models/ui';
 	import { layoutStore, localeStore, themeStore } from '$lib/stores';
 	import { showAlert } from '$lib/utility';
 
-	let modalOpen = $state(false);
+	let modalOpen = $state<boolean>(false);
+	let popoverOpened = $state<boolean>(false);
 
 	function onFilter(event: CustomEvent): void {
 		const value = event.detail.value as string;
 
-		const cards = document.querySelectorAll('ion-card') as NodeListOf<HTMLIonCardElement>;
+		const cards = document.querySelectorAll('ion-card');
 
 		for (const card of cards) {
-			const cardTitle = card.querySelector('ion-card-title') as HTMLIonCardTitleElement;
+			const cardTitle = card.querySelector('ion-card-title');
 			card.style.display =
 				!cardTitle || cardTitle?.textContent?.toLowerCase().includes(value.toLowerCase()) ? 'block' : 'none';
 		}
@@ -44,14 +52,13 @@
 </script>
 
 <LayoutComponent title="Showcase">
-	<!-- svelte-ignore event_directive_deprecated -->
-	<ion-searchbar on:ionInput={onFilter} color="light"></ion-searchbar>
+	<ion-searchbar onionInput={onFilter} color="light"></ion-searchbar>
 	<div class="mx-2 flex gap-2 truncate">
 		<ion-select
 			aria-label="Layout"
 			interface="popover"
 			value={$layoutStore}
-			on:ionChange={onLayoutChange}
+			onionChange={onLayoutChange}
 			fill="outline"
 		>
 			<ion-select-option value={Layout.MD}>Android</ion-select-option>
@@ -61,13 +68,13 @@
 			aria-label="Language"
 			interface="popover"
 			value={$localeStore}
-			on:ionChange={onLocaleChange}
+			onionChange={onLocaleChange}
 			fill="outline"
 		>
 			<ion-select-option value={Locale.DE}>German</ion-select-option>
 			<ion-select-option value={Locale.EN}>English</ion-select-option>
 		</ion-select>
-		<ion-select aria-label="Theme" interface="popover" value={$themeStore} on:ionChange={onThemeChange} fill="outline">
+		<ion-select aria-label="Theme" interface="popover" value={$themeStore} onionChange={onThemeChange} fill="outline">
 			<ion-select-option value={Theme.LIGHT}>Light</ion-select-option>
 			<ion-select-option value={Theme.DARK}>Dark</ion-select-option>
 			<ion-select-option value={Theme.BLACK_AND_WHITE}>Black and white</ion-select-option>
@@ -75,75 +82,112 @@
 	</div>
 	<Card title="Buttons">
 		<Modal
-			dismissed={() => (modalOpen = false)}
 			open={modalOpen}
-			cancel={() => {
+			dismissed={async () => {
 				modalOpen = false;
-				showAlert('Modal canceled');
+				await showAlert('Modal dismissed');
 			}}
-			confirm={() => {
-				modalOpen = false;
-				showAlert('Model confirmed', { type: AlertType.SUCCESS });
-			}}
+			confirmed={async () => await showAlert('Model confirmed', { type: AlertType.SUCCESS })}
+			lazy
 		>
-			This is a modal.
+			<ion-text>This is a modal.</ion-text>
 		</Modal>
 		<div class="flex flex-wrap items-center justify-center">
-			<Button label="Default" icon={addOutline} click={() => showAlert('Button clicked', { type: AlertType.SUCCESS })}
-			></Button>
+			<Button
+				label="Default"
+				icon={addOutline}
+				clicked={async () => await showAlert('Button clicked', { type: AlertType.SUCCESS })}
+			/>
 			<Button
 				label="Outline"
 				fill="outline"
 				icon={addOutline}
-				click={() => showAlert('Button clicked', { type: AlertType.SUCCESS })}
-			></Button>
+				clicked={async () => await showAlert('Button clicked', { type: AlertType.SUCCESS })}
+			/>
 			<Button
 				label="Clear"
 				fill="clear"
 				icon={addOutline}
-				click={() => showAlert('Button clicked', { type: AlertType.SUCCESS })}
-			></Button>
-			<Button icon={addOutline} click={() => showAlert('Button clicked', { type: AlertType.SUCCESS })}></Button>
+				clicked={async () => await showAlert('Button clicked', { type: AlertType.SUCCESS })}
+			/>
+			<Button icon={addOutline} clicked={async () => await showAlert('Button clicked', { type: AlertType.SUCCESS })} />
 			<Button
 				label="Disabled"
 				disabled
 				icon={addOutline}
-				click={() => showAlert('Button clicked', { type: AlertType.SUCCESS })}
-			></Button>
+				clicked={async () => await showAlert('Button clicked', { type: AlertType.SUCCESS })}
+			/>
 			<Button
 				label="Icon right"
-				iconPosition="end"
-				icon={addOutline}
-				click={() => showAlert('Button clicked', { type: AlertType.SUCCESS })}
-			></Button>
+				iconEnd={addOutline}
+				clicked={async () => await showAlert('Button clicked', { type: AlertType.SUCCESS })}
+			/>
 			<Button
 				label="Icon big"
 				iconSize="large"
 				icon={addOutline}
-				click={() => showAlert('Button clicked', { type: AlertType.SUCCESS })}
-			></Button>
+				clicked={async () => await showAlert('Button clicked', { type: AlertType.SUCCESS })}
+			/>
 			<Button
 				label="Button large"
 				size="large"
 				icon={addOutline}
-				click={() => showAlert('Button clicked', { type: AlertType.SUCCESS })}
-			></Button>
+				clicked={async () => await showAlert('Button clicked', { type: AlertType.SUCCESS })}
+			/>
 		</div>
+	</Card>
+	<Card title="Toggle">
+		<ToggleItem
+			card
+			icon={personOutline}
+			label="Toggle item with icon"
+			changed={async (value) => await showAlert('Toggle changed: ' + value, { type: AlertType.SUCCESS })}
+		/>
+		<ToggleItem
+			card
+			label="Toggle item"
+			changed={async (value) => await showAlert('Toggle changed: ' + value, { type: AlertType.SUCCESS })}
+		/>
+	</Card>
+	<Card title="Chips">
+		<Chip label="Chip label" />
+		<Chip label="Clickable chip" clicked={async () => await showAlert('Chip clicked', { type: AlertType.SUCCESS })} />
+		<Chip label="Chip with icon" icon={personOutline} />
+		<Chip label="Chip with end icon" iconEnd={personOutline} />
+	</Card>
+	<Card title="Fabbutton">
+		<div class="relative h-24">
+			<FabButton
+				horizontal="center"
+				icon={addOutline}
+				indexedLabel="Add"
+				buttons={[
+					{
+						handler: async () => await showAlert('Add clicked', { type: AlertType.SUCCESS }),
+						icon: addOutline,
+						label: 'Add'
+					}
+				]}
+			/>
+		</div>
+	</Card>
+	<Card title="Popover" classList="text-center">
+		<Button label="Open popover" clicked={() => (popoverOpened = true)} />
+		<Popover open={popoverOpened} dismissed={() => (popoverOpened = false)}>
+			<div class="p-5">This is a popover.</div>
+		</Popover>
 	</Card>
 	<Card title="Calendar">
 		<div class="flex flex-col gap-4">
-			<Calendar apply={() => showAlert('Date selected', { type: AlertType.SUCCESS })}></Calendar>
-			<Calendar showTitle={false}></Calendar>
+			<Calendar applied={async () => await showAlert('Date selected', { type: AlertType.SUCCESS })} />
+			<Calendar showTitle={false} showButtons={false} />
 		</div>
-	</Card>
-	<Card title="Activity card" classList="bg-transparent">
-		<ActivityCard value={{ id: 1, location: 'Activity location', name: 'Activity name' }}></ActivityCard>
 	</Card>
 	<Card title="Items">
 		<CustomItem card>
 			<div class="flex w-full items-center justify-between gap-4">
 				<ion-label>Custom item</ion-label>
-				<Button click={() => showAlert('Button clicked', { type: AlertType.SUCCESS })} label="Click me"></Button>
+				<Button clicked={async () => await showAlert('Button clicked', { type: AlertType.SUCCESS })} label="Click me" />
 			</div>
 		</CustomItem>
 		<LabeledItem card label="Labeled item"></LabeledItem>
@@ -151,23 +195,39 @@
 		<LabeledItem
 			card
 			label="Clickable labeled item"
-			click={() => showAlert('Item clicked', { type: AlertType.SUCCESS })}
+			clicked={async () => await showAlert('Item clicked', { type: AlertType.SUCCESS })}
 		></LabeledItem>
-		<LabeledItem card label="Labeled item with icon" icon={documentOutline}></LabeledItem>
-		<InputItem card label="Input item" name="value"></InputItem>
-		<InputItem card label="Input item" name="value" helperText="With helper text"></InputItem>
-		<InputItem card label="Input item with icon" name="value" icon={personOutline}></InputItem>
+		<LabeledItem card label="Labeled item with icon" icon={documentOutline} />
+		<InputItem card label="Input item" name="value" />
+		<InputItem card label="Input item" name="value" helperText="With helper text" />
+		<InputItem card label="Input item with icon" name="value" icon={personOutline} />
 		<InputItem
 			card
 			label="Input item with clickable icon"
 			name="value"
 			inputIcon={attachOutline}
-			inputIconClick={() => showAlert('Item clicked', { type: AlertType.SUCCESS })}
-		></InputItem>
+			inputIconClicked={async () => await showAlert('Item clicked', { type: AlertType.SUCCESS })}
+		/>
+	</Card>
+	<Card title="Custom Input Items">
+		<AmountInputItem
+			card
+			label="Amount input item"
+			name="amount"
+			helperText="Use this in forms with formatter and parser"
+		/>
+		<TextareaInputItem icon={attachOutline} card label="Textarea item" name="textarea" />
+		<LocationInputItem
+			card
+			label="Location input item"
+			name="location"
+			helperText="Map not shown cos there is already an instance"
+		/>
+		<DatetimeInputItem card label="Datetime input item" name="datetime" />
 	</Card>
 	<Card title="Modal">
 		<div class="text-center">
-			<Button label="Open modal" click={() => (modalOpen = true)}></Button>
+			<Button label="Open modal" clicked={() => (modalOpen = true)} />
 		</div>
 	</Card>
 	<Card title="Map">
