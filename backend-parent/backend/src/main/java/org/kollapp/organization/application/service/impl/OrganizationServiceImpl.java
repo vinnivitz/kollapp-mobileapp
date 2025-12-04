@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.kollapp.core.config.properties.ApplicationProperties;
 import org.kollapp.organization.application.exception.InvalidInvitationCodeException;
 import org.kollapp.organization.application.exception.LastManagerException;
+import org.kollapp.organization.application.exception.MaxOrganizationsReachedException;
 import org.kollapp.organization.application.exception.OrganizationNotFoundException;
 import org.kollapp.organization.application.exception.PersonAlreadyHasTargetRoleException;
 import org.kollapp.organization.application.exception.PersonAlreadyRegisteredInOrganizationException;
@@ -71,6 +72,11 @@ public class OrganizationServiceImpl implements OrganizationService {
     @RequiresKollappUserRole
     public Organization createOrganization(Organization organization) {
         KollappUser user = kollappUserService.getLoggedInKollappUser();
+        long organizationCount = personOfOrganizationRepository.countByUserIdAndOrganizationRole(
+                user.getId(), OrganizationRole.ROLE_ORGANIZATION_MANAGER);
+        if (organizationCount >= applicationProperties.getMaxOrganizationsPerUser()) {
+            throw new MaxOrganizationsReachedException(messageSource);
+        }
         user.setRole(SystemRole.ROLE_KOLLAPP_ORGANIZATION_MEMBER);
         organization.setActivities(new ArrayList<>());
         organization.setOrganizationPostings(new ArrayList<>());
@@ -144,6 +150,10 @@ public class OrganizationServiceImpl implements OrganizationService {
     public void enterOrganizationByInvitationCode(String invitationCode) {
         String currentDateMinusOneDay = LocalDate.now().minusDays(1).toString();
         KollappUser currentUser = kollappUserService.getLoggedInKollappUser();
+        long membershipCount = personOfOrganizationRepository.countByUserId(currentUser.getId());
+        if (membershipCount >= applicationProperties.getMaxOrganizationsPerUser()) {
+            throw new MaxOrganizationsReachedException(messageSource);
+        }
         OrganizationInvitationCode organizationInvitationCode = organizationInvitationCodeRepository
                 .findByInvitationCodeAndExpirationDateIsAfter(invitationCode, currentDateMinusOneDay)
                 .orElseThrow(() -> new InvalidInvitationCodeException(messageSource));

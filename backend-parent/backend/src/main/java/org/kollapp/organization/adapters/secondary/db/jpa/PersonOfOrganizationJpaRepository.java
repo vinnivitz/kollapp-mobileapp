@@ -7,6 +7,7 @@ import org.jmolecules.ddd.annotation.Repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import org.kollapp.organization.application.model.Organization;
+import org.kollapp.organization.application.model.OrganizationRole;
 import org.kollapp.organization.application.model.PersonOfOrganization;
 
 @Repository
@@ -16,4 +17,8 @@ public interface PersonOfOrganizationJpaRepository extends JpaRepository<PersonO
     Optional<PersonOfOrganization> findByUserIdAndOrganization(long userId, Organization organization);
 
     Optional<PersonOfOrganization> findByIdAndOrganization(long id, Organization organization);
+
+    long countByUserId(long userId);
+
+    long countByUserIdAndOrganizationRole(long userId, OrganizationRole organizationRole);
 }

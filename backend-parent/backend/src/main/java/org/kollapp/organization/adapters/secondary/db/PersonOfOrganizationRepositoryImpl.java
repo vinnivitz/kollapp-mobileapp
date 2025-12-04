@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import org.kollapp.organization.adapters.secondary.db.jpa.PersonOfOrganizationJpaRepository;
 import org.kollapp.organization.application.model.Organization;
+import org.kollapp.organization.application.model.OrganizationRole;
 import org.kollapp.organization.application.model.PersonOfOrganization;
 import org.kollapp.organization.application.repository.PersonOfOrganizationRepository;
 
@@ -47,5 +48,15 @@ public class PersonOfOrganizationRepositoryImpl implements PersonOfOrganizationR
     @Override
     public Optional<PersonOfOrganization> findByIdAndOrganization(long id, Organization organization) {
         return personOfOrganizationJpaRepository.findByIdAndOrganization(id, organization);
+    }
+
+    @Override
+    public long countByUserId(long userId) {
+        return personOfOrganizationJpaRepository.countByUserId(userId);
+    }
+
+    @Override
+    public long countByUserIdAndOrganizationRole(long userId, OrganizationRole organizationRole) {
+        return personOfOrganizationJpaRepository.countByUserIdAndOrganizationRole(userId, organizationRole);
     }
 }
