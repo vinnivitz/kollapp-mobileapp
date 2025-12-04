@@ -7,6 +7,7 @@ import java.util.Optional;
 import jakarta.transaction.Transactional;
 
 import org.junit.jupiter.api.Test;
+import org.kollapp.organization.application.exception.SelfActionNotAllowedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
@@ -126,6 +127,12 @@ public class OrganizationServiceManagerIT extends BaseIT {
         // not existing organization but existing user
         assertThatExceptionOfType(OrganizationNotFoundException.class)
                 .isThrownBy(() -> organizationService.deleteUserFromOrganization(2, 4));
+    }
+
+    @Test
+    public void deleteOwnUserFromOrganizationShouldThrowException() {
+        assertThatExceptionOfType(SelfActionNotAllowedException.class)
+            .isThrownBy(() -> organizationService.deleteUserFromOrganization(1, 1));
     }
 
     @Test
@@ -255,6 +262,12 @@ public class OrganizationServiceManagerIT extends BaseIT {
         assertThatExceptionOfType(PersonAlreadyHasTargetRoleException.class)
                 .isThrownBy(() -> organizationService.grantRoleToPersonOfOrganization(
                         1, 3, OrganizationRole.ROLE_ORGANIZATION_MANAGER));
+    }
+
+    @Test
+    public void grantRoleToOwnUserShouldThrowException() {
+        assertThatExceptionOfType(SelfActionNotAllowedException.class)
+            .isThrownBy(() -> organizationService.grantRoleToPersonOfOrganization(1, 1, OrganizationRole.ROLE_ORGANIZATION_MEMBER));
     }
 
     @Test
