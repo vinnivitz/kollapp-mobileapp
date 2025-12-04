@@ -10,6 +10,8 @@ import org.kollapp.core.adapters.primary.rest.dto.ErrorResponseTO;
 import org.kollapp.core.adapters.primary.rest.dto.ResponseTO;
 import org.kollapp.organization.application.exception.ActivityNotFoundException;
 import org.kollapp.organization.application.exception.InvalidInvitationCodeException;
+import org.kollapp.organization.application.exception.InvalidOrganizationRoleException;
+import org.kollapp.organization.application.exception.InvalidPostingTypeException;
 import org.kollapp.organization.application.exception.LastManagerException;
 import org.kollapp.organization.application.exception.OrganizationAuthorizationException;
 import org.kollapp.organization.application.exception.OrganizationNotFoundException;
@@ -64,6 +66,16 @@ public class OrganizationExceptionHandler {
     @ExceptionHandler(OrganizationAuthorizationException.class)
     public ResponseEntity<ResponseTO> handleOrganizationAuthorizationException(OrganizationAuthorizationException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponseTO(ex.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidOrganizationRoleException.class)
+    public ResponseEntity<ResponseTO> handleInvalidOrganizationRole(InvalidOrganizationRoleException ex) {
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidPostingTypeException.class)
+    public ResponseEntity<ResponseTO> handleInvalidPostingType(InvalidPostingTypeException ex) {
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
     }
 
     @ExceptionHandler(LastManagerException.class)
