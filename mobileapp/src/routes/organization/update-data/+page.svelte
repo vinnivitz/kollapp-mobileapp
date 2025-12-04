@@ -1,113 +1,69 @@
 <script lang="ts">
-	import type { OrganizationModel } from '$lib/models/models';
+	import { accessibilityOutline, readerOutline, saveOutline } from 'ionicons/icons';
 
-	import { loadingController } from 'ionic-svelte';
-	import { accessibilityOutline, locationOutline, mapOutline, readerOutline, saveOutline } from 'ionicons/icons';
-
-	import { type UpdateOrganizationDto, updateOrganizationSchema } from '$lib/api/dto/client/organization';
-	import { organizationResource } from '$lib/api/resources';
+	import { organizationService } from '$lib/api/services';
+	import { updateOrganizationSchema } from '$lib/api/validation/organization';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
-	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
-	import TextareaItem from '$lib/components/widgets/ionic/TextareaItem.svelte';
-	import LeafletMap from '$lib/components/widgets/LeafletMap.svelte';
+	import LocationInputItem from '$lib/components/widgets/ionic/LocationInputItem.svelte';
+	import TextareaInputItem from '$lib/components/widgets/ionic/TextareaInputItem.svelte';
 	import { t } from '$lib/locales';
-	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
+	import { Form } from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';
-	import { customForm, getValidationResult } from '$lib/utility';
+	import { customForm } from '$lib/utility';
 
-	const organization = $derived<OrganizationModel | undefined>($organizationStore);
-	let actions: FormActions<UpdateOrganizationDto>;
-	let model: UpdateOrganizationDto;
-	let form = $state<Form<UpdateOrganizationDto>>();
-	let touched = $state(false);
-	let mapModalOpen = $state(false);
-	let selectedLocation = $state('');
+	let touched = $state<boolean>(false);
 
-	const config: FormConfig<UpdateOrganizationDto> = {
-		exposedActions: (exposedActions) => (actions = exposedActions),
-		onSubmit,
+	const form = new Form({
+		completed: async () => {
+			await organizationStore.init();
+			touched = false;
+		},
+		exposedActions: (actions) => {
+			actions?.setModel({
+				description: $organizationStore!.description,
+				name: $organizationStore!.name,
+				place: $organizationStore!.place
+			});
+		},
+		failed: () => (touched = false),
+		initialModel: {
+			description: $organizationStore!.description,
+			name: $organizationStore!.name,
+			place: $organizationStore!.place
+		},
 		onTouched: () => (touched = true),
+		request: async (model) => organizationService.update($organizationStore?.id!, model),
 		schema: updateOrganizationSchema()
-	};
-
-	$effect(() => {
-		if (organization) {
-			model = updateOrganizationSchema().cast({
-				description: organization.description,
-				name: organization.name,
-				place: organization.place
-			}) as UpdateOrganizationDto;
-
-			form = new Form(model, config);
-		}
 	});
-
-	async function onSubmit(model: UpdateOrganizationDto, result: ValidationResult): Promise<void> {
-		if (result.valid) {
-			const loader = await loadingController.create({});
-			await loader.present();
-			result = getValidationResult(await organizationResource.update(organization!.id, model));
-			await loader.dismiss();
-			if (result.valid) {
-				touched = false;
-				organizationStore.init();
-			} else {
-				actions.applyValidationFeedback(result);
-			}
-		}
-	}
-
-	function onCancelMapModal(): void {
-		mapModalOpen = false;
-		selectedLocation = '';
-	}
-
-	function onConfirmMap(): void {
-		mapModalOpen = false;
-		actions.onUpdate('place', selectedLocation);
-	}
 </script>
 
-<Layout title={$t('routes.organization.update-info.title')} showBackButton>
+<Layout title={$t('routes.organization.update-data.page.title')} showBackButton>
 	{#if form}
-		<Card title={$t('routes.organization.update-info.card.title')}>
+		<Card title={$t('routes.organization.update-data.page.card.title')}>
 			<form use:customForm={form}>
 				<InputItem
 					name="name"
-					label={$t('routes.auth.register.organization.form.input.name')}
+					label={$t('routes.organization.update-data.page.card.form.name')}
 					icon={accessibilityOutline}
 				/>
-				<TextareaItem
+				<TextareaInputItem
 					name="description"
-					label={$t('routes.organization.page.update-data.form.description')}
+					label={$t('routes.organization.update-data.page.card.form.description')}
 					icon={readerOutline}
-				></TextareaItem>
-				<InputItem
-					name="place"
-					label={$t('routes.organization.page.register.form.place')}
-					icon={locationOutline}
-					inputIcon={mapOutline}
-					inputIconClick={() => (mapModalOpen = true)}
-					value={selectedLocation}
-				/>
+				></TextareaInputItem>
+				<LocationInputItem name="place" label={$t('routes.organization.update-data.page.card.form.place')} />
 				<Button
 					classList="mt-3"
 					expand="block"
 					type="submit"
 					disabled={!touched}
-					label={$t('routes.organization.update-info.card.button')}
+					label={$t('routes.organization.update-data.page.card.form.submit')}
 					icon={saveOutline}
 				/>
 			</form>
 		</Card>
 	{/if}
 </Layout>
-
-<Modal open={mapModalOpen} confirm={onConfirmMap} dismissed={() => (mapModalOpen = false)} cancel={onCancelMapModal}>
-	{#if mapModalOpen}
-		<LeafletMap selected={(location) => (selectedLocation = location)} classList="-m-4"></LeafletMap>
-	{/if}
-</Modal>

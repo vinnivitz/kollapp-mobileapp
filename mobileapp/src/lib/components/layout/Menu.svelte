@@ -1,16 +1,17 @@
 <script lang="ts">
-	import type { SearchableItemDto } from '$lib/api/dto/server';
+	import type { SearchableItemTO } from '$lib/api/dtos';
 	import type { Snippet } from 'svelte';
 
 	import * as icons from 'ionicons/icons';
+	import { notificationsOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
+	import type { RouteId } from '$app/types';
 
-	import { authResource, searchableResource } from '$lib/api/resources';
+	import { authenticationService, searchableService } from '$lib/api/services';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
 	import { t } from '$lib/locales';
-	import { type PageRoutePaths } from '$lib/models/routing';
 	import { triggerClickByLabel } from '$lib/utility';
 
 	type Properties = {
@@ -19,13 +20,14 @@
 
 	let { children }: Properties = $props();
 
-	let searchedItems = $state<SearchableItemDto[]>([]);
-	let searchValue = $state('');
+	let searchedItems = $state<SearchableItemTO[]>([]);
+	let searchValue = $state<string>('');
 	let menuController: HTMLIonMenuElement;
 
-	export async function navigate(route: PageRoutePaths, label?: string): Promise<void> {
+	export async function navigate(route: RouteId, label?: string): Promise<void> {
 		await menuController.close();
 		searchValue = '';
+		// eslint-disable-next-line svelte/no-navigation-without-resolve
 		await goto(route);
 		if (label) {
 			triggerClickByLabel(label);
@@ -33,28 +35,37 @@
 	}
 
 	async function logout(): Promise<void> {
-		await authResource.logout();
+		await authenticationService.logout();
 	}
 
 	async function onSearch(event: CustomEvent): Promise<void> {
 		searchValue = event.detail.value;
-		searchedItems = await searchableResource.filter(searchValue.toLowerCase());
+		searchedItems = await searchableService.filter(searchValue.toLowerCase());
 	}
 </script>
 
 <ion-menu side="end" content-id="menu" bind:this={menuController}>
 	<ion-header>
 		<ion-toolbar>
-			<!-- svelte-ignore event_directive_deprecated -->
-			<ion-searchbar
-				class="pt-5"
-				color="light"
-				debounce={100}
-				placeholder={$t('components.layout.menu.searchbar.placeholder')}
-				on:ionInput={onSearch}
-				value={searchValue}
-			>
-			</ion-searchbar>
+			<div class="flex">
+				<ion-searchbar
+					class="pt-5"
+					color="light"
+					debounce={100}
+					placeholder={$t('components.menu.header.toolbar.searchbar.placeholder')}
+					onionInput={onSearch}
+					value={searchValue}
+				>
+				</ion-searchbar>
+				<Button
+					fill="clear"
+					size="large"
+					classList="m-0"
+					color="light"
+					icon={notificationsOutline}
+					clicked={() => navigate('/account/notifications')}
+				/>
+			</div>
 		</ion-toolbar>
 	</ion-header>
 	<ion-content class="ion-padding relative text-center">
@@ -62,9 +73,9 @@
 			<ion-list>
 				<ion-list-header>
 					{#if searchedItems.length > 0}
-						{$t('components.layout.menu.searchbar.title.found', { value: searchValue })}
+						{$t('components.menu.search-results.found', { value: searchValue })}
 					{:else}
-						{$t('components.layout.menu.searchbar.title.not-found', { value: searchValue })}
+						{$t('components.menu.search-results.not-found', { value: searchValue })}
 					{/if}
 				</ion-list-header>
 				{#each searchedItems as item (item.id)}
@@ -72,7 +83,7 @@
 						transparent
 						label={item.label}
 						icon={icons[item.icon as keyof typeof icons]}
-						click={() => navigate(item.route, item.label)}
+						clicked={() => navigate(item.route, item.label)}
 					/>
 				{/each}
 			</ion-list>
@@ -83,13 +94,13 @@
 			<Button
 				size="default"
 				fill="outline"
-				click={logout}
+				clicked={logout}
 				icon={icons.logOutOutline}
-				label={$t('components.layout.header.button.logout')}
+				label={$t('components.menu.button.logout')}
 			/>
 			<hr class="my-3" />
 		{/if}
-		<div class="fixed right-0 bottom-0 left-0 bg-[var(--ion-background-color)]">
+		<div class="fixed right-0 bottom-0 left-0 bg-(--ion-background-color)">
 			<ion-note>
 				Made with <ion-text color="danger">&#10084;</ion-text> from Dresden.
 			</ion-note>

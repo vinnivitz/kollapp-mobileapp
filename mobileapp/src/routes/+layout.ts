@@ -3,46 +3,61 @@ import type { LayoutLoad } from './$types';
 import { App, type URLOpenListenerEvent } from '@capacitor/app';
 
 import { goto } from '$app/navigation';
+import { resolve } from '$app/paths';
+import type { RouteId } from '$app/types';
 
-import { PageRoute } from '$lib/models/routing';
-import { authenticationStore, connectionStore, layoutStore, themeStore } from '$lib/stores';
-import { isAuthenticated, navigateBack } from '$lib/utility';
+import { appStateStore } from '$lib/stores';
+import { initPushNotifications, isAuthenticated, navigateBack } from '$lib/utility';
 
 export const ssr = false;
 
 let initialized = false;
 
-export const load: LayoutLoad = async ({ url }) => {
-	const authenticated = await isAuthenticated();
-	await handleRouting(url.pathname, authenticated);
+export const load: LayoutLoad = async ({ route, url }) => {
 	if (!initialized) {
 		initialized = true;
+		await appStateStore.initialize();
 		handleAppEvents();
-		await initStores();
-	} else if (!authenticated) {
-		await authenticationStore.init();
+		initPushNotifications();
+	}
+
+	const authenticated = await isAuthenticated();
+	const shouldRedirect = await handleRouting(url.pathname, authenticated, route.id as RouteId);
+
+	if (shouldRedirect) {
+		await new Promise(() => {});
 	}
 };
 
-async function handleRouting(pathname: string, authenticated: boolean): Promise<void> {
-	const isAuthPath = pathname.startsWith(PageRoute.AUTH.ROOT);
+async function handleRouting(pathname: string, authenticated: boolean, routeId: RouteId): Promise<boolean> {
+	if (routeId === ('/auth/organization/[slug]' as RouteId)) return false;
+
+	const isAuthPath = pathname.startsWith('/auth' as RouteId);
 
 	if (authenticated && isAuthPath) {
-		return goto(PageRoute.HOME);
-	} else if (!authenticated && !isAuthPath) {
-		return goto(PageRoute.AUTH.LOGIN);
+		await goto(resolve('/'));
+		return true;
 	}
-}
 
-async function initStores(): Promise<void> {
-	await Promise.all([themeStore.init(), layoutStore.init(), connectionStore.init(), authenticationStore.init()]);
+	if (!authenticated && !isAuthPath) {
+		await goto(resolve('/auth/login'));
+		return true;
+	}
+
+	if (!authenticated && ['/auth' as RouteId, '/auth/organization' as RouteId].includes(routeId)) {
+		await goto(resolve('/auth/login'));
+		return true;
+	}
+
+	return false;
 }
 
 async function handleAppEvents(): Promise<void> {
 	App.addListener('appUrlOpen', async (event: URLOpenListenerEvent) => {
 		const url = event.url;
 		if (url.startsWith('kollapp://')) {
-			const path = url.replace('kollapp:/', '');
+			const path = url.replace('kollapp:/', '') as RouteId;
+			// eslint-disable-next-line svelte/no-navigation-without-resolve
 			await goto(path);
 		}
 	});

@@ -1,10 +1,11 @@
 <script lang="ts">
-	import type { Colors } from '$lib/models/ui';
 	import type { DatetimeChangeEventDetail } from '@ionic/core';
 
-	import { addYears } from 'date-fns';
+	import { TZDate } from '@date-fns/tz';
+	import { addYears, format } from 'date-fns';
 
 	import { t } from '$lib/locales';
+	import { type Colors, DateTimePickerType } from '$lib/models/ui';
 	import { localeStore } from '$lib/stores';
 	import { clickOutside } from '$lib/utility';
 
@@ -12,65 +13,57 @@
 		applyText?: string;
 		color?: Colors;
 		dismissText?: string;
-		includeDate?: boolean;
-		includeTime?: boolean;
+		max?: string;
+		min?: string;
+		showButtons?: boolean;
 		showTitle?: boolean;
+		type?: DateTimePickerType;
 		value?: string;
-		apply?: (value: string) => void;
-		dismiss?: () => void;
+		applied?: (value: string) => void;
+		dismissed?: () => void;
 	};
 
 	let {
-		apply,
-		applyText = $t('components.widgets.calendar.done-button.label'),
+		applied,
+		applyText = $t('components.widgets.ionic.datetime.apply'),
 		color = 'secondary',
-		dismiss,
-		dismissText = $t('components.widgets.calendar.dismiss-button.label'),
-		includeDate = true,
-		includeTime = false,
+		dismissed,
+		dismissText = $t('components.widgets.ionic.datetime.dismiss'),
+		max = format(addYears(new TZDate(), 10), 'yyyy-MM-dd'),
+		min,
+		showButtons = true,
 		showTitle = true,
-		value = new Date().toISOString()
+		type = DateTimePickerType.DATE,
+		value
 	}: Properties = $props();
 
-	let calendar = $state<HTMLIonDatetimeElement>();
-	let selectedDate = $state(new Date().toISOString());
-
 	function onDismiss(): void {
-		calendar?.reset();
-		dismiss?.();
+		dismissed?.();
 	}
 
 	async function onApply(event: CustomEvent<DatetimeChangeEventDetail>): Promise<void> {
-		calendar?.reset();
-		selectedDate = event.detail.value as string;
-		apply?.(selectedDate);
-	}
-
-	function getPresentation(): 'date-time' | 'date' | 'time' {
-		if (includeDate && includeTime) return 'date-time';
-		if (includeDate) return 'date';
-		return 'time';
+		value = event.detail.value as string;
+		applied?.(value);
 	}
 </script>
 
-<!-- svelte-ignore event_directive_deprecated -->
 <ion-datetime
 	{value}
-	show-default-buttons
+	{min}
+	{max}
+	show-default-buttons={showButtons}
 	cancel-text={dismissText}
 	done-text={applyText}
 	use:clickOutside
-	on:blur={onDismiss}
+	onblur={onDismiss}
 	{color}
 	size="cover"
-	max={addYears(new Date(), 10).toISOString()}
-	bind:this={calendar}
 	locale={$localeStore}
-	on:ionChange={onApply}
+	onionChange={onApply}
 	first-day-of-week={1}
-	presentation={getPresentation()}
+	presentation={type}
 >
 	{#if showTitle}
-		<span slot="title">{$t('routes.organization.page.activity.calendar.title')}</span>
+		<span slot="title">{$t('components.widgets.ionic.datetime.title')}</span>
 	{/if}
 </ion-datetime>

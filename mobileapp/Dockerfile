@@ -1,17 +1,16 @@
-FROM node:22-alpine AS base
+FROM node:24-alpine AS base
 WORKDIR /app
 RUN npm -g install pnpm
 
 FROM base AS builder
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml .npmrc ./
 RUN pnpm install --frozen-lockfile
 ENV VITE_API_URL=https://api.kollapp.org/api
 COPY . .
-RUN pnpm validate
 RUN pnpm build-web
 
 FROM base AS runner
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml .npmrc ./
 RUN pnpm install --frozen-lockfile --prod
 COPY --from=builder /app/build ./build
 

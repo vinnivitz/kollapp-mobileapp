@@ -1,26 +1,42 @@
 import { type ConnectionStatus, Network } from '@capacitor/network';
 import { get, writable } from 'svelte/store';
 
-import environment from '$lib/environment';
+import { dev } from '$app/environment';
+
 import { t } from '$lib/locales';
 import { PreferencesKey } from '$lib/models/preferences';
 import { type ConnectionStore } from '$lib/models/stores';
 import { AlertType } from '$lib/models/ui';
 import { showAlert, storeValue } from '$lib/utility';
 
-const $t = get(t);
-
 function createStore(): ConnectionStore {
 	const { set, subscribe } = writable<boolean | undefined>();
-
-	let lastNetworkCheck = 0;
-	let cachedNetworkStatus: ConnectionStatus;
+	let isInitialized = false;
 
 	async function init(): Promise<void> {
-		const status = await getStatus();
-		const isOnline = status?.connected ?? false;
-		await _set(isOnline);
+		if (isInitialized) return;
+		isInitialized = true;
+
+		const status = await Network.getStatus();
+		await _set(status.connected);
+
+		Network.addListener('networkStatusChange', async (status: ConnectionStatus) => {
+			const $t = get(t);
+			const wasOnline = get(connectionStore);
+			const isOnline = status.connected;
+
+			if (!isOnline && wasOnline) {
+				await showAlert($t('stores.connection.offline'));
+				if (dev) console.info('User is offline.');
+			} else if (isOnline && wasOnline === false) {
+				await showAlert($t('stores.connection.online'), { type: AlertType.SUCCESS });
+				if (dev) console.info('User is online.');
+			}
+
+			await _set(isOnline);
+		});
 	}
+
 	async function _set(value: boolean): Promise<void> {
 		await storeValue(PreferencesKey.ONLINE, value);
 		set(value);
@@ -30,28 +46,23 @@ function createStore(): ConnectionStore {
 		await _set(true);
 	}
 
-	async function getStatus(): Promise<ConnectionStatus> {
-		const now = Date.now();
-		if (!cachedNetworkStatus || now - lastNetworkCheck > environment.networkCheckInterval) {
-			cachedNetworkStatus = await Network.getStatus();
-			lastNetworkCheck = now;
-		}
-		return cachedNetworkStatus;
-	}
-
 	async function check(): Promise<void> {
-		const networkStatus = await getStatus();
-		const isOnline = networkStatus?.connected;
+		const $t = get(t);
+		const status = await Network.getStatus();
+		const isOnline = status.connected;
+
 		const wasOnline = get(connectionStore);
 
 		if (!isOnline && wasOnline) {
-			await storeValue(PreferencesKey.ONLINE, false);
-			showAlert($t('api.offline'));
-			console.info($t('api.offline'));
-		} else if (isOnline && !wasOnline) {
-			await storeValue(PreferencesKey.ONLINE, true);
-			showAlert($t('api.online'), { type: AlertType.SUCCESS });
-			console.info($t('api.online'));
+			await showAlert($t('stores.connection.offline'));
+			if (dev) console.info('User is offline.');
+		} else if (isOnline && wasOnline === false) {
+			await showAlert($t('stores.connection.online'), { type: AlertType.SUCCESS });
+			if (dev) console.info('User is online.');
+		}
+
+		if (status.connected !== wasOnline) {
+			await _set(isOnline);
 		}
 	}
 

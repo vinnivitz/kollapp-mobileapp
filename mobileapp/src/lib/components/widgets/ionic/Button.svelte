@@ -2,43 +2,66 @@
 	import { type Colors } from '$lib/models/ui';
 
 	type Properties = {
+		badge?: string;
+		badgeColor?: Colors;
 		classList?: string;
 		color?: Colors | undefined;
 		disabled?: boolean;
 		expand?: 'block' | 'full' | undefined;
 		fill?: 'clear' | 'default' | 'outline' | 'solid' | undefined;
 		icon?: string;
-		iconPosition?: 'end' | 'start';
+		iconEnd?: string;
 		iconSize?: 'large' | 'small' | undefined;
+		indexed?: string;
 		label?: string;
+		labelColor?: Colors;
+		readonly?: boolean;
 		shape?: 'round' | undefined;
 		size?: 'default' | 'large' | 'small' | undefined;
 		type?: 'button' | 'reset' | 'submit';
-		click?: (event?: MouseEvent) => void;
-	} & ({ type: 'submit'; click?: never } | { type?: 'button' | 'reset'; click: (event?: MouseEvent) => void }) &
+		clicked?: (event?: MouseEvent) => void;
+	} & (
+		| { readonly: true; type?: 'button' | 'reset'; clicked?: (event?: MouseEvent) => void }
+		| { readonly?: false; type?: 'button' | 'reset'; clicked: (event?: MouseEvent) => void }
+		| { type: 'submit'; clicked?: never; readonly?: boolean }
+	) &
 		({ icon: string; label?: string } | { label: string; icon?: string });
 
 	let {
-		classList,
-		click,
+		badge,
+		badgeColor = 'danger',
+		classList = '',
+		clicked,
 		color = 'secondary',
 		disabled,
 		expand,
 		fill,
 		icon,
-		iconPosition = 'start',
+		iconEnd,
 		iconSize,
+		indexed,
 		label,
-		shape,
+		labelColor,
+		readonly,
+		shape = 'round',
 		size,
 		type
 	}: Properties = $props();
 
+	// workaround to avoid reference linting error
+	void indexed;
+
 	const fontWeight = $derived(fill === 'outline' ? 'font-extrabold' : 'font-medium');
+
+	function onClicked(event: MouseEvent): void {
+		event.stopPropagation();
+		clicked?.(event);
+	}
 </script>
 
-<!-- svelte-ignore a11y_click_events_have_key_events -->
 <ion-button
+	onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && clicked?.()}
+	style={`pointer-events: ${readonly ? 'none' : 'auto'};`}
 	{shape}
 	{color}
 	{expand}
@@ -47,7 +70,7 @@
 	{size}
 	{type}
 	{disabled}
-	onclick={(event) => click?.(event)}
+	onclick={(event: MouseEvent) => onClicked(event)}
 	role="button"
 	tabindex="0"
 >
@@ -55,11 +78,12 @@
 </ion-button>
 
 {#snippet content()}
-	{#if icon}
+	{#if icon || iconEnd}
 		{#if label}
-			{#if iconPosition === 'start'}
+			{#if icon}
 				{@render startIcon()}
-			{:else}
+			{/if}
+			{#if iconEnd}
 				{@render endIcon()}
 			{/if}
 		{:else}
@@ -67,20 +91,31 @@
 		{/if}
 	{/if}
 	{#if label}
-		<ion-text class={fontWeight}>
+		<ion-text color={labelColor} class={fontWeight}>
 			{label}
 		</ion-text>
+	{/if}
+	{#if badge}
+		{@render badgeIcon()}
 	{/if}
 {/snippet}
 
 {#snippet startIcon()}
-	<ion-icon slot="start" {icon} size={size === 'large' ? 'large' : iconSize}></ion-icon>
+	<ion-icon slot="start" color={labelColor} {icon} size={size === 'large' ? 'large' : iconSize}></ion-icon>
 {/snippet}
 
 {#snippet endIcon()}
-	<ion-icon slot="end" {icon} size={size === 'large' ? 'large' : iconSize}></ion-icon>
+	<ion-icon slot="end" color={labelColor} icon={iconEnd} size={size === 'large' ? 'large' : iconSize}></ion-icon>
 {/snippet}
 
 {#snippet iconOnly()}
-	<ion-icon slot="icon-only" {icon} size={size === 'large' ? 'large' : iconSize}></ion-icon>
+	<ion-icon slot="icon-only" color={labelColor} {icon} size={size === 'large' ? 'large' : iconSize}></ion-icon>
+{/snippet}
+
+{#snippet badgeIcon()}
+	<div class="absolute top-1 right-1">
+		<ion-badge color={badgeColor}>
+			{badge}
+		</ion-badge>
+	</div>
 {/snippet}

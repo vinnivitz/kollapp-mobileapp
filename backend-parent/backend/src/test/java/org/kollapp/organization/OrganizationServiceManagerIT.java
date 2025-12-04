@@ -22,6 +22,7 @@ import org.kollapp.organization.application.exception.OrganizationNotFoundExcept
 import org.kollapp.organization.application.exception.PersonAlreadyHasTargetRoleException;
 import org.kollapp.organization.application.exception.PersonAlreadyRegisteredInOrganizationException;
 import org.kollapp.organization.application.exception.PersonNotRegisteredInOrganizationException;
+import org.kollapp.organization.application.exception.SelfActionNotAllowedException;
 import org.kollapp.organization.application.model.Organization;
 import org.kollapp.organization.application.model.OrganizationRole;
 import org.kollapp.organization.application.model.PersonOfOrganization;
@@ -126,6 +127,12 @@ public class OrganizationServiceManagerIT extends BaseIT {
         // not existing organization but existing user
         assertThatExceptionOfType(OrganizationNotFoundException.class)
                 .isThrownBy(() -> organizationService.deleteUserFromOrganization(2, 4));
+    }
+
+    @Test
+    public void deleteOwnUserFromOrganizationShouldThrowException() {
+        assertThatExceptionOfType(SelfActionNotAllowedException.class)
+                .isThrownBy(() -> organizationService.deleteUserFromOrganization(1, 1));
     }
 
     @Test
@@ -255,6 +262,13 @@ public class OrganizationServiceManagerIT extends BaseIT {
         assertThatExceptionOfType(PersonAlreadyHasTargetRoleException.class)
                 .isThrownBy(() -> organizationService.grantRoleToPersonOfOrganization(
                         1, 3, OrganizationRole.ROLE_ORGANIZATION_MANAGER));
+    }
+
+    @Test
+    public void grantRoleToOwnUserShouldThrowException() {
+        assertThatExceptionOfType(SelfActionNotAllowedException.class)
+                .isThrownBy(() -> organizationService.grantRoleToPersonOfOrganization(
+                        1, 1, OrganizationRole.ROLE_ORGANIZATION_MEMBER));
     }
 
     @Test

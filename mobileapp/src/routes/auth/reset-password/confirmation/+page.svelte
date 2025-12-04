@@ -1,81 +1,66 @@
 <script lang="ts">
 	import type { PageData } from './$types';
+	import type { ResetPasswordRequestTO } from '@kollapp/api-types';
 
-	import { loadingController } from 'ionic-svelte';
 	import { keyOutline, keySharp } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 
-	import { type ResetPasswordConfirmationDto, resetPasswordConfirmationSchema } from '$lib/api/dto/client/auth';
-	import { publicUserResource } from '$lib/api/resources';
+	import { publicUserService } from '$lib/api/services';
+	import { resetPasswordSchema } from '$lib/api/validation/authentication';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import { t } from '$lib/locales';
-	import { PageRoute } from '$lib/models/routing';
-	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
-	import { customForm, getValidationResult, showAlert } from '$lib/utility';
+	import { Form } from '$lib/models/ui';
+	import { customForm, passwordConfirmationValidator, showAlert } from '$lib/utility';
 
 	const { data }: { data: PageData } = $props();
 
 	$effect(() => {
 		if (!data.token) {
-			showAlert($t('routes.auth.reset-password.confirmation.no-token'));
-			goto(PageRoute.AUTH.LOGIN);
+			showAlert($t('routes.auth.reset-password.confirmation.page.no-token'));
+			goto(resolve('/auth/login'));
 		}
 	});
 
-	const model = resetPasswordConfirmationSchema().cast({}) as ResetPasswordConfirmationDto;
-	let actions: FormActions<ResetPasswordConfirmationDto>;
-	let touched = $state(false);
-
-	const config: FormConfig<ResetPasswordConfirmationDto> = {
-		exposedActions: (exposedActions) => (actions = exposedActions),
-		onSubmit,
-		onTouched: () => (touched = true),
-		schema: resetPasswordConfirmationSchema()
-	};
-
-	const form = new Form(model, config);
-
-	async function onSubmit(model: ResetPasswordConfirmationDto, result: ValidationResult): Promise<void> {
-		if (result.valid) {
-			const loading = await loadingController.create({});
-			await loading.present();
-			delete model.confirmPassword;
-			result = getValidationResult(await publicUserResource.resetPassword(model, data.token!));
-			if (result.valid) {
-				await goto(PageRoute.AUTH.LOGIN);
-			} else {
-				actions.applyValidationFeedback(result);
-			}
-			await loading.dismiss();
-		}
-	}
+	const form = new Form({
+		completed: async () => goto(resolve('/auth/login')),
+		customValidators: {
+			confirmPassword: passwordConfirmationValidator<ResetPasswordRequestTO & { confirmPassword: string }>(
+				'password',
+				'confirmPassword'
+			)
+		},
+		request: async (model) => {
+			return publicUserService.resetPassword(model, data.token!);
+		},
+		schema: resetPasswordSchema()
+	});
 </script>
 
-<Layout title={$t('routes.auth.reset-password.confirmation.title')} showBackButton>
-	<Card title={$t('routes.auth.reset-password.confirmation.form.title')}>
+<Layout title={$t('routes.auth.reset-password.confirmation.page.title')} showBackButton>
+	<Card title={$t('routes.auth.reset-password.confirmation.page.card.title')}>
 		<form use:customForm={form}>
 			<InputItem
 				name="password"
 				type="password"
-				label={$t('routes.auth.reset-password.confirmation.form.input.password')}
+				label={$t('routes.auth.reset-password.confirmation.page.card.form.password')}
 				icon={keyOutline}
 			/>
 			<InputItem
 				name="confirmPassword"
 				type="password"
-				label={$t('routes.auth.reset-password.confirmation.form.input.confirm-password')}
+				label={$t('routes.auth.reset-password.confirmation.page.card.form.confirm-password')}
 				icon={keySharp}
 			/>
 			<Button
 				classList="mt-3"
 				expand="block"
 				type="submit"
-				label={$t('routes.auth.reset-password.confirmation.form.submit')}
-				disabled={!touched}
+				label={$t('routes.auth.reset-password.confirmation.page.card.form.submit')}
 			/>
 		</form>
 	</Card>

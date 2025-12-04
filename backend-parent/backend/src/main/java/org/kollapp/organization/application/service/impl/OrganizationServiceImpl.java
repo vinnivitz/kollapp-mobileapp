@@ -118,6 +118,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     @RequiresKollappOrganizationMemberRole
     public Organization deleteUserFromOrganization(long personOfOrganizationId, long organizationId) {
         organizationRoleHelper.verifyOrganizationManager(organizationId);
+        organizationRoleHelper.verifySelfActionNotAllowed(personOfOrganizationId);
         Organization organization = organizationRepository
                 .findById(organizationId)
                 .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
@@ -238,6 +239,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     @RequiresKollappOrganizationMemberRole
     public Organization grantRoleToPersonOfOrganization(long organizationId, long personId, OrganizationRole role) {
         organizationRoleHelper.verifyOrganizationManager(organizationId);
+        organizationRoleHelper.verifySelfActionNotAllowed(personId);
         Organization organization = organizationRepository
                 .findById(organizationId)
                 .orElseThrow(() -> new OrganizationNotFoundException(messageSource));

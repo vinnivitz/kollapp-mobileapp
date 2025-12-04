@@ -1,67 +1,92 @@
 <script lang="ts">
-	import type { UserRole } from '$lib/models/api';
+	import type { OrganizationRole } from '@kollapp/api-types';
 	import type { Snippet } from 'svelte';
 
 	import { type Colors } from '$lib/models/ui';
 
 	type Properties = {
-		accessible?: UserRole[];
+		accessible?: OrganizationRole;
+		border?: Colors;
 		children?: Snippet;
 		classList?: string;
 		color?: Colors | undefined;
-		contentHeight?: number;
 		icon?: string;
-		id?: string;
-		searchable?: string;
+		indexed?: string;
+		indexLabel?: string;
+		readonly?: boolean;
 		subtitle?: string;
 		title?: string;
-		click?: () => void;
+		titleIconEnd?: string;
+		titleIconStart?: string;
+		clicked?: () => void;
 	};
 
 	let {
 		accessible,
+		border,
 		children,
-		classList,
-		click,
-		color,
-		contentHeight,
+		classList = '',
+		clicked,
+		color = border ? 'transparent' : 'light',
 		icon,
-		id,
-		searchable,
+		indexed,
+		indexLabel,
+		readonly,
 		subtitle,
-		title
+		title,
+		titleIconEnd,
+		titleIconStart
 	}: Properties = $props();
 
 	// workaround to avoid reference linting error
-	void searchable;
+	void indexed;
 	void accessible;
-	void id;
 	void icon;
+
+	const borderStyle = $derived(border ? `1px solid var(--ion-color-${border})` : '0px solid transparent');
 </script>
 
-{#if !!click}
-	<!-- svelte-ignore a11y_click_events_have_key_events -->
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<ion-card {id} {color} button={!!click} class={classList} onclick={click}>
+{#if !!clicked}
+	<ion-card
+		onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && clicked?.()}
+		role="button"
+		tabindex="0"
+		style={`pointer-events: ${readonly ? 'none' : 'auto'}; border: ${borderStyle}`}
+		id={indexLabel}
+		{color}
+		button
+		class={classList}
+		onclick={clicked}
+	>
 		{@render content()}
 	</ion-card>
 {:else}
-	<ion-card {id} {color} button={!!click} class={classList}>
+	<ion-card id={indexLabel} {color} class={classList} style={`border: ${borderStyle}`}>
 		{@render content()}
 	</ion-card>
 {/if}
 
 {#snippet content()}
-	{#if title || subtitle}
+	{#if title || subtitle || titleIconStart || titleIconEnd}
 		<ion-card-header>
-			<ion-card-title class="text-center">{title}</ion-card-title>
+			<ion-card-title class="flex items-center justify-center gap-2 text-center text-2xl">
+				{#if titleIconStart}
+					<ion-icon icon={titleIconStart}></ion-icon>
+				{/if}
+				{#if title}
+					<ion-text>{title}</ion-text>
+				{/if}
+				{#if titleIconEnd}
+					<ion-icon icon={titleIconEnd}></ion-icon>
+				{/if}
+			</ion-card-title>
 			{#if subtitle}
 				<ion-card-subtitle>{subtitle}</ion-card-subtitle>
 			{/if}
 		</ion-card-header>
 	{/if}
 	{#if children}
-		<ion-card-content class={`${contentHeight ? 'h-[' + contentHeight + 'vh]' : ''}`}>
+		<ion-card-content>
 			{@render children()}
 		</ion-card-content>
 	{/if}
@@ -73,10 +98,6 @@
 
 		ion-card-title {
 			--color: var(--ion-color-dark);
-		}
-
-		.ion-card-content {
-			height: 400px;
 		}
 	}
 </style>

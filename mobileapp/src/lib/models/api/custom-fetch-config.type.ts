@@ -1,4 +1,4 @@
-import type { AuthorizationType, RequestMethod } from '$lib/models/api';
+import type { AuthorizationType, RequestMethod, StatusCode } from '$lib/models/api';
 
 /**
  * Custom fetch configuration
@@ -10,13 +10,15 @@ export type CustomFetchConfig =
 			method?: RequestMethod.DELETE | RequestMethod.GET;
 			query?: Record<string, string>;
 			silentOnError?: boolean;
+			silentOnSpecificStatus?: StatusCode[];
 			silentOnSuccess?: boolean;
 	  }
 	| {
-			method: RequestMethod.POST | RequestMethod.PUT;
+			method: RequestMethod.PATCH | RequestMethod.POST | RequestMethod.PUT;
 			authorizationType?: AuthorizationType;
-			body?: string;
+			body?: unknown;
 			query?: Record<string, string>;
 			silentOnError?: boolean;
+			silentOnSpecificStatus?: StatusCode[];
 			silentOnSuccess?: boolean;
 	  };

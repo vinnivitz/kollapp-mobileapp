@@ -10,6 +10,8 @@ import org.kollapp.core.adapters.primary.rest.dto.ErrorResponseTO;
 import org.kollapp.core.adapters.primary.rest.dto.ResponseTO;
 import org.kollapp.organization.application.exception.ActivityNotFoundException;
 import org.kollapp.organization.application.exception.InvalidInvitationCodeException;
+import org.kollapp.organization.application.exception.InvalidOrganizationRoleException;
+import org.kollapp.organization.application.exception.InvalidPostingTypeException;
 import org.kollapp.organization.application.exception.LastManagerException;
 import org.kollapp.organization.application.exception.MaxOrganizationsReachedException;
 import org.kollapp.organization.application.exception.OrganizationAuthorizationException;
@@ -19,6 +21,7 @@ import org.kollapp.organization.application.exception.PersonAlreadyRegisteredInO
 import org.kollapp.organization.application.exception.PersonNotRegisteredInOrganizationException;
 import org.kollapp.organization.application.exception.PersonOfOrganizationIsNotApprovedYetException;
 import org.kollapp.organization.application.exception.PostingDoesNotExistException;
+import org.kollapp.organization.application.exception.SelfActionNotAllowedException;
 
 @ControllerAdvice(basePackages = {"org.kollapp.organization"})
 @RestController
@@ -66,6 +69,16 @@ public class OrganizationExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponseTO(ex.getMessage()));
     }
 
+    @ExceptionHandler(InvalidOrganizationRoleException.class)
+    public ResponseEntity<ResponseTO> handleInvalidOrganizationRole(InvalidOrganizationRoleException ex) {
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidPostingTypeException.class)
+    public ResponseEntity<ResponseTO> handleInvalidPostingType(InvalidPostingTypeException ex) {
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
+    }
+
     @ExceptionHandler(LastManagerException.class)
     public ResponseEntity<ResponseTO> handleLastManager(LastManagerException ex) {
         return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
@@ -79,5 +92,10 @@ public class OrganizationExceptionHandler {
     @ExceptionHandler(MaxOrganizationsReachedException.class)
     public ResponseEntity<ResponseTO> handleMaxOrganizationsReached(MaxOrganizationsReachedException ex) {
         return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
+    }
+
+    @ExceptionHandler(SelfActionNotAllowedException.class)
+    public ResponseEntity<ResponseTO> handleSelfActionNotAllowed(SelfActionNotAllowedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponseTO(ex.getMessage()));
     }
 }

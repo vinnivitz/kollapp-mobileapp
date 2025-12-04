@@ -30,6 +30,7 @@ import org.kollapp.organization.adapters.primary.rest.dto.OrganizationUpdateRequ
 import org.kollapp.organization.adapters.primary.rest.dto.PersonOfOrganizationPatchRoleRequestTO;
 import org.kollapp.organization.adapters.primary.rest.mapper.OrganizationMapper;
 import org.kollapp.organization.application.model.Organization;
+import org.kollapp.organization.application.model.OrganizationRole;
 import org.kollapp.organization.application.service.OrganizationService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -113,8 +114,10 @@ public class OrganizationController {
             @PathVariable("organization-id") long organizationId,
             @PathVariable("person-id") long personId,
             @RequestBody PersonOfOrganizationPatchRoleRequestTO patchRoleRequestTO) {
-        Organization organization = organizationService.grantRoleToPersonOfOrganization(
-                organizationId, personId, patchRoleRequestTO.getRole());
+        OrganizationRole targetRole =
+                OrganizationRole.valueOf(patchRoleRequestTO.getRole().name());
+        Organization organization =
+                organizationService.grantRoleToPersonOfOrganization(organizationId, personId, targetRole);
         OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(organization);
         return ResponseEntity.ok(new DataResponseTO<>(organizationTO, "success.organization.get", messageSource));
     }

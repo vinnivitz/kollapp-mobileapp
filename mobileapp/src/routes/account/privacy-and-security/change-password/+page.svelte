@@ -1,88 +1,67 @@
 <script lang="ts">
-	import { loadingController } from 'ionic-svelte';
 	import { keyOutline, keySharp, saveOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 
-	import { type ChangePasswordDto, changePasswordSchema } from '$lib/api/dto/client/user';
-	import { userResource } from '$lib/api/resources';
+	import { userService } from '$lib/api/services';
+	import { changePasswordSchema } from '$lib/api/validation/user';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import { t } from '$lib/locales';
-	import { PageRoute } from '$lib/models/routing';
-	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
+	import { Form } from '$lib/models/ui';
 	import {
 		customForm,
-		getValidationResult,
 		isBiometricAvailable,
 		isBiometricEnabled,
+		passwordConfirmationValidator,
 		updatePasswordBiometricCredentials
 	} from '$lib/utility';
 
-	const model = changePasswordSchema().cast({}) as ChangePasswordDto;
-	let validationResult: ValidationResult;
-	let actions: FormActions<ChangePasswordDto>;
-	let touched = $state(false);
-
-	const config: FormConfig<ChangePasswordDto> = {
-		exposedActions: (exposedActions) => (actions = exposedActions),
-		onSubmit,
-		onTouched: () => (touched = true),
-		schema: changePasswordSchema()
-	};
-
-	const form = new Form(model, config);
-
-	async function onSubmit(model: ChangePasswordDto, result: ValidationResult): Promise<void> {
-		validationResult = result;
-		if (validationResult.valid) {
-			const loading = await loadingController.create({});
-			await loading.present();
-			delete model.confirmNewPassword;
-			validationResult = getValidationResult(await userResource.changePassword(model));
-			if (validationResult.valid) {
-				if ((await isBiometricAvailable()) && (await isBiometricEnabled())) {
-					await updatePasswordBiometricCredentials(model.newPassword);
-				}
-				await goto(PageRoute.ACCOUNT.ROOT);
-			} else {
-				actions.applyValidationFeedback(validationResult);
+	const form = new Form({
+		completed: async ({ model }) => {
+			if ((await isBiometricAvailable()) && (await isBiometricEnabled())) {
+				await updatePasswordBiometricCredentials(model.newPassword);
 			}
-			await loading.dismiss();
-		}
-	}
+			goto(resolve('/account'));
+		},
+		customValidators: {
+			confirmNewPassword: passwordConfirmationValidator('newPassword', 'confirmNewPassword')
+		},
+		request: async (model) => userService.changePassword(model),
+		schema: changePasswordSchema()
+	});
 </script>
 
-<Layout title={$t('routes.auth.change-password.confirmation.title')} showBackButton>
-	<Card title={$t('routes.auth.change-password.confirmation.form.title')}>
+<Layout title={$t('routes.account.privacy-and-security.change-password.page.title')} showBackButton>
+	<Card title={$t('routes.account.privacy-and-security.change-password.page.card.title')}>
 		<form use:customForm={form}>
 			<InputItem
 				name="currentPassword"
 				type="password"
-				label={$t('routes.account.change-password.form.input.current-password')}
+				label={$t('routes.account.privacy-and-security.change-password.page.card.form.current-password')}
 				icon={keyOutline}
 			/>
 			<InputItem
 				name="newPassword"
 				type="password"
-				label={$t('routes.account.change-password.form.input.new-password')}
+				label={$t('routes.account.privacy-and-security.change-password.page.card.form.new-password')}
 				icon={keySharp}
 			/>
 			<InputItem
 				name="confirmNewPassword"
 				type="password"
-				label={$t('routes.auth.reset-password.confirmation.form.input.confirm-password')}
+				label={$t('routes.account.privacy-and-security.change-password.page.card.form.confirm-new-password')}
 				icon={keySharp}
 			/>
 			<Button
 				classList="mt-3"
 				expand="block"
 				type="submit"
-				label={$t('routes.account.change-password.form.submit')}
+				label={$t('routes.account.privacy-and-security.change-password.page.card.form.submit')}
 				icon={saveOutline}
-				disabled={!touched}
 			/>
 		</form>
 	</Card>

@@ -1,3 +1,6 @@
 import type { PredefinedColors } from '@ionic/core';
 
-export type Colors = 'black' | 'white' | PredefinedColors;
+/**
+ * Type representing the colors used in the application.
+ */
+export type Colors = 'black' | 'transparent' | 'white' | PredefinedColors;

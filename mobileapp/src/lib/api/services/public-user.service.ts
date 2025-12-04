@@ -1,0 +1,48 @@
+import type { ForgotPasswordRequestTO, KollappUserSignupRequestTO, ResetPasswordRequestTO } from '@kollapp/api-types';
+
+import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/models/api';
+import { customFetch } from '$lib/utility';
+
+class PublicUserResource {
+	ENDPOINT = 'public/user';
+
+	/** Registers a new manager
+	 * @param model signup model
+	 * @returns {Promise<ResponseBody>} response body
+	 */
+	async register(model: KollappUserSignupRequestTO): Promise<ResponseBody> {
+		return customFetch(`${this.ENDPOINT}/signup`, {
+			authorizationType: AuthorizationType.NONE,
+			body: model,
+			method: RequestMethod.POST
+		});
+	}
+
+	/** Sends a password reset email to the user
+	 * @param model forgot password model
+	 * @returns {Promise<ResponseBody>} response body
+	 */
+	async forgotPassword(model: ForgotPasswordRequestTO): Promise<ResponseBody> {
+		return customFetch(`${this.ENDPOINT}/forgot-password`, {
+			authorizationType: AuthorizationType.NONE,
+			body: model,
+			method: RequestMethod.POST
+		});
+	}
+
+	/** Resets the user password
+	 * @param model reset password model
+	 * @param token reset token
+	 * @returns {Promise<ResponseBody>} response body
+	 */
+	async resetPassword(model: ResetPasswordRequestTO, token: string): Promise<ResponseBody> {
+		return customFetch(`${this.ENDPOINT}/reset-password`, {
+			authorizationType: AuthorizationType.NONE,
+			body: model,
+			method: RequestMethod.POST,
+			query: { token }
+		});
+	}
+}
+
+export const publicUserService = new PublicUserResource();
