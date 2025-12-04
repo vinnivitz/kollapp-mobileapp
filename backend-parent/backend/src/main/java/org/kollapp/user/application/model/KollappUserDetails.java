@@ -20,8 +20,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Setter
 public class KollappUserDetails implements UserDetails {
     private long id;
+
     private String username;
+
     private String email;
+
     private boolean isActivated;
 
     @JsonIgnore

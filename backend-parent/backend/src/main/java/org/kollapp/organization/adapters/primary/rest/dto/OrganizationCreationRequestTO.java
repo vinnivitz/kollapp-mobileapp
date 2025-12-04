@@ -22,5 +22,6 @@ public class OrganizationCreationRequestTO {
     @Size(max = 255, message = "{validation.organization.place.maxlength}")
     private String place;
 
+    @Size(max = 255, message = "{validation.organization.description.maxlength}")
     private String description;
 }
