@@ -7,7 +7,6 @@ import java.util.Optional;
 import jakarta.transaction.Transactional;
 
 import org.junit.jupiter.api.Test;
-import org.kollapp.organization.application.exception.SelfActionNotAllowedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
@@ -23,6 +22,7 @@ import org.kollapp.organization.application.exception.OrganizationNotFoundExcept
 import org.kollapp.organization.application.exception.PersonAlreadyHasTargetRoleException;
 import org.kollapp.organization.application.exception.PersonAlreadyRegisteredInOrganizationException;
 import org.kollapp.organization.application.exception.PersonNotRegisteredInOrganizationException;
+import org.kollapp.organization.application.exception.SelfActionNotAllowedException;
 import org.kollapp.organization.application.model.Organization;
 import org.kollapp.organization.application.model.OrganizationRole;
 import org.kollapp.organization.application.model.PersonOfOrganization;
@@ -132,7 +132,7 @@ public class OrganizationServiceManagerIT extends BaseIT {
     @Test
     public void deleteOwnUserFromOrganizationShouldThrowException() {
         assertThatExceptionOfType(SelfActionNotAllowedException.class)
-            .isThrownBy(() -> organizationService.deleteUserFromOrganization(1, 1));
+                .isThrownBy(() -> organizationService.deleteUserFromOrganization(1, 1));
     }
 
     @Test
@@ -267,7 +267,8 @@ public class OrganizationServiceManagerIT extends BaseIT {
     @Test
     public void grantRoleToOwnUserShouldThrowException() {
         assertThatExceptionOfType(SelfActionNotAllowedException.class)
-            .isThrownBy(() -> organizationService.grantRoleToPersonOfOrganization(1, 1, OrganizationRole.ROLE_ORGANIZATION_MEMBER));
+                .isThrownBy(() -> organizationService.grantRoleToPersonOfOrganization(
+                        1, 1, OrganizationRole.ROLE_ORGANIZATION_MEMBER));
     }
 
     @Test
