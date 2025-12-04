@@ -10,6 +10,7 @@ import org.kollapp.organization.application.exception.OrganizationAuthorizationE
 import org.kollapp.organization.application.exception.OrganizationNotFoundException;
 import org.kollapp.organization.application.exception.PersonNotRegisteredInOrganizationException;
 import org.kollapp.organization.application.exception.PersonOfOrganizationIsNotApprovedYetException;
+import org.kollapp.organization.application.exception.SelfActionNotAllowedException;
 import org.kollapp.organization.application.model.Organization;
 import org.kollapp.organization.application.model.OrganizationRole;
 import org.kollapp.organization.application.model.PersonOfOrganization;
@@ -43,6 +44,13 @@ class OrganizationRoleHelper {
         Organization organization = getOrganization(organizationId);
         if (!isManagerOfOrganization(currentUser, organization)) {
             throw new OrganizationAuthorizationException(messageSource);
+        }
+    }
+
+    protected void verifySelfActionNotAllowed(long targetUserId) {
+        KollappUser currentUser = kollappUserService.getLoggedInKollappUser();
+        if (currentUser.getId() == targetUserId) {
+            throw new SelfActionNotAllowedException(messageSource);
         }
     }
 

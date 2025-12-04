@@ -18,6 +18,7 @@ import org.kollapp.organization.application.exception.PersonAlreadyRegisteredInO
 import org.kollapp.organization.application.exception.PersonNotRegisteredInOrganizationException;
 import org.kollapp.organization.application.exception.PersonOfOrganizationIsNotApprovedYetException;
 import org.kollapp.organization.application.exception.PostingDoesNotExistException;
+import org.kollapp.organization.application.exception.SelfActionNotAllowedException;
 
 @ControllerAdvice(basePackages = {"org.kollapp.organization"})
 @RestController
@@ -73,5 +74,10 @@ public class OrganizationExceptionHandler {
     @ExceptionHandler(PersonAlreadyHasTargetRoleException.class)
     public ResponseEntity<ResponseTO> handlePersonAlreadyHasTargetRole(PersonAlreadyHasTargetRoleException ex) {
         return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
+    }
+
+    @ExceptionHandler(SelfActionNotAllowedException.class)
+    public ResponseEntity<ResponseTO> handleSelfActionNotAllowed(SelfActionNotAllowedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponseTO(ex.getMessage()));
     }
 }
