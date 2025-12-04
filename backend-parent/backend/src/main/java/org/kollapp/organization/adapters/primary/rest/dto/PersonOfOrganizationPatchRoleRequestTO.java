@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import org.kollapp.organization.application.model.OrganizationRole;
+import org.kollapp.organization.adapters.primary.rest.dto.enums.OrganizationRole;
 
 @Getter
 @Setter
