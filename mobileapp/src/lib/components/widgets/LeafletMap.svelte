@@ -113,7 +113,7 @@
 		}
 	}
 
-	async function onSearch(query: null | string | undefined): Promise<void> {
+	async function onSearch(query: string | undefined): Promise<void> {
 		if (!query) {
 			searchItems = [];
 			return;

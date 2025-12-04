@@ -161,7 +161,7 @@ function getAttributeValue(node: ASTComponent, name: string): string | undefined
 		return name; // Boolean attribute
 	}
 
-	// If the value is a single ExpressionTag (e.g., label={$t('...')})
+	// If the value is a single ExpressionTag
 	if (
 		typeof attributeNode.value === 'object' &&
 		!Array.isArray(attributeNode.value) &&
