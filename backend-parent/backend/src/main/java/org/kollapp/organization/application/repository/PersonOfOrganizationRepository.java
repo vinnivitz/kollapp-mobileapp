@@ -7,7 +7,6 @@ import org.jmolecules.architecture.hexagonal.SecondaryPort;
 import org.jmolecules.ddd.annotation.Repository;
 
 import org.kollapp.organization.application.model.Organization;
-import org.kollapp.organization.application.model.OrganizationRole;
 import org.kollapp.organization.application.model.PersonOfOrganization;
 
 @Repository
@@ -26,6 +25,4 @@ public interface PersonOfOrganizationRepository {
     Optional<PersonOfOrganization> findByIdAndOrganization(long id, Organization organization);
 
     long countByUserId(long userId);
-
-    long countByUserIdAndOrganizationRole(long userId, OrganizationRole organizationRole);
 }

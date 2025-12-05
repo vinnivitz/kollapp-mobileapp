@@ -72,8 +72,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     @RequiresKollappUserRole
     public Organization createOrganization(Organization organization) {
         KollappUser user = kollappUserService.getLoggedInKollappUser();
-        long organizationCount = personOfOrganizationRepository.countByUserIdAndOrganizationRole(
-                user.getId(), OrganizationRole.ROLE_ORGANIZATION_MANAGER);
+        long organizationCount = personOfOrganizationRepository.countByUserId(user.getId());
         if (organizationCount >= applicationProperties.getMaxOrganizationsPerUser()) {
             throw new MaxOrganizationsReachedException(messageSource);
         }
