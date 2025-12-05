@@ -16,9 +16,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import org.kollapp.core.adapters.primary.rest.dto.DataResponseTO;
+import org.kollapp.user.adapters.primary.rest.dto.AuthTokensTO;
 import org.kollapp.user.adapters.primary.rest.dto.LoginRequestTO;
+import org.kollapp.user.adapters.primary.rest.mapper.AuthTokensMapper;
 import org.kollapp.user.application.model.AuthToken;
-import org.kollapp.user.application.model.AuthenticatedKollappUser;
+import org.kollapp.user.application.model.AuthTokens;
 import org.kollapp.user.application.service.AuthService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,13 +36,17 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
+    @Autowired
+    private AuthTokensMapper authTokensMapper;
+
     @PostMapping("/signin")
     @Operation(summary = "Sign in a kollapp user")
-    public ResponseEntity<DataResponseTO<AuthenticatedKollappUser>> authenticateKollappUser(
+    public ResponseEntity<DataResponseTO<AuthTokensTO>> authenticateKollappUser(
             @Valid @RequestBody LoginRequestTO loginRequestTO) {
-        AuthenticatedKollappUser authenticatedKollappUser =
+        AuthTokens authenticatedKollappUser =
                 authService.authenticate(loginRequestTO.getUsername(), loginRequestTO.getPassword());
-        return ResponseEntity.ok(new DataResponseTO<>(authenticatedKollappUser, "success.user.signin", messageSource));
+        AuthTokensTO tokensTO = authTokensMapper.authTokensToAuthTokensTO(authenticatedKollappUser);
+        return ResponseEntity.ok(new DataResponseTO<>(tokensTO, "success.user.signin", messageSource));
     }
 
     @GetMapping("/refresh")
