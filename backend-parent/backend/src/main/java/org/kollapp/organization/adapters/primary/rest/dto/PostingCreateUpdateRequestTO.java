@@ -25,7 +25,7 @@ public class PostingCreateUpdateRequestTO {
     private PostingType type;
 
     @NotNull(message = "{validation.posting.amount.required}")
-    @Min(value = 0, message = "{validation.posting.amount.min}")
+    @Min(value = 1, message = "{validation.posting.amount.min}")
     @Max(value = 10_000_000, message = "{validation.posting.amount.max}")
     private long amountInCents;
 

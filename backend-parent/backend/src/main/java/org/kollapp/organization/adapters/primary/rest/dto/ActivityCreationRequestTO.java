@@ -13,12 +13,11 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ActivityCreationRequestTO {
-
     @NotBlank(message = "{validation.activity.name.required}")
     @Size(max = 50, message = "{validation.activity.name.maxlength}")
     private String name;
 
     @NotBlank(message = "{validation.activity.location.required}")
-    @Size(max = 255, message = "{validation.activity.location.maxlength}")
+    @Size(max = 50, message = "{validation.activity.location.maxlength}")
     private String location;
 }
