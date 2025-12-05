@@ -8,6 +8,7 @@ import jakarta.transaction.Transactional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -54,6 +55,9 @@ public class OrganizationServiceManagerIT extends BaseIT {
 
     @Autowired
     private OrganizationRepository organizationRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Test
     public void createOrganizationShouldCreateOrganization() {
@@ -309,7 +313,11 @@ public class OrganizationServiceManagerIT extends BaseIT {
 
     @Test
     public void deleteUserFromAllOrganizationsShouldThrowExceptionIfLastManager() {
-        assertThatExceptionOfType(LastManagerException.class).isThrownBy(() -> kollappUserService.deleteKollappUser());
+        KollappUser nina = kollappUserRepository.findByUsername("nina").orElseThrow();
+        nina.setPassword(passwordEncoder.encode("test"));
+        kollappUserRepository.save(nina);
+        assertThatExceptionOfType(LastManagerException.class)
+                .isThrownBy(() -> kollappUserService.deleteKollappUser("test"));
     }
 
     @Test
@@ -318,7 +326,10 @@ public class OrganizationServiceManagerIT extends BaseIT {
             authorities = {"ROLE_KOLLAPP_ORGANIZATION_MEMBER"})
     @Transactional
     public void deleteUserFromAllOrganizationsShouldDeleteUser() {
-        kollappUserService.deleteKollappUser();
+        KollappUser member = kollappUserRepository.findByUsername("member").orElseThrow();
+        member.setPassword(passwordEncoder.encode("test"));
+        kollappUserRepository.save(member);
+        kollappUserService.deleteKollappUser("test");
         assertThat(kollappUserRepository.findByUsername("member")).isEmpty();
         Optional<Organization> organization1 = organizationRepository.findById(1);
         Optional<Organization> organization3 = organizationRepository.findById(3);

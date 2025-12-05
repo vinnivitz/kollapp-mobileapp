@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import org.kollapp.core.adapters.primary.rest.dto.DataResponseTO;
 import org.kollapp.core.adapters.primary.rest.dto.MessageResponseTO;
+import org.kollapp.user.adapters.primary.rest.dto.DeleteAccountRequestTO;
 import org.kollapp.user.adapters.primary.rest.dto.KollappUserTO;
 import org.kollapp.user.adapters.primary.rest.dto.KollappUserUpdateRequestTO;
 import org.kollapp.user.adapters.primary.rest.dto.PasswordChangeRequestTO;
@@ -76,8 +77,9 @@ public class AuthorizedKollappUserController {
     @Operation(
             summary = "Delete the logged in user",
             security = {@SecurityRequirement(name = "bearer-key")})
-    public ResponseEntity<MessageResponseTO> deleteUser() {
-        kollappUserService.deleteKollappUser();
+    public ResponseEntity<MessageResponseTO> deleteUser(
+            @Valid @RequestBody DeleteAccountRequestTO deleteAccountRequestTO) {
+        kollappUserService.deleteKollappUser(deleteAccountRequestTO.getPassword());
         return ResponseEntity.ok(new MessageResponseTO("success.user.delete", messageSource));
     }
 }
