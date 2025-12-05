@@ -12,7 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import org.kollapp.organization.application.model.PostingType;
+import org.kollapp.organization.adapters.primary.rest.dto.enums.PostingType;
 
 @Getter
 @Setter

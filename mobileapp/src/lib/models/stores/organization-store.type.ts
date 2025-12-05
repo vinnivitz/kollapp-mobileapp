@@ -1,12 +1,11 @@
-import type { OrganizationModel } from '$lib/models/models';
-import type { BaseStore } from '$lib/models/stores';
+import type { LoadableStore } from '$lib/models/stores';
+import type { OrganizationMinifiedTO, OrganizationTO } from '@kollapp/api-types';
 import type { Writable } from 'svelte/store';
 
 /**
  * Store for organization information.
  */
-export type OrganizationStore = BaseStore<OrganizationModel> & {
-	initialized: Writable<boolean>;
-	organizations: Writable<OrganizationModel[]>;
-	change: (id: number) => Promise<void>;
+export type OrganizationStore = LoadableStore<OrganizationTO> & {
+	organizations: Writable<OrganizationMinifiedTO[]>;
+	update: (organizationId: number) => Promise<void>;
 };

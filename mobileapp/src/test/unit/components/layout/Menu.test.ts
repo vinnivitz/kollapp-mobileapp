@@ -1,106 +1,63 @@
-import { fireEvent, render, waitFor } from '@testing-library/svelte';
+import { fireEvent, render } from '@testing-library/svelte';
 import { createRawSnippet } from 'svelte';
-import { beforeAll, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, type Mock } from 'vitest';
 
 import { goto } from '$app/navigation';
+import type { RouteId } from '$app/types';
 
-import { authResource } from '$lib/api/resources';
+import { authenticationService, searchableService } from '$lib/api/services';
 import Menu from '$lib/components/layout/Menu.svelte';
-import { triggerClickByLabel } from '$lib/utility';
 
-const childText = 'Hello, world!';
-const properties = { children: createRawSnippet(() => ({ render: () => `<p>${childText}</p>` })) };
+const childHtml = 'Content';
 
-const { searchItem } = vi.hoisted(() => ({
-	searchItem: { icon: 'logOutOutline', id: '1', label: 'Test Item', route: '/test' }
-}));
+const children = createRawSnippet(() => ({ render: () => `<div>${childHtml}</div>` }));
 
-describe('Menu Component', () => {
-	beforeAll(() => {
-		vi.mock('$lib/api/resources', () => ({
-			authResource: {
-				logout: vi.fn()
-			},
-			searchableResource: {
-				filter: vi.fn().mockResolvedValue([searchItem])
-			}
-		}));
-
-		vi.mock('$lib/utility', () => ({
-			triggerClickByLabel: vi.fn()
-		}));
-	});
-
-	it('renders a searchbar and children', () => {
-		const { container } = render(Menu, { props: properties });
-		const ionContent = container.querySelector('ion-content');
-		const searchbar = container.querySelector('ion-searchbar');
-
-		expect(ionContent?.textContent).toContain(childText);
-		expect(searchbar).toBeTruthy();
-	});
-
-	it('should perform a search and navigate when a search result is clicked', async () => {
-		const { container } = render(Menu, { props: properties });
-		const ionContent = container.querySelector('ion-content');
-		const ionMenu = container.querySelector('ion-menu') as HTMLIonMenuElement;
-		const searchbar = container.querySelector('ion-searchbar');
-
-		ionMenu.close = vi.fn();
-
-		expect(ionContent?.textContent).toContain(childText);
-		expect(ionMenu).toBeTruthy();
-		expect(searchbar).toBeTruthy();
-
-		await fireEvent(
-			searchbar as HTMLIonSearchbarElement,
-			new CustomEvent('ionInput', { detail: { value: searchItem.label } })
-		);
-
-		await waitFor(async () => {
-			const listItem = container.querySelector('ion-item') as HTMLIonItemElement;
-
-			expect(listItem?.textContent).toContain(searchItem.label);
-			fireEvent.click(listItem);
-
-			expect(ionMenu!.close).toHaveBeenCalled();
-
-			await waitFor(() => {
-				expect(goto).toHaveBeenCalledWith(searchItem.route);
-				expect(triggerClickByLabel).toHaveBeenCalledWith(searchItem.label);
-			});
-		});
-	});
-
-	it('should not display search results when search is emptied', async () => {
-		const { container, queryByText } = render(Menu, { props: properties });
-		const searchbar = container.querySelector('ion-searchbar');
-		const ionContent = container.querySelector('ion-content');
-		const ionMenu = container.querySelector('ion-menu') as HTMLIonMenuElement;
-		ionMenu.close = vi.fn();
-
-		expect(ionContent?.textContent).toContain(childText);
-		expect(ionMenu).toBeTruthy();
-		expect(searchbar).toBeTruthy();
-
-		await fireEvent(searchbar as HTMLIonSearchbarElement, new CustomEvent('ionInput', { detail: { value: '' } }));
-
-		await waitFor(() => {
-			expect(queryByText(searchItem.label)).toBeNull();
+describe('Menu', () => {
+	it('renders children when search is empty and shows logout', () => {
+		const { container } = render(Menu, {
+			props: { children }
 		});
 
-		await fireEvent(searchbar as HTMLIonSearchbarElement, new CustomEvent('ionInput', { detail: { value: '' } }));
-
-		await waitFor(() => {
-			expect(queryByText(searchItem.label)).toBeNull();
-		});
+		expect(container.querySelector('ion-content')).toBeTruthy();
+		const logoutLabel = container.querySelector('ion-content button, ion-content ion-button');
+		expect(logoutLabel).toBeTruthy();
 	});
 
-	it('calls logout when clicking the logout button', async () => {
-		const { container } = render(Menu, { props: properties });
-		const logoutButton = container.querySelector('ion-button') as HTMLIonButtonElement;
-		expect(logoutButton).toBeTruthy();
-		await fireEvent.click(logoutButton);
-		await waitFor(() => expect(authResource.logout).toHaveBeenCalled());
+	it('filters search results and lists items header', async () => {
+		(searchableService.filter as Mock).mockResolvedValueOnce([
+			{ icon: 'homeOutline', id: '1', label: 'Item', route: '/' }
+		]);
+
+		const { container } = render(Menu, {
+			props: { children }
+		});
+
+		const searchbar = container.querySelector('ion-searchbar') as HTMLIonSearchbarElement;
+		const event = new CustomEvent('ionInput', { detail: { value: 'i' } });
+		searchbar.dispatchEvent(event);
+
+		await Promise.resolve();
+
+		const list = container.querySelector('ion-list');
+		expect(list).toBeTruthy();
+	});
+
+	it('navigate closes menu and calls goto', async () => {
+		const { component } = render(Menu, {
+			props: { children }
+		});
+
+		await component.navigate('/account' as RouteId);
+		expect(goto).toHaveBeenCalled();
+	});
+
+	it('logout triggers authenticationService.logout', async () => {
+		const { container } = render(Menu, {
+			props: { children }
+		});
+
+		const button = container.querySelector('ion-content button, ion-content ion-button') as HTMLIonButtonElement;
+		await fireEvent.click(button);
+		expect(authenticationService.logout).toHaveBeenCalled();
 	});
 });

@@ -1,3 +1,7 @@
 import type { BaseStore } from '$lib/models/stores';
+import type { ApiVersionTO } from '@kollapp/api-types';
 
-export type VersionStore = BaseStore;
+/**
+ * Store for version information.
+ */
+export type VersionStore = BaseStore<ApiVersionTO>;

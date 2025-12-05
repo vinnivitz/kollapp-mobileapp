@@ -28,12 +28,29 @@
 		}
 	}
 
+	ion-item:has(ion-chip) {
+		:first-child {
+			padding-left: 4px;
+		}
+	}
+
 	ion-button {
 		text-transform: none;
 	}
 
 	ion-toast {
 		--button-color: var(--ion-color-white);
+	}
+
+	.scroll-viewport {
+		height: 100%;
+		overflow-y: auto;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	.sc-ion-searchbar-ios-h {
+		--background: var(--ion-background-color-step-50);
+		--border: 1px solid var(--ion-border-color);
 	}
 }
 

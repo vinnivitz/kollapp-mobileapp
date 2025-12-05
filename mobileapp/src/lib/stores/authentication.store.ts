@@ -22,8 +22,7 @@ function createStore(): AuthenticationStore {
 	}
 
 	async function reset(): Promise<void> {
-		initialized.set(false);
-		return _set();
+		await _set();
 	}
 
 	return {

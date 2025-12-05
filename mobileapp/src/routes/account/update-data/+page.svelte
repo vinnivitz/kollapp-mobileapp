@@ -1,68 +1,58 @@
 <script lang="ts">
-	import { loadingController } from 'ionic-svelte';
+	import type { KollappUserUpdateRequestTO } from '@kollapp/api-types';
+
 	import { mailOutline, personOutline, saveOutline } from 'ionicons/icons';
 
-	import { type UpdateUserDataDto, updateUserDataSchema } from '$lib/api/dto/client/user';
-	import { userResource } from '$lib/api/resources';
+	import { userService } from '$lib/api/services';
+	import { updateUserDataSchema } from '$lib/api/validation/user';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import { t } from '$lib/locales';
-	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
+	import { Form } from '$lib/models/ui';
 	import { userStore } from '$lib/stores';
 	import {
 		customForm,
-		getValidationResult,
 		isBiometricAvailable,
 		isBiometricEnabled,
 		updateUsernameBiometricCredentials
 	} from '$lib/utility';
 
-	let actions: FormActions<UpdateUserDataDto>;
-	let validationResult: ValidationResult;
+	let touched = $state<boolean>(false);
 
-	const model = updateUserDataSchema().cast({
-		email: $userStore?.email,
-		username: $userStore?.username
-	}) as UpdateUserDataDto;
-	const config: FormConfig<UpdateUserDataDto> = {
-		exposedActions: (exposedActions) => (actions = exposedActions),
-		onSubmit,
-		onTouched: () => (touched = true),
-		schema: updateUserDataSchema()
-	};
-	const form = new Form(model, config);
-	let touched = $state(false);
-
-	async function onSubmit(model: UpdateUserDataDto, result: ValidationResult): Promise<void> {
-		validationResult = result;
-		if (validationResult.valid) {
-			const loading = await loadingController.create({});
-			await loading.present();
-			validationResult = getValidationResult(await userResource.update(model));
-			if (validationResult.valid) {
-				await userStore.init();
-				touched = false;
-				if ((await isBiometricAvailable()) && (await isBiometricEnabled())) {
-					await updateUsernameBiometricCredentials(model.username);
-				}
-			} else {
-				actions.applyValidationFeedback(validationResult);
+	const form = new Form({
+		completed: async ({ model }) => {
+			if ((await isBiometricAvailable()) && (await isBiometricEnabled())) {
+				await updateUsernameBiometricCredentials(model.username);
 			}
-			await loading.dismiss();
-		}
-	}
+			await userStore.init();
+		},
+		exposedActions: (actions) => {
+			actions.setModel({
+				email: $userStore!.email,
+				username: $userStore!.username
+			});
+		},
+		onTouched: () => (touched = true),
+		request: async (model: KollappUserUpdateRequestTO) => userService.update(model),
+		schema: updateUserDataSchema()
+	});
 </script>
 
-<Layout title={$t('routes.account.update-data.title')} showBackButton>
+<Layout title={$t('routes.account.update-data.page.title')} showBackButton>
 	{#if form}
-		<Card title={$t('routes.account.update-data.card.title')}>
+		<Card title={$t('routes.account.update-data.page.card.title')}>
 			<form use:customForm={form}>
-				<InputItem name="username" label={$t('routes.account.update-data.card.form.username')} icon={personOutline} />
+				<InputItem
+					name="username"
+					label={$t('routes.account.update-data.page.card.form.username')}
+					icon={personOutline}
+				/>
 				<InputItem
 					name="email"
-					label={$t('routes.account.update-data.card.form.email')}
+					inputmode="email"
+					label={$t('routes.account.update-data.page.card.form.email')}
 					icon={mailOutline}
 					type="email"
 				/>
@@ -71,7 +61,7 @@
 					expand="block"
 					type="submit"
 					disabled={!touched}
-					label={$t('routes.account.update-data.card.form.button.submit')}
+					label={$t('routes.account.update-data.page.card.form.submit')}
 					icon={saveOutline}
 				/>
 			</form>

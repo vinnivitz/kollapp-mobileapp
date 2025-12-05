@@ -1,671 +1,1066 @@
 {
-  "routes": {
-    "home": {
-      "title": "Kollapp",
-      "card": {
-        "organization": {
-          "button": "Go to collective",
-          "register": "Register",
-          "join": "Join"
-        },
-        "user": {
-          "title": "Hello {{value}}!"
-        },
-        "register-organization": {
-          "title": "Register a new collective"
-        },
-        "join-organization": {
-          "title": "Join a collective"
-        }
-      }
-    },
-    "auth": {
-      "login": {
-        "title": "Log in",
-        "form": {
-          "input": {
-            "password": "Password",
-            "username": "Username"
-          },
-          "submit": "Log in"
-        },
-        "register": {
-          "text": "You are not registered yet?",
-          "link": "Register"
-        },
+  "api": {
+    "validation": {
+      "authentication": {
         "forgot-password": {
-          "text": "Forgot your password?",
-          "link": "Reset"
-        },
-        "resend-confirmation": {
-          "text": "Didn't received the confirmation mail?",
-          "link": "Resend"
-        },
-        "alert": {
-          "email-not-confirmed": "Email is not confirmed"
-        },
-        "card": {
-          "welcome": {
-            "title": "Welcome to Kollapp!",
-            "content": "The app for all the collectives out there."
+          "email": {
+            "invalid": "Email is not valid",
+            "required": "Email is required"
           }
-        },
-        "biometrics": "Log in with biometrics"
-      },
-      "register": {
-        "title": "Register",
-        "form": {
-          "input": {
-            "username": "Username",
-            "email": "Email",
-            "password": "Password",
-            "confirm-password": "Confirm password"
-          },
-          "submit": "Register"
         },
         "login": {
-          "text": "You are already registered?",
-          "link": "Log in"
-        },
-        "organization": {
-          "form": {
-            "input": {
-              "name": "Name"
-            },
-            "submit": "Register collective",
-            "title": "Whats your collective called?"
+          "password": {
+            "required": "Password is required"
           },
-          "title": "Register collective"
+          "username": {
+            "required": "Username is required"
+          }
         },
-        "card": {
-          "join-organization": {
-            "title": "Join an existing Collective?",
-            "content": "Contact the the collective admin for sending you an invitation email."
+        "register": {
+          "email": {
+            "invalid": "Email is invalid",
+            "max": "Email exceeds maximum length of 50 characters",
+            "required": "Email is required"
           },
-          "register-organization": {
-            "title": "Register to Kollapp"
+          "password": {
+            "min": "Password must be at least 8 characters long",
+            "max": "Password exceed maximum length of 255 characters",
+            "pattern": "Password has to contain at least a number and an uppercase letter",
+            "required": "Password is required"
+          },
+          "username": {
+            "min": "Username must be at least two characters long",
+            "max": "Username exceeds maximum length of 20 characters",
+            "required": "Username is required"
+          }
+        },
+        "resend-confirmation": {
+          "email": {
+            "invalid": "Email is invalid",
+            "required": "Email is required"
+          }
+        },
+        "reset-password": {
+          "password": {
+            "min": "Password must be at least 8 characters long",
+            "max": "Password exceeds maximum length of 255 characters",
+            "pattern": "Password should contain at least a number and an uppercase letter",
+            "required": "Password is required"
           }
         }
       },
-      "reset-password": {
-        "title": "Reset password",
-        "card": {
-          "title": "Enter your email"
-        },
-        "form": {
-          "email": "Email",
-          "buttons": {
-            "send": "Reset password"
-          }
-        },
-        "confirmation": {
-          "title": "Reset password",
-          "form": {
-            "title": "Reset your password",
-            "input": {
-              "password": "New password",
-              "confirm-password": "Confirm new password"
-            },
-            "submit": "Update password"
+      "budget": {
+        "create-posting": {
+          "amount": {
+            "min": "Amount should be a positive value",
+            "max": "Amount exceeds maximum value of 10,000,000",
+            "required": "Amount is required"
           },
-          "no-token": "Authentication token not found."
-        }
-      },
-      "resend-confirmation": {
-        "title": "Resend confirmation",
-        "card": {
-          "title": "Enter your email"
+          "date": {
+            "required": "Date is required"
+          },
+          "purpose": {
+            "max": "Purpose exceeds maximum of 200 characters",
+            "required": "Purpose is required"
+          }
         },
-        "form": {
-          "buttons": {
-            "send": "Send confirmation email"
+        "update-posting": {
+          "amount": {
+            "min": "Amount should be a positive value",
+            "max": "Amount exceeds maximum of 10,000,000",
+            "required": "Amount is required"
+          },
+          "date": {
+            "required": "Date is required"
+          },
+          "purpose": {
+            "required": "Purpose is required",
+            "max": "Purpose exceed maximum of 200 characters"
           }
         }
       },
-      "change-password": {
-        "confirmation": {
-          "title": "Change password",
-          "form": {
-            "title": "Update your password"
+      "organization": {
+        "create-activity": {
+          "location": {
+            "max": "Name of location exceeds maximum of 50 characters",
+            "required": "Name of location is required"
+          },
+          "name": {
+            "max": "Name exceeds maximum of 50 characters",
+            "required": "Name is required"
+          }
+        },
+        "create-organization": {
+          "description": {
+            "max": "Description exceeds maximum of 500 characters"
+          },
+          "name": {
+            "max": "Name exceeds maximum of 50 characters",
+            "required": "Name is required"
+          },
+          "place": {
+            "max": "Place exceeds maximum of 50 characters",
+            "required": "Place is required"
+          }
+        },
+        "join-organization": {
+          "code": {
+            "length": "Code must be exactly 8 characters long",
+            "required": "Code is required"
+          }
+        },
+        "update-activity": {
+          "location": {
+            "max": "Name of location exceeds maximum of 50 characters",
+            "required": "Name of location is required"
+          },
+          "name": {
+            "max": "Name exceeds maximum of 50 characters",
+            "required": "Name is required"
+          }
+        },
+        "update-organization": {
+          "description": {
+            "max": "Description exceeds maximum of 500 characters"
+          },
+          "name": {
+            "max": "Name exceeds maximum of 50 characters",
+            "required": "Name is required"
+          },
+          "place": {
+            "max": "Place exceeds maximum of 50 characters",
+            "required": "Place is required"
+          }
+        }
+      },
+      "user": {
+        "change-password": {
+          "current-password": {
+            "required": "Current password is required"
+          },
+          "new-password": {
+            "min": "New password must be at least 8 characters long",
+            "max": "New password exceeds 255 characters",
+            "matches": "New password should contain at least a number and a uppercase letter",
+            "required": "New password is required"
+          }
+        },
+        "update-user-data": {
+          "email": {
+            "invalid": "Email is not valid",
+            "max": "Email exceeds maximum of 50 characters",
+            "required": "Email is required"
+          },
+          "username": {
+            "min": "Username should be at least 2 characters long",
+            "max": "Username exceeds maximum of 50 characters",
+            "required": "Username is required"
           }
         }
       }
     },
-    "account": {
-      "title": "Account",
-      "list": {
-        "application": {
-          "title": "Application"
-        },
-        "account": {
-          "title": "Account settings",
-          "button": {
-            "update-data": "Update user data",
-            "delete-account": "Delete account",
-            "privacy-and-security": "Privacy and security"
+    "services": {
+      "osm": {
+        "location-query-error": "Locations could not be queried"
+      }
+    }
+  },
+  "components": {
+    "layout": {
+      "menu": {
+        "list": {
+          "account": {
+            "label": "Account"
           },
-          "privacy-and-security": {
-            "button": {
-              "change-password": "Change password",
-              "biometrics": "Log in with biometrics",
-              "notifications": "Notifications"
-            },
-            "form": {
-              "input": {
-                "password": "Password"
+          "activities": {
+            "label": "Events"
+          },
+          "collective": {
+            "label": "Collective"
+          }
+        }
+      }
+    },
+    "menu": {
+      "header": {
+        "toolbar": {
+          "searchbar": {
+            "placeholder": "Search the app..."
+          }
+        }
+      },
+      "search-results": {
+        "found": "Search results for \"{{value}}\"",
+        "not-found": "No results found for \"{{value}}\""
+      },
+      "button": {
+        "logout": "Log out"
+      }
+    },
+    "widgets": {
+      "ionic": {
+        "datetime": {
+          "apply": "Apply",
+          "dismiss": "Dismiss",
+          "title": "Select date"
+        },
+        "modal": {
+          "cancel": "Cancel",
+          "confirm": "Confirm"
+        },
+        "location-input-item": {
+          "modal": {
+            "confirm": "Select"
+          }
+        },
+        "multi-select-item": {
+          "all-selected": "All selected",
+          "none-selected": "None selected",
+          "search-placeholder": "Search...",
+          "select-all": "Select all events"
+        }
+      },
+      "budget-card": {
+        "heading": "Budget overview",
+        "no-postings": "No postings found.",
+        "all": "All",
+        "credit": "Income",
+        "debit": "Expense"
+      },
+      "leaflet-map": {
+        "searchbar": {
+          "placeholder": "Search location"
+        }
+      },
+      "page-not-found": {
+        "title": "Page not found",
+        "button": {
+          "back-to-home": "Back to home"
+        }
+      },
+      "welcome": {
+        "heading": "Welcome to Kollapp!",
+        "subheading": "The app for all the collectives out there."
+      }
+    },
+    "header": {
+      "back-button": "Back"
+    }
+  },
+  "stores": {
+    "app-state": {
+      "error": "An error occurred during app initialization."
+    },
+    "connection": {
+      "offline": "You are offline",
+      "online": "You are online"
+    }
+  },
+  "utility": {
+    "alert": {
+      "feature-not-implemented": "Feature is not implemented yet",
+      "toast": {
+        "button": "Close"
+      }
+    },
+    "api": {
+      "server-not-reachable": "Server not reachable",
+      "maintenance": {
+        "alert": {
+          "header": "Maintenance"
+        },
+        "message": "The app will probably be unavailable on {{value}} for some minutes."
+      },
+      "error": {
+        "authorization": "Authorization error",
+        "generic": "An error occurred"
+      },
+      "request-successful": "Request successful"
+    },
+    "biometrics": {
+      "not-available": "Biometrics not available",
+      "prompt": {
+        "cancel": "Cancel",
+        "subtitle": "Authenticate with biometrics",
+        "title": "Log in to Kollapp"
+      }
+    },
+    "form-validators": {
+      "password-confirmation": {
+        "no-match": "Must match the password"
+      }
+    },
+    "preferences": {
+      "failure": {
+        "store": "Failed to store value",
+        "retreive": "Failed to retrieve value",
+        "remove": "Failed to remove value"
+      }
+    },
+    "ui": {
+      "confirm-modal": {
+        "cancel": "Cancel",
+        "confirm": "Confirm",
+        "header": "Are you sure?",
+        "message": "This action cannot be undone."
+      },
+      "information-modal": {
+        "ok": "Okay"
+      },
+      "get-role-translation": {
+        "manager": "Manager",
+        "member": "Member"
+      }
+    }
+  },
+  "routes": {
+    "account": {
+      "delete": {
+        "page": {
+          "title": "Delete account",
+          "card": {
+            "title": "Are you sure?",
+            "submit": "Delete account",
+            "note": "This cannot be undone.",
+            "manager-hint": {
+              "heading": "You are the last manager of the following collectives:",
+              "message": "Deleting the account will delete these collectives."
+            }
+          },
+          "modal": {
+            "confirm": "Delete account",
+            "header": "All your data will be deleted."
+          }
+        }
+      },
+      "notifications": {
+        "page": {
+          "title": "Notifications",
+          "no-unread": "No unread notifications.",
+          "no-notifications": "No notifications found.",
+          "unread": "Unread",
+          "all": "All",
+          "read": "Read"
+        }
+      },
+      "privacy-and-security": {
+        "app-version": {
+          "page": {
+            "title": "App version",
+            "card": {
+              "title": "Version {{value}}"
+            }
+          }
+        },
+        "change-password": {
+          "page": {
+            "title": "Change password",
+            "card": {
+              "title": "Update your password",
+              "form": {
+                "current-password": "Current password",
+                "new-password": "New password",
+                "confirm-new-password": "Confirm password",
+                "submit": "Update password"
+              }
+            }
+          }
+        },
+        "legal": {
+          "page": {
+            "title": "Legal",
+            "card": {
+              "disclaimer": {
+                "title": "Disclaimer",
+                "liability-for-content": {
+                  "heading": "Liability for content",
+                  "content": "It is generally possible to use our website without providing any personal data.\n\nAs far as personal data (e.g. name, address or e-mail addresses) is collected on our pages, this is always done on a voluntary basis, as far as possible.\n\nThis data will not be passed on to third parties without your express consent.\n\nWe would like to point out that data transmission over the Internet (e.g. when communicating via email) can have security gaps.\n\nComplete protection of data from access by third parties is not possible.\n\nThe use of contact details published as part of the imprint obligation by third parties to send unsolicited advertising and information materials is hereby expressly prohibited.\n\nThe site operators expressly reserve the right to take legal action in the event of unsolicited advertising being sent, such as spam emails."
+                },
+                "liability-for-links": {
+                  "heading": "Liability for links",
+                  "content": "Our offer contains links to external third-party websites, the content of which we have no influence on. Therefore we cannot assume any liability for this external content. The respective provider or operator of the pages is always responsible for the content of the linked pages. The linked pages were checked for possible legal violations at the time of linking. Illegal content was not recognizable at the time of linking. However, a permanent control of the content of the linked pages is not reasonable without concrete evidence of an infringement. As soon as we become aware of legal violations, we will remove such links immediately."
+                },
+                "copyright": {
+                  "heading": "Copyright",
+                  "content": "The content and works on these application created by the application operators are subject to German copyright law. The duplication, editing, distribution and any kind of exploitation outside the limits of copyright require the written consent of the respective author or creator. Downloads and copies of this site are only permitted for private, non-commercial use. Insofar as the content on this application was not created by the operator, the copyrights of third parties are observed. In particular contents of third parties are marked as such. Should you nevertheless become aware of a copyright infringement, we ask that you inform us accordingly. As soon as we become aware of legal violations, we will remove such content immediately."
+                }
               },
-              "submit": "Confirm"
+              "privacy": {
+                "title": "Privacy",
+                "content": "Our application can usually be used without providing any personal data. Insofar as personal data (e.g. name, address or e-mail addresses) is collected on our application, this is always done on a voluntary basis as far as possible. This data will not be passed on to third parties without your express consent. We would like to point out that data transmission on the Internet (e.g. when communicating by e-mail) can have security gaps. A complete protection of the data against access by third parties is not possible. The use of contact data published as part of the imprint obligation by third parties for the purpose of sending unsolicited advertising and information material is hereby expressly prohibited. The site operators expressly reserve the right to take legal action in the event of unsolicited advertising being sent, such as spam e-mails."
+              },
+              "credits": {
+                "title": "Credits"
+              }
+            }
+          }
+        },
+        "page": {
+          "title": "Privacy and security",
+          "list": {
+            "privacy": {
+              "header": "Privacy",
+              "notifications": "Notifications",
+              "legal": "Legal"
+            },
+            "security": {
+              "header": "Security",
+              "change-password": "Change password",
+              "login-with-biometrics": "Log in with biometrics"
+            }
+          },
+          "modal": {
+            "password": {
+              "card": {
+                "title": "Confirm your password",
+                "form": {
+                  "password": "Password",
+                  "submit": "Confirm"
+                }
+              }
             }
           }
         }
       },
-      "app": {
-        "list": {
-          "language": {
-            "button": "Change language"
-          },
-          "layout": {
-            "button": "Change layout"
-          },
-          "theme": {
-            "button": "Change color theme"
-          },
-          "restore": {
-            "button": "Restore defaults"
-          }
-        }
-      },
-      "change-password": {
-        "form": {
-          "input": {
-            "current-password": "Current password",
-            "new-password": "New password"
-          },
-          "submit": "Update password"
-        }
-      },
-      "language": {
-        "action-sheet": {
-          "buttons": {
-            "german": "German",
-            "english": "English"
-          },
-          "title": "Change language"
-        }
-      },
-      "layout": {
-        "action-sheet": {
-          "buttons": {
-            "md": "Android (Material Design)",
-            "ios": "iOS (Human Interface Guidelines)"
-          },
-          "title": "Change layout"
-        }
-      },
-      "theme": {
-        "action-sheet": {
-          "buttons": {
-            "light": "Light",
-            "dark": "Dark",
-            "system": "System",
-            "bw": "Black and white"
-          },
-          "title": "Change color theme"
-        }
-      },
       "update-data": {
-        "title": "Update user data",
-        "card": {
-          "title": "Update your data",
-          "form": {
-            "username": "Username",
-            "email": "Email",
-            "button": {
+        "page": {
+          "title": "Update my data",
+          "card": {
+            "title": "My data",
+            "form": {
+              "username": "Username",
+              "email": "Email",
               "submit": "Update"
             }
           }
         }
       },
-      "delete": {
-        "title": "Delete account",
-        "card": {
-          "title": "Are you sure?",
-          "button": "Delete account",
-          "note": "This cannot be undone."
+      "page": {
+        "modal": {
+          "language": {
+            "title": "Change language",
+            "german": "German",
+            "english": "English"
+          },
+          "layout": {
+            "title": "Change layout",
+            "md": "Android (Material Design)",
+            "ios": "iOS (Human Interface Guidelines)"
+          },
+          "color-theme": {
+            "title": "Change color theme",
+            "system": "System",
+            "light": "Light",
+            "dark": "Dark",
+            "grayscale": "Black and white"
+          }
+        },
+        "title": "Account",
+        "list": {
+          "personal": {
+            "header": "Personal",
+            "notifications": "Notifications",
+            "my-data": "My data",
+            "privacy-and-security": "Privacy and security",
+            "delete-account": "Delete account"
+          },
+          "application": {
+            "header": "Application",
+            "language": "Change Language",
+            "color-theme": "Change color theme",
+            "layout": "Change layout",
+            "restore-defaults": "Restore default"
+          },
+          "miscellaneous": {
+            "header": "Miscellaneous",
+            "app-version": "App version",
+            "report-bug": "Report bug"
+          }
+        }
+      }
+    },
+    "auth": {
+      "login": {
+        "page": {
+          "biometrics": {
+            "wrong-credentials": "Could not log in with biometrics. Wrong credentials provided."
+          },
+          "form": {
+            "username": "Username",
+            "password": "Password",
+            "submit": "Log in"
+          },
+          "login-with-biometrics": "Log in with biometrics",
+          "register": {
+            "question": "You are not registered yet?",
+            "link": "Register"
+          },
+          "forgot-password": {
+            "question": "Forgot your password?",
+            "link": "Reset"
+          }
         }
       },
-      "page": {
-        "privacy-and-security": {
-          "title": "Privacy and security",
-          "list": {
-            "privacy": "Privacy",
-            "security": "Security"
-          },
-          "security": {
-            "list": {
-              "legal": "Legal"
-            }
-          },
+      "organization": {
+        "slug": {
           "page": {
-            "legal": {
-              "title": "Legal",
-              "list": {
-                "disclaimer": {
-                  "title": "Disclaimer",
-                  "content": {
-                    "content": {
-                      "title": "Liability for content",
-                      "content": "It is generally possible to use our website without providing any personal data.\\n\\n\\nAs far as personal data (e.g. name, address or e-mail addresses) is collected on our pages, this is always done on a voluntary basis, as far as possible.\\n\\n\\nThis data will not be passed on to third parties without your express consent.\\n\\n\\nWe would like to point out that data transmission over the Internet (e.g. when communicating via email) can have security gaps.\\n\\n\\nComplete protection of data from access by third parties is not possible.\\n\\n\\nThe use of contact details published as part of the imprint obligation by third parties to send unsolicited advertising and information materials is hereby expressly prohibited.\\n\\n\\nThe site operators expressly reserve the right to take legal action in the event of unsolicited advertising being sent, such as spam emails."
-                    },
-                    "links": {
-                      "title": "Liability for links",
-                      "content": "Our offer contains links to external third-party websites, the content of which we have no influence on. Therefore we cannot assume any liability for this external content. The respective provider or operator of the pages is always responsible for the content of the linked pages. The linked pages were checked for possible legal violations at the time of linking. Illegal content was not recognizable at the time of linking. However, a permanent control of the content of the linked pages is not reasonable without concrete evidence of an infringement. As soon as we become aware of legal violations, we will remove such links immediately."
-                    },
-                    "copyright": {
-                      "title": "Copyright",
-                      "content": "The content and works on these application created by the application operators are subject to German copyright law. The duplication, editing, distribution and any kind of exploitation outside the limits of copyright require the written consent of the respective author or creator. Downloads and copies of this site are only permitted for private, non-commercial use. Insofar as the content on this application was not created by the operator, the copyrights of third parties are observed. In particular contents of third parties are marked as such. Should you nevertheless become aware of a copyright infringement, we ask that you inform us accordingly. As soon as we become aware of legal violations, we will remove such content immediately."
-                    }
-                  }
-                },
-                "privacy": {
-                  "title": "Privacy",
-                  "content": "Our application can usually be used without providing any personal data. Insofar as personal data (e.g. name, address or e-mail addresses) is collected on our application, this is always done on a voluntary basis as far as possible. This data will not be passed on to third parties without your express consent. We would like to point out that data transmission on the Internet (e.g. when communicating by e-mail) can have security gaps. A complete protection of the data against access by third parties is not possible. The use of contact data published as part of the imprint obligation by third parties for the purpose of sending unsolicited advertising and information material is hereby expressly prohibited. The site operators expressly reserve the right to take legal action in the event of unsolicited advertising being sent, such as spam e-mails."
+            "title": "Collective",
+            "card": {
+              "join": {
+                "title": "Collective Details",
+                "form": {
+                  "description": "Description",
+                  "name": "Name",
+                  "place": "Place",
+                  "submit": "Join Collective",
+                  "info": {
+                    "not-authenticated": "You need to be logged in to join a collective.",
+                    "already-member": "You are already a member of this collective."
+                  },
+                  "login": "Log in"
+                }
+              },
+              "invalid-code": {
+                "title": "Invalid Code",
+                "info": "The provided code is invalid. Please ask the collective admin to provide you a new one.",
+                "button": {
+                  "go-back": "Go back"
                 }
               }
+            }
+          }
+        }
+      },
+      "register": {
+        "page": {
+          "card": {
+            "join": {
+              "title": "Join a Collective?",
+              "content": "Contact a collective admin to provide you with the invitation code to join their collective."
+            },
+            "register": {
+              "title": "Register to Kollapp",
+              "form": {
+                "username": "Username",
+                "email": "Email",
+                "password": "Password",
+                "confirm-password": "Confirm Password",
+                "submit": "Register"
+              },
+              "card": {
+                "login": {
+                  "content": "You are already registered?",
+                  "link": "Log&nbsp;in"
+                }
+              }
+            }
+          }
+        }
+      },
+      "resend-confirmation": {
+        "page": {
+          "title": "Resend confirmation",
+          "card": {
+            "title": "Enter your email",
+            "form": {
+              "email": "Email",
+              "submit": "Send confirmation email"
+            }
+          }
+        }
+      },
+      "reset-password": {
+        "confirmation": {
+          "page": {
+            "no-token": "Authentication token not found",
+            "title": "Update your password",
+            "card": {
+              "form": {
+                "password": "Password",
+                "confirm-password": "Confirm password",
+                "submit": "Update password"
+              },
+              "title": "Enter a new password"
+            }
+          }
+        },
+        "page": {
+          "title": "Reset password",
+          "card": {
+            "title": "Enter email to reset your password",
+            "form": {
+              "email": "Email",
+              "submit": "Get email for password reset"
             }
           }
         }
       }
     },
     "organization": {
-      "title": "Collective",
-      "update-info": {
-        "title": "Update collective",
-        "card": {
-          "title": "Update collective information",
-          "button": "Update information"
-        }
-      },
-      "list": {
-        "update-info": {
-          "update-info": "Update collective info"
-        },
-        "current-collective": {
-          "title": "Collective"
-        },
-        "general": {
-          "title": "General",
-          "register": {
-            "label": "Register new collective"
-          },
-          "leave": {},
-          "join": {
-            "label": "Join a collective"
-          }
-        },
-        "organization": {
-          "members": "Members",
-          "leave": {
-            "label": "Leave collective"
-          },
-          "activity": {
-            "label": "Manage events"
-          }
-        }
-      },
-      "page": {
-        "join": {
-          "title": "Join a collective",
-          "form": {
-            "code": "Code",
-            "submit": "Join"
-          }
-        },
-        "leave": {
-          "title": "Leave collective",
-          "card": {
-            "title": "Leave collective",
-            "button": "Leave",
-            "note": "All personal data collected to the collective will be deleted."
-          }
-        },
-        "activity": {
-          "title": "Events",
-          "create-modal": {
-            "card": {
-              "title": "New event",
-              "input": {
-                "name": "Name",
-                "location": "Location"
+      "activities": {
+        "slug": {
+          "page": {
+            "fab": {
+              "delete": "Delete event",
+              "archieve": "Archieve event",
+              "edit": "Edit event"
+            },
+            "filter-members": {},
+            "modal": {
+              "delete-activity": {
+                "confirm": "Delete event"
+              },
+              "delete-posting": {
+                "modal": {
+                  "confirm": "Delete transaction"
+                }
+              },
+              "update-activity": {
+                "confirm": "Update",
+                "card": {
+                  "title": "Update event",
+                  "form": {
+                    "name": "Title",
+                    "location": "Location",
+                    "date": "Date"
+                  }
+                }
+              },
+              "create-posting": {
+                "form": {
+                  "credit": "Income",
+                  "debit": "Expense",
+                  "amount": "Amount",
+                  "date": "Date",
+                  "purpose": "Purpose"
+                }
+              },
+              "update-posting": {
+                "card": {
+                  "title": "Update transaction",
+                  "form": {
+                    "credit": "Income",
+                    "debit": "Expense",
+                    "purpose": "Purpose",
+                    "amount": "Amount",
+                    "date": "Date"
+                  }
+                }
+              },
+              "transaction-history": {
+                "searchbar": "Search transactions...",
+                "no-transactions": "No transactions found.",
+                "reset-filters": "Reset filters"
+              },
+              "activity-filter": {
+                "card": {
+                  "title": "Filters",
+                  "credit": "Income",
+                  "debit": "Expense",
+                  "date": {
+                    "from": "From",
+                    "to": "To"
+                  },
+                  "members": {
+                    "all-selected": "All members selected",
+                    "none-selected": "No members selected",
+                    "search-placeholder": "Search members...",
+                    "select-all": "Select all members",
+                    "label": "Select members"
+                  },
+                  "reset": "Reset",
+                  "apply": "Apply"
+                }
               }
             },
-            "button": {
-              "confirm": "Create"
-            }
-          },
-          "no-organization-id": "Organization not found",
-          "edit-modal": {
-            "button": {
-              "confirm": "Update"
-            },
-            "card": {
-              "title": "Edit event",
-              "more-actions": {
-                "title": "More actions"
+            "create-posting": {
+              "title": {
+                "debit": "Add expense",
+                "credit": "Add income"
               }
+            },
+            "calendar-request-prompt": {
+              "denied": "Calendar access was denied by user",
+              "error": "Calendar is not available"
+            },
+            "title": "Event Details",
+            "event-summary": {
+              "add-to-calendar": "Add to calendar",
+              "open-in-map": "Open in map"
+            },
+            "posting-summary": {},
+            "action-button": "Event actions",
+            "postings-summary": {
+              "heading": "Event balance",
+              "total-credit": "Total income: {{value}}",
+              "total-debit": "Total expense: {{value}}",
+              "add-credit": "Add income",
+              "add-debit": "Add expense",
+              "transaction-history": "Transaction history"
             }
-          },
-          "calendar": {
-            "done": "Create event",
-            "title": "Selected date"
-          },
-          "search": {
-            "placeholder": "Search events..."
-          },
+          }
+        },
+        "page": {
           "segments": {
             "activities": "Events",
             "calendar": "Calendar"
           },
-          "no-activities-found": "No results for \"{{value}}\"",
           "filters": {
-            "title": "Filters",
-            "type": {
-              "pending": "Pending",
-              "archived": "Archieved"
-            }
+            "type": {},
+            "card": {}
           },
-          "no-activities": "No events found.",
-          "map-modal": {
-            "button": {
-              "confirm": "Select",
-              "cancel": "Cancel"
-            }
+          "title": "Events",
+          "calendar": {
+            "apply": "Create event"
           },
-          "update-modal": {
-            "card": {
-              "input": {
-                "location": "Location"
+          "activities": {
+            "fab": {
+              "create": "Create event"
+            },
+            "search": {
+              "placeholder": "Search events..."
+            },
+            "not-found": "No events found",
+            "no-results": "No results for \"{{value}}\""
+          },
+          "modal": {
+            "create-activity": {
+              "confirm": "Create",
+              "card": {
+                "title": "Create event",
+                "form": {
+                  "name": "Title",
+                  "location": "Location"
+                }
+              }
+            }
+          }
+        }
+      },
+      "info": {
+        "page": {
+          "title": "Collective info",
+          "card": {
+            "invalid-code": {
+              "title": "Code invalid or expired",
+              "content": "Ask the collective admin to provide you a new invitation code.",
+              "button": {
+                "back-to-home": "Back to home"
               }
             }
           },
-          "create": "Create event"
-        },
-        "register": {
-          "form": {
-            "place": "Place",
-            "description": "Description"
-          }
-        },
-        "update-data": {
-          "form": {
-            "description": "Description"
-          }
-        },
-        "members": {
           "modal": {
-            "invitation-code": {
-              "expires-in": "Expires",
-              "is-expired": "Code is expired. Please renew."
+            "join": {}
+          }
+        }
+      },
+      "join": {
+        "page": {
+          "qr-code": {
+            "invalid": "QR code is not valid.",
+            "error": "An error occurred while scanning the QR code. Please try again."
+          },
+          "modal": {
+            "join": {
+              "header": "Join request sent",
+              "message": "Your request to join {{value}} has been sent. You will be notified once it is approved."
             }
           },
-          "title": "Manage members"
+          "title": "Join collective",
+          "card": {
+            "title": "Join a collective with an invitation code",
+            "form": {
+              "code": "Code",
+              "helper-text": "Get it from a collective admin.",
+              "submit": "Join Collective"
+            }
+          }
         }
       },
-      "change-organization": {
-        "action-sheet": {
-          "title": "Change collective"
+      "leave": {
+        "page": {
+          "modal": {
+            "confirm": "Leave"
+          },
+          "title": "Leave collective",
+          "card": {
+            "title": "Leave the collective",
+            "note": "All personal data related to the collective will be deleted.",
+            "warning": "are the last manager of this organization. Leaving will delete the organization.",
+            "button": {
+              "members": "Grant manager role to another member",
+              "leave": "Leave collective"
+            }
+          }
         }
-      }
-    },
-    "orgnization": {
+      },
+      "members": {
+        "page": {
+          "modal": {
+            "approve-member": {
+              "confirm": "Approve",
+              "header": "Approve member",
+              "message": "User will be granted access to the collective"
+            },
+            "remove-member": {
+              "confirm": "Remove",
+              "message": "User will be removed from the collective."
+            },
+            "select-role": {
+              "manager": "Manager",
+              "member": "Member",
+              "header": "Select collective role"
+            },
+            "change-role": {
+              "header": "Change user role?",
+              "message": "User will be granted the role of a {{value}}"
+            },
+            "invitation-code": {
+              "card": {
+                "title": "Invitation Code",
+                "note": {
+                  "code-expired": "Code is expired. Please renew.",
+                  "expires-in": "Expires"
+                },
+                "button": {
+                  "renew": "Renew invitation code"
+                }
+              }
+            },
+            "qr-code": {
+              "info-text": "Join a collective by scanning this QR-Code",
+              "breadcrumb": {
+                "first": "Collective",
+                "second": "Join Collective"
+              }
+            }
+          },
+          "invitation-code": {
+            "clipboard": {
+              "info": "Invitation code wrote to clipboard"
+            },
+            "share": {
+              "text": "Join {{value}} using this invitation code: {{value2}}",
+              "title": "Join {{value}} on Kollapp!",
+              "error": "Sharing is not supported on this device"
+            },
+            "renew": {},
+            "email": {
+              "body": "User this invitation code to join {{value}}",
+              "subject": "Join {{value}} on Kollapp!",
+              "error": "Default email app is not configured",
+              "unsupported": "Sending email is not supported on this device."
+            }
+          },
+          "title": "Members",
+          "card": {
+            "invite-members": {},
+            "pending-members": {
+              "title": "Pending members"
+            }
+          },
+          "fab": {
+            "invite-members": {
+              "title": "Invite members"
+            }
+          },
+          "no-members": "No other members found.",
+          "invite": "Invite person"
+        }
+      },
+      "register": {
+        "page": {
+          "title": "Register",
+          "card": {
+            "title": "Register a collective",
+            "form": {
+              "name": "Name",
+              "description": "Description",
+              "place": "Place",
+              "submit": "Register collective"
+            }
+          }
+        }
+      },
+      "update-data": {
+        "page": {
+          "title": "Collective information",
+          "card": {
+            "title": "Update collective information",
+            "form": {
+              "name": "Name",
+              "description": "Description",
+              "place": "Place",
+              "submit": "Update information"
+            }
+          }
+        }
+      },
       "page": {
-        "join": {
-          "form": {
-            "title": "Enter the code"
+        "activity-filter-item": {
+          "not-assigned-to-activity": "Not assigned to event"
+        },
+        "modal": {
+          "select-organization": {
+            "header": "Change collective"
+          },
+          "delete-posting": {
+            "confirm-text": "Delete transaction"
+          },
+          "create-posting": {
+            "credit": "Income",
+            "debit": "Expense",
+            "date": "Date",
+            "activities": {
+              "all-selected": "All events selected",
+              "select": "Select event",
+              "search": "Search events..."
+            },
+            "purpose": "Purpose",
+            "amount": "Amount"
+          },
+          "update-posting": {
+            "card": {
+              "credit": "Income",
+              "debit": "Expense",
+              "purpose": "Purpose",
+              "amount": "Amount",
+              "date": "Date",
+              "activities": {
+                "all-selected": "All events selected",
+                "select": "Select event",
+                "search": "Search events..."
+              },
+              "title": "Update posting"
+            }
+          },
+          "postings-history": {
+            "search": "Search transactions...",
+            "not-found": "No transactions found.",
+            "reset-filters": "Reset filters"
+          },
+          "postings-filter": {
+            "card": {
+              "credit": "Income",
+              "debit": "Expense",
+              "title": "Filters",
+              "from": "From",
+              "to": "To",
+              "activities": {
+                "all-selected": "All events selected",
+                "select": "Select event",
+                "search": "Search events..."
+              },
+              "reset": "Reset filters",
+              "apply": "Apply filters"
+            }
+          }
+        },
+        "posting-translation": {
+          "debit": "Expense",
+          "cedit": "Income"
+        },
+        "title": "Collective",
+        "no-collective": {
+          "note": "You are not part of any collective."
+        },
+        "event-list": {
+          "list": {
+            "create-event": "Create event",
+            "header": "Events",
+            "manage-events": "Manage events"
+          }
+        },
+        "collective-list": {
+          "list": {
+            "header": "Collective",
+            "members": "Manage members",
+            "update-info": "Update collective info",
+            "leave": "Leave collective",
+            "change-collective": "Change collective"
+          }
+        },
+        "general": {
+          "list": {
+            "header": "General",
+            "register": "Register new collective",
+            "join": "Join a collective"
+          }
+        },
+        "budget-card": {
+          "card": {
+            "collective-balance": "Collective balance",
+            "total-credit": "Total income: {{value}}",
+            "total-debit": "Total expense: {{value}}",
+            "add-credit": "Add income",
+            "add-debit": "Add expense",
+            "postings-history": "Transaction history"
+          }
+        },
+        "pending-organization-join-request-card": {
+          "card": {
+            "info": "You have a pending request for joining"
+          }
+        },
+        "upcoming-event": {
+          "card": {
+            "title": "Upcoming event"
           }
         }
       }
-    }
-  },
-  "common": {
-    "page-routes": {
-      "account": "Account",
-      "home": "Home",
-      "organization": "Collective"
     },
-    "error-page": {
-      "card": {
-        "title": "Page not found.",
-        "content": {
-          "button": "Back to home"
-        }
-      }
-    }
-  },
-  "components": {
-    "widgets": {
-      "modal": {
-        "button": {
-          "confirm": "Confirm",
-          "cancel": "Cancel"
-        }
-      },
-      "calendar": {
-        "done-button": {
-          "label": "Apply"
-        },
-        "dismiss-button": {
-          "label": "Dismiss"
-        }
-      },
-      "map": {
-        "searchbar": {
-          "placeholder": "Search location"
-        },
-        "api": {
-          "error": "Locations could not be queried",
-          "location-error": "Location could not be determined"
-        }
+    "error": {
+      "page": {
+        "title": "Kollapp"
       }
     },
     "layout": {
-      "header": {
-        "button": {
-          "logout": "Log out",
+      "page": {
+        "tabs": {
+          "home": "Home",
+          "organization": "Collective",
           "account": "Account"
+        },
+        "title": "Kollapp - The collective app",
+        "error": {
+          "heading": "Initialization Error",
+          "content": "An error occurred while starting the app."
         }
-      },
-      "menu": {
-        "searchbar": {
-          "placeholder": "Search the app...",
-          "title": {
-            "found": "Search results for \"{{value}}\"",
-            "not-found": "No results found for \"{{value}}\""
+      }
+    },
+    "page": {
+      "page": {
+        "title": "Kollapp",
+        "account-card": {
+          "greetings": "Hello {{value}}",
+          "notifications": {
+            "no-notes": "No new notifications"
           }
         },
-        "list": {
-          "organization": "Collective"
-        }
-      }
-    }
-  },
-  "api": {
-    "dto": {
-      "register": {
-        "schema": {
-          "validation": {
-            "username": {
-              "min": "Username must be at least 2 characters",
-              "max": "Username must be less than 255 characters",
-              "required": "Username is required"
-            },
-            "email": {
-              "email": "Email is not valid",
-              "max": "Email must be less than 50 characters",
-              "required": "Email is required"
-            },
-            "password": {
-              "min": "Password must be at least 8 characters",
-              "max": "Password must be less than 255 characters",
-              "matches": "Password must contain at least one uppercase letter, one lowercase letter and one number",
-              "required": "Password is required"
-            },
-            "confirm-password": {
-              "no-match": "Must match the password"
-            }
+        "upcoming-event-card": {
+          "card": {
+            "title": "Upcoming event"
           }
-        }
-      },
-      "login": {
-        "schema": {
-          "validation": {
-            "username": {
-              "required": "Username is required"
-            },
-            "password": {
-              "required": "Password is required"
-            }
+        },
+        "organization-card": {
+          "card": {
+            "members": "{{value}} members",
+            "activities": "{{value}} events"
           }
-        }
-      },
-      "reset-password": {
-        "schema": {
-          "validation": {
-            "newPassword": {
-              "min": "The new password must be at least 8 characters",
-              "max": "New password must be less then 255 characters",
-              "matches": "Password must contain at least one uppercase letter, one lowercase letter and one number",
-              "required": "New password is required"
-            },
-            "confirm-password": {
-              "no-match": "Must match the new password"
-            },
-            "email": {
-              "invalid": "Invalid email",
-              "required": "Email is required"
-            }
+        },
+        "no-collectives-card": {
+          "card": {
+            "note": "You are not part of any collective yet.",
+            "register": "Register a new collective",
+            "join": "Join a collective"
           }
-        }
-      },
-      "change-password": {
-        "schema": {
-          "validation": {
-            "current-password": {
-              "required": "Current password is required"
-            },
-            "new-password": {
-              "max": "New password must be less than 255 characters",
-              "min": "New password must be at least 8 characters",
-              "matches": "New password must contain at least one uppercase letter, one lowercase letter and one number",
-              "required": "New password is required"
-            },
-            "confirm-password": {
-              "no-match": "Must match the new password"
-            }
-          }
-        }
-      },
-      "register-organization": {
-        "schema": {
-          "validation": {
-            "name": {
-              "max": "Name must be less than 50 characters long",
-              "required": "Name is required"
-            },
-            "description": {
-              "max": "Description must be less then 500 characters long"
-            },
-            "place": {
-              "max": "Name of place must be less then 50 characters long",
-              "required": "Name of place is required"
-            }
-          }
-        }
-      },
-      "client": {
-        "organization": {
-          "create-activity": {
-            "schema": {
-              "validation": {
-                "name": {
-                  "max": "Name must be less then 50 characters long",
-                  "required": "Name is required"
-                },
-                "location": {
-                  "max": "Name of location must be less then 50 characters long",
-                  "required": "Name of location is required"
-                }
-              }
-            }
-          },
-          "update-activity": {
-            "schema": {
-              "validation": {
-                "name": {
-                  "min": "Name must be at least one character long",
-                  "max": "Name must be less then 50 characters long",
-                  "required": "Name is required"
-                },
-                "location": {
-                  "min": "Name of location must be at least one character long",
-                  "max": "Name of location must be less then 50 characters long",
-                  "required": "Name of location is required"
-                }
-              }
-            }
-          }
-        }
-      },
-      "resend-confirmation": {
-        "schema": {
-          "validation": {
-            "email": {
-              "invalid": "Invalid Email",
-              "required": "Email is required"
-            }
-          }
-        }
-      },
-      "update-organization": {
-        "schema": {
-          "validation": {
-            "description": {
-              "max": "Description must be less then 500 characters long"
-            },
-            "name": {
-              "required": "Name is required",
-              "max": "Name must be less then 50 characters long"
-            },
-            "place": {
-              "max": "Name of place must be less then 50 characters long",
-              "required": "Name of place is required"
-            }
+        },
+        "pending-organization-join-request-card": {
+          "card": {
+            "note": "You have a pending request for joining {{value}}"
           }
         }
       }
-    },
-    "error": "An error occurred.",
-    "success": "Request successful",
-    "not-available": "Server not reachable",
-    "offline": "You are offline",
-    "online": "You are online",
-    "unauthorized": "Authentification failed"
-  },
-  "utils": {
-    "alert": {
-      "button": "Close"
-    },
-    "biometrics": {
-      "not-available": "Biometrics not available",
-      "cancel": "Cancel",
-      "subtitle": "Authenticate with biometrics",
-      "title": "Log in to Kollapp"
-    }
-  },
-  "stores": {
-    "maintenance": {
-      "alert": "The app will probably be unavailable on {{value}} for some minutes.",
-      "header": "Maintenance"
     }
   }
 }

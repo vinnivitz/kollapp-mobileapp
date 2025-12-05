@@ -1,94 +1,90 @@
 <script lang="ts">
 	import type { AuthenticationModel } from '$lib/models/models';
+	import type { AuthenticatedUserTO, LoginRequestTO } from '@kollapp/api-types';
 
-	import { loadingController } from 'ionic-svelte';
-	import { fingerPrintOutline, keyOutline, logInOutline, personOutline } from 'ionicons/icons';
+	import { loadingController } from '@ionic/core';
+	import {
+		fingerPrintOutline,
+		keyOutline,
+		logInOutline,
+		logoApple,
+		logoGithub,
+		logoGoogle,
+		logoSlack,
+		personOutline
+	} from 'ionicons/icons';
 	import { onMount } from 'svelte';
 
 	import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 
-	import { type LoginDto, loginSchema } from '$lib/api/dto/client/auth';
-	import { authResource } from '$lib/api/resources';
+	import { authenticationService } from '$lib/api/services';
+	import { loginSchema } from '$lib/api/validation/authentication';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import Welcome from '$lib/components/widgets/Welcome.svelte';
 	import { t } from '$lib/locales';
-	import { ValidationCode } from '$lib/models/api';
 	import { PreferencesKey } from '$lib/models/preferences';
-	import { PageRoute } from '$lib/models/routing';
-	import { Form, type FormActions, type FormConfig, type ValidationResult } from '$lib/models/ui';
-	import { authenticationStore } from '$lib/stores';
+	import { Form } from '$lib/models/ui';
+	import { appStateStore, authenticationStore } from '$lib/stores';
 	import {
 		customForm,
+		featureNotImplementedAlert,
 		getStoredValue,
 		getValidationResult,
 		isBiometricAvailable,
 		isBiometricEnabled,
-		requestBiometricAuthentication,
-		showAlert
+		promptBiometricAuthentication,
+		showAlert,
+		storeValue
 	} from '$lib/utility';
 
-	const model = loginSchema().cast({}) as LoginDto;
-	let actions: FormActions<LoginDto>;
-	let emailNotConfirmed = $state(false);
-
-	const config: FormConfig<LoginDto> = {
-		exposedActions: (exposedActions) => (actions = exposedActions),
-		onSubmit,
+	const form = new Form({
+		completed: async ({ response }) => await handleLogin(response),
+		request: async (model: LoginRequestTO) => await authenticationService.login(model),
 		schema: loginSchema()
-	};
+	});
 
-	const form = new Form(model, config);
-
-	onMount(() => performBiometricVerification());
+	onMount(async () => await performBiometricVerification());
 
 	async function performBiometricVerification(): Promise<void> {
 		if (dev || !(await isBiometricAvailable()) || !(await isBiometricEnabled()) || $authenticationStore) return;
 
-		const credentials = await requestBiometricAuthentication();
-		if (credentials) {
-			const model: LoginDto = {
-				password: credentials.password,
-				username: credentials.username
-			};
-			const result: ValidationResult = { valid: true };
-			await onSubmit(model, result);
-		}
+		const credentials = await promptBiometricAuthentication();
+		if (!credentials) return;
+
+		const loading = await loadingController.create({});
+		await loading.present();
+
+		const response = await authenticationService.login({
+			password: credentials.password,
+			username: credentials.username
+		} satisfies LoginRequestTO);
+		const result = getValidationResult<AuthenticatedUserTO>(response);
+		await (result.valid
+			? handleLogin(response.data)
+			: Promise.all([
+					showAlert($t('routes.auth.login.page.biometrics.wrong-credentials')),
+					storeValue(PreferencesKey.BIOMETRICS_ENABLED, false)
+				]));
+		await loading.dismiss();
 	}
 
-	async function onSubmit(model: LoginDto, result: ValidationResult): Promise<void> {
-		if (result.valid) {
-			const loading = await loadingController.create({});
-			await loading.present();
-			const body = await authResource.login(model);
-			result = getValidationResult(body);
-			if (result.valid) {
-				const authenticationModel: AuthenticationModel = {
-					accessToken: body.data.accessToken,
-					refreshToken: body.data.refreshToken
-				};
-				await handleLogin(authenticationModel);
-			} else {
-				if (result.errors?.[0]?.code === ValidationCode.EMAIL_NOT_CONFIRMED) {
-					emailNotConfirmed = true;
-					showAlert($t('routes.auth.login.alert.email-not-confirmed'));
-				}
-				actions.applyValidationFeedback(result);
-			}
-			await loading.dismiss();
-		}
-	}
-
-	async function handleLogin(model: AuthenticationModel): Promise<void> {
-		await authenticationStore.set(model);
-		return goto(PageRoute.HOME);
+	async function handleLogin(model: AuthenticatedUserTO): Promise<void> {
+		const authenticationModel: AuthenticationModel = {
+			accessToken: model.accessToken,
+			refreshToken: model.refreshToken
+		};
+		await authenticationStore.set(authenticationModel);
+		await appStateStore.initializeBaseData();
+		await goto(resolve('/'));
 	}
 </script>
 
-<Layout title={$t('routes.auth.login.title')} hideLayout>
+<Layout>
 	<div class="mb-6">
 		<Welcome />
 	</div>
@@ -99,39 +95,45 @@
 
 {#snippet loginForm()}
 	<form use:customForm={form}>
-		<InputItem name="username" label={$t('routes.auth.login.form.input.username')} icon={personOutline} />
-		<InputItem name="password" type="password" label={$t('routes.auth.login.form.input.password')} icon={keyOutline} />
+		<InputItem name="username" label={$t('routes.auth.login.page.form.username')} icon={personOutline} />
+		<InputItem name="password" type="password" label={$t('routes.auth.login.page.form.password')} icon={keyOutline} />
 		<Button
 			classList="mt-3"
 			expand="block"
 			type="submit"
-			label={$t('routes.auth.login.form.submit')}
+			label={$t('routes.auth.login.page.form.submit')}
 			icon={logInOutline}
 		/>
 	</form>
-	{#if emailNotConfirmed}
-		<Card click={() => goto(PageRoute.AUTH.RESEND_CONFIRMATION)} classList="text-center">
-			{$t('routes.auth.login.resend-confirmation.text')}
-			<ion-text color="secondary">{$t('routes.auth.login.resend-confirmation.link')}</ion-text>
-		</Card>
-	{/if}
 	{#await getStoredValue(PreferencesKey.BIOMETRICS_ENABLED) then enabled}
 		{#if enabled}
 			<Button
 				fill="outline"
 				expand="block"
 				icon={fingerPrintOutline}
-				label={$t('routes.auth.login.biometrics')}
-				click={performBiometricVerification}
+				label={$t('routes.auth.login.page.login-with-biometrics')}
+				clicked={performBiometricVerification}
 			/>
 		{/if}
 	{/await}
-	<Card color="light" click={() => goto(PageRoute.AUTH.REGISTER)} classList="text-center">
-		{$t('routes.auth.login.register.text')}
-		<ion-text color="secondary">{$t('routes.auth.login.register.link')}</ion-text>
+	{#if dev}
+		<div class="mx-3 flex justify-between gap-2">
+			<Button color="tertiary" size="large" fill="outline" icon={logoGoogle} clicked={featureNotImplementedAlert} />
+			<Button color="tertiary" size="large" fill="outline" icon={logoApple} clicked={featureNotImplementedAlert} />
+			<Button color="tertiary" size="large" fill="outline" icon={logoSlack} clicked={featureNotImplementedAlert} />
+			<Button color="tertiary" size="large" fill="outline" icon={logoGithub} clicked={featureNotImplementedAlert} />
+		</div>
+	{/if}
+	<Card color="light" clicked={() => goto(resolve('/auth/register'))} classList="text-center flex flex-wrap gap-1">
+		<ion-text>{$t('routes.auth.login.page.register.question')}</ion-text>
+		<ion-text color="secondary">{$t('routes.auth.login.page.register.link')}</ion-text>
 	</Card>
-	<Card color="light" click={() => goto(PageRoute.AUTH.RESET_PASSWORD)} classList="text-center">
-		{$t('routes.auth.login.forgot-password.text')}
-		<ion-text color="secondary">{$t('routes.auth.login.forgot-password.link')}</ion-text>
+	<Card
+		color="light"
+		clicked={() => goto(resolve('/auth/reset-password'))}
+		classList="text-center flex flex-wrap gap-1"
+	>
+		<ion-text>{$t('routes.auth.login.page.forgot-password.question')}</ion-text>
+		<ion-text color="secondary">{$t('routes.auth.login.page.forgot-password.link')}</ion-text>
 	</Card>
 {/snippet}

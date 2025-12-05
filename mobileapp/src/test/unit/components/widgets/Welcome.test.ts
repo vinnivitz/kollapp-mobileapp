@@ -3,15 +3,12 @@ import { describe, expect, it } from 'vitest';
 
 import Welcome from '$lib/components/widgets/Welcome.svelte';
 
-describe('Welcome Component', () => {
-	it('renders welcome component correcty', () => {
+describe('widgets/Welcome', () => {
+	it('Welcome renders logo and headings', () => {
 		const { container } = render(Welcome);
-		const ionImg = container.querySelector('ion-img');
-		const ionText = container.querySelector('ion-text');
-		const ionNote = container.querySelector('ion-note');
-
-		expect(ionImg).toBeTruthy();
-		expect(ionText).toBeTruthy();
-		expect(ionNote).toBeTruthy();
+		const img = container.querySelector('ion-img');
+		const texts = container.querySelectorAll('ion-text');
+		expect(img).toBeTruthy();
+		expect(texts.length).toBe(2);
 	});
 });

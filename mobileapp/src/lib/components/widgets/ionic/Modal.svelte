@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { getPlatforms } from '@ionic/core';
-	import { modalController } from 'ionic-svelte';
+	import { getPlatforms, modalController } from '@ionic/core';
 	import { saveOutline, trashBinOutline } from 'ionicons/icons';
 	import { onDestroy, type Snippet } from 'svelte';
 
@@ -11,45 +10,91 @@
 
 	type Properties = {
 		children: Snippet;
+		open: boolean;
+		breakpoints?: boolean;
+		cancelIcon?: string;
 		cancelLabel?: string;
+		classList?: string;
+		confirmIcon?: string;
 		confirmLabel?: string;
-		open?: boolean;
-		cancel?: () => void;
-		confirm?: () => void;
+		informational?: boolean;
+		initialBreakPoint?: number;
+		labels?: boolean;
+		lazy?: boolean;
+		title?: string;
+		touched?: boolean;
+		confirmed?: () => void;
 		dismissed?: () => void;
 	};
 
 	let {
-		cancel,
-		cancelLabel = $t('components.widgets.modal.button.cancel'),
+		breakpoints = true,
+		cancelIcon = trashBinOutline,
+		cancelLabel = $t('components.widgets.ionic.modal.cancel'),
 		children,
-		confirm,
-		confirmLabel = $t('components.widgets.modal.button.confirm'),
+		classList = '',
+		confirmed,
+		confirmIcon = saveOutline,
+		confirmLabel = $t('components.widgets.ionic.modal.confirm'),
 		dismissed,
-		open = false
+		informational,
+		initialBreakPoint = 0.75,
+		labels = true,
+		lazy = false,
+		open,
+		title,
+		touched = true
 	}: Properties = $props();
 
-	let modal: HTMLIonModalElement | undefined;
+	let _modalController = $state<HTMLIonModalElement>();
 
 	$effect(() => {
-		if (!modal) return;
+		if (!_modalController) return;
+
 		if (open) {
-			modalStore.add(modal);
+			modalStore.add(_modalController);
 		} else {
-			modalStore.remove(modal);
+			modalStore.remove(_modalController);
 		}
+
+		return () => {
+			if (_modalController) {
+				modalStore.remove(_modalController);
+			}
+		};
 	});
 
 	function isPlatformWeb(): boolean {
 		return getPlatforms().includes('mobileweb') || getPlatforms().includes('desktop');
 	}
 
+	async function onDismiss(): Promise<void> {
+		await _modalController?.dismiss();
+		open = false;
+		dismissed?.();
+	}
+
+	async function onConfirm(): Promise<void> {
+		_modalController?.querySelector('form')?.requestSubmit();
+		confirmed?.();
+	}
+
+	function onPresent(): void {
+		if (!$modalStore) return;
+		for (const modal of $modalStore) {
+			if (modal !== _modalController) {
+				modal.setCurrentBreakpoint(1);
+			}
+		}
+	}
+
 	onDestroy(async () => {
 		if (!isPlatformWeb()) return;
+		const self = _modalController;
 		const controller = await modalController.getTop();
-		if (controller) {
+		if (controller && controller === self) {
 			try {
-				await controller.dismiss();
+				await self?.dismiss();
 			} catch {
 				return;
 			}
@@ -57,36 +102,58 @@
 	});
 </script>
 
-<!-- svelte-ignore event_directive_deprecated -->
-<ion-modal
-	bind:this={modal}
-	is-open={open}
-	on:didDismiss={() => {
-		open = false;
-		dismissed?.();
-	}}
->
-	<ion-header>
-		<ion-toolbar>
-			<ion-buttons slot="start">
-				<Button
-					label={cancelLabel}
-					color="white"
-					click={() => {
-						open = false;
-						cancel?.();
-					}}
-					icon={trashBinOutline}
-				/>
-			</ion-buttons>
-			{#if !!confirm}
-				<ion-buttons slot="end">
-					<Button label={confirmLabel} color="white" click={() => confirm?.()} icon={saveOutline} />
-				</ion-buttons>
-			{/if}
-		</ion-toolbar>
-	</ion-header>
-	<ion-content class="ion-padding">
-		{@render children?.()}
-	</ion-content>
-</ion-modal>
+{#if (lazy && open) || !lazy}
+	<ion-modal
+		class={classList}
+		bind:this={_modalController}
+		is-open={open}
+		onwillPresent={onPresent}
+		ondidDismiss={dismissed}
+		breakpoints={breakpoints ? [0, 0.5, 0.75, 1] : undefined}
+		initial-breakpoint={initialBreakPoint}
+		handle-behavior="cycle"
+	>
+		<ion-header>
+			<ion-toolbar>
+				{#if title}
+					<ion-title>{title}</ion-title>
+				{/if}
+				{#if informational}
+					<ion-buttons slot="start">
+						<ion-button
+							role="button"
+							tabindex="0"
+							onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && onDismiss()}
+							onclick={onDismiss}
+						>
+							<ion-back-button default-href="/"></ion-back-button>
+						</ion-button>
+					</ion-buttons>
+				{:else}
+					<ion-buttons slot="start">
+						<Button
+							type="button"
+							label={labels ? cancelLabel : ''}
+							color="white"
+							clicked={onDismiss}
+							icon={cancelIcon}
+						/>
+					</ion-buttons>
+					<ion-buttons slot="end">
+						<Button
+							disabled={!touched}
+							type="button"
+							label={labels ? confirmLabel : ''}
+							color="white"
+							clicked={onConfirm}
+							icon={confirmIcon}
+						/>
+					</ion-buttons>
+				{/if}
+			</ion-toolbar>
+		</ion-header>
+		<ion-content class="ion-padding">
+			{@render children?.()}
+		</ion-content>
+	</ion-modal>
+{/if}

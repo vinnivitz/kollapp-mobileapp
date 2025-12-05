@@ -1,12 +1,13 @@
 import type { AuthenticationModel } from '$lib/models/models';
+import type { OrganizationRole, SystemRole } from '@kollapp/api-types';
 
+import { TZDate } from '@date-fns/tz';
 import { format } from 'date-fns';
-import { alertController } from 'ionic-svelte';
 import { get } from 'svelte/store';
 
 import { dev } from '$app/environment';
 
-import { authResource, serverMetaResource } from '$lib/api/resources';
+import { authenticationService, metaService } from '$lib/api/services';
 import environment from '$lib/environment';
 import { Locale, t } from '$lib/locales';
 import {
@@ -16,15 +17,21 @@ import {
 	HeaderKey,
 	RequestMethod,
 	type ResponseBody,
-	StatusCode,
-	UserRole
+	StatusCode
 } from '$lib/models/api';
 import { PreferencesKey } from '$lib/models/preferences';
 import { AlertType, type ValidationResult } from '$lib/models/ui';
-import { authenticationStore, connectionStore, localeStore, userStore } from '$lib/stores';
-import { getStoredValue, removeStoredValue, showAlert, storeValue } from '$lib/utility';
+import {
+	appStateStore,
+	authenticationStore,
+	connectionStore,
+	localeStore,
+	organizationStore,
+	userStore
+} from '$lib/stores';
+import { getStoredValue, informationModal, removeStoredValue, showAlert, storeValue } from '$lib/utility';
 
-const $t = get(t);
+let refreshPromise: Promise<string | undefined> | undefined;
 
 /**
  * Custom fetch function with authentication and error handling.
@@ -33,55 +40,79 @@ const $t = get(t);
  * @returns {Promise<ResponseBody<T>>}
  */
 export async function customFetch<T = never>(url: string, config?: CustomFetchConfig): Promise<ResponseBody<T>> {
+	const $t = get(t);
 	url = getUrl(url);
-	const method = config?.method ?? RequestMethod.GET;
-	const body = config?.body;
-	const query = config?.query;
-	const authorizationType = config?.authorizationType ?? AuthorizationType.BEARER;
-	const silentOnSuccess = config?.silentOnSuccess ?? false;
-	const silentOnError = config?.silentOnError ?? false;
+
+	const {
+		authorizationType = AuthorizationType.BEARER,
+		body,
+		method = RequestMethod.GET,
+		query,
+		silentOnError = false,
+		silentOnSuccess = false
+	} = config ?? {};
+
+	const hasBody = hasRequestBody(method);
+
+	function buildHeaders(): Headers {
+		const headers = new Headers();
+		headers.set(HeaderKey.ACCEPT_LANGUAGE, get(localeStore) ?? Locale.DE);
+		if (hasBody) {
+			headers.set(HeaderKey.CONTENT_TYPE, ContentType.JSON);
+		}
+		return headers;
+	}
+
+	function buildOptions(headers: Headers): RequestInit {
+		const options: RequestInit = { headers, method };
+		if (hasBody && body !== undefined) {
+			options.body = typeof body === 'string' ? body : JSON.stringify(body);
+		}
+		return options;
+	}
+
+	async function handleUnauthorizedResponse(
+		response: Response,
+		enhancedUrl: string,
+		headers: Headers
+	): Promise<Response | undefined> {
+		if (!StatusCheck.isUnauthorized(response.status)) return response;
+		const newToken = await getNewAuthenticationToken();
+		if (!newToken) return undefined;
+		headers.set(HeaderKey.AUTHORIZATION, getBearerToken(newToken));
+		response = await fetch(enhancedUrl, buildOptions(headers));
+		if (StatusCheck.isUnauthorized(response.status)) return undefined;
+		return response;
+	}
 
 	try {
-		const options: RequestInit = { method };
-		const headers = new Headers();
-
-		headers.set(HeaderKey.ACCEPT_LANGUAGE, get(localeStore) ?? Locale.DE);
-
-		if (hasRequestBody(method)) {
-			headers.set(HeaderKey.CONTENT_TYPE, ContentType.JSON);
-			options.body = body;
-		}
+		const headers = buildHeaders();
 
 		if (authorizationType === AuthorizationType.BEARER) {
 			const token = get(authenticationStore)?.accessToken;
-			if (token) {
-				headers.set(HeaderKey.AUTHORIZATION, getBearerToken(token));
-			} else {
-				return handleAuthenticationError();
+			if (!token) {
+				return handleAuthorizationError();
 			}
+			headers.set(HeaderKey.AUTHORIZATION, getBearerToken(token));
 		}
 
 		const enhancedUrl = await getEnhancedUrl(url, query);
+		let response = await fetch(enhancedUrl, buildOptions(headers));
 
-		let response = await fetch(enhancedUrl, { ...options, headers });
-
-		if (StatusCheck.isUnauthorized(response.status)) {
-			const newToken = await getNewAuthenticationToken();
-			if (!newToken) {
-				return handleAuthenticationError();
-			}
-			headers.set(HeaderKey.AUTHORIZATION, getBearerToken(newToken));
-			response = await fetch(enhancedUrl, { ...options, headers });
+		const handled = await handleUnauthorizedResponse(response, enhancedUrl, headers);
+		if (!handled) {
+			return handleAuthorizationError();
 		}
+		response = handled;
 
 		connectionStore.check();
 
-		return getResponseBody(response, silentOnSuccess, silentOnError);
+		return getResponseBody<T>(response, silentOnSuccess, silentOnError, config?.silentOnSpecificStatus);
 	} catch (error) {
-		let message = $t('api.error');
+		let message = $t('utility.api.error.generic');
 		let status = StatusCode.SERVICE_UNAVAILABLE;
 		if (error instanceof Error) {
-			message = error.message === 'Failed to fetch' ? $t('api.not-available') : error.message;
+			message = error.message === 'Failed to fetch' ? $t('utility.api.server-not-reachable') : error.message;
 		} else if (error instanceof Response) {
 			status = error.status;
 		}
@@ -95,21 +126,23 @@ export async function customFetch<T = never>(url: string, config?: CustomFetchCo
  */
 export async function isAuthenticated(): Promise<boolean> {
 	const model = get(authenticationStore) || (await getStoredValue<AuthenticationModel>(PreferencesKey.AUTHENTICATION));
-	return !!model;
+	return !!model?.accessToken;
 }
 
 /**
  * Processes the validation response, showing alerts as necessary.
  * @param body Fetch response.
- * @returns {ValidationResult} ValidationResult indicating validity and any errors.
+ * @returns {ValidationResult<T>} Validation result containing errors and validity status.
  */
-export function getValidationResult<T>(body: ResponseBody<T>): ValidationResult {
+export function getValidationResult<TField = unknown, TData = unknown>(
+	body: ResponseBody<TData>
+): ValidationResult<TField> {
+	const $t = get(t);
 	return {
 		errors: [
 			{
-				code: body.validationCode,
-				field: body.validationField,
-				message: body.message ?? $t('api.error')
+				field: body.validationField as keyof TField,
+				message: body.message ?? $t('utility.api.error.generic')
 			}
 		],
 		valid: StatusCheck.isOK(body.status)
@@ -120,17 +153,31 @@ export function getValidationResult<T>(body: ResponseBody<T>): ValidationResult 
  * Checks if http status code is in the given range.
  */
 export const StatusCheck = {
+	isForbidden: (status: number): boolean => status === StatusCode.FORBIDDEN,
 	isOK: (status: number): boolean => status >= 200 && status < 300,
-	isUnauthorized: (status: number): boolean => status === StatusCode.UNAUTHORIZED
+	isUnauthorized: (status: number): boolean => status === StatusCode.UNAUTHORIZED,
+	serverNotReachable: (status: number): boolean => status === StatusCode.SERVICE_UNAVAILABLE
 };
 
 /**
- * Checks if the user has the given role.
- * @param role UserRole to check.
+ * Checks if the user has the given organization role.
+ * @param role OrganizationRole to check.
  * @returns {boolean} True if the user has the role; otherwise, false.
  */
-export function hasRole(role: UserRole): boolean {
-	return !!get(userStore)?.roles.includes(role);
+export function hasOrganizationRole(role: OrganizationRole): boolean {
+	const userId = get(userStore)?.id;
+	return !!get(organizationStore)?.personsOfOrganization.find(
+		(personOfOrganization) => personOfOrganization.userId === userId && personOfOrganization.organizationRole === role
+	);
+}
+
+/**
+ * Checks if the user has the given system role.
+ * @param role SystemRole to check.
+ * @returns {boolean} True if the user has the role; otherwise, false.
+ */
+export function hasSystemRole(role: SystemRole): boolean {
+	return get(userStore)?.role === role;
 }
 
 /**
@@ -140,29 +187,31 @@ export function hasRole(role: UserRole): boolean {
  * @returns {Promise<void>}
  */
 export async function checkMaintenance(): Promise<void> {
-	const response = await serverMetaResource.getMaintenanceInfo();
+	const $t = get(t);
+	const response = await metaService.getMaintenanceInfo();
 	if (StatusCheck.isOK(response.status)) {
-		const schedule = new Date(response.data.scheduled);
-		if (!response.data.scheduled || schedule <= new Date()) {
+		const schedule = new TZDate(response.data.scheduled);
+		if (!response.data.scheduled || schedule <= new TZDate()) {
 			removeStoredValue(PreferencesKey.MAINTENANCE_SCHEDULE);
 		} else {
 			const storedSchedule = await getStoredValue<Date>(PreferencesKey.MAINTENANCE_SCHEDULE);
 			if (!storedSchedule || schedule !== storedSchedule) {
-				const alert = await alertController.create({
-					buttons: ['Ok'],
-					header: $t('stores.maintenance.header'),
-					message: $t('stores.maintenance.alert', { value: format(schedule, 'PPP p') })
-				});
-				await alert.present();
-				storeValue(PreferencesKey.MAINTENANCE_SCHEDULE, schedule);
+				Promise.all([
+					informationModal(
+						$t('utility.api.maintenance.alert.header'),
+						$t('utility.api.maintenance.message', { value: format(schedule, 'PPP p') })
+					),
+					storeValue(PreferencesKey.MAINTENANCE_SCHEDULE, schedule)
+				]);
 			}
 		}
 	}
 }
 
-async function handleAuthenticationError(): Promise<ResponseBody> {
-	await authResource.logout();
-	return createErrorResponse(StatusCode.UNAUTHORIZED, $t('api.unauthorized'), true);
+async function handleAuthorizationError(): Promise<ResponseBody> {
+	const $t = get(t);
+	await authenticationService.logout();
+	return createErrorResponse(StatusCode.UNAUTHORIZED, $t('utility.api.error.authorization'), true);
 }
 
 function getUrl(endpoint: string): string {
@@ -172,43 +221,43 @@ function getUrl(endpoint: string): string {
 async function getResponseBody<T>(
 	response: Response,
 	silentOnSuccess: boolean,
-	silentOnError: boolean
+	silentOnError: boolean,
+	silentOnSpecificStatus?: StatusCode[]
 ): Promise<ResponseBody<T>> {
+	const $t = get(t);
 	const status = response.status;
-	let message = $t('api.success');
+	let message = $t('utility.api.request-successful');
 	let data = {} as T;
 	const contentType = response.headers.get(HeaderKey.CONTENT_TYPE);
 	const silent = response.ok ? silentOnSuccess : silentOnError;
 	if (!contentType?.includes(ContentType.JSON)) {
-		message = contentType?.includes(ContentType.TEXT) ? $t('api.error') : await response.text();
+		message = contentType?.includes(ContentType.TEXT) ? $t('utility.api.error.generic') : await response.text();
 		return { data, message, status };
 	}
 	const body = (await response.json()) as ResponseBody<T>;
-	message = body.message ?? (response.ok ? message : $t('api.error'));
+	message = body.message ?? (response.ok ? message : $t('utility.api.error.generic'));
 	data = body.data ?? data;
-	const { validationCode, validationField } = body;
-	if (!silent && !validationField) {
-		showAlert(message, { type: response.ok ? AlertType.SUCCESS : AlertType.ERROR });
+	const { validationField } = body;
+	if (!silent && !validationField && !silentOnSpecificStatus?.includes(status)) {
+		await showAlert(message, { type: response.ok ? AlertType.SUCCESS : AlertType.ERROR });
 	}
-	// only triggered in dev mode
 	if (dev) {
 		if (response.ok) {
 			console.info(message);
 		} else {
-			console.warn(`status: ${response.status}, msg: ${message}`);
+			console.warn(`status: ${response.status}, message: ${message}`);
 		}
 	}
 	return {
 		data,
 		message,
 		status,
-		validationCode,
 		validationField
 	};
 }
 
 function hasRequestBody(method: RequestMethod): boolean {
-	return method === RequestMethod.POST || method === RequestMethod.PUT;
+	return method === RequestMethod.POST || method === RequestMethod.PUT || method === RequestMethod.PATCH;
 }
 
 async function getEnhancedUrl(url: string, query: Record<string, string> | undefined): Promise<string> {
@@ -217,28 +266,39 @@ async function getEnhancedUrl(url: string, query: Record<string, string> | undef
 }
 
 async function getNewAuthenticationToken(): Promise<string | undefined> {
-	const refreshToken = get(authenticationStore)?.refreshToken;
-	if (refreshToken) {
-		const body = await authResource.refresh(refreshToken);
+	if (refreshPromise) return refreshPromise;
+
+	refreshPromise = (async () => {
+		const refreshToken = get(authenticationStore)?.refreshToken;
+		if (!refreshToken) {
+			await appStateStore.reset();
+			return;
+		}
+
+		const body = await authenticationService.refresh(refreshToken);
 		if (StatusCheck.isOK(body.status)) {
 			const accessToken = body.data.token;
 			await authenticationStore.set({ accessToken, refreshToken });
 			return accessToken;
 		}
-	} else {
-		await authenticationStore.reset();
-	}
+
+		await appStateStore.reset();
+	})();
+
+	const result = await refreshPromise;
+	refreshPromise = undefined;
+	return result;
 }
 
 async function createErrorResponse(status: number, message: string, silent: boolean): Promise<ResponseBody> {
 	if (!silent) {
-		showAlert(message);
+		await showAlert(message);
 	}
-	const log = `status: ${status}, msg: ${message}`;
+	const log = `status: ${status}, message: ${message}`;
 	if (dev) {
 		console.warn(log);
 	} else if (!StatusCheck.isUnauthorized(status)) {
-		serverMetaResource.reportErrorLog(log);
+		metaService.reportErrorLog(log);
 	}
 	return { data: {} as never, message, status };
 }

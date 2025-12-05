@@ -2,16 +2,16 @@ import type { Config } from 'sveltekit-i18n';
 
 import I18n from 'sveltekit-i18n';
 
-const config: Config<{ value?: number | string }> = {
+const config: Config<{ value?: number | string; value2?: number | string }> = {
 	loaders: [
 		{
 			key: '',
-			loader: () => import('./en.json'),
+			loader: async () => import('./en.json'),
 			locale: 'en'
 		},
 		{
 			key: '',
-			loader: () => import('./de.json'),
+			loader: async () => import('./de.json'),
 			locale: 'de'
 		}
 	]
@@ -19,10 +19,15 @@ const config: Config<{ value?: number | string }> = {
 
 /**
  * Locale enum for the supported languages.
+ * @enum {string} Locale
  */
 export enum Locale {
 	DE = 'de',
 	EN = 'en'
 }
 
+/**
+ * I18n instance for managing translations and locale.
+ * @constant {I18n} i18n
+ */
 export const { initialized, loadTranslations, locale, t } = new I18n(config);

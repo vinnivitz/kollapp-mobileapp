@@ -1,43 +1,54 @@
-import type { UserModel } from '$lib/models/models';
 import type { UserStore } from '$lib/models/stores';
+import type { KollappUserTO } from '@kollapp/api-types';
 
 import { writable } from 'svelte/store';
 
-import { userResource } from '$lib/api/resources';
+import { userService } from '$lib/api/services';
 import { PreferencesKey } from '$lib/models/preferences';
-import { getStoredValue, removeStoredValue, StatusCheck, storeValue } from '$lib/utility';
+import { deduplicateRequest, getStoredValue, removeStoredValue, StatusCheck, storeValue } from '$lib/utility';
+
+const USER_STORE_INIT_REQUEST_KEY = 'user-store-init';
 
 function createStore(): UserStore {
-	const { set, subscribe } = writable<undefined | UserModel>();
-	const initialized = writable(false);
+	const { set, subscribe } = writable<KollappUserTO | undefined>();
+	const loadedCache = writable(false);
+	const loadedServer = writable(false);
 
 	async function init(): Promise<void> {
-		const body = await userResource.getByAuthentication();
+		return deduplicateRequest(USER_STORE_INIT_REQUEST_KEY, async () => {
+			const storedUser = await getStoredValue<KollappUserTO>(PreferencesKey.USER);
+			if (storedUser) {
+				await _set(storedUser);
+				loadedCache.set(true);
+			}
 
-		if (StatusCheck.isOK(body.status)) {
-			await _set(body.data);
-		} else if (StatusCheck.isUnauthorized(body.status)) {
-			await _set();
-		} else {
-			const model = await getStoredValue<UserModel>(PreferencesKey.USER);
-			await _set(model);
-		}
-		initialized.set(true);
+			const response = await userService.get();
+
+			if (StatusCheck.isOK(response.status)) {
+				await _set(response.data);
+			} else if (StatusCheck.isUnauthorized(response.status)) {
+				await _set();
+			}
+
+			loadedServer.set(true);
+		});
 	}
 
-	async function _set(model?: UserModel): Promise<void> {
+	async function _set(model?: KollappUserTO): Promise<void> {
 		await (model ? storeValue(PreferencesKey.USER, model) : removeStoredValue(PreferencesKey.USER));
 		set(model);
 	}
 
 	async function reset(): Promise<void> {
-		initialized.set(false);
+		loadedCache.set(false);
+		loadedServer.set(false);
 		await _set();
 	}
 
 	return {
 		init,
-		initialized,
+		loadedCache,
+		loadedServer,
 		reset,
 		set: _set,
 		subscribe

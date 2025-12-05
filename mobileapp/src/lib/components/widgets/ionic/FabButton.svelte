@@ -1,35 +1,77 @@
 <script lang="ts">
-	import type { Colors } from '$lib/models/ui';
+	import type { Colors, FabButtonButtons } from '$lib/models/ui';
+
+	import type { RouteId } from '$app/types';
+
+	import { clickOutside } from '$lib/utility';
 
 	type Properties = {
 		icon: string;
+		buttons?: FabButtonButtons[];
+		classList?: string;
 		color?: Colors;
 		horizontal?: 'center' | 'end' | 'start';
-		id?: string;
-		searchable?: string;
+		indexed?: RouteId;
+		indexedLabel?: string;
+		indexLabel?: string;
 		vertical?: 'bottom' | 'center' | 'top';
-		click: () => void;
+		clicked?: () => void;
 	};
 
 	let {
-		click,
+		buttons = [],
+		classList = '',
+		clicked,
 		color = 'secondary',
 		horizontal = 'end',
 		icon,
-		id,
-		searchable,
+		indexed,
+		indexedLabel,
+		indexLabel,
 		vertical = 'bottom'
 	}: Properties = $props();
 
+	let fabButtonElement = $state<HTMLIonFabElement>();
+
 	// workaround to avoid reference linting error
-	void searchable;
+	void indexed;
 </script>
 
-<ion-fab class="fixed" {vertical} {horizontal} {id}>
-	<!-- svelte-ignore a11y_click_events_have_key_events -->
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<!-- svelte-ignore event_directive_deprecated -->
-	<ion-fab-button {color} on:click={click}>
+<ion-fab
+	bind:this={fabButtonElement}
+	class={`fixed ${classList}`}
+	{vertical}
+	{horizontal}
+	id={indexLabel}
+	aria-label={indexedLabel}
+	use:clickOutside
+	onblur={fabButtonElement?.close}
+>
+	<ion-fab-button
+		role="button"
+		tabindex="0"
+		onkeydown={(_event: KeyboardEvent) => _event.key === 'Enter' && clicked?.()}
+		{color}
+		onclick={clicked}
+		translucent
+	>
 		<ion-icon {icon}></ion-icon>
 	</ion-fab-button>
+	{#if buttons.length > 0}
+		<ion-fab-list side="top">
+			{#each buttons as button (button.label)}
+				<ion-fab-button
+					role="button"
+					tabindex="0"
+					onkeydown={(_event: KeyboardEvent) => _event.key === 'Enter' && button.handler()}
+					color={button.color ?? 'secondary'}
+					onclick={button.handler}
+					aria-label={button.label}
+					translucent
+				>
+					<ion-icon icon={button.icon}></ion-icon>
+				</ion-fab-button>
+			{/each}
+		</ion-fab-list>
+	{/if}
 </ion-fab>

@@ -5,6 +5,8 @@ on:
     branches:
       - main
   workflow_dispatch:
+  pull_request:
+    branches: [main]
 
 jobs:
   build:
@@ -32,6 +34,8 @@ jobs:
         run: |
           npm -g install pnpm 
           pnpm install --prefix mobileapp --frozen-lockfile
+          pnpm --prefix mobileapp sync-ionic-types
+          pnpm --prefix mobileapp indexing
           pnpm --prefix mobileapp validate
           pnpm --prefix mobileapp test
           pnpm --prefix mobileapp build
