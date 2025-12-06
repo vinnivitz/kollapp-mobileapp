@@ -47,7 +47,7 @@ public class GenerateTsApiTypesMojo extends AbstractMojo {
     private List<String> classPatterns;
 
     @Parameter
-    private List<String> excludeClasses = new ArrayList<>();
+    private final List<String> excludeClasses = new ArrayList<>();
 
     @Parameter(required = true)
     private File outputFile;
@@ -142,7 +142,7 @@ public class GenerateTsApiTypesMojo extends AbstractMojo {
         }
         
         getLog().debug("Created classloader with " + urls.size() + " URLs");
-        return new URLClassLoader(urls.toArray(new URL[0]), getClass().getClassLoader());
+        return new URLClassLoader(urls.toArray(URL[]::new), getClass().getClassLoader());
     }
 
     private List<Class<?>> findClasses(URLClassLoader classLoader) throws Exception {
@@ -273,7 +273,7 @@ public class GenerateTsApiTypesMojo extends AbstractMojo {
         // Ensure output directory exists
         outputFile.getParentFile().mkdirs();
         
-        Input input = Input.from(dtoClasses.toArray(new Class<?>[0]));
+        Input input = Input.from(dtoClasses.toArray(Class<?>[]::new));
         
         TypeScriptGenerator generator = new TypeScriptGenerator(settings);
         String output = generator.generateTypeScript(input);
@@ -378,8 +378,7 @@ public class GenerateTsApiTypesMojo extends AbstractMojo {
         if (typeName.equals("java.util.Date")) return "string";
 
         // Handle parameterized types (generics)
-        if (type instanceof ParameterizedType) {
-            ParameterizedType pType = (ParameterizedType) type;
+        if (type instanceof ParameterizedType pType) {
             Type rawType = pType.getRawType();
             String rawTypeName = rawType.getTypeName();
 
