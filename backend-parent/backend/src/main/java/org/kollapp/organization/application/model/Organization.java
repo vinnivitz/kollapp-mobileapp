@@ -79,7 +79,7 @@ public class Organization {
     }
 
     public OrganizationInvitationCode generateNewInvitationCode(int validityDays) {
-        String code = generateInvitationCode();
+        String code = generateInvitationCode().toUpperCase();
         String expirationDate = LocalDate.now().plusDays(validityDays).toString();
         if (getOrganizationInvitationCode() == null) {
             organizationInvitationCode = OrganizationInvitationCode.builder()
