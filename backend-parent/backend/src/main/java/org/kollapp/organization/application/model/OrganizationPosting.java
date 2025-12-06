@@ -8,16 +8,18 @@ import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @DiscriminatorValue("organization")
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString(exclude = "organization")
 public class OrganizationPosting extends Posting {
 
     @ManyToOne
-    @JoinColumn(name = "organization_id")
+    @JoinColumn(name = "organization_id", nullable = false)
     private Organization organization;
 
     public OrganizationPosting(
