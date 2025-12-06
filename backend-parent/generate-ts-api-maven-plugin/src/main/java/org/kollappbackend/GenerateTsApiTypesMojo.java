@@ -420,6 +420,23 @@ public class GenerateTsApiTypesMojo extends AbstractMojo {
                 }
                 return "any";
             }
+
+            // Handle generic custom classes (like DataResponseTO<T>, etc.)
+            // For any other parameterized type, preserve the generics
+            if (rawType instanceof Class) {
+                Class<?> rawClass = (Class<?>) rawType;
+                String simpleName = rawClass.getSimpleName();
+                if (!simpleName.isEmpty() && typeArgs.length > 0) {
+                    StringBuilder sb = new StringBuilder(simpleName);
+                    sb.append("<");
+                    for (int i = 0; i < typeArgs.length; i++) {
+                        if (i > 0) sb.append(", ");
+                        sb.append(mapJavaToTsType(typeArgs[i]));
+                    }
+                    sb.append(">");
+                    return sb.toString();
+                }
+            }
         }
 
         // Handle arrays
