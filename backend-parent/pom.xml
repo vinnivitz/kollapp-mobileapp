@@ -19,6 +19,7 @@
     <modules>
         <module>backend</module>
         <module>backend-api</module>
+        <module>generate-ts-api-maven-plugin</module>
     </modules>
 
     <properties>
