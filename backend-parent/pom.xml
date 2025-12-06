@@ -22,17 +22,203 @@
     </modules>
 
     <properties>
+        <!-- Java & Compiler -->
         <java.version>21</java.version>
         <maven.compiler.release>21</maven.compiler.release>
+
+        <!-- Spring Boot & Framework Dependencies -->
+        <spring-boot-thymeleaf.version>1.5.2.RELEASE</spring-boot-thymeleaf.version>
+        <spring-boot-starter-actuator.version>3.4.3</spring-boot-starter-actuator.version>
+        <spring-security-test.version>6.4.2</spring-security-test.version>
+        <thymeleaf-spring6.version>3.1.3.RELEASE</thymeleaf-spring6.version>
+
+        <!-- Security & Authentication -->
+        <jsonwebtoken.version>0.11.5</jsonwebtoken.version>
+        <jasypt-spring-boot.version>3.0.5</jasypt-spring-boot.version>
+
+        <!-- Database -->
+        <mysql-connector.version>8.2.0</mysql-connector.version>
+
+        <!-- API & Documentation -->
+        <springdoc.version>2.6.0</springdoc.version>
+
+        <!-- Architecture & Domain -->
+        <jmolecules.version>1.10.0</jmolecules.version>
+
+        <!-- Utilities -->
+        <lombok.version>1.18.42</lombok.version>
+        <mapstruct.version>1.6.3</mapstruct.version>
+        <bucket4j.version>8.0.1</bucket4j.version>
+        <spring-dotenv.version>4.0.0</spring-dotenv.version>
+        <google-findbugs.version>3.0.2</google-findbugs.version>
+
+        <!-- Testing -->
+        <testcontainers.version>1.20.6</testcontainers.version>
+
+        <!-- Code Quality & Analysis -->
         <jqassistant.version>2.5.0</jqassistant.version>
+        <checkstyle.version>3.6.0</checkstyle.version>
+        <spotless.version>2.43.0</spotless.version>
+        <palantir-java-format.version>2.50.0</palantir-java-format.version>
+        <jacoco.version>0.8.13</jacoco.version>
+
+        <!-- Maven Plugins -->
+        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+        <maven-failsafe-plugin.version>3.5.2</maven-failsafe-plugin.version>
+        <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
+        <maven-javadoc.version>3.12.0</maven-javadoc.version>
+
+        <!-- Frontend & TypeScript -->
+        <frontend-maven-plugin.version>1.15.4</frontend-maven-plugin.version>
+        <typescript-generator.version>3.2.1263</typescript-generator.version>
+        <generate-ts-api-types-maven-plugin.version>1.0.0</generate-ts-api-types-maven-plugin.version>
+        <xml-doclet.version>1.0.5</xml-doclet.version>
+        <node.version>v24.11.1</node.version>
+        <npm.version>11.6.2</npm.version>
+        <npm.registry>https://nexus.kollapp.org/repository/npm</npm.registry>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-api</artifactId>
+                <version>${jsonwebtoken.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.findbugs</groupId>
+                <artifactId>jsr305</artifactId>
+                <version>${google-findbugs.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>${jsonwebtoken.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
+                <version>${jsonwebtoken.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+                <version>${springdoc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mysql</groupId>
+                <artifactId>mysql-connector-j</artifactId>
+                <version>${mysql-connector.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jmolecules</groupId>
+                <artifactId>jmolecules-ddd</artifactId>
+                <version>${jmolecules.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jmolecules</groupId>
+                <artifactId>jmolecules-hexagonal-architecture</artifactId>
+                <version>${jmolecules.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.bucket4j</groupId>
+                <artifactId>bucket4j-core</artifactId>
+                <version>${bucket4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-thymeleaf</artifactId>
+                <version>${spring-boot-thymeleaf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.ulisesbocchio</groupId>
+                <artifactId>jasypt-spring-boot-starter</artifactId>
+                <version>${jasypt-spring-boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.thymeleaf</groupId>
+                <artifactId>thymeleaf-spring6</artifactId>
+                <version>${thymeleaf-spring6.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>me.paulschwarz</groupId>
+                <artifactId>spring-dotenv</artifactId>
+                <version>${spring-dotenv.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-bom</artifactId>
+                <version>${testcontainers.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-test</artifactId>
+                <version>${spring-security-test.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-actuator</artifactId>
+                <version>${spring-boot-starter-actuator.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>com.buschmais.jqassistant</groupId>
+                    <artifactId>jqassistant-maven-plugin</artifactId>
+                    <version>${jqassistant.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven-compiler-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>${maven-failsafe-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${jacoco.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.github.eirslett</groupId>
+                    <artifactId>frontend-maven-plugin</artifactId>
+                    <version>${frontend-maven-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>${maven-resources-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>cz.habarta.typescript-generator</groupId>
+                    <artifactId>typescript-generator-maven-plugin</artifactId>
+                    <version>${typescript-generator.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>com.buschmais.jqassistant</groupId>
                 <artifactId>jqassistant-maven-plugin</artifactId>
-                <version>${jqassistant.version}</version>
                 <executions>
                     <execution>
                         <goals>
