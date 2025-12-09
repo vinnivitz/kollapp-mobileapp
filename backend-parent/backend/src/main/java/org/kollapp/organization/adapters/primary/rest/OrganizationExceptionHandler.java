@@ -1,5 +1,6 @@
 package org.kollapp.organization.adapters.primary.rest;
 
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -24,6 +25,7 @@ import org.kollapp.organization.application.exception.SelfActionNotAllowedExcept
 
 @ControllerAdvice(basePackages = {"org.kollapp.organization"})
 @RestController
+@Order(0)
 public class OrganizationExceptionHandler {
     @ExceptionHandler(OrganizationNotFoundException.class)
     public ResponseEntity<ResponseTO> handleOrganizationNotFound(OrganizationNotFoundException ex) {

@@ -10,6 +10,7 @@ import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import org.kollapp.core.adapters.primary.rest.dto.DataResponseTO;
 import org.kollapp.core.adapters.primary.rest.dto.MessageResponseTO;
+import org.kollapp.core.validation.ValidId;
 import org.kollapp.organization.adapters.primary.rest.dto.OrganizationBaseTO;
 import org.kollapp.organization.adapters.primary.rest.dto.OrganizationCreationRequestTO;
 import org.kollapp.organization.adapters.primary.rest.dto.OrganizationMinifiedTO;
@@ -40,6 +42,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 @RequestMapping("/api/organization")
 @Slf4j
 @PrimaryAdapter
+@Validated
 public class OrganizationController {
 
     @Autowired
@@ -68,7 +71,7 @@ public class OrganizationController {
             summary = "Get an organization by its id",
             security = {@SecurityRequirement(name = "bearer-key")})
     public ResponseEntity<DataResponseTO<OrganizationTO>> getOrganizationById(
-            @PathVariable("organization-id") long organizationId) {
+            @PathVariable("organization-id") @ValidId long organizationId) {
         Organization organization = organizationService.getOrganizationById(organizationId);
         OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(organization);
         return ResponseEntity.ok(new DataResponseTO<>(organizationTO, "success.organization.get", messageSource));
@@ -90,7 +93,8 @@ public class OrganizationController {
             summary = "Approve a request of a new member to join the organization.",
             security = {@SecurityRequirement(name = "bearer-key")})
     public ResponseEntity<DataResponseTO<OrganizationTO>> approveMemberRequest(
-            @PathVariable("organization-id") long organizationId, @PathVariable("person-id") long personId) {
+            @PathVariable("organization-id") @ValidId long organizationId,
+            @PathVariable("person-id") @ValidId long personId) {
         Organization organization = organizationService.approveNewMemberRequest(organizationId, personId);
         OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(organization);
         return ResponseEntity.ok(new DataResponseTO<>(organizationTO, "success.organization.get", messageSource));
@@ -111,8 +115,8 @@ public class OrganizationController {
             summary = "Grant a certain role to a person of an organization.",
             security = {@SecurityRequirement(name = "bearer-key")})
     public ResponseEntity<DataResponseTO<OrganizationTO>> grantRoleToPersonOfOrganization(
-            @PathVariable("organization-id") long organizationId,
-            @PathVariable("person-id") long personId,
+            @PathVariable("organization-id") @ValidId long organizationId,
+            @PathVariable("person-id") @ValidId long personId,
             @RequestBody PersonOfOrganizationPatchRoleRequestTO patchRoleRequestTO) {
         OrganizationRole targetRole =
                 OrganizationRole.valueOf(patchRoleRequestTO.getRole().name());
@@ -127,7 +131,7 @@ public class OrganizationController {
             summary = "Renew the invitation code of the organization.",
             security = {@SecurityRequirement(name = "bearer-key")})
     public ResponseEntity<DataResponseTO<OrganizationTO>> updateOrganizationInvitationCode(
-            @PathVariable("organization-id") long organizationId) {
+            @PathVariable("organization-id") @ValidId long organizationId) {
         Organization organization = organizationService.generateNewOrganizationInvitationCode(organizationId);
         OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(organization);
         return ResponseEntity.ok(new DataResponseTO<>(organizationTO, "success.organization.update", messageSource));
@@ -151,7 +155,7 @@ public class OrganizationController {
             security = {@SecurityRequirement(name = "bearer-key")})
     public ResponseEntity<DataResponseTO<OrganizationTO>> updateOrganization(
             @Valid @RequestBody OrganizationUpdateRequestTO updateRequestTO,
-            @PathVariable("organization-id") long organizationId) {
+            @PathVariable("organization-id") @ValidId long organizationId) {
         Organization organization = organizationMapper.organizationUpdateRequestToOrganization(updateRequestTO);
         Organization updatedOrganization = organizationService.updateOrganization(organization, organizationId);
         OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(updatedOrganization);
@@ -162,7 +166,8 @@ public class OrganizationController {
     @Operation(
             summary = "Leave the organization, deletion if last manager",
             security = {@SecurityRequirement(name = "bearer-key")})
-    public ResponseEntity<MessageResponseTO> leaveOrganization(@PathVariable("organization-id") long organizationId) {
+    public ResponseEntity<MessageResponseTO> leaveOrganization(
+            @PathVariable("organization-id") @ValidId long organizationId) {
         organizationService.leaveOrganization(organizationId);
         return ResponseEntity.ok(new MessageResponseTO("success.organization.delete", messageSource));
     }
@@ -172,8 +177,8 @@ public class OrganizationController {
             summary = "Remove user from the organization",
             security = {@SecurityRequirement(name = "bearer-key")})
     public ResponseEntity<DataResponseTO<OrganizationTO>> removeUserFromOrganization(
-            @PathVariable("person-of-organization-id") long personOfOrganizationId,
-            @PathVariable("organization-id") long organizationId) {
+            @PathVariable("person-of-organization-id") @ValidId long personOfOrganizationId,
+            @PathVariable("organization-id") @ValidId long organizationId) {
         Organization organization =
                 organizationService.deleteUserFromOrganization(personOfOrganizationId, organizationId);
         OrganizationTO orgaTo = organizationMapper.organizationToOrganizationTO(organization);
