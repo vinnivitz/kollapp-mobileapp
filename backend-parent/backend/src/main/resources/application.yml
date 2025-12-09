@@ -55,11 +55,6 @@ logging:
     org.kollapp: DEBUG
     org.springframework.security: INFO
     org.springframework.web: INFO
-  file:
-    name: ${BACKEND_LOG_FILE:logs/kollapp.log}
-    max-size: 10MB
-    max-history: 30
-    total-size-cap: 1GB
 
 i18n:
   baseName: i18n/messages
@@ -105,25 +100,17 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health
       base-path: /actuator
   endpoint:
     health:
-      show-details: when-authorized
+      show-details: never
       probes:
         enabled: true
-      roles: ADMIN
   health:
     livenessState:
       enabled: true
     readinessState:
-      enabled: true
-  info:
-    env:
-      enabled: true
-    java:
-      enabled: true
-    os:
       enabled: true
 
 ---
@@ -132,28 +119,3 @@ spring:
   config:
     activate:
       on-profile: production
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    show-sql: false
-  datasource:
-    hikari:
-      maximum-pool-size: 50
-      minimum-idle: 10
-
-logging:
-  level:
-    root: WARN
-    org.kollapp: INFO
-    org.springframework.security: WARN
-    org.springframework.web: WARN
-    org.hibernate.SQL: WARN
-
-management:
-  endpoint:
-    health:
-      show-details: never
-  endpoints:
-    web:
-      exposure:
-        include: health,info,metrics,prometheus
