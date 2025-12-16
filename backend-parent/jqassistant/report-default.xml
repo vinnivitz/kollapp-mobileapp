@@ -28,8 +28,10 @@
                     {upstream: 'Core', downstream: 'Organization'},
                     {upstream: 'Core', downstream: 'User'},
                     {upstream: 'Core', downstream: 'Accounting'},
+                    {upstream: 'Core', downstream: 'Notification'},
                     {upstream: 'User', downstream: 'Organization'},
                     {upstream: 'User', downstream: 'Accounting'},
+                    {upstream: 'User', downstream: 'Notification'},
                     {upstream: 'Organization', downstream: 'Accounting'}
                 ] as allowedDependencies
             UNWIND
