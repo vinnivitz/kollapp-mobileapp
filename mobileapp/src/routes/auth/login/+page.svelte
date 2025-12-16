@@ -38,6 +38,7 @@
 		isBiometricAvailable,
 		isBiometricEnabled,
 		promptBiometricAuthentication,
+		reregisterPushNotifications,
 		showAlert,
 		storeValue
 	} from '$lib/utility';
@@ -80,7 +81,8 @@
 		};
 		await authenticationStore.set(authenticationModel);
 		await appStateStore.initializeBaseData();
-		await goto(resolve('/'));
+
+		await Promise.all([reregisterPushNotifications(), goto(resolve('/'))]);
 	}
 </script>
 

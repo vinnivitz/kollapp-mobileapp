@@ -159,10 +159,12 @@ public class PushNotificationServiceImpl implements PushNotificationService {
             notification.setStatus(NotificationStatus.FAILED);
             notification.setErrorMessage(e.getMessage());
 
-            // If token is invalid, deactivate it
             if (isInvalidTokenError(e)) {
                 deactivateToken(token);
             }
+        } catch (Exception e) {
+            notification.setStatus(NotificationStatus.FAILED);
+            notification.setErrorMessage(e.getMessage());
         } finally {
             pushNotificationRepository.save(notification);
         }

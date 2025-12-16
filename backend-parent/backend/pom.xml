@@ -41,6 +41,8 @@
         <palantir-java-format.version>2.50.0</palantir-java-format.version>
         <spring-boot-starter-actuator.version>3.4.3</spring-boot-starter-actuator.version>
         <jacoco.version>0.8.13</jacoco.version>
+        <firebase-admin.version>9.4.2</firebase-admin.version>
+        <google-auth-library.version>1.31.0</google-auth-library.version>
     </properties>
 
     <dependencyManagement>
@@ -257,7 +259,12 @@
         <dependency>
             <groupId>com.google.firebase</groupId>
             <artifactId>firebase-admin</artifactId>
-            <version>9.4.2</version>
+            <version>${firebase-admin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.auth</groupId>
+            <artifactId>google-auth-library-oauth2-http</artifactId>
+            <version>${google-auth-library.version}</version>
         </dependency>
     </dependencies>
     <build>

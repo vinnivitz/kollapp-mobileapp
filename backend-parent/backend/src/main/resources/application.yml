@@ -84,6 +84,10 @@ kollapp:
     resetPasswordSecret: ${BACKEND_JWT_RESET_PASSWORD_SECRET}
     resetPasswordExpirationInSeconds: ${BACKEND_JWT_RESET_PASSWORD_EXPIRATION_IN_SECONDS:3600}
 
+  firebase:
+    enabled: ${BACKEND_FIREBASE_ENABLED:false}
+    credentialsPath: ${BACKEND_FIREBASE_CREDENTIALS_PATH:firebase-service-account.json}
+
 ---
 # Management and Actuator configuration
 management:

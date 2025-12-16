@@ -5,7 +5,7 @@ import { resolve } from '$app/paths';
 
 import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/models/api';
 import { appStateStore } from '$lib/stores';
-import { customFetch } from '$lib/utility';
+import { customFetch, unregisterPushNotifications } from '$lib/utility';
 
 class AuthenticationResource {
 	ENDPOINT = 'public/auth';
@@ -43,6 +43,7 @@ class AuthenticationResource {
 	async logout(): Promise<void> {
 		await appStateStore.reset();
 		await goto(resolve('/auth/login'));
+		await unregisterPushNotifications();
 	}
 }
 

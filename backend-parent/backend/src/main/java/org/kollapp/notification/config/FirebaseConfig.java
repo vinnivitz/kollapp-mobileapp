@@ -1,7 +1,10 @@
 package org.kollapp.notification.config;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,6 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.auth.oauth2.ServiceAccountCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -39,15 +43,31 @@ public class FirebaseConfig {
     @ConditionalOnProperty(prefix = "kollapp.firebase", name = "enabled", havingValue = "true")
     public FirebaseApp firebaseApp() throws IOException {
         if (FirebaseApp.getApps().isEmpty()) {
-            InputStream serviceAccount =
-                    new ClassPathResource(firebaseProperties.getCredentialsPath()).getInputStream();
+            String credentialsPath = firebaseProperties.getCredentialsPath();
+            InputStream serviceAccount;
 
-            FirebaseOptions options = FirebaseOptions.builder()
-                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                    .build();
+            if (Files.exists(Paths.get(credentialsPath))) {
+                serviceAccount = new FileInputStream(credentialsPath);
+            } else {
+                serviceAccount = new ClassPathResource(credentialsPath).getInputStream();
+            }
 
+            GoogleCredentials credentials = GoogleCredentials.fromStream(serviceAccount);
+
+            String projectId = null;
+            if (credentials instanceof ServiceAccountCredentials serviceAccountCredentials) {
+                projectId = serviceAccountCredentials.getProjectId();
+            }
+
+            FirebaseOptions.Builder optionsBuilder = FirebaseOptions.builder().setCredentials(credentials);
+
+            if (projectId != null) {
+                optionsBuilder.setProjectId(projectId);
+            }
+
+            FirebaseOptions options = optionsBuilder.build();
             FirebaseApp app = FirebaseApp.initializeApp(options);
-            log.info("Firebase initialized successfully");
+
             return app;
         }
         return FirebaseApp.getInstance();

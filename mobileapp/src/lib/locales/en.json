@@ -311,6 +311,9 @@
         "manager": "Manager",
         "member": "Member"
       }
+    },
+    "push-notifications": {
+      "error": "Push Notification registration failed"
     }
   },
   "routes": {

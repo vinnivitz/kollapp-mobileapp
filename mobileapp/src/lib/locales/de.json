@@ -1054,6 +1054,9 @@
       "information-modal": {
         "ok": "Okay"
       }
+    },
+    "push-notifications": {
+      "error": "Fehler beim Registrieren der Push-Benachrichtigungen"
     }
   }
 }

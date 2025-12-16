@@ -6,6 +6,7 @@ export enum PreferencesKey {
 	API_VERSION = 'app-version',
 	AUTHENTICATION = 'authentication',
 	BIOMETRICS_ENABLED = 'biometrics-enabled',
+	FCM_TOKEN = 'fcm-token',
 	LAYOUT = 'layout',
 	LOCALE = 'locale',
 	MAINTENANCE_SCHEDULE = 'maintenance-schedule',
