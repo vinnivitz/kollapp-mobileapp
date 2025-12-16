@@ -298,4 +298,16 @@ public class OrganizationServiceImpl implements OrganizationService {
         List<PersonOfOrganization> rolesInOtherOrganizations = personOfOrganizationRepository.findByUserId(userId);
         return rolesInOtherOrganizations.stream().noneMatch(p -> p.getUserId() == userId);
     }
+
+    @Override
+    public List<Long> getAllMemberUserIds(long organizationId) {
+        Organization organization = organizationRepository
+                .findById(organizationId)
+                .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
+
+        return organization.getPersonsOfOrganization().stream()
+                .filter(person -> person.getStatus() == PersonOfOrganizationStatus.APPROVED)
+                .map(PersonOfOrganization::getUserId)
+                .collect(Collectors.toList());
+    }
 }
