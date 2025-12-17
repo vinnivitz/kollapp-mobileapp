@@ -117,7 +117,7 @@
 
 {#snippet accountList()}
 	<ion-list inset>
-		<list-header>{$t('routes.account.page.list.personal.header')}</list-header>
+		<ion-list-header>{$t('routes.account.page.list.personal.header')}</ion-list-header>
 		<LabeledItem
 			indexed="/account/notifications"
 			clicked={() => goto(resolve('/account/notifications'))}
@@ -176,7 +176,7 @@
 {/snippet}
 
 {#snippet miscellaneousList()}
-	<ion-list>
+	<ion-list inset>
 		<ion-list-header>{$t('routes.account.page.list.miscellaneous.header')}</ion-list-header>
 		<LabeledItem
 			label={$t('routes.account.page.list.miscellaneous.app-version')}
