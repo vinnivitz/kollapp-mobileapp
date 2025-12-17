@@ -644,12 +644,14 @@
 			<ion-avatar class="flex items-center justify-center">
 				<ion-icon color="warning" icon={warningOutline} size="large"></ion-icon>
 			</ion-avatar>
-			<ion-text class="flex flex-wrap gap-2">
-				<div>
-					{$t('routes.organization.page.pending-organization-join-request-card.card.info')}
-				</div>
-				<div class="font-bold">{$organizations[0]?.name}</div>
-			</ion-text>
+			<div class="flex flex-col">
+				<ion-text>{$t('routes.organization.page.pending-organization-join-request-card.card.info')}</ion-text>
+				<ul class="text-start">
+					{#each $organizations as organization (organization.id)}
+						<li class="font-bold">{organization.name}</li>
+					{/each}
+				</ul>
+			</div>
 		</div>
 	</Card>
 {/snippet}
