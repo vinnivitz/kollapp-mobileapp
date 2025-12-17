@@ -2,6 +2,7 @@ package org.kollapp.core.adapters.primary.rest;
 
 import java.util.List;
 
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +44,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ResponseTO> handleConstraintViolation(ConstraintViolationException exception) {
-        var firstViolation =
+        ConstraintViolation<?> firstViolation =
                 exception.getConstraintViolations().stream().findFirst().orElse(null);
         if (firstViolation == null) {
             return ResponseEntity.badRequest().body(new ErrorResponseTO("error.validation.generic", messageSource));
