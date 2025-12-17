@@ -162,7 +162,7 @@
 		organizationId: number,
 		role: OrganizationRole
 	): Promise<void> {
-		if (role === filteredMembers.find((member) => member.id === memberId)?.organizationRole) {
+		if (role === members.find((member) => member.id === memberId)?.organizationRole) {
 			return;
 		}
 		await confirmationModal({
