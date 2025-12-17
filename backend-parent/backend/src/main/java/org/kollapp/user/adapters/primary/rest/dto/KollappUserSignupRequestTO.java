@@ -12,7 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class KollappUserSignupRequest {
+public class KollappUserSignupRequestTO {
     @NotBlank(message = "{validation.username.required}")
     @Size(min = 2, message = "{validation.username.minlength}")
     @Size(max = 20, message = "{validation.username.maxlength}")
