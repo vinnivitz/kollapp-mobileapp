@@ -14,7 +14,7 @@ import lombok.Setter;
 @Builder
 public class KollappUserSignupRequest {
     @NotBlank(message = "{validation.username.required}")
-    @Pattern(regexp = ".{2,}", message = "{validation.username.minlength}")
+    @Size(min = 2, message = "{validation.username.minlength}")
     @Size(max = 20, message = "{validation.username.maxlength}")
     private String username;
 
@@ -24,7 +24,7 @@ public class KollappUserSignupRequest {
     private String email;
 
     @NotBlank(message = "{validation.password.required}")
-    @Pattern(regexp = ".{8,}", message = "{validation.password.minlength}")
+    @Size(min = 8, message = "{validation.password.minlength}")
     @Size(max = 255, message = "{validation.password.maxlength}")
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$", message = "{validation.password.pattern}")
     private String password;

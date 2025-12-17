@@ -9,7 +9,10 @@ import lombok.Setter;
 @Setter
 public class OrganizationMinifiedTO {
     private long id;
+
     private String name;
+
     private String description;
+
     private String place;
 }

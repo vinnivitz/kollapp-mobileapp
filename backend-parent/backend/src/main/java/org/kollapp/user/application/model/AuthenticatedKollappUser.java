@@ -13,8 +13,12 @@ import lombok.Setter;
 @Builder
 public class AuthenticatedKollappUser {
     private String accessToken;
+
     private String refreshToken;
+
     private String username;
+
     private String email;
+
     private long loggedInUntil;
 }
