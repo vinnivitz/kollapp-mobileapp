@@ -1,5 +1,4 @@
 <script lang="ts">
-	import type { Locale } from '$lib/locales';
 	import type { InputInputEventDetail } from '@ionic/core';
 
 	import { cashOutline } from 'ionicons/icons';
@@ -7,6 +6,7 @@
 	import { get } from 'svelte/store';
 
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
+	import { Locale } from '$lib/locales';
 	import { type Colors, Currency, type NumberStyle } from '$lib/models/ui';
 	import { localeStore } from '$lib/stores';
 
@@ -392,7 +392,7 @@
 	});
 
 	function getDecimalSeparator(): string {
-		return getLocaleSeparators(get(localeStore) ?? 'de').decimal;
+		return getLocaleSeparators(get(localeStore) ?? Locale.DE).decimal;
 	}
 
 	function isDecimalKey(event: KeyboardEvent, dec: string): boolean {
