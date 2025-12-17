@@ -1,7 +1,7 @@
 import { isPlatform } from '@ionic/core';
 import { writable } from 'svelte/store';
 
-import { PreferencesKey } from '$lib/models/preferences';
+import { StorageKey } from '$lib/models/storage';
 import { type LayoutStore } from '$lib/models/stores';
 import { Layout } from '$lib/models/ui';
 import { getStoredValue, storeValue } from '$lib/utility';
@@ -10,7 +10,7 @@ function createStore(): LayoutStore {
 	const { set, subscribe } = writable<Layout | undefined>();
 
 	async function init(): Promise<void> {
-		const value = await getStoredValue<Layout>(PreferencesKey.LAYOUT);
+		const value = await getStoredValue<Layout>(StorageKey.LAYOUT);
 		if (value) {
 			await _set(value);
 			document.documentElement.setAttribute('mode', value);
@@ -19,7 +19,7 @@ function createStore(): LayoutStore {
 		}
 	}
 	async function _set(value: Layout): Promise<void> {
-		await storeValue(PreferencesKey.LAYOUT, value);
+		await storeValue(StorageKey.LAYOUT, value);
 		set(value);
 		document.documentElement.setAttribute('mode', value);
 	}
