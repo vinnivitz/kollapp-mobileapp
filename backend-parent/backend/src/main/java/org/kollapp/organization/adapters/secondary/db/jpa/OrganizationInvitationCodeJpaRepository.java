@@ -7,5 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.kollapp.organization.application.model.OrganizationInvitationCode;
 
 public interface OrganizationInvitationCodeJpaRepository extends JpaRepository<OrganizationInvitationCode, String> {
-    Optional<OrganizationInvitationCode> findByCodeAndExpirationDateIsAfter(String code, String currentDateMinusOneDay);
+    Optional<OrganizationInvitationCode> findByCodeIgnoreCaseAndExpirationDateIsAfter(
+            String code, String currentDateMinusOneDay);
 }
