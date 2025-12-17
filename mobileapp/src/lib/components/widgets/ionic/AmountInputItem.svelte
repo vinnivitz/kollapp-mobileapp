@@ -1,5 +1,4 @@
 <script lang="ts">
-	import type { Locale } from '$lib/locales';
 	import type { InputInputEventDetail } from '@ionic/core';
 
 	import { cashOutline } from 'ionicons/icons';
@@ -7,6 +6,7 @@
 	import { get } from 'svelte/store';
 
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
+	import { Locale } from '$lib/locales';
 	import { type Colors, Currency, type NumberStyle } from '$lib/models/ui';
 	import { localeStore } from '$lib/stores';
 
@@ -111,7 +111,8 @@
 	}
 
 	let edit = $state<AmountEditState>(createStateFromCents(value ?? 0));
-	let tokens = $derived(
+	let hasError = $state(false);
+	const tokens = $derived(
 		formatAmountTokens({
 			cents: edit.cents,
 			currency,
@@ -120,7 +121,7 @@
 			typedFractalDigits: edit.typedFractalDigits
 		})
 	);
-	let plain = $derived(tokensToPlainString(tokens));
+	const plain = $derived(tokensToPlainString(tokens));
 
 	$effect(() => {
 		if (element) inputElement?.(element);
@@ -377,6 +378,12 @@
 					notifyChange(edit.cents);
 				}
 			}
+			if (element) {
+				const currentError = element.classList.contains('ion-invalid') || !!element.errorText;
+				if (currentError !== hasError) {
+					hasError = currentError;
+				}
+			}
 		}, 100);
 	});
 
@@ -385,7 +392,7 @@
 	});
 
 	function getDecimalSeparator(): string {
-		return getLocaleSeparators(get(localeStore) ?? 'de').decimal;
+		return getLocaleSeparators(get(localeStore) ?? Locale.DE).decimal;
 	}
 
 	function isDecimalKey(event: KeyboardEvent, dec: string): boolean {
@@ -543,7 +550,11 @@
 <div bind:this={containerElement}>
 	<CustomItem {card} {color} {icon} iconEnd={inputIcon} iconClick={inputIconClicked} {classList}>
 		<div class="relative">
-			<div class="ghost absolute inset-0 top-7 flex items-center" aria-hidden="true">
+			<div
+				class="ghost pointer-events-none absolute inset-0 -mt-1 flex items-center"
+				class:top-7={!helperText && !hasError}
+				aria-hidden="true"
+			>
 				{#each tokens as token (token)}
 					<span class:grey={token.grey}>{token.text}</span>
 				{/each}
