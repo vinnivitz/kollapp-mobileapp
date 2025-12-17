@@ -67,7 +67,9 @@
 			.filter((member) => member.userId !== userId && member.status === 'APPROVED')
 	);
 
-	const pendingMembers = $derived(members.filter((member) => member.status === 'PENDING'));
+	const pendingMembers = $derived(
+		$organizationStore?.personsOfOrganization?.filter((member) => member.status === 'PENDING') ?? []
+	);
 
 	const memberGroups = $derived(getGroupedMembers(members));
 
