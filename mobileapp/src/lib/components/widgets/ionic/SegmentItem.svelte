@@ -21,7 +21,7 @@
 	<div class="mb-2 flex items-center justify-center gap-3 rounded-full bg-(--ion-background-color-step-50) px-5 py-1">
 		{#each config as item (item.label)}
 			<Chip
-				color={item.color ?? 'primary'}
+				color={item.color ?? 'secondary'}
 				label={item.label}
 				icon={item.icon}
 				selected={item.selected}

@@ -13,6 +13,9 @@ spring:
       max-lifetime: 1800000
       leak-detection-threshold: 60000
       pool-name: KollappHikariCP
+      connection-test-query: SELECT 1
+      validation-timeout: 5000
+      keepalive-time: 300000
   jpa:
     hibernate:
       ddl-auto: update
@@ -45,6 +48,13 @@ server:
   shutdown: graceful
   lifecycle:
     timeout-per-shutdown-phase: 30s
+
+logging:
+  level:
+    root: INFO
+    org.kollapp: DEBUG
+    org.springframework.security: INFO
+    org.springframework.web: INFO
 
 i18n:
   baseName: i18n/messages
