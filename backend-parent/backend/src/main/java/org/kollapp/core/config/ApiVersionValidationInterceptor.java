@@ -1,7 +1,5 @@
 package org.kollapp.core.config;
 
-import java.io.IOException;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -9,13 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.kollapp.core.adapters.primary.rest.dto.ErrorResponseTO;
+import org.kollapp.core.config.properties.ApplicationProperties;
 
 @Component
 public class ApiVersionValidationInterceptor implements HandlerInterceptor {
@@ -24,7 +23,10 @@ public class ApiVersionValidationInterceptor implements HandlerInterceptor {
     private MessageSource messageSource;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private ApplicationProperties applicationProperties;
+
+    @Autowired
+    private MappingJackson2HttpMessageConverter messageConverter;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
@@ -46,44 +48,34 @@ public class ApiVersionValidationInterceptor implements HandlerInterceptor {
 
         String requestVersion = (String) request.getAttribute(ApiVersionInterceptor.API_VERSION_ATTRIBUTE);
         if (requestVersion == null) {
-            requestVersion = "1.0";
+            requestVersion = applicationProperties.getMinApiVersion();
         }
 
-        // Check minimum version
-        if (compareVersions(requestVersion, apiVersion.min()) < 0) {
-            writeErrorResponse(response, HttpStatus.UPGRADE_REQUIRED, "error.api-version.too-old");
-            return false;
-        }
-
-        // Check maximum version
-        if (!apiVersion.max().isEmpty() && compareVersions(requestVersion, apiVersion.max()) > 0) {
-            writeErrorResponse(response, HttpStatus.GONE, "error.api-version.too-new");
+        if (!isVersionAtLeast(requestVersion, apiVersion.min())) {
+            ErrorResponseTO errorResponse = new ErrorResponseTO("error.api-version.too-old", messageSource);
+            response.setStatus(HttpStatus.UPGRADE_REQUIRED.value());
+            messageConverter.write(errorResponse, MediaType.APPLICATION_JSON, new ServletServerHttpResponse(response));
             return false;
         }
 
         return true;
     }
 
-    private void writeErrorResponse(HttpServletResponse response, HttpStatus status, String messageKey)
-            throws IOException {
-        ErrorResponseTO errorResponse = new ErrorResponseTO(messageKey, messageSource);
-        response.setStatus(status.value());
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
-    }
+    private boolean isVersionAtLeast(String requestVersion, String minVersion) {
+        String[] requestParts = requestVersion.split("\\.");
+        String[] minParts = minVersion.split("\\.");
+        int length = Math.max(requestParts.length, minParts.length);
 
-    private int compareVersions(String version1, String version2) {
-        String[] parts1 = version1.split("\\.");
-        String[] parts2 = version2.split("\\.");
-        int maxLength = Math.max(parts1.length, parts2.length);
-
-        for (int i = 0; i < maxLength; i++) {
-            int v1 = i < parts1.length ? Integer.parseInt(parts1[i]) : 0;
-            int v2 = i < parts2.length ? Integer.parseInt(parts2[i]) : 0;
-            if (v1 != v2) {
-                return Integer.compare(v1, v2);
+        for (int i = 0; i < length; i++) {
+            int request = i < requestParts.length ? Integer.parseInt(requestParts[i]) : 0;
+            int min = i < minParts.length ? Integer.parseInt(minParts[i]) : 0;
+            if (request > min) {
+                return true;
+            }
+            if (request < min) {
+                return false;
             }
         }
-        return 0;
+        return true;
     }
 }
