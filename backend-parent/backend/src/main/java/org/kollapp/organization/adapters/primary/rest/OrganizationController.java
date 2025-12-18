@@ -95,7 +95,8 @@ public class OrganizationController {
             @PathVariable("organization-id") long organizationId, @PathVariable("person-id") long personId) {
         Organization organization = organizationService.approveNewMemberRequest(organizationId, personId);
         OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(organization);
-        return ResponseEntity.ok(new DataResponseTO<>(organizationTO, "success.organization.get", messageSource));
+        return ResponseEntity.ok(
+                new DataResponseTO<>(organizationTO, "success.organization.member.approve", messageSource));
     }
 
     @PostMapping("/invitation/{invitation-code}")
@@ -121,7 +122,8 @@ public class OrganizationController {
         Organization organization =
                 organizationService.grantRoleToPersonOfOrganization(organizationId, personId, targetRole);
         OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(organization);
-        return ResponseEntity.ok(new DataResponseTO<>(organizationTO, "success.organization.get", messageSource));
+        return ResponseEntity.ok(
+                new DataResponseTO<>(organizationTO, "success.organization.role.grant", messageSource));
     }
 
     @PatchMapping("/{organization-id}/invitation-code")
@@ -132,7 +134,8 @@ public class OrganizationController {
             @PathVariable("organization-id") long organizationId) {
         Organization organization = organizationService.generateNewOrganizationInvitationCode(organizationId);
         OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(organization);
-        return ResponseEntity.ok(new DataResponseTO<>(organizationTO, "success.organization.update", messageSource));
+        return ResponseEntity.ok(
+                new DataResponseTO<>(organizationTO, "success.organization.invitation.update", messageSource));
     }
 
     @PostMapping

@@ -4,7 +4,7 @@ import type { ApiVersionTO } from '@kollapp/api-types';
 import { writable } from 'svelte/store';
 
 import { metaService } from '$lib/api/services';
-import { PreferencesKey } from '$lib/models/preferences';
+import { StorageKey } from '$lib/models/storage';
 import { removeStoredValue, StatusCheck, storeValue } from '$lib/utility';
 
 function createStore(): VersionStore {
@@ -15,7 +15,7 @@ function createStore(): VersionStore {
 		await (StatusCheck.isOK(response.status) ? _set(response.data) : _set());
 	}
 	async function _set(value?: ApiVersionTO): Promise<void> {
-		await (value ? storeValue(PreferencesKey.API_VERSION, value) : removeStoredValue(PreferencesKey.API_VERSION));
+		await (value ? storeValue(StorageKey.API_VERSION, value) : removeStoredValue(StorageKey.API_VERSION));
 		set(value);
 	}
 

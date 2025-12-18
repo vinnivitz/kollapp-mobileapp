@@ -15,8 +15,12 @@ import org.kollapp.organization.adapters.primary.rest.dto.enums.OrganizationRole
 @Builder
 public class PersonOfOrganizationTO {
     private long id;
+
     private long userId;
+
     private String username;
+
     private OrganizationRole organizationRole;
+
     private String status;
 }

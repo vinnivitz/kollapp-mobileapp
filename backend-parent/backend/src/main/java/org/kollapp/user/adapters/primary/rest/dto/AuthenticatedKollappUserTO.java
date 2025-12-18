@@ -6,22 +6,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import org.kollapp.user.application.model.SystemRole;
-
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class KollappUserTO {
+public class AuthenticatedKollappUserTO {
+    private String accessToken;
 
-    private long id;
+    private String refreshToken;
 
     private String username;
 
     private String email;
 
-    private boolean activated;
-
-    private SystemRole role;
+    private long loggedInUntil;
 }

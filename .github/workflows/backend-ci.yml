@@ -31,28 +31,21 @@ jobs:
         run: |
           git config --global user.name 'GitHub-Actions'
           git config --global user.email 'gha@kollapp.org'
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
       
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
 
+
       - name: Maven Verify
         working-directory: backend-parent
         run: ./mvnw clean verify -B
 
-      - name: Prepare Release
+      - name: Set release version
         working-directory: backend-parent
         run: |
           ./mvnw versions:set -DnewVersion=${{ github.event.inputs.releaseVersion }}
-          git add .
-          git commit -m "[GitHubActions] set release version to ${{ github.event.inputs.releaseVersion }}"
-          git push
-          git tag -a v${{ github.event.inputs.releaseVersion }} -m "Release ${{ github.event.inputs.releaseVersion }}"
-          git push origin v${{ github.event.inputs.releaseVersion }}
 
       - name: Build Release Version and publish API types
         working-directory: backend-parent
@@ -78,7 +71,16 @@ jobs:
             registry.kollapp.org/kollapp/backend:v${{ github.event.inputs.releaseVersion }}
             registry.kollapp.org/kollapp/backend:latest
 
-      - name: Setup new development version
+      - name: Commit and tag release
+        working-directory: backend-parent
+        run: |
+          git add .
+          git commit -m "[GitHubActions] set release version to ${{ github.event.inputs.releaseVersion }}"
+          git tag -a v${{ github.event.inputs.releaseVersion }} -m "Release ${{ github.event.inputs.releaseVersion }}"
+          git push origin HEAD
+          git push origin v${{ github.event.inputs.releaseVersion }}
+
+      - name: Setup new development version and push
         working-directory: backend-parent
         run: |
           ./mvnw versions:set -DnewVersion=${{ github.event.inputs.developmentVersion }}

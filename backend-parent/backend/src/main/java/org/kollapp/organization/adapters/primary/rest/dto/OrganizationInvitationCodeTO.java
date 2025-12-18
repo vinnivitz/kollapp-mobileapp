@@ -13,5 +13,6 @@ import lombok.Setter;
 @Setter
 public class OrganizationInvitationCodeTO {
     private String code;
+
     private String expirationDate;
 }
