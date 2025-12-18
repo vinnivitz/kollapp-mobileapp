@@ -19,7 +19,7 @@ import org.kollapp.core.adapters.primary.rest.dto.DataResponseTO;
 import org.kollapp.user.adapters.primary.rest.dto.AuthTokensTO;
 import org.kollapp.user.adapters.primary.rest.dto.LoginRequestTO;
 import org.kollapp.user.adapters.primary.rest.mapper.AuthTokensMapper;
-import org.kollapp.user.application.model.AuthToken;
+import org.kollapp.user.application.model.AccessToken;
 import org.kollapp.user.application.model.AuthTokens;
 import org.kollapp.user.application.service.AuthService;
 
@@ -51,9 +51,9 @@ public class AuthController {
 
     @GetMapping("/refresh")
     @Operation(summary = "Refresh the access token")
-    public ResponseEntity<DataResponseTO<AuthToken>> refreshAccessToken(@RequestParam("token") String refreshToken) {
+    public ResponseEntity<DataResponseTO<AccessToken>> refreshAccessToken(@RequestParam("token") String refreshToken) {
         String accessToken = authService.refresh(refreshToken);
         return ResponseEntity.ok(
-                new DataResponseTO<>(new AuthToken(accessToken), "success.user.refresh-token", messageSource));
+                new DataResponseTO<>(new AccessToken(accessToken), "success.user.refresh-token", messageSource));
     }
 }
