@@ -1,5 +1,4 @@
 import type {
-	OrganizationBaseTO,
 	OrganizationCreationRequestTO,
 	OrganizationMinifiedTO,
 	OrganizationRole,
@@ -111,9 +110,9 @@ class OrganizationResource {
 	/**
 	 * Retrieves the organization by invitation code.
 	 * @param code The invitation code.
-	 * @returns {Promise<ResponseBody<OrganizationBaseTO>>} The organization.
+	 * @returns {Promise<ResponseBody<OrganizationMinifiedTO>>} The organization.
 	 */
-	async getByInvitationCode(code: string): Promise<ResponseBody<OrganizationBaseTO>> {
+	async getByInvitationCode(code: string): Promise<ResponseBody<OrganizationMinifiedTO>> {
 		return customFetch(`${this.ENDPOINT}/invitation/${code}`, {
 			authorizationType: AuthorizationType.NONE,
 			silentOnError: true,
