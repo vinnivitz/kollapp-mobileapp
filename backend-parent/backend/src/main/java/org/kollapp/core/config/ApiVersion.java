@@ -8,7 +8,5 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ApiVersion {
-    String min() default "1.0";
-
-    String max() default "";
+    String min() default "1.0.0";
 }
