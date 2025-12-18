@@ -93,8 +93,8 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponseTO("error.authorization", messageSource));
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ResponseTO> handleUnhandledException(Exception ex) {
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ResponseTO> handleUnhandledException(RuntimeException ex) {
         log.error("Unhandled exception: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponseTO("error.generic", messageSource));
