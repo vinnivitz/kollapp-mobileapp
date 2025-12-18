@@ -383,9 +383,6 @@
 </script>
 
 <Layout title={$t('routes.organization.page.title')}>
-	{#if !$organizationStore && $organizations.length > 0}
-		{@render pendingOrganizationJoinRequestCard()}
-	{/if}
 	{#if $organizationStore}
 		{@render collectiveName($organizationStore)}
 		{@render collectiveInfo()}
@@ -636,24 +633,6 @@
 			</div>
 		</div>
 	</CustomItem>
-{/snippet}
-
-{#snippet pendingOrganizationJoinRequestCard()}
-	<Card border="warning">
-		<div class="flex items-center justify-center gap-2">
-			<ion-avatar class="flex items-center justify-center">
-				<ion-icon color="warning" icon={warningOutline} size="large"></ion-icon>
-			</ion-avatar>
-			<div class="flex flex-col">
-				<ion-text>{$t('routes.organization.page.pending-organization-join-request-card.card.info')}</ion-text>
-				<ul class="text-start">
-					{#each $organizations as organization (organization.id)}
-						<li class="font-bold">{organization.name}</li>
-					{/each}
-				</ul>
-			</div>
-		</div>
-	</Card>
 {/snippet}
 
 <!-- Modals -->
