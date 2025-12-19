@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { AuthenticationModel } from '$lib/models/models';
-	import type { AuthenticatedUserTO, LoginRequestTO } from '@kollapp/api-types';
+	import type { AuthenticatedKollappUserTO, LoginRequestTO } from '@kollapp/api-types';
 
 	import { loadingController } from '@ionic/core';
 	import {
@@ -63,7 +63,7 @@
 			password: credentials.password,
 			username: credentials.username
 		} satisfies LoginRequestTO);
-		const result = getValidationResult<AuthenticatedUserTO>(response);
+		const result = getValidationResult<AuthenticatedKollappUserTO>(response);
 		await (result.valid
 			? handleLogin(response.data)
 			: Promise.all([
@@ -73,7 +73,7 @@
 		await loading.dismiss();
 	}
 
-	async function handleLogin(model: AuthenticatedUserTO): Promise<void> {
+	async function handleLogin(model: AuthenticatedKollappUserTO): Promise<void> {
 		const authenticationModel: AuthenticationModel = {
 			accessToken: model.accessToken,
 			refreshToken: model.refreshToken

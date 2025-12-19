@@ -48,4 +48,9 @@ public class PersonOfOrganizationRepositoryImpl implements PersonOfOrganizationR
     public Optional<PersonOfOrganization> findByIdAndOrganization(long id, Organization organization) {
         return personOfOrganizationJpaRepository.findByIdAndOrganization(id, organization);
     }
+
+    @Override
+    public long countByUserId(long userId) {
+        return personOfOrganizationJpaRepository.countByUserId(userId);
+    }
 }
