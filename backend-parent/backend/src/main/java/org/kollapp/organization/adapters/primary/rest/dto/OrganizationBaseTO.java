@@ -9,6 +9,8 @@ import lombok.Setter;
 @Setter
 public class OrganizationBaseTO {
     private String name;
+
     private String description;
+
     private String place;
 }

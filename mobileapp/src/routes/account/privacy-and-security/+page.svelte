@@ -18,7 +18,7 @@
 	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
 	import Popover from '$lib/components/widgets/ionic/Popover.svelte';
 	import { t } from '$lib/locales';
-	import { PreferencesKey } from '$lib/models/preferences';
+	import { StorageKey } from '$lib/models/storage';
 	import { Form, type FormActions } from '$lib/models/ui';
 	import { userStore } from '$lib/stores';
 	import {
@@ -81,7 +81,7 @@
 	}
 
 	async function isBiometricsEnabled(): Promise<boolean> {
-		return (await getStoredValue<boolean>(PreferencesKey.BIOMETRICS_ENABLED)) ?? false;
+		return (await getStoredValue<boolean>(StorageKey.BIOMETRICS_ENABLED)) ?? false;
 	}
 </script>
 

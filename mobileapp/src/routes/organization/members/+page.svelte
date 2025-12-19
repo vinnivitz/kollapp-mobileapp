@@ -67,7 +67,9 @@
 			.filter((member) => member.userId !== userId && member.status === 'APPROVED')
 	);
 
-	const pendingMembers = $derived(members.filter((member) => member.status === 'PENDING'));
+	const pendingMembers = $derived(
+		$organizationStore?.personsOfOrganization?.filter((member) => member.status === 'PENDING') ?? []
+	);
 
 	const memberGroups = $derived(getGroupedMembers(members));
 
@@ -264,7 +266,7 @@
 <!-- Snippets-->
 
 {#snippet pendingMembersCard()}
-	<Card title={$t('routes.organization.members.page.card.pending-members.title')} border="secondary" classList="mt-5">
+	<Card title={$t('routes.organization.members.page.card.pending-members.title')} border="warning" classList="mt-5">
 		{#each pendingMembers as member (member.id)}
 			{@render pendingMemberItem(member)}
 		{/each}

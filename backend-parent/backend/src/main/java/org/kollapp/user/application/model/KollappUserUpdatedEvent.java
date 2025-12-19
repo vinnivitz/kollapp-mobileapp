@@ -10,6 +10,7 @@ import org.springframework.context.ApplicationEvent;
 public class KollappUserUpdatedEvent extends ApplicationEvent {
 
     private String username;
+
     private long userId;
 
     public KollappUserUpdatedEvent(Object source, String username, long userId) {

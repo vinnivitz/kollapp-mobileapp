@@ -8,7 +8,7 @@
 	import { osmService } from '$lib/api/services';
 	import environment from '$lib/environment';
 	import { t } from '$lib/locales';
-	import { PreferencesKey } from '$lib/models/preferences';
+	import { StorageKey } from '$lib/models/storage';
 	import { clickOutside, getStoredValue } from '$lib/utility';
 
 	type Properties = {
@@ -33,7 +33,6 @@
 	$effect(() => {
 		if (mapContainer && !map && !mapInitialized) {
 			mapInitialized = true;
-			// Small delay to ensure DOM is fully ready
 			setTimeout(() => {
 				if (mapContainer && !map) {
 					initializeMap(value);
@@ -51,7 +50,6 @@
 		};
 	});
 
-	// Re-initialize map when value prop changes
 	$effect(() => {
 		if (value && map) {
 			updateMarkerFromValue(value);
@@ -70,7 +68,7 @@
 	async function initializeMap(value?: string): Promise<void> {
 		if (!mapContainer) return;
 
-		const coordinates = (await getStoredValue(PreferencesKey.POSITION)) || JSON.parse(environment.defaultPosition);
+		const coordinates = (await getStoredValue(StorageKey.POSITION)) || JSON.parse(environment.defaultPosition);
 		const latlng = new LatLng(coordinates[0], coordinates[1]);
 
 		map = new Map(mapContainer, {
