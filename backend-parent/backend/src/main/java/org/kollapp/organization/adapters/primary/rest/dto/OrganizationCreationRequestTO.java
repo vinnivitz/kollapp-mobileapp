@@ -13,7 +13,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrganizationCreationRequestTO {
-
     @NotBlank(message = "{validation.organization.name.required}")
     @Size(max = 50, message = "{validation.organization.name.maxlength}")
     private String name;

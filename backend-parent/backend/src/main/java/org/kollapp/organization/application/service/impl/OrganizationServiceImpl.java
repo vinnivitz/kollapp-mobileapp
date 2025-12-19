@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.kollapp.core.config.properties.ApplicationProperties;
 import org.kollapp.organization.application.exception.InvalidInvitationCodeException;
 import org.kollapp.organization.application.exception.LastManagerException;
+import org.kollapp.organization.application.exception.MaxOrganizationsReachedException;
 import org.kollapp.organization.application.exception.OrganizationNotFoundException;
 import org.kollapp.organization.application.exception.PersonAlreadyHasTargetRoleException;
 import org.kollapp.organization.application.exception.PersonAlreadyRegisteredInOrganizationException;
@@ -71,6 +72,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     @RequiresKollappUserRole
     public Organization createOrganization(Organization organization) {
         KollappUser user = kollappUserService.getLoggedInKollappUser();
+        verifyMaxOrganizationsNotReached(user.getId());
         user.setRole(SystemRole.ROLE_KOLLAPP_ORGANIZATION_MEMBER);
         organization.setActivities(new ArrayList<>());
         organization.setOrganizationPostings(new ArrayList<>());
@@ -145,6 +147,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     public void enterOrganizationByInvitationCode(String invitationCode) {
         String currentDateMinusOneDay = LocalDate.now().minusDays(1).toString();
         KollappUser currentUser = kollappUserService.getLoggedInKollappUser();
+        verifyMaxOrganizationsNotReached(currentUser.getId());
         OrganizationInvitationCode organizationInvitationCode = organizationInvitationCodeRepository
                 .findByInvitationCodeAndExpirationDateIsAfter(invitationCode, currentDateMinusOneDay)
                 .orElseThrow(() -> new InvalidInvitationCodeException(messageSource));
@@ -297,5 +300,12 @@ public class OrganizationServiceImpl implements OrganizationService {
     private boolean userIsNoOrganizationMember(long userId) {
         List<PersonOfOrganization> rolesInOtherOrganizations = personOfOrganizationRepository.findByUserId(userId);
         return rolesInOtherOrganizations.stream().noneMatch(p -> p.getUserId() == userId);
+    }
+
+    private void verifyMaxOrganizationsNotReached(long userId) {
+        long organizationCount = personOfOrganizationRepository.countByUserId(userId);
+        if (organizationCount >= applicationProperties.getMaxOrganizationsPerUser()) {
+            throw new MaxOrganizationsReachedException(messageSource);
+        }
     }
 }

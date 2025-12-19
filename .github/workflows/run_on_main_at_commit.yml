@@ -31,7 +31,7 @@ jobs:
         with:
           node-version-file: '.nvmrc'
 
-      - name: NPM Build
+      - name: Verify mobileapp
         run: |
           npm -g install pnpm 
           pnpm install --prefix mobileapp --frozen-lockfile
@@ -39,7 +39,6 @@ jobs:
           pnpm --prefix mobileapp indexing
           pnpm --prefix mobileapp validate
           pnpm --prefix mobileapp test
-          pnpm --prefix mobileapp build
 
       - name: Dump Docker container logs
         if: failure()
