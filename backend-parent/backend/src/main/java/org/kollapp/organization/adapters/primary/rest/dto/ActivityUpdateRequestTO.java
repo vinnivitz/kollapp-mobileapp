@@ -13,7 +13,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ActivityUpdateRequestTO {
-
     @NotBlank(message = "{validation.activity.name.required}")
     @Size(max = 50, message = "{validation.activity.name.maxlength}")
     private String name;
