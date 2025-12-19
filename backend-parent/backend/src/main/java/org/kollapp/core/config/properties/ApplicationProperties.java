@@ -22,4 +22,5 @@ public class ApplicationProperties {
     private String port;
     private int staticCacheDays;
     private int organizationInvitationValidityDays;
+    private int maxOrganizationsPerUser;
 }

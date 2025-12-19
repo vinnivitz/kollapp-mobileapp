@@ -23,4 +23,6 @@ public interface PersonOfOrganizationRepository {
     Optional<PersonOfOrganization> findById(long id);
 
     Optional<PersonOfOrganization> findByIdAndOrganization(long id, Organization organization);
+
+    long countByUserId(long userId);
 }
