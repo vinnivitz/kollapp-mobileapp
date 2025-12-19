@@ -20,7 +20,7 @@ import org.kollapp.user.application.exception.EmailIsNotConfirmedException;
 import org.kollapp.user.application.exception.InvalidRefreshTokenException;
 import org.kollapp.user.application.exception.KollappUserNotFoundException;
 import org.kollapp.user.application.exception.UsernameNotFoundException;
-import org.kollapp.user.application.model.AuthenticatedKollappUser;
+import org.kollapp.user.application.model.AuthTokens;
 import org.kollapp.user.application.model.KollappUser;
 import org.kollapp.user.application.model.KollappUserDetails;
 import org.kollapp.user.application.repository.KollappUserRepository;
@@ -46,7 +46,7 @@ public class AuthServiceImpl implements AuthService {
     private AuthenticationManager authenticationManager;
 
     @Override
-    public AuthenticatedKollappUser authenticate(String username, String password) {
+    public AuthTokens authenticate(String username, String password) {
         if (!userRepo.existsByUsername(username)) {
             throw new UsernameNotFoundException(messageSource);
         }
@@ -60,12 +60,7 @@ public class AuthServiceImpl implements AuthService {
         }
         String accessToken = jwtUtil.generateAuthenticationToken(kollappUserDetails.getUsername(), expirationDate);
         String refreshToken = jwtUtil.generateRefreshToken(kollappUserDetails.getUsername());
-        return AuthenticatedKollappUser.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .username(kollappUserDetails.getUsername())
-                .email(kollappUserDetails.getEmail())
-                .build();
+        return new AuthTokens(accessToken, refreshToken);
     }
 
     @Override
