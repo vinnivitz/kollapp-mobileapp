@@ -61,6 +61,7 @@ public class KollappUserServiceImpl implements KollappUserService {
     @Autowired
     private KollappUserPublisher kollappUserPublisher;
 
+    @Override
     public KollappUser getKollappUserByUsername(String username) {
         return userRepo.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(messageSource));
     }
@@ -71,8 +72,8 @@ public class KollappUserServiceImpl implements KollappUserService {
         Object principal =
                 SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username;
-        if (principal instanceof User) {
-            username = ((User) principal).getUsername();
+        if (principal instanceof User user) {
+            username = user.getUsername();
         } else {
             username = ((KollappUserDetails) principal).getUsername();
         }
@@ -181,8 +182,12 @@ public class KollappUserServiceImpl implements KollappUserService {
 
     @Override
     @RequiresKollappUserRole
-    public void deleteKollappUser() {
+    public void deleteKollappUser(String password) {
         KollappUser kollappUser = getLoggedInKollappUser();
+        boolean passwordIsCorrect = encoder.matches(password, kollappUser.getPassword());
+        if (!passwordIsCorrect) {
+            throw new IncorrectPasswordException(messageSource);
+        }
         kollappUserPublisher.publishUserDeletedEvent(new KollappUserDeletedEvent(this, kollappUser.getId()));
         SecurityContextHolder.getContext().setAuthentication(null);
         userRepo.deleteById(kollappUser.getId());
