@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import type { OrganizationBaseTO } from '@kollapp/api-types';
+	import type { OrganizationMinifiedTO } from '@kollapp/api-types';
 
 	import {
 		accessibilityOutline,
@@ -27,11 +27,14 @@
 	import { organizationStore } from '$lib/stores';
 	import { isAuthenticated, StatusCheck } from '$lib/utility';
 
-	let loading = $state<boolean>(true);
-	let organization = $state<OrganizationBaseTO>();
-	let authenticated = $state<boolean>(false);
-
 	const { data }: { data: PageData } = $props();
+
+	const organizations = $derived(organizationStore.organizations);
+	const isAlreadyMember = $derived($organizations.some((organization) => organization.id === $organizationStore?.id));
+
+	let loading = $state<boolean>(true);
+	let organization = $state<OrganizationMinifiedTO>();
+	let authenticated = $state<boolean>(false);
 
 	async function onJoinCollective(): Promise<void> {
 		const result = await organizationService.joinByInvitationCode(data.code);
@@ -64,7 +67,7 @@
 
 <!-- Snippets -->
 
-{#snippet collectiveDetails(organization: OrganizationBaseTO)}
+{#snippet collectiveDetails(organization: OrganizationMinifiedTO)}
 	<Card title={$t('routes.auth.organization.slug.page.card.join.title')}>
 		<InputItem
 			readonly
@@ -85,7 +88,7 @@
 			value={organization?.place}
 		></InputItem>
 		<div class="mt-3 text-center">
-			{#if organization.name !== $organizationStore?.name}
+			{#if !isAlreadyMember}
 				{#if authenticated}
 					<Button
 						icon={addOutline}

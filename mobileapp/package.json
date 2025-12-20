@@ -1,6 +1,6 @@
 {
 	"name": "mobileapp",
-	"version": "1.0.0",
+	"version": "0.1.0",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "npm run indexing && npm run sync-ionic-types && npm run validate && vite build --mode production",
@@ -12,7 +12,7 @@
 		"test:ui": "vitest --ui",
 		"test": "vitest -- --run",
 		"doc": "typedoc & live-server ./docs --watch --silent --no-browser --port=1234 & chokidar 'src/lib' -c 'typedoc' --silent",
-		"build-android": "cross-env ADAPTER=static npm run build --prod && dotenv cross-env-shell 'cap sync && ./android/gradlew -p android assembleDebug'",
+		"build-android": "cross-env ADAPTER=static npm run build && dotenv cross-env-shell 'cap sync && ./android/gradlew -p android assembleDebug'",
 		"build-web": "cross-env ADAPTER=node npm run build",
 		"visualize": "mkdir -p visualize && madge --extensions ts,svelte --image visualize/dependency-graph.png src",
 		"indexing": "tsx ./src/lib/utility/indexing.utility.ts",
@@ -26,7 +26,7 @@
 		"@capacitor/cli": "^7.4.4",
 		"@capacitor/core": "^7.4.4",
 		"@eslint/js": "^9.39.1",
-		"@kollapp/api-types": "0.8.0",
+		"@kollapp/api-types": "^0.9.0",
 		"@sveltejs/adapter-node": "^5.4.0",
 		"@sveltejs/adapter-static": "^3.0.10",
 		"@sveltejs/kit": "^2.48.5",
@@ -96,6 +96,7 @@
 		"@tailwindcss/vite": "^4.1.17",
 		"apexcharts": "^5.3.6",
 		"capacitor-email-composer": "^7.0.2",
+		"capacitor-secure-storage-plugin": "^0.12.0",
 		"d3": "^7.9.0",
 		"date-fns": "^4.1.0",
 		"ionicons": "^8.0.13",

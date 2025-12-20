@@ -9,5 +9,5 @@ import org.kollapp.user.application.model.KollappUser;
 @Mapper(componentModel = "spring")
 @Service
 public interface KollappUserMapper {
-    KollappUserTO userToUserTO(KollappUser user);
+    KollappUserTO kollappUserToKollappUserTO(KollappUser user);
 }
