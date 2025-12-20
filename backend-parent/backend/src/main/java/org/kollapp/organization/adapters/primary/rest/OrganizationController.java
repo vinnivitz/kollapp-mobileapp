@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import org.kollapp.core.adapters.primary.rest.dto.DataResponseTO;
 import org.kollapp.core.adapters.primary.rest.dto.MessageResponseTO;
-import org.kollapp.organization.adapters.primary.rest.dto.OrganizationBaseTO;
 import org.kollapp.organization.adapters.primary.rest.dto.OrganizationCreationRequestTO;
 import org.kollapp.organization.adapters.primary.rest.dto.OrganizationMinifiedTO;
 import org.kollapp.organization.adapters.primary.rest.dto.OrganizationTO;
@@ -57,10 +56,11 @@ public class OrganizationController {
             security = {@SecurityRequirement(name = "bearer-key")})
     public ResponseEntity<DataResponseTO<List<OrganizationMinifiedTO>>> getOrganizationOfLoggedInUser() {
         List<Organization> organizations = organizationService.getOrganizationsByLoggedInUser();
-        List<OrganizationMinifiedTO> organizationBaseTOs = organizations.stream()
+        List<OrganizationMinifiedTO> organizationMinifiedTOs = organizations.stream()
                 .map(o -> organizationMapper.organizationToOrganizationMinifiedTO(o))
                 .toList();
-        return ResponseEntity.ok(new DataResponseTO<>(organizationBaseTOs, "success.organization.get", messageSource));
+        return ResponseEntity.ok(
+                new DataResponseTO<>(organizationMinifiedTOs, "success.organization.get", messageSource));
     }
 
     @GetMapping("/{organization-id}")
@@ -78,11 +78,13 @@ public class OrganizationController {
     @Operation(
             summary = "Get the basic information of the organization by its invitation code",
             security = {@SecurityRequirement(name = "bearer-key")})
-    public ResponseEntity<DataResponseTO<OrganizationBaseTO>> getOrganizationBaseInformationByInvitationCode(
+    public ResponseEntity<DataResponseTO<OrganizationMinifiedTO>> getOrganizationBaseInformationByInvitationCode(
             @PathVariable("invitation-code") String invitationCode) {
         Organization organization = organizationService.getOrganizationByInvitationCode(invitationCode);
-        OrganizationBaseTO organizationBaseTO = organizationMapper.organizationToOrganizationBaseTO(organization);
-        return ResponseEntity.ok(new DataResponseTO<>(organizationBaseTO, "success.organization.get", messageSource));
+        OrganizationMinifiedTO organizationMinifiedTO =
+                organizationMapper.organizationToOrganizationMinifiedTO(organization);
+        return ResponseEntity.ok(
+                new DataResponseTO<>(organizationMinifiedTO, "success.organization.get", messageSource));
     }
 
     @PatchMapping("/{organization-id}/person/{person-id}/approve")
@@ -93,7 +95,8 @@ public class OrganizationController {
             @PathVariable("organization-id") long organizationId, @PathVariable("person-id") long personId) {
         Organization organization = organizationService.approveNewMemberRequest(organizationId, personId);
         OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(organization);
-        return ResponseEntity.ok(new DataResponseTO<>(organizationTO, "success.organization.get", messageSource));
+        return ResponseEntity.ok(
+                new DataResponseTO<>(organizationTO, "success.organization.member.approve", messageSource));
     }
 
     @PostMapping("/invitation/{invitation-code}")
@@ -119,7 +122,8 @@ public class OrganizationController {
         Organization organization =
                 organizationService.grantRoleToPersonOfOrganization(organizationId, personId, targetRole);
         OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(organization);
-        return ResponseEntity.ok(new DataResponseTO<>(organizationTO, "success.organization.get", messageSource));
+        return ResponseEntity.ok(
+                new DataResponseTO<>(organizationTO, "success.organization.role.grant", messageSource));
     }
 
     @PatchMapping("/{organization-id}/invitation-code")
@@ -130,7 +134,8 @@ public class OrganizationController {
             @PathVariable("organization-id") long organizationId) {
         Organization organization = organizationService.generateNewOrganizationInvitationCode(organizationId);
         OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(organization);
-        return ResponseEntity.ok(new DataResponseTO<>(organizationTO, "success.organization.update", messageSource));
+        return ResponseEntity.ok(
+                new DataResponseTO<>(organizationTO, "success.organization.invitation.update", messageSource));
     }
 
     @PostMapping

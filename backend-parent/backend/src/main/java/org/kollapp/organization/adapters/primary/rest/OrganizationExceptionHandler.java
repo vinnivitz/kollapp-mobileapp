@@ -13,6 +13,7 @@ import org.kollapp.organization.application.exception.InvalidInvitationCodeExcep
 import org.kollapp.organization.application.exception.InvalidOrganizationRoleException;
 import org.kollapp.organization.application.exception.InvalidPostingTypeException;
 import org.kollapp.organization.application.exception.LastManagerException;
+import org.kollapp.organization.application.exception.MaxOrganizationsReachedException;
 import org.kollapp.organization.application.exception.OrganizationAuthorizationException;
 import org.kollapp.organization.application.exception.OrganizationNotFoundException;
 import org.kollapp.organization.application.exception.PersonAlreadyHasTargetRoleException;
@@ -85,6 +86,11 @@ public class OrganizationExceptionHandler {
 
     @ExceptionHandler(PersonAlreadyHasTargetRoleException.class)
     public ResponseEntity<ResponseTO> handlePersonAlreadyHasTargetRole(PersonAlreadyHasTargetRoleException ex) {
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
+    }
+
+    @ExceptionHandler(MaxOrganizationsReachedException.class)
+    public ResponseEntity<ResponseTO> handleMaxOrganizationsReached(MaxOrganizationsReachedException ex) {
         return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
     }
 

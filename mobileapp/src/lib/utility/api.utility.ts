@@ -19,7 +19,7 @@ import {
 	type ResponseBody,
 	StatusCode
 } from '$lib/models/api';
-import { PreferencesKey } from '$lib/models/preferences';
+import { StorageKey, StorageStrategy } from '$lib/models/storage';
 import { AlertType, type ValidationResult } from '$lib/models/ui';
 import {
 	appStateStore,
@@ -125,7 +125,9 @@ export async function customFetch<T = never>(url: string, config?: CustomFetchCo
  * @returns {Promise<boolean>} True if authenticated; otherwise, false.
  */
 export async function isAuthenticated(): Promise<boolean> {
-	const model = get(authenticationStore) || (await getStoredValue<AuthenticationModel>(PreferencesKey.AUTHENTICATION));
+	const model =
+		get(authenticationStore) ||
+		(await getStoredValue<AuthenticationModel>(StorageKey.AUTHENTICATION, StorageStrategy.SECURE));
 	return !!model?.accessToken;
 }
 
@@ -192,16 +194,16 @@ export async function checkMaintenance(): Promise<void> {
 	if (StatusCheck.isOK(response.status)) {
 		const schedule = new TZDate(response.data.scheduled);
 		if (!response.data.scheduled || schedule <= new TZDate()) {
-			removeStoredValue(PreferencesKey.MAINTENANCE_SCHEDULE);
+			removeStoredValue(StorageKey.MAINTENANCE_SCHEDULE);
 		} else {
-			const storedSchedule = await getStoredValue<Date>(PreferencesKey.MAINTENANCE_SCHEDULE);
+			const storedSchedule = await getStoredValue<Date>(StorageKey.MAINTENANCE_SCHEDULE);
 			if (!storedSchedule || schedule !== storedSchedule) {
 				Promise.all([
 					informationModal(
 						$t('utility.api.maintenance.alert.header'),
 						$t('utility.api.maintenance.message', { value: format(schedule, 'PPP p') })
 					),
-					storeValue(PreferencesKey.MAINTENANCE_SCHEDULE, schedule)
+					storeValue(StorageKey.MAINTENANCE_SCHEDULE, schedule)
 				]);
 			}
 		}
