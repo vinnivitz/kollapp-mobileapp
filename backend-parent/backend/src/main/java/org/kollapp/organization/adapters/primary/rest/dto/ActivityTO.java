@@ -2,6 +2,8 @@ package org.kollapp.organization.adapters.primary.rest.dto;
 
 import java.util.List;
 
+import jakarta.validation.constraints.NotNull;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,11 +16,15 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 public class ActivityTO {
+    @NotNull
     private long id;
 
+    @NotNull
     private String name;
 
+    @NotNull
     private String location;
 
+    @NotNull
     private List<PostingTO> activityPostings;
 }

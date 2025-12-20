@@ -46,3 +46,6 @@ project(':ebarooni-capacitor-calendar').projectDir = new File('../node_modules/.
 
 include ':capacitor-email-composer'
 project(':capacitor-email-composer').projectDir = new File('../node_modules/.pnpm/capacitor-email-composer@7.0.2_@capacitor+core@7.4.4/node_modules/capacitor-email-composer/android')
+
+include ':capacitor-secure-storage-plugin'
+project(':capacitor-secure-storage-plugin').projectDir = new File('../node_modules/.pnpm/capacitor-secure-storage-plugin@0.12.0_@capacitor+core@7.4.4/node_modules/capacitor-secure-storage-plugin/android')

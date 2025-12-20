@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 
-import { PreferencesKey } from '$lib/models/preferences';
+import { StorageKey } from '$lib/models/storage';
 import { type ThemeStore } from '$lib/models/stores';
 import { Theme } from '$lib/models/ui';
 import { getStoredValue, storeValue } from '$lib/utility';
@@ -14,7 +14,7 @@ function createStore(): ThemeStore {
 	}
 	async function _set(value: Theme): Promise<void> {
 		setClass(value);
-		await storeValue(PreferencesKey.THEME, value);
+		await storeValue(StorageKey.THEME, value);
 		set(value);
 	}
 
@@ -23,7 +23,7 @@ function createStore(): ThemeStore {
 	}
 
 	async function getInitialTheme(): Promise<Theme> {
-		return (await getStoredValue<Theme>(PreferencesKey.THEME)) || getPreferedColorScheme();
+		return (await getStoredValue<Theme>(StorageKey.THEME)) || getPreferedColorScheme();
 	}
 
 	function getPreferedColorScheme(): Theme {

@@ -17,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.springframework.security.web.header.writers.XXssProtectionHeaderWriter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -24,8 +25,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+import org.kollapp.core.config.AccessTokenFilter;
 import org.kollapp.core.config.AuthEntryPointJwt;
-import org.kollapp.core.config.AuthTokenFilter;
 import org.kollapp.core.config.properties.CorsProperties;
 import org.kollapp.user.application.service.impl.KollappUserDetailsServiceImpl;
 
@@ -49,8 +50,8 @@ public class WebSecurityConfig {
      * @return the JWT authentication token filter
      */
     @Bean
-    public AuthTokenFilter authenticationJwtTokenFilter() {
-        return new AuthTokenFilter();
+    public AccessTokenFilter authenticationJwtTokenFilter() {
+        return new AccessTokenFilter();
     }
 
     /**
@@ -126,14 +127,28 @@ public class WebSecurityConfig {
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.headers(headers -> headers.xssProtection(
-                        xss -> xss.headerValue(XXssProtectionHeaderWriter.HeaderValue.ENABLED_MODE_BLOCK))
-                .contentTypeOptions(withDefaults())
-                .frameOptions(frame -> frame.sameOrigin())
-                .httpStrictTransportSecurity(
-                        hsts -> hsts.includeSubDomains(true).maxAgeInSeconds(31536000))
-                .contentSecurityPolicy(csp -> csp.policyDirectives(
-                        "default-src 'self'; img-src 'self' data:; script-src" + " 'self'; style-src 'self';")));
+        http.headers(
+                headers -> headers.xssProtection(
+                                xss -> xss.headerValue(XXssProtectionHeaderWriter.HeaderValue.ENABLED_MODE_BLOCK))
+                        .contentTypeOptions(withDefaults())
+                        .frameOptions(frame -> frame.deny())
+                        .httpStrictTransportSecurity(hsts -> hsts.includeSubDomains(true)
+                                .maxAgeInSeconds(31536000)
+                                .preload(true))
+                        .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'; "
+                                + "script-src 'self' 'unsafe-inline' 'unsafe-eval'; "
+                                + "style-src 'self' 'unsafe-inline'; "
+                                + "img-src 'self' data: https:; "
+                                + "font-src 'self' data:; "
+                                + "connect-src 'self'; "
+                                + "frame-ancestors 'none'; "
+                                + "base-uri 'self'; "
+                                + "form-action 'self'"))
+                        .referrerPolicy(referrer -> referrer.policy(
+                                ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN))
+                        .permissionsPolicy(
+                                permissions -> permissions.policy(
+                                        "geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=()")));
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))

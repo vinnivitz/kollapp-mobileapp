@@ -111,6 +111,9 @@
 		</ion-item>
 		{#if badge}
 			{@render badgeIcon()}
+		{:else}
+			<!-- Workaround to show item separator -->
+			<div></div>
 		{/if}
 	</div>
 {/snippet}
