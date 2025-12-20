@@ -10,9 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,6 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.core.util.JwtUtil;
 import org.kollapp.core.util.ResponseUtil;
 
@@ -36,7 +35,7 @@ public class AccessTokenFilter extends OncePerRequestFilter {
     private UserDetailsService userDetailsService;
 
     @Autowired
-    private MessageSource messageSource;
+    private MessageUtil messageUtil;
 
     @Autowired
     private ResponseUtil responseUtil;
@@ -58,16 +57,13 @@ public class AccessTokenFilter extends OncePerRequestFilter {
                     responseUtil.createMessageResponse(
                             response,
                             HttpServletResponse.SC_UNAUTHORIZED,
-                            messageSource.getMessage(
-                                    "error.jwt.authentication.invalid", null, LocaleContextHolder.getLocale()));
+                            messageUtil.getMessage("error.jwt.authentication.invalid"));
                     return;
                 }
             }
         } catch (IOException | NoSuchMessageException | UsernameNotFoundException e) {
             responseUtil.createMessageResponse(
-                    response,
-                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    messageSource.getMessage(e.getMessage(), null, LocaleContextHolder.getLocale()));
+                    response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, messageUtil.getMessage(e.getMessage()));
         }
         filterChain.doFilter(request, response);
     }

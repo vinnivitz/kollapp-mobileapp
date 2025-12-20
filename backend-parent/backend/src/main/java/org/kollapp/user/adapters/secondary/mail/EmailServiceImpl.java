@@ -7,14 +7,13 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.jmolecules.architecture.hexagonal.SecondaryAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.core.config.properties.ApplicationProperties;
 import org.kollapp.core.util.UrlBuilderUtil;
 import org.kollapp.user.application.service.EmailService;
@@ -27,9 +26,6 @@ public class EmailServiceImpl implements EmailService {
     private UrlBuilderUtil urlBuilderUtil;
 
     @Autowired
-    private MessageSource messageSource;
-
-    @Autowired
     private ApplicationProperties applicationProperties;
 
     @Autowired
@@ -38,18 +34,18 @@ public class EmailServiceImpl implements EmailService {
     @Autowired
     private TemplateEngine templateEngine;
 
+    @Autowired
+    private MessageUtil messageUtil;
+
     @Override
     public void sendConfirmationMail(String recipientMail, String confirmationUrl) {
-        String subject = messageSource.getMessage("mail.confirmation.subject", null, LocaleContextHolder.getLocale());
+        String subject = messageUtil.getMessage("mail.confirmation.subject");
 
         Context context = new Context();
-        context.setVariable(
-                "title", messageSource.getMessage("mail.confirmation.title", null, LocaleContextHolder.getLocale()));
-        context.setVariable(
-                "text", messageSource.getMessage("mail.confirmation.text", null, LocaleContextHolder.getLocale()));
+        context.setVariable("title", messageUtil.getMessage("mail.confirmation.title"));
+        context.setVariable("text", messageUtil.getMessage("mail.confirmation.text"));
         context.setVariable("confirmationUrl", confirmationUrl);
-        context.setVariable(
-                "button", messageSource.getMessage("mail.confirmation.button", null, LocaleContextHolder.getLocale()));
+        context.setVariable("button", messageUtil.getMessage("mail.confirmation.button"));
         context.setVariable("logoUrl", urlBuilderUtil.buildServerUrl("/logo.png"));
 
         String htmlContent = templateEngine.process("confirmation", context);
@@ -70,18 +66,13 @@ public class EmailServiceImpl implements EmailService {
     }
 
     public void sendForgotPasswordMail(String recipientMail, String resetPasswordUrl) {
-        String subject =
-                messageSource.getMessage("mail.forgot-password.subject", null, LocaleContextHolder.getLocale());
+        String subject = messageUtil.getMessage("mail.forgot-password.subject");
 
         Context context = new Context();
-        context.setVariable(
-                "title", messageSource.getMessage("mail.forgot-password.title", null, LocaleContextHolder.getLocale()));
-        context.setVariable(
-                "text", messageSource.getMessage("mail.forgot-password.text", null, LocaleContextHolder.getLocale()));
+        context.setVariable("title", messageUtil.getMessage("mail.forgot-password.title"));
+        context.setVariable("text", messageUtil.getMessage("mail.forgot-password.text"));
         context.setVariable("resetPasswordUrl", resetPasswordUrl);
-        context.setVariable(
-                "button",
-                messageSource.getMessage("mail.forgot-password.button", null, LocaleContextHolder.getLocale()));
+        context.setVariable("button", messageUtil.getMessage("mail.forgot-password.button"));
         context.setVariable("logoUrl", urlBuilderUtil.buildServerUrl("/logo.png"));
 
         String htmlContent = templateEngine.process("forgot-password", context);
