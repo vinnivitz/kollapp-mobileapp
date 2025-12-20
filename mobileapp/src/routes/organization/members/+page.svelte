@@ -54,6 +54,8 @@
 	let invitationCodeModalOpen = $state<boolean>(false);
 	let qrModalOpen = $state<boolean>(false);
 
+	let searchValue = $state<string>('');
+
 	const userId = $derived($userStore?.id);
 
 	const invitationCodeExpiration = $derived(
@@ -67,11 +69,19 @@
 			.filter((member) => member.userId !== userId && member.status === 'APPROVED')
 	);
 
-	const pendingMembers = $derived(
-		$organizationStore?.personsOfOrganization?.filter((member) => member.status === 'PENDING') ?? []
+	const filteredMembers = $derived(
+		searchValue
+			? members.filter((member) => member.username.toLowerCase().includes(searchValue.toLowerCase()))
+			: members
 	);
 
-	const memberGroups = $derived(getGroupedMembers(members));
+	const pendingMembers = $derived(
+		($organizationStore?.personsOfOrganization ?? []).filter(
+			(member) => member.userId !== userId && member.status === 'PENDING'
+		)
+	);
+
+	const memberGroups = $derived(getGroupedMembers(filteredMembers));
 
 	const isExpired = $derived(invitationCodeExpiration.getTime() <= Date.now());
 
@@ -242,6 +252,10 @@
 			await showAlert($t('routes.organization.members.page.invitation-code.email.unsupported'));
 		}
 	}
+
+	async function onSearch(event: CustomEvent): Promise<void> {
+		searchValue = event.detail.value;
+	}
 </script>
 
 <Layout title={$t('routes.organization.members.page.title')} showBackButton>
@@ -256,8 +270,17 @@
 		{/if}
 	{/if}
 
-	{#if members.length > 0}
+	<ion-searchbar
+		debounce={100}
+		placeholder={$t('components.menu.header.toolbar.searchbar.placeholder')}
+		onionInput={onSearch}
+		value={searchValue}
+	></ion-searchbar>
+
+	{#if filteredMembers.length > 0}
 		{@render memberList()}
+	{:else if searchValue}
+		{@render noSearchResults()}
 	{:else}
 		{@render noMembers()}
 	{/if}
@@ -282,6 +305,14 @@
 			clicked={() => (invitationCodeModalOpen = true)}
 		/>
 	</div>
+{/snippet}
+
+{#snippet noSearchResults()}
+	<FadeInOut>
+		<div class="mt-5 flex flex-col items-center justify-center gap-5">
+			<ion-note>No results found for "{searchValue}"</ion-note>
+		</div>
+	</FadeInOut>
 {/snippet}
 
 {#snippet memberList()}

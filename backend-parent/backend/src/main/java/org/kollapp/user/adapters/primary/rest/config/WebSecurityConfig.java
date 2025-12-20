@@ -25,8 +25,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+import org.kollapp.core.config.AccessTokenFilter;
 import org.kollapp.core.config.AuthEntryPointJwt;
-import org.kollapp.core.config.AuthTokenFilter;
 import org.kollapp.core.config.properties.CorsProperties;
 import org.kollapp.user.application.service.impl.KollappUserDetailsServiceImpl;
 
@@ -50,8 +50,8 @@ public class WebSecurityConfig {
      * @return the JWT authentication token filter
      */
     @Bean
-    public AuthTokenFilter authenticationJwtTokenFilter() {
-        return new AuthTokenFilter();
+    public AccessTokenFilter authenticationJwtTokenFilter() {
+        return new AccessTokenFilter();
     }
 
     /**

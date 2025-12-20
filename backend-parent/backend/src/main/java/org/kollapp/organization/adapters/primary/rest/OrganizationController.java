@@ -60,10 +60,11 @@ public class OrganizationController {
             security = {@SecurityRequirement(name = "bearer-key")})
     public ResponseEntity<DataResponseTO<List<OrganizationMinifiedTO>>> getOrganizationOfLoggedInUser() {
         List<Organization> organizations = organizationService.getOrganizationsByLoggedInUser();
-        List<OrganizationMinifiedTO> organizationBaseTOs = organizations.stream()
+        List<OrganizationMinifiedTO> organizationMinifiedTOs = organizations.stream()
                 .map(o -> organizationMapper.organizationToOrganizationMinifiedTO(o))
                 .toList();
-        return ResponseEntity.ok(new DataResponseTO<>(organizationBaseTOs, "success.organization.get", messageSource));
+        return ResponseEntity.ok(
+                new DataResponseTO<>(organizationMinifiedTOs, "success.organization.get", messageSource));
     }
 
     @GetMapping("/{organization-id}")
@@ -81,11 +82,13 @@ public class OrganizationController {
     @Operation(
             summary = "Get the basic information of the organization by its invitation code",
             security = {@SecurityRequirement(name = "bearer-key")})
-    public ResponseEntity<DataResponseTO<OrganizationBaseTO>> getOrganizationBaseInformationByInvitationCode(
+    public ResponseEntity<DataResponseTO<OrganizationMinifiedTO>> getOrganizationBaseInformationByInvitationCode(
             @PathVariable("invitation-code") String invitationCode) {
         Organization organization = organizationService.getOrganizationByInvitationCode(invitationCode);
-        OrganizationBaseTO organizationBaseTO = organizationMapper.organizationToOrganizationBaseTO(organization);
-        return ResponseEntity.ok(new DataResponseTO<>(organizationBaseTO, "success.organization.get", messageSource));
+        OrganizationMinifiedTO organizationMinifiedTO =
+                organizationMapper.organizationToOrganizationMinifiedTO(organization);
+        return ResponseEntity.ok(
+                new DataResponseTO<>(organizationMinifiedTO, "success.organization.get", messageSource));
     }
 
     @PatchMapping("/{organization-id}/person/{person-id}/approve")
