@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.kollapp.core.adapters.primary.rest.dto.DataResponseTO;
 import org.kollapp.core.adapters.primary.rest.dto.MessageResponseTO;
 import org.kollapp.core.validation.ValidId;
-import org.kollapp.organization.adapters.primary.rest.dto.OrganizationBaseTO;
 import org.kollapp.organization.adapters.primary.rest.dto.OrganizationCreationRequestTO;
 import org.kollapp.organization.adapters.primary.rest.dto.OrganizationMinifiedTO;
 import org.kollapp.organization.adapters.primary.rest.dto.OrganizationTO;
