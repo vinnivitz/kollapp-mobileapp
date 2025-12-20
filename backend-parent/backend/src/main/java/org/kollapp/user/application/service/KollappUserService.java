@@ -25,7 +25,7 @@ public interface KollappUserService {
 
     KollappUser updateKollappUser(@Nullable String username, @Nullable String email);
 
-    void deleteKollappUser();
+    void deleteKollappUser(String password);
 
     KollappUser findById(Long id);
 }

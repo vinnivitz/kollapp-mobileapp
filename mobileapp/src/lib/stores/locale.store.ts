@@ -5,7 +5,7 @@ import { setDefaultOptions } from 'date-fns';
 import { writable } from 'svelte/store';
 
 import { loadTranslations, Locale, locale } from '$lib/locales';
-import { PreferencesKey } from '$lib/models/preferences';
+import { StorageKey } from '$lib/models/storage';
 import { getDateFnsLocale, getStoredValue, storeValue } from '$lib/utility';
 
 function createStore(): LocaleStore {
@@ -17,7 +17,7 @@ function createStore(): LocaleStore {
 		await _set(value);
 	}
 	async function _set(value: Locale): Promise<void> {
-		await storeValue(PreferencesKey.LOCALE, value);
+		await storeValue(StorageKey.LOCALE, value);
 		locale.set(value);
 		setDefaultOptions({ locale: getDateFnsLocale(value) });
 		set(value);
@@ -29,7 +29,7 @@ function createStore(): LocaleStore {
 
 	async function getInitialLocale(): Promise<Locale> {
 		return (
-			(await getStoredValue<Locale>(PreferencesKey.LOCALE)) ??
+			(await getStoredValue<Locale>(StorageKey.LOCALE)) ??
 			(await getLocaleFromDevice()) ??
 			(process.env.LOCALE as Locale | undefined) ??
 			Locale.DE

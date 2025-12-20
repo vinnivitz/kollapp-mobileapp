@@ -2,7 +2,7 @@ import type { AuthenticationModel } from '$lib/models/models';
 
 import { writable } from 'svelte/store';
 
-import { PreferencesKey } from '$lib/models/preferences';
+import { StorageKey, StorageStrategy } from '$lib/models/storage';
 import { type AuthenticationStore as AuthenticationStore } from '$lib/models/stores';
 import { getStoredValue, removeStoredValue, storeValue } from '$lib/utility';
 
@@ -11,13 +11,15 @@ function createStore(): AuthenticationStore {
 	const initialized = writable(false);
 
 	async function init(): Promise<void> {
-		const model = await getStoredValue<AuthenticationModel>(PreferencesKey.AUTHENTICATION);
+		const model = await getStoredValue<AuthenticationModel>(StorageKey.AUTHENTICATION, StorageStrategy.SECURE);
 		await _set(model);
 		initialized.set(true);
 	}
 
 	async function _set(model?: AuthenticationModel): Promise<void> {
-		await (model ? storeValue(PreferencesKey.AUTHENTICATION, model) : removeStoredValue(PreferencesKey.AUTHENTICATION));
+		await (model
+			? storeValue(StorageKey.AUTHENTICATION, model, StorageStrategy.SECURE)
+			: removeStoredValue(StorageKey.AUTHENTICATION, StorageStrategy.SECURE));
 		set(model);
 	}
 

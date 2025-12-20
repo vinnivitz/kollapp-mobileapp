@@ -2,7 +2,6 @@ package org.kollapp.user.adapters.primary.rest.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
@@ -18,7 +17,7 @@ import lombok.Setter;
 @Builder
 public class KollappUserUpdateRequestTO {
     @NotBlank(message = "{validation.user.username.required}")
-    @Pattern(regexp = ".{2,}", message = "{validation.username.minlength}")
+    @Size(min = 2, message = "{validation.username.minlength}")
     @Size(max = 20, message = "{validation.username.maxlength}")
     private String username;
 
