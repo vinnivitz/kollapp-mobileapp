@@ -257,6 +257,7 @@ public class OrganizationServiceImpl implements OrganizationService {
                 getPersonOfOrganizationsByUserId(loggedInKollappUser.getId());
         return personsOfOrganization.stream()
                 .map(PersonOfOrganization::getOrganization)
+                .peek(Organization::initChildren)
                 .collect(Collectors.toList());
     }
 
@@ -277,7 +278,9 @@ public class OrganizationServiceImpl implements OrganizationService {
         OrganizationInvitationCode invCode = organizationInvitationCodeRepository
                 .findByInvitationCodeAndExpirationDateIsAfter(invitationCode, localDateMinusOneDay)
                 .orElseThrow(() -> new InvalidInvitationCodeException(messageSource));
-        return invCode.getOrganization();
+        Organization organization = invCode.getOrganization();
+        organization.initChildren();
+        return organization;
     }
 
     private List<PersonOfOrganization> getPersonOfOrganizationsByUserId(long userId) {

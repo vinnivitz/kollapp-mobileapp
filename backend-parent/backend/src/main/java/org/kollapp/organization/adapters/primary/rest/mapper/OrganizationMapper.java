@@ -8,7 +8,10 @@ import org.kollapp.organization.adapters.primary.rest.dto.OrganizationCreationRe
 import org.kollapp.organization.adapters.primary.rest.dto.OrganizationMinifiedTO;
 import org.kollapp.organization.adapters.primary.rest.dto.OrganizationTO;
 import org.kollapp.organization.adapters.primary.rest.dto.OrganizationUpdateRequestTO;
+import org.kollapp.organization.adapters.primary.rest.dto.enums.OrganizationMembershipState;
 import org.kollapp.organization.application.model.Organization;
+import org.kollapp.organization.application.model.PersonOfOrganization;
+import org.kollapp.organization.application.model.PersonOfOrganizationStatus;
 
 @Mapper(
         componentModel = "spring",
@@ -32,5 +35,33 @@ public interface OrganizationMapper {
 
     OrganizationBaseTO organizationToOrganizationBaseTO(Organization organization);
 
+    @Mapping(target = "state", ignore = true)
     OrganizationMinifiedTO organizationToOrganizationMinifiedTO(Organization organization);
+
+    default OrganizationMinifiedTO organizationToOrganizationMinifiedTO(Organization organization, long userId) {
+        OrganizationMinifiedTO organizationMinifiedTO = organizationToOrganizationMinifiedTO(organization);
+        OrganizationMembershipState state = determineUserMembershipState(organization, userId);
+        organizationMinifiedTO.setState(state);
+        return organizationMinifiedTO;
+    }
+
+    default OrganizationMembershipState determineUserMembershipState(Organization organization, long userId) {
+        if (organization.getPersonsOfOrganization() == null) {
+            return OrganizationMembershipState.NOT_MEMBER;
+        }
+
+        return organization.getPersonsOfOrganization().stream()
+                .filter(personOfOrganization -> personOfOrganization.getUserId() == userId)
+                .findFirst()
+                .map(PersonOfOrganization::getStatus)
+                .map(status -> {
+                    if (status == PersonOfOrganizationStatus.APPROVED) {
+                        return OrganizationMembershipState.APPROVED;
+                    } else if (status == PersonOfOrganizationStatus.PENDING) {
+                        return OrganizationMembershipState.PENDING;
+                    }
+                    return OrganizationMembershipState.NOT_MEMBER;
+                })
+                .orElse(OrganizationMembershipState.NOT_MEMBER);
+    }
 }
