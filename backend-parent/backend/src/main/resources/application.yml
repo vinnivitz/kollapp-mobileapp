@@ -84,6 +84,7 @@ kollapp:
   ratelimit:
     requests: ${BACKEND_RATE_LIMIT:10}
     seconds: ${BACKEND_RATE_LIMIT_TIME:60}
+    maxCacheSize: ${BACKEND_RATE_LIMIT_MAX_CACHE_SIZE:10000}
 
   jwt:
     authSecret: ${BACKEND_JWT_AUTH_SECRET}

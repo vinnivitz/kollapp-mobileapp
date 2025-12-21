@@ -49,6 +49,7 @@
         <lombok.version>1.18.42</lombok.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <bucket4j.version>8.0.1</bucket4j.version>
+        <caffeine.version>3.2.3</caffeine.version>
         <spring-dotenv.version>4.0.0</spring-dotenv.version>
         <google-findbugs.version>3.0.2</google-findbugs.version>
 
@@ -123,6 +124,11 @@
                 <groupId>com.bucket4j</groupId>
                 <artifactId>bucket4j-core</artifactId>
                 <version>${bucket4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.ben-manes.caffeine</groupId>
+                <artifactId>caffeine</artifactId>
+                <version>${caffeine.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>

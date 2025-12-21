@@ -17,4 +17,5 @@ import org.springframework.stereotype.Component;
 public class RateLimitProperties {
     private int requests;
     private int seconds;
+    private int maxCacheSize;
 }
