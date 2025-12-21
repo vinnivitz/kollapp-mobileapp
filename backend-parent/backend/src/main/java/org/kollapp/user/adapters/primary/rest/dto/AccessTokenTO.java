@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthTokenTO {
+public class AccessTokenTO {
     @NotNull
     private String token;
 }

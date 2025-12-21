@@ -9,12 +9,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.core.config.properties.RateLimitProperties;
 import org.kollapp.core.util.ResponseUtil;
 
@@ -27,7 +26,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     private final Bucket bucket;
 
     @Autowired
-    private MessageSource messageSource;
+    private MessageUtil messageUtil;
 
     @Autowired
     private ResponseUtil responseUtil;
@@ -60,9 +59,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         if (!bucket.tryConsume(1)) {
             responseUtil.createMessageResponse(
-                    response,
-                    HttpStatus.TOO_MANY_REQUESTS.value(),
-                    messageSource.getMessage("error.ratelimit", null, LocaleContextHolder.getLocale()));
+                    response, HttpStatus.TOO_MANY_REQUESTS.value(), messageUtil.getMessage("error.ratelimit"));
             return;
         }
         chain.doFilter(request, response);

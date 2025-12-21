@@ -1,7 +1,8 @@
-package org.kollapp.user.application.model;
+package org.kollapp.user.adapters.primary.rest.dto;
+
+import jakarta.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,15 +11,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-@Builder
-public class AuthenticatedKollappUser {
+public class AuthTokensTO {
+    @NotNull
     private String accessToken;
 
+    @NotNull
     private String refreshToken;
-
-    private String username;
-
-    private String email;
-
-    private long loggedInUntil;
 }

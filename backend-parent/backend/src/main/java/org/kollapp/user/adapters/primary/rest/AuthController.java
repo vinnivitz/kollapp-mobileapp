@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,14 +14,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.core.adapters.primary.rest.dto.DataResponseTO;
-import org.kollapp.user.adapters.primary.rest.dto.AuthTokenTO;
-import org.kollapp.user.adapters.primary.rest.dto.AuthenticatedKollappUserTO;
+import org.kollapp.user.adapters.primary.rest.dto.AccessTokenTO;
+import org.kollapp.user.adapters.primary.rest.dto.AuthTokensTO;
 import org.kollapp.user.adapters.primary.rest.dto.LoginRequestTO;
-import org.kollapp.user.adapters.primary.rest.mapper.AuthTokenMapper;
-import org.kollapp.user.adapters.primary.rest.mapper.AuthenticatedKollappUserMapper;
-import org.kollapp.user.application.model.AuthToken;
-import org.kollapp.user.application.model.AuthenticatedKollappUser;
+import org.kollapp.user.adapters.primary.rest.mapper.AccessTokenMapper;
+import org.kollapp.user.adapters.primary.rest.mapper.AuthTokensMapper;
+import org.kollapp.user.application.model.AccessToken;
+import org.kollapp.user.application.model.AuthTokens;
 import org.kollapp.user.application.service.AuthService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,35 +33,34 @@ import io.swagger.v3.oas.annotations.Operation;
 @PrimaryAdapter
 public class AuthController {
     @Autowired
-    private MessageSource messageSource;
+    private MessageUtil messageUtil;
 
     @Autowired
     private AuthService authService;
 
     @Autowired
-    private AuthenticatedKollappUserMapper authenticatedKollappUserMapper;
+    private AuthTokensMapper authTokensMapper;
 
     @Autowired
-    private AuthTokenMapper authTokenMapper;
+    private AccessTokenMapper accessTokenMapper;
 
     @PostMapping("/signin")
     @Operation(summary = "Sign in a kollapp user")
-    public ResponseEntity<DataResponseTO<AuthenticatedKollappUserTO>> authenticateKollappUser(
+    public ResponseEntity<DataResponseTO<AuthTokensTO>> authenticateKollappUser(
             @Valid @RequestBody LoginRequestTO loginRequestTO) {
-        AuthenticatedKollappUser authenticatedKollappUser =
-                authService.authenticate(loginRequestTO.getUsername(), loginRequestTO.getPassword());
-        AuthenticatedKollappUserTO authenticatedKollappUserTO =
-                authenticatedKollappUserMapper.authenticatedKollappUserToAuthenticatedKollappUserTO(
-                        authenticatedKollappUser);
-        return ResponseEntity.ok(
-                new DataResponseTO<>(authenticatedKollappUserTO, "success.user.signin", messageSource));
+        AuthTokens authTokens = authService.authenticate(loginRequestTO.getUsername(), loginRequestTO.getPassword());
+        AuthTokensTO tokensTO = authTokensMapper.authTokensToAuthTokensTO(authTokens);
+        String message = messageUtil.getMessage("success.user.signin");
+        return ResponseEntity.ok(new DataResponseTO<>(tokensTO, message));
     }
 
     @GetMapping("/refresh")
     @Operation(summary = "Refresh the access token")
-    public ResponseEntity<DataResponseTO<AuthTokenTO>> refreshAccessToken(@RequestParam("token") String refreshToken) {
+    public ResponseEntity<DataResponseTO<AccessTokenTO>> refreshAccessToken(
+            @RequestParam("token") String refreshToken) {
         String accessToken = authService.refresh(refreshToken);
-        AuthTokenTO authTokenTO = authTokenMapper.authTokenToAuthTokenTO(new AuthToken(accessToken));
-        return ResponseEntity.ok(new DataResponseTO<>(authTokenTO, "success.user.refresh-token", messageSource));
+        AccessTokenTO accessTokenTO = accessTokenMapper.accessTokenToAccessTokenTO(new AccessToken(accessToken));
+        String message = messageUtil.getMessage("success.user.refresh-token");
+        return ResponseEntity.ok(new DataResponseTO<>(accessTokenTO, message));
     }
 }

@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.core.adapters.primary.rest.dto.DataResponseTO;
 import org.kollapp.core.adapters.primary.rest.dto.MessageResponseTO;
 import org.kollapp.organization.adapters.primary.rest.dto.OrganizationCreationRequestTO;
@@ -48,7 +48,7 @@ public class OrganizationController {
     private OrganizationMapper organizationMapper;
 
     @Autowired
-    private MessageSource messageSource;
+    private MessageUtil messageUtil;
 
     @GetMapping
     @Operation(
@@ -62,8 +62,7 @@ public class OrganizationController {
                     return organizationMapper.organizationToOrganizationMinifiedTO(organization, userId);
                 })
                 .toList();
-        return ResponseEntity.ok(
-                new DataResponseTO<>(organizationMinifiedTOs, "success.organization.get", messageSource));
+        return ResponseEntity.ok(new DataResponseTO<>(organizationMinifiedTOs, "success.organization.get"));
     }
 
     @GetMapping("/{organization-id}")
@@ -74,7 +73,8 @@ public class OrganizationController {
             @PathVariable("organization-id") long organizationId) {
         Organization organization = organizationService.getOrganizationById(organizationId);
         OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(organization);
-        return ResponseEntity.ok(new DataResponseTO<>(organizationTO, "success.organization.get", messageSource));
+        String message = messageUtil.getMessage("success.organization.get");
+        return ResponseEntity.ok(new DataResponseTO<>(organizationTO, message));
     }
 
     @GetMapping("/invitation/{invitation-code}")
@@ -90,8 +90,7 @@ public class OrganizationController {
                 : userOrganizations.get(0).getPersonsOfOrganization().get(0).getUserId();
         OrganizationMinifiedTO organizationMinifiedTO =
                 organizationMapper.organizationToOrganizationMinifiedTO(organization, userId);
-        return ResponseEntity.ok(
-                new DataResponseTO<>(organizationMinifiedTO, "success.organization.get", messageSource));
+        return ResponseEntity.ok(new DataResponseTO<>(organizationMinifiedTO, "success.organization.get"));
     }
 
     @PatchMapping("/{organization-id}/person/{person-id}/approve")
@@ -102,8 +101,8 @@ public class OrganizationController {
             @PathVariable("organization-id") long organizationId, @PathVariable("person-id") long personId) {
         Organization organization = organizationService.approveNewMemberRequest(organizationId, personId);
         OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(organization);
-        return ResponseEntity.ok(
-                new DataResponseTO<>(organizationTO, "success.organization.member.approve", messageSource));
+        String message = messageUtil.getMessage("success.organization.member.approve");
+        return ResponseEntity.ok(new DataResponseTO<>(organizationTO, message));
     }
 
     @PostMapping("/invitation/{invitation-code}")
@@ -113,7 +112,8 @@ public class OrganizationController {
     public ResponseEntity<MessageResponseTO> enterOrganizationBasedOnInvitationCode(
             @PathVariable("invitation-code") String invitationCode) {
         organizationService.enterOrganizationByInvitationCode(invitationCode);
-        return ResponseEntity.ok(new MessageResponseTO("success.organization.applied", messageSource));
+        String message = messageUtil.getMessage("success.organization.applied");
+        return ResponseEntity.ok(new MessageResponseTO(message));
     }
 
     @PatchMapping("/{organization-id}/person/{person-id}/grant-role")
@@ -129,8 +129,8 @@ public class OrganizationController {
         Organization organization =
                 organizationService.grantRoleToPersonOfOrganization(organizationId, personId, targetRole);
         OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(organization);
-        return ResponseEntity.ok(
-                new DataResponseTO<>(organizationTO, "success.organization.role.grant", messageSource));
+        String message = messageUtil.getMessage("success.organization.role.grant");
+        return ResponseEntity.ok(new DataResponseTO<>(organizationTO, message));
     }
 
     @PatchMapping("/{organization-id}/invitation-code")
@@ -141,8 +141,8 @@ public class OrganizationController {
             @PathVariable("organization-id") long organizationId) {
         Organization organization = organizationService.generateNewOrganizationInvitationCode(organizationId);
         OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(organization);
-        return ResponseEntity.ok(
-                new DataResponseTO<>(organizationTO, "success.organization.invitation.update", messageSource));
+        String message = messageUtil.getMessage("success.organization.invitation.update");
+        return ResponseEntity.ok(new DataResponseTO<>(organizationTO, message));
     }
 
     @PostMapping
@@ -154,7 +154,8 @@ public class OrganizationController {
         Organization organization = organizationMapper.organizationCreationRequestToOrganization(creationRequestTO);
         Organization persistedOrganization = organizationService.createOrganization(organization);
         OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(persistedOrganization);
-        return ResponseEntity.ok(new DataResponseTO<>(organizationTO, "success.organization.create", messageSource));
+        String message = messageUtil.getMessage("success.organization.create");
+        return ResponseEntity.ok(new DataResponseTO<>(organizationTO, message));
     }
 
     @PutMapping("/{organization-id}")
@@ -167,7 +168,8 @@ public class OrganizationController {
         Organization organization = organizationMapper.organizationUpdateRequestToOrganization(updateRequestTO);
         Organization updatedOrganization = organizationService.updateOrganization(organization, organizationId);
         OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(updatedOrganization);
-        return ResponseEntity.ok(new DataResponseTO<>(organizationTO, "success.organization.update", messageSource));
+        String message = messageUtil.getMessage("success.organization.update");
+        return ResponseEntity.ok(new DataResponseTO<>(organizationTO, message));
     }
 
     @DeleteMapping("/{organization-id}")
@@ -176,7 +178,8 @@ public class OrganizationController {
             security = {@SecurityRequirement(name = "bearer-key")})
     public ResponseEntity<MessageResponseTO> leaveOrganization(@PathVariable("organization-id") long organizationId) {
         organizationService.leaveOrganization(organizationId);
-        return ResponseEntity.ok(new MessageResponseTO("success.organization.delete", messageSource));
+        String message = messageUtil.getMessage("success.organization.delete");
+        return ResponseEntity.ok(new MessageResponseTO(message));
     }
 
     @DeleteMapping("/{organization-id}/person/{person-of-organization-id}")
@@ -189,6 +192,7 @@ public class OrganizationController {
         Organization organization =
                 organizationService.deleteUserFromOrganization(personOfOrganizationId, organizationId);
         OrganizationTO orgaTo = organizationMapper.organizationToOrganizationTO(organization);
-        return ResponseEntity.ok(new DataResponseTO<>(orgaTo, "success.organization.user.delete", messageSource));
+        String message = messageUtil.getMessage("success.organization.user.delete");
+        return ResponseEntity.ok(new DataResponseTO<>(orgaTo, message));
     }
 }

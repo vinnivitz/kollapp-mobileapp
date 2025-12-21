@@ -3,7 +3,6 @@ package org.kollapp.organization.adapters.primary.rest.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import org.kollapp.organization.adapters.primary.rest.dto.OrganizationBaseTO;
 import org.kollapp.organization.adapters.primary.rest.dto.OrganizationCreationRequestTO;
 import org.kollapp.organization.adapters.primary.rest.dto.OrganizationMinifiedTO;
 import org.kollapp.organization.adapters.primary.rest.dto.OrganizationTO;
@@ -32,8 +31,6 @@ public interface OrganizationMapper {
     Organization organizationUpdateRequestToOrganization(OrganizationUpdateRequestTO organizationUpdateRequestTO);
 
     OrganizationTO organizationToOrganizationTO(Organization organization);
-
-    OrganizationBaseTO organizationToOrganizationBaseTO(Organization organization);
 
     @Mapping(target = "state", ignore = true)
     OrganizationMinifiedTO organizationToOrganizationMinifiedTO(Organization organization);

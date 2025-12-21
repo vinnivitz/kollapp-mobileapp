@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 
 import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.core.adapters.primary.rest.dto.DataResponseTO;
 import org.kollapp.core.adapters.primary.rest.dto.MessageResponseTO;
 import org.kollapp.organization.adapters.primary.rest.dto.PostingCreateUpdateRequestTO;
@@ -42,7 +42,7 @@ public class BudgetAccountController {
     private BudgetAccountService budgetAccountService;
 
     @Autowired
-    private MessageSource messageSource;
+    private MessageUtil messageUtil;
 
     @PostMapping("/{organization-id}/posting")
     @Operation(
@@ -55,7 +55,8 @@ public class BudgetAccountController {
                 postingMapper.mapPostingTOToOrganizationPosting(postingCreateUpdateRequestTO);
         Posting addedPosting = budgetAccountService.addOrganizationPosting(organizationId, postingToBeAdded);
         PostingTO response = postingMapper.mapPostingToPostingTO(addedPosting);
-        return ResponseEntity.ok(new DataResponseTO<>(response, "success.posting.create", messageSource));
+        String message = messageUtil.getMessage("success.posting.create");
+        return ResponseEntity.ok(new DataResponseTO<>(response, message));
     }
 
     @PutMapping("/{organization-id}/posting/{posting-id}")
@@ -70,7 +71,8 @@ public class BudgetAccountController {
         Posting editedPosting =
                 budgetAccountService.editOrganizationPosting(organizationId, postingId, postingToBeEdited);
         PostingTO response = postingMapper.mapPostingToPostingTO(editedPosting);
-        return ResponseEntity.ok(new DataResponseTO<>(response, "success.posting.update", messageSource));
+        String message = messageUtil.getMessage("success.posting.update");
+        return ResponseEntity.ok(new DataResponseTO<>(response, message));
     }
 
     @DeleteMapping("/{organization-id}/posting/{posting-id}")
@@ -80,7 +82,8 @@ public class BudgetAccountController {
     public ResponseEntity<MessageResponseTO> deleteOrganizationPosting(
             @PathVariable("organization-id") long organizationId, @PathVariable("posting-id") long postingId) {
         budgetAccountService.deleteOrganizationPosting(organizationId, postingId);
-        return ResponseEntity.ok(new MessageResponseTO("success.posting.delete", messageSource));
+        String message = messageUtil.getMessage("success.posting.delete");
+        return ResponseEntity.ok(new MessageResponseTO(message));
     }
 
     @PostMapping("/{organization-id}/{activity-id}/posting")
@@ -94,7 +97,8 @@ public class BudgetAccountController {
         ActivityPosting postingToBeAdded = postingMapper.mapPostingTOToActivityPosting(postingCreateUpdateRequestTO);
         Posting addedPosting = budgetAccountService.addActivityPosting(organizationId, activityId, postingToBeAdded);
         PostingTO response = postingMapper.mapPostingToPostingTO(addedPosting);
-        return ResponseEntity.ok(new DataResponseTO<>(response, "success.posting.create", messageSource));
+        String message = messageUtil.getMessage("success.posting.create");
+        return ResponseEntity.ok(new DataResponseTO<>(response, message));
     }
 
     @PutMapping("/{organization-id}/{activity-id}/posting/{posting-id}")
@@ -110,7 +114,8 @@ public class BudgetAccountController {
         Posting editedPosting =
                 budgetAccountService.editActivityPosting(organizationId, activityId, postingId, postingToBeEdited);
         PostingTO response = postingMapper.mapPostingToPostingTO(editedPosting);
-        return ResponseEntity.ok(new DataResponseTO<>(response, "success.posting.update", messageSource));
+        String message = messageUtil.getMessage("success.posting.update");
+        return ResponseEntity.ok(new DataResponseTO<>(response, message));
     }
 
     @DeleteMapping("/{organization-id}/{activity-id}/posting/{posting-id}")
@@ -122,6 +127,7 @@ public class BudgetAccountController {
             @PathVariable("activity-id") long activityId,
             @PathVariable("posting-id") long postingId) {
         budgetAccountService.deleteActivityPosting(organizationId, activityId, postingId);
-        return ResponseEntity.ok(new MessageResponseTO("success.posting.delete", messageSource));
+        String message = messageUtil.getMessage("success.posting.delete");
+        return ResponseEntity.ok(new MessageResponseTO(message));
     }
 }
