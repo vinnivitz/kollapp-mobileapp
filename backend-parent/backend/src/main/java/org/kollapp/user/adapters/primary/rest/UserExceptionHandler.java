@@ -31,19 +31,19 @@ public class UserExceptionHandler {
     @ExceptionHandler(UsernameExistsException.class)
     public ResponseEntity<ValidationFailureResponseTO> handleUsernameExists() {
         String message = messageUtil.getMessage("error.username.exists");
-        return ResponseEntity.badRequest().body(new ValidationFailureResponseTO(message, "username"));
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ValidationFailureResponseTO(message, "username"));
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<ValidationFailureResponseTO> handleUsernameNotFound() {
         String message = messageUtil.getMessage("error.username.not-found");
-        return ResponseEntity.badRequest().body(new ValidationFailureResponseTO(message, "username"));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ValidationFailureResponseTO(message, "username"));
     }
 
     @ExceptionHandler(EmailExistsException.class)
     public ResponseEntity<ValidationFailureResponseTO> handleEmailExists() {
         String message = messageUtil.getMessage("error.email.exists");
-        return ResponseEntity.badRequest().body(new ValidationFailureResponseTO(message, "email"));
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ValidationFailureResponseTO(message, "email"));
     }
 
     @ExceptionHandler(EmailIsAlreadyConfirmedException.class)
@@ -61,13 +61,14 @@ public class UserExceptionHandler {
     @ExceptionHandler(EmailNotFoundException.class)
     public ResponseEntity<ValidationFailureResponseTO> handleEmailNotFound() {
         String message = messageUtil.getMessage("error.email.not-found");
-        return ResponseEntity.badRequest().body(new ValidationFailureResponseTO(message, "email"));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ValidationFailureResponseTO(message, "email"));
     }
 
     @ExceptionHandler(IncorrectPasswordException.class)
     public ResponseEntity<ValidationFailureResponseTO> handleIncorrectPassword() {
         String message = messageUtil.getMessage("error.password.incorrect");
-        return ResponseEntity.badRequest().body(new ValidationFailureResponseTO(message, "password"));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ValidationFailureResponseTO(message, "password"));
     }
 
     @ExceptionHandler(InvalidConfirmationLinkException.class)
@@ -85,12 +86,12 @@ public class UserExceptionHandler {
     @ExceptionHandler(KollappUserNotFoundException.class)
     public ResponseEntity<ErrorResponseTO> handleUserNotFound() {
         String message = messageUtil.getMessage("error.user.not-found");
-        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ValidationFailureResponseTO> handleBadCredentials(BadCredentialsException ex) {
-        return ResponseEntity.badRequest()
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(new ValidationFailureResponseTO(
                         messageUtil.getMessage("validation.password.incorrect"), "password"));
     }

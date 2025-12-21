@@ -36,31 +36,31 @@ public class OrganizationExceptionHandler {
     @ExceptionHandler(OrganizationNotFoundException.class)
     public ResponseEntity<ResponseTO> handleOrganizationNotFound() {
         String message = messageUtil.getMessage("error.organization.not-found");
-        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(PersonNotRegisteredInOrganizationException.class)
     public ResponseEntity<ResponseTO> handlePersonNotRegisteredInOrganization() {
         String message = messageUtil.getMessage("error.organization.person-not-found");
-        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(PersonAlreadyRegisteredInOrganizationException.class)
     public ResponseEntity<ResponseTO> handlePersonAlreadyRegisteredInOrganization() {
         String message = messageUtil.getMessage("error.organization.person-already-registered");
-        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(ActivityNotFoundException.class)
     public ResponseEntity<ResponseTO> handleActivityNotFound() {
         String message = messageUtil.getMessage("error.activity.not-found");
-        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(PostingDoesNotExistException.class)
     public ResponseEntity<ResponseTO> handlePostingNotFound() {
         String message = messageUtil.getMessage("error.organization.posting.not-found");
-        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(InvalidInvitationCodeException.class)
@@ -100,7 +100,7 @@ public class OrganizationExceptionHandler {
     @ExceptionHandler(PersonAlreadyHasTargetRoleException.class)
     public ResponseEntity<ResponseTO> handlePersonAlreadyHasTargetRole() {
         String message = messageUtil.getMessage("error.organization.person-already-has-target-role");
-        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(MaxOrganizationsReachedException.class)
