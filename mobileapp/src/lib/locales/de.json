@@ -730,7 +730,7 @@
         },
         "pending-organization-join-request-card": {
           "card": {
-            "note": "Du hast eine ausstehende Anfrage für den Beitritt zu {{value}}"
+            "note": "Du hast eine ausstehende Anfrage für den Beitritt zu:"
           }
         },
         "title": "Kollapp",
