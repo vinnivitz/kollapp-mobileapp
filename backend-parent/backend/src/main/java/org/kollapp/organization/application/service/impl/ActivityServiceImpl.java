@@ -6,7 +6,6 @@ import java.util.List;
 import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import org.kollapp.organization.application.exception.ActivityNotFoundException;
@@ -31,9 +30,6 @@ public class ActivityServiceImpl implements ActivityService {
     private OrganizationRepository organizationRepository;
 
     @Autowired
-    private MessageSource messageSource;
-
-    @Autowired
     private OrganizationPublisher organizationPublisher;
 
     @Autowired
@@ -50,9 +46,8 @@ public class ActivityServiceImpl implements ActivityService {
     @RequiresKollappOrganizationMemberRole
     public Activity createActivityForOrganization(long organizationId, Activity activity) {
         organizationRoleHelper.verifyOrganizationManager(organizationId);
-        Organization organization = organizationRepository
-                .findById(organizationId)
-                .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
+        Organization organization =
+                organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
         activity.setOrganization(organization);
         activity.setActivityPostings(new ArrayList<>());
         activityRepository.save(activity);
@@ -66,7 +61,7 @@ public class ActivityServiceImpl implements ActivityService {
         organizationRoleHelper.verifyOrganizationManager(organizationId);
         Activity activityToBeUpdated = activityRepository
                 .findByIdAndOrganizationId(activityId, organizationId)
-                .orElseThrow(() -> new ActivityNotFoundException(messageSource));
+                .orElseThrow(ActivityNotFoundException::new);
         activityToBeUpdated.setName(activity.getName());
         activityToBeUpdated.setLocation(activity.getLocation());
         return activityToBeUpdated;
@@ -76,12 +71,11 @@ public class ActivityServiceImpl implements ActivityService {
     @RequiresKollappOrganizationMemberRole
     public void deleteActivity(long organizationId, long activityId) {
         organizationRoleHelper.verifyOrganizationManager(organizationId);
-        Organization organization = organizationRepository
-                .findById(organizationId)
-                .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
+        Organization organization =
+                organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
         Activity activity = activityRepository
                 .findByIdAndOrganizationId(activityId, organizationId)
-                .orElseThrow(() -> new ActivityNotFoundException(messageSource));
+                .orElseThrow(ActivityNotFoundException::new);
         organization.getActivities().remove(activity);
         ActivityDeletedEvent activityDeletedEvent = new ActivityDeletedEvent(this, activity.getId());
         organizationPublisher.publishActivityDeletedEvent(activityDeletedEvent);
