@@ -16,9 +16,13 @@ public interface PostingMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "organization", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     OrganizationPosting mapPostingTOToOrganizationPosting(PostingCreateUpdateRequestTO postingCreateUpdateRequestTO);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "activity", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     ActivityPosting mapPostingTOToActivityPosting(PostingCreateUpdateRequestTO postingCreateUpdateRequestTO);
 }

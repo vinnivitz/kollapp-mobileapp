@@ -15,10 +15,14 @@ public interface ActivityMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "organization", ignore = true)
     @Mapping(target = "activityPostings", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     Activity activityCreationRequestTOToActivity(ActivityCreationRequestTO activityCreationRequestTO);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "organization", ignore = true)
     @Mapping(target = "activityPostings", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     Activity activityUpdateTOToActivity(ActivityUpdateRequestTO activityUpdateRequestTO);
 }

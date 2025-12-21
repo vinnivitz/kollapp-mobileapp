@@ -1,5 +1,7 @@
 package org.kollapp.organization.application.model;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -9,6 +11,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -37,10 +41,25 @@ public abstract class Posting {
 
     private String purpose;
 
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
+
     public Posting(PostingType type, long amountInCents, String date, String purpose) {
         this.type = type;
         this.amountInCents = amountInCents;
         this.date = date;
         this.purpose = purpose;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 }
