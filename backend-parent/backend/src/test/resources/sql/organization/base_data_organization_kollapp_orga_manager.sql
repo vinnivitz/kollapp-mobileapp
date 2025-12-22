@@ -7,17 +7,17 @@ VALUES (2, 'member', 'member@test.de', true, 'test', 'ROLE_KOLLAPP_ORGANIZATION_
 INSERT INTO kollapp_user(id, username, email, is_activated, password, role)
 VALUES (3, 'manager', 'manager@test.de', true, 'test', 'ROLE_KOLLAPP_ORGANIZATION_MEMBER');
 
-INSERT INTO organization(id, name)
-VALUES (1, 'NMS');
+INSERT INTO organization(id, name, place)
+VALUES (1, 'NMS', 'Test City');
 
 INSERT INTO posting(id, scope, amount_in_cents, date, purpose, type, activity_id, organization_id)
 VALUES(2, 'organization', 10000, '2025-09-11', 'Test', 'CREDIT', null, 1);
 
-INSERT INTO organization(id, name)
-VALUES (2, 'Frequenzfamilie');
+INSERT INTO organization(id, name, place)
+VALUES (2, 'Frequenzfamilie', 'Hamburg');
 
-INSERT INTO organization(id, name)
-VALUES (3, 'Glitzerglanz');
+INSERT INTO organization(id, name, place)
+VALUES (3, 'Glitzerglanz', 'Berlin');
 
 INSERT INTO person_of_organization(organization_role, id, user_id, organization_id, status)
 VALUES ('ROLE_ORGANIZATION_MANAGER', 1, 1, 1, 'APPROVED');
