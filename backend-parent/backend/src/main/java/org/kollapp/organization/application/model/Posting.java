@@ -33,7 +33,7 @@ public abstract class Posting {
     @Column(nullable = false)
     private PostingType type;
 
-    @Column(length = 10_000_000, nullable = false)
+    @Column(nullable = false)
     private long amountInCents;
 
     @Column(length = 10, nullable = false)

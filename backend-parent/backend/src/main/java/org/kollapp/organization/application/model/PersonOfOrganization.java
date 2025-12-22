@@ -9,6 +9,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,6 +23,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"userId", "organization_id"}))
 @Builder
 public class PersonOfOrganization {
     @Column(nullable = false)
