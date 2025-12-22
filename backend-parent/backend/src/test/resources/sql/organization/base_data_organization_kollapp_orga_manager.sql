@@ -19,8 +19,8 @@ VALUES (2, 'Frequenzfamilie', 'Hamburg');
 INSERT INTO organization(id, name, place)
 VALUES (3, 'Glitzerglanz', 'Berlin');
 
-INSERT INTO person_of_organization(organization_role, id, user_id, organization_id, status)
-VALUES ('ROLE_ORGANIZATION_MANAGER', 1, 1, 1, 'APPROVED');
+INSERT INTO person_of_organization(organization_role, id, user_id, organization_id, status, username)
+VALUES ('ROLE_ORGANIZATION_MANAGER', 1, 1, 1, 'APPROVED', 'nina');
 
 INSERT INTO person_of_organization(organization_role, id, user_id, organization_id, status, username)
 VALUES ('ROLE_ORGANIZATION_MEMBER', 2, 2, 1, 'PENDING', 'orgamember');
@@ -31,8 +31,8 @@ VALUES ('ROLE_ORGANIZATION_MANAGER', 3, 3, 1, 'APPROVED', 'orgamanager');
 INSERT INTO person_of_organization(organization_role, id, user_id, organization_id, status, username)
 VALUES ('ROLE_ORGANIZATION_MEMBER', 4, 2, 2, 'APPROVED', 'orgamember');
 
-INSERT INTO person_of_organization(organization_role, id, user_id, organization_id, status)
-VALUES ('ROLE_ORGANIZATION_MANAGER', 5, 1, 3, 'APPROVED');
+INSERT INTO person_of_organization(organization_role, id, user_id, organization_id, status, username)
+VALUES ('ROLE_ORGANIZATION_MANAGER', 5, 1, 3, 'APPROVED', 'nina');
 
 INSERT INTO person_of_organization(organization_role, id, user_id, organization_id, status, username)
 VALUES ('ROLE_ORGANIZATION_MEMBER', 6, 2, 3, 'APPROVED', 'orgamember');

@@ -10,8 +10,8 @@ VALUES (1, 'NMS', 'Test City');
 INSERT INTO organization(id, name, place)
 VALUES (2, 'Frequenzfamilie', 'Hamburg');
 
-INSERT INTO person_of_organization(organization_role, id, user_id, organization_id, status)
-VALUES ('ROLE_ORGANIZATION_MEMBER', 1, 1, 1, 'APPROVED');
+INSERT INTO person_of_organization(organization_role, id, user_id, organization_id, status, username)
+VALUES ('ROLE_ORGANIZATION_MEMBER', 1, 1, 1, 'APPROVED', 'nina');
 
 INSERT INTO person_of_organization(organization_role, id, user_id, organization_id, status, username)
 VALUES ('ROLE_ORGANIZATION_MANAGER', 2, 2, 1, 'APPROVED', 'orgamanager');
