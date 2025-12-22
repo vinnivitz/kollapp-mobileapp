@@ -38,7 +38,7 @@ INSERT INTO person_of_organization(organization_role, id, user_id, organization_
 VALUES ('ROLE_ORGANIZATION_MEMBER', 6, 2, 3, 'APPROVED', 'orgamember');
 
 INSERT INTO organization_invitation_code(id, code, expiration_date, organization_id)
-VALUES(1, 'asdfjkloe', '2099-08-15', 1);
+VALUES(1, 'asdfjk01', '2099-08-15', 1);
 
 INSERT INTO organization_invitation_code(id, code, expiration_date, organization_id)
 VALUES(2, 'asdfjklo', '2099-08-15', 2);
