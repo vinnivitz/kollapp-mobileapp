@@ -17,10 +17,10 @@ INSERT INTO person_of_organization(organization_role, id, user_id, organization_
 VALUES ('ROLE_ORGANIZATION_MANAGER', 2, 2, 1, 'APPROVED', 'orgamanager');
 
 INSERT INTO organization_invitation_code(id, code, expiration_date, organization_id)
-VALUES(1, 'asdfjklo', '2099-08-15', 2);
+VALUES(3, 'xyzabc12', '2099-08-15', 2);
 
 INSERT INTO organization_invitation_code(id, code, expiration_date, organization_id)
-VALUES(2, 'asdfjkloe', '2099-08-15', 1);
+VALUES(4, 'defghi34', '2099-08-15', 1);
 
 INSERT INTO activity(id, name, location, organization_id)
 VALUES(1, 'Halloween-Party', 'Soderso', 1);
