@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.core.adapters.primary.rest.dto.DataResponseTO;
 import org.kollapp.user.adapters.primary.rest.dto.AccessTokenTO;
 import org.kollapp.user.adapters.primary.rest.dto.AuthTokensTO;
@@ -33,7 +33,7 @@ import io.swagger.v3.oas.annotations.Operation;
 @PrimaryAdapter
 public class AuthController {
     @Autowired
-    private MessageSource messageSource;
+    private MessageUtil messageUtil;
 
     @Autowired
     private AuthService authService;
@@ -50,7 +50,8 @@ public class AuthController {
             @Valid @RequestBody LoginRequestTO loginRequestTO) {
         AuthTokens authTokens = authService.authenticate(loginRequestTO.getUsername(), loginRequestTO.getPassword());
         AuthTokensTO tokensTO = authTokensMapper.authTokensToAuthTokensTO(authTokens);
-        return ResponseEntity.ok(new DataResponseTO<>(tokensTO, "success.user.signin", messageSource));
+        String message = messageUtil.getMessage("success.user.signin");
+        return ResponseEntity.ok(new DataResponseTO<>(tokensTO, message));
     }
 
     @GetMapping("/refresh")
@@ -59,6 +60,7 @@ public class AuthController {
             @RequestParam("token") String refreshToken) {
         String accessToken = authService.refresh(refreshToken);
         AccessTokenTO accessTokenTO = accessTokenMapper.accessTokenToAccessTokenTO(new AccessToken(accessToken));
-        return ResponseEntity.ok(new DataResponseTO<>(accessTokenTO, "success.user.refresh-token", messageSource));
+        String message = messageUtil.getMessage("success.user.refresh-token");
+        return ResponseEntity.ok(new DataResponseTO<>(accessTokenTO, message));
     }
 }

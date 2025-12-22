@@ -7,7 +7,6 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -47,9 +46,6 @@ public class KollappUserServiceImpl implements KollappUserService {
     private UrlBuilderUtil urlBuilderUtil;
 
     @Autowired
-    private MessageSource messageSource;
-
-    @Autowired
     private JwtUtil jwtUtil;
 
     @Autowired
@@ -63,7 +59,7 @@ public class KollappUserServiceImpl implements KollappUserService {
 
     @Override
     public KollappUser getKollappUserByUsername(String username) {
-        return userRepo.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(messageSource));
+        return userRepo.findByUsername(username).orElseThrow(UsernameNotFoundException::new);
     }
 
     @Override
@@ -77,19 +73,19 @@ public class KollappUserServiceImpl implements KollappUserService {
         } else {
             username = ((KollappUserDetails) principal).getUsername();
         }
-        return userRepo.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(messageSource));
+        return userRepo.findByUsername(username).orElseThrow(UsernameNotFoundException::new);
     }
 
     @Override
     public void activateKollappUser(String confirmationToken) {
         if (!jwtUtil.validateConfirmationToken(confirmationToken)) {
-            throw new InvalidConfirmationLinkException(messageSource);
+            throw new InvalidConfirmationLinkException();
         }
         String username = jwtUtil.getSubjectFromConfirmationToken(confirmationToken);
         KollappUser kollappUser = userRepo.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("error.user.not-found"));
         if (kollappUser.isActivated()) {
-            throw new EmailIsAlreadyConfirmedException(messageSource);
+            throw new EmailIsAlreadyConfirmedException();
         }
         kollappUser.setActivated(true);
     }
@@ -101,7 +97,7 @@ public class KollappUserServiceImpl implements KollappUserService {
         KollappUser kollappUser = getKollappUserByUsername(usernameOfLoggedInUser);
         boolean oldPasswordIsCorrect = encoder.matches(oldPassword, kollappUser.getPassword());
         if (!oldPasswordIsCorrect) {
-            throw new IncorrectPasswordException(messageSource);
+            throw new IncorrectPasswordException();
         }
         kollappUser.setPassword(encoder.encode(newPassword));
     }
@@ -116,7 +112,7 @@ public class KollappUserServiceImpl implements KollappUserService {
     @Override
     public void resetPassword(String token, String password) {
         if (!jwtUtil.validateResetPasswordToken(token)) {
-            throw new InvalidConfirmationLinkException(messageSource);
+            throw new InvalidConfirmationLinkException();
         }
         String username = jwtUtil.getSubjectFromResetPasswordToken(token);
         KollappUser kollappUser = getKollappUserByUsername(username);
@@ -126,10 +122,10 @@ public class KollappUserServiceImpl implements KollappUserService {
     @Override
     public void register(String username, String email, String password) {
         if (userRepo.existsByUsername(username)) {
-            throw new UsernameExistsException(messageSource);
+            throw new UsernameExistsException();
         }
         if (userRepo.existsByEmail(email)) {
-            throw new EmailExistsException(messageSource);
+            throw new EmailExistsException();
         }
         String encodedPassword = encoder.encode(password);
         KollappUser kollappUser = KollappUser.builder()
@@ -148,7 +144,7 @@ public class KollappUserServiceImpl implements KollappUserService {
     public void resendConfirmationMail(String email) {
         KollappUser kollappUser = getKollappUserByEmail(email);
         if (kollappUser.isActivated()) {
-            throw new EmailIsAlreadyConfirmedException(messageSource);
+            throw new EmailIsAlreadyConfirmedException();
         }
         String confirmationToken = jwtUtil.generateConfirmationToken(kollappUser.getUsername());
         emailService.sendConfirmationMail(kollappUser.getEmail(), createConfirmationBaseUrl(confirmationToken));
@@ -160,13 +156,13 @@ public class KollappUserServiceImpl implements KollappUserService {
         KollappUser kollappUser = getLoggedInKollappUser();
         if (username != null && !kollappUser.getUsername().equals(username)) {
             if (userRepo.existsByUsername(username)) {
-                throw new UsernameExistsException(messageSource);
+                throw new UsernameExistsException();
             }
             kollappUser.setUsername(username);
         }
         if (email != null && !kollappUser.getEmail().equals(email)) {
             if (userRepo.existsByEmail(email)) {
-                throw new EmailExistsException(messageSource);
+                throw new EmailExistsException();
             }
             kollappUser.setActivated(false);
             kollappUser.setEmail(email);
@@ -186,7 +182,7 @@ public class KollappUserServiceImpl implements KollappUserService {
         KollappUser kollappUser = getLoggedInKollappUser();
         boolean passwordIsCorrect = encoder.matches(password, kollappUser.getPassword());
         if (!passwordIsCorrect) {
-            throw new IncorrectPasswordException(messageSource);
+            throw new IncorrectPasswordException();
         }
         kollappUserPublisher.publishUserDeletedEvent(new KollappUserDeletedEvent(this, kollappUser.getId()));
         SecurityContextHolder.getContext().setAuthentication(null);
@@ -195,7 +191,7 @@ public class KollappUserServiceImpl implements KollappUserService {
 
     @Override
     public KollappUser findById(Long id) {
-        return userRepo.findById(id).orElseThrow(() -> new KollappUserNotFoundException(messageSource));
+        return userRepo.findById(id).orElseThrow(KollappUserNotFoundException::new);
     }
 
     private String createConfirmationBaseUrl(String token) {
@@ -209,6 +205,6 @@ public class KollappUserServiceImpl implements KollappUserService {
     }
 
     private KollappUser getKollappUserByEmail(String email) {
-        return userRepo.findByEmail(email).orElseThrow(() -> new EmailNotFoundException(messageSource));
+        return userRepo.findByEmail(email).orElseThrow(EmailNotFoundException::new);
     }
 }

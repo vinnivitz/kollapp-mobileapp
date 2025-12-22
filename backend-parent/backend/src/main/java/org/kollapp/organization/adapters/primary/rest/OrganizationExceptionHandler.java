@@ -1,11 +1,14 @@
 package org.kollapp.organization.adapters.primary.rest;
 
+import lombok.AllArgsConstructor;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.core.adapters.primary.rest.dto.ErrorResponseTO;
 import org.kollapp.core.adapters.primary.rest.dto.ResponseTO;
 import org.kollapp.organization.application.exception.ActivityNotFoundException;
@@ -25,48 +28,57 @@ import org.kollapp.organization.application.exception.SelfActionNotAllowedExcept
 
 @ControllerAdvice(basePackages = {"org.kollapp.organization"})
 @RestController
+@AllArgsConstructor
 public class OrganizationExceptionHandler {
+
+    private final MessageUtil messageUtil;
+
     @ExceptionHandler(OrganizationNotFoundException.class)
-    public ResponseEntity<ResponseTO> handleOrganizationNotFound(OrganizationNotFoundException ex) {
-        return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
+    public ResponseEntity<ResponseTO> handleOrganizationNotFound() {
+        String message = messageUtil.getMessage("error.organization.not-found");
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(PersonNotRegisteredInOrganizationException.class)
-    public ResponseEntity<ResponseTO> handlePersonNotRegisteredInOrganization(
-            PersonNotRegisteredInOrganizationException ex) {
-        return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
+    public ResponseEntity<ResponseTO> handlePersonNotRegisteredInOrganization() {
+        String message = messageUtil.getMessage("error.organization.person-not-found");
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(PersonAlreadyRegisteredInOrganizationException.class)
-    public ResponseEntity<ResponseTO> handlePersonAlreadyRegisteredInOrganization(
-            PersonAlreadyRegisteredInOrganizationException ex) {
-        return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
+    public ResponseEntity<ResponseTO> handlePersonAlreadyRegisteredInOrganization() {
+        String message = messageUtil.getMessage("error.organization.person-already-registered");
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(ActivityNotFoundException.class)
-    public ResponseEntity<ResponseTO> handleActivityNotFound(ActivityNotFoundException ex) {
-        return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
+    public ResponseEntity<ResponseTO> handleActivityNotFound() {
+        String message = messageUtil.getMessage("error.activity.not-found");
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(PostingDoesNotExistException.class)
-    public ResponseEntity<ResponseTO> handlePostingNotFound(PostingDoesNotExistException ex) {
-        return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
+    public ResponseEntity<ResponseTO> handlePostingNotFound() {
+        String message = messageUtil.getMessage("error.organization.posting.not-found");
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(InvalidInvitationCodeException.class)
-    public ResponseEntity<ResponseTO> handleInvalidInvitationCode(InvalidInvitationCodeException ex) {
-        return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
+    public ResponseEntity<ResponseTO> handleInvalidInvitationCode() {
+        String message = messageUtil.getMessage("error.invitationcode.invalid");
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(PersonOfOrganizationIsNotApprovedYetException.class)
-    public ResponseEntity<ResponseTO> handlePersonOfOrganizationIsNotApprovedYet(
-            PersonOfOrganizationIsNotApprovedYetException ex) {
-        return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
+    public ResponseEntity<ResponseTO> handlePersonOfOrganizationIsNotApprovedYet() {
+        String message = messageUtil.getMessage("error.organization.person-not-approved");
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(OrganizationAuthorizationException.class)
-    public ResponseEntity<ResponseTO> handleOrganizationAuthorizationException(OrganizationAuthorizationException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponseTO(ex.getMessage()));
+    public ResponseEntity<ResponseTO> handleOrganizationAuthorizationException() {
+        String message = messageUtil.getMessage("error.authorization");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(InvalidOrganizationRoleException.class)
@@ -80,22 +92,26 @@ public class OrganizationExceptionHandler {
     }
 
     @ExceptionHandler(LastManagerException.class)
-    public ResponseEntity<ResponseTO> handleLastManager(LastManagerException ex) {
-        return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
+    public ResponseEntity<ResponseTO> handleLastManager() {
+        String message = messageUtil.getMessage("error.organization.lastmanager");
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(PersonAlreadyHasTargetRoleException.class)
-    public ResponseEntity<ResponseTO> handlePersonAlreadyHasTargetRole(PersonAlreadyHasTargetRoleException ex) {
-        return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
+    public ResponseEntity<ResponseTO> handlePersonAlreadyHasTargetRole() {
+        String message = messageUtil.getMessage("error.organization.person-already-has-target-role");
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(MaxOrganizationsReachedException.class)
-    public ResponseEntity<ResponseTO> handleMaxOrganizationsReached(MaxOrganizationsReachedException ex) {
-        return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
+    public ResponseEntity<ResponseTO> handleMaxOrganizationsReached() {
+        String message = messageUtil.getMessage("error.organization.max-organizations-reached");
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(SelfActionNotAllowedException.class)
-    public ResponseEntity<ResponseTO> handleSelfActionNotAllowed(SelfActionNotAllowedException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponseTO(ex.getMessage()));
+    public ResponseEntity<ResponseTO> handleSelfActionNotAllowed() {
+        String message = messageUtil.getMessage("error.organization.self-action-not-allowed");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponseTO(message));
     }
 }

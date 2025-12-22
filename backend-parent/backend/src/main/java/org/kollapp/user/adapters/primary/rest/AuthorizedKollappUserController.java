@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.core.adapters.primary.rest.dto.DataResponseTO;
 import org.kollapp.core.adapters.primary.rest.dto.MessageResponseTO;
 import org.kollapp.user.adapters.primary.rest.dto.DeleteAccountRequestTO;
@@ -34,7 +34,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 @PrimaryAdapter
 public class AuthorizedKollappUserController {
     @Autowired
-    private MessageSource messageSource;
+    private MessageUtil messageUtil;
 
     @Autowired
     private KollappUserService kollappUserService;
@@ -49,7 +49,8 @@ public class AuthorizedKollappUserController {
     public ResponseEntity<DataResponseTO<KollappUserTO>> getKollappUser() {
         KollappUser kollappUser = kollappUserService.getLoggedInKollappUser();
         KollappUserTO kollappUserTO = kollappUserMapper.kollappUserToKollappUserTO(kollappUser);
-        return ResponseEntity.ok(new DataResponseTO<>(kollappUserTO, "success.user.get-data", messageSource));
+        String message = messageUtil.getMessage("success.user.get-data");
+        return ResponseEntity.ok(new DataResponseTO<>(kollappUserTO, message));
     }
 
     @PatchMapping("/change-password")
@@ -58,7 +59,8 @@ public class AuthorizedKollappUserController {
             security = {@SecurityRequirement(name = "bearer-key")})
     public ResponseEntity<MessageResponseTO> changePassword(@RequestBody PasswordChangeRequestTO changeRequestTo) {
         kollappUserService.changePassword(changeRequestTo.getCurrentPassword(), changeRequestTo.getNewPassword());
-        return ResponseEntity.ok(new MessageResponseTO("success.password.changed", messageSource));
+        String message = messageUtil.getMessage("success.password.changed");
+        return ResponseEntity.ok(new MessageResponseTO(message));
     }
 
     @PatchMapping("/update-information")
@@ -70,7 +72,8 @@ public class AuthorizedKollappUserController {
         KollappUser updatedUser =
                 kollappUserService.updateKollappUser(updateRequestTO.getUsername(), updateRequestTO.getEmail());
         KollappUserTO updatedUserTO = kollappUserMapper.kollappUserToKollappUserTO(updatedUser);
-        return ResponseEntity.ok(new DataResponseTO<>(updatedUserTO, "success.user.update-data", messageSource));
+        String message = messageUtil.getMessage("success.user.update-data");
+        return ResponseEntity.ok(new DataResponseTO<>(updatedUserTO, message));
     }
 
     @DeleteMapping
@@ -80,6 +83,7 @@ public class AuthorizedKollappUserController {
     public ResponseEntity<MessageResponseTO> deleteUser(
             @Valid @RequestBody DeleteAccountRequestTO deleteAccountRequestTO) {
         kollappUserService.deleteKollappUser(deleteAccountRequestTO.getPassword());
-        return ResponseEntity.ok(new MessageResponseTO("success.user.delete", messageSource));
+        String message = messageUtil.getMessage("success.user.delete");
+        return ResponseEntity.ok(new MessageResponseTO(message));
     }
 }

@@ -3,7 +3,6 @@ package org.kollapp.organization.application.service.impl;
 import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import org.kollapp.organization.application.exception.ActivityNotFoundException;
@@ -28,16 +27,12 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
     @Autowired
     private OrganizationRoleHelper organizationRoleHelper;
 
-    @Autowired
-    private MessageSource messageSource;
-
     @Override
     @RequiresKollappOrganizationMemberRole
     public Posting addOrganizationPosting(long organizationId, OrganizationPosting posting) {
         organizationRoleHelper.verifyOrganizationManager(organizationId);
-        Organization organization = organizationRepository
-                .findById(organizationId)
-                .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
+        Organization organization =
+                organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
         organization.getOrganizationPostings().add(posting);
         posting.setOrganization(organization);
         return posting;
@@ -47,13 +42,12 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
     @RequiresKollappOrganizationMemberRole
     public Posting editOrganizationPosting(long organizationId, long postingId, OrganizationPosting updatedPosting) {
         organizationRoleHelper.verifyOrganizationManager(organizationId);
-        Organization organization = organizationRepository
-                .findById(organizationId)
-                .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
+        Organization organization =
+                organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
         OrganizationPosting postingToBeEdited = organization.getOrganizationPostings().stream()
                 .filter(f -> f.getId() == postingId)
                 .findFirst()
-                .orElseThrow(() -> new PostingDoesNotExistException(messageSource));
+                .orElseThrow(PostingDoesNotExistException::new);
         postingToBeEdited.setDate(updatedPosting.getDate());
         postingToBeEdited.setPurpose(updatedPosting.getPurpose());
         postingToBeEdited.setAmountInCents(updatedPosting.getAmountInCents());
@@ -65,13 +59,12 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
     @RequiresKollappOrganizationMemberRole
     public void deleteOrganizationPosting(long organizationId, long postingId) {
         organizationRoleHelper.verifyOrganizationManager(organizationId);
-        Organization organization = organizationRepository
-                .findById(organizationId)
-                .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
+        Organization organization =
+                organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
         OrganizationPosting postingToBeRemoved = organization.getOrganizationPostings().stream()
                 .filter(p -> p.getId() == postingId)
                 .findFirst()
-                .orElseThrow(() -> new PostingDoesNotExistException(messageSource));
+                .orElseThrow(PostingDoesNotExistException::new);
         organization.getOrganizationPostings().remove(postingToBeRemoved);
     }
 
@@ -79,13 +72,12 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
     @RequiresKollappOrganizationMemberRole
     public Posting addActivityPosting(long organizationId, long activityId, ActivityPosting posting) {
         organizationRoleHelper.verifyOrganizationMember(organizationId);
-        Organization organization = organizationRepository
-                .findById(organizationId)
-                .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
+        Organization organization =
+                organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
         Activity activity = organization.getActivities().stream()
                 .filter(a -> a.getId() == activityId)
                 .findFirst()
-                .orElseThrow(() -> new ActivityNotFoundException(messageSource));
+                .orElseThrow(ActivityNotFoundException::new);
         activity.getActivityPostings().add(posting);
         posting.setActivity(activity);
         return posting;
@@ -96,17 +88,16 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
     public Posting editActivityPosting(
             long organizationId, long activityId, long postingId, ActivityPosting updatedPosting) {
         organizationRoleHelper.verifyOrganizationMember(organizationId);
-        Organization organization = organizationRepository
-                .findById(organizationId)
-                .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
+        Organization organization =
+                organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
         Activity activity = organization.getActivities().stream()
                 .filter(a -> a.getId() == activityId)
                 .findFirst()
-                .orElseThrow(() -> new ActivityNotFoundException(messageSource));
+                .orElseThrow(ActivityNotFoundException::new);
         ActivityPosting postingToBeEdited = activity.getActivityPostings().stream()
                 .filter(p -> p.getId() == postingId)
                 .findFirst()
-                .orElseThrow(() -> new PostingDoesNotExistException(messageSource));
+                .orElseThrow(PostingDoesNotExistException::new);
         postingToBeEdited.setDate(updatedPosting.getDate());
         postingToBeEdited.setPurpose(updatedPosting.getPurpose());
         postingToBeEdited.setAmountInCents(updatedPosting.getAmountInCents());
@@ -118,17 +109,16 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
     @RequiresKollappOrganizationMemberRole
     public void deleteActivityPosting(long organizationId, long activityId, long postingId) {
         organizationRoleHelper.verifyOrganizationMember(organizationId);
-        Organization organization = organizationRepository
-                .findById(organizationId)
-                .orElseThrow(() -> new OrganizationNotFoundException(messageSource));
+        Organization organization =
+                organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
         Activity activity = organization.getActivities().stream()
                 .filter(a -> a.getId() == activityId)
                 .findFirst()
-                .orElseThrow(() -> new ActivityNotFoundException(messageSource));
+                .orElseThrow(ActivityNotFoundException::new);
         ActivityPosting postingToBeRemoved = activity.getActivityPostings().stream()
                 .filter(p -> p.getId() == postingId)
                 .findFirst()
-                .orElseThrow(() -> new PostingDoesNotExistException(messageSource));
+                .orElseThrow(PostingDoesNotExistException::new);
         activity.getActivityPostings().remove(postingToBeRemoved);
     }
 }
