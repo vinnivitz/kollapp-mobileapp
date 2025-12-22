@@ -18,8 +18,8 @@ class TrimmedDeserializationTest {
         String json =
                 """
                 {
-                  \"username\": \"  nina  ",
-                  \"password\": \"  secret  \"
+                  "username": "  nina  ",
+                  "password": "  secret  "
                 }
                 """;
 
@@ -34,9 +34,9 @@ class TrimmedDeserializationTest {
         String json =
                 """
                 {
-                  \"name\": \"  My Org  ",
-                  \"place\": \"  Berlin  ",
-                  \"description\": null
+                  "name": "  My Org  ",
+                  "place": "  Berlin  ",
+                  "description": null
                 }
                 """;
 
