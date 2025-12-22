@@ -23,7 +23,7 @@ INSERT INTO organization_invitation_code(id, code, expiration_date, organization
 VALUES(201, 'membrfrq', '2099-08-15', 201);
 
 INSERT INTO activity(id, name, location, organization_id)
-VALUES(1, 'Halloween-Party', 'Soderso', 200););
+VALUES(1, 'Halloween-Party', 'Soderso', 200);
 
 INSERT INTO posting(id, scope, amount_in_cents, date, purpose, type, activity_id, organization_id)
-VALUES(1, 'activity', 10000, '2025-09-11', 'Test', 'CREDIT', 1, null)
+VALUES(1, 'activity', 10000, '2025-09-11', 'Test', 'CREDIT', 1, null);
