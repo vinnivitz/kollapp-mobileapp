@@ -7,12 +7,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import org.kollapp.core.jackson.Trimmed;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 public class LoginRequestTO {
     @NotBlank(message = "{validation.username.required}")
+    @Trimmed
     private String username;
 
     @NotBlank(message = "{validation.password.required}")

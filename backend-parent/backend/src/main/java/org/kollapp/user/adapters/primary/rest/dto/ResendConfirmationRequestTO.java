@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import org.kollapp.core.jackson.Trimmed;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -15,5 +17,6 @@ import lombok.Setter;
 public class ResendConfirmationRequestTO {
     @NotBlank(message = "{validation.email.required}")
     @Email(message = "{validation.email.invalid}")
+    @Trimmed
     private String email;
 }

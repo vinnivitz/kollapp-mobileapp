@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import org.kollapp.core.jackson.Trimmed;
 import org.kollapp.organization.adapters.primary.rest.dto.enums.PostingType;
 
 @Getter
@@ -34,5 +35,6 @@ public class PostingCreateUpdateRequestTO {
     private String date;
 
     @Size(max = 50, message = "{validation.posting.purpose.maxlength}")
+    @Trimmed
     private String purpose;
 }
