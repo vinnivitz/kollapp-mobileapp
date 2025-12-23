@@ -30,7 +30,7 @@ public class PostingCreateUpdateRequestTO {
     private long amountInCents;
 
     @NotNull(message = "{validation.posting.date.required}")
-    @ValidDate(message = "{validation.posting.date.format}")
+    @ValidDate(message = "{validation.posting.date.format}", min = "2000-01-01", max = "2100-12-31")
     private String date;
 
     @Size(max = 50, message = "{validation.posting.purpose.maxlength}")
