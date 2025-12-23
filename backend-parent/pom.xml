@@ -71,6 +71,7 @@
 
         <!-- TypeScript -->
         <typescript-generator.version>3.2.1263</typescript-generator.version>
+        <generate-ts-api-maven-plugin.version>0.1.0</generate-ts-api-maven-plugin.version>
     </properties>
 
     <dependencyManagement>
