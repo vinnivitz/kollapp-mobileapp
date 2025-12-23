@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.core.adapters.primary.rest.dto.ErrorResponseTO;
 import org.kollapp.core.config.properties.ApplicationProperties;
 
@@ -20,7 +20,7 @@ import org.kollapp.core.config.properties.ApplicationProperties;
 public class ApiVersionValidationInterceptor implements HandlerInterceptor {
 
     @Autowired
-    private MessageSource messageSource;
+    private MessageUtil messageUtil;
 
     @Autowired
     private ApplicationProperties applicationProperties;
@@ -52,7 +52,8 @@ public class ApiVersionValidationInterceptor implements HandlerInterceptor {
         }
 
         if (!isVersionAtLeast(requestVersion, apiVersion.min())) {
-            ErrorResponseTO errorResponse = new ErrorResponseTO("error.api-version.too-old", messageSource);
+            String message = messageUtil.getMessage("error.api-version.too-old");
+            ErrorResponseTO errorResponse = new ErrorResponseTO(message);
             response.setStatus(HttpStatus.UPGRADE_REQUIRED.value());
             messageConverter.write(errorResponse, MediaType.APPLICATION_JSON, new ServletServerHttpResponse(response));
             return false;
