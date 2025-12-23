@@ -11,15 +11,23 @@ import jakarta.validation.Payload;
 
 @Target({ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = ValidDateValidator.class)
+@Constraint(validatedBy = {ValidDateValidator.class})
 @Documented
 public @interface ValidDate {
 
     String message();
 
+    /**
+     * Inclusive minimum allowed date in ISO-8601 format (yyyy-MM-dd). Empty means unbounded.
+     */
+    String min() default "";
+
+    /**
+     * Inclusive maximum allowed date in ISO-8601 format (yyyy-MM-dd). Empty means unbounded.
+     */
+    String max() default "";
+
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
-
-    String pattern() default "yyyy-MM-dd";
 }
