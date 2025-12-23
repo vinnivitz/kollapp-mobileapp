@@ -6,9 +6,8 @@ import {
 	type Token
 } from '@capacitor/push-notifications';
 
-import { showAlert } from './alert.utility';
-
 import { AlertType } from '$lib/models/ui';
+import { showAlert } from '$lib/utility';
 
 export async function initPushNotifications(): Promise<void> {
 	try {
