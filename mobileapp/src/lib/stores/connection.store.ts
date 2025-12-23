@@ -4,7 +4,7 @@ import { get, writable } from 'svelte/store';
 import { dev } from '$app/environment';
 
 import { t } from '$lib/locales';
-import { PreferencesKey } from '$lib/models/preferences';
+import { StorageKey } from '$lib/models/storage';
 import { type ConnectionStore } from '$lib/models/stores';
 import { AlertType } from '$lib/models/ui';
 import { showAlert, storeValue } from '$lib/utility';
@@ -38,7 +38,7 @@ function createStore(): ConnectionStore {
 	}
 
 	async function _set(value: boolean): Promise<void> {
-		await storeValue(PreferencesKey.ONLINE, value);
+		await storeValue(StorageKey.ONLINE, value);
 		set(value);
 	}
 

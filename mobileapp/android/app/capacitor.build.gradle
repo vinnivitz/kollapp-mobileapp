@@ -24,6 +24,7 @@ dependencies {
     implementation project(':capgo-capacitor-native-biometric')
     implementation project(':ebarooni-capacitor-calendar')
     implementation project(':capacitor-email-composer')
+    implementation project(':capacitor-secure-storage-plugin')
 
 }
 

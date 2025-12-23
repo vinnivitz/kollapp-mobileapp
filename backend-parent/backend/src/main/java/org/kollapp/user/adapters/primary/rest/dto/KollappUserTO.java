@@ -1,9 +1,6 @@
 package org.kollapp.user.adapters.primary.rest.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import org.kollapp.user.application.model.SystemRole;
+import org.kollapp.user.adapters.primary.rest.dto.enums.SystemRoleTO;
 
 @Getter
 @Setter
@@ -19,20 +16,18 @@ import org.kollapp.user.application.model.SystemRole;
 @NoArgsConstructor
 @Builder
 public class KollappUserTO {
-
+    @NotNull
     private long id;
 
-    @NotBlank(message = "{validation.user.username.required}")
-    @Pattern(regexp = ".{2,}", message = "{validation.username.minlength}")
-    @Size(max = 20, message = "{validation.username.maxlength}")
+    @NotNull
     private String username;
 
-    @NotBlank(message = "{validation.user.email.required}")
-    @Email(message = "{validation.email.invalid}")
-    @Size(max = 50, message = "{validation.email.maxlength}")
+    @NotNull
     private String email;
 
+    @NotNull
     private boolean activated;
 
-    private SystemRole role;
+    @NotNull
+    private SystemRoleTO role;
 }

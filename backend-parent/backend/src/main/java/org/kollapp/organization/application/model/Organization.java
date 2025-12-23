@@ -78,18 +78,18 @@ public class Organization {
         activities.add(activity);
     }
 
-    public List<PersonOfOrganization> getManagers() {
+    public List<PersonOfOrganization> fetchManagers() {
         return personsOfOrganization.stream()
                 .filter(p -> p.getOrganizationRole().equals(OrganizationRole.ROLE_ORGANIZATION_MANAGER))
                 .toList();
     }
 
     public boolean hasOnlyOneManagerLeft() {
-        return getManagers().size() == 1;
+        return fetchManagers().size() == 1;
     }
 
     public OrganizationInvitationCode generateNewInvitationCode(int validityDays) {
-        String code = generateInvitationCode();
+        String code = generateInvitationCode().toUpperCase();
         String expirationDate = LocalDate.now().plusDays(validityDays).toString();
         if (getOrganizationInvitationCode() == null) {
             organizationInvitationCode = OrganizationInvitationCode.builder()
