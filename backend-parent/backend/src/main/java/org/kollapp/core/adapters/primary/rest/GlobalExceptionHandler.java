@@ -47,7 +47,7 @@ public class GlobalExceptionHandler {
         ConstraintViolation<?> firstViolation =
                 exception.getConstraintViolations().stream().findFirst().orElse(null);
         if (firstViolation == null) {
-            return ResponseEntity.badRequest().body(new ErrorResponseTO("error.validation.generic", messageSource));
+            return ResponseEntity.badRequest().body(new ErrorResponseTO("error.validation.generic"));
         }
         String message = firstViolation.getMessage();
         String propertyPath = firstViolation.getPropertyPath().toString();
@@ -58,12 +58,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ResponseTO> handleIllegalArgument(IllegalArgumentException ex) {
-        return ResponseEntity.badRequest().body(new ErrorResponseTO("error.invalid-input", messageSource));
+        String message = messageUtil.getMessage("error.invalid-input");
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ResponseTO> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
-        return ResponseEntity.badRequest().body(new ErrorResponseTO("error.invalid-type", messageSource));
+        String message = messageUtil.getMessage("error.invalid-type");
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
@@ -97,7 +99,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ResponseTO> handleUnhandledException(RuntimeException ex) {
         log.error("Unhandled exception: {}", ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponseTO("error.generic", messageSource));
+        String message = messageUtil.getMessage("error.generic");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponseTO(message));
     }
 }
