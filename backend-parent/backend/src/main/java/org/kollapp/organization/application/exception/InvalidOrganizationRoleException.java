@@ -1,7 +1,9 @@
 package org.kollapp.organization.application.exception;
 
-public class InvalidOrganizationRoleException extends RuntimeException {
+import org.kollapp.core.application.exceptions.AbstractLocalizedException;
+
+public class InvalidOrganizationRoleException extends AbstractLocalizedException {
     public InvalidOrganizationRoleException() {
-        super("Invalid organization role.");
+        super();
     }
 }
