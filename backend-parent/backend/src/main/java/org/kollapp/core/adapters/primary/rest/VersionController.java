@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 
 import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,12 +25,13 @@ public class VersionController {
     private final ApplicationProperties applicationProperties;
 
     @Autowired
-    private final MessageSource messageSource;
+    private final MessageUtil messageUtil;
 
     @GetMapping()
     @Operation(summary = "Get the api version")
     public ResponseEntity<DataResponseTO<ApiVersionTO>> getVersion() {
         ApiVersionTO apiVersionTO = new ApiVersionTO(applicationProperties.getVersion());
-        return ResponseEntity.ok(new DataResponseTO<>(apiVersionTO, "success.apiversion.get", messageSource));
+        String message = messageUtil.getMessage("success.apiversion.get");
+        return ResponseEntity.ok(new DataResponseTO<>(apiVersionTO, message));
     }
 }

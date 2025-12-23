@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 
 import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.core.adapters.primary.rest.dto.DataResponseTO;
 import org.kollapp.core.adapters.primary.rest.dto.MessageResponseTO;
 import org.kollapp.organization.adapters.primary.rest.dto.ActivityCreationRequestTO;
@@ -38,7 +38,7 @@ public class ActivityController {
     private ActivityMapper activityMapper;
 
     @Autowired
-    private MessageSource messageSource;
+    private MessageUtil messageUtil;
 
     @PostMapping("/{organization-id}/activity")
     @Operation(
@@ -50,7 +50,8 @@ public class ActivityController {
         Activity activity = activityMapper.activityCreationRequestTOToActivity(activityCreationRequestTO);
         Activity persistedActivity = activityService.createActivityForOrganization(organizationId, activity);
         ActivityTO activityTO = activityMapper.activityToActivityTO(persistedActivity);
-        return ResponseEntity.ok(new DataResponseTO<>(activityTO, "success.activity.create", messageSource));
+        String message = messageUtil.getMessage("success.activity.create");
+        return ResponseEntity.ok(new DataResponseTO<>(activityTO, message));
     }
 
     @PostMapping("/{organization-id}/activity/{activity-id}")
@@ -64,7 +65,8 @@ public class ActivityController {
         Activity activityToBeUpdated = activityMapper.activityUpdateTOToActivity(activityUpdateRequestTO);
         Activity updatedActivity = activityService.updateActivity(organizationId, activityId, activityToBeUpdated);
         ActivityTO activityTO = activityMapper.activityToActivityTO(updatedActivity);
-        return ResponseEntity.ok(new DataResponseTO<>(activityTO, "success.activity.update", messageSource));
+        String message = messageUtil.getMessage("success.activity.update");
+        return ResponseEntity.ok(new DataResponseTO<>(activityTO, message));
     }
 
     @DeleteMapping("/{organization-id}/activity/{activity-id}")
@@ -74,6 +76,7 @@ public class ActivityController {
     public ResponseEntity<MessageResponseTO> deleteActivityOfOrganization(
             @PathVariable("organization-id") long organizationId, @PathVariable("activity-id") long activityId) {
         activityService.deleteActivity(organizationId, activityId);
-        return ResponseEntity.ok(new MessageResponseTO("success.activity.delete", messageSource));
+        String message = messageUtil.getMessage("success.activity.delete");
+        return ResponseEntity.ok(new MessageResponseTO(message));
     }
 }
