@@ -246,7 +246,7 @@ public class OrganizationServiceManagerIT extends BaseIT {
                 .findFirst()
                 .orElse(new PersonOfOrganization());
         assertThat(personOfOrganization.getOrganizationRole()).isEqualTo(OrganizationRole.ROLE_ORGANIZATION_MEMBER);
-        assertThat(organization.getManagers().size()).isEqualTo(1);
+        assertThat(organization.fetchManagers().size()).isEqualTo(1);
     }
 
     @Test
