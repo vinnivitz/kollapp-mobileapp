@@ -1,5 +1,14 @@
 package org.kollapp.user.adapters.primary.rest;
 
+import lombok.AllArgsConstructor;
+
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
 import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.core.adapters.primary.rest.dto.ErrorResponseTO;
 import org.kollapp.core.adapters.primary.rest.dto.ValidationFailureResponseTO;
@@ -14,14 +23,6 @@ import org.kollapp.user.application.exception.InvalidSystemRoleException;
 import org.kollapp.user.application.exception.KollappUserNotFoundException;
 import org.kollapp.user.application.exception.UsernameExistsException;
 import org.kollapp.user.application.exception.UsernameNotFoundException;
-import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-
-import lombok.AllArgsConstructor;
 
 @ControllerAdvice(basePackages = {"org.kollapp.user"})
 @Order(0)

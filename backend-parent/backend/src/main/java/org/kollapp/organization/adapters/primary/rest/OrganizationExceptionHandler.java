@@ -1,5 +1,14 @@
 package org.kollapp.organization.adapters.primary.rest;
 
+import lombok.AllArgsConstructor;
+
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestController;
+
 import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.core.adapters.primary.rest.dto.ErrorResponseTO;
 import org.kollapp.core.adapters.primary.rest.dto.ResponseTO;
@@ -17,14 +26,6 @@ import org.kollapp.organization.application.exception.PersonNotRegisteredInOrgan
 import org.kollapp.organization.application.exception.PersonOfOrganizationIsNotApprovedYetException;
 import org.kollapp.organization.application.exception.PostingDoesNotExistException;
 import org.kollapp.organization.application.exception.SelfActionNotAllowedException;
-import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestController;
-
-import lombok.AllArgsConstructor;
 
 @ControllerAdvice(basePackages = {"org.kollapp.organization"})
 @RestController
