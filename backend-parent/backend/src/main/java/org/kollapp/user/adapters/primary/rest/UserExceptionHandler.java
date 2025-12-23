@@ -18,6 +18,7 @@ import org.kollapp.user.application.exception.EmailNotFoundException;
 import org.kollapp.user.application.exception.IncorrectPasswordException;
 import org.kollapp.user.application.exception.InvalidConfirmationLinkException;
 import org.kollapp.user.application.exception.InvalidRefreshTokenException;
+import org.kollapp.user.application.exception.InvalidSystemRoleException;
 import org.kollapp.user.application.exception.KollappUserNotFoundException;
 import org.kollapp.user.application.exception.UsernameExistsException;
 import org.kollapp.user.application.exception.UsernameNotFoundException;
@@ -91,8 +92,13 @@ public class UserExceptionHandler {
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ValidationFailureResponseTO> handleBadCredentials(BadCredentialsException ex) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(new ValidationFailureResponseTO(
-                        messageUtil.getMessage("validation.password.incorrect"), "password"));
+        String message = messageUtil.getMessage("validation.password.incorrect");
+        return ResponseEntity.badRequest().body(new ValidationFailureResponseTO(message, "password"));
+    }
+
+    @ExceptionHandler(InvalidSystemRoleException.class)
+    public ResponseEntity<ErrorResponseTO> handleInvalidSystemRole() {
+        String message = messageUtil.getMessage("error.system-role.invalid");
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
     }
 }

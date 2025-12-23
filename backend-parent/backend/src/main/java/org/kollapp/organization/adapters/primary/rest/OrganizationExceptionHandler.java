@@ -83,12 +83,14 @@ public class OrganizationExceptionHandler {
 
     @ExceptionHandler(InvalidOrganizationRoleException.class)
     public ResponseEntity<ResponseTO> handleInvalidOrganizationRole(InvalidOrganizationRoleException ex) {
-        return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
+        String message = messageUtil.getMessage("error.invalid-organization-role");
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(InvalidPostingTypeException.class)
     public ResponseEntity<ResponseTO> handleInvalidPostingType(InvalidPostingTypeException ex) {
-        return ResponseEntity.badRequest().body(new ErrorResponseTO(ex.getMessage()));
+        String message = messageUtil.getMessage("error.invalid-posting-type");
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(LastManagerException.class)
