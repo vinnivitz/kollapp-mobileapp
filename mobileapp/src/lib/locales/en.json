@@ -997,11 +997,6 @@
             "postings-history": "Transaction history"
           }
         },
-        "pending-organization-join-request-card": {
-          "card": {
-            "info": "You have a pending request for joining"
-          }
-        },
         "upcoming-event": {
           "card": {
             "title": "Upcoming event"
