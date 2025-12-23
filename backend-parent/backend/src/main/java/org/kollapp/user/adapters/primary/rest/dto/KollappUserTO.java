@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import org.kollapp.user.application.model.SystemRole;
+import org.kollapp.user.adapters.primary.rest.dto.enums.SystemRoleTO;
 
 @Getter
 @Setter
@@ -29,5 +29,5 @@ public class KollappUserTO {
     private boolean activated;
 
     @NotNull
-    private SystemRole role;
+    private SystemRoleTO role;
 }

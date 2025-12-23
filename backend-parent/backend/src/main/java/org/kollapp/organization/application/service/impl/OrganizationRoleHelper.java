@@ -3,7 +3,6 @@ package org.kollapp.organization.application.service.impl;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import org.kollapp.organization.application.exception.OrganizationAuthorizationException;
@@ -28,14 +27,11 @@ class OrganizationRoleHelper {
     @Autowired
     private OrganizationRepository organizationRepository;
 
-    @Autowired
-    private MessageSource messageSource;
-
     protected void verifyOrganizationMember(Long organizationId) {
         KollappUser currentUser = kollappUserService.getLoggedInKollappUser();
         Organization organization = getOrganization(organizationId);
         if (!isMemberOfOrganization(currentUser, organization)) {
-            throw new OrganizationAuthorizationException(messageSource);
+            throw new OrganizationAuthorizationException();
         }
     }
 
@@ -43,21 +39,21 @@ class OrganizationRoleHelper {
         KollappUser currentUser = kollappUserService.getLoggedInKollappUser();
         Organization organization = getOrganization(organizationId);
         if (!isManagerOfOrganization(currentUser, organization)) {
-            throw new OrganizationAuthorizationException(messageSource);
+            throw new OrganizationAuthorizationException();
         }
     }
 
     protected void verifySelfActionNotAllowed(long targetUserId) {
         KollappUser currentUser = kollappUserService.getLoggedInKollappUser();
         if (currentUser.getId() == targetUserId) {
-            throw new SelfActionNotAllowedException(messageSource);
+            throw new SelfActionNotAllowedException();
         }
     }
 
     private Organization getOrganization(Long organizationId) {
         Optional<Organization> organizationOpt = organizationRepository.findById(organizationId);
         if (organizationOpt.isEmpty()) {
-            throw new OrganizationNotFoundException(messageSource);
+            throw new OrganizationNotFoundException();
         }
         return organizationOpt.get();
     }
@@ -65,7 +61,7 @@ class OrganizationRoleHelper {
     private boolean isMemberOfOrganization(KollappUser currentUser, Organization organization) {
         PersonOfOrganization personOfOrganization = getPersonOfOrganization(currentUser, organization);
         if (personOfOrganization.getStatus().equals(PersonOfOrganizationStatus.PENDING)) {
-            throw new PersonOfOrganizationIsNotApprovedYetException(messageSource);
+            throw new PersonOfOrganizationIsNotApprovedYetException();
         }
         return personOfOrganization.getOrganizationRole().equals(OrganizationRole.ROLE_ORGANIZATION_MEMBER)
                 || isManagerOfOrganization(currentUser, organization);
@@ -80,6 +76,6 @@ class OrganizationRoleHelper {
         return organization.getPersonsOfOrganization().stream()
                 .filter(p -> p.getUserId() == currentUser.getId())
                 .findFirst()
-                .orElseThrow(() -> new PersonNotRegisteredInOrganizationException(messageSource));
+                .orElseThrow(PersonNotRegisteredInOrganizationException::new);
     }
 }
