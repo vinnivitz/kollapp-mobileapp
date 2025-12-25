@@ -97,7 +97,10 @@ public class OrganizationServiceKollappUserIT extends BaseIT {
     }
 
     @Test
-    public void updatePersonOfOrganizationOfUserShouldThrowAuthException() {
+    @WithMockUser(
+            username = "nina",
+            authorities = {})
+    public void updatePersonOfOrganizationOfUserWithoutKollappUserRoleShouldThrowAuthException() {
         assertThatExceptionOfType(AuthorizationDeniedException.class)
                 .isThrownBy(() -> organizationService.updatePersonOfOrganizationsOfUser(1, "test"));
     }
