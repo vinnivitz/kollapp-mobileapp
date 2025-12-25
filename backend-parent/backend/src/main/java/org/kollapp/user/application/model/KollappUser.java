@@ -36,6 +36,8 @@ public class KollappUser {
     @Email
     private String email;
 
+    private String pendingEmail;
+
     @NotBlank
     @Size(max = 255)
     private String password;

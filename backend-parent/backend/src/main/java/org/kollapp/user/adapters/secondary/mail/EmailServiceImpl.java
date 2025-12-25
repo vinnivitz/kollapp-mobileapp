@@ -65,6 +65,35 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
+    @Override
+    public void sendNewEmailConfirmationMail(String recipientMail, String confirmationUrl) {
+        String subject = messageUtil.getMessage("mail.new-email-confirmation.subject");
+
+        Context context = new Context();
+        context.setVariable("title", messageUtil.getMessage("mail.new-email-confirmation.title"));
+        context.setVariable("text", messageUtil.getMessage("mail.new-email-confirmation.text"));
+        context.setVariable("confirmationUrl", confirmationUrl);
+        context.setVariable("button", messageUtil.getMessage("mail.new-email-confirmation.button"));
+        context.setVariable("logoUrl", urlBuilderUtil.buildServerUrl("/logo.png"));
+
+        String htmlContent = templateEngine.process("confirm-new-email", context);
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setFrom("noreply@" + applicationProperties.getDomain());
+            helper.setTo(recipientMail);
+            helper.setSubject(subject);
+            helper.setText(htmlContent, true);
+
+            mailSender.send(message);
+            log.info("New email confirmation email sent to: " + recipientMail);
+
+        } catch (MessagingException e) {
+            log.error("Failed to send new email confirmation email to: " + recipientMail + " " + e);
+        }
+    }
+
+    @Override
     public void sendForgotPasswordMail(String recipientMail, String resetPasswordUrl) {
         String subject = messageUtil.getMessage("mail.forgot-password.subject");
 

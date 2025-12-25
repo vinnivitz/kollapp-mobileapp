@@ -196,7 +196,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    @RequiresKollappOrganizationMemberRole
+    @RequiresKollappUserRole
     public void updatePersonOfOrganizationsOfUser(long userId, String username) {
         List<PersonOfOrganization> personsToBeUpdated = personOfOrganizationRepository.findByUserId(userId);
         personsToBeUpdated.forEach(person -> person.setUsername(username));

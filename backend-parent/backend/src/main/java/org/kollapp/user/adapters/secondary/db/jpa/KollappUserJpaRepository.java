@@ -16,4 +16,6 @@ public interface KollappUserJpaRepository extends JpaRepository<KollappUser, Lon
     boolean existsByUsername(String username);
 
     boolean existsByEmail(String email);
+
+    boolean existsByPendingEmail(String email);
 }

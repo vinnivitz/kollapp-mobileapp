@@ -72,7 +72,12 @@ public class AuthorizedKollappUserController {
         KollappUser updatedUser =
                 kollappUserService.updateKollappUser(updateRequestTO.getUsername(), updateRequestTO.getEmail());
         KollappUserTO updatedUserTO = kollappUserMapper.kollappUserToKollappUserTO(updatedUser);
-        String message = messageUtil.getMessage("success.user.update-data");
+        String message;
+        if (updateRequestTO.getEmail() != null && !updateRequestTO.getEmail().equals(updatedUser.getEmail())) {
+            message = messageUtil.getMessage("success.email.change-requested");
+        } else {
+            message = messageUtil.getMessage("success.user.update-data");
+        }
         return ResponseEntity.ok(new DataResponseTO<>(updatedUserTO, message));
     }
 

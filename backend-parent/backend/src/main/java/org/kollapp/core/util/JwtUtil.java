@@ -24,6 +24,7 @@ import io.jsonwebtoken.security.Keys;
 @Slf4j
 @Component
 public class JwtUtil {
+    private static final String CLAIM_NEW_EMAIL = "newEmail";
 
     private final JwtProperties jwtProperties;
 
@@ -65,6 +66,17 @@ public class JwtUtil {
         return Jwts.builder()
                 .setSubject(subject)
                 .setExpiration(generateExpirationDate(jwtProperties.getConfirmationExpirationInSeconds()))
+                .signWith(signingKey, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    /** Generates a JWT token for confirming a new email address (email change). */
+    public String generateNewEmailConfirmationToken(String subject, String newEmail) {
+        Key signingKey = generateSigningKey(jwtProperties.getNewEmailConfirmationSecret());
+        return Jwts.builder()
+                .setSubject(subject)
+                .claim(CLAIM_NEW_EMAIL, newEmail)
+                .setExpiration(generateExpirationDate(jwtProperties.getNewEmailConfirmationExpirationInSeconds()))
                 .signWith(signingKey, SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -122,6 +134,31 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
+    }
+
+    public boolean validateNewEmailConfirmationToken(String token) {
+        Key signingKey = generateSigningKey(jwtProperties.getNewEmailConfirmationSecret());
+        return validateToken(token, signingKey);
+    }
+
+    public String getSubjectFromNewEmailConfirmationToken(String token) {
+        Key signingKey = generateSigningKey(jwtProperties.getNewEmailConfirmationSecret());
+        return Jwts.parserBuilder()
+                .setSigningKey(signingKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+    }
+
+    public String getNewEmailFromNewEmailConfirmationToken(String token) {
+        Key signingKey = generateSigningKey(jwtProperties.getNewEmailConfirmationSecret());
+        return Jwts.parserBuilder()
+                .setSigningKey(signingKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get(CLAIM_NEW_EMAIL, String.class);
     }
 
     /**
