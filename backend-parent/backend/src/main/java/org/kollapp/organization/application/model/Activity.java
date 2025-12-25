@@ -34,6 +34,8 @@ public class Activity {
 
     private String location;
 
+    private String date;
+
     @ManyToOne
     @JoinColumn(name = "organization_id")
     private Organization organization;
