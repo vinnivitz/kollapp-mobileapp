@@ -92,7 +92,7 @@ public class PushNotificationServiceImpl implements PushNotificationService {
         List<DeviceToken> deviceTokens = deviceTokenRepository.findActiveByUserId(userId);
 
         if (deviceTokens.isEmpty()) {
-            throw new NoActiveDeviceTokenFoundException(messageSource);
+            throw new NoActiveDeviceTokenFoundException();
         }
 
         for (DeviceToken deviceToken : deviceTokens) {
@@ -109,16 +109,15 @@ public class PushNotificationServiceImpl implements PushNotificationService {
 
     @Override
     public void sendNotificationToToken(String token, String title, String body, Map<String, String> data) {
-        DeviceToken deviceToken = deviceTokenRepository
-                .findByToken(token)
-                .orElseThrow(() -> new DeviceTokenNotFoundException(messageSource));
+        DeviceToken deviceToken =
+                deviceTokenRepository.findByToken(token).orElseThrow(() -> new DeviceTokenNotFoundException());
 
         sendNotificationAsync(deviceToken.getUserId(), title, body, data, token);
     }
 
     private void sendNotificationAsync(Long userId, String title, String body, Map<String, String> data, String token) {
         if (firebaseMessaging == null) {
-            throw new FirebaseMessagingNotConfiguredException(messageSource);
+            throw new FirebaseMessagingNotConfiguredException();
         }
 
         PushNotification notification = PushNotification.builder()
@@ -133,7 +132,7 @@ public class PushNotificationServiceImpl implements PushNotificationService {
                 notification.setData(objectMapper.writeValueAsString(data));
             }
         } catch (JsonProcessingException e) {
-            throw new NotificationDataSerializationException(messageSource);
+            throw new NotificationDataSerializationException();
         }
 
         try {
