@@ -2,6 +2,7 @@ package org.kollapp.organization.adapters.primary.rest;
 
 import lombok.AllArgsConstructor;
 
+import org.kollapp.organization.application.exception.ReimbursementNotPossibleException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -114,6 +115,12 @@ public class OrganizationExceptionHandler {
     @ExceptionHandler(SelfActionNotAllowedException.class)
     public ResponseEntity<ResponseTO> handleSelfActionNotAllowed() {
         String message = messageUtil.getMessage("error.organization.self-action-not-allowed");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponseTO(message));
+    }
+
+    @ExceptionHandler(ReimbursementNotPossibleException.class)
+    public ResponseEntity<ResponseTO> handleReimbursementNotPossibleException() {
+        String message = messageUtil.getMessage("error.posting.impossible-reimbursement");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponseTO(message));
     }
 }

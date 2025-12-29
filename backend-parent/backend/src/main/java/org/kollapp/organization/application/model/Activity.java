@@ -17,6 +17,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.kollapp.organization.application.exception.PostingDoesNotExistException;
 
 @Entity
 @Getter
@@ -40,4 +41,11 @@ public class Activity {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "activity", orphanRemoval = true)
     private List<ActivityPosting> activityPostings;
+
+    public ActivityPosting getActivityPostingById(long id) {
+        return getActivityPostings().stream()
+            .filter(p -> p.getId() == id)
+            .findFirst()
+            .orElseThrow(PostingDoesNotExistException::new);
+    }
 }

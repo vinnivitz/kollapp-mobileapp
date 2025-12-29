@@ -1,20 +1,10 @@
 package org.kollapp.organization.adapters.primary.rest;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
-
 import lombok.AllArgsConstructor;
-
 import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.core.adapters.primary.rest.dto.DataResponseTO;
 import org.kollapp.core.adapters.primary.rest.dto.MessageResponseTO;
@@ -25,9 +15,15 @@ import org.kollapp.organization.application.model.ActivityPosting;
 import org.kollapp.organization.application.model.OrganizationPosting;
 import org.kollapp.organization.application.model.Posting;
 import org.kollapp.organization.application.service.BudgetAccountService;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @PrimaryAdapter
@@ -35,14 +31,11 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 @AllArgsConstructor
 public class BudgetAccountController {
 
-    @Autowired
-    private PostingMapper postingMapper;
+    private final PostingMapper postingMapper;
 
-    @Autowired
-    private BudgetAccountService budgetAccountService;
+    private final BudgetAccountService budgetAccountService;
 
-    @Autowired
-    private MessageUtil messageUtil;
+    private final MessageUtil messageUtil;
 
     @PostMapping("/{organization-id}/posting")
     @Operation(
@@ -86,7 +79,19 @@ public class BudgetAccountController {
         return ResponseEntity.ok(new MessageResponseTO(message));
     }
 
-    @PostMapping("/{organization-id}/{activity-id}/posting")
+    @PatchMapping("/{organization-id}/posting/{posting-id}")
+    @Operation(
+        summary = "Reimburse an existing organization posting.",
+        security = {@SecurityRequirement(name = "bearer-key")})
+    public ResponseEntity<MessageResponseTO> reimburseOrganizationPosting(
+        @PathVariable("organization-id") long organizationId, @PathVariable("posting-id") long postingId) {
+        Posting reimbursedPosting = budgetAccountService.reimburseOrganizationPosting(organizationId, postingId);
+        PostingTO postingTO = postingMapper.mapPostingToPostingTO(reimbursedPosting);
+        String message = messageUtil.getMessage("success.posting.reimburse");
+        return ResponseEntity.ok(new DataResponseTO<>(postingTO, message));
+    }
+
+    @PostMapping("/{organization-id}/activity/{activity-id}/posting")
     @Operation(
             summary = "Add a new posting to an activity.",
             security = {@SecurityRequirement(name = "bearer-key")})
@@ -101,7 +106,7 @@ public class BudgetAccountController {
         return ResponseEntity.ok(new DataResponseTO<>(response, message));
     }
 
-    @PutMapping("/{organization-id}/{activity-id}/posting/{posting-id}")
+    @PutMapping("/{organization-id}/activity/{activity-id}/posting/{posting-id}")
     @Operation(
             summary = "Edit an existing activity posting.",
             security = {@SecurityRequirement(name = "bearer-key")})
@@ -118,7 +123,7 @@ public class BudgetAccountController {
         return ResponseEntity.ok(new DataResponseTO<>(response, message));
     }
 
-    @DeleteMapping("/{organization-id}/{activity-id}/posting/{posting-id}")
+    @DeleteMapping("/{organization-id}/activity/{activity-id}/posting/{posting-id}")
     @Operation(
             summary = "Delete an existing activity posting.",
             security = {@SecurityRequirement(name = "bearer-key")})
@@ -129,5 +134,19 @@ public class BudgetAccountController {
         budgetAccountService.deleteActivityPosting(organizationId, activityId, postingId);
         String message = messageUtil.getMessage("success.posting.delete");
         return ResponseEntity.ok(new MessageResponseTO(message));
+    }
+
+    @PatchMapping("/{organization-id}/activity/{activity-id}/posting/{posting-id}")
+    @Operation(
+        summary = "Reimburse an existing activity posting.",
+        security = {@SecurityRequirement(name = "bearer-key")})
+    public ResponseEntity<MessageResponseTO> reimburseOrganizationPosting(
+        @PathVariable("organization-id") long organizationId,
+        @PathVariable("activity-id") long activityId,
+        @PathVariable("posting-id") long postingId) {
+        Posting reimbursedPosting = budgetAccountService.reimburseActivityPosting(organizationId, activityId, postingId);
+        PostingTO postingTO = postingMapper.mapPostingToPostingTO(reimbursedPosting);
+        String message = messageUtil.getMessage("success.posting.reimburse");
+        return ResponseEntity.ok(new DataResponseTO<>(postingTO, message));
     }
 }

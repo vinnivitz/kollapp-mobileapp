@@ -8,7 +8,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,4 +38,12 @@ public class PersonOfOrganization {
 
     @Enumerated(EnumType.STRING)
     private PersonOfOrganizationStatus status;
+
+    public boolean isManager() {
+        return organizationRole.equals(OrganizationRole.ROLE_ORGANIZATION_MANAGER);
+    }
+
+    public boolean isMember() {
+        return organizationRole.equals(OrganizationRole.ROLE_ORGANIZATION_MEMBER);
+    }
 }

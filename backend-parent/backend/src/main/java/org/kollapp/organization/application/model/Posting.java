@@ -37,10 +37,25 @@ public abstract class Posting {
 
     private String purpose;
 
-    public Posting(PostingType type, long amountInCents, String date, String purpose) {
+    /**
+     * The person who needs to be reimbursed if it is a debit posting. If 0, the collective paid or the expense is
+     * reimbursed.
+     */
+    private long personOfOrganizationId;
+
+    public Posting(PostingType type,
+                   long amountInCents,
+                   String date,
+                   String purpose,
+                   long personOfOrganizationId) {
         this.type = type;
         this.amountInCents = amountInCents;
         this.date = date;
         this.purpose = purpose;
+        this.personOfOrganizationId = personOfOrganizationId;
+    }
+
+    public void reimburse() {
+        this.setPersonOfOrganizationId(0);
     }
 }

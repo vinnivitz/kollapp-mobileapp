@@ -21,6 +21,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import org.hibernate.Hibernate;
+import org.kollapp.organization.application.exception.ActivityNotFoundException;
+import org.kollapp.organization.application.exception.PersonNotRegisteredInOrganizationException;
+import org.kollapp.organization.application.exception.PostingDoesNotExistException;
 
 @Entity
 @Getter
@@ -92,6 +95,34 @@ public class Organization {
             organizationInvitationCode.setExpirationDate(expirationDate);
         }
         return organizationInvitationCode;
+    }
+
+    public OrganizationPosting getOrganizationPostingById(long postingId) {
+        return getOrganizationPostings().stream()
+            .filter(p -> p.getId() == postingId)
+            .findFirst()
+            .orElseThrow(PostingDoesNotExistException::new);
+    }
+
+    public List<Long> getPersonOfOrganizationIds() {
+        return getPersonsOfOrganization()
+            .stream()
+            .map(PersonOfOrganization::getId)
+            .toList();
+    }
+
+    public PersonOfOrganization getPersonOfOrganizationByUserId(long userId) {
+        return getPersonsOfOrganization()
+            .stream()
+            .filter(p -> p.getUserId() == userId)
+            .findFirst().orElseThrow(PersonNotRegisteredInOrganizationException::new);
+    }
+
+    public Activity getActivityById(long activityId) {
+        return getActivities().stream()
+            .filter(a -> a.getId() == activityId)
+            .findFirst()
+            .orElseThrow(ActivityNotFoundException::new);
     }
 
     private String generateInvitationCode() {
