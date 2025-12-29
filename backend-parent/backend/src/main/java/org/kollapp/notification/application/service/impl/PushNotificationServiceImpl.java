@@ -8,7 +8,6 @@ import java.util.concurrent.CompletableFuture;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,9 +50,6 @@ public class PushNotificationServiceImpl implements PushNotificationService {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
-    private MessageSource messageSource;
-
     @Override
     public DeviceToken registerDeviceToken(Long userId, String token, DeviceType deviceType) {
         Optional<DeviceToken> existingToken = deviceTokenRepository.findByToken(token);
@@ -78,9 +74,8 @@ public class PushNotificationServiceImpl implements PushNotificationService {
 
     @Override
     public void unregisterDeviceToken(String token) {
-        DeviceToken deviceToken = deviceTokenRepository
-                .findByToken(token)
-                .orElseThrow(() -> new DeviceTokenNotFoundException(messageSource));
+        DeviceToken deviceToken =
+                deviceTokenRepository.findByToken(token).orElseThrow(() -> new DeviceTokenNotFoundException());
 
         deviceToken.setActive(false);
         deviceTokenRepository.save(deviceToken);
