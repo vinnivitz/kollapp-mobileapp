@@ -38,8 +38,7 @@ public abstract class Posting {
     private String purpose;
 
     /**
-     * The person who needs to be reimbursed if it is a debit posting. If 0, the collective paid or the expense is
-     * reimbursed.
+     * The person who is referenced to this posting. If 0, the collective is assigned.
      */
     private long personOfOrganizationId;
 
@@ -55,7 +54,7 @@ public abstract class Posting {
         this.personOfOrganizationId = personOfOrganizationId;
     }
 
-    public void reimburse() {
+    public void transfer() {
         this.setPersonOfOrganizationId(0);
     }
 }

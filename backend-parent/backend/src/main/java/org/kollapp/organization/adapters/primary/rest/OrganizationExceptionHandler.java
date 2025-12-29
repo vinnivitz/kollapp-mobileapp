@@ -1,14 +1,6 @@
 package org.kollapp.organization.adapters.primary.rest;
 
 import lombok.AllArgsConstructor;
-
-import org.kollapp.organization.application.exception.ReimbursementNotPossibleException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestController;
-
 import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.core.adapters.primary.rest.dto.ErrorResponseTO;
 import org.kollapp.core.adapters.primary.rest.dto.ResponseTO;
@@ -25,7 +17,13 @@ import org.kollapp.organization.application.exception.PersonAlreadyRegisteredInO
 import org.kollapp.organization.application.exception.PersonNotRegisteredInOrganizationException;
 import org.kollapp.organization.application.exception.PersonOfOrganizationIsNotApprovedYetException;
 import org.kollapp.organization.application.exception.PostingDoesNotExistException;
+import org.kollapp.organization.application.exception.PostingTransferNotPossibleException;
 import org.kollapp.organization.application.exception.SelfActionNotAllowedException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestController;
 
 @ControllerAdvice(basePackages = {"org.kollapp.organization"})
 @RestController
@@ -118,9 +116,9 @@ public class OrganizationExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponseTO(message));
     }
 
-    @ExceptionHandler(ReimbursementNotPossibleException.class)
-    public ResponseEntity<ResponseTO> handleReimbursementNotPossibleException() {
-        String message = messageUtil.getMessage("error.posting.impossible-reimbursement");
+    @ExceptionHandler(PostingTransferNotPossibleException.class)
+    public ResponseEntity<ResponseTO> handlePostingTransferNotPossibleException() {
+        String message = messageUtil.getMessage("error.posting.impossible-transfer");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponseTO(message));
     }
 }

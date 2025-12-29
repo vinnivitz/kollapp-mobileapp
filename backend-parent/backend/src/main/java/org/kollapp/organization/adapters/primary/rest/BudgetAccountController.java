@@ -81,13 +81,13 @@ public class BudgetAccountController {
 
     @PatchMapping("/{organization-id}/posting/{posting-id}")
     @Operation(
-        summary = "Reimburse an existing organization posting.",
+        summary = "Transfer an existing organization posting.",
         security = {@SecurityRequirement(name = "bearer-key")})
-    public ResponseEntity<MessageResponseTO> reimburseOrganizationPosting(
+    public ResponseEntity<MessageResponseTO> transferOrganizationPosting(
         @PathVariable("organization-id") long organizationId, @PathVariable("posting-id") long postingId) {
-        Posting reimbursedPosting = budgetAccountService.reimburseOrganizationPosting(organizationId, postingId);
-        PostingTO postingTO = postingMapper.mapPostingToPostingTO(reimbursedPosting);
-        String message = messageUtil.getMessage("success.posting.reimburse");
+        Posting transferedPosting = budgetAccountService.transferOrganizationPosting(organizationId, postingId);
+        PostingTO postingTO = postingMapper.mapPostingToPostingTO(transferedPosting);
+        String message = messageUtil.getMessage("success.posting.transfer");
         return ResponseEntity.ok(new DataResponseTO<>(postingTO, message));
     }
 
@@ -138,15 +138,15 @@ public class BudgetAccountController {
 
     @PatchMapping("/{organization-id}/activity/{activity-id}/posting/{posting-id}")
     @Operation(
-        summary = "Reimburse an existing activity posting.",
+        summary = "Transfer an existing activity posting.",
         security = {@SecurityRequirement(name = "bearer-key")})
-    public ResponseEntity<MessageResponseTO> reimburseOrganizationPosting(
+    public ResponseEntity<MessageResponseTO> transferOrganizationPosting(
         @PathVariable("organization-id") long organizationId,
         @PathVariable("activity-id") long activityId,
         @PathVariable("posting-id") long postingId) {
-        Posting reimbursedPosting = budgetAccountService.reimburseActivityPosting(organizationId, activityId, postingId);
-        PostingTO postingTO = postingMapper.mapPostingToPostingTO(reimbursedPosting);
-        String message = messageUtil.getMessage("success.posting.reimburse");
+        Posting transferedPosting = budgetAccountService.transferActivityPosting(organizationId, activityId, postingId);
+        PostingTO postingTO = postingMapper.mapPostingToPostingTO(transferedPosting);
+        String message = messageUtil.getMessage("success.posting.transfer");
         return ResponseEntity.ok(new DataResponseTO<>(postingTO, message));
     }
 }

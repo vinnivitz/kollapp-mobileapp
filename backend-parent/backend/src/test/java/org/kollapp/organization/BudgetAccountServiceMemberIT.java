@@ -88,6 +88,12 @@ public class BudgetAccountServiceMemberIT extends BaseIT {
     }
 
     @Test
+    public void transferOrganizationPostingShouldThrowException() {
+        assertThatExceptionOfType(OrganizationAuthorizationException.class)
+            .isThrownBy(() -> budgetAccountService.transferOrganizationPosting(1,1));
+    }
+
+    @Test
     public void addActivityPostingWithOwnIdShouldCreateActivityPosting() {
         ActivityPosting activityPosting = new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test", null, 1);
         Posting persistedActivityPosting = budgetAccountService.addActivityPosting(1, 1, activityPosting);
@@ -193,5 +199,11 @@ public class BudgetAccountServiceMemberIT extends BaseIT {
     public void deleteActivityPostingForNonExistingPostingShouldThrowException() {
         assertThatExceptionOfType(PostingDoesNotExistException.class)
                 .isThrownBy(() -> budgetAccountService.deleteActivityPosting(1, 1, 5));
+    }
+
+    @Test
+    public void transferActivityPostingShouldThrowException() {
+        assertThatExceptionOfType(OrganizationAuthorizationException.class)
+            .isThrownBy(() -> budgetAccountService.transferActivityPosting(1,1,1));
     }
 }

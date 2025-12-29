@@ -34,12 +34,13 @@ public interface BudgetAccountService {
     void deleteOrganizationPosting(long organizationId, long postingId);
 
     /**
-     * Reimburses an existing organization posting. Deletes the reference to a person of organization.
-     * @param organizationId The organization id for which the posting should be reimbursed.
-     * @param postingId The posting to be reimbursed.
-     * @return The reimbursed posting.
+     * Transfers an existing organization posting to the collective.
+     * Deletes the reference to a person of organization.
+     * @param organizationId The organization id for which the posting should be transferred.
+     * @param postingId The posting to be transferred.
+     * @return The transferred posting.
      */
-    Posting reimburseOrganizationPosting(long organizationId, long postingId);
+    Posting transferOrganizationPosting(long organizationId, long postingId);
 
     /**
      * Creates a new activity posting. Organization members can only assign themselves to a posting.
@@ -73,11 +74,12 @@ public interface BudgetAccountService {
     void deleteActivityPosting(long organizationId, long activityId, long postingId);
 
     /**
-     * Reimburses an existing activity posting. Deletes the reference to a person of organization.
-     * @param organizationId The organization id for which the posting should be reimbursed.
-     * @param activityId The activity id for which the posting should be reimbursed.
-     * @param postingId The posting to be reimbursed.
-     * @return The reimbursed posting.
+     * Transfers an existing activity posting to the collective.
+     * Deletes the reference to a person of organization.
+     * @param organizationId The organization id for which the posting should be transferred
+     * @param activityId The activity id for which the posting should be transferred
+     * @param postingId The posting to be transferred
+     * @return The transferred posting.
      */
-    Posting reimburseActivityPosting(long organizationId, long activityId, long postingId);
+    Posting transferActivityPosting(long organizationId, long activityId, long postingId);
 }

@@ -5,14 +5,13 @@ import lombok.AllArgsConstructor;
 import org.kollapp.organization.application.exception.OrganizationAuthorizationException;
 import org.kollapp.organization.application.exception.OrganizationNotFoundException;
 import org.kollapp.organization.application.exception.PersonNotRegisteredInOrganizationException;
-import org.kollapp.organization.application.exception.ReimbursementNotPossibleException;
+import org.kollapp.organization.application.exception.PostingTransferNotPossibleException;
 import org.kollapp.organization.application.model.Activity;
 import org.kollapp.organization.application.model.ActivityPosting;
 import org.kollapp.organization.application.model.Organization;
 import org.kollapp.organization.application.model.OrganizationPosting;
 import org.kollapp.organization.application.model.PersonOfOrganization;
 import org.kollapp.organization.application.model.Posting;
-import org.kollapp.organization.application.model.PostingType;
 import org.kollapp.organization.application.repository.OrganizationRepository;
 import org.kollapp.organization.application.service.BudgetAccountService;
 import org.kollapp.user.application.model.KollappUser;
@@ -44,12 +43,13 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
             organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
         checkOrganizationMemberSelfAssignment(organization, posting);
         List<Long> personOfOrganizationIdsOfOrganization = organization.getPersonOfOrganizationIds();
-        if (!personOfOrganizationIdsOfOrganization.contains(posting.getPersonOfOrganizationId())) {
-            throw new PersonNotRegisteredInOrganizationException();
+        if (posting.getPersonOfOrganizationId() == 0
+            || personOfOrganizationIdsOfOrganization.contains(posting.getPersonOfOrganizationId())) {
+            organization.getOrganizationPostings().add(posting);
+            posting.setOrganization(organization);
+            return posting;
         }
-        organization.getOrganizationPostings().add(posting);
-        posting.setOrganization(organization);
-        return posting;
+        throw new PersonNotRegisteredInOrganizationException();
     }
 
     /**
@@ -84,14 +84,14 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
      */
     @Override
     @RequiresKollappOrganizationMemberRole
-    public Posting reimburseOrganizationPosting(long organizationId, long postingId) {
+    public Posting transferOrganizationPosting(long organizationId, long postingId) {
         organizationRoleHelper.verifyOrganizationManager(organizationId);
         Organization organization = organizationRepository
             .findById(organizationId)
             .orElseThrow(OrganizationNotFoundException::new);
         OrganizationPosting organizationPosting = organization.getOrganizationPostingById(postingId);
-        checkPostingReimbursability(organizationPosting);
-        organizationPosting.reimburse();
+        checkPostingTransferability(organizationPosting);
+        organizationPosting.transfer();
         return organizationPosting;
     }
 
@@ -107,12 +107,13 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
         Activity activity = organization.getActivityById(activityId);
         checkOrganizationMemberSelfAssignment(organization, posting);
         List<Long> personOfOrganizationIdsOfOrganization = organization.getPersonOfOrganizationIds();
-        if (!personOfOrganizationIdsOfOrganization.contains(posting.getPersonOfOrganizationId())) {
-            throw new PersonNotRegisteredInOrganizationException();
+        if (posting.getPersonOfOrganizationId() == 0
+            || personOfOrganizationIdsOfOrganization.contains(posting.getPersonOfOrganizationId())) {
+            activity.getActivityPostings().add(posting);
+            posting.setActivity(activity);
+            return posting;
         }
-        activity.getActivityPostings().add(posting);
-        posting.setActivity(activity);
-        return posting;
+        throw new PersonNotRegisteredInOrganizationException();
     }
 
     /**
@@ -150,27 +151,26 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
      */
     @Override
     @RequiresKollappOrganizationMemberRole
-    public Posting reimburseActivityPosting(long organizationId, long activityId, long postingId) {
+    public Posting transferActivityPosting(long organizationId, long activityId, long postingId) {
         organizationRoleHelper.verifyOrganizationManager(organizationId);
         Organization organization = organizationRepository
             .findById(organizationId)
             .orElseThrow(OrganizationNotFoundException::new);
         Activity activity = organization.getActivityById(activityId);
         ActivityPosting activityPosting = activity.getActivityPostingById(postingId);
-        checkPostingReimbursability(activityPosting);
-        activityPosting.reimburse();
+        checkPostingTransferability(activityPosting);
+        activityPosting.transfer();
         return activityPosting;
     }
 
     /**
-     * Checks if a posting is suitable for reimbursement. A posting can only be reimbursed if it is a credit posting
-     * and not already reimbursed.
-     * @param posting The posting to be reimbursed.
+     * Checks if a posting is suitable for transfer. A posting can only be transferred if it has a
+     * reference to a person of organization.
+     * @param posting The posting to be transferred.
      */
-    private void checkPostingReimbursability(Posting posting) {
-        if (posting.getType().equals(PostingType.CREDIT)
-            || posting.getPersonOfOrganizationId() == 0) {
-            throw new ReimbursementNotPossibleException();
+    private void checkPostingTransferability(Posting posting) {
+        if (posting.getPersonOfOrganizationId() == 0) {
+            throw new PostingTransferNotPossibleException();
         }
     }
 
@@ -202,24 +202,24 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
      * @throws PersonNotRegisteredInOrganizationException If the new referenced
      * person of organization is not part of the organization.
      * @throws UnsupportedOperationException If the id of the reference person of organization is set to zero. The posting
-     * reimbursement method has to be used instead.
+     * transfer method has to be used instead.
      */
     private Posting updatePosting(Organization organization, Posting postingToBeEdited, Posting updatedPosting) {
         checkOrganizationMemberSelfAssignment(organization, updatedPosting);
-        if (postingToBeEdited.getPersonOfOrganizationId() != updatedPosting.getPersonOfOrganizationId()
-            && updatedPosting.getPersonOfOrganizationId() == 0) {
+
+        List<Long> personOfOrganizationIdsOfOrganization = organization.getPersonOfOrganizationIds();
+        if (!personOfOrganizationIdsOfOrganization.contains(updatedPosting.getPersonOfOrganizationId())) {
+            throw new PersonNotRegisteredInOrganizationException();
+        }
+        if (postingToBeEdited.getPersonOfOrganizationId() == 0 && updatedPosting.getPersonOfOrganizationId() != 0) {
             throw new UnsupportedOperationException();
         }
         postingToBeEdited.setDate(updatedPosting.getDate());
         postingToBeEdited.setPurpose(updatedPosting.getPurpose());
         postingToBeEdited.setAmountInCents(updatedPosting.getAmountInCents());
         postingToBeEdited.setType(updatedPosting.getType());
-        List<Long> personOfOrganizationIdsOfOrganization = organization.getPersonOfOrganizationIds();
-        if (personOfOrganizationIdsOfOrganization.contains(postingToBeEdited.getPersonOfOrganizationId())) {
-            postingToBeEdited.setPersonOfOrganizationId(updatedPosting.getPersonOfOrganizationId());
-            return postingToBeEdited;
-        }
-        throw new PersonNotRegisteredInOrganizationException();
+        postingToBeEdited.setPersonOfOrganizationId(updatedPosting.getPersonOfOrganizationId());
+        return postingToBeEdited;
     }
 
 }
