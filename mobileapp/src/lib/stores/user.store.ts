@@ -4,7 +4,7 @@ import type { KollappUserTO } from '@kollapp/api-types';
 import { writable } from 'svelte/store';
 
 import { userService } from '$lib/api/services';
-import { PreferencesKey } from '$lib/models/preferences';
+import { StorageKey } from '$lib/models/storage';
 import { deduplicateRequest, getStoredValue, removeStoredValue, StatusCheck, storeValue } from '$lib/utility';
 
 const USER_STORE_INIT_REQUEST_KEY = 'user-store-init';
@@ -16,7 +16,7 @@ function createStore(): UserStore {
 
 	async function init(): Promise<void> {
 		return deduplicateRequest(USER_STORE_INIT_REQUEST_KEY, async () => {
-			const storedUser = await getStoredValue<KollappUserTO>(PreferencesKey.USER);
+			const storedUser = await getStoredValue<KollappUserTO>(StorageKey.USER);
 			if (storedUser) {
 				await _set(storedUser);
 				loadedCache.set(true);
@@ -35,7 +35,7 @@ function createStore(): UserStore {
 	}
 
 	async function _set(model?: KollappUserTO): Promise<void> {
-		await (model ? storeValue(PreferencesKey.USER, model) : removeStoredValue(PreferencesKey.USER));
+		await (model ? storeValue(StorageKey.USER, model) : removeStoredValue(StorageKey.USER));
 		set(model);
 	}
 

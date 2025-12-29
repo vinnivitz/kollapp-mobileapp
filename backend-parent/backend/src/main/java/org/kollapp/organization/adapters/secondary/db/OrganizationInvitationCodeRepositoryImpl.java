@@ -20,6 +20,6 @@ public class OrganizationInvitationCodeRepositoryImpl implements OrganizationInv
     @Override
     public Optional<OrganizationInvitationCode> findByInvitationCodeAndExpirationDateIsAfter(
             String invitationCode, String currentDateMinusOneDay) {
-        return jpaRepository.findByCodeAndExpirationDateIsAfter(invitationCode, currentDateMinusOneDay);
+        return jpaRepository.findByCodeIgnoreCaseAndExpirationDateIsAfter(invitationCode, currentDateMinusOneDay);
     }
 }

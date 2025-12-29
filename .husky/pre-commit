@@ -17,6 +17,8 @@ if echo "$STAGED_FILES" | grep -q '^mobileapp/'; then
     exit 1
   fi
 
+  DECLARED_VERSION=$(echo "$DECLARED" | sed 's/^[\^~]//')
+
   LATEST=$(npm --prefix mobileapp view @kollapp/api-types version 2>/dev/null || true)
 
   if [ -z "$LATEST" ]; then
@@ -24,8 +26,8 @@ if echo "$STAGED_FILES" | grep -q '^mobileapp/'; then
     exit 1
   fi
 
-  if [ "$DECLARED" != "$LATEST" ]; then
-    echo "@kollapp/api-types outdated: declared=$DECLARED, latest=$LATEST"
+  if [ "$DECLARED_VERSION" != "$LATEST" ]; then
+    echo "@kollapp/api-types outdated: declared=$DECLARED_VERSION, latest=$LATEST"
     echo "Please bump the version in mobileapp/package.json."
     exit 1
   fi

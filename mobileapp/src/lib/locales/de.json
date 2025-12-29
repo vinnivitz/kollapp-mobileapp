@@ -662,11 +662,6 @@
         "no-collective": {
           "note": "Du bist kein Mitglied eines Kollektivs."
         },
-        "pending-organization-join-request-card": {
-          "card": {
-            "info": "Du hast eine ausstehende Beitrittsanfrage"
-          }
-        },
         "posting-translation": {
           "cedit": "Einnahme",
           "debit": "Ausgabe"
@@ -730,7 +725,7 @@
         },
         "pending-organization-join-request-card": {
           "card": {
-            "note": "Du hast eine ausstehende Anfrage für den Beitritt zu {{value}}"
+            "note": "Du hast eine ausstehende Anfrage für den Beitritt zu:"
           }
         },
         "title": "Kollapp",

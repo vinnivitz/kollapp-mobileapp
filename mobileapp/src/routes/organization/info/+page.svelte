@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import type { OrganizationBaseTO } from '@kollapp/api-types';
+	import type { OrganizationMinifiedTO } from '@kollapp/api-types';
 
 	import { homeOutline, locationOutline } from 'ionicons/icons';
 	import { onMount } from 'svelte';
@@ -18,7 +18,7 @@
 	let { data }: { data: PageData } = $props();
 
 	let loading = $state<boolean>(true);
-	let organization = $state<OrganizationBaseTO>();
+	let organization = $state<OrganizationMinifiedTO>();
 
 	onMount(async () => {
 		if (data.invitationCode) {
@@ -41,7 +41,7 @@
 
 <!-- Snippets -->
 
-{#snippet infoCard(organization: OrganizationBaseTO)}
+{#snippet infoCard(organization: OrganizationMinifiedTO)}
 	<Card title={organization.name} classList="text-center">
 		<div class="flex flex-col items-center justify-center gap-2">
 			{#if organization.description}

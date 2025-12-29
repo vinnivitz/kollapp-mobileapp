@@ -1000,11 +1000,6 @@
             "postings-history": "Transaction history"
           }
         },
-        "pending-organization-join-request-card": {
-          "card": {
-            "info": "You have a pending request for joining"
-          }
-        },
         "upcoming-event": {
           "card": {
             "title": "Upcoming event"
@@ -1060,7 +1055,7 @@
         },
         "pending-organization-join-request-card": {
           "card": {
-            "note": "You have a pending request for joining {{value}}"
+            "note": "You have a pending request for joining:"
           }
         }
       }

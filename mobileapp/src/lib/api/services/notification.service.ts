@@ -3,7 +3,7 @@ import type { DeviceTokenRegistrationRequestTO, DeviceTokenTO, SendNotificationR
 import { RequestMethod, type ResponseBody } from '$lib/models/api';
 import { customFetch } from '$lib/utility';
 
-class NotificationResource {
+class NotificationService {
 	ENDPOINT = 'notifications';
 
 	/**
@@ -55,4 +55,4 @@ class NotificationResource {
 	}
 }
 
-export const notificationService = new NotificationResource();
+export const notificationService = new NotificationService();

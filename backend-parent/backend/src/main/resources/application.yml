@@ -13,6 +13,9 @@ spring:
       max-lifetime: 1800000
       leak-detection-threshold: 60000
       pool-name: KollappHikariCP
+      connection-test-query: SELECT 1
+      validation-timeout: 5000
+      keepalive-time: 300000
   jpa:
     hibernate:
       ddl-auto: update
@@ -46,6 +49,13 @@ server:
   lifecycle:
     timeout-per-shutdown-phase: 30s
 
+logging:
+  level:
+    root: INFO
+    org.kollapp: DEBUG
+    org.springframework.security: INFO
+    org.springframework.web: INFO
+
 i18n:
   baseName: i18n/messages
 
@@ -58,6 +68,7 @@ kollapp:
     port: ${BACKEND_PORT:8080}
     staticCacheDays: ${BACKEND_STATIC_CACHE_DAYS:356}
     organizationInvitationValidityDays: ${BACKEND_ORGANIZATION_INVITATION_VALIDITY_DAYS:3}
+    maxOrganizationsPerUser: ${BACKEND_MAX_ORGANIZATIONS_PER_USER:10}
 
   client:
     webBaseUrl: ${BACKEND_CLIENT_WEB_URL:http://localhost:5173}

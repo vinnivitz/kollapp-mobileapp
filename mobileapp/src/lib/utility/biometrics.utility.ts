@@ -5,7 +5,7 @@ import { get } from 'svelte/store';
 
 import environment from '$lib/environment';
 import { t } from '$lib/locales';
-import { PreferencesKey } from '$lib/models/preferences';
+import { StorageKey } from '$lib/models/storage';
 import { getStoredValue, showAlert, storeValue } from '$lib/utility';
 
 const $t = get(t);
@@ -33,7 +33,7 @@ export async function isBiometricAvailable(): Promise<boolean> {
  * @returns {Promise<boolean>} - Returns true if biometric authentication is enabled, false otherwise.
  */
 export async function isBiometricEnabled(): Promise<boolean> {
-	return (await getStoredValue<boolean>(PreferencesKey.BIOMETRICS_ENABLED)) ?? false;
+	return (await getStoredValue<boolean>(StorageKey.BIOMETRICS_ENABLED)) ?? false;
 }
 
 /**
@@ -63,7 +63,7 @@ export async function storeBiometricCredentials(username: string, password: stri
 			server: BIOMETRICS_SERVER,
 			username
 		});
-		await storeValue(PreferencesKey.BIOMETRICS_ENABLED, true);
+		await storeValue(StorageKey.BIOMETRICS_ENABLED, true);
 	} catch {
 		await showAlert($t('utility.biometrics.not-available'));
 	}
@@ -112,7 +112,7 @@ export async function updatePasswordBiometricCredentials(password: string): Prom
 export async function deleteBiometricCredentials(): Promise<void> {
 	try {
 		await NativeBiometric.deleteCredentials({ server: BIOMETRICS_SERVER });
-		await storeValue(PreferencesKey.BIOMETRICS_ENABLED, false);
+		await storeValue(StorageKey.BIOMETRICS_ENABLED, false);
 	} catch {
 		await showAlert($t('utility.biometrics.not-available'));
 	}

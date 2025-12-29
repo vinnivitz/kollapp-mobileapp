@@ -175,7 +175,7 @@
 							selectedChartDataId = id;
 
 							return `
-								<div class="p-2 rounded-md text-center">
+								<div class="p-2 rounded-md text-center text-gray-900">
 								<div class="font-bold">${purpose}</div>
 								<div class="h-[1px] w-full bg-gray-300 my-2"></div>
 								<div class="flex flex-row gap-2 items-center justify-start">

@@ -1,1 +1,0 @@
-import{a4 as m,a5 as o,f as a}from"./Cxs3aTIT.js";import{m as e}from"./DxwjQ-OX.js";import{C as n}from"./BQrqpjUs.js";import"./CFR-ogXz.js";function i(r,t=!1){return new Intl.NumberFormat(e(a)??"de",{currency:n.EUR,maximumFractionDigits:2,minimumFractionDigits:t?2:0,style:"currency"}).format(r/100)}function c(r){return m(new o(r),"PPP")}const y={currency:i,date:c};export{y as f};

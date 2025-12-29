@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { AuthenticationModel } from '$lib/models/models';
-	import type { AuthenticatedUserTO, LoginRequestTO } from '@kollapp/api-types';
+	import type { AuthenticatedKollappUserTO, LoginRequestTO } from '@kollapp/api-types';
 
 	import { loadingController } from '@ionic/core';
 	import {
@@ -27,7 +27,7 @@
 	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import Welcome from '$lib/components/widgets/Welcome.svelte';
 	import { t } from '$lib/locales';
-	import { PreferencesKey } from '$lib/models/preferences';
+	import { StorageKey } from '$lib/models/storage';
 	import { Form } from '$lib/models/ui';
 	import { appStateStore, authenticationStore } from '$lib/stores';
 	import {
@@ -64,17 +64,17 @@
 			password: credentials.password,
 			username: credentials.username
 		} satisfies LoginRequestTO);
-		const result = getValidationResult<AuthenticatedUserTO>(response);
+		const result = getValidationResult<AuthenticatedKollappUserTO>(response);
 		await (result.valid
 			? handleLogin(response.data)
 			: Promise.all([
 					showAlert($t('routes.auth.login.page.biometrics.wrong-credentials')),
-					storeValue(PreferencesKey.BIOMETRICS_ENABLED, false)
+					storeValue(StorageKey.BIOMETRICS_ENABLED, false)
 				]));
 		await loading.dismiss();
 	}
 
-	async function handleLogin(model: AuthenticatedUserTO): Promise<void> {
+	async function handleLogin(model: AuthenticatedKollappUserTO): Promise<void> {
 		const authenticationModel: AuthenticationModel = {
 			accessToken: model.accessToken,
 			refreshToken: model.refreshToken
@@ -107,7 +107,7 @@
 			icon={logInOutline}
 		/>
 	</form>
-	{#await getStoredValue(PreferencesKey.BIOMETRICS_ENABLED) then enabled}
+	{#await getStoredValue(StorageKey.BIOMETRICS_ENABLED) then enabled}
 		{#if enabled}
 			<Button
 				fill="outline"

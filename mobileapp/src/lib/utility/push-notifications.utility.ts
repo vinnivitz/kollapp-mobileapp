@@ -14,12 +14,12 @@ import { resolve } from '$app/paths';
 
 import { showAlert } from './alert.utility';
 import { isAuthenticated } from './api.utility';
-import { getStoredValue, storeValue } from './preferences.utility';
+import { getStoredValue, storeValue } from './storage.utility';
 
 import { DeviceType } from '$lib/api/dtos';
 import { notificationService } from '$lib/api/services';
 import { t } from '$lib/locales';
-import { PreferencesKey } from '$lib/models/preferences';
+import { StorageKey } from '$lib/models/storage';
 import { AlertType } from '$lib/models/ui';
 
 /**
@@ -55,7 +55,7 @@ export async function initPushNotifications(): Promise<void> {
 			await handleNotificationAction(action);
 		});
 
-		const storedToken = await getStoredValue<string>(PreferencesKey.FCM_TOKEN);
+		const storedToken = await getStoredValue<string>(StorageKey.FCM_TOKEN);
 		if (storedToken) {
 			const authenticated = await isAuthenticated();
 			if (authenticated) {
@@ -73,7 +73,7 @@ export async function initPushNotifications(): Promise<void> {
  * @returns {Promise<void>}
  */
 export async function reregisterPushNotifications(): Promise<void> {
-	const storedToken = await getStoredValue<string>(PreferencesKey.FCM_TOKEN);
+	const storedToken = await getStoredValue<string>(StorageKey.FCM_TOKEN);
 	if (storedToken) {
 		await registerTokenWithBackend(storedToken);
 	}
@@ -86,7 +86,7 @@ export async function reregisterPushNotifications(): Promise<void> {
  */
 export async function unregisterPushNotifications(): Promise<void> {
 	try {
-		const storedToken = await getStoredValue<string>(PreferencesKey.FCM_TOKEN);
+		const storedToken = await getStoredValue<string>(StorageKey.FCM_TOKEN);
 		if (storedToken) {
 			await notificationService.unregisterDeviceToken(storedToken);
 			if (dev) console.info('Device token unregistered successfully');
@@ -102,7 +102,7 @@ export async function unregisterPushNotifications(): Promise<void> {
  * @returns {Promise<void>}
  */
 async function handleTokenRegistration(token: string): Promise<void> {
-	await storeValue(PreferencesKey.FCM_TOKEN, token);
+	await storeValue(StorageKey.FCM_TOKEN, token);
 
 	const authenticated = await isAuthenticated();
 
