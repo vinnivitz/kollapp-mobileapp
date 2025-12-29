@@ -11,28 +11,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingException;
-import com.google.firebase.messaging.Message;
-import com.google.firebase.messaging.MessagingErrorCode;
-import com.google.firebase.messaging.Notification;
-
 import org.kollapp.notification.application.exception.DeviceTokenNotFoundException;
-import org.kollapp.notification.application.exception.FirebaseMessagingNotConfiguredException;
 import org.kollapp.notification.application.exception.NoActiveDeviceTokenFoundException;
-import org.kollapp.notification.application.exception.NotificationDataSerializationException;
+import org.kollapp.notification.application.exception.PushNotificationException;
 import org.kollapp.notification.application.model.entities.DeviceToken;
 import org.kollapp.notification.application.model.entities.PushNotification;
 import org.kollapp.notification.application.model.enums.DeviceType;
-import org.kollapp.notification.application.model.enums.NotificationStatus;
+import org.kollapp.notification.application.port.PushNotificationChannel;
 import org.kollapp.notification.application.repository.DeviceTokenRepository;
 import org.kollapp.notification.application.repository.PushNotificationRepository;
 import org.kollapp.notification.application.service.PushNotificationService;
 
 /**
- * Implementation of PushNotificationService using Firebase Cloud Messaging.
+ * Implementation of PushNotificationService with support for multiple notification channels.
  */
 @Slf4j
 @Service
@@ -44,11 +35,8 @@ public class PushNotificationServiceImpl implements PushNotificationService {
     @Autowired
     private PushNotificationRepository pushNotificationRepository;
 
-    @Autowired(required = false)
-    private FirebaseMessaging firebaseMessaging;
-
     @Autowired
-    private ObjectMapper objectMapper;
+    private List<PushNotificationChannel> notificationChannels;
 
     @Override
     public DeviceToken registerDeviceToken(Long userId, String token, DeviceType deviceType) {
@@ -96,7 +84,7 @@ public class PushNotificationServiceImpl implements PushNotificationService {
         }
 
         for (DeviceToken deviceToken : deviceTokens) {
-            CompletableFuture.runAsync(() -> sendNotificationAsync(userId, title, body, data, deviceToken.getToken()));
+            CompletableFuture.runAsync(() -> sendNotificationAsync(deviceToken, title, body, data));
         }
     }
 
@@ -112,68 +100,39 @@ public class PushNotificationServiceImpl implements PushNotificationService {
         DeviceToken deviceToken =
                 deviceTokenRepository.findByToken(token).orElseThrow(() -> new DeviceTokenNotFoundException());
 
-        sendNotificationAsync(deviceToken.getUserId(), title, body, data, token);
+        sendNotificationAsync(deviceToken, title, body, data);
     }
 
-    private void sendNotificationAsync(Long userId, String title, String body, Map<String, String> data, String token) {
-        if (firebaseMessaging == null) {
-            throw new FirebaseMessagingNotConfiguredException();
-        }
+    private void sendNotificationAsync(DeviceToken deviceToken, String title, String body, Map<String, String> data) {
+        PushNotificationChannel channel = selectChannel(deviceToken);
 
-        PushNotification notification = PushNotification.builder()
-                .userId(userId)
-                .title(title)
-                .body(body)
-                .status(NotificationStatus.PENDING)
-                .build();
-
-        try {
-            if (data != null) {
-                notification.setData(objectMapper.writeValueAsString(data));
-            }
-        } catch (JsonProcessingException e) {
-            throw new NotificationDataSerializationException();
+        if (channel == null) {
+            log.warn("No notification channel available for device type: {}", deviceToken.getDeviceType());
+            PushNotification notification = PushNotification.builder()
+                    .userId(deviceToken.getUserId())
+                    .title(title)
+                    .body(body)
+                    .build();
+            throw new PushNotificationException();
         }
 
         try {
-            Notification fcmNotification =
-                    Notification.builder().setTitle(title).setBody(body).build();
-
-            Message.Builder messageBuilder = Message.builder().setToken(token).setNotification(fcmNotification);
-
-            if (data != null && !data.isEmpty()) {
-                messageBuilder.putAllData(data);
-            }
-
-            Message message = messageBuilder.build();
-            firebaseMessaging.send(message);
-
-            notification.setStatus(NotificationStatus.SENT);
-        } catch (FirebaseMessagingException e) {
-            notification.setStatus(NotificationStatus.FAILED);
-            notification.setErrorMessage(e.getMessage());
-
-            if (isInvalidTokenError(e)) {
-                deactivateToken(token);
-            }
-        } catch (Exception e) {
-            notification.setStatus(NotificationStatus.FAILED);
-            notification.setErrorMessage(e.getMessage());
-        } finally {
+            PushNotification notification = channel.send(deviceToken, title, body, data);
             pushNotificationRepository.save(notification);
+            log.debug(
+                    "Notification sent via channel '{}' with status: {}",
+                    channel.getChannelName(),
+                    notification.getStatus());
+        } catch (Exception e) {
+            log.error("Failed to send notification via channel '{}': {}", channel.getChannelName(), e.getMessage());
+            throw e;
         }
     }
 
-    private boolean isInvalidTokenError(FirebaseMessagingException e) {
-        MessagingErrorCode errorCode = e.getMessagingErrorCode();
-        return errorCode != null
-                && (errorCode.name().equals("UNREGISTERED") || errorCode.name().equals("INVALID_ARGUMENT"));
-    }
-
-    private void deactivateToken(String token) {
-        deviceTokenRepository.findByToken(token).ifPresent(deviceToken -> {
-            deviceToken.setActive(false);
-            deviceTokenRepository.save(deviceToken);
-        });
+    private PushNotificationChannel selectChannel(DeviceToken deviceToken) {
+        return notificationChannels.stream()
+                .filter(channel -> channel.supports(deviceToken))
+                .findFirst()
+                .orElse(null);
     }
 }

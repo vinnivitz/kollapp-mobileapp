@@ -3,15 +3,12 @@ package org.kollapp.notification.config;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.auth.oauth2.ServiceAccountCredentials;
@@ -44,13 +41,7 @@ public class FirebaseConfig {
     public FirebaseApp firebaseApp() throws IOException {
         if (FirebaseApp.getApps().isEmpty()) {
             String credentialsPath = firebaseProperties.getCredentialsPath();
-            InputStream serviceAccount;
-
-            if (Files.exists(Paths.get(credentialsPath))) {
-                serviceAccount = new FileInputStream(credentialsPath);
-            } else {
-                serviceAccount = new ClassPathResource(credentialsPath).getInputStream();
-            }
+            InputStream serviceAccount = new FileInputStream(credentialsPath);
 
             GoogleCredentials credentials = GoogleCredentials.fromStream(serviceAccount);
 
