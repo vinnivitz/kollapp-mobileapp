@@ -1,0 +1,3 @@
+kollapp:
+  firebase:
+    enabled: false
