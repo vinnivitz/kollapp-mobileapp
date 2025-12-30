@@ -3,6 +3,7 @@ package org.kollapp.organization.application.model;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -30,8 +31,10 @@ public class Activity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Column(length = 50, nullable = false)
     private String name;
 
+    @Column(length = 50, nullable = false)
     private String location;
 
     private String date;
