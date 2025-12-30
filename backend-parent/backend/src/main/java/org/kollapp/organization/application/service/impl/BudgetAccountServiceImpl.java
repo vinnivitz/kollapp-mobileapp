@@ -211,7 +211,8 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
         checkOrganizationMemberSelfAssignment(organization, updatedPosting);
 
         List<Long> personOfOrganizationIdsOfOrganization = organization.getPersonOfOrganizationIds();
-        if (!personOfOrganizationIdsOfOrganization.contains(updatedPosting.getPersonOfOrganizationId())) {
+        if ((postingToBeEdited.getPersonOfOrganizationId() != updatedPosting.getPersonOfOrganizationId())
+                && !personOfOrganizationIdsOfOrganization.contains(updatedPosting.getPersonOfOrganizationId())) {
             throw new PersonNotRegisteredInOrganizationException();
         }
         if (postingToBeEdited.getPersonOfOrganizationId() == 0 && updatedPosting.getPersonOfOrganizationId() != 0) {

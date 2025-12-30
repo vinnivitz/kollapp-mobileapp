@@ -153,6 +153,17 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
     }
 
     @Test
+    public void editTransferredOrganizationPostingShouldEditOrganizationPosting() {
+        OrganizationPosting organizationPosting = new OrganizationPosting();
+        organizationPosting.setPurpose("Test");
+        organizationPosting.setDate("2025-12-30");
+        organizationPosting.setType(PostingType.CREDIT);
+        organizationPosting.setAmountInCents(100);
+        Posting updatedPosting = budgetAccountService.editOrganizationPosting(1, 3, organizationPosting);
+        assertThat(updatedPosting.getPurpose()).isEqualTo(organizationPosting.getPurpose());
+    }
+
+    @Test
     @Transactional
     public void deleteOrganizationPostingWithValidIdShouldDeletePosting() {
         budgetAccountService.deleteOrganizationPosting(1, 2);
