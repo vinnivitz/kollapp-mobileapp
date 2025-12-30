@@ -1,4 +1,4 @@
-import type { Colors } from './colors.type';
+import type { Colors } from '$lib/models/ui';
 
 /**
  * Model for a Floating Action Button (FAB) with multiple buttons.

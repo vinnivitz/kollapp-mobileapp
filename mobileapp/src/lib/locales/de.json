@@ -662,11 +662,6 @@
         "no-collective": {
           "note": "Du bist kein Mitglied eines Kollektivs."
         },
-        "pending-organization-join-request-card": {
-          "card": {
-            "info": "Du hast eine ausstehende Beitrittsanfrage"
-          }
-        },
         "posting-translation": {
           "cedit": "Einnahme",
           "debit": "Ausgabe"
