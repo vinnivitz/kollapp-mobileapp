@@ -20,8 +20,13 @@ public class ActivityPosting extends Posting {
     @JoinColumn(name = "activity_id")
     private Activity activity;
 
-    public ActivityPosting(PostingType type, long amountInCents, String date, String purpose, Activity activity,
-                           long personOfOrganizationId) {
+    public ActivityPosting(
+            PostingType type,
+            long amountInCents,
+            String date,
+            String purpose,
+            Activity activity,
+            long personOfOrganizationId) {
         super(type, amountInCents, date, purpose, personOfOrganizationId);
         this.activity = activity;
     }

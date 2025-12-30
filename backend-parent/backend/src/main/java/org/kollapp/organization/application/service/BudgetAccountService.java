@@ -61,8 +61,7 @@ public interface BudgetAccountService {
      * @param updatedPosting The posting to be updated
      * @return The updated posting
      */
-    Posting editActivityPosting(
-            long organizationId, long activityId, long postingId, ActivityPosting updatedPosting);
+    Posting editActivityPosting(long organizationId, long activityId, long postingId, ActivityPosting updatedPosting);
 
     /**
      * Deletes an existing activity posting. Organization members can only delete postings assigned to

@@ -5,8 +5,6 @@ import java.util.Optional;
 import jakarta.transaction.Transactional;
 
 import org.junit.jupiter.api.Test;
-import org.kollapp.organization.application.exception.PersonNotRegisteredInOrganizationException;
-import org.kollapp.organization.application.exception.PostingTransferNotPossibleException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
@@ -18,7 +16,9 @@ import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TES
 import org.kollapp.core.BaseIT;
 import org.kollapp.organization.application.exception.ActivityNotFoundException;
 import org.kollapp.organization.application.exception.OrganizationNotFoundException;
+import org.kollapp.organization.application.exception.PersonNotRegisteredInOrganizationException;
 import org.kollapp.organization.application.exception.PostingDoesNotExistException;
+import org.kollapp.organization.application.exception.PostingTransferNotPossibleException;
 import org.kollapp.organization.application.model.Activity;
 import org.kollapp.organization.application.model.ActivityPosting;
 import org.kollapp.organization.application.model.Organization;
@@ -54,35 +54,38 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
         assertThat(persistedPosting.getPurpose()).isEqualTo(organizationPosting.getPurpose());
         assertThat(((OrganizationPosting) persistedPosting).getOrganization().getId())
                 .isEqualTo(1L);
-        assertThat(persistedPosting.getPersonOfOrganizationId()).isEqualTo(organizationPosting.getPersonOfOrganizationId());
+        assertThat(persistedPosting.getPersonOfOrganizationId())
+                .isEqualTo(organizationPosting.getPersonOfOrganizationId());
     }
 
     @Test
     public void addOrganizationPostingWithValidIdShouldAddOrganizationPosting() {
         OrganizationPosting organizationPosting =
-            new OrganizationPosting(PostingType.CREDIT, 10000L, "2025-09-11", "Test", null, 3);
+                new OrganizationPosting(PostingType.CREDIT, 10000L, "2025-09-11", "Test", null, 3);
         Posting persistedPosting = budgetAccountService.addOrganizationPosting(1, organizationPosting);
         assertThat(persistedPosting.getId()).isNotZero();
         assertThat(persistedPosting.getDate()).isEqualTo(organizationPosting.getDate());
         assertThat(persistedPosting.getType()).isEqualTo(organizationPosting.getType());
         assertThat(persistedPosting.getPurpose()).isEqualTo(organizationPosting.getPurpose());
         assertThat(((OrganizationPosting) persistedPosting).getOrganization().getId())
-            .isEqualTo(1L);
-        assertThat(persistedPosting.getPersonOfOrganizationId()).isEqualTo(organizationPosting.getPersonOfOrganizationId());
+                .isEqualTo(1L);
+        assertThat(persistedPosting.getPersonOfOrganizationId())
+                .isEqualTo(organizationPosting.getPersonOfOrganizationId());
     }
 
     @Test
     public void addOrganizationPostingWithoutIdShouldAddOrganizationPosting() {
         OrganizationPosting organizationPosting =
-            new OrganizationPosting(PostingType.CREDIT, 10000L, "2025-09-11", "Test", null, 0);
+                new OrganizationPosting(PostingType.CREDIT, 10000L, "2025-09-11", "Test", null, 0);
         Posting persistedPosting = budgetAccountService.addOrganizationPosting(1, organizationPosting);
         assertThat(persistedPosting.getId()).isNotZero();
         assertThat(persistedPosting.getDate()).isEqualTo(organizationPosting.getDate());
         assertThat(persistedPosting.getType()).isEqualTo(organizationPosting.getType());
         assertThat(persistedPosting.getPurpose()).isEqualTo(organizationPosting.getPurpose());
         assertThat(((OrganizationPosting) persistedPosting).getOrganization().getId())
-            .isEqualTo(1L);
-        assertThat(persistedPosting.getPersonOfOrganizationId()).isEqualTo(organizationPosting.getPersonOfOrganizationId());
+                .isEqualTo(1L);
+        assertThat(persistedPosting.getPersonOfOrganizationId())
+                .isEqualTo(organizationPosting.getPersonOfOrganizationId());
     }
 
     @Test
@@ -90,7 +93,7 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
         OrganizationPosting organizationPosting = new OrganizationPosting();
         organizationPosting.setPersonOfOrganizationId(4);
         assertThatExceptionOfType(PersonNotRegisteredInOrganizationException.class)
-            .isThrownBy(() -> budgetAccountService.addOrganizationPosting(1, organizationPosting));
+                .isThrownBy(() -> budgetAccountService.addOrganizationPosting(1, organizationPosting));
     }
 
     @Test
@@ -116,9 +119,9 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
     @Test
     public void editOrganizationPostingWithIdOfOtherOrganizationShouldThrowException() {
         OrganizationPosting organizationPosting =
-            new OrganizationPosting(PostingType.CREDIT, 1000L, "2025-09-11", "Test_updated", null, 4);
+                new OrganizationPosting(PostingType.CREDIT, 1000L, "2025-09-11", "Test_updated", null, 4);
         assertThatExceptionOfType(PersonNotRegisteredInOrganizationException.class)
-            .isThrownBy(() -> budgetAccountService.editOrganizationPosting(1, 2, organizationPosting));
+                .isThrownBy(() -> budgetAccountService.editOrganizationPosting(1, 2, organizationPosting));
     }
 
     @Test
@@ -138,7 +141,7 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
         OrganizationPosting organizationPosting = new OrganizationPosting();
         organizationPosting.setPersonOfOrganizationId(0);
         assertThatExceptionOfType(PersonNotRegisteredInOrganizationException.class)
-            .isThrownBy(() -> budgetAccountService.editOrganizationPosting(1, 2, organizationPosting));
+                .isThrownBy(() -> budgetAccountService.editOrganizationPosting(1, 2, organizationPosting));
     }
 
     @Test
@@ -146,7 +149,7 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
         OrganizationPosting organizationPosting = new OrganizationPosting();
         organizationPosting.setPersonOfOrganizationId(1);
         assertThatExceptionOfType(UnsupportedOperationException.class)
-            .isThrownBy(() -> budgetAccountService.editOrganizationPosting(1, 3, organizationPosting));
+                .isThrownBy(() -> budgetAccountService.editOrganizationPosting(1, 3, organizationPosting));
     }
 
     @Test
@@ -172,19 +175,20 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
 
     @Test
     public void transferOrganizationPostingShouldTransferOrganizationPosting() {
-        Posting transferredPosting = budgetAccountService.transferOrganizationPosting(1,2);
+        Posting transferredPosting = budgetAccountService.transferOrganizationPosting(1, 2);
         assertThat(transferredPosting.getPersonOfOrganizationId()).isEqualTo(0);
     }
 
     @Test
     public void transferTransferredOrganizationPostingShouldThrowException() {
         assertThatExceptionOfType(PostingTransferNotPossibleException.class)
-            .isThrownBy(() -> budgetAccountService.transferOrganizationPosting(1,3));
+                .isThrownBy(() -> budgetAccountService.transferOrganizationPosting(1, 3));
     }
 
     @Test
     public void addActivityPostingWithOwnIdShouldCreateActivityPosting() {
-        ActivityPosting activityPosting = new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test", null, 1);
+        ActivityPosting activityPosting =
+                new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test", null, 1);
         Posting persistedActivityPosting = budgetAccountService.addActivityPosting(1, 1, activityPosting);
         assertThat(persistedActivityPosting.getId()).isNotZero();
         assertThat(persistedActivityPosting.getDate()).isEqualTo(activityPosting.getDate());
@@ -192,33 +196,38 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
         assertThat(persistedActivityPosting.getPurpose()).isEqualTo(activityPosting.getPurpose());
         assertThat(((ActivityPosting) persistedActivityPosting).getActivity().getId())
                 .isEqualTo(1L);
-        assertThat(persistedActivityPosting.getPersonOfOrganizationId()).isEqualTo(activityPosting.getPersonOfOrganizationId());
+        assertThat(persistedActivityPosting.getPersonOfOrganizationId())
+                .isEqualTo(activityPosting.getPersonOfOrganizationId());
     }
 
     @Test
     public void addActivityPostingWithValidIdShouldCreateActivityPosting() {
-        ActivityPosting activityPosting = new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test", null, 3);
+        ActivityPosting activityPosting =
+                new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test", null, 3);
         Posting persistedActivityPosting = budgetAccountService.addActivityPosting(1, 1, activityPosting);
         assertThat(persistedActivityPosting.getId()).isNotZero();
         assertThat(persistedActivityPosting.getDate()).isEqualTo(activityPosting.getDate());
         assertThat(persistedActivityPosting.getType()).isEqualTo(activityPosting.getType());
         assertThat(persistedActivityPosting.getPurpose()).isEqualTo(activityPosting.getPurpose());
         assertThat(((ActivityPosting) persistedActivityPosting).getActivity().getId())
-            .isEqualTo(1L);
-        assertThat(persistedActivityPosting.getPersonOfOrganizationId()).isEqualTo(activityPosting.getPersonOfOrganizationId());
+                .isEqualTo(1L);
+        assertThat(persistedActivityPosting.getPersonOfOrganizationId())
+                .isEqualTo(activityPosting.getPersonOfOrganizationId());
     }
 
     @Test
     public void addActivityPostingWithoutIdShouldCreateActivityPosting() {
-        ActivityPosting activityPosting = new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test", null, 0);
+        ActivityPosting activityPosting =
+                new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test", null, 0);
         Posting persistedActivityPosting = budgetAccountService.addActivityPosting(1, 1, activityPosting);
         assertThat(persistedActivityPosting.getId()).isNotZero();
         assertThat(persistedActivityPosting.getDate()).isEqualTo(activityPosting.getDate());
         assertThat(persistedActivityPosting.getType()).isEqualTo(activityPosting.getType());
         assertThat(persistedActivityPosting.getPurpose()).isEqualTo(activityPosting.getPurpose());
         assertThat(((ActivityPosting) persistedActivityPosting).getActivity().getId())
-            .isEqualTo(1L);
-        assertThat(persistedActivityPosting.getPersonOfOrganizationId()).isEqualTo(activityPosting.getPersonOfOrganizationId());
+                .isEqualTo(1L);
+        assertThat(persistedActivityPosting.getPersonOfOrganizationId())
+                .isEqualTo(activityPosting.getPersonOfOrganizationId());
     }
 
     @Test
@@ -226,7 +235,7 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
         ActivityPosting activityPosting = new ActivityPosting();
         activityPosting.setPersonOfOrganizationId(4);
         assertThatExceptionOfType(PersonNotRegisteredInOrganizationException.class)
-            .isThrownBy(() -> budgetAccountService.addActivityPosting(1, 1, activityPosting));
+                .isThrownBy(() -> budgetAccountService.addActivityPosting(1, 1, activityPosting));
     }
 
     @Test
@@ -252,7 +261,8 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
         assertThat(editedActivityPosting.getPurpose()).isEqualTo(activityPosting.getPurpose());
         assertThat(((ActivityPosting) editedActivityPosting).getActivity().getId())
                 .isEqualTo(1L);
-        assertThat(editedActivityPosting.getPersonOfOrganizationId()).isEqualTo(activityPosting.getPersonOfOrganizationId());
+        assertThat(editedActivityPosting.getPersonOfOrganizationId())
+                .isEqualTo(activityPosting.getPersonOfOrganizationId());
     }
 
     @Test
@@ -260,7 +270,7 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
         ActivityPosting activityPosting = new ActivityPosting();
         activityPosting.setPersonOfOrganizationId(4);
         assertThatExceptionOfType(PersonNotRegisteredInOrganizationException.class)
-            .isThrownBy(() -> budgetAccountService.editActivityPosting(1, 1, 1, activityPosting));
+                .isThrownBy(() -> budgetAccountService.editActivityPosting(1, 1, 1, activityPosting));
     }
 
     @Test
@@ -316,7 +326,7 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
         ActivityPosting activityPosting = new ActivityPosting();
         activityPosting.setPersonOfOrganizationId(0);
         assertThatExceptionOfType(PersonNotRegisteredInOrganizationException.class)
-            .isThrownBy(() -> budgetAccountService.editActivityPosting(1, 1, 1, activityPosting));
+                .isThrownBy(() -> budgetAccountService.editActivityPosting(1, 1, 1, activityPosting));
     }
 
     @Test
@@ -324,18 +334,18 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
         ActivityPosting activityPosting = new ActivityPosting();
         activityPosting.setPersonOfOrganizationId(1);
         assertThatExceptionOfType(UnsupportedOperationException.class)
-            .isThrownBy(() -> budgetAccountService.editActivityPosting(1, 1, 4, activityPosting));
+                .isThrownBy(() -> budgetAccountService.editActivityPosting(1, 1, 4, activityPosting));
     }
 
     @Test
     public void transferActivityPostingShouldTransferActivityPosting() {
-        Posting transferredPosting = budgetAccountService.transferActivityPosting(1,1,1);
+        Posting transferredPosting = budgetAccountService.transferActivityPosting(1, 1, 1);
         assertThat(transferredPosting.getPersonOfOrganizationId()).isEqualTo(0);
     }
 
     @Test
     public void transferTransferredActivityPostingShouldThrowException() {
         assertThatExceptionOfType(PostingTransferNotPossibleException.class)
-            .isThrownBy(() -> budgetAccountService.transferActivityPosting(1,1,4));
+                .isThrownBy(() -> budgetAccountService.transferActivityPosting(1, 1, 4));
     }
 }

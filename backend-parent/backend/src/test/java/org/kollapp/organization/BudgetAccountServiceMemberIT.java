@@ -43,11 +43,13 @@ public class BudgetAccountServiceMemberIT extends BaseIT {
 
     @Test
     public void addOrganizationPostingWithOwnIdShouldCreateOrganizationPosting() {
-        OrganizationPosting organizationPosting = new OrganizationPosting(PostingType.DEBIT, 1000L, "2025-09-11", "test", null, 1);
-        Posting persistedPosting = budgetAccountService.addOrganizationPosting(1,  organizationPosting);
+        OrganizationPosting organizationPosting =
+                new OrganizationPosting(PostingType.DEBIT, 1000L, "2025-09-11", "test", null, 1);
+        Posting persistedPosting = budgetAccountService.addOrganizationPosting(1, organizationPosting);
         assertThat(persistedPosting.getId()).isNotZero();
         assertThat(persistedPosting.getDate()).isEqualTo(organizationPosting.getDate());
-        assertThat(persistedPosting.getPersonOfOrganizationId()).isEqualTo(organizationPosting.getPersonOfOrganizationId());
+        assertThat(persistedPosting.getPersonOfOrganizationId())
+                .isEqualTo(organizationPosting.getPersonOfOrganizationId());
     }
 
     @Test
@@ -55,7 +57,7 @@ public class BudgetAccountServiceMemberIT extends BaseIT {
         OrganizationPosting organizationPosting = new OrganizationPosting();
         organizationPosting.setPersonOfOrganizationId(2);
         assertThatExceptionOfType(OrganizationAuthorizationException.class)
-            .isThrownBy(() -> budgetAccountService.addOrganizationPosting(1, new OrganizationPosting()));
+                .isThrownBy(() -> budgetAccountService.addOrganizationPosting(1, new OrganizationPosting()));
     }
 
     @Test
@@ -73,7 +75,7 @@ public class BudgetAccountServiceMemberIT extends BaseIT {
         OrganizationPosting updatedPosting = new OrganizationPosting();
         updatedPosting.setPersonOfOrganizationId(2);
         assertThatExceptionOfType(OrganizationAuthorizationException.class)
-            .isThrownBy(() -> budgetAccountService.editOrganizationPosting(1, 1, updatedPosting));
+                .isThrownBy(() -> budgetAccountService.editOrganizationPosting(1, 1, updatedPosting));
     }
 
     @Test
@@ -81,7 +83,7 @@ public class BudgetAccountServiceMemberIT extends BaseIT {
         OrganizationPosting organizationPosting = new OrganizationPosting();
         organizationPosting.setPersonOfOrganizationId(1);
         assertThatExceptionOfType(OrganizationAuthorizationException.class)
-            .isThrownBy(() -> budgetAccountService.editOrganizationPosting(1,3, organizationPosting));
+                .isThrownBy(() -> budgetAccountService.editOrganizationPosting(1, 3, organizationPosting));
     }
 
     @Test
@@ -92,32 +94,36 @@ public class BudgetAccountServiceMemberIT extends BaseIT {
     @Test
     public void deleteOrganizationPostingWithWrongIdShouldThrowException() {
         assertThatExceptionOfType(OrganizationAuthorizationException.class)
-            .isThrownBy(() -> budgetAccountService.deleteOrganizationPosting(1, 3));
+                .isThrownBy(() -> budgetAccountService.deleteOrganizationPosting(1, 3));
     }
 
     @Test
     public void transferOrganizationPostingShouldThrowException() {
         assertThatExceptionOfType(OrganizationAuthorizationException.class)
-            .isThrownBy(() -> budgetAccountService.transferOrganizationPosting(1,1));
+                .isThrownBy(() -> budgetAccountService.transferOrganizationPosting(1, 1));
     }
 
     @Test
     public void addActivityPostingWithOwnIdShouldCreateActivityPosting() {
-        ActivityPosting activityPosting = new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test", null, 1);
+        ActivityPosting activityPosting =
+                new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test", null, 1);
         Posting persistedActivityPosting = budgetAccountService.addActivityPosting(1, 1, activityPosting);
         assertThat(persistedActivityPosting.getId()).isNotZero();
         assertThat(persistedActivityPosting.getDate()).isEqualTo(activityPosting.getDate());
         assertThat(persistedActivityPosting.getType()).isEqualTo(activityPosting.getType());
         assertThat(persistedActivityPosting.getPurpose()).isEqualTo(activityPosting.getPurpose());
-        assertThat(persistedActivityPosting.getPersonOfOrganizationId()).isEqualTo(activityPosting.getPersonOfOrganizationId());
+        assertThat(persistedActivityPosting.getPersonOfOrganizationId())
+                .isEqualTo(activityPosting.getPersonOfOrganizationId());
         assertThat(((ActivityPosting) persistedActivityPosting).getActivity().getId())
                 .isEqualTo(1L);
     }
 
     @Test
     public void addActivityPostingWithWrongIdShouldThrowException() {
-        ActivityPosting activityPosting = new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test", null, 2);
-        assertThatExceptionOfType(OrganizationAuthorizationException.class).isThrownBy(() -> budgetAccountService.addActivityPosting(1, 1, activityPosting));
+        ActivityPosting activityPosting =
+                new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test", null, 2);
+        assertThatExceptionOfType(OrganizationAuthorizationException.class)
+                .isThrownBy(() -> budgetAccountService.addActivityPosting(1, 1, activityPosting));
     }
 
     @Test
@@ -143,7 +149,8 @@ public class BudgetAccountServiceMemberIT extends BaseIT {
         assertThat(editedActivityPosting.getPurpose()).isEqualTo(activityPosting.getPurpose());
         assertThat(((ActivityPosting) editedActivityPosting).getActivity().getId())
                 .isEqualTo(1L);
-        assertThat(editedActivityPosting.getPersonOfOrganizationId()).isEqualTo(activityPosting.getPersonOfOrganizationId());
+        assertThat(editedActivityPosting.getPersonOfOrganizationId())
+                .isEqualTo(activityPosting.getPersonOfOrganizationId());
     }
 
     @Test
@@ -151,7 +158,7 @@ public class BudgetAccountServiceMemberIT extends BaseIT {
         ActivityPosting activityPosting = new ActivityPosting();
         activityPosting.setPersonOfOrganizationId(2);
         assertThatExceptionOfType(OrganizationAuthorizationException.class)
-            .isThrownBy(() -> budgetAccountService.editActivityPosting(1,1,2, activityPosting));
+                .isThrownBy(() -> budgetAccountService.editActivityPosting(1, 1, 2, activityPosting));
     }
 
     @Test
@@ -159,7 +166,7 @@ public class BudgetAccountServiceMemberIT extends BaseIT {
         ActivityPosting activityPosting = new ActivityPosting();
         activityPosting.setPersonOfOrganizationId(1);
         assertThatExceptionOfType(OrganizationAuthorizationException.class)
-            .isThrownBy(() -> budgetAccountService.editActivityPosting(1,1,4, activityPosting));
+                .isThrownBy(() -> budgetAccountService.editActivityPosting(1, 1, 4, activityPosting));
     }
 
     @Test
@@ -196,7 +203,7 @@ public class BudgetAccountServiceMemberIT extends BaseIT {
     @Transactional
     public void deleteActivityPostingWithWrongIdShouldDeleteActivityPosting() {
         assertThatExceptionOfType(OrganizationAuthorizationException.class)
-            .isThrownBy(() -> budgetAccountService.deleteActivityPosting(1, 1, 4));
+                .isThrownBy(() -> budgetAccountService.deleteActivityPosting(1, 1, 4));
     }
 
     @Test
@@ -220,6 +227,6 @@ public class BudgetAccountServiceMemberIT extends BaseIT {
     @Test
     public void transferActivityPostingShouldThrowException() {
         assertThatExceptionOfType(OrganizationAuthorizationException.class)
-            .isThrownBy(() -> budgetAccountService.transferActivityPosting(1,1,1));
+                .isThrownBy(() -> budgetAccountService.transferActivityPosting(1, 1, 1));
     }
 }

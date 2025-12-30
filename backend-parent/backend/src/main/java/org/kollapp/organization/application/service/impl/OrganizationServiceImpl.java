@@ -1,8 +1,17 @@
 package org.kollapp.organization.application.service.impl;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import jakarta.transaction.Transactional;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.stereotype.Service;
+
 import org.kollapp.core.config.properties.ApplicationProperties;
 import org.kollapp.organization.application.exception.InvalidInvitationCodeException;
 import org.kollapp.organization.application.exception.LastManagerException;
@@ -31,12 +40,6 @@ import org.kollapp.user.application.model.RequiresKollappOrganizationMemberRole;
 import org.kollapp.user.application.model.RequiresKollappUserRole;
 import org.kollapp.user.application.model.SystemRole;
 import org.kollapp.user.application.service.KollappUserService;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Transactional
 @Slf4j
@@ -298,8 +301,8 @@ public class OrganizationServiceImpl implements OrganizationService {
     private void verifyUntransferredPostings(Organization organization, PersonOfOrganization personOfOrganization) {
         List<Posting> allOrganizationAndActivityPostings = organization.getAllOrganizationAndActivityPostings();
         List<Posting> postingsOfPersonOfOrganization = allOrganizationAndActivityPostings.stream()
-            .filter(p -> p.getPersonOfOrganizationId() == personOfOrganization.getId())
-            .toList();
+                .filter(p -> p.getPersonOfOrganizationId() == personOfOrganization.getId())
+                .toList();
         if (!postingsOfPersonOfOrganization.isEmpty()) {
             throw new UntransferredPostingException();
         }

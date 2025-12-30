@@ -42,11 +42,7 @@ public abstract class Posting {
      */
     private long personOfOrganizationId;
 
-    public Posting(PostingType type,
-                   long amountInCents,
-                   String date,
-                   String purpose,
-                   long personOfOrganizationId) {
+    public Posting(PostingType type, long amountInCents, String date, String purpose, long personOfOrganizationId) {
         this.type = type;
         this.amountInCents = amountInCents;
         this.date = date;

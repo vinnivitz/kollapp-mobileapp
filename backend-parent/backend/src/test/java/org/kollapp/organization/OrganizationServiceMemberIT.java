@@ -5,10 +5,6 @@ import java.util.List;
 import jakarta.transaction.Transactional;
 
 import org.junit.jupiter.api.Test;
-import org.kollapp.organization.application.exception.UntransferredPostingException;
-import org.kollapp.organization.application.model.Activity;
-import org.kollapp.organization.application.model.ActivityPosting;
-import org.kollapp.organization.application.model.OrganizationPosting;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
@@ -23,7 +19,11 @@ import org.kollapp.organization.application.exception.OrganizationAuthorizationE
 import org.kollapp.organization.application.exception.OrganizationNotFoundException;
 import org.kollapp.organization.application.exception.PersonAlreadyRegisteredInOrganizationException;
 import org.kollapp.organization.application.exception.PersonNotRegisteredInOrganizationException;
+import org.kollapp.organization.application.exception.UntransferredPostingException;
+import org.kollapp.organization.application.model.Activity;
+import org.kollapp.organization.application.model.ActivityPosting;
 import org.kollapp.organization.application.model.Organization;
+import org.kollapp.organization.application.model.OrganizationPosting;
 import org.kollapp.organization.application.model.OrganizationRole;
 import org.kollapp.organization.application.model.PersonOfOrganization;
 import org.kollapp.organization.application.model.PersonOfOrganizationStatus;
@@ -112,7 +112,7 @@ public class OrganizationServiceMemberIT extends BaseIT {
     @Transactional
     public void leaveOrganizationWitUntransferredPostingsShouldThrowException() {
         assertThatExceptionOfType(UntransferredPostingException.class)
-            .isThrownBy(() -> organizationService.leaveOrganization(1));
+                .isThrownBy(() -> organizationService.leaveOrganization(1));
     }
 
     @Test

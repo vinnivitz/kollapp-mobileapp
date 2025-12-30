@@ -17,6 +17,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import org.kollapp.organization.application.exception.PostingDoesNotExistException;
 
 @Entity
@@ -44,8 +45,8 @@ public class Activity {
 
     public ActivityPosting getActivityPostingById(long id) {
         return getActivityPostings().stream()
-            .filter(p -> p.getId() == id)
-            .findFirst()
-            .orElseThrow(PostingDoesNotExistException::new);
+                .filter(p -> p.getId() == id)
+                .findFirst()
+                .orElseThrow(PostingDoesNotExistException::new);
     }
 }

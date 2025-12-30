@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import org.hibernate.Hibernate;
+
 import org.kollapp.organization.application.exception.ActivityNotFoundException;
 import org.kollapp.organization.application.exception.PersonNotRegisteredInOrganizationException;
 import org.kollapp.organization.application.exception.PostingDoesNotExistException;
@@ -100,40 +101,36 @@ public class Organization {
 
     public OrganizationPosting getOrganizationPostingById(long postingId) {
         return getOrganizationPostings().stream()
-            .filter(p -> p.getId() == postingId)
-            .findFirst()
-            .orElseThrow(PostingDoesNotExistException::new);
+                .filter(p -> p.getId() == postingId)
+                .findFirst()
+                .orElseThrow(PostingDoesNotExistException::new);
     }
 
     public List<Long> getPersonOfOrganizationIds() {
-        return getPersonsOfOrganization()
-            .stream()
-            .map(PersonOfOrganization::getId)
-            .toList();
+        return getPersonsOfOrganization().stream()
+                .map(PersonOfOrganization::getId)
+                .toList();
     }
 
     public PersonOfOrganization getPersonOfOrganizationByUserId(long userId) {
-        return getPersonsOfOrganization()
-            .stream()
-            .filter(p -> p.getUserId() == userId)
-            .findFirst().orElseThrow(PersonNotRegisteredInOrganizationException::new);
+        return getPersonsOfOrganization().stream()
+                .filter(p -> p.getUserId() == userId)
+                .findFirst()
+                .orElseThrow(PersonNotRegisteredInOrganizationException::new);
     }
 
     public Activity getActivityById(long activityId) {
         return getActivities().stream()
-            .filter(a -> a.getId() == activityId)
-            .findFirst()
-            .orElseThrow(ActivityNotFoundException::new);
+                .filter(a -> a.getId() == activityId)
+                .findFirst()
+                .orElseThrow(ActivityNotFoundException::new);
     }
 
     public List<Posting> getAllOrganizationAndActivityPostings() {
         List<Posting> postings = new ArrayList<>(organizationPostings);
-        List<Posting> activityPostings = activities.stream()
-            .map(Activity::getActivityPostings)
-            .toList()
-            .stream()
-            .flatMap(List::stream)
-            .collect(Collectors.toList());
+        List<Posting> activityPostings = activities.stream().map(Activity::getActivityPostings).toList().stream()
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
         postings.addAll(activityPostings);
         return postings;
     }

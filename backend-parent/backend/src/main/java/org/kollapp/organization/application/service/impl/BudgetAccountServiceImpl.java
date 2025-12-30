@@ -1,7 +1,13 @@
 package org.kollapp.organization.application.service.impl;
 
+import java.util.List;
+
 import jakarta.transaction.Transactional;
+
 import lombok.AllArgsConstructor;
+
+import org.springframework.stereotype.Service;
+
 import org.kollapp.organization.application.exception.OrganizationAuthorizationException;
 import org.kollapp.organization.application.exception.OrganizationNotFoundException;
 import org.kollapp.organization.application.exception.PersonNotRegisteredInOrganizationException;
@@ -17,9 +23,6 @@ import org.kollapp.organization.application.service.BudgetAccountService;
 import org.kollapp.user.application.model.KollappUser;
 import org.kollapp.user.application.model.RequiresKollappOrganizationMemberRole;
 import org.kollapp.user.application.service.KollappUserService;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @Transactional
@@ -40,11 +43,11 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
     public Posting addOrganizationPosting(long organizationId, OrganizationPosting posting) {
         organizationRoleHelper.verifyOrganizationMember(organizationId);
         Organization organization =
-            organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
+                organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
         checkOrganizationMemberSelfAssignment(organization, posting);
         List<Long> personOfOrganizationIdsOfOrganization = organization.getPersonOfOrganizationIds();
         if (posting.getPersonOfOrganizationId() == 0
-            || personOfOrganizationIdsOfOrganization.contains(posting.getPersonOfOrganizationId())) {
+                || personOfOrganizationIdsOfOrganization.contains(posting.getPersonOfOrganizationId())) {
             organization.getOrganizationPostings().add(posting);
             posting.setOrganization(organization);
             return posting;
@@ -86,9 +89,8 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
     @RequiresKollappOrganizationMemberRole
     public Posting transferOrganizationPosting(long organizationId, long postingId) {
         organizationRoleHelper.verifyOrganizationManager(organizationId);
-        Organization organization = organizationRepository
-            .findById(organizationId)
-            .orElseThrow(OrganizationNotFoundException::new);
+        Organization organization =
+                organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
         OrganizationPosting organizationPosting = organization.getOrganizationPostingById(postingId);
         checkPostingTransferability(organizationPosting);
         organizationPosting.transfer();
@@ -108,7 +110,7 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
         checkOrganizationMemberSelfAssignment(organization, posting);
         List<Long> personOfOrganizationIdsOfOrganization = organization.getPersonOfOrganizationIds();
         if (posting.getPersonOfOrganizationId() == 0
-            || personOfOrganizationIdsOfOrganization.contains(posting.getPersonOfOrganizationId())) {
+                || personOfOrganizationIdsOfOrganization.contains(posting.getPersonOfOrganizationId())) {
             activity.getActivityPostings().add(posting);
             posting.setActivity(activity);
             return posting;
@@ -153,9 +155,8 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
     @RequiresKollappOrganizationMemberRole
     public Posting transferActivityPosting(long organizationId, long activityId, long postingId) {
         organizationRoleHelper.verifyOrganizationManager(organizationId);
-        Organization organization = organizationRepository
-            .findById(organizationId)
-            .orElseThrow(OrganizationNotFoundException::new);
+        Organization organization =
+                organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
         Activity activity = organization.getActivityById(activityId);
         ActivityPosting activityPosting = activity.getActivityPostingById(postingId);
         checkPostingTransferability(activityPosting);
@@ -184,10 +185,9 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
     private void checkOrganizationMemberSelfAssignment(Organization organization, Posting posting) {
         KollappUser loggedInKollappUser = kollappUserService.getLoggedInKollappUser();
         PersonOfOrganization loggedInPersonOfOrganization =
-            organization.getPersonOfOrganizationByUserId(loggedInKollappUser.getId());
+                organization.getPersonOfOrganizationByUserId(loggedInKollappUser.getId());
         boolean postingIsSelfAssigned = posting.getPersonOfOrganizationId() == loggedInPersonOfOrganization.getId();
-        if (loggedInPersonOfOrganization.isMember()
-            && !postingIsSelfAssigned) {
+        if (loggedInPersonOfOrganization.isMember() && !postingIsSelfAssigned) {
             throw new OrganizationAuthorizationException();
         }
     }
@@ -215,8 +215,9 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
             throw new PersonNotRegisteredInOrganizationException();
         }
         if (postingToBeEdited.getPersonOfOrganizationId() == 0 && updatedPosting.getPersonOfOrganizationId() != 0) {
-            throw new UnsupportedOperationException("An already transferred posting cannot have a organization member reference." +
-                "PostingId: " + postingToBeEdited.getId());
+            throw new UnsupportedOperationException(
+                    "An already transferred posting cannot have a organization member reference." + "PostingId: "
+                            + postingToBeEdited.getId());
         }
         postingToBeEdited.setDate(updatedPosting.getDate());
         postingToBeEdited.setPurpose(updatedPosting.getPurpose());
@@ -225,5 +226,4 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
         postingToBeEdited.setPersonOfOrganizationId(updatedPosting.getPersonOfOrganizationId());
         return postingToBeEdited;
     }
-
 }
