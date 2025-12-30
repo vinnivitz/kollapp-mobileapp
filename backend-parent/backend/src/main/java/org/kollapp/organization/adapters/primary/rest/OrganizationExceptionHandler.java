@@ -12,6 +12,8 @@ import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.core.adapters.primary.rest.dto.ErrorResponseTO;
 import org.kollapp.core.adapters.primary.rest.dto.ResponseTO;
 import org.kollapp.organization.application.exception.ActivityNotFoundException;
+import org.kollapp.organization.application.exception.BudgetCategoryNotFoundException;
+import org.kollapp.organization.application.exception.BudgetCategoryWithNameExistsException;
 import org.kollapp.organization.application.exception.InvalidInvitationCodeException;
 import org.kollapp.organization.application.exception.InvalidOrganizationRoleException;
 import org.kollapp.organization.application.exception.InvalidPostingTypeException;
@@ -115,5 +117,17 @@ public class OrganizationExceptionHandler {
     public ResponseEntity<ResponseTO> handleSelfActionNotAllowed() {
         String message = messageUtil.getMessage("error.organization.self-action-not-allowed");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponseTO(message));
+    }
+
+    @ExceptionHandler(BudgetCategoryNotFoundException.class)
+    public ResponseEntity<ResponseTO> handleBudgetCategoryNotFound() {
+        String message = messageUtil.getMessage("error.organization.budget-category-not-found");
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
+    }
+
+    @ExceptionHandler(BudgetCategoryWithNameExistsException.class)
+    public ResponseEntity<ResponseTO> handleBudgetCategoryWithNameAlreadyExists() {
+        String message = messageUtil.getMessage("error.organization.budget-category-with-name-exists");
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
     }
 }

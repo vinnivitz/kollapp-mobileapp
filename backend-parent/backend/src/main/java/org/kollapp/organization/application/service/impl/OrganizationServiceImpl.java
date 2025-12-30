@@ -3,6 +3,7 @@ package org.kollapp.organization.application.service.impl;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import jakarta.transaction.Transactional;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import org.kollapp.core.config.properties.ApplicationProperties;
+import org.kollapp.organization.application.exception.BudgetCategoryWithNameExistsException;
 import org.kollapp.organization.application.exception.InvalidInvitationCodeException;
 import org.kollapp.organization.application.exception.LastManagerException;
 import org.kollapp.organization.application.exception.MaxOrganizationsReachedException;
@@ -22,6 +24,7 @@ import org.kollapp.organization.application.exception.PersonAlreadyRegisteredInO
 import org.kollapp.organization.application.exception.PersonNotRegisteredInOrganizationException;
 import org.kollapp.organization.application.exception.PersonOfOrganizationIsNotApprovedYetException;
 import org.kollapp.organization.application.model.Organization;
+import org.kollapp.organization.application.model.OrganizationBudgetCategory;
 import org.kollapp.organization.application.model.OrganizationCreatedEvent;
 import org.kollapp.organization.application.model.OrganizationDeletedEvent;
 import org.kollapp.organization.application.model.OrganizationInvitationCode;
@@ -85,6 +88,10 @@ public class OrganizationServiceImpl implements OrganizationService {
         personOfOrganization.setOrganization(persistedOrganization);
         PersonOfOrganization persistedOrganizationManager = personOfOrganizationRepository.save(personOfOrganization);
         persistedOrganization.addPersonOfOrganization(persistedOrganizationManager);
+        OrganizationBudgetCategory budgetCategory =
+                OrganizationBudgetCategory.builder().name("General").build();
+        budgetCategory.setOrganization(persistedOrganization);
+        persistedOrganization.addBudgetCategory(budgetCategory);
         OrganizationCreatedEvent organizationCreatedEvent = new OrganizationCreatedEvent(this, organization.getId());
         organizationPublisher.publishOrganizationCreatedEvent(organizationCreatedEvent);
         return persistedOrganization;
@@ -241,6 +248,45 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
+    @RequiresKollappOrganizationMemberRole
+    public Organization addBudgetCategory(long organizationId, OrganizationBudgetCategory budgetCategory) {
+        organizationRoleHelper.verifyOrganizationManager(organizationId);
+        Organization organization =
+                organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
+        verifyUniqueCategoryNamePerOrganization(organization, budgetCategory);
+        organization.addBudgetCategory(budgetCategory);
+        budgetCategory.setOrganization(organization);
+        organization.initChildren();
+        return organization;
+    }
+
+    @Override
+    @RequiresKollappOrganizationMemberRole
+    public Organization editBudgetCategory(
+            long organizationId, long budgetCategoryId, OrganizationBudgetCategory updatedBudgetCategory) {
+        organizationRoleHelper.verifyOrganizationManager(organizationId);
+        Organization organization =
+                organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
+        verifyUniqueCategoryNamePerOrganization(organization, updatedBudgetCategory);
+        OrganizationBudgetCategory budgetCategory = organization.findBudgetCategoryById(budgetCategoryId);
+        budgetCategory.setName(updatedBudgetCategory.getName());
+        organization.initChildren();
+        return organization;
+    }
+
+    @Override
+    @RequiresKollappOrganizationMemberRole
+    public Organization deleteBudgetCategory(long organizationId, long budgetCategoryId) {
+        organizationRoleHelper.verifyOrganizationManager(organizationId);
+        Organization organization =
+                organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
+        OrganizationBudgetCategory budgetCategoryToRemove = organization.findBudgetCategoryById(budgetCategoryId);
+        organization.getBudgetCategories().remove(budgetCategoryToRemove);
+        organization.initChildren();
+        return organization;
+    }
+
+    @Override
     @RequiresKollappUserRole
     public List<Organization> getOrganizationsByLoggedInUser() {
         KollappUser loggedInKollappUser = kollappUserService.getLoggedInKollappUser();
@@ -293,6 +339,17 @@ public class OrganizationServiceImpl implements OrganizationService {
         long organizationCount = personOfOrganizationRepository.countByUserId(userId);
         if (organizationCount >= applicationProperties.getMaxOrganizationsPerUser()) {
             throw new MaxOrganizationsReachedException();
+        }
+    }
+
+    private void verifyUniqueCategoryNamePerOrganization(
+            Organization organization, OrganizationBudgetCategory budgetCategory) {
+        List<OrganizationBudgetCategory> budgetCategories = organization.getBudgetCategories();
+        Optional<OrganizationBudgetCategory> existingCategory = budgetCategories.stream()
+                .filter(c -> c.getName().equals(budgetCategory.getName()))
+                .findFirst();
+        if (existingCategory.isPresent()) {
+            throw new BudgetCategoryWithNameExistsException();
         }
     }
 }

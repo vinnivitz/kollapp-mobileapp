@@ -5,6 +5,7 @@ import java.util.List;
 import org.jmolecules.architecture.hexagonal.PrimaryPort;
 
 import org.kollapp.organization.application.model.Organization;
+import org.kollapp.organization.application.model.OrganizationBudgetCategory;
 import org.kollapp.organization.application.model.OrganizationRole;
 
 @PrimaryPort
@@ -34,4 +35,11 @@ public interface OrganizationService {
     Organization approveNewMemberRequest(long organizationId, long personId);
 
     Organization grantRoleToPersonOfOrganization(long organizationId, long personId, OrganizationRole role);
+
+    Organization addBudgetCategory(long organizationId, OrganizationBudgetCategory budgetCategory);
+
+    Organization editBudgetCategory(
+            long organizationId, long budgetCategoryId, OrganizationBudgetCategory updatedBudgetCategory);
+
+    Organization deleteBudgetCategory(long organizationId, long budgetCategoryId);
 }
