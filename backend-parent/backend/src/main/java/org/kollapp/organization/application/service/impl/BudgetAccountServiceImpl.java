@@ -205,6 +205,9 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
      * transfer method has to be used instead.
      */
     private Posting updatePosting(Organization organization, Posting postingToBeEdited, Posting updatedPosting) {
+        // check the existing posting
+        checkOrganizationMemberSelfAssignment(organization, postingToBeEdited);
+        // check the updated posting
         checkOrganizationMemberSelfAssignment(organization, updatedPosting);
 
         List<Long> personOfOrganizationIdsOfOrganization = organization.getPersonOfOrganizationIds();
@@ -212,7 +215,8 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
             throw new PersonNotRegisteredInOrganizationException();
         }
         if (postingToBeEdited.getPersonOfOrganizationId() == 0 && updatedPosting.getPersonOfOrganizationId() != 0) {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("An already transferred posting cannot have a organization member reference." +
+                "PostingId: " + postingToBeEdited.getId());
         }
         postingToBeEdited.setDate(updatedPosting.getDate());
         postingToBeEdited.setPurpose(updatedPosting.getPurpose());

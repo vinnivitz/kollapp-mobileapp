@@ -77,6 +77,14 @@ public class BudgetAccountServiceMemberIT extends BaseIT {
     }
 
     @Test
+    public void editWrongOrganizationPostingWithCorrectIdShouldThrowException() {
+        OrganizationPosting organizationPosting = new OrganizationPosting();
+        organizationPosting.setPersonOfOrganizationId(1);
+        assertThatExceptionOfType(OrganizationAuthorizationException.class)
+            .isThrownBy(() -> budgetAccountService.editOrganizationPosting(1,3, organizationPosting));
+    }
+
+    @Test
     public void deleteOrganizationPostingWithOwnIdShouldDeleteOrganizationPosting() {
         assertThatNoException().isThrownBy(() -> budgetAccountService.deleteOrganizationPosting(1, 1));
     }
@@ -144,6 +152,14 @@ public class BudgetAccountServiceMemberIT extends BaseIT {
         activityPosting.setPersonOfOrganizationId(2);
         assertThatExceptionOfType(OrganizationAuthorizationException.class)
             .isThrownBy(() -> budgetAccountService.editActivityPosting(1,1,2, activityPosting));
+    }
+
+    @Test
+    public void editWrongActivityPostingWithCorrectIdShouldThrowException() {
+        ActivityPosting activityPosting = new ActivityPosting();
+        activityPosting.setPersonOfOrganizationId(1);
+        assertThatExceptionOfType(OrganizationAuthorizationException.class)
+            .isThrownBy(() -> budgetAccountService.editActivityPosting(1,1,4, activityPosting));
     }
 
     @Test

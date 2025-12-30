@@ -4,6 +4,7 @@ import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -123,6 +124,18 @@ public class Organization {
             .filter(a -> a.getId() == activityId)
             .findFirst()
             .orElseThrow(ActivityNotFoundException::new);
+    }
+
+    public List<Posting> getAllOrganizationAndActivityPostings() {
+        List<Posting> postings = new ArrayList<>(organizationPostings);
+        List<Posting> activityPostings = activities.stream()
+            .map(Activity::getActivityPostings)
+            .toList()
+            .stream()
+            .flatMap(List::stream)
+            .collect(Collectors.toList());
+        postings.addAll(activityPostings);
+        return postings;
     }
 
     private String generateInvitationCode() {

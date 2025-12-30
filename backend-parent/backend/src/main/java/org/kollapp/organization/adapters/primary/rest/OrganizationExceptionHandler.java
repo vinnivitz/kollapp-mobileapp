@@ -19,6 +19,7 @@ import org.kollapp.organization.application.exception.PersonOfOrganizationIsNotA
 import org.kollapp.organization.application.exception.PostingDoesNotExistException;
 import org.kollapp.organization.application.exception.PostingTransferNotPossibleException;
 import org.kollapp.organization.application.exception.SelfActionNotAllowedException;
+import org.kollapp.organization.application.exception.UntransferredPostingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -81,13 +82,13 @@ public class OrganizationExceptionHandler {
     }
 
     @ExceptionHandler(InvalidOrganizationRoleException.class)
-    public ResponseEntity<ResponseTO> handleInvalidOrganizationRole(InvalidOrganizationRoleException ex) {
+    public ResponseEntity<ResponseTO> handleInvalidOrganizationRole() {
         String message = messageUtil.getMessage("error.invalid-organization-role");
         return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(InvalidPostingTypeException.class)
-    public ResponseEntity<ResponseTO> handleInvalidPostingType(InvalidPostingTypeException ex) {
+    public ResponseEntity<ResponseTO> handleInvalidPostingType() {
         String message = messageUtil.getMessage("error.invalid-posting-type");
         return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
     }
@@ -120,5 +121,11 @@ public class OrganizationExceptionHandler {
     public ResponseEntity<ResponseTO> handlePostingTransferNotPossibleException() {
         String message = messageUtil.getMessage("error.posting.impossible-transfer");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponseTO(message));
+    }
+
+    @ExceptionHandler(UntransferredPostingException.class)
+    public ResponseEntity<ResponseTO> handleUntransferredPostingException() {
+        String message = messageUtil.getMessage("error.organization.untransferred-posting");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponseTO(message));
     }
 }

@@ -7,6 +7,10 @@ import java.util.Optional;
 import jakarta.transaction.Transactional;
 
 import org.junit.jupiter.api.Test;
+import org.kollapp.organization.application.exception.UntransferredPostingException;
+import org.kollapp.organization.application.model.Activity;
+import org.kollapp.organization.application.model.ActivityPosting;
+import org.kollapp.organization.application.model.OrganizationPosting;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -101,7 +105,15 @@ public class OrganizationServiceManagerIT extends BaseIT {
     }
 
     @Test
+    public void deleteUserFromTheirLastOrganizationWithUntransferredPostingsShouldThrowException() {
+        assertThatExceptionOfType(UntransferredPostingException.class)
+            .isThrownBy(() -> organizationService.deleteUserFromOrganization(3, 1));
+    }
+
+    @Test
+    @Transactional
     public void deleteUserFromTheirLastOrganizationShouldDowngradeRoleAndDeleteThemFromOrganization() {
+        transferUntransferredOrganizationPosting();
         Organization organization = organizationService.deleteUserFromOrganization(3, 1);
         assertThat(organization.getPersonsOfOrganization().stream().mapToLong(PersonOfOrganization::getId))
                 .doesNotContain(3L);
@@ -196,19 +208,29 @@ public class OrganizationServiceManagerIT extends BaseIT {
 
     @Test
     @Transactional
+    public void leaveOrganizationWithUntransferredActivityPostingShouldThrowException() {
+        assertThatExceptionOfType(UntransferredPostingException.class)
+            .isThrownBy(() -> organizationService.leaveOrganization(1));
+
+    }
+
+    @Test
+    @Transactional
     public void leaveOrganizationShouldRemoveUserFromOrganization() {
-        organizationService.leaveOrganization(1);
         Organization organization = organizationRepository.findById(1).orElseThrow();
+        transferUntransferredActivityPosting();
+        organizationService.leaveOrganization(1);
         assertThat(organization.getPersonsOfOrganization().size()).isEqualTo(2);
         List<String> remainingUsernamesInOrganization = organization.getPersonsOfOrganization().stream()
-                .map(PersonOfOrganization::getUsername)
-                .toList();
+            .map(PersonOfOrganization::getUsername)
+            .toList();
         assertThat(remainingUsernamesInOrganization).containsExactlyInAnyOrder("orgamanager", "orgamember");
     }
 
     @Test
     @Transactional
     public void leaveOrganizationAsLastManagerShouldDeleteOrganization() {
+        transferUntransferredActivityPosting();
         organizationService.leaveOrganization(1);
         organizationService.leaveOrganization(3);
         assertThatExceptionOfType(OrganizationNotFoundException.class)
@@ -312,12 +334,23 @@ public class OrganizationServiceManagerIT extends BaseIT {
     }
 
     @Test
+    public void deleteUserWithUntransferredPostingsFromAllOrganizationsShouldThrowException() {
+        KollappUser nina = kollappUserRepository.findByUsername("nina").orElseThrow();
+        nina.setPassword(passwordEncoder.encode("test"));
+        kollappUserRepository.save(nina);
+        assertThatExceptionOfType(UntransferredPostingException.class)
+                .isThrownBy(() -> kollappUserService.deleteKollappUser("test"));
+    }
+
+    @Test
+    @Transactional
     public void deleteUserFromAllOrganizationsShouldThrowExceptionIfLastManager() {
+        transferUntransferredActivityPosting();
         KollappUser nina = kollappUserRepository.findByUsername("nina").orElseThrow();
         nina.setPassword(passwordEncoder.encode("test"));
         kollappUserRepository.save(nina);
         assertThatExceptionOfType(LastManagerException.class)
-                .isThrownBy(() -> kollappUserService.deleteKollappUser("test"));
+            .isThrownBy(() -> kollappUserService.deleteKollappUser("test"));
     }
 
     @Test
@@ -337,5 +370,18 @@ public class OrganizationServiceManagerIT extends BaseIT {
         assertThat(organization3.isPresent()).isTrue();
         assertThat(organization1.get().getPersonsOfOrganization().size()).isEqualTo(2);
         assertThat(organization3.get().getPersonsOfOrganization().size()).isEqualTo(1);
+    }
+
+    private void transferUntransferredActivityPosting() {
+        Organization organization = organizationRepository.findById(1).orElseThrow();
+        Activity activity = organization.getActivityById(1);
+        ActivityPosting untransferredPosting = activity.getActivityPostingById(1);
+        untransferredPosting.transfer();
+    }
+
+    private void transferUntransferredOrganizationPosting() {
+        Organization organization = organizationRepository.findById(1).orElseThrow();
+        OrganizationPosting untransferredPosting = organization.getOrganizationPostingById(2);
+        untransferredPosting.transfer();
     }
 }

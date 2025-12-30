@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 
 import org.junit.jupiter.api.Test;
 import org.kollapp.organization.application.exception.PersonNotRegisteredInOrganizationException;
+import org.kollapp.organization.application.exception.PostingTransferNotPossibleException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
@@ -170,6 +171,18 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
     }
 
     @Test
+    public void transferOrganizationPostingShouldTransferOrganizationPosting() {
+        Posting transferredPosting = budgetAccountService.transferOrganizationPosting(1,2);
+        assertThat(transferredPosting.getPersonOfOrganizationId()).isEqualTo(0);
+    }
+
+    @Test
+    public void transferTransferredOrganizationPostingShouldThrowException() {
+        assertThatExceptionOfType(PostingTransferNotPossibleException.class)
+            .isThrownBy(() -> budgetAccountService.transferOrganizationPosting(1,3));
+    }
+
+    @Test
     public void addActivityPostingWithOwnIdShouldCreateActivityPosting() {
         ActivityPosting activityPosting = new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test", null, 1);
         Posting persistedActivityPosting = budgetAccountService.addActivityPosting(1, 1, activityPosting);
@@ -312,5 +325,17 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
         activityPosting.setPersonOfOrganizationId(1);
         assertThatExceptionOfType(UnsupportedOperationException.class)
             .isThrownBy(() -> budgetAccountService.editActivityPosting(1, 1, 4, activityPosting));
+    }
+
+    @Test
+    public void transferActivityPostingShouldTransferActivityPosting() {
+        Posting transferredPosting = budgetAccountService.transferActivityPosting(1,1,1);
+        assertThat(transferredPosting.getPersonOfOrganizationId()).isEqualTo(0);
+    }
+
+    @Test
+    public void transferTransferredActivityPostingShouldThrowException() {
+        assertThatExceptionOfType(PostingTransferNotPossibleException.class)
+            .isThrownBy(() -> budgetAccountService.transferActivityPosting(1,1,4));
     }
 }

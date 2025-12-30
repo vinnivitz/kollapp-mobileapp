@@ -1,17 +1,8 @@
 package org.kollapp.organization.application.service.impl;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import jakarta.transaction.Transactional;
-
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import org.kollapp.core.config.properties.ApplicationProperties;
 import org.kollapp.organization.application.exception.InvalidInvitationCodeException;
 import org.kollapp.organization.application.exception.LastManagerException;
@@ -21,6 +12,7 @@ import org.kollapp.organization.application.exception.PersonAlreadyHasTargetRole
 import org.kollapp.organization.application.exception.PersonAlreadyRegisteredInOrganizationException;
 import org.kollapp.organization.application.exception.PersonNotRegisteredInOrganizationException;
 import org.kollapp.organization.application.exception.PersonOfOrganizationIsNotApprovedYetException;
+import org.kollapp.organization.application.exception.UntransferredPostingException;
 import org.kollapp.organization.application.model.Organization;
 import org.kollapp.organization.application.model.OrganizationCreatedEvent;
 import org.kollapp.organization.application.model.OrganizationDeletedEvent;
@@ -28,6 +20,7 @@ import org.kollapp.organization.application.model.OrganizationInvitationCode;
 import org.kollapp.organization.application.model.OrganizationRole;
 import org.kollapp.organization.application.model.PersonOfOrganization;
 import org.kollapp.organization.application.model.PersonOfOrganizationStatus;
+import org.kollapp.organization.application.model.Posting;
 import org.kollapp.organization.application.publisher.OrganizationPublisher;
 import org.kollapp.organization.application.repository.OrganizationInvitationCodeRepository;
 import org.kollapp.organization.application.repository.OrganizationRepository;
@@ -38,31 +31,32 @@ import org.kollapp.user.application.model.RequiresKollappOrganizationMemberRole;
 import org.kollapp.user.application.model.RequiresKollappUserRole;
 import org.kollapp.user.application.model.SystemRole;
 import org.kollapp.user.application.service.KollappUserService;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Transactional
 @Slf4j
 @Service
+@AllArgsConstructor
 public class OrganizationServiceImpl implements OrganizationService {
-    @Autowired
-    private OrganizationRepository organizationRepository;
 
-    @Autowired
-    private PersonOfOrganizationRepository personOfOrganizationRepository;
+    private final OrganizationRepository organizationRepository;
 
-    @Autowired
-    private OrganizationInvitationCodeRepository organizationInvitationCodeRepository;
+    private final PersonOfOrganizationRepository personOfOrganizationRepository;
 
-    @Autowired
-    private KollappUserService kollappUserService;
+    private final OrganizationInvitationCodeRepository organizationInvitationCodeRepository;
 
-    @Autowired
-    private OrganizationPublisher organizationPublisher;
+    private final KollappUserService kollappUserService;
 
-    @Autowired
-    private ApplicationProperties applicationProperties;
+    private final OrganizationPublisher organizationPublisher;
 
-    @Autowired
-    private OrganizationRoleHelper organizationRoleHelper;
+    private final ApplicationProperties applicationProperties;
+
+    private final OrganizationRoleHelper organizationRoleHelper;
 
     @Override
     @RequiresKollappUserRole
@@ -115,6 +109,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         PersonOfOrganization personToBeDeleted = personOfOrganizationRepository
                 .findByIdAndOrganization(personOfOrganizationId, organization)
                 .orElseThrow(PersonNotRegisteredInOrganizationException::new);
+        verifyUntransferredPostings(organization, personToBeDeleted);
         organization.getPersonsOfOrganization().remove(personToBeDeleted);
         KollappUser kollappUser = kollappUserService.findById(personToBeDeleted.getUserId());
         if (userIsNoOrganizationMember(kollappUser.getId())) {
@@ -170,6 +165,7 @@ public class OrganizationServiceImpl implements OrganizationService {
                     && personOfOrganization.getOrganization().hasOnlyOneManagerLeft()) {
                 throw new LastManagerException();
             }
+            verifyUntransferredPostings(personOfOrganization.getOrganization(), personOfOrganization);
             personOfOrganizationRepository.deleteById(personOfOrganization.getId());
         }
     }
@@ -184,6 +180,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         PersonOfOrganization personOfOrganization = personOfOrganizationRepository
                 .findByUserIdAndOrganization(loggedInUser.getId(), organization)
                 .orElseThrow(PersonNotRegisteredInOrganizationException::new);
+        verifyUntransferredPostings(organization, personOfOrganization);
         if (personOfOrganization.getOrganizationRole().equals(OrganizationRole.ROLE_ORGANIZATION_MANAGER)
                 && organization.hasOnlyOneManagerLeft()) {
             deleteOrganization(loggedInUser, organization);
@@ -295,6 +292,16 @@ public class OrganizationServiceImpl implements OrganizationService {
         long organizationCount = personOfOrganizationRepository.countByUserId(userId);
         if (organizationCount >= applicationProperties.getMaxOrganizationsPerUser()) {
             throw new MaxOrganizationsReachedException();
+        }
+    }
+
+    private void verifyUntransferredPostings(Organization organization, PersonOfOrganization personOfOrganization) {
+        List<Posting> allOrganizationAndActivityPostings = organization.getAllOrganizationAndActivityPostings();
+        List<Posting> postingsOfPersonOfOrganization = allOrganizationAndActivityPostings.stream()
+            .filter(p -> p.getPersonOfOrganizationId() == personOfOrganization.getId())
+            .toList();
+        if (!postingsOfPersonOfOrganization.isEmpty()) {
+            throw new UntransferredPostingException();
         }
     }
 }

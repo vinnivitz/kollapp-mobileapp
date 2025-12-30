@@ -5,6 +5,10 @@ import java.util.List;
 import jakarta.transaction.Transactional;
 
 import org.junit.jupiter.api.Test;
+import org.kollapp.organization.application.exception.UntransferredPostingException;
+import org.kollapp.organization.application.model.Activity;
+import org.kollapp.organization.application.model.ActivityPosting;
+import org.kollapp.organization.application.model.OrganizationPosting;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
@@ -106,7 +110,16 @@ public class OrganizationServiceMemberIT extends BaseIT {
 
     @Test
     @Transactional
+    public void leaveOrganizationWitUntransferredPostingsShouldThrowException() {
+        assertThatExceptionOfType(UntransferredPostingException.class)
+            .isThrownBy(() -> organizationService.leaveOrganization(1));
+    }
+
+    @Test
+    @Transactional
     public void leaveOrganizationShouldRemoveUserFromOrganization() {
+        transferUntransferredActivityPosting();
+        transferUntransferredOrganizationPosting();
         organizationService.leaveOrganization(1);
         Organization organization = organizationRepository.findById(1).orElseThrow();
         assertThat(organization.getPersonsOfOrganization().size()).isEqualTo(1);
@@ -172,5 +185,18 @@ public class OrganizationServiceMemberIT extends BaseIT {
     public void approveNewMemberShouldThrowAuthException() {
         assertThatExceptionOfType(OrganizationAuthorizationException.class)
                 .isThrownBy(() -> organizationService.approveNewMemberRequest(1, 1));
+    }
+
+    private void transferUntransferredActivityPosting() {
+        Organization organization = organizationRepository.findById(1).orElseThrow();
+        Activity activity = organization.getActivityById(1);
+        ActivityPosting untransferredPosting = activity.getActivityPostingById(2);
+        untransferredPosting.transfer();
+    }
+
+    private void transferUntransferredOrganizationPosting() {
+        Organization organization = organizationRepository.findById(1).orElseThrow();
+        OrganizationPosting untransferredPosting = organization.getOrganizationPostingById(1);
+        untransferredPosting.transfer();
     }
 }
