@@ -65,6 +65,8 @@ public class BudgetAccountServiceMemberIT extends BaseIT {
         OrganizationPosting updatedPosting = new OrganizationPosting();
         updatedPosting.setPersonOfOrganizationId(1);
         updatedPosting.setPurpose("updated");
+        updatedPosting.setDate("2025-09-11");
+        updatedPosting.setType(PostingType.DEBIT);
         Posting posting = budgetAccountService.editOrganizationPosting(1, 1, updatedPosting);
         assertThat(posting.getPersonOfOrganizationId()).isEqualTo(updatedPosting.getPersonOfOrganizationId());
         assertThat(posting.getPurpose()).isEqualTo(updatedPosting.getPurpose());

@@ -7,8 +7,8 @@ VALUES (2, 'member', 'member@test.de', true, 'test', 'ROLE_KOLLAPP_ORGANIZATION_
 INSERT INTO kollapp_user(id, username, email, is_activated, password, role)
 VALUES (3, 'manager', 'manager@test.de', true, 'test', 'ROLE_KOLLAPP_ORGANIZATION_MEMBER');
 
-INSERT INTO organization(id, name)
-VALUES (1, 'NMS');
+INSERT INTO organization(id, name, place)
+VALUES (1, 'NMS', 'Test City');
 
 INSERT INTO posting(id, scope, amount_in_cents, date, purpose, type, activity_id, organization_id, person_of_organization_id)
 VALUES(2, 'organization', 10000, '2025-09-11', 'Test', 'CREDIT', null, 1, 3);
