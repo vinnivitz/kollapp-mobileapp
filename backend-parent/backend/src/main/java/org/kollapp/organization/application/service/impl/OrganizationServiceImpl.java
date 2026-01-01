@@ -112,12 +112,12 @@ public class OrganizationServiceImpl implements OrganizationService {
     @RequiresKollappOrganizationMemberRole
     public Organization deleteUserFromOrganization(long personOfOrganizationId, long organizationId) {
         organizationRoleHelper.verifyOrganizationManager(organizationId);
-        organizationRoleHelper.verifySelfActionNotAllowed(personOfOrganizationId);
         Organization organization =
                 organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
         PersonOfOrganization personToBeDeleted = personOfOrganizationRepository
                 .findByIdAndOrganization(personOfOrganizationId, organization)
                 .orElseThrow(PersonNotRegisteredInOrganizationException::new);
+        organizationRoleHelper.verifySelfActionNotAllowed(personToBeDeleted.getUserId());
         organization.getPersonsOfOrganization().remove(personToBeDeleted);
         KollappUser kollappUser = kollappUserService.findById(personToBeDeleted.getUserId());
         if (userIsNoOrganizationMember(kollappUser.getId())) {
@@ -241,15 +241,12 @@ public class OrganizationServiceImpl implements OrganizationService {
     @RequiresKollappOrganizationMemberRole
     public Organization grantRoleToPersonOfOrganization(long organizationId, long personId, OrganizationRole role) {
         organizationRoleHelper.verifyOrganizationManager(organizationId);
-        organizationRoleHelper.verifySelfActionNotAllowed(personId);
         Organization organization =
                 organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
         PersonOfOrganization personOfOrganization = personOfOrganizationRepository
-                .findById(personId)
+                .findByIdAndOrganization(personId, organization)
                 .orElseThrow(PersonNotRegisteredInOrganizationException::new);
-        if (!organization.getPersonsOfOrganization().contains(personOfOrganization)) {
-            throw new PersonNotRegisteredInOrganizationException();
-        }
+        organizationRoleHelper.verifySelfActionNotAllowed(personOfOrganization.getUserId());
         if (personOfOrganization.getStatus().equals(PersonOfOrganizationStatus.PENDING)) {
             throw new PersonOfOrganizationIsNotApprovedYetException();
         }
@@ -258,7 +255,6 @@ public class OrganizationServiceImpl implements OrganizationService {
         }
         personOfOrganization.setOrganizationRole(role);
 
-        // Publish event to notify user about role change
         MemberRoleChangedEvent memberRoleChangedEvent = new MemberRoleChangedEvent(
                 this,
                 personOfOrganization.getUserId(),
@@ -268,6 +264,7 @@ public class OrganizationServiceImpl implements OrganizationService {
                 role);
         organizationPublisher.publishMemberRoleChangedEvent(memberRoleChangedEvent);
 
+        organization.initChildren();
         return organization;
     }
 

@@ -13,7 +13,6 @@ import { dev } from '$app/environment';
 import { goto } from '$app/navigation';
 import { resolve } from '$app/paths';
 
-import { showAlert } from './alert.utility';
 import { isAuthenticated } from './api.utility';
 import { getStoredValue, storeValue } from './storage.utility';
 
@@ -22,6 +21,7 @@ import { notificationService } from '$lib/api/services';
 import { t } from '$lib/locales';
 import { StorageKey } from '$lib/models/storage';
 import { AlertType } from '$lib/models/ui';
+import { showAlert } from '$lib/utility';
 
 /**
  * Initializes push notifications for the application.
