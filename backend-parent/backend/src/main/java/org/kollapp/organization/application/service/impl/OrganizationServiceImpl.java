@@ -21,6 +21,9 @@ import org.kollapp.organization.application.exception.PersonAlreadyHasTargetRole
 import org.kollapp.organization.application.exception.PersonAlreadyRegisteredInOrganizationException;
 import org.kollapp.organization.application.exception.PersonNotRegisteredInOrganizationException;
 import org.kollapp.organization.application.exception.PersonOfOrganizationIsNotApprovedYetException;
+import org.kollapp.organization.application.model.MemberRoleChangedEvent;
+import org.kollapp.organization.application.model.MembershipApprovedEvent;
+import org.kollapp.organization.application.model.NewMemberRequestEvent;
 import org.kollapp.organization.application.model.Organization;
 import org.kollapp.organization.application.model.OrganizationCreatedEvent;
 import org.kollapp.organization.application.model.OrganizationDeletedEvent;
@@ -159,6 +162,11 @@ public class OrganizationServiceImpl implements OrganizationService {
         if (userIsNoOrganizationMember(currentUser.getId())) {
             currentUser.setRole(SystemRole.ROLE_KOLLAPP_ORGANIZATION_MEMBER);
         }
+
+        // Publish event to notify managers about new membership request
+        NewMemberRequestEvent newMemberRequestEvent = new NewMemberRequestEvent(
+                this, currentUser.getId(), organization.getId(), organization.getName(), currentUser.getUsername());
+        organizationPublisher.publishNewMemberRequestEvent(newMemberRequestEvent);
     }
 
     @Override
@@ -216,6 +224,16 @@ public class OrganizationServiceImpl implements OrganizationService {
         KollappUser kollappUser = kollappUserService.findById(personOfOrganization.getUserId());
         kollappUser.setRole(SystemRole.ROLE_KOLLAPP_ORGANIZATION_MEMBER);
         organization.initChildren();
+
+        // Publish event to notify user about membership approval
+        MembershipApprovedEvent membershipApprovedEvent = new MembershipApprovedEvent(
+                this,
+                personOfOrganization.getUserId(),
+                organization.getId(),
+                organization.getName(),
+                personOfOrganization.getUsername());
+        organizationPublisher.publishMembershipApprovedEvent(membershipApprovedEvent);
+
         return organization;
     }
 
@@ -239,6 +257,17 @@ public class OrganizationServiceImpl implements OrganizationService {
             throw new PersonAlreadyHasTargetRoleException();
         }
         personOfOrganization.setOrganizationRole(role);
+
+        // Publish event to notify user about role change
+        MemberRoleChangedEvent memberRoleChangedEvent = new MemberRoleChangedEvent(
+                this,
+                personOfOrganization.getUserId(),
+                organization.getId(),
+                organization.getName(),
+                personOfOrganization.getUsername(),
+                role);
+        organizationPublisher.publishMemberRoleChangedEvent(memberRoleChangedEvent);
+
         return organization;
     }
 
@@ -298,6 +327,18 @@ public class OrganizationServiceImpl implements OrganizationService {
 
         return organization.getPersonsOfOrganization().stream()
                 .filter(person -> person.getStatus() == PersonOfOrganizationStatus.APPROVED)
+                .map(PersonOfOrganization::getUserId)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Long> getAllManagerUserIds(long organizationId) {
+        Organization organization =
+                organizationRepository.findById(organizationId).orElseThrow(() -> new OrganizationNotFoundException());
+
+        return organization.getPersonsOfOrganization().stream()
+                .filter(person -> person.getStatus() == PersonOfOrganizationStatus.APPROVED)
+                .filter(person -> person.getOrganizationRole() == OrganizationRole.ROLE_ORGANIZATION_MANAGER)
                 .map(PersonOfOrganization::getUserId)
                 .collect(Collectors.toList());
     }

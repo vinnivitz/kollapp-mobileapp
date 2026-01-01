@@ -1,4 +1,4 @@
-import type { DeviceTokenRegistrationRequestTO, DeviceTokenTO, SendNotificationRequestTO } from '$lib/api/dtos';
+import type { DeviceTokenRegistrationRequestTO, DeviceTokenTO } from '$lib/api/dtos';
 
 import { RequestMethod, type ResponseBody } from '$lib/models/api';
 import { customFetch } from '$lib/utility';
@@ -39,18 +39,6 @@ class NotificationService {
 	async getUserDeviceTokens(): Promise<ResponseBody<DeviceTokenTO[]>> {
 		return customFetch(`${this.ENDPOINT}/device-tokens`, {
 			method: RequestMethod.GET
-		});
-	}
-
-	/**
-	 * Sends a test push notification to the logged in user.
-	 * @param request The notification request.
-	 * @returns {Promise<ResponseBody>} The response body.
-	 */
-	async sendTestNotification(request: SendNotificationRequestTO): Promise<ResponseBody> {
-		return customFetch(`${this.ENDPOINT}/send`, {
-			body: request,
-			method: RequestMethod.POST
 		});
 	}
 }

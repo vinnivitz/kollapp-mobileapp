@@ -36,4 +36,6 @@ public interface OrganizationService {
     Organization grantRoleToPersonOfOrganization(long organizationId, long personId, OrganizationRole role);
 
     List<Long> getAllMemberUserIds(long organizationId);
+
+    List<Long> getAllManagerUserIds(long organizationId);
 }

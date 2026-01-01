@@ -11,13 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 
+import org.kollapp.notification.application.model.enums.NotificationType;
 import org.kollapp.notification.application.publisher.NotificationPublisher;
 import org.kollapp.organization.application.model.ActivityCreatedEvent;
 import org.kollapp.organization.application.service.OrganizationService;
 
 /**
- * Example listener that sends a notification when a new activity is created.
- * This demonstrates the event-driven approach for triggering notifications.
+ * Listener that sends push notifications when a new activity is created.
+ * Implements event-driven notification triggering.
  */
 @PrimaryAdapter
 @Service
@@ -32,11 +33,6 @@ public class ActivityCreatedNotificationListener implements ApplicationListener<
 
     @Override
     public void onApplicationEvent(ActivityCreatedEvent event) {
-        log.info(
-                "[Organization] Received domain event: ActivityCreatedEvent for activity {}, sending notification to organization {}",
-                event.getActivityId(),
-                event.getOrganizationId());
-
         // Get user IDs from the organization
         List<Long> userIds = organizationService.getAllMemberUserIds(event.getOrganizationId());
 
@@ -50,6 +46,6 @@ public class ActivityCreatedNotificationListener implements ApplicationListener<
         String body = String.format("A new activity '%s' has been created!", event.getActivityName());
 
         notificationPublisher.publishSendNotificationToOrganizationEvent(
-                event.getOrganizationId(), userIds, title, body, data);
+                event.getOrganizationId(), userIds, title, body, NotificationType.ACTIVITIES, data);
     }
 }

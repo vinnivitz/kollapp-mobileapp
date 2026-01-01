@@ -13,6 +13,7 @@ import org.kollapp.core.adapters.primary.rest.dto.ErrorResponseTO;
 import org.kollapp.core.adapters.primary.rest.dto.ResponseTO;
 import org.kollapp.notification.application.exception.DeviceTokenNotFoundException;
 import org.kollapp.notification.application.exception.FirebaseMessagingNotConfiguredException;
+import org.kollapp.notification.application.exception.InvalidDeviceTypeException;
 import org.kollapp.notification.application.exception.NoActiveDeviceTokenFoundException;
 import org.kollapp.notification.application.exception.NotificationDataSerializationException;
 import org.kollapp.notification.application.exception.PushNotificationException;
@@ -52,5 +53,11 @@ public class NotificationExceptionHandler {
     public ResponseEntity<ResponseTO> handleNotificationDataSerialization() {
         String message = messageUtil.getMessage("error.notification.data.serialization-failed");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponseTO(message));
+    }
+
+    @ExceptionHandler(InvalidDeviceTypeException.class)
+    public ResponseEntity<ResponseTO> handleInvalidDeviceType() {
+        String message = messageUtil.getMessage("error.device-type.invalid");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponseTO(message));
     }
 }

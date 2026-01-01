@@ -1,6 +1,7 @@
-import { Device } from '@capacitor/device';
+import { Device, type DeviceInfo } from '@capacitor/device';
 import {
 	type ActionPerformed,
+	type Channel,
 	PushNotifications,
 	type PushNotificationSchema,
 	type RegistrationError,
@@ -16,7 +17,7 @@ import { showAlert } from './alert.utility';
 import { isAuthenticated } from './api.utility';
 import { getStoredValue, storeValue } from './storage.utility';
 
-import { DeviceType } from '$lib/api/dtos';
+import { DeviceType, NotificationType } from '$lib/api/dtos';
 import { notificationService } from '$lib/api/services';
 import { t } from '$lib/locales';
 import { StorageKey } from '$lib/models/storage';
@@ -29,6 +30,8 @@ import { AlertType } from '$lib/models/ui';
  */
 export async function initPushNotifications(): Promise<void> {
 	try {
+		await registerNotificationChannels();
+
 		let permissionStatus = await PushNotifications.checkPermissions();
 		if (permissionStatus.receive === 'prompt') {
 			permissionStatus = await PushNotifications.requestPermissions();
@@ -145,11 +148,92 @@ async function handleNotificationReceived(notification: PushNotificationSchema):
  */
 async function handleNotificationAction(action: ActionPerformed): Promise<void> {
 	const data = action.notification.data;
-	if (data && data.route) {
-		await showAlert(action.notification.title ?? '', { type: AlertType.SUCCESS });
-		await goto(resolve(data.route));
-	} else {
-		await showAlert(action.notification.title ?? '', { type: AlertType.SUCCESS });
+	await (data && data.route
+		? goto(resolve(data.route))
+		: showAlert(action.notification.title ?? '', { type: AlertType.SUCCESS }));
+}
+
+/**
+ * Registers notification channels/categories with the OS.
+ * For iOS: Creates UNNotificationCategory for each NotificationType.
+ * For Android: Creates NotificationChannel for each NotificationType.
+ * This allows users to configure notification preferences per channel in System Settings.
+ * @returns {Promise<void>}
+ */
+async function registerNotificationChannels(): Promise<void> {
+	try {
+		const deviceInfo = await Device.getInfo();
+		const channels: Channel[] = [
+			{
+				description: 'General notifications',
+				id: NotificationType.GENERAL,
+				importance: 3,
+				name: 'General',
+				visibility: 1
+			},
+			{
+				description: 'Personal notifications about your membership status',
+				id: NotificationType.MEMBERSHIP_STATUS,
+				importance: 4,
+				name: 'Membership Status'
+			},
+			{
+				description: 'Notifications about other members joining or requesting to join',
+				id: NotificationType.MEMBERSHIP_CHANGES,
+				importance: 3,
+				name: 'Membership Changes'
+			},
+			{
+				description: 'Events and activities notifications',
+				id: NotificationType.ACTIVITIES,
+				importance: 4,
+				name: 'Activities'
+			},
+			{
+				description: 'Financial transactions and budget notifications',
+				id: NotificationType.FINANCES,
+				importance: 4,
+				name: 'Finances'
+			},
+			{
+				description: 'Organization-wide announcements',
+				id: NotificationType.ANNOUNCEMENTS,
+				importance: 4,
+				name: 'Announcements'
+			},
+			{
+				description: 'Direct messages',
+				id: NotificationType.MESSAGES,
+				importance: 4,
+				name: 'Messages'
+			},
+			{
+				description: 'Critical system alerts',
+				id: NotificationType.SYSTEM_ALERTS,
+				importance: 5,
+				name: 'System Alerts'
+			}
+		];
+
+		if (deviceInfo.platform === 'android') {
+			for (const channel of channels) {
+				await PushNotifications.createChannel({
+					description: channel.description,
+					id: channel.id,
+					importance: channel.importance,
+					name: channel.name,
+					sound: 'default',
+					vibration: true,
+					visibility: 1
+				});
+			}
+			if (dev) console.info('Android notification channels registered');
+		}
+		if (dev && deviceInfo.platform === 'ios') {
+			console.info('iOS will use notification categories from FCM messages');
+		}
+	} catch (error) {
+		console.warn('Failed to register notification channels:', error);
 	}
 }
 
@@ -158,8 +242,8 @@ async function handleNotificationAction(action: ActionPerformed): Promise<void> 
  * @param platform The platform string from Capacitor Device.
  * @returns {DeviceType} The corresponding DeviceType enum value.
  */
-function getDeviceType(platform: string): DeviceType {
-	switch (platform.toLowerCase()) {
+function getDeviceType(platform: DeviceInfo['platform']): DeviceType {
+	switch (platform) {
 		case 'android': {
 			return DeviceType.ANDROID;
 		}

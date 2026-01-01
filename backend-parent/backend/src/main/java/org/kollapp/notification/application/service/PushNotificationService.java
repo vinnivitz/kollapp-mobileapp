@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.kollapp.notification.application.model.entities.DeviceToken;
 import org.kollapp.notification.application.model.enums.DeviceType;
+import org.kollapp.notification.application.model.enums.NotificationType;
 
 /**
  * Service interface for push notification operations.
@@ -41,9 +42,11 @@ public interface PushNotificationService {
      * @param userId The user ID
      * @param title The notification title
      * @param body The notification body
+     * @param notificationType The notification type
      * @param data Additional data payload
      */
-    void sendNotificationToUser(Long userId, String title, String body, Map<String, String> data);
+    void sendNotificationToUser(
+            Long userId, String title, String body, NotificationType notificationType, Map<String, String> data);
 
     /**
      * Send a push notification to specific users.
@@ -51,9 +54,11 @@ public interface PushNotificationService {
      * @param userIds The list of user IDs
      * @param title The notification title
      * @param body The notification body
+     * @param notificationType The notification type
      * @param data Additional data payload
      */
-    void sendNotificationToUsers(List<Long> userIds, String title, String body, Map<String, String> data);
+    void sendNotificationToUsers(
+            List<Long> userIds, String title, String body, NotificationType notificationType, Map<String, String> data);
 
     /**
      * Send a push notification to a specific device token.
@@ -61,7 +66,9 @@ public interface PushNotificationService {
      * @param token The device token
      * @param title The notification title
      * @param body The notification body
+     * @param notificationType The notification type
      * @param data Additional data payload
      */
-    void sendNotificationToToken(String token, String title, String body, Map<String, String> data);
+    void sendNotificationToToken(
+            String token, String title, String body, NotificationType notificationType, Map<String, String> data);
 }

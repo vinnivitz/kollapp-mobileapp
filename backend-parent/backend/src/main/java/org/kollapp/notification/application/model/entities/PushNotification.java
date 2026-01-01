@@ -20,6 +20,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import org.kollapp.notification.application.model.enums.NotificationStatus;
+import org.kollapp.notification.application.model.enums.NotificationType;
 
 /**
  * Entity representing a push notification record.
@@ -53,6 +54,11 @@ public class PushNotification {
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    private NotificationType notificationType;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private NotificationStatus status;
 
     @Column(length = 500)
@@ -67,6 +73,9 @@ public class PushNotification {
         createdAt = LocalDateTime.now();
         if (status == null) {
             status = NotificationStatus.PENDING;
+        }
+        if (notificationType == null) {
+            notificationType = NotificationType.GENERAL;
         }
     }
 }

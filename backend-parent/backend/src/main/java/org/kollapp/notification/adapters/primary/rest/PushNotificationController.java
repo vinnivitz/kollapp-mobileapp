@@ -21,8 +21,6 @@ import org.kollapp.core.adapters.primary.rest.dto.DataResponseTO;
 import org.kollapp.core.adapters.primary.rest.dto.MessageResponseTO;
 import org.kollapp.notification.adapters.primary.rest.dto.DeviceTokenRegistrationRequestTO;
 import org.kollapp.notification.adapters.primary.rest.dto.DeviceTokenTO;
-import org.kollapp.notification.adapters.primary.rest.dto.SendNotificationRequestTO;
-import org.kollapp.notification.adapters.primary.rest.dto.SendNotificationToUsersRequestTO;
 import org.kollapp.notification.adapters.primary.rest.mapper.DeviceTokenMapper;
 import org.kollapp.notification.application.model.entities.DeviceToken;
 import org.kollapp.notification.application.model.enums.DeviceType;
@@ -81,32 +79,9 @@ public class PushNotificationController {
             summary = "Get all active device tokens for the logged in user",
             security = {@SecurityRequirement(name = "bearer-key")})
     public ResponseEntity<DataResponseTO<List<DeviceTokenTO>>> getUserDeviceTokens() {
-        var user = kollappUserService.getLoggedInKollappUser();
-        var deviceTokens = pushNotificationService.getUserDeviceTokens(user.getId());
-        var response = deviceTokenMapper.toTOs(deviceTokens);
+        KollappUser user = kollappUserService.getLoggedInKollappUser();
+        List<DeviceToken> deviceTokens = pushNotificationService.getUserDeviceTokens(user.getId());
+        List<DeviceTokenTO> response = deviceTokenMapper.toTOs(deviceTokens);
         return ResponseEntity.ok(new DataResponseTO<>(response, "success.notification.device-tokens-retrieved"));
-    }
-
-    @PostMapping("/send")
-    @Operation(
-            summary = "Send a push notification to the logged in user (for testing)",
-            security = {@SecurityRequirement(name = "bearer-key")})
-    public ResponseEntity<MessageResponseTO> sendNotificationToSelf(
-            @Valid @RequestBody SendNotificationRequestTO request) {
-        var user = kollappUserService.getLoggedInKollappUser();
-        pushNotificationService.sendNotificationToUser(
-                user.getId(), request.getTitle(), request.getBody(), request.getData());
-        return ResponseEntity.ok(new MessageResponseTO("success.notification.sent"));
-    }
-
-    @PostMapping("/send-to-users")
-    @Operation(
-            summary = "Send a push notification to multiple users (admin only)",
-            security = {@SecurityRequirement(name = "bearer-key")})
-    public ResponseEntity<MessageResponseTO> sendNotificationToUsers(
-            @Valid @RequestBody SendNotificationToUsersRequestTO request) {
-        pushNotificationService.sendNotificationToUsers(
-                request.getUserIds(), request.getTitle(), request.getBody(), request.getData());
-        return ResponseEntity.ok(new MessageResponseTO("success.notification.sent"));
     }
 }

@@ -23,12 +23,13 @@ public class SendNotificationToUsersListener implements ApplicationListener<Send
 
     @Override
     public void onApplicationEvent(SendNotificationToUsersEvent event) {
-        log.info(
-                "[Notification] Received domain event: SendNotificationToUsersEvent for {} users",
-                event.getUserIds().size());
         try {
             pushNotificationService.sendNotificationToUsers(
-                    event.getUserIds(), event.getTitle(), event.getBody(), event.getData());
+                    event.getUserIds(),
+                    event.getTitle(),
+                    event.getBody(),
+                    event.getNotificationType(),
+                    event.getData());
         } catch (Exception e) {
             log.error("[Notification] Failed to send notification to users: {}", e.getMessage());
         }

@@ -23,10 +23,9 @@ public class SendNotificationListener implements ApplicationListener<SendNotific
 
     @Override
     public void onApplicationEvent(SendNotificationEvent event) {
-        log.info("[Notification] Received domain event: SendNotificationEvent for user {}", event.getUserId());
         try {
             pushNotificationService.sendNotificationToUser(
-                    event.getUserId(), event.getTitle(), event.getBody(), event.getData());
+                    event.getUserId(), event.getTitle(), event.getBody(), event.getNotificationType(), event.getData());
         } catch (Exception e) {
             log.error("[Notification] Failed to send notification to user {}: {}", event.getUserId(), e.getMessage());
         }

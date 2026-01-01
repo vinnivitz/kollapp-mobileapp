@@ -8,6 +8,28 @@ export enum DeviceType {
 }
 
 /**
+ * Notification type enumeration for categorizing push notifications.
+ */
+export enum NotificationType {
+	/** Events and activities notifications */
+	ACTIVITIES = 'ACTIVITIES',
+	/** Organization-wide announcements */
+	ANNOUNCEMENTS = 'ANNOUNCEMENTS',
+	/** Financial transactions and budget notifications */
+	FINANCES = 'FINANCES',
+	/** Legacy/fallback general notifications */
+	GENERAL = 'GENERAL',
+	/** Notifications about other members joining/requesting to join */
+	MEMBERSHIP_CHANGES = 'MEMBERSHIP_CHANGES',
+	/** Personal notifications about own membership status (approved, rejected, role changed) */
+	MEMBERSHIP_STATUS = 'MEMBERSHIP_STATUS',
+	/** Direct messages (future feature) */
+	MESSAGES = 'MESSAGES',
+	/** Critical system alerts */
+	SYSTEM_ALERTS = 'SYSTEM_ALERTS'
+}
+
+/**
  * Device token registration request
  */
 export type DeviceTokenRegistrationRequestTO = {
@@ -23,13 +45,4 @@ export type DeviceTokenTO = {
 	deviceType: DeviceType;
 	id: number;
 	token: string;
-};
-
-/**
- * Send notification request
- */
-export type SendNotificationRequestTO = {
-	body: string;
-	title: string;
-	data?: Record<string, string>;
 };
