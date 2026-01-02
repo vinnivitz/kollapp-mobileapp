@@ -30,17 +30,7 @@ public class DeviceTokenRepositoryImpl implements DeviceTokenRepository {
     }
 
     @Override
-    public List<DeviceToken> findActiveByUserId(Long userId) {
+    public List<DeviceToken> findActiveByUserId(long userId) {
         return jpaRepository.findByUserIdAndActive(userId, true);
-    }
-
-    @Override
-    public List<DeviceToken> findByUserId(Long userId) {
-        return jpaRepository.findByUserId(userId);
-    }
-
-    @Override
-    public void delete(DeviceToken deviceToken) {
-        jpaRepository.delete(deviceToken);
     }
 }

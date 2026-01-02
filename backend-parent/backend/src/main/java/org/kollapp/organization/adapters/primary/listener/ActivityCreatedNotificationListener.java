@@ -1,8 +1,6 @@
 package org.kollapp.organization.adapters.primary.listener;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 
+import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.notification.application.model.enums.NotificationType;
 import org.kollapp.notification.application.publisher.NotificationPublisher;
 import org.kollapp.organization.application.model.ActivityCreatedEvent;
@@ -31,21 +30,18 @@ public class ActivityCreatedNotificationListener implements ApplicationListener<
     @Autowired
     private OrganizationService organizationService;
 
+    @Autowired
+    private MessageUtil messageUtil;
+
     @Override
     public void onApplicationEvent(ActivityCreatedEvent event) {
-        // Get user IDs from the organization
         List<Long> userIds = organizationService.getAllMemberUserIds(event.getOrganizationId());
 
-        // Send notification to all organization members about the new activity
-        Map<String, String> data = new HashMap<>();
-        data.put("activityId", String.valueOf(event.getActivityId()));
-        data.put("organizationId", String.valueOf(event.getOrganizationId()));
-        data.put("type", "activity_created");
+        String route = "/organizations/" + event.getOrganizationId() + "/activities/" + event.getActivityId();
+        String title = messageUtil.getMessage("notification.activity.created.title");
+        String body = messageUtil.getMessage("notification.activity.created.body", event.getActivityName());
 
-        String title = "New Activity Created";
-        String body = String.format("A new activity '%s' has been created!", event.getActivityName());
-
-        notificationPublisher.publishSendNotificationToOrganizationEvent(
-                event.getOrganizationId(), userIds, title, body, NotificationType.ACTIVITIES, data);
+        notificationPublisher.publishSendNotificationToUsersEvent(
+                userIds, title, body, NotificationType.ACTIVITIES, route);
     }
 }

@@ -1,7 +1,5 @@
 package org.kollapp.notification.application.port;
 
-import java.util.Map;
-
 import org.kollapp.notification.application.model.entities.DeviceToken;
 import org.kollapp.notification.application.model.entities.PushNotification;
 
@@ -15,10 +13,10 @@ public interface PushNotificationChannel {
      * @param deviceToken The device token to send to
      * @param title       The notification title
      * @param body        The notification body
-     * @param data        Optional additional data
+     * @param route       Optional deep link route
      * @return The notification record with status
      */
-    PushNotification send(DeviceToken deviceToken, String title, String body, Map<String, String> data);
+    PushNotification send(DeviceToken deviceToken, String title, String body, String route);
 
     /**
      * Check if this channel supports the given device type.
@@ -27,11 +25,4 @@ public interface PushNotificationChannel {
      * @return true if this channel can handle the device type
      */
     boolean supports(DeviceToken deviceToken);
-
-    /**
-     * Get the channel name for identification.
-     *
-     * @return The channel name
-     */
-    String getChannelName();
 }

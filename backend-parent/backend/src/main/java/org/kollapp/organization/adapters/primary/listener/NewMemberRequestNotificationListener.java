@@ -1,8 +1,6 @@
 package org.kollapp.organization.adapters.primary.listener;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 
+import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.notification.application.model.enums.NotificationType;
 import org.kollapp.notification.application.publisher.NotificationPublisher;
 import org.kollapp.organization.application.model.NewMemberRequestEvent;
@@ -31,27 +30,19 @@ public class NewMemberRequestNotificationListener implements ApplicationListener
     @Autowired
     private OrganizationService organizationService;
 
+    @Autowired
+    private MessageUtil messageUtil;
+
     @Override
     public void onApplicationEvent(NewMemberRequestEvent event) {
-        log.info(
-                "[Organization] Received domain event: NewMemberRequestEvent for user {} in organization {}",
-                event.getUserId(),
-                event.getOrganizationId());
-
-        // Get all managers of the organization
         List<Long> managerUserIds = organizationService.getAllManagerUserIds(event.getOrganizationId());
 
-        Map<String, String> data = new HashMap<>();
-        data.put("type", "membership_request");
-        data.put("organizationId", String.valueOf(event.getOrganizationId()));
-        data.put("organizationName", event.getOrganizationName());
-        data.put("userId", String.valueOf(event.getUserId()));
-        data.put("username", event.getUsername());
-
-        String title = "New Membership Request";
-        String body = String.format("%s wants to join %s", event.getUsername(), event.getOrganizationName());
+        String route = "/organizations/" + event.getOrganizationId() + "/members";
+        String title = messageUtil.getMessage("notification.membership.new-request.title");
+        String body = messageUtil.getMessage(
+                "notification.membership.new-request.body", event.getUsername(), event.getOrganizationName());
 
         notificationPublisher.publishSendNotificationToUsersEvent(
-                managerUserIds, title, body, NotificationType.MEMBERSHIP_CHANGES, data);
+                managerUserIds, title, body, NotificationType.MEMBERSHIP_CHANGES, route);
     }
 }

@@ -1,4 +1,4 @@
-import type { DeviceTokenRegistrationRequestTO, DeviceTokenTO } from '$lib/api/dtos';
+import type { DeviceTokenRegistrationRequestTO, DeviceTokenTO, PushNotificationTO } from '$lib/api/dtos';
 
 import { RequestMethod, type ResponseBody } from '$lib/models/api';
 import { customFetch } from '$lib/utility';
@@ -39,6 +39,20 @@ class NotificationService {
 	async getUserDeviceTokens(): Promise<ResponseBody<DeviceTokenTO[]>> {
 		return customFetch(`${this.ENDPOINT}/device-tokens`, {
 			method: RequestMethod.GET
+		});
+	}
+
+	/**
+	 * Gets notifications for the logged in user.
+	 * @param limit Optional limit for the number of notifications to retrieve.
+	 * @returns {Promise<ResponseBody<PushNotificationTO[]>>} The response body.
+	 */
+	async getUserNotifications(limit?: number): Promise<ResponseBody<PushNotificationTO[]>> {
+		const query = limit ? { limit: limit.toString() } : undefined;
+		return customFetch(`${this.ENDPOINT}`, {
+			method: RequestMethod.GET,
+			query,
+			silentOnSuccess: true
 		});
 	}
 }

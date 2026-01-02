@@ -3,7 +3,6 @@ import {
 	type ActionPerformed,
 	type Channel,
 	PushNotifications,
-	type PushNotificationSchema,
 	type RegistrationError,
 	type Token
 } from '@capacitor/push-notifications';
@@ -11,16 +10,15 @@ import { get } from 'svelte/store';
 
 import { dev } from '$app/environment';
 import { goto } from '$app/navigation';
-import { resolve } from '$app/paths';
 
 import { isAuthenticated } from './api.utility';
 import { getStoredValue, storeValue } from './storage.utility';
 
-import { DeviceType, NotificationType } from '$lib/api/dtos';
+import { DeviceType, getNotificationRoute, NotificationType } from '$lib/api/dtos';
 import { notificationService } from '$lib/api/services';
 import { t } from '$lib/locales';
 import { StorageKey } from '$lib/models/storage';
-import { AlertType } from '$lib/models/ui';
+import { notificationStore } from '$lib/stores';
 import { showAlert } from '$lib/utility';
 
 /**
@@ -50,8 +48,8 @@ export async function initPushNotifications(): Promise<void> {
 			console.error('Push notification registration error:', error);
 		});
 
-		PushNotifications.addListener('pushNotificationReceived', async (notification: PushNotificationSchema) => {
-			await handleNotificationReceived(notification);
+		PushNotifications.addListener('pushNotificationReceived', async () => {
+			await handleNotificationReceived();
 		});
 
 		PushNotifications.addListener('pushNotificationActionPerformed', async (action: ActionPerformed) => {
@@ -135,11 +133,10 @@ async function registerTokenWithBackend(token: string): Promise<void> {
 
 /**
  * Handles received push notifications while app is in foreground.
- * @param notification The received notification.
  * @returns {Promise<void>}
  */
-async function handleNotificationReceived(notification: PushNotificationSchema): Promise<void> {
-	await showAlert(notification.title ?? '', { type: AlertType.SUCCESS });
+async function handleNotificationReceived(): Promise<void> {
+	await notificationStore.fetch();
 }
 
 /**
@@ -147,10 +144,12 @@ async function handleNotificationReceived(notification: PushNotificationSchema):
  * @param action The notification action performed.
  */
 async function handleNotificationAction(action: ActionPerformed): Promise<void> {
-	const data = action.notification.data;
-	await (data && data.route
-		? goto(resolve(data.route))
-		: showAlert(action.notification.title ?? '', { type: AlertType.SUCCESS }));
+	const route = getNotificationRoute(action.notification.data);
+	if (route) {
+		// eslint-disable-next-line svelte/no-navigation-without-resolve
+		await goto(route);
+	}
+	await notificationStore.fetch();
 }
 
 /**

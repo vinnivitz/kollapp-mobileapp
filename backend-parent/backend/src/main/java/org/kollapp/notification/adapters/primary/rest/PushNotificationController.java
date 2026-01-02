@@ -4,10 +4,10 @@ import java.util.List;
 
 import jakarta.validation.Valid;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,8 +21,11 @@ import org.kollapp.core.adapters.primary.rest.dto.DataResponseTO;
 import org.kollapp.core.adapters.primary.rest.dto.MessageResponseTO;
 import org.kollapp.notification.adapters.primary.rest.dto.DeviceTokenRegistrationRequestTO;
 import org.kollapp.notification.adapters.primary.rest.dto.DeviceTokenTO;
+import org.kollapp.notification.adapters.primary.rest.dto.PushNotificationTO;
 import org.kollapp.notification.adapters.primary.rest.mapper.DeviceTokenMapper;
+import org.kollapp.notification.adapters.primary.rest.mapper.PushNotificationMapper;
 import org.kollapp.notification.application.model.entities.DeviceToken;
+import org.kollapp.notification.application.model.entities.PushNotification;
 import org.kollapp.notification.application.model.enums.DeviceType;
 import org.kollapp.notification.application.service.PushNotificationService;
 import org.kollapp.user.application.model.KollappUser;
@@ -38,15 +41,16 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 @RestController
 @RequestMapping("/api/notifications")
 @PrimaryAdapter
+@AllArgsConstructor
 public class PushNotificationController {
-    @Autowired
-    private PushNotificationService pushNotificationService;
 
-    @Autowired
-    private KollappUserService kollappUserService;
+    private final PushNotificationService pushNotificationService;
 
-    @Autowired
-    private DeviceTokenMapper deviceTokenMapper;
+    private final KollappUserService kollappUserService;
+
+    private final DeviceTokenMapper deviceTokenMapper;
+
+    private final PushNotificationMapper pushNotificationMapper;
 
     @PostMapping("/device-token")
     @Operation(
@@ -54,12 +58,12 @@ public class PushNotificationController {
             security = {@SecurityRequirement(name = "bearer-key")})
     public ResponseEntity<DataResponseTO<DeviceTokenTO>> registerDeviceToken(
             @Valid @RequestBody DeviceTokenRegistrationRequestTO request) {
-        KollappUser user = kollappUserService.getLoggedInKollappUser();
+        KollappUser kollappUser = kollappUserService.getLoggedInKollappUser();
 
         DeviceType deviceType = DeviceType.valueOf(request.getDeviceType().name());
 
-        DeviceToken deviceToken =
-                pushNotificationService.registerDeviceToken(user.getId(), request.getToken(), deviceType);
+        DeviceToken deviceToken = pushNotificationService.registerDeviceToken(
+                kollappUser.getId(), request.getToken(), deviceType, request.getDeviceName());
 
         DeviceTokenTO response = deviceTokenMapper.toTO(deviceToken);
         return ResponseEntity.ok(new DataResponseTO<>(response, "success.notification.device-token-registered"));
@@ -79,9 +83,21 @@ public class PushNotificationController {
             summary = "Get all active device tokens for the logged in user",
             security = {@SecurityRequirement(name = "bearer-key")})
     public ResponseEntity<DataResponseTO<List<DeviceTokenTO>>> getUserDeviceTokens() {
-        KollappUser user = kollappUserService.getLoggedInKollappUser();
-        List<DeviceToken> deviceTokens = pushNotificationService.getUserDeviceTokens(user.getId());
+        KollappUser kollappUser = kollappUserService.getLoggedInKollappUser();
+        List<DeviceToken> deviceTokens = pushNotificationService.getUserDeviceTokens(kollappUser.getId());
         List<DeviceTokenTO> response = deviceTokenMapper.toTOs(deviceTokens);
         return ResponseEntity.ok(new DataResponseTO<>(response, "success.notification.device-tokens-retrieved"));
+    }
+
+    @GetMapping
+    @Operation(
+            summary = "Get notifications for the logged in user",
+            security = {@SecurityRequirement(name = "bearer-key")})
+    public ResponseEntity<DataResponseTO<List<PushNotificationTO>>> getUserNotifications(
+            @RequestParam(value = "limit", required = false) Integer limit) {
+        KollappUser kollappUser = kollappUserService.getLoggedInKollappUser();
+        List<PushNotification> notifications = pushNotificationService.getUserNotifications(kollappUser.getId(), limit);
+        List<PushNotificationTO> response = pushNotificationMapper.toTOs(notifications);
+        return ResponseEntity.ok(new DataResponseTO<>(response, "success.notification.notifications-retrieved"));
     }
 }

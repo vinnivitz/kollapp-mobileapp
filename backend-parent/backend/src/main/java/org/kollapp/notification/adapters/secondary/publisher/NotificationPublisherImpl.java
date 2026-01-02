@@ -1,7 +1,6 @@
 package org.kollapp.notification.adapters.secondary.publisher;
 
 import java.util.List;
-import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -10,10 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
-import org.kollapp.notification.application.model.SendNotificationEvent;
-import org.kollapp.notification.application.model.SendNotificationToOrganizationEvent;
-import org.kollapp.notification.application.model.SendNotificationToUsersEvent;
 import org.kollapp.notification.application.model.enums.NotificationType;
+import org.kollapp.notification.application.model.events.SendNotificationEvent;
+import org.kollapp.notification.application.model.events.SendNotificationToUsersEvent;
 import org.kollapp.notification.application.publisher.NotificationPublisher;
 
 /**
@@ -29,33 +27,16 @@ public class NotificationPublisherImpl implements NotificationPublisher {
 
     @Override
     public void publishSendNotificationEvent(
-            Long userId, String title, String body, NotificationType notificationType, Map<String, String> data) {
-        SendNotificationEvent event = new SendNotificationEvent(this, userId, title, body, notificationType, data);
+            long userId, String title, String body, NotificationType notificationType, String route) {
+        SendNotificationEvent event = new SendNotificationEvent(this, userId, title, body, notificationType, route);
         applicationEventPublisher.publishEvent(event);
     }
 
     @Override
     public void publishSendNotificationToUsersEvent(
-            List<Long> userIds,
-            String title,
-            String body,
-            NotificationType notificationType,
-            Map<String, String> data) {
+            List<Long> userIds, String title, String body, NotificationType notificationType, String route) {
         SendNotificationToUsersEvent event =
-                new SendNotificationToUsersEvent(this, userIds, title, body, notificationType, data);
-        applicationEventPublisher.publishEvent(event);
-    }
-
-    @Override
-    public void publishSendNotificationToOrganizationEvent(
-            Long organizationId,
-            List<Long> userIds,
-            String title,
-            String body,
-            NotificationType notificationType,
-            Map<String, String> data) {
-        SendNotificationToOrganizationEvent event = new SendNotificationToOrganizationEvent(
-                this, organizationId, userIds, title, body, notificationType, data);
+                new SendNotificationToUsersEvent(this, userIds, title, body, notificationType, route);
         applicationEventPublisher.publishEvent(event);
     }
 }

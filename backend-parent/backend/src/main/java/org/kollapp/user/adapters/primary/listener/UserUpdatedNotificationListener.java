@@ -10,12 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 
+import org.kollapp.notification.application.model.enums.NotificationType;
 import org.kollapp.notification.application.publisher.NotificationPublisher;
 import org.kollapp.user.application.model.KollappUserUpdatedEvent;
 
 /**
- * Example listener that sends a notification when a user's profile is updated.
- * This demonstrates how the user module can trigger notifications without direct service dependencies.
+ * Listener that sends a notification when a user's profile is updated.
  */
 @PrimaryAdapter
 @Service
@@ -39,6 +39,7 @@ public class UserUpdatedNotificationListener implements ApplicationListener<Koll
         String title = "Profile Updated";
         String body = String.format("Hi %s, your profile has been successfully updated!", event.getUsername());
 
-        notificationPublisher.publishSendNotificationEvent(event.getUserId(), title, body, data);
+        notificationPublisher.publishSendNotificationEvent(
+                event.getUserId(), title, body, NotificationType.GENERAL, data);
     }
 }

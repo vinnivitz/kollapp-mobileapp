@@ -1,6 +1,8 @@
 package org.kollapp.notification.application.exception;
 
-public class InvalidDeviceTypeException extends RuntimeException {
+import org.kollapp.core.application.exceptions.AbstractLocalizedException;
+
+public class InvalidDeviceTypeException extends AbstractLocalizedException {
     public InvalidDeviceTypeException() {
         super();
     }

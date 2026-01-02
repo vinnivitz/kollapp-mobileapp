@@ -38,17 +38,17 @@ public class PushNotification {
 
     @NotNull
     @Column(nullable = false)
-    private Long userId;
+    private long userId;
 
     @NotBlank
-    @Column(nullable = false)
+    @Column(nullable = false, length = 40)
     private String title;
 
     @NotBlank
-    @Column(nullable = false, length = 1000)
+    @Column(nullable = false, length = 2048)
     private String body;
 
-    @Column(length = 2000)
+    @Column(columnDefinition = "TEXT")
     private String data;
 
     @NotNull
@@ -61,21 +61,14 @@ public class PushNotification {
     @Column(nullable = false)
     private NotificationStatus status;
 
-    @Column(length = 500)
+    @Column(columnDefinition = "TEXT")
     private String errorMessage;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    /** Set creation timestamp before persisting. */
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
-        if (status == null) {
-            status = NotificationStatus.PENDING;
-        }
-        if (notificationType == null) {
-            notificationType = NotificationType.GENERAL;
-        }
     }
 }

@@ -1,7 +1,6 @@
 package org.kollapp.notification.application.publisher;
 
 import java.util.List;
-import java.util.Map;
 
 import org.jmolecules.architecture.hexagonal.SecondaryPort;
 import org.springframework.stereotype.Service;
@@ -22,10 +21,10 @@ public interface NotificationPublisher {
      * @param title The notification title
      * @param body The notification body
      * @param notificationType The notification type
-     * @param data Additional data payload
+     * @param route Optional deep link route
      */
     void publishSendNotificationEvent(
-            Long userId, String title, String body, NotificationType notificationType, Map<String, String> data);
+            long userId, String title, String body, NotificationType notificationType, String route);
 
     /**
      * Publish an event to send a notification to multiple users.
@@ -34,26 +33,8 @@ public interface NotificationPublisher {
      * @param title The notification title
      * @param body The notification body
      * @param notificationType The notification type
-     * @param data Additional data payload
+     * @param route Optional deep link route
      */
     void publishSendNotificationToUsersEvent(
-            List<Long> userIds, String title, String body, NotificationType notificationType, Map<String, String> data);
-
-    /**
-     * Publish an event to send a notification to all members of an organization.
-     *
-     * @param organizationId The organization ID
-     * @param userIds The list of user IDs to send notifications to
-     * @param title The notification title
-     * @param body The notification body
-     * @param notificationType The notification type
-     * @param data Additional data payload
-     */
-    void publishSendNotificationToOrganizationEvent(
-            Long organizationId,
-            List<Long> userIds,
-            String title,
-            String body,
-            NotificationType notificationType,
-            Map<String, String> data);
+            List<Long> userIds, String title, String body, NotificationType notificationType, String route);
 }

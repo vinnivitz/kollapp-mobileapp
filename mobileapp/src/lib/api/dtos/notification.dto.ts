@@ -46,3 +46,24 @@ export type DeviceTokenTO = {
 	id: number;
 	token: string;
 };
+
+/**
+ * Push notification response
+ */
+export type PushNotificationTO = {
+	body: string;
+	createdAt: string;
+	id: number;
+	notificationType: NotificationType;
+	title: string;
+	route?: string;
+};
+
+/**
+ * Extracts the route from notification data.
+ * @param data The data from Capacitor push notification (FCM sends as object with route property)
+ * @returns The route string or undefined
+ */
+export function getNotificationRoute(data?: Record<string, string>): string | undefined {
+	return data?.route;
+}

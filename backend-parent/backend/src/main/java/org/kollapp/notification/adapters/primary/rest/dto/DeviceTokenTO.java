@@ -1,5 +1,7 @@
 package org.kollapp.notification.adapters.primary.rest.dto;
 
+import jakarta.validation.constraints.NotNull;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,11 +19,18 @@ import org.kollapp.notification.adapters.primary.rest.dto.enums.DeviceType;
 @NoArgsConstructor
 @Builder
 public class DeviceTokenTO {
-    private Long id;
+    @NotNull
+    private long id;
 
+    @NotNull
     private String token;
 
+    @NotNull
     private DeviceType deviceType;
 
+    @NotNull
+    private String deviceName;
+
+    @NotNull
     private boolean active;
 }

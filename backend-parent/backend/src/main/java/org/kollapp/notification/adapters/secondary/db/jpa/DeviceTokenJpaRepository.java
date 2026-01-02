@@ -26,13 +26,5 @@ public interface DeviceTokenJpaRepository extends JpaRepository<DeviceToken, Lon
      * @param active The active status
      * @return List of active device tokens
      */
-    List<DeviceToken> findByUserIdAndActive(Long userId, boolean active);
-
-    /**
-     * Find all device tokens for a user.
-     *
-     * @param userId The user ID
-     * @return List of device tokens
-     */
-    List<DeviceToken> findByUserId(Long userId);
+    List<DeviceToken> findByUserIdAndActive(long userId, boolean active);
 }

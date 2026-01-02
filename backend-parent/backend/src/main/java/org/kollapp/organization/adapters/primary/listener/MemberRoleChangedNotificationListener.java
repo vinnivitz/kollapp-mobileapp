@@ -1,8 +1,5 @@
 package org.kollapp.organization.adapters.primary.listener;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import lombok.extern.slf4j.Slf4j;
 
 import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
@@ -10,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 
+import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.notification.application.model.enums.NotificationType;
 import org.kollapp.notification.application.publisher.NotificationPublisher;
 import org.kollapp.organization.application.model.MemberRoleChangedEvent;
@@ -26,19 +24,18 @@ public class MemberRoleChangedNotificationListener implements ApplicationListene
     @Autowired
     private NotificationPublisher notificationPublisher;
 
+    @Autowired
+    private MessageUtil messageUtil;
+
     @Override
     public void onApplicationEvent(MemberRoleChangedEvent event) {
-        Map<String, String> data = new HashMap<>();
-        data.put("type", "role_changed");
-        data.put("organizationId", String.valueOf(event.getOrganizationId()));
-        data.put("organizationName", event.getOrganizationName());
-        data.put("newRole", event.getNewRole().name());
-
+        String route = "/organizations/" + event.getOrganizationId();
         String roleDisplay = event.getNewRole().name().replace("ROLE_ORGANIZATION_", "");
-        String title = "Your Role Has Changed";
-        String body = String.format("You are now a %s in %s", roleDisplay, event.getOrganizationName());
+        String title = messageUtil.getMessage("notification.membership.role-changed.title");
+        String body = messageUtil.getMessage(
+                "notification.membership.role-changed.body", roleDisplay, event.getOrganizationName());
 
         notificationPublisher.publishSendNotificationEvent(
-                event.getUserId(), title, body, NotificationType.MEMBERSHIP_STATUS, data);
+                event.getUserId(), title, body, NotificationType.MEMBERSHIP_STATUS, route);
     }
 }

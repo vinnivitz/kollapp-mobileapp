@@ -1,8 +1,5 @@
 package org.kollapp.organization.adapters.primary.listener;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import lombok.extern.slf4j.Slf4j;
 
 import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
@@ -10,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 
+import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.notification.application.model.enums.NotificationType;
 import org.kollapp.notification.application.publisher.NotificationPublisher;
 import org.kollapp.organization.application.model.MembershipApprovedEvent;
@@ -26,17 +24,16 @@ public class MembershipApprovedNotificationListener implements ApplicationListen
     @Autowired
     private NotificationPublisher notificationPublisher;
 
+    @Autowired
+    private MessageUtil messageUtil;
+
     @Override
     public void onApplicationEvent(MembershipApprovedEvent event) {
-        Map<String, String> data = new HashMap<>();
-        data.put("type", "membership_approved");
-        data.put("organizationId", String.valueOf(event.getOrganizationId()));
-        data.put("organizationName", event.getOrganizationName());
-
-        String title = "Membership Approved";
-        String body = String.format("Your membership to %s has been approved!", event.getOrganizationName());
+        String route = "/organizations/" + event.getOrganizationId();
+        String title = messageUtil.getMessage("notification.membership.approved.title");
+        String body = messageUtil.getMessage("notification.membership.approved.body", event.getOrganizationName());
 
         notificationPublisher.publishSendNotificationEvent(
-                event.getUserId(), title, body, NotificationType.MEMBERSHIP_STATUS, data);
+                event.getUserId(), title, body, NotificationType.MEMBERSHIP_STATUS, route);
     }
 }

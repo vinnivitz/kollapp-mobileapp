@@ -6,6 +6,7 @@ export * from './initialization.store';
 export * from './layout.store';
 export * from './locale.store';
 export * from './modal.store';
+export * from './notification.store';
 export * from './organization.store';
 export * from './theme.store';
 export * from './user.store';

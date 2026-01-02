@@ -31,20 +31,5 @@ public interface DeviceTokenRepository {
      * @param userId The user ID
      * @return List of active device tokens
      */
-    List<DeviceToken> findActiveByUserId(Long userId);
-
-    /**
-     * Find all device tokens for a user.
-     *
-     * @param userId The user ID
-     * @return List of device tokens
-     */
-    List<DeviceToken> findByUserId(Long userId);
-
-    /**
-     * Delete a device token.
-     *
-     * @param deviceToken The device token to delete
-     */
-    void delete(DeviceToken deviceToken);
+    List<DeviceToken> findActiveByUserId(long userId);
 }

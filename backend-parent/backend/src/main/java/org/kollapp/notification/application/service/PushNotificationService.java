@@ -1,9 +1,9 @@
 package org.kollapp.notification.application.service;
 
 import java.util.List;
-import java.util.Map;
 
 import org.kollapp.notification.application.model.entities.DeviceToken;
+import org.kollapp.notification.application.model.entities.PushNotification;
 import org.kollapp.notification.application.model.enums.DeviceType;
 import org.kollapp.notification.application.model.enums.NotificationType;
 
@@ -19,7 +19,7 @@ public interface PushNotificationService {
      * @param deviceType The device type
      * @return The registered device token
      */
-    DeviceToken registerDeviceToken(Long userId, String token, DeviceType deviceType);
+    DeviceToken registerDeviceToken(long userId, String token, DeviceType deviceType, String deviceName);
 
     /**
      * Unregister a device token.
@@ -34,7 +34,7 @@ public interface PushNotificationService {
      * @param userId The user ID
      * @return List of active device tokens
      */
-    List<DeviceToken> getUserDeviceTokens(Long userId);
+    List<DeviceToken> getUserDeviceTokens(long userId);
 
     /**
      * Send a push notification to a specific user.
@@ -43,10 +43,10 @@ public interface PushNotificationService {
      * @param title The notification title
      * @param body The notification body
      * @param notificationType The notification type
-     * @param data Additional data payload
+     * @param route Optional deep link route
      */
     void sendNotificationToUser(
-            Long userId, String title, String body, NotificationType notificationType, Map<String, String> data);
+            long userId, String title, String body, NotificationType notificationType, String route);
 
     /**
      * Send a push notification to specific users.
@@ -55,20 +55,17 @@ public interface PushNotificationService {
      * @param title The notification title
      * @param body The notification body
      * @param notificationType The notification type
-     * @param data Additional data payload
+     * @param route Optional deep link route
      */
     void sendNotificationToUsers(
-            List<Long> userIds, String title, String body, NotificationType notificationType, Map<String, String> data);
+            List<Long> userIds, String title, String body, NotificationType notificationType, String route);
 
     /**
-     * Send a push notification to a specific device token.
+     * Get notification history for a specific user.
      *
-     * @param token The device token
-     * @param title The notification title
-     * @param body The notification body
-     * @param notificationType The notification type
-     * @param data Additional data payload
+     * @param userId The user ID
+     * @param limit Maximum number of notifications to return (null for all)
+     * @return List of notifications ordered by creation date descending
      */
-    void sendNotificationToToken(
-            String token, String title, String body, NotificationType notificationType, Map<String, String> data);
+    List<PushNotification> getUserNotifications(long userId, Integer limit);
 }

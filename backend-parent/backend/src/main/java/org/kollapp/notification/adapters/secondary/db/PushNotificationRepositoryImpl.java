@@ -1,7 +1,10 @@
 package org.kollapp.notification.adapters.secondary.db;
 
+import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 import org.kollapp.notification.adapters.secondary.db.jpa.PushNotificationJpaRepository;
@@ -19,5 +22,13 @@ public class PushNotificationRepositoryImpl implements PushNotificationRepositor
     @Override
     public PushNotification save(PushNotification notification) {
         return jpaRepository.save(notification);
+    }
+
+    @Override
+    public List<PushNotification> findByUserIdOrderByCreatedAtDesc(long userId, Integer limit) {
+        if (limit == null) {
+            return jpaRepository.findByUserIdOrderByCreatedAtDesc(userId);
+        }
+        return jpaRepository.findByUserIdOrderByCreatedAtDesc(userId, PageRequest.of(0, limit));
     }
 }

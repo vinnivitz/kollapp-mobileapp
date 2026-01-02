@@ -1,6 +1,4 @@
-package org.kollapp.notification.application.model;
-
-import java.util.Map;
+package org.kollapp.notification.application.model.events;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -15,24 +13,19 @@ import org.kollapp.notification.application.model.enums.NotificationType;
 @Getter
 @Setter
 public class SendNotificationEvent extends ApplicationEvent {
-    private Long userId;
+    private long userId;
     private String title;
     private String body;
     private NotificationType notificationType;
-    private Map<String, String> data;
+    private String route;
 
     public SendNotificationEvent(
-            Object source,
-            Long userId,
-            String title,
-            String body,
-            NotificationType notificationType,
-            Map<String, String> data) {
+            Object source, long userId, String title, String body, NotificationType notificationType, String route) {
         super(source);
         this.userId = userId;
         this.title = title;
         this.body = body;
         this.notificationType = notificationType;
-        this.data = data;
+        this.route = route;
     }
 }
