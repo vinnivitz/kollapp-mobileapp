@@ -1,7 +1,6 @@
 package org.kollapp.notification.application.service.impl;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import lombok.AllArgsConstructor;
@@ -75,34 +74,30 @@ public class PushNotificationServiceImpl implements PushNotificationService {
 
     @Override
     public void sendNotificationToUser(
-            long userId, String title, String body, NotificationType notificationType, Map<String, String> data) {
+            long userId, String title, String body, NotificationType notificationType, String route) {
         List<DeviceToken> deviceTokens = deviceTokenRepository.findActiveByUserId(userId);
 
         if (deviceTokens.isEmpty()) {
             return;
         }
 
-        deviceTokens.forEach(deviceToken -> sendNotificationAsync(deviceToken, title, body, data));
+        deviceTokens.forEach(deviceToken -> sendNotificationAsync(deviceToken, title, body, route));
     }
 
     @Override
     public void sendNotificationToUsers(
-            List<Long> userIds,
-            String title,
-            String body,
-            NotificationType notificationType,
-            Map<String, String> data) {
+            List<Long> userIds, String title, String body, NotificationType notificationType, String route) {
 
         userIds.forEach(userId -> {
-            sendNotificationToUser(userId, title, body, notificationType, data);
+            sendNotificationToUser(userId, title, body, notificationType, route);
         });
     }
 
     @Async
     private CompletableFuture<PushNotification> sendNotificationAsync(
-            DeviceToken deviceToken, String title, String body, Map<String, String> data) {
+            DeviceToken deviceToken, String title, String body, String route) {
         PushNotificationChannel channel = selectChannel(deviceToken);
-        PushNotification notification = channel.send(deviceToken, title, body, data);
+        PushNotification notification = channel.send(deviceToken, title, body, route);
         return CompletableFuture.completedFuture(notification);
     }
 
