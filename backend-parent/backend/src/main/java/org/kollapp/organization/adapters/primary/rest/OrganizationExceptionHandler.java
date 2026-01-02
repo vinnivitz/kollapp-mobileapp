@@ -14,6 +14,7 @@ import org.kollapp.core.adapters.primary.rest.dto.ResponseTO;
 import org.kollapp.organization.application.exception.ActivityNotFoundException;
 import org.kollapp.organization.application.exception.BudgetCategoryNotFoundException;
 import org.kollapp.organization.application.exception.BudgetCategoryWithNameExistsException;
+import org.kollapp.organization.application.exception.DefaultBudgetCategoryMustNotBeDeletedException;
 import org.kollapp.organization.application.exception.InvalidInvitationCodeException;
 import org.kollapp.organization.application.exception.InvalidOrganizationRoleException;
 import org.kollapp.organization.application.exception.InvalidPostingTypeException;
@@ -128,6 +129,12 @@ public class OrganizationExceptionHandler {
     @ExceptionHandler(BudgetCategoryWithNameExistsException.class)
     public ResponseEntity<ResponseTO> handleBudgetCategoryWithNameAlreadyExists() {
         String message = messageUtil.getMessage("error.organization.budget-category-with-name-exists");
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
+    }
+
+    @ExceptionHandler(DefaultBudgetCategoryMustNotBeDeletedException.class)
+    public ResponseEntity<ResponseTO> handleDefaultBudgetCategoryMustNotBeDeleted() {
+        String message = messageUtil.getMessage("error.organization.default-budget-category-deletion");
         return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
     }
 }

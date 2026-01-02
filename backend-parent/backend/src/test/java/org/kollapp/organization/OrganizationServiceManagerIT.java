@@ -17,6 +17,9 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 
 import org.kollapp.core.BaseIT;
+import org.kollapp.organization.application.exception.BudgetCategoryNotFoundException;
+import org.kollapp.organization.application.exception.BudgetCategoryWithNameExistsException;
+import org.kollapp.organization.application.exception.DefaultBudgetCategoryMustNotBeDeletedException;
 import org.kollapp.organization.application.exception.InvalidInvitationCodeException;
 import org.kollapp.organization.application.exception.LastManagerException;
 import org.kollapp.organization.application.exception.OrganizationNotFoundException;
@@ -25,6 +28,7 @@ import org.kollapp.organization.application.exception.PersonAlreadyRegisteredInO
 import org.kollapp.organization.application.exception.PersonNotRegisteredInOrganizationException;
 import org.kollapp.organization.application.exception.SelfActionNotAllowedException;
 import org.kollapp.organization.application.model.Organization;
+import org.kollapp.organization.application.model.OrganizationBudgetCategory;
 import org.kollapp.organization.application.model.OrganizationRole;
 import org.kollapp.organization.application.model.PersonOfOrganization;
 import org.kollapp.organization.application.model.PersonOfOrganizationStatus;
@@ -78,6 +82,7 @@ public class OrganizationServiceManagerIT extends BaseIT {
         assertThat(organization.getPersonsOfOrganization().getFirst().getUsername())
                 .isEqualTo("nina");
         assertThat(organization.getOrganizationInvitationCode()).isNotNull();
+        assertThat(organization.getBudgetCategories().size()).isEqualTo(1);
     }
 
     @Test
@@ -337,5 +342,79 @@ public class OrganizationServiceManagerIT extends BaseIT {
         assertThat(organization3.isPresent()).isTrue();
         assertThat(organization1.get().getPersonsOfOrganization().size()).isEqualTo(2);
         assertThat(organization3.get().getPersonsOfOrganization().size()).isEqualTo(1);
+    }
+
+    @Test
+    public void addBudgetCategoryShouldCreateBudgetCategory() {
+        OrganizationBudgetCategory budgetCategory = new OrganizationBudgetCategory();
+        budgetCategory.setName("test");
+        Organization organization = organizationService.addBudgetCategory(1, budgetCategory);
+        assertThat(organization.getBudgetCategories().size()).isEqualTo(4);
+    }
+
+    @Test
+    public void addBudgetCategoryWithExistingNameShouldThrowException() {
+        OrganizationBudgetCategory budgetCategory = new OrganizationBudgetCategory();
+        budgetCategory.setName("Category_2");
+        assertThatExceptionOfType(BudgetCategoryWithNameExistsException.class)
+                .isThrownBy(() -> organizationService.addBudgetCategory(1, budgetCategory));
+    }
+
+    @Test
+    public void editBudgetCategoryShouldEditBudgetCategory() {
+        OrganizationBudgetCategory budgetCategory = new OrganizationBudgetCategory();
+        budgetCategory.setName("Category_edited");
+        Organization organization = organizationService.editBudgetCategory(1, 2, budgetCategory);
+        OrganizationBudgetCategory updatedBudgetCategory = organization.findBudgetCategoryById(2);
+        assertThat(updatedBudgetCategory.getName()).isEqualTo(budgetCategory.getName());
+    }
+
+    @Test
+    public void editBudgetCategoryWithNoChangesShouldEditBudgetCategory() {
+        OrganizationBudgetCategory budgetCategory = new OrganizationBudgetCategory();
+        budgetCategory.setName("Category_2");
+        budgetCategory.setId(2);
+        Organization organization = organizationService.editBudgetCategory(1, 2, budgetCategory);
+        OrganizationBudgetCategory updatedBudgetCategory = organization.findBudgetCategoryById(2);
+        assertThat(updatedBudgetCategory.getName()).isEqualTo(budgetCategory.getName());
+    }
+
+    @Test
+    public void editBudgetCategoryWithWrongIdShouldThrowException() {
+        assertThatExceptionOfType(BudgetCategoryNotFoundException.class)
+                .isThrownBy(() -> organizationService.editBudgetCategory(1, 4, null));
+    }
+
+    @Test
+    public void editDefaultBudgetCategoryShouldThrowException() {
+        assertThatExceptionOfType(DefaultBudgetCategoryMustNotBeDeletedException.class)
+                .isThrownBy(() -> organizationService.editBudgetCategory(1, 1, null));
+    }
+
+    @Test
+    public void editBudgetCategoryToExistingNameShouldThrowException() {
+        OrganizationBudgetCategory budgetCategory = new OrganizationBudgetCategory();
+        budgetCategory.setName("Category_2");
+        assertThatExceptionOfType(BudgetCategoryWithNameExistsException.class)
+                .isThrownBy(() -> organizationService.editBudgetCategory(1, 3, budgetCategory));
+    }
+
+    @Test
+    public void deleteDefaultBudgetCategoryShouldThrowException() {
+        assertThatExceptionOfType(DefaultBudgetCategoryMustNotBeDeletedException.class)
+                .isThrownBy(() -> organizationService.deleteBudgetCategory(1, 1));
+    }
+
+    @Test
+    public void deleteNonDefaultBudgetCategoryShouldDeleteBudgetCategory() {
+        organizationService.deleteBudgetCategory(1, 2);
+        Organization organization = organizationService.getOrganizationById(1);
+        assertThat(organization.getBudgetCategories().size()).isEqualTo(2);
+    }
+
+    @Test
+    public void deleteBudgetCategoryWithWrongIdShouldThrowException() {
+        assertThatExceptionOfType(BudgetCategoryNotFoundException.class)
+                .isThrownBy(() -> organizationService.deleteBudgetCategory(1, 4));
     }
 }

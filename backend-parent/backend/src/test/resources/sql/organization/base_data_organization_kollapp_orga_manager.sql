@@ -10,6 +10,15 @@ VALUES (3, 'manager', 'manager@test.de', true, 'test', 'ROLE_KOLLAPP_ORGANIZATIO
 INSERT INTO organization(id, name, place)
 VALUES (1, 'NMS', 'Test City');
 
+INSERT INTO organization_budget_category(id,name,organization_id)
+VALUES (1, 'General',1);
+
+INSERT INTO organization_budget_category(id,name,organization_id)
+VALUES (2, 'Category_2',1);
+
+INSERT INTO organization_budget_category(id,name,organization_id)
+VALUES (3, 'Category_3',1);
+
 INSERT INTO posting(id, scope, amount_in_cents, date, purpose, type, activity_id, organization_id)
 VALUES(2, 'organization', 10000, '2025-09-11', 'Test', 'CREDIT', null, 1);
 
