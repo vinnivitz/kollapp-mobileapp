@@ -25,6 +25,6 @@ public class SendNotificationListener implements ApplicationListener<SendNotific
     @Override
     public void onApplicationEvent(SendNotificationEvent event) {
         pushNotificationService.sendNotificationToUser(
-                event.getUserId(), event.getTitle(), event.getBody(), event.getNotificationType(), event.getData());
+                event.getUserId(), event.getTitle(), event.getBody(), event.getNotificationType(), event.getRoute());
     }
 }
