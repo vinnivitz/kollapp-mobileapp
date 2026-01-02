@@ -1,5 +1,6 @@
 package org.kollapp.organization.application.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,8 +25,10 @@ public class OrganizationInvitationCode {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Column(length = 10, nullable = false)
     private String expirationDate;
 
+    @Column(length = 8, nullable = false)
     private String code;
 
     @OneToOne

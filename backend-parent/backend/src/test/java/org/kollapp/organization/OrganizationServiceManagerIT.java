@@ -191,7 +191,7 @@ public class OrganizationServiceManagerIT extends BaseIT {
     @Test
     public void enterOrganizationWithInvitationCodeTwiceShouldThrowException() {
         assertThatExceptionOfType(PersonAlreadyRegisteredInOrganizationException.class)
-                .isThrownBy(() -> organizationService.enterOrganizationByInvitationCode("asdfjkloe"));
+                .isThrownBy(() -> organizationService.enterOrganizationByInvitationCode("asdfjk01"));
     }
 
     @Test

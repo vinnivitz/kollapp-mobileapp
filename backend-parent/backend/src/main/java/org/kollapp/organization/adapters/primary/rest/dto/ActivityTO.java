@@ -26,5 +26,8 @@ public class ActivityTO {
     private String location;
 
     @NotNull
+    private String date;
+
+    @NotNull
     private List<PostingTO> activityPostings;
 }
