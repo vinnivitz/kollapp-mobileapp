@@ -35,5 +35,5 @@ public class OrganizationBudgetCategory {
     @JoinColumn(name = "organization_id", nullable = false)
     private Organization organization;
 
-    private boolean isDefault;
+    private boolean defaultCategory;
 }

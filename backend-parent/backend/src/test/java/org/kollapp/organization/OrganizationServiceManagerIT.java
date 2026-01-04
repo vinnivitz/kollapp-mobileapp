@@ -348,7 +348,7 @@ public class OrganizationServiceManagerIT extends BaseIT {
     public void addNonDefaultBudgetCategoryShouldCreateBudgetCategory() {
         OrganizationBudgetCategory budgetCategory = new OrganizationBudgetCategory();
         budgetCategory.setName("test");
-        budgetCategory.setDefault(false);
+        budgetCategory.setDefaultCategory(false);
         Organization organization = organizationService.addBudgetCategory(1, budgetCategory);
         assertThat(organization.getBudgetCategories().size()).isEqualTo(4);
     }
@@ -357,11 +357,11 @@ public class OrganizationServiceManagerIT extends BaseIT {
     public void addDefaultBudgetCategoryShouldCreateBudgetCategoryAndOverrideDefault() {
         OrganizationBudgetCategory budgetCategory = new OrganizationBudgetCategory();
         budgetCategory.setName("test");
-        budgetCategory.setDefault(true);
+        budgetCategory.setDefaultCategory(true);
         Organization organization = organizationService.addBudgetCategory(1, budgetCategory);
         List<OrganizationBudgetCategory> budgetCategories = organization.getBudgetCategories();
         List<OrganizationBudgetCategory> defaultBudgetCategories = budgetCategories.stream()
-                .filter(OrganizationBudgetCategory::isDefault)
+                .filter(OrganizationBudgetCategory::isDefaultCategory)
                 .toList();
         assertThat(organization.getBudgetCategories().size()).isEqualTo(4);
         assertThat(defaultBudgetCategories.size()).isEqualTo(1);
@@ -372,7 +372,7 @@ public class OrganizationServiceManagerIT extends BaseIT {
     public void addBudgetCategoryWithExistingNameShouldThrowException() {
         OrganizationBudgetCategory budgetCategory = new OrganizationBudgetCategory();
         budgetCategory.setName("Category_2");
-        budgetCategory.setDefault(false);
+        budgetCategory.setDefaultCategory(false);
         assertThatExceptionOfType(BudgetCategoryWithNameExistsException.class)
                 .isThrownBy(() -> organizationService.addBudgetCategory(1, budgetCategory));
     }
@@ -381,7 +381,7 @@ public class OrganizationServiceManagerIT extends BaseIT {
     public void editBudgetCategoryNonDefaultShouldEditBudgetCategory() {
         OrganizationBudgetCategory budgetCategory = new OrganizationBudgetCategory();
         budgetCategory.setName("Category_edited");
-        budgetCategory.setDefault(false);
+        budgetCategory.setDefaultCategory(false);
         Organization organization = organizationService.editBudgetCategory(1, 2, budgetCategory);
         OrganizationBudgetCategory updatedBudgetCategory = organization.findBudgetCategoryById(2);
         assertThat(updatedBudgetCategory.getName()).isEqualTo(budgetCategory.getName());
@@ -391,13 +391,13 @@ public class OrganizationServiceManagerIT extends BaseIT {
     public void editBudgetCategoryDefaultShouldEditBudgetCategoryAndOverrideDefault() {
         OrganizationBudgetCategory budgetCategory = new OrganizationBudgetCategory();
         budgetCategory.setName("Category_edited");
-        budgetCategory.setDefault(true);
+        budgetCategory.setDefaultCategory(true);
         Organization organization = organizationService.editBudgetCategory(1, 2, budgetCategory);
         OrganizationBudgetCategory updatedBudgetCategory = organization.findBudgetCategoryById(2);
         assertThat(updatedBudgetCategory.getName()).isEqualTo(budgetCategory.getName());
         List<OrganizationBudgetCategory> budgetCategories = organization.getBudgetCategories();
         List<OrganizationBudgetCategory> defaultBudgetCategories = budgetCategories.stream()
-                .filter(OrganizationBudgetCategory::isDefault)
+                .filter(OrganizationBudgetCategory::isDefaultCategory)
                 .toList();
         assertThat(defaultBudgetCategories.size()).isEqualTo(1);
         assertThat(defaultBudgetCategories.getFirst().getName()).isEqualTo(budgetCategory.getName());
@@ -407,7 +407,7 @@ public class OrganizationServiceManagerIT extends BaseIT {
     public void editBudgetCategoryWithNoChangesShouldEditBudgetCategory() {
         OrganizationBudgetCategory budgetCategory = new OrganizationBudgetCategory();
         budgetCategory.setName("Category_2");
-        budgetCategory.setDefault(false);
+        budgetCategory.setDefaultCategory(false);
         budgetCategory.setId(2);
         Organization organization = organizationService.editBudgetCategory(1, 2, budgetCategory);
         OrganizationBudgetCategory updatedBudgetCategory = organization.findBudgetCategoryById(2);
@@ -424,7 +424,7 @@ public class OrganizationServiceManagerIT extends BaseIT {
     public void editDefaultBudgetCategoryToBeNonDefaultShouldThrowException() {
         OrganizationBudgetCategory budgetCategory = new OrganizationBudgetCategory();
         budgetCategory.setName("Category_edited");
-        budgetCategory.setDefault(false);
+        budgetCategory.setDefaultCategory(false);
         assertThatExceptionOfType(UnsupportedOperationException.class)
                 .isThrownBy(() -> organizationService.editBudgetCategory(1, 1, budgetCategory));
     }
@@ -433,7 +433,7 @@ public class OrganizationServiceManagerIT extends BaseIT {
     public void editBudgetCategoryToExistingNameShouldThrowException() {
         OrganizationBudgetCategory budgetCategory = new OrganizationBudgetCategory();
         budgetCategory.setName("Category_2");
-        budgetCategory.setDefault(false);
+        budgetCategory.setDefaultCategory(false);
         assertThatExceptionOfType(BudgetCategoryWithNameExistsException.class)
                 .isThrownBy(() -> organizationService.editBudgetCategory(1, 3, budgetCategory));
     }

@@ -18,4 +18,7 @@ public class OrganizationBudgetCategoryRequestTO {
     @NotBlank(message = "{validation.organization.budget-category.name.required}")
     @Size(max = 50, message = "{validation.organization.budget-category.name.maxlength}")
     private String name;
+
+    @NotBlank(message = "{validation.organization.budget-category.default.required}")
+    private boolean defaultCategory;
 }

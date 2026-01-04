@@ -20,4 +20,7 @@ public class OrganizationBudgetCategoryResponseTO {
 
     @NotNull
     private String name;
+
+    @NotNull
+    private boolean defaultCategory;
 }
