@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.core.adapters.primary.rest.dto.DataResponseTO;
 import org.kollapp.core.adapters.primary.rest.dto.MessageResponseTO;
 import org.kollapp.notification.adapters.primary.rest.dto.DeviceTokenRegistrationRequestTO;
@@ -53,6 +54,8 @@ public class PushNotificationController {
 
     private final PushNotificationMapper pushNotificationMapper;
 
+    private final MessageUtil messageUtil;
+
     @PostMapping("/device-token")
     @Operation(
             summary = "Register a device token for push notifications",
@@ -67,7 +70,8 @@ public class PushNotificationController {
                 kollappUser.getId(), request.getToken(), deviceType, request.getDeviceName());
 
         DeviceTokenTO response = deviceTokenMapper.toTO(deviceToken);
-        return ResponseEntity.ok(new DataResponseTO<>(response, "success.notification.device-token-registered"));
+        String message = messageUtil.getMessage("success.notification.device-token-registered");
+        return ResponseEntity.ok(new DataResponseTO<>(response, message));
     }
 
     @DeleteMapping("/device-token")
@@ -76,7 +80,8 @@ public class PushNotificationController {
             security = {@SecurityRequirement(name = "bearer-key")})
     public ResponseEntity<MessageResponseTO> unregisterDeviceToken(@RequestParam("token") String token) {
         pushNotificationService.unregisterDeviceToken(token);
-        return ResponseEntity.ok(new MessageResponseTO("success.notification.device-token-unregistered"));
+        String message = messageUtil.getMessage("success.notification.device-token-unregistered");
+        return ResponseEntity.ok(new MessageResponseTO(message));
     }
 
     @GetMapping("/device-tokens")
@@ -87,7 +92,8 @@ public class PushNotificationController {
         KollappUser kollappUser = kollappUserService.getLoggedInKollappUser();
         List<DeviceToken> deviceTokens = pushNotificationService.getUserDeviceTokens(kollappUser.getId());
         List<DeviceTokenTO> response = deviceTokenMapper.toTOs(deviceTokens);
-        return ResponseEntity.ok(new DataResponseTO<>(response, "success.notification.device-tokens-retrieved"));
+        String message = messageUtil.getMessage("success.notification.device-tokens-retrieved");
+        return ResponseEntity.ok(new DataResponseTO<>(response, message));
     }
 
     @GetMapping
@@ -99,7 +105,8 @@ public class PushNotificationController {
         KollappUser kollappUser = kollappUserService.getLoggedInKollappUser();
         List<PushNotification> notifications = pushNotificationService.getUserNotifications(kollappUser.getId(), limit);
         List<PushNotificationTO> response = pushNotificationMapper.toTOs(notifications);
-        return ResponseEntity.ok(new DataResponseTO<>(response, "success.notification.notifications-retrieved"));
+        String message = messageUtil.getMessage("success.notification.notifications-retrieved");
+        return ResponseEntity.ok(new DataResponseTO<>(response, message));
     }
 
     @PostMapping("/test")
@@ -115,6 +122,7 @@ public class PushNotificationController {
                 request.getBody(),
                 request.getNotificationType(),
                 request.getRoute());
-        return ResponseEntity.ok(new MessageResponseTO("success.notification.test-notification-sent"));
+        String message = messageUtil.getMessage("success.notification.test-notification-sent");
+        return ResponseEntity.ok(new MessageResponseTO(message));
     }
 }

@@ -33,6 +33,7 @@ export enum NotificationType {
  * Device token registration request
  */
 export type DeviceTokenRegistrationRequestTO = {
+	deviceName: string;
 	deviceType: DeviceType;
 	token: string;
 };

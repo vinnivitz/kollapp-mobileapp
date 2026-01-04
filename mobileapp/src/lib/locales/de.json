@@ -1051,7 +1051,41 @@
       }
     },
     "push-notifications": {
-      "error": "Fehler beim Registrieren der Push-Benachrichtigungen"
+      "error": "Fehler beim Registrieren der Push-Benachrichtigungen",
+      "channels": {
+        "activities": {
+          "description": "Benachrichtigungen über Veranstaltugen",
+          "name": "Veranstaltungen"
+        },
+        "announcements": {
+          "description": "Organisationsbezogene Ankündigungen",
+          "name": "Ankündigungen"
+        },
+        "finances": {
+          "description": "Finanztransaktionen und Budgetbenachrichtigungen",
+          "name": "Finanzen"
+        },
+        "general": {
+          "description": "Allgemeine Benachrichtigungen",
+          "name": "Allgemein"
+        },
+        "membership-changes": {
+          "description": "Benachrichtigungen über den Beitritt anderer Mitglieder oder Beitrittsanfragen",
+          "name": "Mitglieder"
+        },
+        "membership-status": {
+          "description": "Benachrichtigungen über deinen Mitgliedsstatus",
+          "name": "Mitgliedsstatus"
+        },
+        "messages": {
+          "description": "Direktnachrichten",
+          "name": "Nachrichten"
+        },
+        "system-alerts": {
+          "description": "Kritische Systemwarnungen",
+          "name": "Systemwarnungen"
+        }
+      }
     }
   }
 }

@@ -13,18 +13,18 @@ import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.notification.application.model.enums.NotificationType;
 import org.kollapp.notification.application.publisher.NotificationPublisher;
 import org.kollapp.notification.application.util.NotificationRouteBuilder;
-import org.kollapp.organization.application.model.ActivityCreatedEvent;
+import org.kollapp.organization.application.model.PostingDeletedEvent;
 import org.kollapp.organization.application.service.OrganizationService;
 
 /**
- * Listener that sends push notifications when a new activity is created.
+ * Listener that sends push notifications when a posting is deleted.
  * Implements event-driven notification triggering.
  */
 @PrimaryAdapter
 @Service
 @Slf4j
 @AllArgsConstructor
-public class ActivityCreatedNotificationListener implements ApplicationListener<ActivityCreatedEvent> {
+public class PostingDeletedNotificationListener implements ApplicationListener<PostingDeletedEvent> {
 
     private final NotificationPublisher notificationPublisher;
 
@@ -35,14 +35,20 @@ public class ActivityCreatedNotificationListener implements ApplicationListener<
     private final NotificationRouteBuilder routeBuilder;
 
     @Override
-    public void onApplicationEvent(ActivityCreatedEvent event) {
+    public void onApplicationEvent(PostingDeletedEvent event) {
         List<Long> userIds = organizationService.getAllMemberUserIds(event.getOrganizationId());
 
-        String route = routeBuilder.toActivity(event.getActivityId());
-        String title = messageUtil.getMessage("notification.activity.created.title");
-        String body = messageUtil.getMessage("notification.activity.created.body", event.getActivityName());
+        String route;
+        if (event.getActivityId() != null) {
+            route = routeBuilder.toActivity(event.getActivityId());
+        } else {
+            route = routeBuilder.toOrganizationPage();
+        }
+
+        String title = messageUtil.getMessage("notification.posting.deleted.title");
+        String body = messageUtil.getMessage("notification.posting.deleted.body", event.getPostingPurpose());
 
         notificationPublisher.publishSendNotificationToUsersEvent(
-                userIds, title, body, NotificationType.ACTIVITIES, route);
+                userIds, title, body, NotificationType.FINANCES, route);
     }
 }

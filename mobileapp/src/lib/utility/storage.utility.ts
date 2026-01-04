@@ -1,3 +1,4 @@
+import { Device } from '@capacitor/device';
 import { Preferences } from '@capacitor/preferences';
 import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
 import { get } from 'svelte/store';
@@ -20,16 +21,17 @@ const $t = get(t);
  */
 export async function storeValue<T>(key: StorageKey, value: T, strategy = StorageStrategy.DEFAULT): Promise<void> {
 	try {
-		if (strategy === StorageStrategy.SECURE && !dev) {
+		const deviceInfo = await Device.getInfo();
+		if (strategy === StorageStrategy.SECURE && !dev && deviceInfo.platform !== 'web') {
 			const success = await SecureStoragePlugin.set({ key: getKey(key), value: JSON.stringify(value) });
 			if (!success) {
-				return showAlert($t('utility.preferences.failure.store'));
+				await showAlert($t('utility.preferences.failure.store'));
 			}
 		} else {
-			return Preferences.set({ key: getKey(key), value: JSON.stringify(value) });
+			await Preferences.set({ key: getKey(key), value: JSON.stringify(value) });
 		}
 	} catch {
-		return showAlert($t('utility.preferences.failure.store'));
+		await showAlert($t('utility.preferences.failure.store'));
 	}
 }
 
@@ -44,14 +46,14 @@ export async function getStoredValue<T = string>(
 	strategy = StorageStrategy.DEFAULT
 ): Promise<T | undefined> {
 	try {
-		let value: string | undefined;
-		if (strategy === StorageStrategy.SECURE && !dev) {
-			const result = await SecureStoragePlugin.get({ key: getKey(key) });
-			value = result.value ?? undefined;
-		}
-		const result = await Preferences.get({ key: getKey(key) });
-		value = result.value ?? undefined;
+		const deviceInfo = await Device.getInfo();
+		const result = await (strategy === StorageStrategy.SECURE && !dev && deviceInfo.platform !== 'web'
+			? SecureStoragePlugin.get({ key: getKey(key) })
+			: Preferences.get({ key: getKey(key) }));
+		const value = result.value ?? undefined;
+
 		if (!value) return undefined;
+
 		try {
 			return value ? (JSON.parse(value) as T) : undefined;
 		} catch {
@@ -70,13 +72,15 @@ export async function getStoredValue<T = string>(
  */
 export async function removeStoredValue(key: StorageKey, strategy = StorageStrategy.DEFAULT): Promise<void> {
 	try {
-		if (strategy === StorageStrategy.SECURE && !dev) {
+		const deviceInfo = await Device.getInfo();
+		if (strategy === StorageStrategy.SECURE && !dev && deviceInfo.platform !== 'web') {
 			const success = await SecureStoragePlugin.remove({ key: getKey(key) });
 			if (!success) {
-				return showAlert($t('utility.preferences.failure.remove'));
+				await showAlert($t('utility.preferences.failure.remove'));
 			}
+		} else {
+			await Preferences.remove({ key: getKey(key) });
 		}
-		return Preferences.remove({ key: getKey(key) });
 	} catch {
 		await showAlert($t('utility.preferences.failure.remove'));
 	}

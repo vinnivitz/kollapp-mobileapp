@@ -184,7 +184,8 @@ public class KollappUserServiceImpl implements KollappUserService {
         if (!passwordIsCorrect) {
             throw new IncorrectPasswordException();
         }
-        kollappUserPublisher.publishUserDeletedEvent(new KollappUserDeletedEvent(this, kollappUser.getId()));
+        kollappUserPublisher.publishUserDeletedEvent(
+                new KollappUserDeletedEvent(this, kollappUser.getId(), kollappUser.getUsername()));
         SecurityContextHolder.getContext().setAuthentication(null);
         userRepo.deleteById(kollappUser.getId());
     }

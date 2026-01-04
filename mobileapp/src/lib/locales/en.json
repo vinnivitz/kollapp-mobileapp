@@ -313,7 +313,41 @@
       }
     },
     "push-notifications": {
-      "error": "Push Notification registration failed"
+      "error": "Push Notification registration failed",
+      "channels": {
+        "general": {
+          "name": "General",
+          "description": "General notifications"
+        },
+        "membership-status": {
+          "name": "Membership Status",
+          "description": "Personal notifications about your membership status"
+        },
+        "membership-changes": {
+          "name": "Members",
+          "description": "Notifications about other members joining or requesting to join"
+        },
+        "activities": {
+          "name": "Events",
+          "description": "Event notifications"
+        },
+        "finances": {
+          "name": "Finances",
+          "description": "Financial transactions and budget notifications"
+        },
+        "announcements": {
+          "name": "Announcements",
+          "description": "Organization-related announcements"
+        },
+        "messages": {
+          "name": "Messages",
+          "description": "Direct messages"
+        },
+        "system-alerts": {
+          "name": "System Alerts",
+          "description": "Critical system alerts"
+        }
+      }
     }
   },
   "routes": {

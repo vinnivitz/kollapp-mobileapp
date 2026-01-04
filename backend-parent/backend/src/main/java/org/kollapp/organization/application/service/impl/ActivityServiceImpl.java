@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 import org.kollapp.organization.application.exception.ActivityNotFoundException;
 import org.kollapp.organization.application.exception.OrganizationNotFoundException;
 import org.kollapp.organization.application.model.Activity;
+import org.kollapp.organization.application.model.ActivityCreatedEvent;
 import org.kollapp.organization.application.model.ActivityDeletedEvent;
+import org.kollapp.organization.application.model.ActivityUpdatedEvent;
 import org.kollapp.organization.application.model.Organization;
 import org.kollapp.organization.application.publisher.OrganizationPublisher;
 import org.kollapp.organization.application.repository.ActivityRepository;
@@ -52,6 +54,11 @@ public class ActivityServiceImpl implements ActivityService {
         activity.setActivityPostings(new ArrayList<>());
         activityRepository.save(activity);
         organization.addActivityOfOrganization(activity);
+
+        ActivityCreatedEvent event =
+                new ActivityCreatedEvent(this, activity.getId(), organizationId, activity.getName());
+        organizationPublisher.publishActivityCreatedEvent(event);
+
         return activity;
     }
 
@@ -65,6 +72,11 @@ public class ActivityServiceImpl implements ActivityService {
         activityToBeUpdated.setName(activity.getName());
         activityToBeUpdated.setLocation(activity.getLocation());
         activityToBeUpdated.setDate(activity.getDate());
+
+        ActivityUpdatedEvent event =
+                new ActivityUpdatedEvent(this, activityId, organizationId, activityToBeUpdated.getName());
+        organizationPublisher.publishActivityUpdatedEvent(event);
+
         return activityToBeUpdated;
     }
 
@@ -78,7 +90,8 @@ public class ActivityServiceImpl implements ActivityService {
                 .findByIdAndOrganizationId(activityId, organizationId)
                 .orElseThrow(ActivityNotFoundException::new);
         organization.getActivities().remove(activity);
-        ActivityDeletedEvent activityDeletedEvent = new ActivityDeletedEvent(this, activity.getId());
+        ActivityDeletedEvent activityDeletedEvent =
+                new ActivityDeletedEvent(this, activity.getId(), organizationId, activity.getName());
         organizationPublisher.publishActivityDeletedEvent(activityDeletedEvent);
     }
 }

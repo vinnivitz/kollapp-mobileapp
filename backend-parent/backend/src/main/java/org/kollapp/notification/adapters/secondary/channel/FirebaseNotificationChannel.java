@@ -7,6 +7,8 @@ import org.jmolecules.architecture.hexagonal.SecondaryAdapter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 
+import com.google.firebase.messaging.AndroidConfig;
+import com.google.firebase.messaging.AndroidNotification;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
@@ -17,7 +19,9 @@ import com.google.firebase.messaging.Notification;
 import org.kollapp.notification.application.exception.PushNotificationException;
 import org.kollapp.notification.application.model.entities.DeviceToken;
 import org.kollapp.notification.application.model.entities.PushNotification;
+import org.kollapp.notification.application.model.enums.DeviceType;
 import org.kollapp.notification.application.model.enums.NotificationStatus;
+import org.kollapp.notification.application.model.enums.NotificationType;
 import org.kollapp.notification.application.port.PushNotificationChannel;
 import org.kollapp.notification.application.repository.DeviceTokenRepository;
 import org.kollapp.notification.application.repository.PushNotificationRepository;
@@ -39,11 +43,13 @@ public class FirebaseNotificationChannel implements PushNotificationChannel {
     private final PushNotificationRepository pushNotificationRepository;
 
     @Override
-    public PushNotification send(DeviceToken deviceToken, String title, String body, String route) {
+    public PushNotification send(
+            DeviceToken deviceToken, String title, String body, NotificationType notificationType, String route) {
         PushNotification notification = PushNotification.builder()
                 .userId(deviceToken.getUserId())
                 .title(title)
                 .body(body)
+                .notificationType(notificationType)
                 .data(route)
                 .status(NotificationStatus.PENDING)
                 .build();
@@ -55,6 +61,13 @@ public class FirebaseNotificationChannel implements PushNotificationChannel {
             Builder messageBuilder =
                     Message.builder().setToken(deviceToken.getToken()).setNotification(fcmNotification);
 
+            if (deviceToken.getDeviceType() == DeviceType.ANDROID) {
+                messageBuilder.setAndroidConfig(AndroidConfig.builder()
+                        .setNotification(AndroidNotification.builder()
+                                .setChannelId(notificationType.name())
+                                .build())
+                        .build());
+            }
             if (route != null && !route.isEmpty()) {
                 messageBuilder.putData("route", route);
             }

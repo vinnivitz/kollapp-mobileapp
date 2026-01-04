@@ -13,6 +13,10 @@ import org.kollapp.organization.application.model.ActivityPosting;
 import org.kollapp.organization.application.model.Organization;
 import org.kollapp.organization.application.model.OrganizationPosting;
 import org.kollapp.organization.application.model.Posting;
+import org.kollapp.organization.application.model.PostingCreatedEvent;
+import org.kollapp.organization.application.model.PostingDeletedEvent;
+import org.kollapp.organization.application.model.PostingUpdatedEvent;
+import org.kollapp.organization.application.publisher.OrganizationPublisher;
 import org.kollapp.organization.application.repository.OrganizationRepository;
 import org.kollapp.organization.application.service.BudgetAccountService;
 import org.kollapp.user.application.model.RequiresKollappOrganizationMemberRole;
@@ -27,6 +31,9 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
     @Autowired
     private OrganizationRoleHelper organizationRoleHelper;
 
+    @Autowired
+    private OrganizationPublisher organizationPublisher;
+
     @Override
     @RequiresKollappOrganizationMemberRole
     public Posting addOrganizationPosting(long organizationId, OrganizationPosting posting) {
@@ -35,6 +42,11 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
                 organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
         organization.getOrganizationPostings().add(posting);
         posting.setOrganization(organization);
+
+        PostingCreatedEvent event =
+                new PostingCreatedEvent(this, posting.getId(), null, organizationId, posting.getPurpose());
+        organizationPublisher.publishPostingCreatedEvent(event);
+
         return posting;
     }
 
@@ -52,6 +64,11 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
         postingToBeEdited.setPurpose(updatedPosting.getPurpose());
         postingToBeEdited.setAmountInCents(updatedPosting.getAmountInCents());
         postingToBeEdited.setType(updatedPosting.getType());
+
+        PostingUpdatedEvent event =
+                new PostingUpdatedEvent(this, postingId, null, organizationId, postingToBeEdited.getPurpose());
+        organizationPublisher.publishPostingUpdatedEvent(event);
+
         return postingToBeEdited;
     }
 
@@ -66,6 +83,10 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
                 .findFirst()
                 .orElseThrow(PostingDoesNotExistException::new);
         organization.getOrganizationPostings().remove(postingToBeRemoved);
+
+        PostingDeletedEvent event =
+                new PostingDeletedEvent(this, postingId, null, organizationId, postingToBeRemoved.getPurpose());
+        organizationPublisher.publishPostingDeletedEvent(event);
     }
 
     @Override
@@ -80,6 +101,11 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
                 .orElseThrow(ActivityNotFoundException::new);
         activity.getActivityPostings().add(posting);
         posting.setActivity(activity);
+
+        PostingCreatedEvent event =
+                new PostingCreatedEvent(this, posting.getId(), activityId, organizationId, posting.getPurpose());
+        organizationPublisher.publishPostingCreatedEvent(event);
+
         return posting;
     }
 
@@ -102,6 +128,11 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
         postingToBeEdited.setPurpose(updatedPosting.getPurpose());
         postingToBeEdited.setAmountInCents(updatedPosting.getAmountInCents());
         postingToBeEdited.setType(updatedPosting.getType());
+
+        PostingUpdatedEvent event =
+                new PostingUpdatedEvent(this, postingId, activityId, organizationId, postingToBeEdited.getPurpose());
+        organizationPublisher.publishPostingUpdatedEvent(event);
+
         return postingToBeEdited;
     }
 
@@ -120,5 +151,9 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
                 .findFirst()
                 .orElseThrow(PostingDoesNotExistException::new);
         activity.getActivityPostings().remove(postingToBeRemoved);
+
+        PostingDeletedEvent event =
+                new PostingDeletedEvent(this, postingId, activityId, organizationId, postingToBeRemoved.getPurpose());
+        organizationPublisher.publishPostingDeletedEvent(event);
     }
 }

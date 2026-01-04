@@ -1,17 +1,11 @@
 import { Device, type DeviceInfo } from '@capacitor/device';
-import {
-	type ActionPerformed,
-	type Channel,
-	PushNotifications,
-	type RegistrationError,
-	type Token
-} from '@capacitor/push-notifications';
+import { type ActionPerformed, type Channel, PushNotifications, type Token } from '@capacitor/push-notifications';
 import { get } from 'svelte/store';
 
 import { dev } from '$app/environment';
 import { goto } from '$app/navigation';
 
-import { isAuthenticated } from './api.utility';
+import { isAuthenticated, StatusCheck } from './api.utility';
 import { getStoredValue, storeValue } from './storage.utility';
 
 import { DeviceType, getNotificationRoute, NotificationType } from '$lib/api/dtos';
@@ -27,25 +21,28 @@ import { showAlert } from '$lib/utility';
  * @returns {Promise<void>}
  */
 export async function initPushNotifications(): Promise<void> {
+	const $t = get(t);
 	try {
+		await PushNotifications.removeAllListeners();
+
 		await registerNotificationChannels();
 
 		let permissionStatus = await PushNotifications.checkPermissions();
 		if (permissionStatus.receive === 'prompt') {
 			permissionStatus = await PushNotifications.requestPermissions();
-			if (permissionStatus.receive === 'granted') {
-				await PushNotifications.register();
-			}
 		}
 
-		await PushNotifications.removeAllListeners();
+		if (permissionStatus.receive !== 'granted') {
+			if (dev) console.warn('Push notification permission not granted');
+			return;
+		}
 
 		PushNotifications.addListener('registration', async (token: Token) => {
 			await handleTokenRegistration(token.value);
 		});
 
-		PushNotifications.addListener('registrationError', async (error: RegistrationError) => {
-			console.error('Push notification registration error:', error);
+		PushNotifications.addListener('registrationError', async () => {
+			await showAlert($t('utility.push-notifications.error'));
 		});
 
 		PushNotifications.addListener('pushNotificationReceived', async () => {
@@ -56,6 +53,8 @@ export async function initPushNotifications(): Promise<void> {
 			await handleNotificationAction(action);
 		});
 
+		await PushNotifications.register();
+
 		const storedToken = await getStoredValue<string>(StorageKey.FCM_TOKEN);
 		if (storedToken) {
 			const authenticated = await isAuthenticated();
@@ -64,7 +63,7 @@ export async function initPushNotifications(): Promise<void> {
 			}
 		}
 	} catch {
-		console.warn('Push notifications not supported on this platform');
+		if (dev) console.warn('Push notifications not supported on this platform');
 	}
 }
 
@@ -90,10 +89,9 @@ export async function unregisterPushNotifications(): Promise<void> {
 		const storedToken = await getStoredValue<string>(StorageKey.FCM_TOKEN);
 		if (storedToken) {
 			await notificationService.unregisterDeviceToken(storedToken);
-			if (dev) console.info('Device token unregistered successfully');
 		}
 	} catch (error) {
-		console.warn('Failed to unregister device token:', error);
+		if (dev) console.warn('Failed to unregister device token:', error);
 	}
 }
 
@@ -121,11 +119,17 @@ async function registerTokenWithBackend(token: string): Promise<void> {
 	try {
 		const deviceInfo = await Device.getInfo();
 		const deviceType = getDeviceType(deviceInfo.platform);
+		const deviceName =
+			deviceInfo.name || `${deviceInfo.manufacturer} ${deviceInfo.model || deviceInfo.platform}`.trim();
 
-		await notificationService.registerDeviceToken({
+		const result = await notificationService.registerDeviceToken({
+			deviceName,
 			deviceType,
 			token
 		});
+		if (!StatusCheck.isOK(result.status)) {
+			showAlert($t('utility.push-notifications.error'));
+		}
 	} catch {
 		await showAlert($t('utility.push-notifications.error'));
 	}
@@ -160,79 +164,74 @@ async function handleNotificationAction(action: ActionPerformed): Promise<void> 
  * @returns {Promise<void>}
  */
 async function registerNotificationChannels(): Promise<void> {
+	const $t = get(t);
 	try {
 		const deviceInfo = await Device.getInfo();
+
 		const channels: Channel[] = [
 			{
-				description: 'General notifications',
+				description: $t('utility.push-notifications.channels.general.description'),
 				id: NotificationType.GENERAL,
-				importance: 3,
-				name: 'General',
-				visibility: 1
+				name: $t('utility.push-notifications.channels.general.name')
 			},
 			{
-				description: 'Personal notifications about your membership status',
+				description: $t('utility.push-notifications.channels.membership-status.description'),
 				id: NotificationType.MEMBERSHIP_STATUS,
-				importance: 4,
-				name: 'Membership Status'
+				name: $t('utility.push-notifications.channels.membership-status.name')
 			},
 			{
-				description: 'Notifications about other members joining or requesting to join',
+				description: $t('utility.push-notifications.channels.membership-changes.description'),
 				id: NotificationType.MEMBERSHIP_CHANGES,
-				importance: 3,
-				name: 'Membership Changes'
+				name: $t('utility.push-notifications.channels.membership-changes.name')
 			},
 			{
-				description: 'Events and activities notifications',
+				description: $t('utility.push-notifications.channels.activities.description'),
 				id: NotificationType.ACTIVITIES,
-				importance: 4,
-				name: 'Activities'
+				name: $t('utility.push-notifications.channels.activities.name')
 			},
 			{
-				description: 'Financial transactions and budget notifications',
+				description: $t('utility.push-notifications.channels.finances.description'),
 				id: NotificationType.FINANCES,
-				importance: 4,
-				name: 'Finances'
+				name: $t('utility.push-notifications.channels.finances.name')
 			},
 			{
-				description: 'Organization-wide announcements',
+				description: $t('utility.push-notifications.channels.announcements.description'),
 				id: NotificationType.ANNOUNCEMENTS,
-				importance: 4,
-				name: 'Announcements'
+				name: $t('utility.push-notifications.channels.announcements.name')
 			},
 			{
-				description: 'Direct messages',
+				description: $t('utility.push-notifications.channels.messages.description'),
 				id: NotificationType.MESSAGES,
-				importance: 4,
-				name: 'Messages'
+				name: $t('utility.push-notifications.channels.messages.name')
 			},
 			{
-				description: 'Critical system alerts',
+				description: $t('utility.push-notifications.channels.system-alerts.description'),
 				id: NotificationType.SYSTEM_ALERTS,
-				importance: 5,
-				name: 'System Alerts'
+				name: $t('utility.push-notifications.channels.system-alerts.name')
 			}
 		];
 
 		if (deviceInfo.platform === 'android') {
-			for (const channel of channels) {
-				await PushNotifications.createChannel({
-					description: channel.description,
-					id: channel.id,
-					importance: channel.importance,
-					name: channel.name,
-					sound: 'default',
-					vibration: true,
-					visibility: 1
-				});
-			}
+			await Promise.all(
+				channels.map(({ description, id, name }) =>
+					PushNotifications.createChannel({
+						description,
+						id,
+						importance: 4,
+						name,
+						sound: 'default',
+						vibration: true,
+						visibility: 1
+					})
+				)
+			);
 			if (dev) console.info('Android notification channels registered');
 		}
 		if (dev && deviceInfo.platform === 'ios') {
 			console.info('iOS will use notification categories from FCM messages');
 		}
 	} catch (error) {
-		console.warn('Failed to register notification channels:', error);
+		if (dev) console.warn('Failed to register notification channels:', error);
 	}
 }
 

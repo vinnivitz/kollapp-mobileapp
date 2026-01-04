@@ -10,9 +10,11 @@ import org.springframework.context.ApplicationEvent;
 public class KollappUserDeletedEvent extends ApplicationEvent {
 
     private long userId;
+    private String username;
 
-    public KollappUserDeletedEvent(Object source, long userId) {
+    public KollappUserDeletedEvent(Object source, long userId, String username) {
         super(source);
         this.userId = userId;
+        this.username = username;
     }
 }

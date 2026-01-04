@@ -1,6 +1,7 @@
-package org.kollapp.notification.application.service.impl;
+package org.kollapp.notification.adapters.secondary.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import lombok.AllArgsConstructor;
@@ -41,10 +42,18 @@ public class PushNotificationServiceImpl implements PushNotificationService {
     @Override
     @Transactional
     public DeviceToken registerDeviceToken(long userId, String token, DeviceType deviceType, String deviceName) {
-        deviceTokenRepository.findByToken(token).ifPresent(existingToken -> {
-            existingToken.setActive(false);
-            deviceTokenRepository.save(existingToken);
-        });
+        Optional<DeviceToken> existingTokenOpt = deviceTokenRepository.findByToken(token);
+        if (existingTokenOpt.isPresent()) {
+            DeviceToken existingToken = existingTokenOpt.get();
+
+            existingToken.setUserId(userId);
+            existingToken.setDeviceType(deviceType);
+            existingToken.setDeviceName(deviceName);
+            existingToken.setActive(true);
+
+            DeviceToken savedToken = deviceTokenRepository.save(existingToken);
+            return savedToken;
+        }
 
         DeviceToken deviceToken = DeviceToken.builder()
                 .token(token)
@@ -81,7 +90,7 @@ public class PushNotificationServiceImpl implements PushNotificationService {
             return;
         }
 
-        deviceTokens.forEach(deviceToken -> sendNotificationAsync(deviceToken, title, body, route));
+        deviceTokens.forEach(deviceToken -> sendNotificationAsync(deviceToken, title, body, notificationType, route));
     }
 
     @Override
@@ -95,9 +104,9 @@ public class PushNotificationServiceImpl implements PushNotificationService {
 
     @Async
     private CompletableFuture<PushNotification> sendNotificationAsync(
-            DeviceToken deviceToken, String title, String body, String route) {
+            DeviceToken deviceToken, String title, String body, NotificationType notificationType, String route) {
         PushNotificationChannel channel = selectChannel(deviceToken);
-        PushNotification notification = channel.send(deviceToken, title, body, route);
+        PushNotification notification = channel.send(deviceToken, title, body, notificationType, route);
         return CompletableFuture.completedFuture(notification);
     }
 

@@ -29,6 +29,7 @@ import org.kollapp.organization.application.model.OrganizationCreatedEvent;
 import org.kollapp.organization.application.model.OrganizationDeletedEvent;
 import org.kollapp.organization.application.model.OrganizationInvitationCode;
 import org.kollapp.organization.application.model.OrganizationRole;
+import org.kollapp.organization.application.model.OrganizationUpdatedEvent;
 import org.kollapp.organization.application.model.PersonOfOrganization;
 import org.kollapp.organization.application.model.PersonOfOrganizationStatus;
 import org.kollapp.organization.application.publisher.OrganizationPublisher;
@@ -105,6 +106,11 @@ public class OrganizationServiceImpl implements OrganizationService {
             organization.setDescription(updatedOrganization.getDescription());
         }
         organization.initChildren();
+
+        OrganizationUpdatedEvent event =
+                new OrganizationUpdatedEvent(this, organization.getId(), organization.getName());
+        organizationPublisher.publishOrganizationUpdatedEvent(event);
+
         return organization;
     }
 

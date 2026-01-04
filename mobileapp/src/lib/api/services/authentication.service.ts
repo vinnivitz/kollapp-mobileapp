@@ -1,5 +1,7 @@
 import type { AuthenticatedKollappUserTO, AuthTokenTO, LoginRequestTO } from '@kollapp/api-types';
 
+import { loadingController } from '@ionic/core';
+
 import { goto } from '$app/navigation';
 import { resolve } from '$app/paths';
 
@@ -41,9 +43,12 @@ class AuthenticationResource {
 	 * Logs out the user by clearing authentication tokens and user information
 	 */
 	async logout(): Promise<void> {
+		const loader = await loadingController.create({});
+		await loader.present();
+		await unregisterPushNotifications();
 		await appStateStore.reset();
 		await goto(resolve('/auth/login'));
-		await unregisterPushNotifications();
+		await loader.dismiss();
 	}
 }
 
