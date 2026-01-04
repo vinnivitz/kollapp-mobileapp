@@ -8,9 +8,9 @@ import java.util.stream.Collectors;
 
 import jakarta.transaction.Transactional;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import org.kollapp.core.config.properties.ApplicationProperties;
@@ -46,27 +46,22 @@ import org.kollapp.user.application.service.KollappUserService;
 @Transactional
 @Slf4j
 @Service
+@AllArgsConstructor
 public class OrganizationServiceImpl implements OrganizationService {
-    @Autowired
-    private OrganizationRepository organizationRepository;
 
-    @Autowired
-    private PersonOfOrganizationRepository personOfOrganizationRepository;
+    private final OrganizationRepository organizationRepository;
 
-    @Autowired
-    private OrganizationInvitationCodeRepository organizationInvitationCodeRepository;
+    private final PersonOfOrganizationRepository personOfOrganizationRepository;
 
-    @Autowired
-    private KollappUserService kollappUserService;
+    private final OrganizationInvitationCodeRepository organizationInvitationCodeRepository;
 
-    @Autowired
-    private OrganizationPublisher organizationPublisher;
+    private final KollappUserService kollappUserService;
 
-    @Autowired
-    private ApplicationProperties applicationProperties;
+    private final OrganizationPublisher organizationPublisher;
 
-    @Autowired
-    private OrganizationRoleHelper organizationRoleHelper;
+    private final ApplicationProperties applicationProperties;
+
+    private final OrganizationRoleHelper organizationRoleHelper;
 
     @Override
     @RequiresKollappUserRole
@@ -91,6 +86,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         persistedOrganization.addPersonOfOrganization(persistedOrganizationManager);
         OrganizationBudgetCategory budgetCategory = OrganizationBudgetCategory.builder()
                 .name(applicationProperties.getDefaultBudgetCategoryName())
+                .isDefault(true)
                 .build();
         budgetCategory.setOrganization(persistedOrganization);
         persistedOrganization.addBudgetCategory(budgetCategory);
@@ -256,6 +252,9 @@ public class OrganizationServiceImpl implements OrganizationService {
         Organization organization =
                 organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
         verifyUniqueCategoryNamePerOrganization(organization, budgetCategory);
+        if (budgetCategory.isDefault()) {
+            overrideDefaultBudgetCategory(organization);
+        }
         organization.addBudgetCategory(budgetCategory);
         budgetCategory.setOrganization(organization);
         organization.initChildren();
@@ -270,11 +269,15 @@ public class OrganizationServiceImpl implements OrganizationService {
         Organization organization =
                 organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
         OrganizationBudgetCategory budgetCategory = organization.findBudgetCategoryById(budgetCategoryId);
-        if (budgetCategory.getName().equals(applicationProperties.getDefaultBudgetCategoryName())) {
-            throw new DefaultBudgetCategoryMustNotBeDeletedException();
+        if (budgetCategory.isDefault() && !updatedBudgetCategory.isDefault()) {
+            throw new UnsupportedOperationException();
+        }
+        if (!budgetCategory.isDefault() && updatedBudgetCategory.isDefault()) {
+            overrideDefaultBudgetCategory(organization);
         }
         verifyUniqueCategoryNamePerOrganization(organization, updatedBudgetCategory);
         budgetCategory.setName(updatedBudgetCategory.getName());
+        budgetCategory.setDefault(updatedBudgetCategory.isDefault());
         organization.initChildren();
         return organization;
     }
@@ -286,7 +289,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         Organization organization =
                 organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
         OrganizationBudgetCategory budgetCategoryToRemove = organization.findBudgetCategoryById(budgetCategoryId);
-        if (budgetCategoryToRemove.getName().equals(applicationProperties.getDefaultBudgetCategoryName())) {
+        if (budgetCategoryToRemove.isDefault()) {
             throw new DefaultBudgetCategoryMustNotBeDeletedException();
         }
         organization.getBudgetCategories().remove(budgetCategoryToRemove);
@@ -360,5 +363,10 @@ public class OrganizationServiceImpl implements OrganizationService {
         if (existingCategory.isPresent()) {
             throw new BudgetCategoryWithNameExistsException();
         }
+    }
+
+    private void overrideDefaultBudgetCategory(Organization organization) {
+        List<OrganizationBudgetCategory> budgetCategories = organization.getBudgetCategories();
+        budgetCategories.forEach(budgetCategory -> budgetCategory.setDefault(false));
     }
 }

@@ -34,4 +34,6 @@ public class OrganizationBudgetCategory {
     @ManyToOne
     @JoinColumn(name = "organization_id", nullable = false)
     private Organization organization;
+
+    private boolean isDefault;
 }
