@@ -1,9 +1,6 @@
-import { Device } from '@capacitor/device';
-import { Preferences } from '@capacitor/preferences';
+import { type GetResult, Preferences } from '@capacitor/preferences';
 import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
 import { get } from 'svelte/store';
-
-import { dev } from '$app/environment';
 
 import environment from '$lib/environment';
 import { t } from '$lib/locales';
@@ -21,8 +18,7 @@ const $t = get(t);
  */
 export async function storeValue<T>(key: StorageKey, value: T, strategy = StorageStrategy.DEFAULT): Promise<void> {
 	try {
-		const deviceInfo = await Device.getInfo();
-		if (strategy === StorageStrategy.SECURE && !dev && deviceInfo.platform !== 'web') {
+		if (strategy === StorageStrategy.SECURE) {
 			const success = await SecureStoragePlugin.set({ key: getKey(key), value: JSON.stringify(value) });
 			if (!success) {
 				await showAlert($t('utility.preferences.failure.store'));
@@ -46,10 +42,16 @@ export async function getStoredValue<T = string>(
 	strategy = StorageStrategy.DEFAULT
 ): Promise<T | undefined> {
 	try {
-		const deviceInfo = await Device.getInfo();
-		const result = await (strategy === StorageStrategy.SECURE && !dev && deviceInfo.platform !== 'web'
-			? SecureStoragePlugin.get({ key: getKey(key) })
-			: Preferences.get({ key: getKey(key) }));
+		let result: GetResult;
+		if (strategy === StorageStrategy.SECURE) {
+			try {
+				result = await SecureStoragePlugin.get({ key: getKey(key) });
+			} catch {
+				return undefined;
+			}
+		} else {
+			result = await Preferences.get({ key: getKey(key) });
+		}
 		const value = result.value ?? undefined;
 
 		if (!value) return undefined;
@@ -72,17 +74,11 @@ export async function getStoredValue<T = string>(
  */
 export async function removeStoredValue(key: StorageKey, strategy = StorageStrategy.DEFAULT): Promise<void> {
 	try {
-		const deviceInfo = await Device.getInfo();
-		if (strategy === StorageStrategy.SECURE && !dev && deviceInfo.platform !== 'web') {
-			const success = await SecureStoragePlugin.remove({ key: getKey(key) });
-			if (!success) {
-				await showAlert($t('utility.preferences.failure.remove'));
-			}
-		} else {
-			await Preferences.remove({ key: getKey(key) });
-		}
+		await (strategy === StorageStrategy.SECURE
+			? SecureStoragePlugin.remove({ key: getKey(key) })
+			: Preferences.remove({ key: getKey(key) }));
 	} catch {
-		await showAlert($t('utility.preferences.failure.remove'));
+		return;
 	}
 }
 

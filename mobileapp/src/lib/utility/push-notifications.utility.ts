@@ -10,6 +10,7 @@ import { getStoredValue, storeValue } from './storage.utility';
 
 import { DeviceType, getNotificationRoute, NotificationType } from '$lib/api/dtos';
 import { notificationService } from '$lib/api/services';
+import environment from '$lib/environment';
 import { t } from '$lib/locales';
 import { StorageKey } from '$lib/models/storage';
 import { notificationStore } from '$lib/stores';
@@ -219,7 +220,7 @@ async function registerNotificationChannels(): Promise<void> {
 						id,
 						importance: 4,
 						name,
-						sound: 'default',
+						sound: environment.notificationSoundFile,
 						vibration: true,
 						visibility: 1
 					})
@@ -231,6 +232,7 @@ async function registerNotificationChannels(): Promise<void> {
 			console.info('iOS will use notification categories from FCM messages');
 		}
 	} catch (error) {
+		await showAlert(`${error}`);
 		if (dev) console.warn('Failed to register notification channels:', error);
 	}
 }

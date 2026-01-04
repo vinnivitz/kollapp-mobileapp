@@ -293,8 +293,7 @@
     "preferences": {
       "failure": {
         "store": "Failed to store value",
-        "retreive": "Failed to retrieve value",
-        "remove": "Failed to remove value"
+        "retreive": "Failed to retrieve value"
       }
     },
     "ui": {

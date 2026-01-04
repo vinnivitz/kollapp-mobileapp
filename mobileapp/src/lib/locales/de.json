@@ -1030,7 +1030,6 @@
     },
     "preferences": {
       "failure": {
-        "remove": "Wert konnte nicht entfernt werden",
         "retreive": "Wert konnte nicht abgerufen werden",
         "store": "Wert konnte nicht gespeichert werden"
       }
