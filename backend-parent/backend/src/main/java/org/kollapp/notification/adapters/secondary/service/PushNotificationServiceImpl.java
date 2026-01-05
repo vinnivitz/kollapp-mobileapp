@@ -126,4 +126,16 @@ public class PushNotificationServiceImpl implements PushNotificationService {
     public List<PushNotification> getUserNotifications(long userId, Integer limit) {
         return pushNotificationRepository.findByUserIdOrderByCreatedAtDesc(userId, limit);
     }
+
+    @Override
+    @Transactional
+    public void deleteNotification(long userId, long notificationId) {
+        pushNotificationRepository.deleteByIdAndUserId(notificationId, userId);
+    }
+
+    @Override
+    @Transactional
+    public void deleteAllUserNotifications(long userId) {
+        pushNotificationRepository.deleteAllByUserId(userId);
+    }
 }

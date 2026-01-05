@@ -68,4 +68,19 @@ public interface PushNotificationService {
      * @return List of notifications ordered by creation date descending
      */
     List<PushNotification> getUserNotifications(long userId, Integer limit);
+
+    /**
+     * Delete a specific notification.
+     *
+     * @param userId The user ID
+     * @param notificationId The notification ID to delete
+     */
+    void deleteNotification(long userId, long notificationId);
+
+    /**
+     * Delete all notifications for a user.
+     *
+     * @param userId The user ID
+     */
+    void deleteAllUserNotifications(long userId);
 }

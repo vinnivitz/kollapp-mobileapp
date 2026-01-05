@@ -11,6 +11,7 @@ import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -123,6 +124,28 @@ public class PushNotificationController {
                 request.getNotificationType(),
                 request.getRoute());
         String message = messageUtil.getMessage("success.notification.test-notification-sent");
+        return ResponseEntity.ok(new MessageResponseTO(message));
+    }
+
+    @DeleteMapping("/{notificationId}")
+    @Operation(
+            summary = "Delete a specific notification",
+            security = {@SecurityRequirement(name = "bearer-key")})
+    public ResponseEntity<MessageResponseTO> deleteNotification(@PathVariable("notificationId") long notificationId) {
+        KollappUser kollappUser = kollappUserService.getLoggedInKollappUser();
+        pushNotificationService.deleteNotification(kollappUser.getId(), notificationId);
+        String message = messageUtil.getMessage("success.notification.deleted");
+        return ResponseEntity.ok(new MessageResponseTO(message));
+    }
+
+    @DeleteMapping
+    @Operation(
+            summary = "Delete all notifications for the logged in user",
+            security = {@SecurityRequirement(name = "bearer-key")})
+    public ResponseEntity<MessageResponseTO> deleteAllNotifications() {
+        KollappUser kollappUser = kollappUserService.getLoggedInKollappUser();
+        pushNotificationService.deleteAllUserNotifications(kollappUser.getId());
+        String message = messageUtil.getMessage("success.notification.all-deleted");
         return ResponseEntity.ok(new MessageResponseTO(message));
     }
 }

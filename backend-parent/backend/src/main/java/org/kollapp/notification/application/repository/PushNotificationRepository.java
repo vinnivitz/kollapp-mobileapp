@@ -24,4 +24,19 @@ public interface PushNotificationRepository {
      * @return List of push notifications ordered by creation date descending
      */
     List<PushNotification> findByUserIdOrderByCreatedAtDesc(long userId, Integer limit);
+
+    /**
+     * Delete a notification by ID and user ID.
+     *
+     * @param notificationId The notification ID
+     * @param userId The user ID
+     */
+    void deleteByIdAndUserId(long notificationId, long userId);
+
+    /**
+     * Delete all notifications for a user.
+     *
+     * @param userId The user ID
+     */
+    void deleteAllByUserId(long userId);
 }

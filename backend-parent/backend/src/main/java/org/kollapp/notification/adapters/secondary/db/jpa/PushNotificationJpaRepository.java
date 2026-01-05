@@ -27,4 +27,19 @@ public interface PushNotificationJpaRepository extends JpaRepository<PushNotific
      * @return List of notifications ordered by creation date descending
      */
     List<PushNotification> findByUserIdOrderByCreatedAtDesc(long userId, Pageable pageable);
+
+    /**
+     * Delete a notification by ID and user ID.
+     *
+     * @param id The notification ID
+     * @param userId The user ID
+     */
+    void deleteByIdAndUserId(long id, long userId);
+
+    /**
+     * Delete all notifications for a user.
+     *
+     * @param userId The user ID
+     */
+    void deleteAllByUserId(long userId);
 }

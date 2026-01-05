@@ -31,4 +31,14 @@ public class PushNotificationRepositoryImpl implements PushNotificationRepositor
         }
         return jpaRepository.findByUserIdOrderByCreatedAtDesc(userId, PageRequest.of(0, limit));
     }
+
+    @Override
+    public void deleteByIdAndUserId(long notificationId, long userId) {
+        jpaRepository.deleteByIdAndUserId(notificationId, userId);
+    }
+
+    @Override
+    public void deleteAllByUserId(long userId) {
+        jpaRepository.deleteAllByUserId(userId);
+    }
 }
