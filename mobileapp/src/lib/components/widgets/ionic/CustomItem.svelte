@@ -52,6 +52,14 @@
 	void indexed;
 
 	let ionItemSlidingElement = $state<HTMLIonItemSlidingElement>();
+
+	function onClick(): void {
+		if (clicked) {
+			clicked();
+		} else if (slidingOptions) {
+			ionItemSlidingElement?.open('end');
+		}
+	}
 </script>
 
 {#if slidingOptions}
@@ -86,7 +94,7 @@
 			{color}
 			detail={detail ?? (!!(clicked || slidingOptions) && !iconEnd)}
 			data-transparent={transparent}
-			onclick={() => (slidingOptions ? ionItemSlidingElement?.open('end') : clicked?.())}
+			onclick={onClick}
 			class={classList}
 			style="--ion-color-shade: var(--border-color) !important;"
 		>

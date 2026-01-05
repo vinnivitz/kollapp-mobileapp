@@ -103,10 +103,24 @@
           "no-notifications": "Keine Benachrichtigungen gefunden.",
           "no-unread": "Keine ungelesenen Benachrichtigungen.",
           "title": "Benachrichtigungen",
+          "mark-all-read": "Alle als gelesen markieren",
+          "delete-all": "Alle löschen",
           "all": "Alle",
           "read": "Gelesen",
           "unread": "Ungelesen",
-          "search": "Benachrichtigungen durchsuchen..."
+          "search": "Benachrichtigungen durchsuchen...",
+          "modal": {
+            "mark-all-read": {
+              "header": "Alle als gelesen markieren",
+              "message": "Bist du sicher, dass du alle ungelesenen Benachrichtigungen als gelesen markieren möchtest?",
+              "confirm": "Als gelesen markieren"
+            },
+            "delete-all": {
+              "header": "Alle Benachrichtigungen löschen",
+              "message": "Bist du sicher, dass du alle Benachrichtigungen löschen möchtest? Dies kann nicht rückgängig gemacht werden.",
+              "confirm": "Alle löschen"
+            }
+          }
         }
       },
       "page": {

@@ -374,10 +374,24 @@
           "title": "Notifications",
           "no-unread": "No unread notifications.",
           "no-notifications": "No notifications found.",
+          "mark-all-read": "Mark all as read",
+          "delete-all": "Delete all",
           "unread": "Unread",
           "all": "All",
           "read": "Read",
-          "search": "Search notifications..."
+          "search": "Search notifications...",
+          "modal": {
+            "mark-all-read": {
+              "header": "Mark all as read",
+              "message": "Are you sure you want to mark all unread notifications as read?",
+              "confirm": "Mark as read"
+            },
+            "delete-all": {
+              "header": "Delete all notifications",
+              "message": "Are you sure you want to delete all notifications? This cannot be undone.",
+              "confirm": "Delete all"
+            }
+          }
         }
       },
       "privacy-and-security": {

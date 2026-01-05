@@ -55,6 +55,27 @@ class NotificationService {
 			silentOnSuccess: true
 		});
 	}
+
+	/**
+	 * Deletes a notification by its ID.
+	 * @param id The ID of the notification to delete.
+	 * @returns {Promise<ResponseBody>} The response body.
+	 */
+	async deleteNotification(id: number): Promise<ResponseBody> {
+		return customFetch(`${this.ENDPOINT}/${id}`, {
+			method: RequestMethod.DELETE
+		});
+	}
+
+	/**
+	 * Deletes all notifications for the logged in user.
+	 * @returns {Promise<ResponseBody>} The response body.
+	 */
+	async deleteAllNotifications(): Promise<ResponseBody> {
+		return customFetch(`${this.ENDPOINT}`, {
+			method: RequestMethod.DELETE
+		});
+	}
 }
 
 export const notificationService = new NotificationService();
