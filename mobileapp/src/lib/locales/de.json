@@ -105,7 +105,8 @@
           "title": "Benachrichtigungen",
           "all": "Alle",
           "read": "Gelesen",
-          "unread": "Ungelesen"
+          "unread": "Ungelesen",
+          "search": "Benachrichtigungen durchsuchen..."
         }
       },
       "page": {
@@ -228,7 +229,7 @@
               "card": {
                 "login": {
                   "content": "Du bist bereits registriert?",
-                  "link": "Protokoll"
+                  "link": "Login"
                 }
               },
               "form": {

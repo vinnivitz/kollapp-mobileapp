@@ -11,6 +11,7 @@ import {
 	connectionStore,
 	layoutStore,
 	localeStore,
+	notificationStore,
 	organizationStore,
 	themeStore,
 	userStore
@@ -47,6 +48,7 @@ function createAppStateStore(): AppStateStore {
 			if (isAuthenticated) {
 				set(AppStateType.INITIALIZING_BASE_DATA);
 				await Promise.all([userStore.init(), organizationStore.init()]);
+				void notificationStore.init();
 				if (dev) console.info('Base data stores initialized.');
 			} else {
 				await Promise.all([userStore.reset(), organizationStore.reset()]);

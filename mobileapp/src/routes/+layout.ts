@@ -1,6 +1,7 @@
 import type { LayoutLoad } from './$types';
 
 import { App, type URLOpenListenerEvent } from '@capacitor/app';
+import { redirect } from '@sveltejs/kit';
 
 import { goto } from '$app/navigation';
 import { resolve } from '$app/paths';
@@ -22,34 +23,25 @@ export const load: LayoutLoad = async ({ route, url }) => {
 	}
 
 	const authenticated = await isAuthenticated();
-	const shouldRedirect = await handleRouting(url.pathname, authenticated, route.id as RouteId);
-
-	if (shouldRedirect) {
-		await new Promise(() => {});
-	}
+	handleRouting(url.pathname, authenticated, route.id as RouteId);
 };
 
-async function handleRouting(pathname: string, authenticated: boolean, routeId: RouteId): Promise<boolean> {
-	if (routeId === ('/auth/organization/[slug]' as RouteId)) return false;
+function handleRouting(pathname: string, authenticated: boolean, routeId: RouteId): void {
+	if (routeId === ('/auth/organization/[slug]' as RouteId)) return;
 
 	const isAuthPath = pathname.startsWith('/auth' as RouteId);
 
 	if (authenticated && isAuthPath) {
-		await goto(resolve('/'));
-		return true;
+		throw redirect(303, resolve('/'));
 	}
 
 	if (!authenticated && !isAuthPath) {
-		await goto(resolve('/auth/login'));
-		return true;
+		throw redirect(303, resolve('/auth/login'));
 	}
 
 	if (!authenticated && ['/auth' as RouteId, '/auth/organization' as RouteId].includes(routeId)) {
-		await goto(resolve('/auth/login'));
-		return true;
+		throw redirect(303, resolve('/auth/login'));
 	}
-
-	return false;
 }
 
 async function handleAppEvents(): Promise<void> {

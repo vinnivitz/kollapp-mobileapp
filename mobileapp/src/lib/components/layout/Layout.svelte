@@ -9,7 +9,7 @@
 	import Menu from '$lib/components/layout/Menu.svelte';
 	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
 	import { t } from '$lib/locales';
-	import { initializationStore, organizationStore, userStore } from '$lib/stores';
+	import { initializationStore, notificationStore, organizationStore, userStore } from '$lib/stores';
 
 	type Properties = {
 		children?: Snippet;
@@ -39,7 +39,9 @@
 	let menuComponent = $state<ReturnType<typeof Menu>>();
 
 	async function doRefresh(): Promise<void> {
-		await (onRefresh ? onRefresh() : Promise.all([userStore.init(), organizationStore.init()]));
+		await (onRefresh
+			? onRefresh()
+			: Promise.all([userStore.init(), organizationStore.init(), notificationStore.init()]));
 		refresher?.complete?.();
 	}
 </script>

@@ -376,7 +376,8 @@
           "no-notifications": "No notifications found.",
           "unread": "Unread",
           "all": "All",
-          "read": "Read"
+          "read": "Read",
+          "search": "Search notifications..."
         }
       },
       "privacy-and-security": {
@@ -586,7 +587,7 @@
               "card": {
                 "login": {
                   "content": "You are already registered?",
-                  "link": "Log&nbsp;in"
+                  "link": "Login"
                 }
               }
             }

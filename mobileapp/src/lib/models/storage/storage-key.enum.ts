@@ -11,6 +11,7 @@ export enum StorageKey {
 	LOCALE = 'locale',
 	MAINTENANCE_SCHEDULE = 'maintenance-schedule',
 	NOTIFICATIONS = 'notifications',
+	NOTIFICATIONS_READ = 'notifications-read',
 	ONLINE = 'online',
 	ORGANIZATION = 'organization',
 	POSITION = 'position',

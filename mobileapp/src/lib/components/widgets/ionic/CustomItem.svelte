@@ -11,6 +11,7 @@
 		card?: boolean;
 		classList?: string;
 		color?: Colors | undefined;
+		detail?: boolean;
 		disabled?: boolean;
 		icon?: string;
 		iconColor?: Colors;
@@ -33,6 +34,7 @@
 		classList = '',
 		clicked,
 		color = 'light',
+		detail,
 		disabled,
 		icon,
 		iconClick,
@@ -82,7 +84,7 @@
 			role={clicked ? 'button' : undefined}
 			tabindex={clicked ? 0 : undefined}
 			{color}
-			detail={!!(clicked || slidingOptions) && !iconEnd}
+			detail={detail ?? (!!(clicked || slidingOptions) && !iconEnd)}
 			data-transparent={transparent}
 			onclick={() => (slidingOptions ? ionItemSlidingElement?.open('end') : clicked?.())}
 			class={classList}
