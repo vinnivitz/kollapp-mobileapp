@@ -14,7 +14,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
 
-import org.kollapp.notification.config.properties.FirebaseProperties;
+import org.kollapp.notification.adapters.infrastructure.properties.FirebaseProperties;
 
 /**
  * Configuration for Firebase Cloud Messaging.

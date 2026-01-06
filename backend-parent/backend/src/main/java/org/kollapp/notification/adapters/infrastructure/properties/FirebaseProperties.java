@@ -1,4 +1,4 @@
-package org.kollapp.notification.config.properties;
+package org.kollapp.notification.adapters.infrastructure.properties;
 
 import lombok.Getter;
 import lombok.Setter;
