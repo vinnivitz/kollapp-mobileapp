@@ -73,6 +73,7 @@ function createAppStateStore(): AppStateStore {
 		try {
 			set(AppStateType.INITIALIZING_BASE_DATA);
 			await Promise.all([userStore.init(), organizationStore.init()]);
+			notificationStore.init();
 			if (dev) console.info('Base data stores initialized.');
 			set(AppStateType.READY);
 		} catch (error) {

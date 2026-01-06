@@ -12,8 +12,6 @@
 		openOutline,
 		trashBinOutline
 	} from 'ionicons/icons';
-	import { onMount } from 'svelte';
-	import { SvelteSet } from 'svelte/reactivity';
 
 	import { goto } from '$app/navigation';
 
@@ -23,9 +21,8 @@
 	import FabButton from '$lib/components/widgets/ionic/FabButton.svelte';
 	import SegmentItem from '$lib/components/widgets/ionic/SegmentItem.svelte';
 	import { t } from '$lib/locales';
-	import { StorageKey } from '$lib/models/storage';
 	import { notificationStore } from '$lib/stores';
-	import { confirmationModal, formatter, getStoredValue, StatusCheck, storeValue } from '$lib/utility';
+	import { confirmationModal, formatter, StatusCheck } from '$lib/utility';
 
 	enum NotificationFilter {
 		ALL = 'all',
@@ -35,8 +32,7 @@
 
 	let notificationFilter = $state<NotificationFilter>(NotificationFilter.UNREAD);
 	let searchValue = $state<string>('');
-	const readNotificationIds = new SvelteSet<number>();
-
+	const readNotifications = notificationStore.readNotifications;
 	const notifications = $derived(
 		($notificationStore ?? []).toSorted((a, b) => {
 			return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
@@ -50,7 +46,7 @@
 				if (!haystack.includes(normalizedSearchValue)) return false;
 			}
 
-			const isRead = readNotificationIds.has(notification.id);
+			const isRead = $readNotifications.has(notification.id);
 			switch (notificationFilter) {
 				case NotificationFilter.UNREAD: {
 					return !isRead;
@@ -91,8 +87,6 @@
 
 	const fabButtons = $derived<FabButtonButtons[]>(getFabButtons());
 
-	onMount(async () => await loadReadNotificationIds());
-
 	function getFabButtons(): FabButtonButtons[] {
 		if (notificationFilter === NotificationFilter.UNREAD && filteredNotifications.length > 0) {
 			return [
@@ -117,31 +111,20 @@
 		}
 	}
 
-	async function loadReadNotificationIds(): Promise<void> {
-		const stored = (await getStoredValue<number[]>(StorageKey.NOTIFICATIONS_READ)) ?? [];
-		readNotificationIds.clear();
-		for (const id of stored) {
-			readNotificationIds.add(id);
-		}
-	}
-
 	async function markNotificationAsRead(notification: PushNotificationTO): Promise<void> {
-		if (readNotificationIds.has(notification.id)) return;
-		readNotificationIds.add(notification.id);
-		await storeValue(StorageKey.NOTIFICATIONS_READ, [...readNotificationIds]);
+		await notificationStore.markAsRead(notification.id);
 	}
 
 	async function deleteNotification(notification: PushNotificationTO): Promise<void> {
 		const remainingNotifications = ($notificationStore ?? []).filter((n) => n.id !== notification.id);
 		await notificationStore.set(remainingNotifications);
 
-		if (readNotificationIds.has(notification.id)) {
+		if ($readNotifications.has(notification.id)) {
 			const loader = await loadingController.create({});
 			await loader.present();
 			const result = await notificationService.deleteNotification(notification.id);
 			if (StatusCheck.isOK(result.status)) {
-				readNotificationIds.delete(notification.id);
-				await storeValue(StorageKey.NOTIFICATIONS_READ, [...readNotificationIds]);
+				await notificationStore.removeReadStatus(notification.id);
 			}
 			await loader.dismiss();
 		}
@@ -157,7 +140,7 @@
 
 	function getNotificationSlidingOptions(notification: PushNotificationTO): ItemSlidingOption[] {
 		const options: ItemSlidingOption[] = [];
-		const isRead = readNotificationIds.has(notification.id);
+		const isRead = $readNotifications.has(notification.id);
 
 		if (!isRead) {
 			options.push({
@@ -194,12 +177,9 @@
 	}
 
 	async function markAllUnreadAsRead(): Promise<void> {
-		const unreadNotifications = notifications.filter((notification) => !readNotificationIds.has(notification.id));
+		const unreadNotifications = notifications.filter((notification) => !$readNotifications.has(notification.id));
 		if (unreadNotifications.length === 0) return;
-		for (const notification of unreadNotifications) {
-			readNotificationIds.add(notification.id);
-		}
-		await storeValue(StorageKey.NOTIFICATIONS_READ, [...readNotificationIds]);
+		await notificationStore.markMultipleAsRead(unreadNotifications.map((n) => n.id));
 	}
 
 	async function onDeleteAllNotificationsPrompt(): Promise<void> {
@@ -217,8 +197,7 @@
 		const result = await notificationService.deleteAllNotifications();
 		if (StatusCheck.isOK(result.status)) {
 			await notificationStore.set([]);
-			readNotificationIds.clear();
-			await storeValue(StorageKey.NOTIFICATIONS_READ, []);
+			await notificationStore.clearReadStatuses();
 		}
 		await loader.dismiss();
 	}
@@ -254,7 +233,7 @@
 				{:else}
 					<ion-list inset>
 						{#each filteredNotifications as notification (notification.id)}
-							{@const isRead = readNotificationIds.has(notification.id)}
+							{@const isRead = $readNotifications.has(notification.id)}
 							<CustomItem
 								slidingOptions={getNotificationSlidingOptions(notification)}
 								clicked={notification.route ? () => openNotification(notification) : undefined}

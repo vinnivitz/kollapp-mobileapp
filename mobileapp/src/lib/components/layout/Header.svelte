@@ -12,9 +12,10 @@
 		title: string;
 		loading?: boolean;
 		showBackButton?: boolean;
+		unreadNotificationCount?: number;
 	};
 
-	let { loading, showBackButton, title }: Properties = $props();
+	let { loading, showBackButton, title, unreadNotificationCount }: Properties = $props();
 
 	const loaded = $derived($initializationStore.loadedServer);
 
@@ -57,7 +58,14 @@
 			</ion-button>
 		</ion-buttons>
 		<ion-buttons slot="end">
-			<ion-menu-button class="text-3xl"></ion-menu-button>
+			<div class="relative">
+				<ion-menu-button class="text-3xl"></ion-menu-button>
+				{#if unreadNotificationCount && unreadNotificationCount > 0}
+					<ion-badge color="danger" class="absolute -top-1 right-0 z-10">
+						{unreadNotificationCount}
+					</ion-badge>
+				{/if}
+			</div>
 		</ion-buttons>
 	</ion-toolbar>
 	{#if showProgressBar}

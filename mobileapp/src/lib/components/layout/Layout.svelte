@@ -35,6 +35,12 @@
 	const loadedServer = $derived($initializationStore.loadedServer);
 	const loaded = $derived($loadedCache || $loadedServer);
 
+	const readNotifications = $derived(notificationStore.readNotifications);
+
+	const unreadNotificationCount = $derived(
+		($notificationStore ?? []).filter((notification) => !$readNotifications.has(notification.id)).length
+	);
+
 	let refresher = $state<HTMLIonRefresherElement>();
 	let menuComponent = $state<ReturnType<typeof Menu>>();
 
@@ -47,7 +53,7 @@
 </script>
 
 {#if title && !hideMenu}
-	<Menu bind:this={menuComponent}>
+	<Menu bind:this={menuComponent} {unreadNotificationCount}>
 		<ion-list>
 			<LabeledItem
 				transparent
@@ -81,7 +87,7 @@
 
 <div class="ion-page" id="menu">
 	{#if title}
-		<Header {title} {showBackButton} {loading}></Header>
+		<Header {title} {showBackButton} {loading} {unreadNotificationCount}></Header>
 	{/if}
 	{#if loaded && !loading}
 		<ion-content class="ion-padding" in:fade={{ delay: 0, duration: 200 }} class:no-overflow={!scrollable}>

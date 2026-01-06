@@ -16,9 +16,10 @@
 
 	type Properties = {
 		children: Snippet;
+		unreadNotificationCount?: number;
 	};
 
-	let { children }: Properties = $props();
+	let { children, unreadNotificationCount }: Properties = $props();
 
 	let searchedItems = $state<SearchableItemTO[]>([]);
 	let searchValue = $state<string>('');
@@ -61,8 +62,11 @@
 					fill="clear"
 					size="large"
 					classList="m-0"
-					color="light"
+					color="white"
 					icon={notificationsOutline}
+					badge={unreadNotificationCount && unreadNotificationCount > 0
+						? unreadNotificationCount.toString()
+						: undefined}
 					clicked={() => navigate('/account/notifications')}
 				/>
 			</div>
