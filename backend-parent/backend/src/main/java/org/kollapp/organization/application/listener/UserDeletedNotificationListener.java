@@ -1,4 +1,4 @@
-package org.kollapp.organization.adapters.primary.listener;
+package org.kollapp.organization.application.listener;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -6,9 +6,8 @@ import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
 import org.springframework.context.ApplicationListener;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.notification.application.port.secondary.NotificationPublisher;
@@ -22,8 +21,7 @@ import org.kollapp.user.application.model.KollappUserDeletedEvent;
 /**
  * Listener that sends push notifications to organization members when a user deletes their account.
  */
-@PrimaryAdapter
-@Service
+@Component
 @Slf4j
 @AllArgsConstructor
 public class UserDeletedNotificationListener implements ApplicationListener<KollappUserDeletedEvent> {

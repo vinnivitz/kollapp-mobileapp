@@ -1,4 +1,4 @@
-package org.kollapp.notification.application.port.secondary;
+package org.kollapp.notification.domain.model;
 
 import lombok.Value;
 

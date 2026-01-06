@@ -18,10 +18,10 @@ import com.google.firebase.messaging.Notification;
 
 import org.kollapp.notification.application.exception.PushNotificationException;
 import org.kollapp.notification.application.port.secondary.PushNotificationChannel;
-import org.kollapp.notification.application.port.secondary.PushNotificationSendResult;
 import org.kollapp.notification.domain.entities.DeviceToken;
 import org.kollapp.notification.domain.enums.DeviceType;
 import org.kollapp.notification.domain.enums.NotificationType;
+import org.kollapp.notification.domain.model.PushNotificationSendResult;
 
 /**
  * Firebase Cloud Messaging implementation of push notification channel.

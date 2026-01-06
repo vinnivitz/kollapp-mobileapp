@@ -1,11 +1,10 @@
-package org.kollapp.organization.adapters.primary.listener;
+package org.kollapp.organization.application.listener;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
 import org.springframework.context.ApplicationListener;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.notification.application.port.secondary.NotificationPublisher;
@@ -17,8 +16,7 @@ import org.kollapp.organization.application.model.MemberRoleChangedEvent;
  * Listener that sends a notification when a member's role is changed.
  * Channel: MEMBERSHIP_STATUS - Personal notification about the user's own membership status.
  */
-@PrimaryAdapter
-@Service
+@Component
 @Slf4j
 @AllArgsConstructor
 public class MemberRoleChangedNotificationListener implements ApplicationListener<MemberRoleChangedEvent> {

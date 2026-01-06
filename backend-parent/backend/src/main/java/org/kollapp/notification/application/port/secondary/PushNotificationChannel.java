@@ -4,6 +4,7 @@ import org.jmolecules.architecture.hexagonal.SecondaryPort;
 
 import org.kollapp.notification.domain.entities.DeviceToken;
 import org.kollapp.notification.domain.enums.NotificationType;
+import org.kollapp.notification.domain.model.PushNotificationSendResult;
 
 /**
  * Port for sending push notifications through different channels.

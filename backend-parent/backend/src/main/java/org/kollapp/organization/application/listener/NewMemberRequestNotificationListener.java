@@ -1,13 +1,12 @@
-package org.kollapp.organization.adapters.primary.listener;
+package org.kollapp.organization.application.listener;
 
 import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
 import org.springframework.context.ApplicationListener;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.notification.application.port.secondary.NotificationPublisher;
@@ -19,8 +18,7 @@ import org.kollapp.organization.application.service.OrganizationService;
 /**
  * Listener that sends a notification to managers when a new member requests to join.
  */
-@PrimaryAdapter
-@Service
+@Component
 @Slf4j
 @AllArgsConstructor
 public class NewMemberRequestNotificationListener implements ApplicationListener<NewMemberRequestEvent> {

@@ -1,11 +1,10 @@
-package org.kollapp.organization.adapters.primary.listener;
+package org.kollapp.organization.application.listener;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
 import org.springframework.context.ApplicationListener;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.notification.application.port.secondary.NotificationPublisher;
@@ -16,8 +15,7 @@ import org.kollapp.organization.application.model.MembershipApprovedEvent;
 /**
  * Listener that sends a notification when a membership is approved.
  */
-@PrimaryAdapter
-@Service
+@Component
 @Slf4j
 @AllArgsConstructor
 public class MembershipApprovedNotificationListener implements ApplicationListener<MembershipApprovedEvent> {

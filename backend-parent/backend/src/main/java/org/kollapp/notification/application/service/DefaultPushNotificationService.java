@@ -11,12 +11,12 @@ import org.kollapp.notification.application.port.primary.PushNotificationService
 import org.kollapp.notification.application.port.secondary.DeviceTokenRepository;
 import org.kollapp.notification.application.port.secondary.PushNotificationChannel;
 import org.kollapp.notification.application.port.secondary.PushNotificationRepository;
-import org.kollapp.notification.application.port.secondary.PushNotificationSendResult;
 import org.kollapp.notification.domain.entities.DeviceToken;
 import org.kollapp.notification.domain.entities.PushNotification;
 import org.kollapp.notification.domain.enums.DeviceType;
 import org.kollapp.notification.domain.enums.NotificationStatus;
 import org.kollapp.notification.domain.enums.NotificationType;
+import org.kollapp.notification.domain.model.PushNotificationSendResult;
 
 @RequiredArgsConstructor
 public class DefaultPushNotificationService implements PushNotificationService {
