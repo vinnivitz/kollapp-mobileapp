@@ -5,6 +5,7 @@ import java.util.List;
 import jakarta.transaction.Transactional;
 
 import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 import org.kollapp.notification.application.port.primary.PushNotificationService;
@@ -20,6 +21,7 @@ import org.kollapp.notification.domain.enums.NotificationType;
 @PrimaryAdapter
 @Transactional
 @Component
+@Primary
 public class TransactionalPushNotificationService implements PushNotificationService {
 
     private final PushNotificationService delegate;

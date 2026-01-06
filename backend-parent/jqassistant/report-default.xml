@@ -32,7 +32,8 @@
                     {upstream: 'User', downstream: 'Organization'},
                     {upstream: 'User', downstream: 'Accounting'},
                     {upstream: 'User', downstream: 'Notification'},
-                    {upstream: 'Organization', downstream: 'Accounting'}
+                    {upstream: 'Organization', downstream: 'Accounting'},
+                    {upstream: 'Notification', downstream: 'Organization'}
                 ] as allowedDependencies
             UNWIND
                 allowedDependencies as allowedDependency
