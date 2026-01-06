@@ -17,11 +17,17 @@ import org.kollapp.notification.application.service.DefaultPushNotificationServi
 public class PushNotificationServiceConfig {
 
     @Bean
-    public PushNotificationService pushNotificationService(
+    public DefaultPushNotificationService defaultPushNotificationService(
             DeviceTokenRepository deviceTokenRepository,
             PushNotificationRepository pushNotificationRepository,
             List<PushNotificationChannel> notificationChannels) {
         return new DefaultPushNotificationService(
                 deviceTokenRepository, pushNotificationRepository, notificationChannels);
+    }
+
+    @Bean
+    public PushNotificationService pushNotificationService(
+            DefaultPushNotificationService defaultPushNotificationService) {
+        return new TransactionalPushNotificationService(defaultPushNotificationService);
     }
 }
