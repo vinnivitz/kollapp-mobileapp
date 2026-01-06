@@ -1,4 +1,4 @@
 # Firebase
 src/main/resources/firebase-service-account.json
 # Database
-db/
+/db/
