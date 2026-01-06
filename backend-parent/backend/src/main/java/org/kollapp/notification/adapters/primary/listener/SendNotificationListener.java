@@ -1,14 +1,13 @@
 package org.kollapp.notification.adapters.primary.listener;
 
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 
 import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
-import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
-import org.kollapp.notification.application.model.events.SendNotificationEvent;
-import org.kollapp.notification.application.service.PushNotificationService;
+import org.kollapp.notification.application.port.primary.PushNotificationService;
+import org.kollapp.notification.domain.events.SendNotificationEvent;
 
 /**
  * Listener for SendNotificationEvent to send push notifications to a single
@@ -16,14 +15,13 @@ import org.kollapp.notification.application.service.PushNotificationService;
  */
 @PrimaryAdapter
 @Service
-@Slf4j
-@AllArgsConstructor
-public class SendNotificationListener implements ApplicationListener<SendNotificationEvent> {
+@RequiredArgsConstructor
+public class SendNotificationListener {
 
     private final PushNotificationService pushNotificationService;
 
-    @Override
-    public void onApplicationEvent(SendNotificationEvent event) {
+    @EventListener
+    public void on(SendNotificationEvent event) {
         pushNotificationService.sendNotificationToUser(
                 event.getUserId(), event.getTitle(), event.getBody(), event.getNotificationType(), event.getRoute());
     }

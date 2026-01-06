@@ -5,19 +5,19 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import org.kollapp.notification.application.model.entities.DeviceToken;
+import org.kollapp.notification.adapters.secondary.db.jpa.entities.DeviceTokenEntity;
 
 /**
  * JPA repository for device tokens.
  */
-public interface DeviceTokenJpaRepository extends JpaRepository<DeviceToken, Long> {
+public interface DeviceTokenJpaRepository extends JpaRepository<DeviceTokenEntity, Long> {
     /**
      * Find a device token by token.
      *
      * @param token The token
      * @return Optional containing the device token if found
      */
-    Optional<DeviceToken> findByToken(String token);
+    Optional<DeviceTokenEntity> findByToken(String token);
 
     /**
      * Find all active device tokens for a user.
@@ -26,5 +26,5 @@ public interface DeviceTokenJpaRepository extends JpaRepository<DeviceToken, Lon
      * @param active The active status
      * @return List of active device tokens
      */
-    List<DeviceToken> findByUserIdAndActive(long userId, boolean active);
+    List<DeviceTokenEntity> findByUserIdAndActive(long userId, boolean active);
 }

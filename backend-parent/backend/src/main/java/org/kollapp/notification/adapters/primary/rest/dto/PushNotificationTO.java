@@ -2,22 +2,18 @@ package org.kollapp.notification.adapters.primary.rest.dto;
 
 import java.time.LocalDateTime;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import org.kollapp.notification.application.model.enums.NotificationType;
+import org.kollapp.notification.domain.enums.NotificationType;
 
 /**
  * Transfer object for push notification response.
  */
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class PushNotificationTO {
     private long id;
 

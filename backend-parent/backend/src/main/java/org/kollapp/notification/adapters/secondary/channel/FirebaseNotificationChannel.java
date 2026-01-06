@@ -1,6 +1,6 @@
 package org.kollapp.notification.adapters.secondary.channel;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.jmolecules.architecture.hexagonal.SecondaryAdapter;
@@ -17,14 +17,11 @@ import com.google.firebase.messaging.MessagingErrorCode;
 import com.google.firebase.messaging.Notification;
 
 import org.kollapp.notification.application.exception.PushNotificationException;
-import org.kollapp.notification.application.model.entities.DeviceToken;
-import org.kollapp.notification.application.model.entities.PushNotification;
-import org.kollapp.notification.application.model.enums.DeviceType;
-import org.kollapp.notification.application.model.enums.NotificationStatus;
-import org.kollapp.notification.application.model.enums.NotificationType;
-import org.kollapp.notification.application.port.PushNotificationChannel;
-import org.kollapp.notification.application.repository.DeviceTokenRepository;
-import org.kollapp.notification.application.repository.PushNotificationRepository;
+import org.kollapp.notification.application.port.secondary.PushNotificationChannel;
+import org.kollapp.notification.application.port.secondary.PushNotificationSendResult;
+import org.kollapp.notification.domain.entities.DeviceToken;
+import org.kollapp.notification.domain.enums.DeviceType;
+import org.kollapp.notification.domain.enums.NotificationType;
 
 /**
  * Firebase Cloud Messaging implementation of push notification channel.
@@ -32,28 +29,15 @@ import org.kollapp.notification.application.repository.PushNotificationRepositor
 @Slf4j
 @Component
 @SecondaryAdapter
-@AllArgsConstructor
+@RequiredArgsConstructor
 @ConditionalOnBean(FirebaseMessaging.class)
 public class FirebaseNotificationChannel implements PushNotificationChannel {
 
     private final FirebaseMessaging firebaseMessaging;
 
-    private final DeviceTokenRepository deviceTokenRepository;
-
-    private final PushNotificationRepository pushNotificationRepository;
-
     @Override
-    public PushNotification send(
+    public PushNotificationSendResult send(
             DeviceToken deviceToken, String title, String body, NotificationType notificationType, String route) {
-        PushNotification notification = PushNotification.builder()
-                .userId(deviceToken.getUserId())
-                .title(title)
-                .body(body)
-                .notificationType(notificationType)
-                .data(route)
-                .status(NotificationStatus.PENDING)
-                .build();
-
         try {
             Notification fcmNotification =
                     Notification.builder().setTitle(title).setBody(body).build();
@@ -75,21 +59,13 @@ public class FirebaseNotificationChannel implements PushNotificationChannel {
             Message message = messageBuilder.build();
             firebaseMessaging.send(message);
 
-            notification.setStatus(NotificationStatus.SENT);
+            return PushNotificationSendResult.sent();
         } catch (FirebaseMessagingException e) {
-            notification.setStatus(NotificationStatus.FAILED);
-            notification.setErrorMessage(e.getMessage());
-
-            if (isInvalidTokenError(e)) {
-                deactivateToken(deviceToken);
-            }
+            return PushNotificationSendResult.failed(e.getMessage(), isInvalidTokenError(e));
         } catch (Exception exception) {
-            notification.setStatus(NotificationStatus.FAILED);
-            notification.setErrorMessage(exception.getMessage());
+            log.error("Unexpected error while sending push notification", exception);
             throw new PushNotificationException();
         }
-
-        return pushNotificationRepository.save(notification);
     }
 
     @Override
@@ -102,10 +78,5 @@ public class FirebaseNotificationChannel implements PushNotificationChannel {
         MessagingErrorCode errorCode = exception.getMessagingErrorCode();
         return errorCode != null
                 && (errorCode.name().equals("UNREGISTERED") || errorCode.name().equals("INVALID_ARGUMENT"));
-    }
-
-    private void deactivateToken(DeviceToken deviceToken) {
-        deviceToken.setActive(false);
-        deviceTokenRepository.save(deviceToken);
     }
 }

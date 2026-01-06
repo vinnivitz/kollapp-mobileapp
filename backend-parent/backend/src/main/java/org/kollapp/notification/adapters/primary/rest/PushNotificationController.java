@@ -4,8 +4,7 @@ import java.util.List;
 
 import jakarta.validation.Valid;
 
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 
 import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
 import org.springframework.http.ResponseEntity;
@@ -27,10 +26,10 @@ import org.kollapp.notification.adapters.primary.rest.dto.PushNotificationTO;
 import org.kollapp.notification.adapters.primary.rest.dto.TestNotificationRequestTO;
 import org.kollapp.notification.adapters.primary.rest.mapper.DeviceTokenMapper;
 import org.kollapp.notification.adapters.primary.rest.mapper.PushNotificationMapper;
-import org.kollapp.notification.application.model.entities.DeviceToken;
-import org.kollapp.notification.application.model.entities.PushNotification;
-import org.kollapp.notification.application.model.enums.DeviceType;
-import org.kollapp.notification.application.service.PushNotificationService;
+import org.kollapp.notification.application.port.primary.PushNotificationService;
+import org.kollapp.notification.domain.entities.DeviceToken;
+import org.kollapp.notification.domain.entities.PushNotification;
+import org.kollapp.notification.domain.enums.DeviceType;
 import org.kollapp.user.application.model.KollappUser;
 import org.kollapp.user.application.service.KollappUserService;
 
@@ -40,11 +39,10 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 /**
  * REST controller for push notification operations.
  */
-@Slf4j
 @RestController
 @RequestMapping("/api/notifications")
 @PrimaryAdapter
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class PushNotificationController {
 
     private final PushNotificationService pushNotificationService;

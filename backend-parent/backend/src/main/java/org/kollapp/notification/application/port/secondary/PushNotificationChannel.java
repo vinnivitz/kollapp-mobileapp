@@ -1,12 +1,14 @@
-package org.kollapp.notification.application.port;
+package org.kollapp.notification.application.port.secondary;
 
-import org.kollapp.notification.application.model.entities.DeviceToken;
-import org.kollapp.notification.application.model.entities.PushNotification;
-import org.kollapp.notification.application.model.enums.NotificationType;
+import org.jmolecules.architecture.hexagonal.SecondaryPort;
+
+import org.kollapp.notification.domain.entities.DeviceToken;
+import org.kollapp.notification.domain.enums.NotificationType;
 
 /**
  * Port for sending push notifications through different channels.
  */
+@SecondaryPort
 public interface PushNotificationChannel {
     /**
      * Send a push notification through this channel.
@@ -16,9 +18,9 @@ public interface PushNotificationChannel {
      * @param body        The notification body
      * @param notificationType The type of notification
      * @param route       Optional deep link route
-     * @return The notification record with status
+     * @return The send result (status + optional error)
      */
-    PushNotification send(
+    PushNotificationSendResult send(
             DeviceToken deviceToken, String title, String body, NotificationType notificationType, String route);
 
     /**

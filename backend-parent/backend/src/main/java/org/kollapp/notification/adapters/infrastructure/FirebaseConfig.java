@@ -1,10 +1,8 @@
-package org.kollapp.notification.config;
+package org.kollapp.notification.adapters.infrastructure;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -21,7 +19,6 @@ import org.kollapp.notification.config.properties.FirebaseProperties;
 /**
  * Configuration for Firebase Cloud Messaging.
  */
-@Slf4j
 @Configuration
 public class FirebaseConfig {
     private final FirebaseProperties firebaseProperties;

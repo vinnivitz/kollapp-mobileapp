@@ -1,4 +1,4 @@
-package org.kollapp.notification.application.model.enums;
+package org.kollapp.notification.domain.enums;
 
 /**
  * Enum representing different types of push notifications.

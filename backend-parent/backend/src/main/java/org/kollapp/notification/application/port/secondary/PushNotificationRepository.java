@@ -1,12 +1,15 @@
-package org.kollapp.notification.application.repository;
+package org.kollapp.notification.application.port.secondary;
 
 import java.util.List;
 
-import org.kollapp.notification.application.model.entities.PushNotification;
+import org.jmolecules.architecture.hexagonal.SecondaryPort;
+
+import org.kollapp.notification.domain.entities.PushNotification;
 
 /**
  * Repository interface for push notification operations.
  */
+@SecondaryPort
 public interface PushNotificationRepository {
     /**
      * Save a push notification.

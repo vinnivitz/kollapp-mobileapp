@@ -1,6 +1,6 @@
 package org.kollapp.notification.adapters.primary.rest;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +18,7 @@ import org.kollapp.notification.application.exception.PushNotificationException;
 
 @ControllerAdvice(basePackages = {"org.kollapp.notification"})
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class NotificationExceptionHandler {
 
     private final MessageUtil messageUtil;

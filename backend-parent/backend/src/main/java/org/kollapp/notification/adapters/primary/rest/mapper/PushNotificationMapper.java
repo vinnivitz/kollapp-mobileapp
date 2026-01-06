@@ -5,7 +5,7 @@ import java.util.List;
 import org.mapstruct.Mapper;
 
 import org.kollapp.notification.adapters.primary.rest.dto.PushNotificationTO;
-import org.kollapp.notification.application.model.entities.PushNotification;
+import org.kollapp.notification.domain.entities.PushNotification;
 
 /**
  * MapStruct mapper for push notification entities and DTOs.

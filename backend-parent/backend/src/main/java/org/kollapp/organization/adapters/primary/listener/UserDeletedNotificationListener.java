@@ -11,9 +11,9 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 
 import org.kollapp.core.adapters.primary.rest.MessageUtil;
-import org.kollapp.notification.application.model.enums.NotificationType;
-import org.kollapp.notification.application.publisher.NotificationPublisher;
-import org.kollapp.notification.application.util.NotificationRouteBuilder;
+import org.kollapp.notification.application.port.secondary.NotificationPublisher;
+import org.kollapp.notification.application.service.NotificationRouteBuilder;
+import org.kollapp.notification.domain.enums.NotificationType;
 import org.kollapp.organization.application.model.PersonOfOrganization;
 import org.kollapp.organization.application.repository.PersonOfOrganizationRepository;
 import org.kollapp.organization.application.service.OrganizationService;

@@ -1,13 +1,16 @@
-package org.kollapp.notification.application.repository;
+package org.kollapp.notification.application.port.secondary;
 
 import java.util.List;
 import java.util.Optional;
 
-import org.kollapp.notification.application.model.entities.DeviceToken;
+import org.jmolecules.architecture.hexagonal.SecondaryPort;
+
+import org.kollapp.notification.domain.entities.DeviceToken;
 
 /**
  * Repository interface for device token operations.
  */
+@SecondaryPort
 public interface DeviceTokenRepository {
     /**
      * Save a device token.

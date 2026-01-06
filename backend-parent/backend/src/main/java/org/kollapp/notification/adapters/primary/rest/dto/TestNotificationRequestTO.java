@@ -3,18 +3,18 @@ package org.kollapp.notification.adapters.primary.rest.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import org.kollapp.notification.application.model.enums.NotificationType;
+import org.kollapp.notification.domain.enums.NotificationType;
 
 /**
  * Request DTO for testing push notifications.
  */
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class TestNotificationRequestTO {
 
     @NotBlank(message = "validation.notification.title.required")

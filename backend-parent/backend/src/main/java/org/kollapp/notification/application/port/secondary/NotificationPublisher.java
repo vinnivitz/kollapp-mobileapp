@@ -1,18 +1,16 @@
-package org.kollapp.notification.application.publisher;
+package org.kollapp.notification.application.port.secondary;
 
 import java.util.List;
 
 import org.jmolecules.architecture.hexagonal.SecondaryPort;
-import org.springframework.stereotype.Service;
 
-import org.kollapp.notification.application.model.enums.NotificationType;
+import org.kollapp.notification.domain.enums.NotificationType;
 
 /**
  * Publisher interface for notification events.
  * This allows other modules to trigger notifications without depending on the notification service directly.
  */
 @SecondaryPort
-@Service
 public interface NotificationPublisher {
     /**
      * Publish an event to send a notification to a specific user.

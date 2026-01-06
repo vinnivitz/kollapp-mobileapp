@@ -1,15 +1,18 @@
-package org.kollapp.notification.application.service;
+package org.kollapp.notification.application.port.primary;
 
 import java.util.List;
 
-import org.kollapp.notification.application.model.entities.DeviceToken;
-import org.kollapp.notification.application.model.entities.PushNotification;
-import org.kollapp.notification.application.model.enums.DeviceType;
-import org.kollapp.notification.application.model.enums.NotificationType;
+import org.jmolecules.architecture.hexagonal.PrimaryPort;
+
+import org.kollapp.notification.domain.entities.DeviceToken;
+import org.kollapp.notification.domain.entities.PushNotification;
+import org.kollapp.notification.domain.enums.DeviceType;
+import org.kollapp.notification.domain.enums.NotificationType;
 
 /**
  * Service interface for push notification operations.
  */
+@PrimaryPort
 public interface PushNotificationService {
     /**
      * Register a device token for a user.

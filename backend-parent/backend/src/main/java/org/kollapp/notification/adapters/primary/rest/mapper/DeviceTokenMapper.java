@@ -5,7 +5,7 @@ import java.util.List;
 import org.mapstruct.Mapper;
 
 import org.kollapp.notification.adapters.primary.rest.dto.DeviceTokenTO;
-import org.kollapp.notification.application.model.entities.DeviceToken;
+import org.kollapp.notification.domain.entities.DeviceToken;
 
 /**
  * MapStruct mapper for device token entities and DTOs.

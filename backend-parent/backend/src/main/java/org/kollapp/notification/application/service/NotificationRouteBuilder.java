@@ -1,12 +1,9 @@
-package org.kollapp.notification.application.util;
-
-import org.springframework.stereotype.Component;
+package org.kollapp.notification.application.service;
 
 /**
  * Utility class for building deep link routes for push notifications.
  * Centralizes route construction to ensure consistency across the application.
  */
-@Component
 public class NotificationRouteBuilder {
 
     private static final String ORGANIZATION_BASE = "/organization";
