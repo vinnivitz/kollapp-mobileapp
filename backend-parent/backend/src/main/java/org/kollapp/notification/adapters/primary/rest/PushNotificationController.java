@@ -23,7 +23,6 @@ import org.kollapp.core.adapters.primary.rest.dto.MessageResponseTO;
 import org.kollapp.notification.adapters.primary.rest.dto.DeviceTokenRegistrationRequestTO;
 import org.kollapp.notification.adapters.primary.rest.dto.DeviceTokenTO;
 import org.kollapp.notification.adapters.primary.rest.dto.PushNotificationTO;
-import org.kollapp.notification.adapters.primary.rest.dto.TestNotificationRequestTO;
 import org.kollapp.notification.adapters.primary.rest.mapper.DeviceTokenMapper;
 import org.kollapp.notification.adapters.primary.rest.mapper.PushNotificationMapper;
 import org.kollapp.notification.application.port.primary.PushNotificationService;
@@ -106,23 +105,6 @@ public class PushNotificationController {
         List<PushNotificationTO> response = pushNotificationMapper.toTOs(notifications);
         String message = messageUtil.getMessage("success.notification.notifications-retrieved");
         return ResponseEntity.ok(new DataResponseTO<>(response, message));
-    }
-
-    @PostMapping("/test")
-    @Operation(
-            summary = "Send a test push notification to all registered devices of the logged in user",
-            security = {@SecurityRequirement(name = "bearer-key")})
-    public ResponseEntity<MessageResponseTO> sendTestNotification(
-            @Valid @RequestBody TestNotificationRequestTO request) {
-        KollappUser kollappUser = kollappUserService.getLoggedInKollappUser();
-        pushNotificationService.sendNotificationToUser(
-                kollappUser.getId(),
-                request.getTitle(),
-                request.getBody(),
-                request.getNotificationType(),
-                request.getRoute());
-        String message = messageUtil.getMessage("success.notification.test-notification-sent");
-        return ResponseEntity.ok(new MessageResponseTO(message));
     }
 
     @DeleteMapping("/{notificationId}")
