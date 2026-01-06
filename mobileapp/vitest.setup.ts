@@ -120,6 +120,14 @@ vi.mock('$lib/stores', () => {
 				return vi.fn();
 			}
 		},
+		notificationStore: {
+			init: vi.fn().mockResolvedValue(vi.fn()),
+			readNotifications: new Set<string>(),
+			subscribe: (run: (value: Array<{ id: string }>) => void) => {
+				run([]);
+				return vi.fn();
+			}
+		},
 		organizationStore: {
 			init: vi.fn().mockResolvedValue(vi.fn())
 		},

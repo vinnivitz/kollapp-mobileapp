@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { goto } from '$app/navigation';
 
 import Layout from '$lib/components/layout/Layout.svelte';
-import { organizationStore, userStore } from '$lib/stores';
+import { notificationStore, organizationStore, userStore } from '$lib/stores';
 
 const childHtml = 'Content';
 
@@ -98,6 +98,7 @@ describe('Layout', () => {
 		await waitFor(() => {
 			expect(userStore.init).toHaveBeenCalled();
 			expect(organizationStore.init).toHaveBeenCalled();
+			expect(notificationStore.init).toHaveBeenCalled();
 			expect(refresher.complete).toHaveBeenCalled();
 		});
 	});
@@ -130,6 +131,7 @@ describe('Layout', () => {
 			expect(onRefresh).toHaveBeenCalled();
 			expect(userStore.init).not.toHaveBeenCalled();
 			expect(organizationStore.init).not.toHaveBeenCalled();
+			expect(notificationStore.init).not.toHaveBeenCalled();
 			expect(refresher.complete).toHaveBeenCalled();
 		});
 	});
