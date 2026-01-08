@@ -2,6 +2,7 @@ package org.kollapp.organization.application.model;
 
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -33,12 +34,16 @@ public abstract class Posting {
     private long id;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private PostingType type;
 
+    @Column(nullable = false)
     private long amountInCents;
 
+    @Column(length = 10, nullable = false)
     private String date;
 
+    @Column(length = 50, nullable = false)
     private String purpose;
 
     private LocalDateTime createdAt;

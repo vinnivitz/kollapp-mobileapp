@@ -17,7 +17,7 @@
 		"visualize": "mkdir -p visualize && madge --extensions ts,svelte --image visualize/dependency-graph.png src",
 		"indexing": "tsx ./src/lib/utility/indexing.utility.ts",
 		"sync-ionic-types": "tsx ./src/lib/utility/sync-ionic-types.ts && prettier --write ./src/app.d.ts && eslint ./src/app.d.ts --fix",
-		"i18n": "i18n-unused display-unused && i18n-unused display-missed"
+		"i18n": "OUTPUT=$(i18n-unused display-unused && i18n-unused display-missed) && echo \"$OUTPUT\" && echo \"$OUTPUT\" | grep -qE 'Total unused translations count: 0' && echo \"$OUTPUT\" | grep -qE 'Total missed.*count: 0'"
 	},
 	"type": "module",
 	"devDependencies": {

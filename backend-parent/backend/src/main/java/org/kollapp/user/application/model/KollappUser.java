@@ -2,6 +2,7 @@ package org.kollapp.user.application.model;
 
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -10,9 +11,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,22 +29,20 @@ public class KollappUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @NotBlank
-    @Size(max = 20)
+    @Column(length = 20, nullable = false, unique = true)
     private String username;
 
-    @NotBlank
-    @Size(max = 50)
-    @Email
+    @Column(length = 50, nullable = false, unique = true)
     private String email;
 
-    @NotBlank
-    @Size(max = 255)
+    @Column(length = 255, nullable = false)
     private String password;
 
+    @Column(nullable = false)
     private boolean isActivated;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private SystemRole role;
 
     private LocalDateTime createdAt;
