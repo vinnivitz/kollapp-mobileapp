@@ -118,7 +118,7 @@ public class OrganizationController {
     public ResponseEntity<DataResponseTO<OrganizationTO>> grantRoleToPersonOfOrganization(
             @PathVariable("organization-id") long organizationId,
             @PathVariable("person-id") long personId,
-            @RequestBody PersonOfOrganizationPatchRoleRequestTO patchRoleRequestTO) {
+            @Valid @RequestBody PersonOfOrganizationPatchRoleRequestTO patchRoleRequestTO) {
         OrganizationRole targetRole =
                 OrganizationRole.valueOf(patchRoleRequestTO.getRole().name());
         Organization organization =
