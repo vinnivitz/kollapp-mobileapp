@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,11 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.core.adapters.primary.rest.dto.DataResponseTO;
 import org.kollapp.core.adapters.primary.rest.dto.MessageResponseTO;
+import org.kollapp.user.adapters.primary.rest.dto.BasicUserInfoTO;
 import org.kollapp.user.adapters.primary.rest.dto.DeleteAccountRequestTO;
 import org.kollapp.user.adapters.primary.rest.dto.KollappUserTO;
 import org.kollapp.user.adapters.primary.rest.dto.KollappUserUpdateRequestTO;
 import org.kollapp.user.adapters.primary.rest.dto.PasswordChangeRequestTO;
 import org.kollapp.user.adapters.primary.rest.mapper.KollappUserMapper;
+import org.kollapp.user.application.model.BasicUserInfo;
 import org.kollapp.user.application.model.KollappUser;
 import org.kollapp.user.application.service.KollappUserService;
 
@@ -85,5 +88,16 @@ public class AuthorizedKollappUserController {
         kollappUserService.deleteKollappUser(deleteAccountRequestTO.getPassword());
         String message = messageUtil.getMessage("success.user.delete");
         return ResponseEntity.ok(new MessageResponseTO(message));
+    }
+
+    @GetMapping("/{user-id}/basic-info")
+    @Operation(
+            summary = "Get basic information about another user if they share at least one organization",
+            security = {@SecurityRequirement(name = "bearer-key")})
+    public ResponseEntity<DataResponseTO<BasicUserInfoTO>> getBasicUserInfo(@PathVariable("user-id") long userId) {
+        BasicUserInfo basicUserInfo = kollappUserService.getBasicUserInfo(userId);
+        BasicUserInfoTO basicUserInfoTO = kollappUserMapper.basicUserInfoToBasicUserInfoTO(basicUserInfo);
+        String message = messageUtil.getMessage("success.user.basic-info");
+        return ResponseEntity.ok(new DataResponseTO<>(basicUserInfoTO, message));
     }
 }

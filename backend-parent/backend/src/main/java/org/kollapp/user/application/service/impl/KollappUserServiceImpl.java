@@ -1,29 +1,14 @@
 package org.kollapp.user.application.service.impl;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import jakarta.transaction.Transactional;
-
-import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.lang.Nullable;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
-import org.kollapp.core.config.ClientPlatform;
-import org.kollapp.core.util.JwtUtil;
-import org.kollapp.core.util.UrlBuilderUtil;
-import org.kollapp.user.application.exception.EmailExistsException;
-import org.kollapp.user.application.exception.EmailIsAlreadyConfirmedException;
-import org.kollapp.user.application.exception.EmailNotFoundException;
-import org.kollapp.user.application.exception.IncorrectPasswordException;
-import org.kollapp.user.application.exception.InvalidConfirmationLinkException;
 import org.kollapp.user.application.exception.KollappUserNotFoundException;
+import org.kollapp.user.application.exception.NoSharedOrganizationsException;
 import org.kollapp.user.application.exception.UsernameExistsException;
 import org.kollapp.user.application.exception.UsernameNotFoundException;
+import org.kollapp.user.application.model.BasicUserInfo;
 import org.kollapp.user.application.model.KollappUser;
 import org.kollapp.user.application.model.KollappUserDeletedEvent;
 import org.kollapp.user.application.model.KollappUserDetails;
@@ -34,8 +19,26 @@ import org.kollapp.user.application.publisher.KollappUserPublisher;
 import org.kollapp.user.application.repository.KollappUserRepository;
 import org.kollapp.user.application.service.EmailService;
 import org.kollapp.user.application.service.KollappUserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 @Service
 @Transactional
 public class KollappUserServiceImpl implements KollappUserService {
@@ -56,6 +59,9 @@ public class KollappUserServiceImpl implements KollappUserService {
 
     @Autowired
     private KollappUserPublisher kollappUserPublisher;
+
+    @Autowired
+    private PersonOfOrganizationRepository personOfOrganizationRepository;
 
     @Override
     public KollappUser getKollappUserByUsername(String username) {
@@ -192,6 +198,48 @@ public class KollappUserServiceImpl implements KollappUserService {
     @Override
     public KollappUser findById(Long id) {
         return userRepo.findById(id).orElseThrow(KollappUserNotFoundException::new);
+    }
+
+    @Override
+    @RequiresKollappUserRole
+    public BasicUserInfo getBasicUserInfo(long userId) {
+        KollappUser currentUser = getLoggedInKollappUser();
+        KollappUser targetUser = findById(userId);
+
+        List<PersonOfOrganization> currentUserOrganizations =
+                personOfOrganizationRepository.findByUserId(currentUser.getId());
+
+        boolean currentUserHasApprovedMembership = currentUserOrganizations.stream()
+                .anyMatch(p -> p.getStatus().equals(PersonOfOrganizationStatus.APPROVED));
+
+        if (!currentUserHasApprovedMembership) {
+            throw new NoSharedOrganizationsException();
+        }
+
+        List<PersonOfOrganization> targetUserOrganizations = personOfOrganizationRepository.findByUserId(userId);
+
+        List<Long> currentUserApprovedOrganizationIds = currentUserOrganizations.stream()
+                .filter(personOfOrganizaton -> personOfOrganizaton.getStatus().equals(PersonOfOrganizationStatus.APPROVED))
+                .map(personOfOrganizaton -> personOfOrganizaton.getOrganization().getId())
+                .collect(Collectors.toList());
+
+        List<Long> targetUserApprovedOrganizationIds = targetUserOrganizations.stream()
+                .filter(personOfOrganizaton -> personOfOrganizaton.getStatus().equals(PersonOfOrganizationStatus.APPROVED))
+                .map(personOfOrganizaton -> personOfOrganizaton.getOrganization().getId())
+                .collect(Collectors.toList());
+
+        List<Long> commonOrganizationIds = currentUserApprovedOrganizationIds.stream()
+                .filter(targetUserApprovedOrganizationIds::contains)
+                .collect(Collectors.toList());
+
+        if (commonOrganizationIds.isEmpty()) {
+            throw new NoSharedOrganizationsException();
+        }
+
+        return BasicUserInfo.builder()
+                .username(targetUser.getUsername())
+                .commonOrganizationIds(commonOrganizationIds)
+                .build();
     }
 
     private String createConfirmationBaseUrl(String token) {

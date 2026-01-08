@@ -20,6 +20,7 @@ import org.kollapp.user.application.exception.InvalidConfirmationLinkException;
 import org.kollapp.user.application.exception.InvalidRefreshTokenException;
 import org.kollapp.user.application.exception.InvalidSystemRoleException;
 import org.kollapp.user.application.exception.KollappUserNotFoundException;
+import org.kollapp.user.application.exception.NoSharedOrganizationsException;
 import org.kollapp.user.application.exception.UsernameExistsException;
 import org.kollapp.user.application.exception.UsernameNotFoundException;
 
@@ -99,5 +100,11 @@ public class UserExceptionHandler {
     public ResponseEntity<ErrorResponseTO> handleInvalidSystemRole() {
         String message = messageUtil.getMessage("error.system-role.invalid");
         return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
+    }
+
+    @ExceptionHandler(NoSharedOrganizationsException.class)
+    public ResponseEntity<ErrorResponseTO> handleNoSharedOrganizations() {
+        String message = messageUtil.getMessage("error.user.no-shared-organizations");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponseTO(message));
     }
 }

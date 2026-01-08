@@ -3,6 +3,7 @@ package org.kollapp.user.application.service;
 import org.jmolecules.architecture.hexagonal.PrimaryPort;
 import org.springframework.lang.Nullable;
 
+import org.kollapp.user.application.model.BasicUserInfo;
 import org.kollapp.user.application.model.KollappUser;
 
 @PrimaryPort
@@ -28,4 +29,6 @@ public interface KollappUserService {
     void deleteKollappUser(String password);
 
     KollappUser findById(Long id);
+
+    BasicUserInfo getBasicUserInfo(long userId);
 }
