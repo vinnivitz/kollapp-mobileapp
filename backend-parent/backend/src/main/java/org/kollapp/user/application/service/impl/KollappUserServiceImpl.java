@@ -4,6 +4,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import jakarta.transaction.Transactional;
+
+import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import org.kollapp.core.config.ClientPlatform;
+import org.kollapp.core.util.JwtUtil;
+import org.kollapp.core.util.UrlBuilderUtil;
+import org.kollapp.organization.application.model.PersonOfOrganization;
+import org.kollapp.organization.application.model.PersonOfOrganizationStatus;
+import org.kollapp.organization.application.repository.PersonOfOrganizationRepository;
+import org.kollapp.user.application.exception.EmailExistsException;
+import org.kollapp.user.application.exception.EmailIsAlreadyConfirmedException;
+import org.kollapp.user.application.exception.EmailNotFoundException;
+import org.kollapp.user.application.exception.IncorrectPasswordException;
+import org.kollapp.user.application.exception.InvalidConfirmationLinkException;
 import org.kollapp.user.application.exception.KollappUserNotFoundException;
 import org.kollapp.user.application.exception.NoSharedOrganizationsException;
 import org.kollapp.user.application.exception.UsernameExistsException;
@@ -19,26 +41,8 @@ import org.kollapp.user.application.publisher.KollappUserPublisher;
 import org.kollapp.user.application.repository.KollappUserRepository;
 import org.kollapp.user.application.service.EmailService;
 import org.kollapp.user.application.service.KollappUserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.lang.Nullable;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
-import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.lang.Nullable;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
-import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
 @Service
 @Transactional
 public class KollappUserServiceImpl implements KollappUserService {
@@ -219,13 +223,17 @@ public class KollappUserServiceImpl implements KollappUserService {
         List<PersonOfOrganization> targetUserOrganizations = personOfOrganizationRepository.findByUserId(userId);
 
         List<Long> currentUserApprovedOrganizationIds = currentUserOrganizations.stream()
-                .filter(personOfOrganizaton -> personOfOrganizaton.getStatus().equals(PersonOfOrganizationStatus.APPROVED))
-                .map(personOfOrganizaton -> personOfOrganizaton.getOrganization().getId())
+                .filter(personOfOrganizaton ->
+                        personOfOrganizaton.getStatus().equals(PersonOfOrganizationStatus.APPROVED))
+                .map(personOfOrganizaton ->
+                        personOfOrganizaton.getOrganization().getId())
                 .collect(Collectors.toList());
 
         List<Long> targetUserApprovedOrganizationIds = targetUserOrganizations.stream()
-                .filter(personOfOrganizaton -> personOfOrganizaton.getStatus().equals(PersonOfOrganizationStatus.APPROVED))
-                .map(personOfOrganizaton -> personOfOrganizaton.getOrganization().getId())
+                .filter(personOfOrganizaton ->
+                        personOfOrganizaton.getStatus().equals(PersonOfOrganizationStatus.APPROVED))
+                .map(personOfOrganizaton ->
+                        personOfOrganizaton.getOrganization().getId())
                 .collect(Collectors.toList());
 
         List<Long> commonOrganizationIds = currentUserApprovedOrganizationIds.stream()
