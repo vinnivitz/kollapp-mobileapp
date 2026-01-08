@@ -1,4 +1,4 @@
-import type { Colors } from './colors.type';
+import type { Colors } from '$lib/models/ui';
 
 export type SegmentConfig = {
 	label: string;

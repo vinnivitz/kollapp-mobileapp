@@ -64,6 +64,7 @@ public class ActivityServiceImpl implements ActivityService {
                 .orElseThrow(ActivityNotFoundException::new);
         activityToBeUpdated.setName(activity.getName());
         activityToBeUpdated.setLocation(activity.getLocation());
+        activityToBeUpdated.setDate(activity.getDate());
         return activityToBeUpdated;
     }
 
