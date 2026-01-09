@@ -180,7 +180,7 @@
             "submit": "Einloggen",
             "username": "Benutzername"
           },
-          "login-with-biometrics": "Melde dich mit biometrischen Daten an",
+          "login-with-biometrics": "Mit Biometrie anmelden",
           "register": {
             "link": "Registrieren",
             "question": "Du bist noch nicht registriert?"

@@ -1,4 +1,4 @@
-import { Preferences } from '@capacitor/preferences';
+import { type GetResult, Preferences } from '@capacitor/preferences';
 import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
 import { get } from 'svelte/store';
 
@@ -22,11 +22,11 @@ export async function storeValue<T>(key: StorageKey, value: T, strategy = Storag
 	try {
 		if (strategy === StorageStrategy.SECURE && !dev) {
 			const success = await SecureStoragePlugin.set({ key: getKey(key), value: JSON.stringify(value) });
-			if (!success) {
+			if (!success.value) {
 				return showAlert($t('utility.preferences.failure.store'));
 			}
 		} else {
-			return Preferences.set({ key: getKey(key), value: JSON.stringify(value) });
+			await Preferences.set({ key: getKey(key), value: JSON.stringify(value) });
 		}
 	} catch {
 		return showAlert($t('utility.preferences.failure.store'));
@@ -44,13 +44,17 @@ export async function getStoredValue<T = string>(
 	strategy = StorageStrategy.DEFAULT
 ): Promise<T | undefined> {
 	try {
-		let value: string | undefined;
+		let result: GetResult;
 		if (strategy === StorageStrategy.SECURE && !dev) {
-			const result = await SecureStoragePlugin.get({ key: getKey(key) });
-			value = result.value ?? undefined;
+			try {
+				result = await SecureStoragePlugin.get({ key: getKey(key) });
+			} catch {
+				return undefined;
+			}
+		} else {
+			result = await Preferences.get({ key: getKey(key) });
 		}
-		const result = await Preferences.get({ key: getKey(key) });
-		value = result.value ?? undefined;
+		const value = result.value ?? undefined;
 		if (!value) return undefined;
 		try {
 			return value ? (JSON.parse(value) as T) : undefined;
@@ -72,11 +76,11 @@ export async function removeStoredValue(key: StorageKey, strategy = StorageStrat
 	try {
 		if (strategy === StorageStrategy.SECURE && !dev) {
 			const success = await SecureStoragePlugin.remove({ key: getKey(key) });
-			if (!success) {
-				return showAlert($t('utility.preferences.failure.remove'));
+			if (!success.value) {
+				return showAlert($t('utility.preferences.failure.store'));
 			}
 		}
-		return Preferences.remove({ key: getKey(key) });
+		await Preferences.remove({ key: getKey(key) });
 	} catch {
 		await showAlert($t('utility.preferences.failure.remove'));
 	}
