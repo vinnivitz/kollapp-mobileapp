@@ -75,9 +75,13 @@ export async function getStoredValue<T = string>(
 export async function removeStoredValue(key: StorageKey, strategy = StorageStrategy.DEFAULT): Promise<void> {
 	try {
 		if (strategy === StorageStrategy.SECURE && !dev) {
-			const success = await SecureStoragePlugin.remove({ key: getKey(key) });
-			if (!success.value) {
-				return showAlert($t('utility.preferences.failure.remove'));
+			try {
+				const success = await SecureStoragePlugin.remove({ key: getKey(key) });
+				if (!success.value) {
+					return showAlert($t('utility.preferences.failure.remove'));
+				}
+			} catch {
+				return;
 			}
 		}
 		await Preferences.remove({ key: getKey(key) });
