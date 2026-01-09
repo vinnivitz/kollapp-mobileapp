@@ -77,7 +77,7 @@ export async function removeStoredValue(key: StorageKey, strategy = StorageStrat
 		if (strategy === StorageStrategy.SECURE && !dev) {
 			const success = await SecureStoragePlugin.remove({ key: getKey(key) });
 			if (!success.value) {
-				return showAlert($t('utility.preferences.failure.store'));
+				return showAlert($t('utility.preferences.failure.remove'));
 			}
 		}
 		await Preferences.remove({ key: getKey(key) });
