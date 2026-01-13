@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.kollapp.core.config.properties.ApplicationProperties;
 import org.kollapp.organization.application.exception.BudgetCategoryWithNameExistsException;
 import org.kollapp.organization.application.exception.DefaultBudgetCategoryMustNotBeDeletedException;
+import org.kollapp.organization.application.exception.DefaultFlagOfBudgetCategoryMustNotBeRevokedException;
 import org.kollapp.organization.application.exception.InvalidInvitationCodeException;
 import org.kollapp.organization.application.exception.LastManagerException;
 import org.kollapp.organization.application.exception.MaxOrganizationsReachedException;
@@ -253,7 +254,7 @@ public class OrganizationServiceImpl implements OrganizationService {
                 organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
         verifyUniqueCategoryNamePerOrganization(organization, 0, budgetCategory);
         if (budgetCategory.isDefaultCategory()) {
-            overrideDefaultBudgetCategory(organization);
+            specifyDefaultBudgetCategory(organization);
         }
         organization.addBudgetCategory(budgetCategory);
         budgetCategory.setOrganization(organization);
@@ -270,10 +271,10 @@ public class OrganizationServiceImpl implements OrganizationService {
                 organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
         OrganizationBudgetCategory budgetCategory = organization.findBudgetCategoryById(budgetCategoryId);
         if (budgetCategory.isDefaultCategory() && !updatedBudgetCategory.isDefaultCategory()) {
-            throw new UnsupportedOperationException();
+            throw new DefaultFlagOfBudgetCategoryMustNotBeRevokedException();
         }
         if (!budgetCategory.isDefaultCategory() && updatedBudgetCategory.isDefaultCategory()) {
-            overrideDefaultBudgetCategory(organization);
+            specifyDefaultBudgetCategory(organization);
         }
         verifyUniqueCategoryNamePerOrganization(organization, budgetCategoryId, updatedBudgetCategory);
         budgetCategory.setName(updatedBudgetCategory.getName());
@@ -357,7 +358,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             Organization organization, long budgetCategoryId, OrganizationBudgetCategory budgetCategory) {
         List<OrganizationBudgetCategory> budgetCategories = organization.getBudgetCategories();
         Optional<OrganizationBudgetCategory> existingCategory = budgetCategories.stream()
-                .filter(c -> c.getName().equals(budgetCategory.getName()))
+                .filter(c -> c.getName().equalsIgnoreCase(budgetCategory.getName()))
                 .filter(c -> c.getId() != budgetCategoryId)
                 .findFirst();
         if (existingCategory.isPresent()) {
@@ -365,7 +366,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         }
     }
 
-    private void overrideDefaultBudgetCategory(Organization organization) {
+    private void specifyDefaultBudgetCategory(Organization organization) {
         List<OrganizationBudgetCategory> budgetCategories = organization.getBudgetCategories();
         budgetCategories.forEach(budgetCategory -> budgetCategory.setDefaultCategory(false));
     }

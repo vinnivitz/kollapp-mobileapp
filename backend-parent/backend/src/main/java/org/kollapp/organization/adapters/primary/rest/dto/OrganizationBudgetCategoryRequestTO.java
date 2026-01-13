@@ -1,6 +1,7 @@
 package org.kollapp.organization.adapters.primary.rest.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
@@ -19,6 +20,6 @@ public class OrganizationBudgetCategoryRequestTO {
     @Size(max = 50, message = "{validation.organization.budget-category.name.maxlength}")
     private String name;
 
-    @NotBlank(message = "{validation.organization.budget-category.default.required}")
+    @NotNull(message = "{validation.organization.budget-category.default.required}")
     private boolean defaultCategory;
 }

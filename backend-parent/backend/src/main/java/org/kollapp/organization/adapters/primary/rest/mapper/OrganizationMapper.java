@@ -21,6 +21,7 @@ public interface OrganizationMapper {
     @Mapping(target = "activities", ignore = true)
     @Mapping(target = "organizationInvitationCode", ignore = true)
     @Mapping(target = "organizationPostings", ignore = true)
+    @Mapping(target = "budgetCategories", ignore = true)
     Organization organizationCreationRequestToOrganization(OrganizationCreationRequestTO organizationCreationRequestTO);
 
     @Mapping(target = "id", ignore = true)
@@ -28,10 +29,13 @@ public interface OrganizationMapper {
     @Mapping(target = "activities", ignore = true)
     @Mapping(target = "organizationInvitationCode", ignore = true)
     @Mapping(target = "organizationPostings", ignore = true)
+    @Mapping(target = "budgetCategories", ignore = true)
     Organization organizationUpdateRequestToOrganization(OrganizationUpdateRequestTO organizationUpdateRequestTO);
 
     OrganizationTO organizationToOrganizationTO(Organization organization);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "organization", ignore = true)
     OrganizationBudgetCategory organizationBudgetCategoryTOToOrganizationBudgetCategory(
             OrganizationBudgetCategoryRequestTO organizationBudgetCategoryTO);
 

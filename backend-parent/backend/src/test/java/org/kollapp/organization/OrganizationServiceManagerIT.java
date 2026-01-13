@@ -20,6 +20,7 @@ import org.kollapp.core.BaseIT;
 import org.kollapp.organization.application.exception.BudgetCategoryNotFoundException;
 import org.kollapp.organization.application.exception.BudgetCategoryWithNameExistsException;
 import org.kollapp.organization.application.exception.DefaultBudgetCategoryMustNotBeDeletedException;
+import org.kollapp.organization.application.exception.DefaultFlagOfBudgetCategoryMustNotBeRevokedException;
 import org.kollapp.organization.application.exception.InvalidInvitationCodeException;
 import org.kollapp.organization.application.exception.LastManagerException;
 import org.kollapp.organization.application.exception.OrganizationNotFoundException;
@@ -425,7 +426,7 @@ public class OrganizationServiceManagerIT extends BaseIT {
         OrganizationBudgetCategory budgetCategory = new OrganizationBudgetCategory();
         budgetCategory.setName("Category_edited");
         budgetCategory.setDefaultCategory(false);
-        assertThatExceptionOfType(UnsupportedOperationException.class)
+        assertThatExceptionOfType(DefaultFlagOfBudgetCategoryMustNotBeRevokedException.class)
                 .isThrownBy(() -> organizationService.editBudgetCategory(1, 1, budgetCategory));
     }
 

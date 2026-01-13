@@ -118,7 +118,7 @@ public class OrganizationController {
     public ResponseEntity<DataResponseTO<OrganizationTO>> grantRoleToPersonOfOrganization(
             @PathVariable("organization-id") long organizationId,
             @PathVariable("person-id") long personId,
-            @RequestBody PersonOfOrganizationPatchRoleRequestTO patchRoleRequestTO) {
+            @Valid @RequestBody PersonOfOrganizationPatchRoleRequestTO patchRoleRequestTO) {
         OrganizationRole targetRole =
                 OrganizationRole.valueOf(patchRoleRequestTO.getRole().name());
         Organization organization =
@@ -197,7 +197,7 @@ public class OrganizationController {
             security = {@SecurityRequirement(name = "bearer-key")})
     public ResponseEntity<DataResponseTO<OrganizationTO>> createBudgetCategory(
             @PathVariable("organization-id") long organizationId,
-            @RequestBody OrganizationBudgetCategoryRequestTO budgetCategoryTO) {
+            @Valid @RequestBody OrganizationBudgetCategoryRequestTO budgetCategoryTO) {
         OrganizationBudgetCategory budgetCategory =
                 organizationMapper.organizationBudgetCategoryTOToOrganizationBudgetCategory(budgetCategoryTO);
         Organization organization = organizationService.addBudgetCategory(organizationId, budgetCategory);
@@ -213,7 +213,7 @@ public class OrganizationController {
     public ResponseEntity<DataResponseTO<OrganizationTO>> updateBudgetCategory(
             @PathVariable("organization-id") long organizationId,
             @PathVariable("category-id") long categoryId,
-            @RequestBody OrganizationBudgetCategoryRequestTO budgetCategoryTO) {
+            @Valid @RequestBody OrganizationBudgetCategoryRequestTO budgetCategoryTO) {
         OrganizationBudgetCategory budgetCategory =
                 organizationMapper.organizationBudgetCategoryTOToOrganizationBudgetCategory(budgetCategoryTO);
         Organization organization = organizationService.editBudgetCategory(organizationId, categoryId, budgetCategory);
