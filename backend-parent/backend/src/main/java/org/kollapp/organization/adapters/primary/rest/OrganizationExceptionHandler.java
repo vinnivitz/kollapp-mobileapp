@@ -2,7 +2,6 @@ package org.kollapp.organization.adapters.primary.rest;
 
 import lombok.AllArgsConstructor;
 
-import org.kollapp.organization.application.exception.PostingIsAlreadyTransferredException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -25,6 +24,7 @@ import org.kollapp.organization.application.exception.PersonAlreadyRegisteredInO
 import org.kollapp.organization.application.exception.PersonNotRegisteredInOrganizationException;
 import org.kollapp.organization.application.exception.PersonOfOrganizationIsNotApprovedYetException;
 import org.kollapp.organization.application.exception.PostingDoesNotExistException;
+import org.kollapp.organization.application.exception.PostingIsAlreadyTransferredException;
 import org.kollapp.organization.application.exception.PostingTransferNotPossibleException;
 import org.kollapp.organization.application.exception.SelfActionNotAllowedException;
 import org.kollapp.organization.application.exception.UntransferredPostingException;

@@ -5,7 +5,6 @@ import java.util.Optional;
 import jakarta.transaction.Transactional;
 
 import org.junit.jupiter.api.Test;
-import org.kollapp.organization.application.exception.PostingIsAlreadyTransferredException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
@@ -19,6 +18,7 @@ import org.kollapp.organization.application.exception.ActivityNotFoundException;
 import org.kollapp.organization.application.exception.OrganizationNotFoundException;
 import org.kollapp.organization.application.exception.PersonNotRegisteredInOrganizationException;
 import org.kollapp.organization.application.exception.PostingDoesNotExistException;
+import org.kollapp.organization.application.exception.PostingIsAlreadyTransferredException;
 import org.kollapp.organization.application.exception.PostingTransferNotPossibleException;
 import org.kollapp.organization.application.model.Activity;
 import org.kollapp.organization.application.model.ActivityPosting;

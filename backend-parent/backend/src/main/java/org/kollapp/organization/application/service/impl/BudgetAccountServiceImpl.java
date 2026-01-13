@@ -6,12 +6,12 @@ import jakarta.transaction.Transactional;
 
 import lombok.AllArgsConstructor;
 
-import org.kollapp.organization.application.exception.PostingIsAlreadyTransferredException;
 import org.springframework.stereotype.Service;
 
 import org.kollapp.organization.application.exception.OrganizationAuthorizationException;
 import org.kollapp.organization.application.exception.OrganizationNotFoundException;
 import org.kollapp.organization.application.exception.PersonNotRegisteredInOrganizationException;
+import org.kollapp.organization.application.exception.PostingIsAlreadyTransferredException;
 import org.kollapp.organization.application.exception.PostingTransferNotPossibleException;
 import org.kollapp.organization.application.model.Activity;
 import org.kollapp.organization.application.model.ActivityPosting;
