@@ -63,7 +63,7 @@
             "security": {
               "change-password": "Passwort ändern",
               "header": "Sicherheit",
-              "login-with-biometrics": "Melden dich mit biometrischen Daten an"
+              "login-with-biometrics": "Mit Biometrie anmelden"
             }
           },
           "modal": {
@@ -180,7 +180,7 @@
             "submit": "Einloggen",
             "username": "Benutzername"
           },
-          "login-with-biometrics": "Melde dich mit biometrischen Daten an",
+          "login-with-biometrics": "Mit Biometrie anmelden",
           "register": {
             "link": "Registrieren",
             "question": "Du bist noch nicht registriert?"
@@ -1020,7 +1020,7 @@
       "prompt": {
         "cancel": "Abbrechen",
         "subtitle": "Authentifizieren dich mit biometrischen Daten",
-        "title": "Melden dich bei Kollapp an"
+        "title": "Bei Kollapp anmelden"
       }
     },
     "form-validators": {
