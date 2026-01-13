@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.core.adapters.primary.rest.dto.ErrorResponseTO;
 import org.kollapp.core.adapters.primary.rest.dto.ValidationFailureResponseTO;
+import org.kollapp.organization.application.exception.LastManagerException;
 import org.kollapp.user.application.exception.EmailExistsException;
 import org.kollapp.user.application.exception.EmailIsAlreadyConfirmedException;
 import org.kollapp.user.application.exception.EmailIsNotConfirmedException;
@@ -69,6 +70,12 @@ public class UserExceptionHandler {
     public ResponseEntity<ValidationFailureResponseTO> handleIncorrectPassword() {
         String message = messageUtil.getMessage("error.password.incorrect");
         return ResponseEntity.badRequest().body(new ValidationFailureResponseTO(message, "password"));
+    }
+
+    @ExceptionHandler(LastManagerException.class)
+    public ResponseEntity<ErrorResponseTO> handleLastManager() {
+        String message = messageUtil.getMessage("error.organization.lastmanager");
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(InvalidConfirmationLinkException.class)
