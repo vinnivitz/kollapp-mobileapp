@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,6 +19,7 @@ public class ActivityPosting extends Posting {
 
     @ManyToOne
     @JoinColumn(name = "activity_id")
+    @NotNull
     private Activity activity;
 
     public ActivityPosting(

@@ -5,6 +5,7 @@ import java.util.Optional;
 import jakarta.transaction.Transactional;
 
 import org.junit.jupiter.api.Test;
+import org.kollapp.organization.application.exception.PostingIsAlreadyTransferredException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
@@ -148,7 +149,7 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
     public void editTransferredOrganizationPostingAddMemberReferenceShouldThrowException() {
         OrganizationPosting organizationPosting = new OrganizationPosting();
         organizationPosting.setPersonOfOrganizationId(1);
-        assertThatExceptionOfType(UnsupportedOperationException.class)
+        assertThatExceptionOfType(PostingIsAlreadyTransferredException.class)
                 .isThrownBy(() -> budgetAccountService.editOrganizationPosting(1, 3, organizationPosting));
     }
 
@@ -344,7 +345,7 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
     public void editTransferredActivityPostingAddMemberReferenceShouldThrowException() {
         ActivityPosting activityPosting = new ActivityPosting();
         activityPosting.setPersonOfOrganizationId(1);
-        assertThatExceptionOfType(UnsupportedOperationException.class)
+        assertThatExceptionOfType(PostingIsAlreadyTransferredException.class)
                 .isThrownBy(() -> budgetAccountService.editActivityPosting(1, 1, 4, activityPosting));
     }
 

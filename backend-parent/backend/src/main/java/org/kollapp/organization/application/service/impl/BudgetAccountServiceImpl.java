@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 
 import lombok.AllArgsConstructor;
 
+import org.kollapp.organization.application.exception.PostingIsAlreadyTransferredException;
 import org.springframework.stereotype.Service;
 
 import org.kollapp.organization.application.exception.OrganizationAuthorizationException;
@@ -216,9 +217,7 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
             throw new PersonNotRegisteredInOrganizationException();
         }
         if (postingToBeEdited.getPersonOfOrganizationId() == 0 && updatedPosting.getPersonOfOrganizationId() != 0) {
-            throw new UnsupportedOperationException(
-                    "An already transferred posting cannot have a organization member reference." + "PostingId: "
-                            + postingToBeEdited.getId());
+            throw new PostingIsAlreadyTransferredException();
         }
         postingToBeEdited.setDate(updatedPosting.getDate());
         postingToBeEdited.setPurpose(updatedPosting.getPurpose());

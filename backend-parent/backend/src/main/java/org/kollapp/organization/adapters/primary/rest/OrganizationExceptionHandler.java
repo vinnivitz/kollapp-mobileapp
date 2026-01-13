@@ -2,6 +2,7 @@ package org.kollapp.organization.adapters.primary.rest;
 
 import lombok.AllArgsConstructor;
 
+import org.kollapp.organization.application.exception.PostingIsAlreadyTransferredException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -129,5 +130,11 @@ public class OrganizationExceptionHandler {
     public ResponseEntity<ResponseTO> handleUntransferredPostingException() {
         String message = messageUtil.getMessage("error.organization.untransferred-posting");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponseTO(message));
+    }
+
+    @ExceptionHandler(PostingIsAlreadyTransferredException.class)
+    public ResponseEntity<ResponseTO> handlePostingIsAlreadyTransferredException() {
+        String message = messageUtil.getMessage("error.posting.already-transferred");
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
     }
 }
