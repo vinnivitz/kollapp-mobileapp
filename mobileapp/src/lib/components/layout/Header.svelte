@@ -4,7 +4,6 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
-	import { t } from '$lib/locales';
 	import { initializationStore } from '$lib/stores';
 	import { navigateBack } from '$lib/utility';
 
@@ -50,7 +49,7 @@
 				onclick={navigate}
 			>
 				{#if showBackButton}
-					<ion-back-button default-href="/" text={$t('components.header.back-button')}> </ion-back-button>
+					<ion-back-button default-href="/"> </ion-back-button>
 				{:else}
 					<img src="/logo.png" alt="Logo" class="bw:grayscale h-8 w-8" />
 				{/if}
