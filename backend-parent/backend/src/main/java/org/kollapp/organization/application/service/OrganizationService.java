@@ -26,7 +26,7 @@ public interface OrganizationService {
 
     void enterOrganizationByInvitationCode(String invitationCode);
 
-    void deleteUserFromAllOrganizations(long personOfOrganizationId);
+    void deleteUserFromAllOrganizations(long userId);
 
     void leaveOrganization(long organizationId);
 

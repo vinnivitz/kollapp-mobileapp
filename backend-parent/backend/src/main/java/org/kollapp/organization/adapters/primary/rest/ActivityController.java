@@ -1,5 +1,7 @@
 package org.kollapp.organization.adapters.primary.rest;
 
+import jakarta.validation.Valid;
+
 import lombok.AllArgsConstructor;
 
 import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
@@ -46,7 +48,7 @@ public class ActivityController {
             security = {@SecurityRequirement(name = "bearer-key")})
     public ResponseEntity<DataResponseTO<ActivityTO>> createNewActivity(
             @PathVariable("organization-id") long organizationId,
-            @RequestBody ActivityCreationRequestTO activityCreationRequestTO) {
+            @Valid @RequestBody ActivityCreationRequestTO activityCreationRequestTO) {
         Activity activity = activityMapper.activityCreationRequestTOToActivity(activityCreationRequestTO);
         Activity persistedActivity = activityService.createActivityForOrganization(organizationId, activity);
         ActivityTO activityTO = activityMapper.activityToActivityTO(persistedActivity);
@@ -61,7 +63,7 @@ public class ActivityController {
     public ResponseEntity<DataResponseTO<ActivityTO>> updateActivityOfOrganization(
             @PathVariable("organization-id") long organizationId,
             @PathVariable("activity-id") long activityId,
-            @RequestBody ActivityUpdateRequestTO activityUpdateRequestTO) {
+            @Valid @RequestBody ActivityUpdateRequestTO activityUpdateRequestTO) {
         Activity activityToBeUpdated = activityMapper.activityUpdateTOToActivity(activityUpdateRequestTO);
         Activity updatedActivity = activityService.updateActivity(organizationId, activityId, activityToBeUpdated);
         ActivityTO activityTO = activityMapper.activityToActivityTO(updatedActivity);

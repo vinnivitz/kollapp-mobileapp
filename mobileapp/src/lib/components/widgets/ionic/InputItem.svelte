@@ -17,7 +17,7 @@
 		helperText?: string;
 		icon?: string;
 		inputIcon?: string;
-		inputmode?: 'decimal' | 'email' | 'none' | 'numeric' | 'search' | 'tel' | 'text' | 'url' | undefined;
+		inputmode?: 'decimal' | 'email' | 'none' | 'numeric' | 'search' | 'tel' | 'text' | 'url';
 		maxlength?: number;
 		pattern?: string;
 		readonly?: boolean;
