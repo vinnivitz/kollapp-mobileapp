@@ -63,4 +63,11 @@ public class GlobalExceptionHandler {
         String message = messageUtil.getMessage("error.authorization");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponseTO(message));
     }
+
+    @ExceptionHandler(UnsupportedOperationException.class)
+    public ResponseEntity<ResponseTO> handleUnsupportedOperationException(UnsupportedOperationException ex) {
+        log.error(ex.getMessage());
+        String message = messageUtil.getMessage("error.unsupported");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponseTO(message));
+    }
 }

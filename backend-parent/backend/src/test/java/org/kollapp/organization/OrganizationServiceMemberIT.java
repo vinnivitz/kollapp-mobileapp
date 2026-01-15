@@ -19,7 +19,11 @@ import org.kollapp.organization.application.exception.OrganizationAuthorizationE
 import org.kollapp.organization.application.exception.OrganizationNotFoundException;
 import org.kollapp.organization.application.exception.PersonAlreadyRegisteredInOrganizationException;
 import org.kollapp.organization.application.exception.PersonNotRegisteredInOrganizationException;
+import org.kollapp.organization.application.exception.UntransferredPostingException;
+import org.kollapp.organization.application.model.Activity;
+import org.kollapp.organization.application.model.ActivityPosting;
 import org.kollapp.organization.application.model.Organization;
+import org.kollapp.organization.application.model.OrganizationPosting;
 import org.kollapp.organization.application.model.OrganizationRole;
 import org.kollapp.organization.application.model.PersonOfOrganization;
 import org.kollapp.organization.application.model.PersonOfOrganizationStatus;
@@ -101,12 +105,21 @@ public class OrganizationServiceMemberIT extends BaseIT {
     @Test
     public void enterOrganizationWithInvitationCodeTwiceShouldThrowException() {
         assertThatExceptionOfType(PersonAlreadyRegisteredInOrganizationException.class)
-                .isThrownBy(() -> organizationService.enterOrganizationByInvitationCode("asdfjkloe"));
+                .isThrownBy(() -> organizationService.enterOrganizationByInvitationCode("asdfjk01"));
+    }
+
+    @Test
+    @Transactional
+    public void leaveOrganizationWitUntransferredPostingsShouldThrowException() {
+        assertThatExceptionOfType(UntransferredPostingException.class)
+                .isThrownBy(() -> organizationService.leaveOrganization(1));
     }
 
     @Test
     @Transactional
     public void leaveOrganizationShouldRemoveUserFromOrganization() {
+        transferUntransferredActivityPosting();
+        transferUntransferredOrganizationPosting();
         organizationService.leaveOrganization(1);
         Organization organization = organizationRepository.findById(1).orElseThrow();
         assertThat(organization.getPersonsOfOrganization().size()).isEqualTo(1);
@@ -172,5 +185,36 @@ public class OrganizationServiceMemberIT extends BaseIT {
     public void approveNewMemberShouldThrowAuthException() {
         assertThatExceptionOfType(OrganizationAuthorizationException.class)
                 .isThrownBy(() -> organizationService.approveNewMemberRequest(1, 1));
+    }
+
+    private void transferUntransferredActivityPosting() {
+        Organization organization = organizationRepository.findById(1).orElseThrow();
+        Activity activity = organization.getActivityById(1);
+        ActivityPosting untransferredPosting = activity.getActivityPostingById(2);
+        untransferredPosting.transfer();
+    }
+
+    private void transferUntransferredOrganizationPosting() {
+        Organization organization = organizationRepository.findById(1).orElseThrow();
+        OrganizationPosting untransferredPosting = organization.getOrganizationPostingById(1);
+        untransferredPosting.transfer();
+    }
+
+    @Test
+    public void addBudgetCategoryShouldThrowException() {
+        assertThatExceptionOfType(OrganizationAuthorizationException.class)
+                .isThrownBy(() -> organizationService.addBudgetCategory(1, null));
+    }
+
+    @Test
+    public void editBudgetCategoryShouldThrowException() {
+        assertThatExceptionOfType(OrganizationAuthorizationException.class)
+                .isThrownBy(() -> organizationService.editBudgetCategory(1, 1, null));
+    }
+
+    @Test
+    public void deleteBudgetCategoryShouldThrowException() {
+        assertThatExceptionOfType(OrganizationAuthorizationException.class)
+                .isThrownBy(() -> organizationService.deleteBudgetCategory(1, 1));
     }
 }

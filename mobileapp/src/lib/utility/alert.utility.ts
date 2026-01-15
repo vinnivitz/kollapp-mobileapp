@@ -70,8 +70,6 @@ export async function showAlert(message: string, config?: AlertConfig): Promise<
 	const { appStateStore } = await import('$lib/stores');
 	const appState = get(appStateStore);
 
-	console.log('appstat', appState);
-
 	if (
 		appState === AppStateType.UNINITIALIZED ||
 		appState === AppStateType.INITIALIZING_CORE ||

@@ -1,5 +1,6 @@
 package org.kollapp.organization.application.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -29,18 +30,32 @@ public abstract class Posting {
     private long id;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private PostingType type;
 
+    @Column(nullable = false)
     private long amountInCents;
 
+    @Column(length = 10, nullable = false)
     private String date;
 
+    @Column(length = 50, nullable = false)
     private String purpose;
 
-    public Posting(PostingType type, long amountInCents, String date, String purpose) {
+    /**
+     * The person who is referenced to this posting. If 0, the collective is assigned.
+     */
+    private long personOfOrganizationId;
+
+    public Posting(PostingType type, long amountInCents, String date, String purpose, long personOfOrganizationId) {
         this.type = type;
         this.amountInCents = amountInCents;
         this.date = date;
         this.purpose = purpose;
+        this.personOfOrganizationId = personOfOrganizationId;
+    }
+
+    public void transfer() {
+        this.setPersonOfOrganizationId(0);
     }
 }

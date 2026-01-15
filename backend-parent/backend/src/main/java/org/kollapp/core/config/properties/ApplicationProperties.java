@@ -23,4 +23,5 @@ public class ApplicationProperties {
     private int staticCacheDays;
     private int organizationInvitationValidityDays;
     private int maxOrganizationsPerUser;
+    private String defaultBudgetCategoryName;
 }

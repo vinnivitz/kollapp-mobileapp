@@ -242,9 +242,6 @@
         "heading": "Welcome to Kollapp!",
         "subheading": "The app for all the collectives out there."
       }
-    },
-    "header": {
-      "back-button": "Back"
     }
   },
   "stores": {
@@ -995,11 +992,6 @@
             "add-credit": "Add income",
             "add-debit": "Add expense",
             "postings-history": "Transaction history"
-          }
-        },
-        "pending-organization-join-request-card": {
-          "card": {
-            "info": "You have a pending request for joining"
           }
         },
         "upcoming-event": {

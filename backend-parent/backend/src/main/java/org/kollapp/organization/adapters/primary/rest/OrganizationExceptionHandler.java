@@ -12,6 +12,10 @@ import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.core.adapters.primary.rest.dto.ErrorResponseTO;
 import org.kollapp.core.adapters.primary.rest.dto.ResponseTO;
 import org.kollapp.organization.application.exception.ActivityNotFoundException;
+import org.kollapp.organization.application.exception.BudgetCategoryNotFoundException;
+import org.kollapp.organization.application.exception.BudgetCategoryWithNameExistsException;
+import org.kollapp.organization.application.exception.DefaultBudgetCategoryMustNotBeDeletedException;
+import org.kollapp.organization.application.exception.DefaultFlagOfBudgetCategoryMustNotBeRevokedException;
 import org.kollapp.organization.application.exception.InvalidInvitationCodeException;
 import org.kollapp.organization.application.exception.InvalidOrganizationRoleException;
 import org.kollapp.organization.application.exception.InvalidPostingTypeException;
@@ -24,7 +28,10 @@ import org.kollapp.organization.application.exception.PersonAlreadyRegisteredInO
 import org.kollapp.organization.application.exception.PersonNotRegisteredInOrganizationException;
 import org.kollapp.organization.application.exception.PersonOfOrganizationIsNotApprovedYetException;
 import org.kollapp.organization.application.exception.PostingDoesNotExistException;
+import org.kollapp.organization.application.exception.PostingIsAlreadyTransferredException;
+import org.kollapp.organization.application.exception.PostingTransferNotPossibleException;
 import org.kollapp.organization.application.exception.SelfActionNotAllowedException;
+import org.kollapp.organization.application.exception.UntransferredPostingException;
 
 @ControllerAdvice(basePackages = {"org.kollapp.organization"})
 @RestController
@@ -36,31 +43,31 @@ public class OrganizationExceptionHandler {
     @ExceptionHandler(OrganizationNotFoundException.class)
     public ResponseEntity<ResponseTO> handleOrganizationNotFound() {
         String message = messageUtil.getMessage("error.organization.not-found");
-        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(PersonNotRegisteredInOrganizationException.class)
     public ResponseEntity<ResponseTO> handlePersonNotRegisteredInOrganization() {
         String message = messageUtil.getMessage("error.organization.person-not-found");
-        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(PersonAlreadyRegisteredInOrganizationException.class)
     public ResponseEntity<ResponseTO> handlePersonAlreadyRegisteredInOrganization() {
         String message = messageUtil.getMessage("error.organization.person-already-registered");
-        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(ActivityNotFoundException.class)
     public ResponseEntity<ResponseTO> handleActivityNotFound() {
         String message = messageUtil.getMessage("error.activity.not-found");
-        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(PostingDoesNotExistException.class)
     public ResponseEntity<ResponseTO> handlePostingNotFound() {
         String message = messageUtil.getMessage("error.organization.posting.not-found");
-        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(InvalidInvitationCodeException.class)
@@ -82,13 +89,13 @@ public class OrganizationExceptionHandler {
     }
 
     @ExceptionHandler(InvalidOrganizationRoleException.class)
-    public ResponseEntity<ResponseTO> handleInvalidOrganizationRole(InvalidOrganizationRoleException ex) {
+    public ResponseEntity<ResponseTO> handleInvalidOrganizationRole() {
         String message = messageUtil.getMessage("error.invalid-organization-role");
         return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(InvalidPostingTypeException.class)
-    public ResponseEntity<ResponseTO> handleInvalidPostingType(InvalidPostingTypeException ex) {
+    public ResponseEntity<ResponseTO> handleInvalidPostingType() {
         String message = messageUtil.getMessage("error.invalid-posting-type");
         return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
     }
@@ -102,7 +109,7 @@ public class OrganizationExceptionHandler {
     @ExceptionHandler(PersonAlreadyHasTargetRoleException.class)
     public ResponseEntity<ResponseTO> handlePersonAlreadyHasTargetRole() {
         String message = messageUtil.getMessage("error.organization.person-already-has-target-role");
-        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(MaxOrganizationsReachedException.class)
@@ -115,5 +122,47 @@ public class OrganizationExceptionHandler {
     public ResponseEntity<ResponseTO> handleSelfActionNotAllowed() {
         String message = messageUtil.getMessage("error.organization.self-action-not-allowed");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponseTO(message));
+    }
+
+    @ExceptionHandler(PostingTransferNotPossibleException.class)
+    public ResponseEntity<ResponseTO> handlePostingTransferNotPossibleException() {
+        String message = messageUtil.getMessage("error.posting.impossible-transfer");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponseTO(message));
+    }
+
+    @ExceptionHandler(UntransferredPostingException.class)
+    public ResponseEntity<ResponseTO> handleUntransferredPostingException() {
+        String message = messageUtil.getMessage("error.organization.untransferred-posting");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponseTO(message));
+    }
+
+    @ExceptionHandler(PostingIsAlreadyTransferredException.class)
+    public ResponseEntity<ResponseTO> handlePostingIsAlreadyTransferredException() {
+        String message = messageUtil.getMessage("error.posting.already-transferred");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponseTO(message));
+    }
+
+    @ExceptionHandler(BudgetCategoryNotFoundException.class)
+    public ResponseEntity<ResponseTO> handleBudgetCategoryNotFound() {
+        String message = messageUtil.getMessage("error.organization.budget-category-not-found");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseTO(message));
+    }
+
+    @ExceptionHandler(BudgetCategoryWithNameExistsException.class)
+    public ResponseEntity<ResponseTO> handleBudgetCategoryWithNameAlreadyExists() {
+        String message = messageUtil.getMessage("error.organization.budget-category-with-name-exists");
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponseTO(message));
+    }
+
+    @ExceptionHandler(DefaultBudgetCategoryMustNotBeDeletedException.class)
+    public ResponseEntity<ResponseTO> handleDefaultBudgetCategoryMustNotBeDeleted() {
+        String message = messageUtil.getMessage("error.organization.default-budget-category-deletion");
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
+    }
+
+    @ExceptionHandler(DefaultFlagOfBudgetCategoryMustNotBeRevokedException.class)
+    public ResponseEntity<ResponseTO> handleDefaultFlagOfBudgetCategoryMustNotBeRevoked() {
+        String message = messageUtil.getMessage("error.organization.default-flag-budget-category-revoked");
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
     }
 }

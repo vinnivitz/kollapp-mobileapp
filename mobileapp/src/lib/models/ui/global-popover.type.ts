@@ -1,4 +1,4 @@
-import type { DateTimePickerType } from './datetime.type';
+import type { DateTimePickerType } from '$lib/models/ui';
 import type { Writable } from 'svelte/store';
 
 export type GlobalPopover = {
