@@ -12,6 +12,10 @@ import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.core.adapters.primary.rest.dto.ErrorResponseTO;
 import org.kollapp.core.adapters.primary.rest.dto.ResponseTO;
 import org.kollapp.organization.application.exception.ActivityNotFoundException;
+import org.kollapp.organization.application.exception.BudgetCategoryNotFoundException;
+import org.kollapp.organization.application.exception.BudgetCategoryWithNameExistsException;
+import org.kollapp.organization.application.exception.DefaultBudgetCategoryMustNotBeDeletedException;
+import org.kollapp.organization.application.exception.DefaultFlagOfBudgetCategoryMustNotBeRevokedException;
 import org.kollapp.organization.application.exception.InvalidInvitationCodeException;
 import org.kollapp.organization.application.exception.InvalidOrganizationRoleException;
 import org.kollapp.organization.application.exception.InvalidPostingTypeException;
@@ -82,13 +86,13 @@ public class OrganizationExceptionHandler {
     }
 
     @ExceptionHandler(InvalidOrganizationRoleException.class)
-    public ResponseEntity<ResponseTO> handleInvalidOrganizationRole(InvalidOrganizationRoleException ex) {
+    public ResponseEntity<ResponseTO> handleInvalidOrganizationRole() {
         String message = messageUtil.getMessage("error.invalid-organization-role");
         return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(InvalidPostingTypeException.class)
-    public ResponseEntity<ResponseTO> handleInvalidPostingType(InvalidPostingTypeException ex) {
+    public ResponseEntity<ResponseTO> handleInvalidPostingType() {
         String message = messageUtil.getMessage("error.invalid-posting-type");
         return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
     }
@@ -115,5 +119,29 @@ public class OrganizationExceptionHandler {
     public ResponseEntity<ResponseTO> handleSelfActionNotAllowed() {
         String message = messageUtil.getMessage("error.organization.self-action-not-allowed");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponseTO(message));
+    }
+
+    @ExceptionHandler(BudgetCategoryNotFoundException.class)
+    public ResponseEntity<ResponseTO> handleBudgetCategoryNotFound() {
+        String message = messageUtil.getMessage("error.organization.budget-category-not-found");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseTO(message));
+    }
+
+    @ExceptionHandler(BudgetCategoryWithNameExistsException.class)
+    public ResponseEntity<ResponseTO> handleBudgetCategoryWithNameAlreadyExists() {
+        String message = messageUtil.getMessage("error.organization.budget-category-with-name-exists");
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponseTO(message));
+    }
+
+    @ExceptionHandler(DefaultBudgetCategoryMustNotBeDeletedException.class)
+    public ResponseEntity<ResponseTO> handleDefaultBudgetCategoryMustNotBeDeleted() {
+        String message = messageUtil.getMessage("error.organization.default-budget-category-deletion");
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
+    }
+
+    @ExceptionHandler(DefaultFlagOfBudgetCategoryMustNotBeRevokedException.class)
+    public ResponseEntity<ResponseTO> handleDefaultFlagOfBudgetCategoryMustNotBeRevoked() {
+        String message = messageUtil.getMessage("error.organization.default-flag-budget-category-revoked");
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
     }
 }

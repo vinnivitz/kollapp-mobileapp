@@ -23,6 +23,8 @@ import lombok.Setter;
 
 import org.hibernate.Hibernate;
 
+import org.kollapp.organization.application.exception.BudgetCategoryNotFoundException;
+
 @Entity
 @Getter
 @Setter
@@ -46,6 +48,9 @@ public class Organization {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "organization", orphanRemoval = true)
     private List<PersonOfOrganization> personsOfOrganization;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "organization", orphanRemoval = true)
+    private List<OrganizationBudgetCategory> budgetCategories;
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "organization", orphanRemoval = true)
     private OrganizationInvitationCode organizationInvitationCode;
@@ -98,6 +103,20 @@ public class Organization {
         return organizationInvitationCode;
     }
 
+    public void addBudgetCategory(OrganizationBudgetCategory budgetCategory) {
+        if (budgetCategories == null) {
+            budgetCategories = new ArrayList<>();
+        }
+        budgetCategories.add(budgetCategory);
+    }
+
+    public OrganizationBudgetCategory findBudgetCategoryById(long id) {
+        return budgetCategories.stream()
+                .filter(b -> b.getId() == id)
+                .findFirst()
+                .orElseThrow(BudgetCategoryNotFoundException::new);
+    }
+
     private String generateInvitationCode() {
         int leftLimit = 48; // numeral '0'
         int rightLimit = 122; // letter 'z'
@@ -115,5 +134,6 @@ public class Organization {
         Hibernate.initialize(personsOfOrganization);
         Hibernate.initialize(activities);
         Hibernate.initialize(organizationPostings);
+        Hibernate.initialize(budgetCategories);
     }
 }

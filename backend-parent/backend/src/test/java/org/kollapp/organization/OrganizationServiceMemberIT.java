@@ -173,4 +173,22 @@ public class OrganizationServiceMemberIT extends BaseIT {
         assertThatExceptionOfType(OrganizationAuthorizationException.class)
                 .isThrownBy(() -> organizationService.approveNewMemberRequest(1, 1));
     }
+
+    @Test
+    public void addBudgetCategoryShouldThrowException() {
+        assertThatExceptionOfType(OrganizationAuthorizationException.class)
+                .isThrownBy(() -> organizationService.addBudgetCategory(1, null));
+    }
+
+    @Test
+    public void editBudgetCategoryShouldThrowException() {
+        assertThatExceptionOfType(OrganizationAuthorizationException.class)
+                .isThrownBy(() -> organizationService.editBudgetCategory(1, 1, null));
+    }
+
+    @Test
+    public void deleteBudgetCategoryShouldThrowException() {
+        assertThatExceptionOfType(OrganizationAuthorizationException.class)
+                .isThrownBy(() -> organizationService.deleteBudgetCategory(1, 1));
+    }
 }
