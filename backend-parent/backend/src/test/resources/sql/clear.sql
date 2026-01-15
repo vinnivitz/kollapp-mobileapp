@@ -12,5 +12,7 @@ DELETE
 FROM person_of_organization;
 DELETE
 FROM organization_invitation_code;
+DELETE
+FROM organization_budget_category;
 SET
 FOREIGN_KEY_CHECKS=1;

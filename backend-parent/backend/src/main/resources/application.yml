@@ -69,6 +69,8 @@ kollapp:
     staticCacheDays: ${BACKEND_STATIC_CACHE_DAYS:356}
     organizationInvitationValidityDays: ${BACKEND_ORGANIZATION_INVITATION_VALIDITY_DAYS:3}
     maxOrganizationsPerUser: ${BACKEND_MAX_ORGANIZATIONS_PER_USER:10}
+    defaultBudgetCategoryName: ${BACKEND_DEFAULT_BUDGET_CATEGORY_NAME:General}
+
 
   client:
     webBaseUrl: ${BACKEND_CLIENT_WEB_URL:http://localhost:5173}
