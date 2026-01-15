@@ -6,7 +6,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,18 +22,19 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class OrganizationInvitationCode {
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"name", "organization_id"}))
+public class OrganizationBudgetCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(length = 10, nullable = false)
-    private String expirationDate;
+    @Column(length = 50, nullable = false)
+    private String name;
 
-    @Column(length = 8, nullable = false)
-    private String code;
-
-    @OneToOne
-    @JoinColumn(name = "organization_id")
+    @ManyToOne
+    @JoinColumn(name = "organization_id", nullable = false)
     private Organization organization;
+
+    @Column(nullable = false)
+    private boolean defaultCategory;
 }

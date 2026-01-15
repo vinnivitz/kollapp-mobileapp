@@ -44,18 +44,23 @@ public class ActivityServiceManagerIT extends BaseIT {
         assertThat(activities.getFirst().getId()).isEqualTo(1L);
         assertThat(activities.getFirst().getName()).isEqualTo("Halloween-Party");
         assertThat(activities.getFirst().getLocation()).isEqualTo("Soderso");
+        assertThat(activities.getFirst().getDate()).isEqualTo("2025-10-31");
         assertThat(activities.getFirst().getOrganization().getId()).isEqualTo(1L);
     }
 
     @Test
     @Transactional
     public void createActivityForOrganizationShouldReturnActivity() {
-        Activity activityToBeCreated =
-                Activity.builder().name("Weihnachtsmarkt").location("Kukulida").build();
+        Activity activityToBeCreated = Activity.builder()
+                .name("Weihnachtsmarkt")
+                .location("Kukulida")
+                .date("2025-12-01")
+                .build();
         Activity activity = activityService.createActivityForOrganization(1, activityToBeCreated);
         assertThat(activity.getId()).isNotZero();
         assertThat(activity.getName()).isEqualTo("Weihnachtsmarkt");
         assertThat(activity.getLocation()).isEqualTo("Kukulida");
+        assertThat(activity.getDate()).isEqualTo("2025-12-01");
         Optional<Organization> organizationOpt = organizationRepository.findById(1);
         assertThat(organizationOpt).isPresent();
         Organization organization = organizationOpt.get();
@@ -76,12 +81,16 @@ public class ActivityServiceManagerIT extends BaseIT {
 
     @Test
     public void updateActivityForOrganizationShouldUpdateActivity() {
-        Activity activityToBeUpdated =
-                Activity.builder().location("Kashay").name("Halloween-Party").build();
+        Activity activityToBeUpdated = Activity.builder()
+                .location("Kashay")
+                .name("Halloween-Party")
+                .date("2025-11-01")
+                .build();
         Activity activity = activityService.updateActivity(1, 1, activityToBeUpdated);
         assertThat(activity.getId()).isEqualTo(1);
         assertThat(activity.getName()).isEqualTo(activityToBeUpdated.getName());
         assertThat(activity.getLocation()).isEqualTo(activityToBeUpdated.getLocation());
+        assertThat(activity.getDate()).isEqualTo(activityToBeUpdated.getDate());
     }
 
     @Test

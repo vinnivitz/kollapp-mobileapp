@@ -10,7 +10,7 @@
 		badgeColor?: Colors;
 		card?: boolean;
 		classList?: string;
-		color?: Colors | undefined;
+		color?: Colors;
 		disabled?: boolean;
 		icon?: string;
 		iconColor?: Colors;

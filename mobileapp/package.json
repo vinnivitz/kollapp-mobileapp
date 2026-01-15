@@ -13,11 +13,12 @@
 		"test": "vitest -- --run",
 		"doc": "typedoc & live-server ./docs --watch --silent --no-browser --port=1234 & chokidar 'src/lib' -c 'typedoc' --silent",
 		"build-android": "cross-env ADAPTER=static npm run build && dotenv cross-env-shell 'cap sync && ./android/gradlew -p android assembleDebug'",
+		"run-android": "cross-env ADAPTER=static npm run build && cross-env-shell 'cap run android'",
 		"build-web": "cross-env ADAPTER=node npm run build",
 		"visualize": "mkdir -p visualize && madge --extensions ts,svelte --image visualize/dependency-graph.png src",
 		"indexing": "tsx ./src/lib/utility/indexing.utility.ts",
 		"sync-ionic-types": "tsx ./src/lib/utility/sync-ionic-types.ts && prettier --write ./src/app.d.ts && eslint ./src/app.d.ts --fix",
-		"i18n": "i18n-unused display-unused && i18n-unused display-missed"
+		"i18n": "OUTPUT=$(i18n-unused display-unused && i18n-unused display-missed) && echo \"$OUTPUT\" && echo \"$OUTPUT\" | grep -qE 'Total unused translations count: 0' && echo \"$OUTPUT\" | grep -qE 'Total missed.*count: 0'"
 	},
 	"type": "module",
 	"devDependencies": {
@@ -25,6 +26,7 @@
 		"@capacitor/assets": "^3.0.5",
 		"@capacitor/cli": "^7.4.4",
 		"@capacitor/core": "^7.4.4",
+		"@eslint/compat": "^2.0.1",
 		"@eslint/js": "^9.39.1",
 		"@kollapp/api-types": "^0.9.0",
 		"@sveltejs/adapter-node": "^5.4.0",
@@ -91,9 +93,9 @@
 		"@edde746/svelte-apexcharts": "^2.1.0",
 		"@ionic/core": "^8.7.9",
 		"@ionic/pwa-elements": "^3.3.0",
-		"@svelte-put/qr": "^2.1.1",
 		"@tailwindcss/typography": "^0.5.19",
 		"@tailwindcss/vite": "^4.1.17",
+		"@trasherdk/svelte-qrcode": "^0.2.4",
 		"apexcharts": "^5.3.6",
 		"capacitor-email-composer": "^7.0.2",
 		"capacitor-secure-storage-plugin": "^0.12.0",
@@ -105,13 +107,5 @@
 		"tailwind-scrollbar-hide": "^4.0.0",
 		"tailwindcss": "^4.1.17",
 		"yup": "^1.7.1"
-	},
-	"pnpm": {
-		"onlyBuiltDependencies": [
-			"@sveltejs/kit",
-			"@tailwindcss/oxide",
-			"esbuild",
-			"sharp"
-		]
 	}
 }
