@@ -35,4 +35,6 @@ public class PostingCreateUpdateRequestTO {
 
     @Size(max = 50, message = "{validation.posting.purpose.maxlength}")
     private String purpose;
+
+    private long personOfOrganizationId;
 }

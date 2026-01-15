@@ -3,6 +3,7 @@ package org.kollapp.organization.application.model;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -18,6 +19,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import org.kollapp.organization.application.exception.PostingDoesNotExistException;
+
 @Entity
 @Getter
 @Setter
@@ -30,9 +33,13 @@ public class Activity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Column(length = 50, nullable = false)
     private String name;
 
+    @Column(length = 50, nullable = false)
     private String location;
+
+    private String date;
 
     @ManyToOne
     @JoinColumn(name = "organization_id")
@@ -40,4 +47,11 @@ public class Activity {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "activity", orphanRemoval = true)
     private List<ActivityPosting> activityPostings;
+
+    public ActivityPosting getActivityPostingById(long id) {
+        return getActivityPostings().stream()
+                .filter(p -> p.getId() == id)
+                .findFirst()
+                .orElseThrow(PostingDoesNotExistException::new);
+    }
 }

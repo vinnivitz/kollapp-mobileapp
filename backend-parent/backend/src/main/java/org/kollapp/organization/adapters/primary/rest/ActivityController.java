@@ -1,5 +1,7 @@
 package org.kollapp.organization.adapters.primary.rest;
 
+import jakarta.validation.Valid;
+
 import lombok.AllArgsConstructor;
 
 import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
@@ -48,8 +50,8 @@ public class ActivityController {
             summary = "Create new activity for organization",
             security = {@SecurityRequirement(name = "bearer-key")})
     public ResponseEntity<DataResponseTO<ActivityTO>> createNewActivity(
-            @PathVariable("organization-id") @ValidId long organizationId,
-            @RequestBody ActivityCreationRequestTO activityCreationRequestTO) {
+            @PathVariable("organization-id") long organizationId,
+            @Valid @RequestBody ActivityCreationRequestTO activityCreationRequestTO) {
         Activity activity = activityMapper.activityCreationRequestTOToActivity(activityCreationRequestTO);
         Activity persistedActivity = activityService.createActivityForOrganization(organizationId, activity);
         ActivityTO activityTO = activityMapper.activityToActivityTO(persistedActivity);
@@ -62,9 +64,9 @@ public class ActivityController {
             summary = "Update activity of organization",
             security = {@SecurityRequirement(name = "bearer-key")})
     public ResponseEntity<DataResponseTO<ActivityTO>> updateActivityOfOrganization(
-            @PathVariable("organization-id") @ValidId long organizationId,
-            @PathVariable("activity-id") @ValidId long activityId,
-            @RequestBody ActivityUpdateRequestTO activityUpdateRequestTO) {
+            @PathVariable("organization-id") long organizationId,
+            @PathVariable("activity-id") long activityId,
+            @Valid @RequestBody ActivityUpdateRequestTO activityUpdateRequestTO) {
         Activity activityToBeUpdated = activityMapper.activityUpdateTOToActivity(activityUpdateRequestTO);
         Activity updatedActivity = activityService.updateActivity(organizationId, activityId, activityToBeUpdated);
         ActivityTO activityTO = activityMapper.activityToActivityTO(updatedActivity);

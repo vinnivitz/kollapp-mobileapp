@@ -20,6 +20,7 @@
 	import { accessibility, home, person } from 'ionicons/icons';
 	import { onMount } from 'svelte';
 
+	import favicon from '$lib/assets/favicon.png';
 	import Tabs from '$lib/components/layout/Tabs.svelte';
 	import GlobalPopovers from '$lib/components/widgets/ionic/GlobalPopovers.svelte';
 	import { initializeIonic } from '$lib/ionic';
@@ -34,7 +35,7 @@
 	initializeIonic();
 
 	$effect(() => {
-		if (initialized) {
+		if ($initialized) {
 			tabs = [
 				{ icon: home, label: $t('routes.layout.page.tabs.home'), tab: '/' },
 				{
@@ -60,6 +61,7 @@
 </script>
 
 <svelte:head>
+	<link rel="icon" href={favicon} />
 	<title>{$t('routes.layout.page.title')}</title>
 </svelte:head>
 

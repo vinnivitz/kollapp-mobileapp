@@ -96,6 +96,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponseTO(message));
     }
 
+    @ExceptionHandler(UnsupportedOperationException.class)
+    public ResponseEntity<ResponseTO> handleUnsupportedOperationException(UnsupportedOperationException ex) {
+        log.error(ex.getMessage());
+        String message = messageUtil.getMessage("error.unsupported");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponseTO(message));
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ResponseTO> handleUnhandledException(RuntimeException ex) {
         log.error("Unhandled exception: {}", ex.getMessage(), ex);

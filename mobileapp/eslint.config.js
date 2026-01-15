@@ -1,4 +1,8 @@
+import { fileURLToPath } from 'node:url';
+
+import { includeIgnoreFile } from '@eslint/compat';
 import js from '@eslint/js';
+import { defineConfig } from 'eslint/config';
 import prettier from 'eslint-config-prettier';
 import importPlugin from 'eslint-plugin-import';
 import perfectionistPlugin from 'eslint-plugin-perfectionist';
@@ -9,12 +13,17 @@ import unicornPlugin from 'eslint-plugin-unicorn';
 import globals from 'globals';
 import ts from 'typescript-eslint';
 
-export default ts.config(
+import svelteConfig from './svelte.config.js';
+
+const gitignorePath = fileURLToPath(new URL('.gitignore', import.meta.url));
+
+export default defineConfig(
+	includeIgnoreFile(gitignorePath),
 	js.configs.recommended,
-	ts.configs.recommended,
-	sveltePlugin.configs['flat/recommended'],
+	...ts.configs.recommended,
+	sveltePlugin.configs.recommended,
 	prettier,
-	sveltePlugin.configs['flat/prettier'],
+	...sveltePlugin.configs.prettier,
 	securityPlugin.configs.recommended,
 	unicornPlugin.configs.recommended,
 	sonarjsPlugin.configs.recommended,
@@ -70,8 +79,7 @@ export default ts.config(
 								'$lib/models/api/*',
 								'$lib/models/models/*',
 								'$lib/models/osm/*',
-								'$lib/models/preferences/*',
-								'$lib/models/routing/*',
+								'$lib/models/storage/*',
 								'$lib/models/stores/*',
 								'$lib/models/ui/*',
 								'$lib/utility/*',
@@ -106,11 +114,6 @@ export default ts.config(
 			'svelte/valid-compile': 'off',
 			'unicorn/filename-case': 'off',
 			'unicorn/prefer-structured-clone': 'off'
-		},
-		settings: {
-			'import/parsers': {
-				'@typescript-eslint/parser': ['.ts', '.svelte']
-			}
 		}
 	},
 	{
@@ -145,27 +148,24 @@ export default ts.config(
 
 		languageOptions: {
 			parserOptions: {
-				parser: ts.parser
+				extraFileExtensions: ['.svelte'],
+				parser: ts.parser,
+				projectService: true,
+				svelteConfig
 			}
 		}
 	},
 	{
 		ignores: [
-			'build/',
-			'.svelte-kit/',
 			'docs/',
 			'assets/',
 			'android/',
 			'icons/',
-			'node_modules/',
 			'test-results/',
 			'.env',
-			'vite.config.ts.*',
-			'static/*',
-			'coverage/',
+			'src/lib/assets/',
 			'src/lib/locales/de.json',
-			'src/lib/locales/en.json',
-			'coverage/'
+			'src/lib/locales/en.json'
 		]
 	}
 );

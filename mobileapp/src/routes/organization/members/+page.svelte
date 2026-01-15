@@ -5,7 +5,7 @@
 	import { Share } from '@capacitor/share';
 	import { TZDate } from '@date-fns/tz';
 	import { actionSheetController } from '@ionic/core';
-	import QRCode from '@svelte-put/qr/svg/QR.svelte';
+	import QRCode from '@trasherdk/svelte-qrcode';
 	import { EmailComposer } from 'capacitor-email-composer';
 	import { formatDistanceToNow } from 'date-fns';
 	import {
@@ -415,5 +415,5 @@
 			</ion-breadcrumb>
 		</ion-breadcrumbs>
 	</div>
-	<QRCode data={$organizationStore?.organizationInvitationCode.code ?? ''} shape="circle" />
+	<QRCode content={invitationCode} responsive="true" padding="0" />
 </Popover>

@@ -1,4 +1,4 @@
-import type { Colors } from './colors.type';
+import type { Colors } from '$lib/models/ui';
 
 /**
  * Represents a select item schema with a selected state and a value.

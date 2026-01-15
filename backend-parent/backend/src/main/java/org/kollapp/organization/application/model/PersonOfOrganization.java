@@ -1,5 +1,6 @@
 package org.kollapp.organization.application.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -8,6 +9,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,14 +23,17 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"userId", "organization_id"}))
 @Builder
 public class PersonOfOrganization {
+    @Column(nullable = false)
     private long userId;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(length = 20, nullable = false)
     private String username;
 
     @ManyToOne
@@ -35,8 +41,18 @@ public class PersonOfOrganization {
     private Organization organization;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private OrganizationRole organizationRole;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private PersonOfOrganizationStatus status;
+
+    public boolean isManager() {
+        return organizationRole.equals(OrganizationRole.ROLE_ORGANIZATION_MANAGER);
+    }
+
+    public boolean isMember() {
+        return organizationRole.equals(OrganizationRole.ROLE_ORGANIZATION_MEMBER);
+    }
 }

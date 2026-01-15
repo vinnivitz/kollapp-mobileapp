@@ -12,7 +12,7 @@ vite.config.ts.timestamp-*
 /docs
 /assets
 /icons
-/static
+/src/lib/assets
 /src/lib/locales/de.json
 /src/lib/locales/en.json
 
