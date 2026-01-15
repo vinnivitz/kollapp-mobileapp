@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -25,6 +26,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import org.hibernate.Hibernate;
+
+import org.kollapp.organization.application.exception.ActivityNotFoundException;
+import org.kollapp.organization.application.exception.BudgetCategoryNotFoundException;
+import org.kollapp.organization.application.exception.PersonNotRegisteredInOrganizationException;
+import org.kollapp.organization.application.exception.PostingDoesNotExistException;
 
 @Entity
 @Getter
@@ -53,6 +59,9 @@ public class Organization {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "organization", orphanRemoval = true)
     private List<PersonOfOrganization> personsOfOrganization;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "organization", orphanRemoval = true)
+    private List<OrganizationBudgetCategory> budgetCategories;
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "organization", orphanRemoval = true)
     private OrganizationInvitationCode organizationInvitationCode;
@@ -105,6 +114,56 @@ public class Organization {
         return organizationInvitationCode;
     }
 
+    public OrganizationPosting getOrganizationPostingById(long postingId) {
+        return getOrganizationPostings().stream()
+                .filter(p -> p.getId() == postingId)
+                .findFirst()
+                .orElseThrow(PostingDoesNotExistException::new);
+    }
+
+    public List<Long> getPersonOfOrganizationIds() {
+        return getPersonsOfOrganization().stream()
+                .map(PersonOfOrganization::getId)
+                .toList();
+    }
+
+    public PersonOfOrganization getPersonOfOrganizationByUserId(long userId) {
+        return getPersonsOfOrganization().stream()
+                .filter(p -> p.getUserId() == userId)
+                .findFirst()
+                .orElseThrow(PersonNotRegisteredInOrganizationException::new);
+    }
+
+    public Activity getActivityById(long activityId) {
+        return getActivities().stream()
+                .filter(a -> a.getId() == activityId)
+                .findFirst()
+                .orElseThrow(ActivityNotFoundException::new);
+    }
+
+    public List<Posting> getAllOrganizationAndActivityPostings() {
+        List<Posting> postings = new ArrayList<>(organizationPostings);
+        List<Posting> activityPostings = activities.stream().map(Activity::getActivityPostings).toList().stream()
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+        postings.addAll(activityPostings);
+        return postings;
+    }
+
+    public void addBudgetCategory(OrganizationBudgetCategory budgetCategory) {
+        if (budgetCategories == null) {
+            budgetCategories = new ArrayList<>();
+        }
+        budgetCategories.add(budgetCategory);
+    }
+
+    public OrganizationBudgetCategory findBudgetCategoryById(long id) {
+        return budgetCategories.stream()
+                .filter(b -> b.getId() == id)
+                .findFirst()
+                .orElseThrow(BudgetCategoryNotFoundException::new);
+    }
+
     private String generateInvitationCode() {
         int leftLimit = 48; // numeral '0'
         int rightLimit = 122; // letter 'z'
@@ -122,6 +181,7 @@ public class Organization {
         Hibernate.initialize(personsOfOrganization);
         Hibernate.initialize(activities);
         Hibernate.initialize(organizationPostings);
+        Hibernate.initialize(budgetCategories);
     }
 
     @PrePersist

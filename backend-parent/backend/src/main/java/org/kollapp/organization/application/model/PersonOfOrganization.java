@@ -56,6 +56,14 @@ public class PersonOfOrganization {
 
     private LocalDateTime updatedAt;
 
+    public boolean isManager() {
+        return organizationRole.equals(OrganizationRole.ROLE_ORGANIZATION_MANAGER);
+    }
+
+    public boolean isMember() {
+        return organizationRole.equals(OrganizationRole.ROLE_ORGANIZATION_MEMBER);
+    }
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

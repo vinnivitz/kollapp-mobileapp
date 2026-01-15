@@ -5,19 +5,19 @@
 		badge?: string;
 		badgeColor?: Colors;
 		classList?: string;
-		color?: Colors | undefined;
+		color?: Colors;
 		disabled?: boolean;
-		expand?: 'block' | 'full' | undefined;
-		fill?: 'clear' | 'default' | 'outline' | 'solid' | undefined;
+		expand?: 'block' | 'full';
+		fill?: 'clear' | 'default' | 'outline' | 'solid';
 		icon?: string;
 		iconEnd?: string;
-		iconSize?: 'large' | 'small' | undefined;
+		iconSize?: 'large' | 'small';
 		indexed?: string;
 		label?: string;
 		labelColor?: Colors;
 		readonly?: boolean;
-		shape?: 'round' | undefined;
-		size?: 'default' | 'large' | 'small' | undefined;
+		shape?: 'round';
+		size?: 'default' | 'large' | 'small';
 		type?: 'button' | 'reset' | 'submit';
 		clicked?: (event?: MouseEvent) => void;
 	} & (

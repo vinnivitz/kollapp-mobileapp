@@ -8,28 +8,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import org.kollapp.organization.adapters.primary.rest.dto.enums.PostingType;
-
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PostingTO {
+public class OrganizationBudgetCategoryResponseTO {
+
     @NotNull
     private long id;
 
     @NotNull
-    private PostingType type;
+    private String name;
 
     @NotNull
-    private long amountInCents;
-
-    @NotNull
-    private String date;
-
-    @NotNull
-    private String purpose;
-
-    private long personOfOrganizationId;
+    private boolean defaultCategory;
 }

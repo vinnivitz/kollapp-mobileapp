@@ -9,7 +9,7 @@
 		border?: Colors;
 		children?: Snippet;
 		classList?: string;
-		color?: Colors | undefined;
+		color?: Colors;
 		icon?: string;
 		indexed?: string;
 		indexLabel?: string;

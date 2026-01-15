@@ -5,9 +5,9 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -35,14 +35,11 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 @AllArgsConstructor
 public class BudgetAccountController {
 
-    @Autowired
-    private PostingMapper postingMapper;
+    private final PostingMapper postingMapper;
 
-    @Autowired
-    private BudgetAccountService budgetAccountService;
+    private final BudgetAccountService budgetAccountService;
 
-    @Autowired
-    private MessageUtil messageUtil;
+    private final MessageUtil messageUtil;
 
     @PostMapping("/{organization-id}/posting")
     @Operation(
@@ -86,7 +83,19 @@ public class BudgetAccountController {
         return ResponseEntity.ok(new MessageResponseTO(message));
     }
 
-    @PostMapping("/{organization-id}/{activity-id}/posting")
+    @PatchMapping("/{organization-id}/posting/{posting-id}")
+    @Operation(
+            summary = "Transfer an existing organization posting.",
+            security = {@SecurityRequirement(name = "bearer-key")})
+    public ResponseEntity<MessageResponseTO> transferOrganizationPosting(
+            @PathVariable("organization-id") long organizationId, @PathVariable("posting-id") long postingId) {
+        Posting transferedPosting = budgetAccountService.transferOrganizationPosting(organizationId, postingId);
+        PostingTO postingTO = postingMapper.mapPostingToPostingTO(transferedPosting);
+        String message = messageUtil.getMessage("success.posting.transfer");
+        return ResponseEntity.ok(new DataResponseTO<>(postingTO, message));
+    }
+
+    @PostMapping("/{organization-id}/activity/{activity-id}/posting")
     @Operation(
             summary = "Add a new posting to an activity.",
             security = {@SecurityRequirement(name = "bearer-key")})
@@ -101,7 +110,7 @@ public class BudgetAccountController {
         return ResponseEntity.ok(new DataResponseTO<>(response, message));
     }
 
-    @PutMapping("/{organization-id}/{activity-id}/posting/{posting-id}")
+    @PutMapping("/{organization-id}/activity/{activity-id}/posting/{posting-id}")
     @Operation(
             summary = "Edit an existing activity posting.",
             security = {@SecurityRequirement(name = "bearer-key")})
@@ -118,7 +127,7 @@ public class BudgetAccountController {
         return ResponseEntity.ok(new DataResponseTO<>(response, message));
     }
 
-    @DeleteMapping("/{organization-id}/{activity-id}/posting/{posting-id}")
+    @DeleteMapping("/{organization-id}/activity/{activity-id}/posting/{posting-id}")
     @Operation(
             summary = "Delete an existing activity posting.",
             security = {@SecurityRequirement(name = "bearer-key")})
@@ -129,5 +138,19 @@ public class BudgetAccountController {
         budgetAccountService.deleteActivityPosting(organizationId, activityId, postingId);
         String message = messageUtil.getMessage("success.posting.delete");
         return ResponseEntity.ok(new MessageResponseTO(message));
+    }
+
+    @PatchMapping("/{organization-id}/activity/{activity-id}/posting/{posting-id}")
+    @Operation(
+            summary = "Transfer an existing activity posting.",
+            security = {@SecurityRequirement(name = "bearer-key")})
+    public ResponseEntity<MessageResponseTO> transferOrganizationPosting(
+            @PathVariable("organization-id") long organizationId,
+            @PathVariable("activity-id") long activityId,
+            @PathVariable("posting-id") long postingId) {
+        Posting transferedPosting = budgetAccountService.transferActivityPosting(organizationId, activityId, postingId);
+        PostingTO postingTO = postingMapper.mapPostingToPostingTO(transferedPosting);
+        String message = messageUtil.getMessage("success.posting.transfer");
+        return ResponseEntity.ok(new DataResponseTO<>(postingTO, message));
     }
 }

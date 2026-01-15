@@ -22,6 +22,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import org.kollapp.organization.application.exception.PostingDoesNotExistException;
+
 @Entity
 @Getter
 @Setter
@@ -52,6 +54,13 @@ public class Activity {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+
+    public ActivityPosting getActivityPostingById(long id) {
+        return getActivityPostings().stream()
+                .filter(p -> p.getId() == id)
+                .findFirst()
+                .orElseThrow(PostingDoesNotExistException::new);
+    }
 
     @PrePersist
     protected void onCreate() {
