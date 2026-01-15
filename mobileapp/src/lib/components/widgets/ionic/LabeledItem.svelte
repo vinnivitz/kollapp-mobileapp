@@ -12,7 +12,7 @@
 		badge?: string;
 		card?: boolean;
 		classList?: string;
-		color?: Colors | undefined;
+		color?: Colors;
 		icon?: string;
 		indexed?: RouteId;
 		transparent?: boolean;

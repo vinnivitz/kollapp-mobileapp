@@ -7,7 +7,7 @@
 
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
 	import { Locale } from '$lib/locales';
-	import { type Colors, Currency, type NumberStyle } from '$lib/models/ui';
+	import { type Colors, Currency } from '$lib/models/ui';
 	import { localeStore } from '$lib/stores';
 
 	type AmountPhase = 'fractal' | 'int' | 'zero';
@@ -57,12 +57,7 @@
 		helperText?: string;
 		icon?: string;
 		inputIcon?: string;
-		maximumFractionDigits?: number;
-		minimumFractionDigits?: number;
 		readonly?: boolean;
-		style?: NumberStyle;
-		unit?: string;
-		unitDisplay?: 'long' | 'narrow' | 'short';
 		inputElement?: (element: HTMLIonInputElement) => void;
 		inputIconClicked?: () => void;
 	} & (
@@ -442,7 +437,7 @@
 	}
 
 	function handleValueMismatch(native: HTMLInputElement): void {
-		if (native.value === undefined) return;
+		if (native.value == undefined) return;
 		const digitsOnly = native.value.replaceAll(/\D/g, '');
 
 		if (digitsOnly.length === 0) {

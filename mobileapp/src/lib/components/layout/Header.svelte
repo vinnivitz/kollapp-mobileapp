@@ -52,7 +52,7 @@
 				{#if showBackButton}
 					<ion-back-button default-href="/" text={$t('components.header.back-button')}> </ion-back-button>
 				{:else}
-					<img src="/logo.png" alt="Logo" class="bw:grayscale h-8 w-8" />
+					<img src="/logo.png" alt="Logo" class="h-8 w-8 bw:grayscale" />
 				{/if}
 			</ion-button>
 		</ion-buttons>
