@@ -42,10 +42,20 @@ public abstract class Posting {
     @Column(length = 50, nullable = false)
     private String purpose;
 
-    public Posting(PostingType type, long amountInCents, String date, String purpose) {
+    /**
+     * The person who is referenced to this posting. If 0, the collective is assigned.
+     */
+    private long personOfOrganizationId;
+
+    public Posting(PostingType type, long amountInCents, String date, String purpose, long personOfOrganizationId) {
         this.type = type;
         this.amountInCents = amountInCents;
         this.date = date;
         this.purpose = purpose;
+        this.personOfOrganizationId = personOfOrganizationId;
+    }
+
+    public void transfer() {
+        this.setPersonOfOrganizationId(0);
     }
 }

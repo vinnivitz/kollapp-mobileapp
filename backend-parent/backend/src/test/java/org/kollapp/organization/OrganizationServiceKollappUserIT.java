@@ -135,4 +135,22 @@ public class OrganizationServiceKollappUserIT extends BaseIT {
         assertThatExceptionOfType(AuthorizationDeniedException.class)
                 .isThrownBy(() -> organizationService.approveNewMemberRequest(1, 1));
     }
+
+    @Test
+    public void addBudgetCategoryShouldThrowException() {
+        assertThatExceptionOfType(AuthorizationDeniedException.class)
+                .isThrownBy(() -> organizationService.addBudgetCategory(1, null));
+    }
+
+    @Test
+    public void editBudgetCategoryShouldThrowException() {
+        assertThatExceptionOfType(AuthorizationDeniedException.class)
+                .isThrownBy(() -> organizationService.editBudgetCategory(1, 1, null));
+    }
+
+    @Test
+    public void deleteBudgetCategoryShouldThrowException() {
+        assertThatExceptionOfType(AuthorizationDeniedException.class)
+                .isThrownBy(() -> organizationService.deleteBudgetCategory(1, 1));
+    }
 }

@@ -4,10 +4,10 @@ import java.util.List;
 
 import jakarta.validation.Valid;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.core.adapters.primary.rest.dto.DataResponseTO;
 import org.kollapp.core.adapters.primary.rest.dto.MessageResponseTO;
+import org.kollapp.organization.adapters.primary.rest.dto.OrganizationBudgetCategoryRequestTO;
 import org.kollapp.organization.adapters.primary.rest.dto.OrganizationCreationRequestTO;
 import org.kollapp.organization.adapters.primary.rest.dto.OrganizationMinifiedTO;
 import org.kollapp.organization.adapters.primary.rest.dto.OrganizationTO;
@@ -29,6 +30,7 @@ import org.kollapp.organization.adapters.primary.rest.dto.OrganizationUpdateRequ
 import org.kollapp.organization.adapters.primary.rest.dto.PersonOfOrganizationPatchRoleRequestTO;
 import org.kollapp.organization.adapters.primary.rest.mapper.OrganizationMapper;
 import org.kollapp.organization.application.model.Organization;
+import org.kollapp.organization.application.model.OrganizationBudgetCategory;
 import org.kollapp.organization.application.model.OrganizationRole;
 import org.kollapp.organization.application.service.OrganizationService;
 
@@ -39,16 +41,14 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 @RequestMapping("/api/organization")
 @Slf4j
 @PrimaryAdapter
+@AllArgsConstructor
 public class OrganizationController {
 
-    @Autowired
-    private OrganizationService organizationService;
+    private final OrganizationService organizationService;
 
-    @Autowired
-    private OrganizationMapper organizationMapper;
+    private final OrganizationMapper organizationMapper;
 
-    @Autowired
-    private MessageUtil messageUtil;
+    private final MessageUtil messageUtil;
 
     @GetMapping
     @Operation(
@@ -57,7 +57,7 @@ public class OrganizationController {
     public ResponseEntity<DataResponseTO<List<OrganizationMinifiedTO>>> getOrganizationOfLoggedInUser() {
         List<Organization> organizations = organizationService.getOrganizationsByLoggedInUser();
         List<OrganizationMinifiedTO> organizationMinifiedTOs = organizations.stream()
-                .map(o -> organizationMapper.organizationToOrganizationMinifiedTO(o))
+                .map(organizationMapper::organizationToOrganizationMinifiedTO)
                 .toList();
         String message = messageUtil.getMessage("success.organization.get");
         return ResponseEntity.ok(new DataResponseTO<>(organizationMinifiedTOs, message));
@@ -118,7 +118,7 @@ public class OrganizationController {
     public ResponseEntity<DataResponseTO<OrganizationTO>> grantRoleToPersonOfOrganization(
             @PathVariable("organization-id") long organizationId,
             @PathVariable("person-id") long personId,
-            @RequestBody PersonOfOrganizationPatchRoleRequestTO patchRoleRequestTO) {
+            @Valid @RequestBody PersonOfOrganizationPatchRoleRequestTO patchRoleRequestTO) {
         OrganizationRole targetRole =
                 OrganizationRole.valueOf(patchRoleRequestTO.getRole().name());
         Organization organization =
@@ -189,5 +189,48 @@ public class OrganizationController {
         OrganizationTO orgaTo = organizationMapper.organizationToOrganizationTO(organization);
         String message = messageUtil.getMessage("success.organization.user.delete");
         return ResponseEntity.ok(new DataResponseTO<>(orgaTo, message));
+    }
+
+    @PostMapping("/{organization-id}/budget-category")
+    @Operation(
+            summary = "Creates a new budget category.",
+            security = {@SecurityRequirement(name = "bearer-key")})
+    public ResponseEntity<DataResponseTO<OrganizationTO>> createBudgetCategory(
+            @PathVariable("organization-id") long organizationId,
+            @Valid @RequestBody OrganizationBudgetCategoryRequestTO budgetCategoryTO) {
+        OrganizationBudgetCategory budgetCategory =
+                organizationMapper.organizationBudgetCategoryTOToOrganizationBudgetCategory(budgetCategoryTO);
+        Organization organization = organizationService.addBudgetCategory(organizationId, budgetCategory);
+        OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(organization);
+        String message = messageUtil.getMessage("success.organization.budget-category.create");
+        return ResponseEntity.ok(new DataResponseTO<>(organizationTO, message));
+    }
+
+    @PutMapping("/{organization-id}/budget-category/{category-id}")
+    @Operation(
+            summary = "Updates an existing budget category.",
+            security = {@SecurityRequirement(name = "bearer-key")})
+    public ResponseEntity<DataResponseTO<OrganizationTO>> updateBudgetCategory(
+            @PathVariable("organization-id") long organizationId,
+            @PathVariable("category-id") long categoryId,
+            @Valid @RequestBody OrganizationBudgetCategoryRequestTO budgetCategoryTO) {
+        OrganizationBudgetCategory budgetCategory =
+                organizationMapper.organizationBudgetCategoryTOToOrganizationBudgetCategory(budgetCategoryTO);
+        Organization organization = organizationService.editBudgetCategory(organizationId, categoryId, budgetCategory);
+        OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(organization);
+        String message = messageUtil.getMessage("success.organization.budget-category.update");
+        return ResponseEntity.ok(new DataResponseTO<>(organizationTO, message));
+    }
+
+    @DeleteMapping("/{organization-id}/budget-category/{category-id}")
+    @Operation(
+            summary = "Deletes an existing budget category.",
+            security = {@SecurityRequirement(name = "bearer-key")})
+    public ResponseEntity<DataResponseTO<OrganizationTO>> deleteBudgetCategory(
+            @PathVariable("organization-id") long organizationId, @PathVariable("category-id") long categoryId) {
+        Organization organization = organizationService.deleteBudgetCategory(organizationId, categoryId);
+        OrganizationTO organizationTO = organizationMapper.organizationToOrganizationTO(organization);
+        String message = messageUtil.getMessage("success.organization.budget-category.delete");
+        return ResponseEntity.ok(new DataResponseTO<>(organizationTO, message));
     }
 }

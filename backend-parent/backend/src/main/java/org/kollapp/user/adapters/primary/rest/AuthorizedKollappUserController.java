@@ -57,7 +57,8 @@ public class AuthorizedKollappUserController {
     @Operation(
             summary = "Change the password of the logged in user",
             security = {@SecurityRequirement(name = "bearer-key")})
-    public ResponseEntity<MessageResponseTO> changePassword(@RequestBody PasswordChangeRequestTO changeRequestTo) {
+    public ResponseEntity<MessageResponseTO> changePassword(
+            @Valid @RequestBody PasswordChangeRequestTO changeRequestTo) {
         kollappUserService.changePassword(changeRequestTo.getCurrentPassword(), changeRequestTo.getNewPassword());
         String message = messageUtil.getMessage("success.password.changed");
         return ResponseEntity.ok(new MessageResponseTO(message));
