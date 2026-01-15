@@ -119,15 +119,31 @@ export async function deleteBiometricCredentials(): Promise<void> {
 }
 
 /**
+ * Verifies the user's identity using biometric authentication.
+ * @returns {Promise<boolean>} - Returns true if the user is verified, false otherwise.
+ */
+export async function verifyBiometricIdentity(): Promise<boolean> {
+	try {
+		await NativeBiometric.verifyIdentity({
+			maxAttempts: environment.maxBiometricAuthRetries,
+			negativeButtonText: $t('utility.biometrics.prompt.cancel'),
+			subtitle: $t('utility.biometrics.prompt.subtitle'),
+			title: $t('utility.biometrics.prompt.title')
+		});
+		return true;
+	} catch {
+		return false;
+	}
+}
+
+/**
  * Prompts biometric authentication from the user.
  * @returns {Promise<LoginRequestTO | undefined>} - Returns the credentials if authentication is successful, otherwise undefined.
  */
 export async function promptBiometricAuthentication(): Promise<LoginRequestTO | undefined> {
-	await NativeBiometric.verifyIdentity({
-		maxAttempts: environment.maxBiometricAuthRetries,
-		negativeButtonText: $t('utility.biometrics.prompt.cancel'),
-		subtitle: $t('utility.biometrics.prompt.subtitle'),
-		title: $t('utility.biometrics.prompt.title')
-	});
+	const isVerified = await verifyBiometricIdentity();
+	if (!isVerified) {
+		return undefined;
+	}
 	return getBiometricCredentials();
 }

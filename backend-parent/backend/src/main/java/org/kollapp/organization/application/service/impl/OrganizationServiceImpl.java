@@ -3,6 +3,7 @@ package org.kollapp.organization.application.service.impl;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import jakarta.transaction.Transactional;
@@ -13,6 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import org.kollapp.core.config.properties.ApplicationProperties;
+import org.kollapp.organization.application.exception.BudgetCategoryWithNameExistsException;
+import org.kollapp.organization.application.exception.DefaultBudgetCategoryMustNotBeDeletedException;
+import org.kollapp.organization.application.exception.DefaultFlagOfBudgetCategoryMustNotBeRevokedException;
 import org.kollapp.organization.application.exception.InvalidInvitationCodeException;
 import org.kollapp.organization.application.exception.LastManagerException;
 import org.kollapp.organization.application.exception.MaxOrganizationsReachedException;
@@ -23,6 +27,7 @@ import org.kollapp.organization.application.exception.PersonNotRegisteredInOrgan
 import org.kollapp.organization.application.exception.PersonOfOrganizationIsNotApprovedYetException;
 import org.kollapp.organization.application.exception.UntransferredPostingException;
 import org.kollapp.organization.application.model.Organization;
+import org.kollapp.organization.application.model.OrganizationBudgetCategory;
 import org.kollapp.organization.application.model.OrganizationCreatedEvent;
 import org.kollapp.organization.application.model.OrganizationDeletedEvent;
 import org.kollapp.organization.application.model.OrganizationInvitationCode;
@@ -82,6 +87,12 @@ public class OrganizationServiceImpl implements OrganizationService {
         personOfOrganization.setOrganization(persistedOrganization);
         PersonOfOrganization persistedOrganizationManager = personOfOrganizationRepository.save(personOfOrganization);
         persistedOrganization.addPersonOfOrganization(persistedOrganizationManager);
+        OrganizationBudgetCategory budgetCategory = OrganizationBudgetCategory.builder()
+                .name(applicationProperties.getDefaultBudgetCategoryName())
+                .defaultCategory(true)
+                .build();
+        budgetCategory.setOrganization(persistedOrganization);
+        persistedOrganization.addBudgetCategory(budgetCategory);
         OrganizationCreatedEvent organizationCreatedEvent = new OrganizationCreatedEvent(this, organization.getId());
         organizationPublisher.publishOrganizationCreatedEvent(organizationCreatedEvent);
         return persistedOrganization;
@@ -160,15 +171,21 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    @RequiresKollappUserRole
     public void deleteUserFromAllOrganizations(long userId) {
         List<PersonOfOrganization> personsToBeDeleted = personOfOrganizationRepository.findByUserId(userId);
+
+        for (PersonOfOrganization personOfOrganization : personsToBeDeleted) {
+            verifyUntransferredPostings(personOfOrganization.getOrganization(), personOfOrganization);
+        }
+
+        verifyUserDeletionAllowed(userId, personsToBeDeleted);
+
         for (PersonOfOrganization personOfOrganization : personsToBeDeleted) {
             if (personOfOrganization.getOrganizationRole().equals(OrganizationRole.ROLE_ORGANIZATION_MANAGER)
                     && personOfOrganization.getOrganization().hasOnlyOneManagerLeft()) {
-                throw new LastManagerException();
+                deleteOrganizationOnUserDeletion(personOfOrganization.getOrganization());
+                continue;
             }
-            verifyUntransferredPostings(personOfOrganization.getOrganization(), personOfOrganization);
             personOfOrganizationRepository.deleteById(personOfOrganization.getId());
         }
     }
@@ -241,6 +258,58 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
+    @RequiresKollappOrganizationMemberRole
+    public Organization addBudgetCategory(long organizationId, OrganizationBudgetCategory budgetCategory) {
+        organizationRoleHelper.verifyOrganizationManager(organizationId);
+        Organization organization =
+                organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
+        verifyUniqueCategoryNamePerOrganization(organization, 0, budgetCategory);
+        if (budgetCategory.isDefaultCategory()) {
+            specifyDefaultBudgetCategory(organization);
+        }
+        organization.addBudgetCategory(budgetCategory);
+        budgetCategory.setOrganization(organization);
+        organization.initChildren();
+        return organization;
+    }
+
+    @Override
+    @RequiresKollappOrganizationMemberRole
+    public Organization editBudgetCategory(
+            long organizationId, long budgetCategoryId, OrganizationBudgetCategory updatedBudgetCategory) {
+        organizationRoleHelper.verifyOrganizationManager(organizationId);
+        Organization organization =
+                organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
+        OrganizationBudgetCategory budgetCategory = organization.findBudgetCategoryById(budgetCategoryId);
+        if (budgetCategory.isDefaultCategory() && !updatedBudgetCategory.isDefaultCategory()) {
+            throw new DefaultFlagOfBudgetCategoryMustNotBeRevokedException();
+        }
+        if (!budgetCategory.isDefaultCategory() && updatedBudgetCategory.isDefaultCategory()) {
+            specifyDefaultBudgetCategory(organization);
+        }
+        verifyUniqueCategoryNamePerOrganization(organization, budgetCategoryId, updatedBudgetCategory);
+        budgetCategory.setName(updatedBudgetCategory.getName());
+        budgetCategory.setDefaultCategory(updatedBudgetCategory.isDefaultCategory());
+        organization.initChildren();
+        return organization;
+    }
+
+    @Override
+    @RequiresKollappOrganizationMemberRole
+    public Organization deleteBudgetCategory(long organizationId, long budgetCategoryId) {
+        organizationRoleHelper.verifyOrganizationManager(organizationId);
+        Organization organization =
+                organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
+        OrganizationBudgetCategory budgetCategoryToRemove = organization.findBudgetCategoryById(budgetCategoryId);
+        if (budgetCategoryToRemove.isDefaultCategory()) {
+            throw new DefaultBudgetCategoryMustNotBeDeletedException();
+        }
+        organization.getBudgetCategories().remove(budgetCategoryToRemove);
+        organization.initChildren();
+        return organization;
+    }
+
+    @Override
     @RequiresKollappUserRole
     public List<Organization> getOrganizationsByLoggedInUser() {
         KollappUser loggedInKollappUser = kollappUserService.getLoggedInKollappUser();
@@ -304,5 +373,47 @@ public class OrganizationServiceImpl implements OrganizationService {
         if (!postingsOfPersonOfOrganization.isEmpty()) {
             throw new UntransferredPostingException();
         }
+    }
+
+    private void verifyUniqueCategoryNamePerOrganization(
+            Organization organization, long budgetCategoryId, OrganizationBudgetCategory budgetCategory) {
+        List<OrganizationBudgetCategory> budgetCategories = organization.getBudgetCategories();
+        Optional<OrganizationBudgetCategory> existingCategory = budgetCategories.stream()
+                .filter(c -> c.getName().equalsIgnoreCase(budgetCategory.getName()))
+                .filter(c -> c.getId() != budgetCategoryId)
+                .findFirst();
+        if (existingCategory.isPresent()) {
+            throw new BudgetCategoryWithNameExistsException();
+        }
+    }
+
+    private void specifyDefaultBudgetCategory(Organization organization) {
+        List<OrganizationBudgetCategory> budgetCategories = organization.getBudgetCategories();
+        budgetCategories.forEach(budgetCategory -> budgetCategory.setDefaultCategory(false));
+    }
+
+    private void verifyUserDeletionAllowed(long userId, List<PersonOfOrganization> personsToBeDeleted) {
+        for (PersonOfOrganization personOfOrganization : personsToBeDeleted) {
+            if (!personOfOrganization.getOrganizationRole().equals(OrganizationRole.ROLE_ORGANIZATION_MANAGER)) {
+                continue;
+            }
+
+            Organization organization = personOfOrganization.getOrganization();
+            if (!organization.hasOnlyOneManagerLeft()) {
+                continue;
+            }
+
+            boolean otherPersonsExist =
+                    organization.getPersonsOfOrganization().stream().anyMatch(p -> p.getUserId() != userId);
+            if (otherPersonsExist) {
+                throw new LastManagerException();
+            }
+        }
+    }
+
+    private void deleteOrganizationOnUserDeletion(Organization organization) {
+        organizationRepository.deleteById(organization.getId());
+        OrganizationDeletedEvent organizationDeletedEvent = new OrganizationDeletedEvent(this, organization.getId());
+        organizationPublisher.publishOrganizationDeletedEvent(organizationDeletedEvent);
     }
 }

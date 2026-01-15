@@ -199,4 +199,22 @@ public class OrganizationServiceMemberIT extends BaseIT {
         OrganizationPosting untransferredPosting = organization.getOrganizationPostingById(1);
         untransferredPosting.transfer();
     }
+
+    @Test
+    public void addBudgetCategoryShouldThrowException() {
+        assertThatExceptionOfType(OrganizationAuthorizationException.class)
+                .isThrownBy(() -> organizationService.addBudgetCategory(1, null));
+    }
+
+    @Test
+    public void editBudgetCategoryShouldThrowException() {
+        assertThatExceptionOfType(OrganizationAuthorizationException.class)
+                .isThrownBy(() -> organizationService.editBudgetCategory(1, 1, null));
+    }
+
+    @Test
+    public void deleteBudgetCategoryShouldThrowException() {
+        assertThatExceptionOfType(OrganizationAuthorizationException.class)
+                .isThrownBy(() -> organizationService.deleteBudgetCategory(1, 1));
+    }
 }

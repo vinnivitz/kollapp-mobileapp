@@ -3,7 +3,9 @@ import type { AuthenticationStore, InitializationStore } from '$lib/models/store
 
 import { derived, writable } from 'svelte/store';
 
-import { authenticationStore, organizationStore, userStore } from '$lib/stores';
+import { authenticationStore } from './authentication.store';
+import { organizationStore } from './organization.store';
+import { userStore } from './user.store';
 
 /**
  * Add new loadable stores to this array to include them in the initialization process.

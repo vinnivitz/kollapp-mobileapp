@@ -12,6 +12,10 @@ import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.core.adapters.primary.rest.dto.ErrorResponseTO;
 import org.kollapp.core.adapters.primary.rest.dto.ResponseTO;
 import org.kollapp.organization.application.exception.ActivityNotFoundException;
+import org.kollapp.organization.application.exception.BudgetCategoryNotFoundException;
+import org.kollapp.organization.application.exception.BudgetCategoryWithNameExistsException;
+import org.kollapp.organization.application.exception.DefaultBudgetCategoryMustNotBeDeletedException;
+import org.kollapp.organization.application.exception.DefaultFlagOfBudgetCategoryMustNotBeRevokedException;
 import org.kollapp.organization.application.exception.InvalidInvitationCodeException;
 import org.kollapp.organization.application.exception.InvalidOrganizationRoleException;
 import org.kollapp.organization.application.exception.InvalidPostingTypeException;
@@ -39,31 +43,31 @@ public class OrganizationExceptionHandler {
     @ExceptionHandler(OrganizationNotFoundException.class)
     public ResponseEntity<ResponseTO> handleOrganizationNotFound() {
         String message = messageUtil.getMessage("error.organization.not-found");
-        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(PersonNotRegisteredInOrganizationException.class)
     public ResponseEntity<ResponseTO> handlePersonNotRegisteredInOrganization() {
         String message = messageUtil.getMessage("error.organization.person-not-found");
-        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(PersonAlreadyRegisteredInOrganizationException.class)
     public ResponseEntity<ResponseTO> handlePersonAlreadyRegisteredInOrganization() {
         String message = messageUtil.getMessage("error.organization.person-already-registered");
-        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(ActivityNotFoundException.class)
     public ResponseEntity<ResponseTO> handleActivityNotFound() {
         String message = messageUtil.getMessage("error.activity.not-found");
-        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(PostingDoesNotExistException.class)
     public ResponseEntity<ResponseTO> handlePostingNotFound() {
         String message = messageUtil.getMessage("error.organization.posting.not-found");
-        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(InvalidInvitationCodeException.class)
@@ -105,7 +109,7 @@ public class OrganizationExceptionHandler {
     @ExceptionHandler(PersonAlreadyHasTargetRoleException.class)
     public ResponseEntity<ResponseTO> handlePersonAlreadyHasTargetRole() {
         String message = messageUtil.getMessage("error.organization.person-already-has-target-role");
-        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponseTO(message));
     }
 
     @ExceptionHandler(MaxOrganizationsReachedException.class)
@@ -135,6 +139,30 @@ public class OrganizationExceptionHandler {
     @ExceptionHandler(PostingIsAlreadyTransferredException.class)
     public ResponseEntity<ResponseTO> handlePostingIsAlreadyTransferredException() {
         String message = messageUtil.getMessage("error.posting.already-transferred");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponseTO(message));
+    }
+
+    @ExceptionHandler(BudgetCategoryNotFoundException.class)
+    public ResponseEntity<ResponseTO> handleBudgetCategoryNotFound() {
+        String message = messageUtil.getMessage("error.organization.budget-category-not-found");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseTO(message));
+    }
+
+    @ExceptionHandler(BudgetCategoryWithNameExistsException.class)
+    public ResponseEntity<ResponseTO> handleBudgetCategoryWithNameAlreadyExists() {
+        String message = messageUtil.getMessage("error.organization.budget-category-with-name-exists");
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponseTO(message));
+    }
+
+    @ExceptionHandler(DefaultBudgetCategoryMustNotBeDeletedException.class)
+    public ResponseEntity<ResponseTO> handleDefaultBudgetCategoryMustNotBeDeleted() {
+        String message = messageUtil.getMessage("error.organization.default-budget-category-deletion");
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
+    }
+
+    @ExceptionHandler(DefaultFlagOfBudgetCategoryMustNotBeRevokedException.class)
+    public ResponseEntity<ResponseTO> handleDefaultFlagOfBudgetCategoryMustNotBeRevoked() {
+        String message = messageUtil.getMessage("error.organization.default-flag-budget-category-revoked");
         return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
     }
 }

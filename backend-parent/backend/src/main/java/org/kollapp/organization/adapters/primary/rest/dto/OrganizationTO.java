@@ -34,6 +34,9 @@ public class OrganizationTO {
     private List<PersonOfOrganizationTO> personsOfOrganization;
 
     @NotNull
+    private List<OrganizationBudgetCategoryResponseTO> budgetCategories;
+
+    @NotNull
     private List<ActivityTO> activities;
 
     @NotNull
