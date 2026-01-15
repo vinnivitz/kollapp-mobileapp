@@ -62,15 +62,15 @@ importers:
       '@ionic/pwa-elements':
         specifier: ^3.3.0
         version: 3.3.0
-      '@svelte-put/qr':
-        specifier: ^2.1.1
-        version: 2.1.1(svelte@5.43.6)
       '@tailwindcss/typography':
         specifier: ^0.5.19
         version: 0.5.19(tailwindcss@4.1.17)
       '@tailwindcss/vite':
         specifier: ^4.1.17
         version: 4.1.17(vite@7.2.2(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.20.6)(yaml@2.8.1))
+      '@trasherdk/svelte-qrcode':
+        specifier: ^0.2.4
+        version: 0.2.4(svelte@5.43.6)
       apexcharts:
         specifier: ^5.3.6
         version: 5.3.6
@@ -1012,11 +1012,6 @@ packages:
     engines: {node: '>=16.0.0', npm: '>=7.10.0'}
     hasBin: true
 
-  '@svelte-put/qr@2.1.1':
-    resolution: {integrity: sha512-upkHuCn1X83oaqU63zdwY6t6thjtSydtxE2y74GNlrKre5LogGVmZ4/qaPouWmkP5JcH2frbKZsX0YCr3xUFHw==}
-    peerDependencies:
-      svelte: ^5.1.0
-
   '@sveltejs/acorn-typescript@1.0.6':
     resolution: {integrity: sha512-4awhxtMh4cx9blePWl10HRHj8Iivtqj+2QdDCSMDzxG+XKa9+VCNupQuCuvzEhYPzZSrX+0gC+0lHA/0fFKKQQ==}
     peerDependencies:
@@ -1217,6 +1212,11 @@ packages:
 
   '@trapezedev/project@7.1.3':
     resolution: {integrity: sha512-GANh8Ey73MechZrryfJoILY9hBnWqzS6AdB53zuWBCBbaiImyblXT41fWdN6pB2f5+cNI2FAUxGfVhl+LeEVbQ==}
+
+  '@trasherdk/svelte-qrcode@0.2.4':
+    resolution: {integrity: sha512-sG37EmoH8F63K2oXIu5598PSlCJn6HmBizE4DjTId9Eod5XsfaQE9swfHzxFsXio43qEOKVjVJoeRm0exedXSw==}
+    peerDependencies:
+      svelte: ^5
 
   '@ts-graphviz/adapter@2.0.6':
     resolution: {integrity: sha512-kJ10lIMSWMJkLkkCG5gt927SnGZcBuG0s0HHswGzcHTgvtUe7yk5/3zTEr0bafzsodsOq5Gi6FhQeV775nC35Q==}
@@ -3192,9 +3192,6 @@ packages:
   he@1.2.0:
     resolution: {integrity: sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==}
     hasBin: true
-
-  headless-qr@1.0.3:
-    resolution: {integrity: sha512-HHVwf1i++Ho2vFstHxAdfP0OjB7Di44nGXbh3VXciuzwkuFb1oeFDCrfOLjFgHip/Kbc/wq2GOaSTiKQ81K/Yg==}
 
   hosted-git-info@2.8.9:
     resolution: {integrity: sha512-mxIDAb9Lsm6DoOJ7xH+5+X4y1LU/4Hi50L9C5sIswK3JzULS4bwk1FvjdBgvYR4bzT4tuUQiC15FE2f5HbLvYw==}
@@ -6450,11 +6447,6 @@ snapshots:
       '@rollup/rollup-win32-arm64-msvc': 4.34.9
       '@rollup/rollup-win32-x64-msvc': 4.34.9
 
-  '@svelte-put/qr@2.1.1(svelte@5.43.6)':
-    dependencies:
-      headless-qr: 1.0.3
-      svelte: 5.43.6
-
   '@sveltejs/acorn-typescript@1.0.6(acorn@8.15.0)':
     dependencies:
       acorn: 8.15.0
@@ -6674,6 +6666,10 @@ snapshots:
       - '@types/node'
       - supports-color
       - typescript
+
+  '@trasherdk/svelte-qrcode@0.2.4(svelte@5.43.6)':
+    dependencies:
+      svelte: 5.43.6
 
   '@ts-graphviz/adapter@2.0.6':
     dependencies:
@@ -9013,8 +9009,6 @@ snapshots:
       function-bind: 1.1.2
 
   he@1.2.0: {}
-
-  headless-qr@1.0.3: {}
 
   hosted-git-info@2.8.9: {}
 

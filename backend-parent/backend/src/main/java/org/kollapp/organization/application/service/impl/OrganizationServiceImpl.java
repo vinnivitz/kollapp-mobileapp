@@ -162,14 +162,18 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    @RequiresKollappUserRole
     public void deleteUserFromAllOrganizations(long userId) {
         List<PersonOfOrganization> personsToBeDeleted = personOfOrganizationRepository.findByUserId(userId);
+
+        verifyUserDeletionAllowed(userId, personsToBeDeleted);
+
         for (PersonOfOrganization personOfOrganization : personsToBeDeleted) {
             if (personOfOrganization.getOrganizationRole().equals(OrganizationRole.ROLE_ORGANIZATION_MANAGER)
                     && personOfOrganization.getOrganization().hasOnlyOneManagerLeft()) {
-                throw new LastManagerException();
+                deleteOrganizationOnUserDeletion(personOfOrganization.getOrganization());
+                continue;
             }
+
             personOfOrganizationRepository.deleteById(personOfOrganization.getId());
         }
     }
@@ -294,5 +298,30 @@ public class OrganizationServiceImpl implements OrganizationService {
         if (organizationCount >= applicationProperties.getMaxOrganizationsPerUser()) {
             throw new MaxOrganizationsReachedException();
         }
+    }
+
+    private void verifyUserDeletionAllowed(long userId, List<PersonOfOrganization> personsToBeDeleted) {
+        for (PersonOfOrganization personOfOrganization : personsToBeDeleted) {
+            if (!personOfOrganization.getOrganizationRole().equals(OrganizationRole.ROLE_ORGANIZATION_MANAGER)) {
+                continue;
+            }
+
+            Organization organization = personOfOrganization.getOrganization();
+            if (!organization.hasOnlyOneManagerLeft()) {
+                continue;
+            }
+
+            boolean otherPersonsExist =
+                    organization.getPersonsOfOrganization().stream().anyMatch(p -> p.getUserId() != userId);
+            if (otherPersonsExist) {
+                throw new LastManagerException();
+            }
+        }
+    }
+
+    private void deleteOrganizationOnUserDeletion(Organization organization) {
+        organizationRepository.deleteById(organization.getId());
+        OrganizationDeletedEvent organizationDeletedEvent = new OrganizationDeletedEvent(this, organization.getId());
+        organizationPublisher.publishOrganizationDeletedEvent(organizationDeletedEvent);
     }
 }
