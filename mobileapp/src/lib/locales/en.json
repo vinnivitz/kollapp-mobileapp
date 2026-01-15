@@ -242,9 +242,6 @@
         "heading": "Welcome to Kollapp!",
         "subheading": "The app for all the collectives out there."
       }
-    },
-    "header": {
-      "back-button": "Back"
     }
   },
   "stores": {

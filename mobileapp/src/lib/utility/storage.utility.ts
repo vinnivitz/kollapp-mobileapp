@@ -2,6 +2,8 @@ import { type GetResult, Preferences } from '@capacitor/preferences';
 import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
 import { get } from 'svelte/store';
 
+import { dev } from '$app/environment';
+
 import environment from '$lib/environment';
 import { t } from '$lib/locales';
 import { type StorageKey, StorageStrategy } from '$lib/models/storage';
@@ -20,8 +22,8 @@ export async function storeValue<T>(key: StorageKey, value: T, strategy = Storag
 	try {
 		if (strategy === StorageStrategy.SECURE) {
 			const success = await SecureStoragePlugin.set({ key: getKey(key), value: JSON.stringify(value) });
-			if (!success) {
-				await showAlert($t('utility.preferences.failure.store'));
+			if (!success.value) {
+				return showAlert($t('utility.preferences.failure.store'));
 			}
 		} else {
 			await Preferences.set({ key: getKey(key), value: JSON.stringify(value) });
@@ -43,7 +45,7 @@ export async function getStoredValue<T = string>(
 ): Promise<T | undefined> {
 	try {
 		let result: GetResult;
-		if (strategy === StorageStrategy.SECURE) {
+		if (strategy === StorageStrategy.SECURE && !dev) {
 			try {
 				result = await SecureStoragePlugin.get({ key: getKey(key) });
 			} catch {
@@ -53,7 +55,6 @@ export async function getStoredValue<T = string>(
 			result = await Preferences.get({ key: getKey(key) });
 		}
 		const value = result.value ?? undefined;
-
 		if (!value) return undefined;
 
 		try {
@@ -74,9 +75,17 @@ export async function getStoredValue<T = string>(
  */
 export async function removeStoredValue(key: StorageKey, strategy = StorageStrategy.DEFAULT): Promise<void> {
 	try {
-		await (strategy === StorageStrategy.SECURE
-			? SecureStoragePlugin.remove({ key: getKey(key) })
-			: Preferences.remove({ key: getKey(key) }));
+		if (strategy === StorageStrategy.SECURE && !dev) {
+			try {
+				const success = await SecureStoragePlugin.remove({ key: getKey(key) });
+				if (!success.value) {
+					return showAlert($t('utility.preferences.failure.remove'));
+				}
+			} catch {
+				return;
+			}
+		}
+		await Preferences.remove({ key: getKey(key) });
 	} catch {
 		return;
 	}

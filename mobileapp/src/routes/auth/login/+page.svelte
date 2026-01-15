@@ -40,11 +40,18 @@
 		promptBiometricAuthentication,
 		reregisterPushNotifications,
 		showAlert,
-		storeValue
+		storeBiometricCredentials,
+		storeValue,
+		verifyBiometricIdentity
 	} from '$lib/utility';
 
+	let loginCredentials = $state<LoginRequestTO>();
+
 	const form = new Form({
-		completed: async ({ response }) => await handleLogin(response),
+		completed: async ({ model, response }) => {
+			loginCredentials = { password: model.password, username: model.username };
+			await handleLogin(response);
+		},
 		request: async (model: LoginRequestTO) => await authenticationService.login(model),
 		schema: loginSchema()
 	});
@@ -82,7 +89,18 @@
 		await authenticationStore.set(authenticationModel);
 		await appStateStore.initializeBaseData();
 
+		await promptBiometricSetup();
 		await Promise.all([reregisterPushNotifications(), goto(resolve('/'))]);
+	}
+
+	async function promptBiometricSetup(): Promise<void> {
+		if (dev || !(await isBiometricAvailable()) || (await isBiometricEnabled()) || !loginCredentials) return;
+		const verified = await verifyBiometricIdentity();
+		if (!verified) return;
+		await Promise.all([
+			storeValue(StorageKey.BIOMETRICS_ENABLED, true),
+			storeBiometricCredentials(loginCredentials.username, loginCredentials.password)
+		]);
 	}
 </script>
 

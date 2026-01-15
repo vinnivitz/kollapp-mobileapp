@@ -53,11 +53,11 @@ function createAppStateStore(): AppStateStore {
 			} else {
 				await Promise.all([userStore.reset(), organizationStore.reset()]);
 			}
-			connectionStore.init();
+			void connectionStore.init();
 			set(AppStateType.READY);
 		} catch (error) {
 			set(AppStateType.ERROR);
-			await showAlert($t('stores.app-state.error'), { type: AlertType.ERROR });
+			await showAlert($t('stores.app-state.error'));
 			if (dev) console.warn('AppStateStore initialization error:', error);
 		}
 	}
