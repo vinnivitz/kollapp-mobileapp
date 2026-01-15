@@ -1,60 +1,60 @@
-# STAGED_FILES=$(git diff --cached --name-only)
+STAGED_FILES=$(git diff --cached --name-only)
 
-# if echo "$STAGED_FILES" | grep -q '^mobileapp/'; then
-#   echo "Running mobileapp validation..."
-#   npm run validate --prefix mobileapp || {
-#     echo "Linting mobileapp failed. Aborting commit."
-#     exit 1
-#   }
+if echo "$STAGED_FILES" | grep -q '^mobileapp/'; then
+  echo "Running mobileapp validation..."
+  npm run validate --prefix mobileapp || {
+    echo "Linting mobileapp failed. Aborting commit."
+    exit 1
+  }
 
-#   echo "Checking @kollapp/api-types version in mobileapp..."
+  echo "Checking @kollapp/api-types version in mobileapp..."
 
-#   DECLARED_LINE=$(grep '"@kollapp/api-types"' mobileapp/package.json 2>/dev/null || true)
-#   DECLARED=$(printf '%s\n' "$DECLARED_LINE" | sed 's/.*: *"//; s/".*//')
+  DECLARED_LINE=$(grep '"@kollapp/api-types"' mobileapp/package.json 2>/dev/null || true)
+  DECLARED=$(printf '%s\n' "$DECLARED_LINE" | sed 's/.*: *"//; s/".*//')
 
-#   if [ -z "$DECLARED" ]; then
-#     echo "Could not find @kollapp/api-types in mobileapp/package.json"
-#     exit 1
-#   fi
+  if [ -z "$DECLARED" ]; then
+    echo "Could not find @kollapp/api-types in mobileapp/package.json"
+    exit 1
+  fi
 
-#   DECLARED_VERSION=$(echo "$DECLARED" | sed 's/^[\^~]//')
+  DECLARED_VERSION=$(echo "$DECLARED" | sed 's/^[\^~]//')
 
-#   LATEST=$(npm --prefix mobileapp view @kollapp/api-types version 2>/dev/null || true)
+  LATEST=$(npm --prefix mobileapp view @kollapp/api-types version 2>/dev/null || true)
 
-#   if [ -z "$LATEST" ]; then
-#     echo "Could not fetch latest @kollapp/api-types version (network/registry issue?)."
-#     exit 1
-#   fi
+  if [ -z "$LATEST" ]; then
+    echo "Could not fetch latest @kollapp/api-types version (network/registry issue?)."
+    exit 1
+  fi
 
-#   if [ "$DECLARED_VERSION" != "$LATEST" ]; then
-#     echo "@kollapp/api-types outdated: declared=$DECLARED_VERSION, latest=$LATEST"
-#     echo "Please bump the version in mobileapp/package.json."
-#     exit 1
-#   fi
+  if [ "$DECLARED_VERSION" != "$LATEST" ]; then
+    echo "@kollapp/api-types outdated: declared=$DECLARED_VERSION, latest=$LATEST"
+    echo "Please bump the version in mobileapp/package.json."
+    exit 1
+  fi
 
-#   echo "@kollapp/api-types is up to date ($DECLARED)."
-# fi
+  echo "@kollapp/api-types is up to date ($DECLARED)."
+fi
 
-# if echo "$STAGED_FILES" | grep -q '^backend-parent/'; then
-#   echo "Running backend spotless check..."
-#   ./backend-parent/mvnw -f backend-parent/pom.xml spotless:check -pl backend || {
-#     echo "Code formatting check failed. Run 'mvn spotless:apply' to fix."
-#     exit 1
-#   }
+if echo "$STAGED_FILES" | grep -q '^backend-parent/'; then
+  echo "Running backend spotless check..."
+  ./backend-parent/mvnw -f backend-parent/pom.xml spotless:check -pl backend || {
+    echo "Code formatting check failed. Run 'mvn spotless:apply' to fix."
+    exit 1
+  }
     
-#   echo "Running backend checkstyle..."
-#   ./backend-parent/mvnw -f backend-parent/pom.xml checkstyle:check -pl backend || {
-#     echo "Linting backend failed. Aborting commit."
-#     exit 1
-#   }
-# fi
+  echo "Running backend checkstyle..."
+  ./backend-parent/mvnw -f backend-parent/pom.xml checkstyle:check -pl backend || {
+    echo "Linting backend failed. Aborting commit."
+    exit 1
+  }
+fi
 
-# if echo "$STAGED_FILES" | grep -q '^webapp/'; then
-#   echo "Running webapp lint..."
-#   npm run lint --prefix webapp || {
-#     echo "Linting webapp failed. Aborting commit."
-#     exit 1
-#   }
-# fi
+if echo "$STAGED_FILES" | grep -q '^webapp/'; then
+  echo "Running webapp lint..."
+  npm run lint --prefix webapp || {
+    echo "Linting webapp failed. Aborting commit."
+    exit 1
+  }
+fi
 
-# exit 0
+exit 0
