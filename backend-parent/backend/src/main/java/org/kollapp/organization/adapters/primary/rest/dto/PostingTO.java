@@ -30,4 +30,6 @@ public class PostingTO {
 
     @NotNull
     private String purpose;
+
+    private long personOfOrganizationId;
 }

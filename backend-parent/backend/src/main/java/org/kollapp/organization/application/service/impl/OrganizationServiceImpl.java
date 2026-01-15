@@ -25,6 +25,7 @@ import org.kollapp.organization.application.exception.PersonAlreadyHasTargetRole
 import org.kollapp.organization.application.exception.PersonAlreadyRegisteredInOrganizationException;
 import org.kollapp.organization.application.exception.PersonNotRegisteredInOrganizationException;
 import org.kollapp.organization.application.exception.PersonOfOrganizationIsNotApprovedYetException;
+import org.kollapp.organization.application.exception.UntransferredPostingException;
 import org.kollapp.organization.application.model.MemberRoleChangedEvent;
 import org.kollapp.organization.application.model.MembershipApprovedEvent;
 import org.kollapp.organization.application.model.NewMemberRequestEvent;
@@ -37,6 +38,7 @@ import org.kollapp.organization.application.model.OrganizationRole;
 import org.kollapp.organization.application.model.OrganizationUpdatedEvent;
 import org.kollapp.organization.application.model.PersonOfOrganization;
 import org.kollapp.organization.application.model.PersonOfOrganizationStatus;
+import org.kollapp.organization.application.model.Posting;
 import org.kollapp.organization.application.publisher.OrganizationPublisher;
 import org.kollapp.organization.application.repository.OrganizationInvitationCodeRepository;
 import org.kollapp.organization.application.repository.OrganizationRepository;
@@ -130,6 +132,7 @@ public class OrganizationServiceImpl implements OrganizationService {
                 .findByIdAndOrganization(personOfOrganizationId, organization)
                 .orElseThrow(PersonNotRegisteredInOrganizationException::new);
         organizationRoleHelper.verifySelfActionNotAllowed(personToBeDeleted.getUserId());
+        verifyUntransferredPostings(organization, personToBeDeleted);
         organization.getPersonsOfOrganization().remove(personToBeDeleted);
         KollappUser kollappUser = kollappUserService.findById(personToBeDeleted.getUserId());
         if (userIsNoOrganizationMember(kollappUser.getId())) {
@@ -185,6 +188,10 @@ public class OrganizationServiceImpl implements OrganizationService {
     public void deleteUserFromAllOrganizations(long userId) {
         List<PersonOfOrganization> personsToBeDeleted = personOfOrganizationRepository.findByUserId(userId);
 
+        for (PersonOfOrganization personOfOrganization : personsToBeDeleted) {
+            verifyUntransferredPostings(personOfOrganization.getOrganization(), personOfOrganization);
+        }
+
         verifyUserDeletionAllowed(userId, personsToBeDeleted);
 
         for (PersonOfOrganization personOfOrganization : personsToBeDeleted) {
@@ -193,7 +200,6 @@ public class OrganizationServiceImpl implements OrganizationService {
                 deleteOrganizationOnUserDeletion(personOfOrganization.getOrganization());
                 continue;
             }
-
             personOfOrganizationRepository.deleteById(personOfOrganization.getId());
         }
     }
@@ -208,6 +214,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         PersonOfOrganization personOfOrganization = personOfOrganizationRepository
                 .findByUserIdAndOrganization(loggedInUser.getId(), organization)
                 .orElseThrow(PersonNotRegisteredInOrganizationException::new);
+        verifyUntransferredPostings(organization, personOfOrganization);
         if (personOfOrganization.getOrganizationRole().equals(OrganizationRole.ROLE_ORGANIZATION_MANAGER)
                 && organization.hasOnlyOneManagerLeft()) {
             deleteOrganization(loggedInUser, organization);
@@ -412,6 +419,16 @@ public class OrganizationServiceImpl implements OrganizationService {
         long organizationCount = personOfOrganizationRepository.countByUserId(userId);
         if (organizationCount >= applicationProperties.getMaxOrganizationsPerUser()) {
             throw new MaxOrganizationsReachedException();
+        }
+    }
+
+    private void verifyUntransferredPostings(Organization organization, PersonOfOrganization personOfOrganization) {
+        List<Posting> allOrganizationAndActivityPostings = organization.getAllOrganizationAndActivityPostings();
+        List<Posting> postingsOfPersonOfOrganization = allOrganizationAndActivityPostings.stream()
+                .filter(p -> p.getPersonOfOrganizationId() == personOfOrganization.getId())
+                .toList();
+        if (!postingsOfPersonOfOrganization.isEmpty()) {
+            throw new UntransferredPostingException();
         }
     }
 

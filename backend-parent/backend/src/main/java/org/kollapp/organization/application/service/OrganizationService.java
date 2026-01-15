@@ -38,6 +38,8 @@ public interface OrganizationService {
 
     List<Long> getAllMemberUserIds(long organizationId);
 
+    List<Long> getAllManagerUserIds(long organizationId);
+
     Organization addBudgetCategory(long organizationId, OrganizationBudgetCategory budgetCategory);
 
     Organization editBudgetCategory(
