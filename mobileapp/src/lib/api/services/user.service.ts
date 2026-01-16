@@ -39,7 +39,7 @@ class UserResource {
 	 * @returns {Promise<ResponseBody>} response body
 	 */
 	async remove(): Promise<ResponseBody> {
-		return customFetch(`${this.ENDPOINT}/delete`, {
+		return customFetch(`${this.ENDPOINT}`, {
 			method: RequestMethod.DELETE
 		});
 	}

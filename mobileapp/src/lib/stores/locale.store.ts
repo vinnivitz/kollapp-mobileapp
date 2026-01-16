@@ -14,7 +14,9 @@ function createStore(): LocaleStore {
 	async function init(): Promise<void> {
 		const value = await getInitialLocale();
 		await loadTranslations(value);
-		await _set(value);
+		locale.set(value);
+		setDefaultOptions({ locale: getDateFnsLocale(value) });
+		set(value);
 	}
 	async function _set(value: Locale): Promise<void> {
 		await storeValue(StorageKey.LOCALE, value);

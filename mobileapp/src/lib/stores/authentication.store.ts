@@ -12,7 +12,9 @@ function createStore(): AuthenticationStore {
 
 	async function init(): Promise<void> {
 		const model = await getStoredValue<AuthenticationModel>(StorageKey.AUTHENTICATION, StorageStrategy.SECURE);
-		await _set(model);
+		if (model) {
+			set(model);
+		}
 		initialized.set(true);
 	}
 

@@ -18,7 +18,7 @@ function createStore(): UserStore {
 		return deduplicateRequest(USER_STORE_INIT_REQUEST_KEY, async () => {
 			const storedUser = await getStoredValue<KollappUserTO>(StorageKey.USER);
 			if (storedUser) {
-				await _set(storedUser);
+				set(storedUser);
 				loadedCache.set(true);
 			}
 

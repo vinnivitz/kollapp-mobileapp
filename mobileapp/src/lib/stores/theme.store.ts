@@ -9,10 +9,18 @@ function createStore(): ThemeStore {
 	const { set, subscribe } = writable<Theme | undefined>();
 
 	async function init(): Promise<void> {
-		const initialTheme = await getInitialTheme();
-		await _set(initialTheme);
+		const theme = await getStoredValue<Theme>(StorageKey.THEME);
+		if (theme) {
+			setClass(theme);
+			set(theme);
+		} else {
+			const initialTheme = getPreferedColorScheme();
+			await _set(initialTheme);
+		}
 	}
+
 	async function _set(value: Theme): Promise<void> {
+		console.log('set');
 		setClass(value);
 		await storeValue(StorageKey.THEME, value);
 		set(value);
@@ -20,10 +28,6 @@ function createStore(): ThemeStore {
 
 	async function reset(): Promise<void> {
 		await _set(getPreferedColorScheme());
-	}
-
-	async function getInitialTheme(): Promise<Theme> {
-		return (await getStoredValue<Theme>(StorageKey.THEME)) || getPreferedColorScheme();
 	}
 
 	function getPreferedColorScheme(): Theme {

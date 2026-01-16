@@ -12,7 +12,7 @@ function createStore(): LayoutStore {
 	async function init(): Promise<void> {
 		const value = await getStoredValue<Layout>(StorageKey.LAYOUT);
 		if (value) {
-			await _set(value);
+			set(value);
 			document.documentElement.setAttribute('mode', value);
 		} else {
 			await _set(getDefaultLayout());
