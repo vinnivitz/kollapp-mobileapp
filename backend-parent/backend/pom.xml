@@ -248,49 +248,6 @@
     </build>
     <profiles>
         <profile>
-            <!-- <id>generate-client-api-types</id>
-            <pluginRepositories>
-                <pluginRepository>
-                    <id>nexus-releases</id>
-                    <name>Kollapp Nexus Releases</name>
-                    <url>https://nexus.kollapp.org/repository/maven-releases/</url>
-                </pluginRepository>
-            </pluginRepositories>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.kollapp</groupId>
-                        <artifactId>generate-ts-api-types-maven-plugin</artifactId>
-                        <version>${generate-ts-api-types-maven-plugin.version}</version>
-                        <executions>
-                            <execution>
-                                <id>generate-ts-api-types</id>
-                                <phase>process-classes</phase>
-                                <goals>
-                                    <goal>generate-abstract-ts</goal>
-                                </goals>
-                                <configuration>
-                                    <jsonLibrary>jackson2</jsonLibrary>
-                                    <classPatterns>
-                                        <classPattern>
-                                            org.kollapp.**.adapters.primary.rest.*Controller</classPattern>
-                                        <classPattern>
-                                            org.kollapp.**.adapters.primary.rest.dto.*</classPattern>
-                                    </classPatterns>
-                                    <outputFile>${project.basedir}/../backend-api/ts/index.d.ts</outputFile>
-                                    <customTypeMappings>
-                                        <customTypeMapping>long:number</customTypeMapping>
-                                        <customTypeMapping>java.lang.Long:number</customTypeMapping>
-                                        <customTypeMapping>java.time.LocalDate:string</customTypeMapping>
-                                    </customTypeMappings>
-                                    <mapDate>asString</mapDate>
-                                    <mapEnum>asUnion</mapEnum>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build> -->
             <id>generate-client-api-types</id>
             <build>
                 <plugins>
@@ -310,11 +267,6 @@
                                         <classPattern>
                                             org.kollapp.**.adapters.primary.rest.dto.*</classPattern>
                                     </classPatterns>
-                                    <excludeClasses>
-                                        <excludeClass>
-                                            org.kollapp.core.adapters.primary.rest.dto.DataResponseTO
-                                        </excludeClass>
-                                    </excludeClasses>
                                     <outputKind>module</outputKind>
                                     <outputFile>../backend-api/ts/index.d.ts</outputFile>
                                     <outputFileType>declarationFile</outputFileType>

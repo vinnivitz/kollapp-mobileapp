@@ -25,12 +25,6 @@ function createAppStateStore(): AppStateStore {
 	let isInitialized = false;
 
 	async function initialize(): Promise<void> {
-		const currentState = get(appStateStore);
-
-		if (currentState === AppStateType.UNINITIALIZED) {
-			isInitialized = false;
-		}
-
 		if (isInitialized) return;
 		isInitialized = true;
 
