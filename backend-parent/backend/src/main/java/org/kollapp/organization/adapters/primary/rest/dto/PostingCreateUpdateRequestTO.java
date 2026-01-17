@@ -37,4 +37,6 @@ public class PostingCreateUpdateRequestTO {
     private String purpose;
 
     private long personOfOrganizationId;
+
+    private long organizationBudgetCategoryId;
 }

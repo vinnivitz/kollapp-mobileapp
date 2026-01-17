@@ -32,4 +32,6 @@ public class PostingTO {
     private String purpose;
 
     private long personOfOrganizationId;
+
+    private long organizationBudgetCategoryId;
 }

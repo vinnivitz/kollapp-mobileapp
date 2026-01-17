@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 
 import org.springframework.stereotype.Service;
 
+import org.kollapp.organization.application.exception.BudgetCategoryIsNotAssignableException;
 import org.kollapp.organization.application.exception.OrganizationAuthorizationException;
 import org.kollapp.organization.application.exception.OrganizationNotFoundException;
 import org.kollapp.organization.application.exception.PersonNotRegisteredInOrganizationException;
@@ -16,6 +17,7 @@ import org.kollapp.organization.application.exception.PostingTransferNotPossible
 import org.kollapp.organization.application.model.Activity;
 import org.kollapp.organization.application.model.ActivityPosting;
 import org.kollapp.organization.application.model.Organization;
+import org.kollapp.organization.application.model.OrganizationBudgetCategory;
 import org.kollapp.organization.application.model.OrganizationPosting;
 import org.kollapp.organization.application.model.PersonOfOrganization;
 import org.kollapp.organization.application.model.Posting;
@@ -46,6 +48,8 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
         Organization organization =
                 organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
         checkOrganizationMemberSelfAssignment(organization, posting);
+        long budgetCategoryId = getAssignableBudgetCategory(organization, posting);
+        posting.setOrganizationBudgetCategoryId(budgetCategoryId);
         List<Long> personOfOrganizationIdsOfOrganization = organization.getPersonOfOrganizationIds();
         if (posting.getPersonOfOrganizationId() == 0
                 || personOfOrganizationIdsOfOrganization.contains(posting.getPersonOfOrganizationId())) {
@@ -109,6 +113,8 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
                 organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
         Activity activity = organization.getActivityById(activityId);
         checkOrganizationMemberSelfAssignment(organization, posting);
+        long budgetCategoryId = getAssignableBudgetCategory(organization, posting);
+        posting.setOrganizationBudgetCategoryId(budgetCategoryId);
         List<Long> personOfOrganizationIdsOfOrganization = organization.getPersonOfOrganizationIds();
         if (posting.getPersonOfOrganizationId() == 0
                 || personOfOrganizationIdsOfOrganization.contains(posting.getPersonOfOrganizationId())) {
@@ -166,6 +172,21 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    @RequiresKollappOrganizationMemberRole
+    public void assignPostingsOfBudgetCategoryToDefaultBudgetCategory(
+            Organization organization, OrganizationBudgetCategory sourceBudgetCategory) {
+        List<Posting> postingsOfCategory =
+                organization.getAllOrganizationAndActivityPostingsByBudgetCategoryId(sourceBudgetCategory.getId());
+        OrganizationBudgetCategory defaultCategory = organization.findDefaultBudgetCategory();
+        postingsOfCategory.forEach(posting -> {
+            posting.setOrganizationBudgetCategoryId(defaultCategory.getId());
+        });
+    }
+
+    /**
      * Checks if a posting is suitable for transfer. A posting can only be transferred if it has a
      * reference to a person of organization.
      * @param posting The posting to be transferred.
@@ -219,11 +240,32 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
         if (postingToBeEdited.getPersonOfOrganizationId() == 0 && updatedPosting.getPersonOfOrganizationId() != 0) {
             throw new PostingIsAlreadyTransferredException();
         }
+        long budgetCategoryId = getAssignableBudgetCategory(organization, updatedPosting);
         postingToBeEdited.setDate(updatedPosting.getDate());
         postingToBeEdited.setPurpose(updatedPosting.getPurpose());
         postingToBeEdited.setAmountInCents(updatedPosting.getAmountInCents());
         postingToBeEdited.setType(updatedPosting.getType());
         postingToBeEdited.setPersonOfOrganizationId(updatedPosting.getPersonOfOrganizationId());
+        postingToBeEdited.setOrganizationBudgetCategoryId(budgetCategoryId);
         return postingToBeEdited;
+    }
+
+    /**
+     * Get the assignable budget category for the posting. The provided budget category id is assignable
+     * if it is part of the same organization as the posting. If no budget category id is provided
+     * the posting is assigned to the default budget category of the organization.
+     */
+    private long getAssignableBudgetCategory(Organization organization, Posting posting) {
+        boolean budgetCategoryIdIsProvided = posting.getOrganizationBudgetCategoryId() != 0;
+        if (!budgetCategoryIdIsProvided) {
+            return organization.findDefaultBudgetCategory().getId();
+        }
+        List<Long> budgetCategoryIdsOfOrganization = organization.getBudgetCategoryIds();
+        boolean categoryIsAssignable =
+                budgetCategoryIdsOfOrganization.contains(posting.getOrganizationBudgetCategoryId());
+        if (!categoryIsAssignable) {
+            throw new BudgetCategoryIsNotAssignableException();
+        }
+        return posting.getOrganizationBudgetCategoryId();
     }
 }

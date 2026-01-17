@@ -26,6 +26,7 @@ import org.hibernate.Hibernate;
 
 import org.kollapp.organization.application.exception.ActivityNotFoundException;
 import org.kollapp.organization.application.exception.BudgetCategoryNotFoundException;
+import org.kollapp.organization.application.exception.NoDefaultBudgetCategoryExistsException;
 import org.kollapp.organization.application.exception.PersonNotRegisteredInOrganizationException;
 import org.kollapp.organization.application.exception.PostingDoesNotExistException;
 
@@ -120,6 +121,12 @@ public class Organization {
                 .toList();
     }
 
+    public List<Long> getBudgetCategoryIds() {
+        return getBudgetCategories().stream()
+                .map(OrganizationBudgetCategory::getId)
+                .toList();
+    }
+
     public PersonOfOrganization getPersonOfOrganizationByUserId(long userId) {
         return getPersonsOfOrganization().stream()
                 .filter(p -> p.getUserId() == userId)
@@ -143,6 +150,13 @@ public class Organization {
         return postings;
     }
 
+    public List<Posting> getAllOrganizationAndActivityPostingsByBudgetCategoryId(long budgetCategoryId) {
+        List<Posting> allPostings = getAllOrganizationAndActivityPostings();
+        return allPostings.stream()
+                .filter(p -> p.getOrganizationBudgetCategoryId() == budgetCategoryId)
+                .collect(Collectors.toList());
+    }
+
     public void addBudgetCategory(OrganizationBudgetCategory budgetCategory) {
         if (budgetCategories == null) {
             budgetCategories = new ArrayList<>();
@@ -155,6 +169,13 @@ public class Organization {
                 .filter(b -> b.getId() == id)
                 .findFirst()
                 .orElseThrow(BudgetCategoryNotFoundException::new);
+    }
+
+    public OrganizationBudgetCategory findDefaultBudgetCategory() {
+        return budgetCategories.stream()
+                .filter(OrganizationBudgetCategory::isDefaultCategory)
+                .findFirst()
+                .orElseThrow(NoDefaultBudgetCategoryExistsException::new);
     }
 
     private String generateInvitationCode() {

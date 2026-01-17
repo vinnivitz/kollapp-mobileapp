@@ -12,6 +12,7 @@ import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.core.adapters.primary.rest.dto.ErrorResponseTO;
 import org.kollapp.core.adapters.primary.rest.dto.ResponseTO;
 import org.kollapp.organization.application.exception.ActivityNotFoundException;
+import org.kollapp.organization.application.exception.BudgetCategoryIsNotAssignableException;
 import org.kollapp.organization.application.exception.BudgetCategoryNotFoundException;
 import org.kollapp.organization.application.exception.BudgetCategoryWithNameExistsException;
 import org.kollapp.organization.application.exception.DefaultBudgetCategoryMustNotBeDeletedException;
@@ -21,6 +22,7 @@ import org.kollapp.organization.application.exception.InvalidOrganizationRoleExc
 import org.kollapp.organization.application.exception.InvalidPostingTypeException;
 import org.kollapp.organization.application.exception.LastManagerException;
 import org.kollapp.organization.application.exception.MaxOrganizationsReachedException;
+import org.kollapp.organization.application.exception.NoDefaultBudgetCategoryExistsException;
 import org.kollapp.organization.application.exception.OrganizationAuthorizationException;
 import org.kollapp.organization.application.exception.OrganizationNotFoundException;
 import org.kollapp.organization.application.exception.PersonAlreadyHasTargetRoleException;
@@ -163,6 +165,18 @@ public class OrganizationExceptionHandler {
     @ExceptionHandler(DefaultFlagOfBudgetCategoryMustNotBeRevokedException.class)
     public ResponseEntity<ResponseTO> handleDefaultFlagOfBudgetCategoryMustNotBeRevoked() {
         String message = messageUtil.getMessage("error.organization.default-flag-budget-category-revoked");
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
+    }
+
+    @ExceptionHandler(BudgetCategoryIsNotAssignableException.class)
+    public ResponseEntity<ResponseTO> handleBudgetCategoryIsNotAssignable() {
+        String message = messageUtil.getMessage("error.organization.budget-category-not-assignable");
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
+    }
+
+    @ExceptionHandler(NoDefaultBudgetCategoryExistsException.class)
+    public ResponseEntity<ResponseTO> handleNoDefaultBudgetCategoryExists() {
+        String message = messageUtil.getMessage("error.organization.no-default-budget-category");
         return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
     }
 }

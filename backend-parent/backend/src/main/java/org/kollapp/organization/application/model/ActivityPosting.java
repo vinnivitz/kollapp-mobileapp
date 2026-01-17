@@ -26,8 +26,9 @@ public class ActivityPosting extends Posting {
             String date,
             String purpose,
             Activity activity,
-            long personOfOrganizationId) {
-        super(type, amountInCents, date, purpose, personOfOrganizationId);
+            long personOfOrganizationId,
+            long budgetCategoryId) {
+        super(type, amountInCents, date, purpose, personOfOrganizationId, budgetCategoryId);
         this.activity = activity;
     }
 }

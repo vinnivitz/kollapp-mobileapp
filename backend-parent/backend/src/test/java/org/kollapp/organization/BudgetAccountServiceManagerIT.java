@@ -47,7 +47,7 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
     @Test
     public void addOrganizationPostingWithOwnIdShouldAddOrganizationPosting() {
         OrganizationPosting organizationPosting =
-                new OrganizationPosting(PostingType.CREDIT, 10000L, "2025-09-11", "Test", null, 1);
+                new OrganizationPosting(PostingType.CREDIT, 10000L, "2025-09-11", "Test", null, 1, 0);
         Posting persistedPosting = budgetAccountService.addOrganizationPosting(1, organizationPosting);
         assertThat(persistedPosting.getId()).isNotZero();
         assertThat(persistedPosting.getDate()).isEqualTo(organizationPosting.getDate());
@@ -62,7 +62,7 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
     @Test
     public void addOrganizationPostingWithValidIdShouldAddOrganizationPosting() {
         OrganizationPosting organizationPosting =
-                new OrganizationPosting(PostingType.CREDIT, 10000L, "2025-09-11", "Test", null, 3);
+                new OrganizationPosting(PostingType.CREDIT, 10000L, "2025-09-11", "Test", null, 3, 0);
         Posting persistedPosting = budgetAccountService.addOrganizationPosting(1, organizationPosting);
         assertThat(persistedPosting.getId()).isNotZero();
         assertThat(persistedPosting.getDate()).isEqualTo(organizationPosting.getDate());
@@ -77,7 +77,7 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
     @Test
     public void addOrganizationPostingWithoutIdShouldAddOrganizationPosting() {
         OrganizationPosting organizationPosting =
-                new OrganizationPosting(PostingType.CREDIT, 10000L, "2025-09-11", "Test", null, 0);
+                new OrganizationPosting(PostingType.CREDIT, 10000L, "2025-09-11", "Test", null, 0, 0);
         Posting persistedPosting = budgetAccountService.addOrganizationPosting(1, organizationPosting);
         assertThat(persistedPosting.getId()).isNotZero();
         assertThat(persistedPosting.getDate()).isEqualTo(organizationPosting.getDate());
@@ -106,7 +106,7 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
     @Test
     public void editOrganizationPostingWithValidIdShouldUpdateOrganizationPosting() {
         OrganizationPosting organizationPosting =
-                new OrganizationPosting(PostingType.CREDIT, 1000L, "2025-09-11", "Test_updated", null, 1);
+                new OrganizationPosting(PostingType.CREDIT, 1000L, "2025-09-11", "Test_updated", null, 1, 0);
         Posting updatedPosting = budgetAccountService.editOrganizationPosting(1, 2, organizationPosting);
         assertThat(updatedPosting.getId()).isEqualTo(2);
         assertThat(updatedPosting.getDate()).isEqualTo(organizationPosting.getDate());
@@ -120,7 +120,7 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
     @Test
     public void editOrganizationPostingWithIdOfOtherOrganizationShouldThrowException() {
         OrganizationPosting organizationPosting =
-                new OrganizationPosting(PostingType.CREDIT, 1000L, "2025-09-11", "Test_updated", null, 4);
+                new OrganizationPosting(PostingType.CREDIT, 1000L, "2025-09-11", "Test_updated", null, 4, 0);
         assertThatExceptionOfType(PersonNotRegisteredInOrganizationException.class)
                 .isThrownBy(() -> budgetAccountService.editOrganizationPosting(1, 2, organizationPosting));
     }
@@ -200,7 +200,7 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
     @Test
     public void addActivityPostingWithOwnIdShouldCreateActivityPosting() {
         ActivityPosting activityPosting =
-                new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test", null, 1);
+                new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test", null, 1, 0);
         Posting persistedActivityPosting = budgetAccountService.addActivityPosting(1, 1, activityPosting);
         assertThat(persistedActivityPosting.getId()).isNotZero();
         assertThat(persistedActivityPosting.getDate()).isEqualTo(activityPosting.getDate());
@@ -215,7 +215,7 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
     @Test
     public void addActivityPostingWithValidIdShouldCreateActivityPosting() {
         ActivityPosting activityPosting =
-                new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test", null, 3);
+                new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test", null, 3, 0);
         Posting persistedActivityPosting = budgetAccountService.addActivityPosting(1, 1, activityPosting);
         assertThat(persistedActivityPosting.getId()).isNotZero();
         assertThat(persistedActivityPosting.getDate()).isEqualTo(activityPosting.getDate());
@@ -230,7 +230,7 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
     @Test
     public void addActivityPostingWithoutIdShouldCreateActivityPosting() {
         ActivityPosting activityPosting =
-                new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test", null, 0);
+                new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test", null, 0, 0);
         Posting persistedActivityPosting = budgetAccountService.addActivityPosting(1, 1, activityPosting);
         assertThat(persistedActivityPosting.getId()).isNotZero();
         assertThat(persistedActivityPosting.getDate()).isEqualTo(activityPosting.getDate());
@@ -265,7 +265,7 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
     @Test
     public void editActivityPostingWithValidIdShouldEditActivityPosting() {
         ActivityPosting activityPosting =
-                new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test_bearbeitet", null, 3);
+                new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test_bearbeitet", null, 3, 0);
         Posting editedActivityPosting = budgetAccountService.editActivityPosting(1, 1, 1, activityPosting);
         assertThat(editedActivityPosting.getId()).isEqualTo(1);
         assertThat(editedActivityPosting.getDate()).isEqualTo(activityPosting.getDate());

@@ -44,7 +44,7 @@ public class BudgetAccountServiceMemberIT extends BaseIT {
     @Test
     public void addOrganizationPostingWithOwnIdShouldCreateOrganizationPosting() {
         OrganizationPosting organizationPosting =
-                new OrganizationPosting(PostingType.DEBIT, 1000L, "2025-09-11", "test", null, 1);
+                new OrganizationPosting(PostingType.DEBIT, 1000L, "2025-09-11", "test", null, 1, 0);
         Posting persistedPosting = budgetAccountService.addOrganizationPosting(1, organizationPosting);
         assertThat(persistedPosting.getId()).isNotZero();
         assertThat(persistedPosting.getDate()).isEqualTo(organizationPosting.getDate());
@@ -108,7 +108,7 @@ public class BudgetAccountServiceMemberIT extends BaseIT {
     @Test
     public void addActivityPostingWithOwnIdShouldCreateActivityPosting() {
         ActivityPosting activityPosting =
-                new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test", null, 1);
+                new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test", null, 1, 0);
         Posting persistedActivityPosting = budgetAccountService.addActivityPosting(1, 1, activityPosting);
         assertThat(persistedActivityPosting.getId()).isNotZero();
         assertThat(persistedActivityPosting.getDate()).isEqualTo(activityPosting.getDate());
@@ -123,7 +123,7 @@ public class BudgetAccountServiceMemberIT extends BaseIT {
     @Test
     public void addActivityPostingWithWrongIdShouldThrowException() {
         ActivityPosting activityPosting =
-                new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test", null, 2);
+                new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test", null, 2, 0);
         assertThatExceptionOfType(OrganizationAuthorizationException.class)
                 .isThrownBy(() -> budgetAccountService.addActivityPosting(1, 1, activityPosting));
     }
@@ -143,7 +143,7 @@ public class BudgetAccountServiceMemberIT extends BaseIT {
     @Test
     public void editActivityPostingWithOwnIdShouldEditActivityPosting() {
         ActivityPosting activityPosting =
-                new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test_bearbeitet", null, 1);
+                new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test_bearbeitet", null, 1, 0);
         Posting editedActivityPosting = budgetAccountService.editActivityPosting(1, 1, 2, activityPosting);
         assertThat(editedActivityPosting.getId()).isEqualTo(2);
         assertThat(editedActivityPosting.getDate()).isEqualTo(activityPosting.getDate());
