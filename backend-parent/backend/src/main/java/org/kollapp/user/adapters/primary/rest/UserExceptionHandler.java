@@ -69,8 +69,7 @@ public class UserExceptionHandler {
     @ExceptionHandler(IncorrectPasswordException.class)
     public ResponseEntity<ValidationFailureResponseTO> handleIncorrectPassword() {
         String message = messageUtil.getMessage("error.password.incorrect");
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(new ValidationFailureResponseTO(message, "password"));
+        return ResponseEntity.badRequest().body(new ValidationFailureResponseTO(message, "password"));
     }
 
     @ExceptionHandler(LastManagerException.class)
