@@ -494,6 +494,8 @@ public class OrganizationServiceManagerIT extends BaseIT {
     public void deleteNonDefaultBudgetCategoryShouldDeleteBudgetCategory() {
         organizationService.deleteBudgetCategory(1, 2);
         Organization organization = organizationService.getOrganizationById(1);
+        OrganizationPosting posting = organization.getOrganizationPostingById(10);
+        assertThat(posting.getOrganizationBudgetCategoryId()).isEqualTo(1);
         assertThat(organization.getBudgetCategories().size()).isEqualTo(2);
     }
 

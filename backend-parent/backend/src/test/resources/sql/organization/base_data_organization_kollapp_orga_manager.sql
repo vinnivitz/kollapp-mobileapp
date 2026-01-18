@@ -16,6 +16,9 @@ VALUES(2, 'organization', 10000, '2025-09-11', 'Test', 'CREDIT', null, 1, 3, 0);
 INSERT INTO posting(id, scope, amount_in_cents, date, purpose, type, activity_id, organization_id, person_of_organization_id, organization_budget_category_id)
 VALUES(3, 'organization', 10000, '2025-09-11', 'Test', 'CREDIT', null, 1, 0, 0);
 
+INSERT INTO posting(id, scope, amount_in_cents, date, purpose, type, activity_id, organization_id, person_of_organization_id, organization_budget_category_id)
+VALUES(10, 'organization', 10000, '2025-09-11', 'Test', 'CREDIT', null, 1, 0, 2);
+
 INSERT INTO organization_budget_category(id,name,organization_id,default_category)
 VALUES (1, 'General',1, true);
 

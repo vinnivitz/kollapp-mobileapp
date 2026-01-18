@@ -15,6 +15,7 @@ import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TES
 
 import org.kollapp.core.BaseIT;
 import org.kollapp.organization.application.exception.ActivityNotFoundException;
+import org.kollapp.organization.application.exception.BudgetCategoryIsNotAssignableException;
 import org.kollapp.organization.application.exception.OrganizationNotFoundException;
 import org.kollapp.organization.application.exception.PersonNotRegisteredInOrganizationException;
 import org.kollapp.organization.application.exception.PostingDoesNotExistException;
@@ -47,12 +48,13 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
     @Test
     public void addOrganizationPostingWithOwnIdShouldAddOrganizationPosting() {
         OrganizationPosting organizationPosting =
-                new OrganizationPosting(PostingType.CREDIT, 10000L, "2025-09-11", "Test", null, 1, 0);
+                new OrganizationPosting(PostingType.CREDIT, 10000L, "2025-09-11", "Test", null, 1, 2);
         Posting persistedPosting = budgetAccountService.addOrganizationPosting(1, organizationPosting);
         assertThat(persistedPosting.getId()).isNotZero();
         assertThat(persistedPosting.getDate()).isEqualTo(organizationPosting.getDate());
         assertThat(persistedPosting.getType()).isEqualTo(organizationPosting.getType());
         assertThat(persistedPosting.getPurpose()).isEqualTo(organizationPosting.getPurpose());
+        assertThat(persistedPosting.getOrganizationBudgetCategoryId()).isEqualTo(2);
         assertThat(((OrganizationPosting) persistedPosting).getOrganization().getId())
                 .isEqualTo(1L);
         assertThat(persistedPosting.getPersonOfOrganizationId())
@@ -90,6 +92,15 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
     }
 
     @Test
+    public void addOrganizationPostingWithoutCategoryShouldSetDefaultCategory() {
+        OrganizationPosting organizationPosting =
+                new OrganizationPosting(PostingType.CREDIT, 10000L, "2025-09-11", "Test", null, 0, 0);
+        Posting persistedPosting = budgetAccountService.addOrganizationPosting(1, organizationPosting);
+        assertThat(persistedPosting.getId()).isNotZero();
+        assertThat(persistedPosting.getOrganizationBudgetCategoryId()).isEqualTo(1L);
+    }
+
+    @Test
     public void addOrganizationPostingWithIdOfOtherOrganizationShouldThrowException() {
         OrganizationPosting organizationPosting = new OrganizationPosting();
         organizationPosting.setPersonOfOrganizationId(4);
@@ -104,17 +115,35 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
     }
 
     @Test
+    public void addOrganizationPostingWithNonExistingBudgetCategoryShouldThrowException() {
+        OrganizationPosting organizationPosting = new OrganizationPosting();
+        organizationPosting.setOrganizationBudgetCategoryId(4);
+        assertThatExceptionOfType(BudgetCategoryIsNotAssignableException.class)
+                .isThrownBy(() -> budgetAccountService.addOrganizationPosting(1, organizationPosting));
+    }
+
+    @Test
     public void editOrganizationPostingWithValidIdShouldUpdateOrganizationPosting() {
         OrganizationPosting organizationPosting =
-                new OrganizationPosting(PostingType.CREDIT, 1000L, "2025-09-11", "Test_updated", null, 1, 0);
+                new OrganizationPosting(PostingType.CREDIT, 1000L, "2025-09-11", "Test_updated", null, 1, 2);
         Posting updatedPosting = budgetAccountService.editOrganizationPosting(1, 2, organizationPosting);
         assertThat(updatedPosting.getId()).isEqualTo(2);
         assertThat(updatedPosting.getDate()).isEqualTo(organizationPosting.getDate());
         assertThat(updatedPosting.getType()).isEqualTo(organizationPosting.getType());
         assertThat(updatedPosting.getPurpose()).isEqualTo(organizationPosting.getPurpose());
         assertThat(updatedPosting.getAmountInCents()).isEqualTo(organizationPosting.getAmountInCents());
+        assertThat(updatedPosting.getOrganizationBudgetCategoryId()).isEqualTo(2);
         assertThat(((OrganizationPosting) updatedPosting).getOrganization().getId())
                 .isEqualTo(1L);
+    }
+
+    @Test
+    public void editOrganizationPostingWithoutCategoryShouldSetDefaultCategory() {
+        OrganizationPosting organizationPosting =
+                new OrganizationPosting(PostingType.CREDIT, 1000L, "2025-09-11", "Test_updated", null, 1, 0);
+        Posting updatedPosting = budgetAccountService.editOrganizationPosting(1, 2, organizationPosting);
+        assertThat(updatedPosting.getId()).isEqualTo(2);
+        assertThat(updatedPosting.getOrganizationBudgetCategoryId()).isEqualTo(1);
     }
 
     @Test
@@ -165,12 +194,21 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
     }
 
     @Test
+    public void editOrganizationPostingWithNonExistingBudgetCategoryShouldThrowException() {
+        OrganizationPosting organizationPosting = new OrganizationPosting();
+        organizationPosting.setOrganizationBudgetCategoryId(4);
+        organizationPosting.setPersonOfOrganizationId(1);
+        assertThatExceptionOfType(BudgetCategoryIsNotAssignableException.class)
+                .isThrownBy(() -> budgetAccountService.editOrganizationPosting(1, 2, organizationPosting));
+    }
+
+    @Test
     @Transactional
     public void deleteOrganizationPostingWithValidIdShouldDeletePosting() {
         budgetAccountService.deleteOrganizationPosting(1, 2);
         Optional<Organization> orga = organizationRepository.findById(1L);
         assertThat(orga).isPresent();
-        assertThat(orga.get().getOrganizationPostings().size()).isEqualTo(1);
+        assertThat(orga.get().getOrganizationPostings().size()).isEqualTo(2);
     }
 
     @Test
@@ -200,12 +238,13 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
     @Test
     public void addActivityPostingWithOwnIdShouldCreateActivityPosting() {
         ActivityPosting activityPosting =
-                new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test", null, 1, 0);
+                new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test", null, 1, 2);
         Posting persistedActivityPosting = budgetAccountService.addActivityPosting(1, 1, activityPosting);
         assertThat(persistedActivityPosting.getId()).isNotZero();
         assertThat(persistedActivityPosting.getDate()).isEqualTo(activityPosting.getDate());
         assertThat(persistedActivityPosting.getType()).isEqualTo(activityPosting.getType());
         assertThat(persistedActivityPosting.getPurpose()).isEqualTo(activityPosting.getPurpose());
+        assertThat(persistedActivityPosting.getOrganizationBudgetCategoryId()).isEqualTo(2);
         assertThat(((ActivityPosting) persistedActivityPosting).getActivity().getId())
                 .isEqualTo(1L);
         assertThat(persistedActivityPosting.getPersonOfOrganizationId())
@@ -243,6 +282,15 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
     }
 
     @Test
+    public void addActivityPostingWithNoCategoryShouldSetDefaultCategory() {
+        ActivityPosting activityPosting =
+                new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test", null, 1, 0);
+        Posting persistedActivityPosting = budgetAccountService.addActivityPosting(1, 1, activityPosting);
+        assertThat(persistedActivityPosting.getId()).isNotZero();
+        assertThat(persistedActivityPosting.getOrganizationBudgetCategoryId()).isEqualTo(1);
+    }
+
+    @Test
     public void addActivityPostingWithIdOfOtherOrganizationShouldThrowException() {
         ActivityPosting activityPosting = new ActivityPosting();
         activityPosting.setPersonOfOrganizationId(4);
@@ -263,14 +311,23 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
     }
 
     @Test
+    public void addActivityPostingWithNonExistingBudgetCategoryShouldThrowException() {
+        ActivityPosting activityPosting = new ActivityPosting();
+        activityPosting.setOrganizationBudgetCategoryId(4);
+        assertThatExceptionOfType(BudgetCategoryIsNotAssignableException.class)
+                .isThrownBy(() -> budgetAccountService.addActivityPosting(1, 1, activityPosting));
+    }
+
+    @Test
     public void editActivityPostingWithValidIdShouldEditActivityPosting() {
         ActivityPosting activityPosting =
-                new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test_bearbeitet", null, 3, 0);
+                new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test_bearbeitet", null, 3, 2);
         Posting editedActivityPosting = budgetAccountService.editActivityPosting(1, 1, 1, activityPosting);
         assertThat(editedActivityPosting.getId()).isEqualTo(1);
         assertThat(editedActivityPosting.getDate()).isEqualTo(activityPosting.getDate());
         assertThat(editedActivityPosting.getType()).isEqualTo(activityPosting.getType());
         assertThat(editedActivityPosting.getPurpose()).isEqualTo(activityPosting.getPurpose());
+        assertThat(editedActivityPosting.getOrganizationBudgetCategoryId()).isEqualTo(2);
         assertThat(((ActivityPosting) editedActivityPosting).getActivity().getId())
                 .isEqualTo(1L);
         assertThat(editedActivityPosting.getPersonOfOrganizationId())
@@ -278,10 +335,28 @@ public class BudgetAccountServiceManagerIT extends BaseIT {
     }
 
     @Test
+    public void editActivityPostingWithNoCategoryShouldSetDefaultCategory() {
+        ActivityPosting activityPosting =
+                new ActivityPosting(PostingType.CREDIT, 10000L, "2025-09-11", "test_bearbeitet", null, 3, 0);
+        Posting editedActivityPosting = budgetAccountService.editActivityPosting(1, 1, 1, activityPosting);
+        assertThat(editedActivityPosting.getId()).isEqualTo(1);
+        assertThat(editedActivityPosting.getOrganizationBudgetCategoryId()).isEqualTo(1);
+    }
+
+    @Test
     public void editActivityPostingWithInvalidIdShouldThrowException() {
         ActivityPosting activityPosting = new ActivityPosting();
         activityPosting.setPersonOfOrganizationId(4);
         assertThatExceptionOfType(PersonNotRegisteredInOrganizationException.class)
+                .isThrownBy(() -> budgetAccountService.editActivityPosting(1, 1, 1, activityPosting));
+    }
+
+    @Test
+    public void editActivityPostingWithNonExistingBudgetCategoryShouldThrowException() {
+        ActivityPosting activityPosting = new ActivityPosting();
+        activityPosting.setPersonOfOrganizationId(1);
+        activityPosting.setOrganizationBudgetCategoryId(4);
+        assertThatExceptionOfType(BudgetCategoryIsNotAssignableException.class)
                 .isThrownBy(() -> budgetAccountService.editActivityPosting(1, 1, 1, activityPosting));
     }
 
