@@ -42,12 +42,13 @@ public abstract class Posting {
     @Column(length = 50, nullable = false)
     private String purpose;
 
-    @Column(length = 50, nullable = false)
+    @Column(nullable = false)
     private long organizationBudgetCategoryId;
 
     /**
      * The person who is referenced to this posting. If 0, the collective is assigned.
      */
+    @Column(nullable = false)
     private long personOfOrganizationId;
 
     public Posting(
