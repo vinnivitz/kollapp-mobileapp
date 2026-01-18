@@ -69,7 +69,7 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
         organizationRoleHelper.verifyOrganizationMember(organizationId);
         Organization organization =
                 organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
-        OrganizationPosting postingToBeEdited = organization.getOrganizationPostingById(postingId);
+        OrganizationPosting postingToBeEdited = organization.findOrganizationPostingById(postingId);
         return updatePosting(organization, postingToBeEdited, updatedPosting);
     }
 
@@ -82,7 +82,7 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
         organizationRoleHelper.verifyOrganizationMember(organizationId);
         Organization organization =
                 organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
-        OrganizationPosting postingToBeRemoved = organization.getOrganizationPostingById(postingId);
+        OrganizationPosting postingToBeRemoved = organization.findOrganizationPostingById(postingId);
         checkOrganizationMemberSelfAssignment(organization, postingToBeRemoved);
         organization.getOrganizationPostings().remove(postingToBeRemoved);
     }
@@ -96,7 +96,7 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
         organizationRoleHelper.verifyOrganizationManager(organizationId);
         Organization organization =
                 organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
-        OrganizationPosting organizationPosting = organization.getOrganizationPostingById(postingId);
+        OrganizationPosting organizationPosting = organization.findOrganizationPostingById(postingId);
         checkPostingTransferability(organizationPosting);
         organizationPosting.transfer();
         return organizationPosting;
@@ -111,7 +111,7 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
         organizationRoleHelper.verifyOrganizationMember(organizationId);
         Organization organization =
                 organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
-        Activity activity = organization.getActivityById(activityId);
+        Activity activity = organization.findActivityById(activityId);
         checkOrganizationMemberSelfAssignment(organization, posting);
         long budgetCategoryId = getAssignableBudgetCategory(organization, posting);
         posting.setOrganizationBudgetCategoryId(budgetCategoryId);
@@ -135,7 +135,7 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
         organizationRoleHelper.verifyOrganizationMember(organizationId);
         Organization organization =
                 organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
-        Activity activity = organization.getActivityById(activityId);
+        Activity activity = organization.findActivityById(activityId);
         ActivityPosting postingToBeEdited = activity.getActivityPostingById(postingId);
         return updatePosting(organization, postingToBeEdited, updatedPosting);
     }
@@ -149,7 +149,7 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
         organizationRoleHelper.verifyOrganizationMember(organizationId);
         Organization organization =
                 organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
-        Activity activity = organization.getActivityById(activityId);
+        Activity activity = organization.findActivityById(activityId);
         ActivityPosting postingToBeRemoved = activity.getActivityPostingById(postingId);
         checkOrganizationMemberSelfAssignment(organization, postingToBeRemoved);
         activity.getActivityPostings().remove(postingToBeRemoved);
@@ -164,7 +164,7 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
         organizationRoleHelper.verifyOrganizationManager(organizationId);
         Organization organization =
                 organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
-        Activity activity = organization.getActivityById(activityId);
+        Activity activity = organization.findActivityById(activityId);
         ActivityPosting activityPosting = activity.getActivityPostingById(postingId);
         checkPostingTransferability(activityPosting);
         activityPosting.transfer();
@@ -179,7 +179,7 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
     public void assignPostingsOfBudgetCategoryToDefaultBudgetCategory(
             Organization organization, OrganizationBudgetCategory sourceBudgetCategory) {
         List<Posting> postingsOfCategory =
-                organization.getAllOrganizationAndActivityPostingsByBudgetCategoryId(sourceBudgetCategory.getId());
+                organization.findAllOrganizationAndActivityPostingsByBudgetCategoryId(sourceBudgetCategory.getId());
         OrganizationBudgetCategory defaultCategory = organization.findDefaultBudgetCategory();
         postingsOfCategory.forEach(posting -> {
             posting.setOrganizationBudgetCategoryId(defaultCategory.getId());
@@ -207,7 +207,7 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
     private void checkOrganizationMemberSelfAssignment(Organization organization, Posting posting) {
         KollappUser loggedInKollappUser = kollappUserService.getLoggedInKollappUser();
         PersonOfOrganization loggedInPersonOfOrganization =
-                organization.getPersonOfOrganizationByUserId(loggedInKollappUser.getId());
+                organization.findPersonOfOrganizationByUserId(loggedInKollappUser.getId());
         boolean postingIsSelfAssigned = posting.getPersonOfOrganizationId() == loggedInPersonOfOrganization.getId();
         if (loggedInPersonOfOrganization.isMember() && !postingIsSelfAssigned) {
             throw new OrganizationAuthorizationException();

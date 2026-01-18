@@ -108,7 +108,7 @@ public class Organization {
         return organizationInvitationCode;
     }
 
-    public OrganizationPosting getOrganizationPostingById(long postingId) {
+    public OrganizationPosting findOrganizationPostingById(long postingId) {
         return getOrganizationPostings().stream()
                 .filter(p -> p.getId() == postingId)
                 .findFirst()
@@ -127,21 +127,21 @@ public class Organization {
                 .toList();
     }
 
-    public PersonOfOrganization getPersonOfOrganizationByUserId(long userId) {
+    public PersonOfOrganization findPersonOfOrganizationByUserId(long userId) {
         return getPersonsOfOrganization().stream()
                 .filter(p -> p.getUserId() == userId)
                 .findFirst()
                 .orElseThrow(PersonNotRegisteredInOrganizationException::new);
     }
 
-    public Activity getActivityById(long activityId) {
+    public Activity findActivityById(long activityId) {
         return getActivities().stream()
                 .filter(a -> a.getId() == activityId)
                 .findFirst()
                 .orElseThrow(ActivityNotFoundException::new);
     }
 
-    public List<Posting> getAllOrganizationAndActivityPostings() {
+    public List<Posting> findAllOrganizationAndActivityPostings() {
         List<Posting> postings = new ArrayList<>(organizationPostings);
         List<Posting> activityPostings = activities.stream().map(Activity::getActivityPostings).toList().stream()
                 .flatMap(List::stream)
@@ -150,8 +150,8 @@ public class Organization {
         return postings;
     }
 
-    public List<Posting> getAllOrganizationAndActivityPostingsByBudgetCategoryId(long budgetCategoryId) {
-        List<Posting> allPostings = getAllOrganizationAndActivityPostings();
+    public List<Posting> findAllOrganizationAndActivityPostingsByBudgetCategoryId(long budgetCategoryId) {
+        List<Posting> allPostings = findAllOrganizationAndActivityPostings();
         return allPostings.stream()
                 .filter(p -> p.getOrganizationBudgetCategoryId() == budgetCategoryId)
                 .collect(Collectors.toList());

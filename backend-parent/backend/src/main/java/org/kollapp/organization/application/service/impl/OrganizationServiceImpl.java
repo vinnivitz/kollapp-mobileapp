@@ -370,7 +370,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     private void verifyUntransferredPostings(Organization organization, PersonOfOrganization personOfOrganization) {
-        List<Posting> allOrganizationAndActivityPostings = organization.getAllOrganizationAndActivityPostings();
+        List<Posting> allOrganizationAndActivityPostings = organization.findAllOrganizationAndActivityPostings();
         List<Posting> postingsOfPersonOfOrganization = allOrganizationAndActivityPostings.stream()
                 .filter(p -> p.getPersonOfOrganizationId() == personOfOrganization.getId())
                 .toList();

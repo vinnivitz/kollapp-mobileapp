@@ -379,14 +379,14 @@ public class OrganizationServiceManagerIT extends BaseIT {
 
     private void transferUntransferredActivityPosting() {
         Organization organization = organizationRepository.findById(1).orElseThrow();
-        Activity activity = organization.getActivityById(1);
+        Activity activity = organization.findActivityById(1);
         ActivityPosting untransferredPosting = activity.getActivityPostingById(1);
         untransferredPosting.transfer();
     }
 
     private void transferUntransferredOrganizationPosting() {
         Organization organization = organizationRepository.findById(1).orElseThrow();
-        OrganizationPosting untransferredPosting = organization.getOrganizationPostingById(2);
+        OrganizationPosting untransferredPosting = organization.findOrganizationPostingById(2);
         untransferredPosting.transfer();
     }
 
@@ -494,7 +494,7 @@ public class OrganizationServiceManagerIT extends BaseIT {
     public void deleteNonDefaultBudgetCategoryShouldDeleteBudgetCategory() {
         organizationService.deleteBudgetCategory(1, 2);
         Organization organization = organizationService.getOrganizationById(1);
-        OrganizationPosting posting = organization.getOrganizationPostingById(10);
+        OrganizationPosting posting = organization.findOrganizationPostingById(10);
         assertThat(posting.getOrganizationBudgetCategoryId()).isEqualTo(1);
         assertThat(organization.getBudgetCategories().size()).isEqualTo(2);
     }
