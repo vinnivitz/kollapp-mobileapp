@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import org.kollapp.core.adapters.primary.rest.MessageUtil;
+import org.kollapp.core.adapters.primary.rest.dto.ErrorCodeTO;
 import org.kollapp.core.adapters.primary.rest.dto.ErrorResponseTO;
 import org.kollapp.core.adapters.primary.rest.dto.ValidationFailureResponseTO;
 import org.kollapp.organization.application.exception.LastManagerException;
@@ -55,9 +56,10 @@ public class UserExceptionHandler {
     }
 
     @ExceptionHandler(EmailIsNotConfirmedException.class)
-    public ResponseEntity<ValidationFailureResponseTO> handleEmailIsNotConfirmed() {
+    public ResponseEntity<ErrorResponseTO> handleEmailIsNotConfirmed() {
         String message = messageUtil.getMessage("error.email.not-confirmed");
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ValidationFailureResponseTO(message, "email"));
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new ErrorResponseTO(message, ErrorCodeTO.EMAIL_NOT_CONFIRMED));
     }
 
     @ExceptionHandler(EmailNotFoundException.class)
