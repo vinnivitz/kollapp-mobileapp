@@ -59,4 +59,13 @@ describe('Tabs', () => {
 		const second = container.querySelectorAll('ion-tab-button')[1] as HTMLElement;
 		expect(second.className).toContain('tab-selected');
 	});
+
+	it('does not update tab when pathname matches currentTabName', () => {
+		if (navigating.to) {
+			navigating.to.route.id = '/';
+		}
+		const { container } = render(Tabs, { props: { tabs } });
+		const first = container.querySelectorAll('ion-tab-button')[0] as HTMLElement;
+		expect(first.className).toContain('tab-selected');
+	});
 });

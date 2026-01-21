@@ -1,4 +1,4 @@
-import { render } from '@testing-library/svelte';
+import { fireEvent, render } from '@testing-library/svelte';
 import { createRawSnippet } from 'svelte';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -54,5 +54,32 @@ describe('widgets/ionic/Card', () => {
 		expect(card.hasAttribute('button')).toBe(true);
 		card.click();
 		expect(clicked).toHaveBeenCalled();
+	});
+
+	it('fires click on Enter keydown', async () => {
+		const clicked = vi.fn();
+		const { container } = render(Card, { props: { clicked, title: 'Enter Card' } });
+		const card = container.querySelector('ion-card')!;
+		await fireEvent.keyDown(card, { key: 'Enter' });
+		expect(clicked).toHaveBeenCalled();
+	});
+
+	it('renders in readonly mode with no pointer events', () => {
+		const clicked = vi.fn();
+		const { container } = render(Card, { props: { clicked, readonly: true, title: 'Readonly' } });
+		const card = container.querySelector('ion-card');
+		expect(card?.style.pointerEvents).toBe('none');
+	});
+
+	it('renders with only titleIconEnd', () => {
+		const { container } = render(Card, { props: { titleIconEnd: 'arrow-forward' } });
+		const icons = container.querySelectorAll('ion-card-title ion-icon');
+		expect(icons.length).toBe(1);
+	});
+
+	it('renders with only titleIconStart', () => {
+		const { container } = render(Card, { props: { titleIconStart: 'arrow-back' } });
+		const icons = container.querySelectorAll('ion-card-title ion-icon');
+		expect(icons.length).toBe(1);
 	});
 });

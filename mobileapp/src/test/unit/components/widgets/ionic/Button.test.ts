@@ -31,4 +31,34 @@ describe('widgets/ionic/Button', () => {
 		await fireEvent.keyDown(button, { key: 'Enter' });
 		expect(clicked).toHaveBeenCalled();
 	});
+
+	it('renders with start icon and label', () => {
+		const { container } = render(Button, { props: { icon: 'home', label: 'Home', type: 'submit' } });
+		const startIcon = container.querySelector('ion-icon[slot="start"]');
+		expect(startIcon).toBeTruthy();
+	});
+
+	it('renders with end icon and label', () => {
+		const { container } = render(Button, { props: { iconEnd: 'arrow-right', label: 'Next', type: 'submit' } });
+		const endIcon = container.querySelector('ion-icon[slot="end"]');
+		expect(endIcon).toBeTruthy();
+	});
+
+	it('renders with badge', () => {
+		const { container } = render(Button, { props: { badge: '3', label: 'Notifications', type: 'submit' } });
+		const badge = container.querySelector('ion-badge');
+		expect(badge?.textContent).toBe('3');
+	});
+
+	it('applies disabled state', () => {
+		const { container } = render(Button, { props: { disabled: true, label: 'Disabled', type: 'submit' } });
+		const button = container.querySelector('ion-button');
+		expect(button?.getAttribute('disabled')).toBe('true');
+	});
+
+	it('renders in readonly mode with no pointer events', () => {
+		const { container } = render(Button, { props: { label: 'Readonly', readonly: true, type: 'submit' } });
+		const button = container.querySelector('ion-button');
+		expect(button?.style.pointerEvents).toBe('none');
+	});
 });

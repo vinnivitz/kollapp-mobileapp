@@ -21,4 +21,50 @@ describe('widgets/ionic/LocationInputItem', () => {
 		const dismissButton = container.querySelector('ion-buttons[slot="start"] ion-button');
 		if (dismissButton) await fireEvent.click(dismissButton);
 	});
+
+	it('renders with card prop', () => {
+		const { container } = render(LocationInputItem, {
+			props: { card: true, label: 'Location' }
+		});
+
+		// The InputItem uses card wrapper when card=true
+		const input = container.querySelector('ion-input');
+		expect(input).toBeTruthy();
+	});
+
+	it('renders with hidden prop', () => {
+		const { container } = render(LocationInputItem, {
+			props: { hidden: true, label: 'Location' }
+		});
+
+		const item = container.querySelector('.hidden');
+		expect(item).toBeTruthy();
+	});
+
+	it('renders with custom classList', () => {
+		const { container } = render(LocationInputItem, {
+			props: { classList: 'custom-location', label: 'Location' }
+		});
+
+		const item = container.querySelector('.custom-location');
+		expect(item).toBeTruthy();
+	});
+
+	it('renders with name prop for form integration', () => {
+		const { container } = render(LocationInputItem, {
+			props: { label: 'Location', name: 'locationField' }
+		});
+
+		const input = container.querySelector('ion-input[name="locationField"]');
+		expect(input).toBeTruthy();
+	});
+
+	it('uses default icon when not specified', () => {
+		const { container } = render(LocationInputItem, {
+			props: { label: 'Location' }
+		});
+
+		const icon = container.querySelector('ion-icon');
+		expect(icon).toBeTruthy();
+	});
 });

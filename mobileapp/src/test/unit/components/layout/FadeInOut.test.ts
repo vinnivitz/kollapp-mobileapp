@@ -22,4 +22,18 @@ describe('FadeInOut', () => {
 		expect(childElement?.className).toContain(classList);
 		expect(childElement?.textContent).toBe(htmlContent);
 	});
+
+	it('renders with default empty classList', () => {
+		const { container } = render(FadeInOut, {
+			props: {
+				children: createRawSnippet(() => ({ render: () => `<span>Default</span>` }))
+			}
+		});
+
+		const wrapperDiv = container.querySelector('div');
+
+		expect(wrapperDiv).toBeTruthy();
+		expect(wrapperDiv?.className).toBe('');
+		expect(wrapperDiv?.textContent).toBe('Default');
+	});
 });
