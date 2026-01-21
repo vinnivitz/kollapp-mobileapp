@@ -39,6 +39,7 @@ import org.kollapp.organization.application.publisher.OrganizationPublisher;
 import org.kollapp.organization.application.repository.OrganizationInvitationCodeRepository;
 import org.kollapp.organization.application.repository.OrganizationRepository;
 import org.kollapp.organization.application.repository.PersonOfOrganizationRepository;
+import org.kollapp.organization.application.service.BudgetAccountService;
 import org.kollapp.organization.application.service.OrganizationService;
 import org.kollapp.user.application.model.KollappUser;
 import org.kollapp.user.application.model.RequiresKollappOrganizationMemberRole;
@@ -65,6 +66,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     private final ApplicationProperties applicationProperties;
 
     private final OrganizationRoleHelper organizationRoleHelper;
+    private final BudgetAccountService budgetAccountService;
 
     @Override
     @RequiresKollappUserRole
@@ -304,6 +306,8 @@ public class OrganizationServiceImpl implements OrganizationService {
         if (budgetCategoryToRemove.isDefaultCategory()) {
             throw new DefaultBudgetCategoryMustNotBeDeletedException();
         }
+        budgetAccountService.assignPostingsOfBudgetCategoryToDefaultBudgetCategory(
+                organization, budgetCategoryToRemove);
         organization.getBudgetCategories().remove(budgetCategoryToRemove);
         organization.initChildren();
         return organization;
@@ -366,7 +370,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     private void verifyUntransferredPostings(Organization organization, PersonOfOrganization personOfOrganization) {
-        List<Posting> allOrganizationAndActivityPostings = organization.getAllOrganizationAndActivityPostings();
+        List<Posting> allOrganizationAndActivityPostings = organization.findAllOrganizationAndActivityPostings();
         List<Posting> postingsOfPersonOfOrganization = allOrganizationAndActivityPostings.stream()
                 .filter(p -> p.getPersonOfOrganizationId() == personOfOrganization.getId())
                 .toList();

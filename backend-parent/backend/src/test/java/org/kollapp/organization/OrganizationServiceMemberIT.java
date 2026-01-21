@@ -189,14 +189,14 @@ public class OrganizationServiceMemberIT extends BaseIT {
 
     private void transferUntransferredActivityPosting() {
         Organization organization = organizationRepository.findById(1).orElseThrow();
-        Activity activity = organization.getActivityById(1);
+        Activity activity = organization.findActivityById(1);
         ActivityPosting untransferredPosting = activity.getActivityPostingById(2);
         untransferredPosting.transfer();
     }
 
     private void transferUntransferredOrganizationPosting() {
         Organization organization = organizationRepository.findById(1).orElseThrow();
-        OrganizationPosting untransferredPosting = organization.getOrganizationPostingById(1);
+        OrganizationPosting untransferredPosting = organization.findOrganizationPostingById(1);
         untransferredPosting.transfer();
     }
 

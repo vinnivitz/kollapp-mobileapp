@@ -10,11 +10,14 @@ VALUES (3, 'manager', 'manager@test.de', true, 'test', 'ROLE_KOLLAPP_ORGANIZATIO
 INSERT INTO organization(id, name, place)
 VALUES (1, 'NMS', 'Test City');
 
-INSERT INTO posting(id, scope, amount_in_cents, date, purpose, type, activity_id, organization_id, person_of_organization_id)
-VALUES(2, 'organization', 10000, '2025-09-11', 'Test', 'CREDIT', null, 1, 3);
+INSERT INTO posting(id, scope, amount_in_cents, date, purpose, type, activity_id, organization_id, person_of_organization_id, organization_budget_category_id)
+VALUES(2, 'organization', 10000, '2025-09-11', 'Test', 'CREDIT', null, 1, 3, 0);
 
-INSERT INTO posting(id, scope, amount_in_cents, date, purpose, type, activity_id, organization_id, person_of_organization_id)
-VALUES(3, 'organization', 10000, '2025-09-11', 'Test', 'CREDIT', null, 1, 0);
+INSERT INTO posting(id, scope, amount_in_cents, date, purpose, type, activity_id, organization_id, person_of_organization_id, organization_budget_category_id)
+VALUES(3, 'organization', 10000, '2025-09-11', 'Test', 'CREDIT', null, 1, 0, 0);
+
+INSERT INTO posting(id, scope, amount_in_cents, date, purpose, type, activity_id, organization_id, person_of_organization_id, organization_budget_category_id)
+VALUES(10, 'organization', 10000, '2025-09-11', 'Test', 'CREDIT', null, 1, 0, 2);
 
 INSERT INTO organization_budget_category(id,name,organization_id,default_category)
 VALUES (1, 'General',1, true);
@@ -28,8 +31,14 @@ VALUES (3, 'Category_3',1, false);
 INSERT INTO organization(id, name, place)
 VALUES (2, 'Frequenzfamilie', 'Hamburg');
 
+INSERT INTO organization_budget_category(id, name, organization_id, default_category)
+VALUES (4, 'DEFAULT', 2, true);
+
 INSERT INTO organization(id, name, place)
 VALUES (3, 'Glitzerglanz', 'Berlin');
+
+INSERT INTO organization_budget_category(id, name, organization_id, default_category)
+VALUES (5, 'DEFAULT', 3, true);
 
 INSERT INTO person_of_organization(organization_role, id, user_id, organization_id, status, username)
 VALUES ('ROLE_ORGANIZATION_MANAGER', 1, 1, 1, 'APPROVED', 'nina');
@@ -61,11 +70,11 @@ VALUES(5, 'mnopqr56', '2099-08-15', 3);
 INSERT INTO activity(id, name, location, date, organization_id)
 VALUES(1, 'Halloween-Party', 'Soderso', '2025-10-31', 1);
 
-INSERT INTO posting(id, scope, amount_in_cents, date, purpose, type, activity_id, organization_id, person_of_organization_id)
-VALUES(1, 'activity', 10000, '2025-09-11', 'Test', 'CREDIT', 1, null, 1);
+INSERT INTO posting(id, scope, amount_in_cents, date, purpose, type, activity_id, organization_id, person_of_organization_id, organization_budget_category_id)
+VALUES(1, 'activity', 10000, '2025-09-11', 'Test', 'CREDIT', 1, null, 1, 0);
 
-INSERT INTO posting(id, scope, amount_in_cents, date, purpose, type, activity_id, organization_id, person_of_organization_id)
-VALUES(4, 'activity', 10000, '2025-09-11', 'Test', 'CREDIT', 1, null, 0);
+INSERT INTO posting(id, scope, amount_in_cents, date, purpose, type, activity_id, organization_id, person_of_organization_id, organization_budget_category_id)
+VALUES(4, 'activity', 10000, '2025-09-11', 'Test', 'CREDIT', 1, null, 0, 0);
 
 INSERT INTO activity(id, name, location, date, organization_id)
 VALUES(2, 'Halloween-Party', 'Soderso', '2025-10-31', 2);

@@ -7,8 +7,14 @@ VALUES (2, 'orgamanager', 'manager@test.de', true, 'test', 'ROLE_KOLLAPP_ORGANIZ
 INSERT INTO organization(id, name, place)
 VALUES (1, 'NMS', 'Test City');
 
+INSERT INTO organization_budget_category(id, name, organization_id, default_category)
+VALUES (1, 'DEFAULT', 1, true);
+
 INSERT INTO organization(id, name, place)
 VALUES (2, 'Frequenzfamilie', 'Hamburg');
+
+INSERT INTO organization_budget_category(id, name, organization_id, default_category)
+VALUES (2, 'DEFAULT', 2, true);
 
 INSERT INTO person_of_organization(organization_role, id, user_id, organization_id, status, username)
 VALUES ('ROLE_ORGANIZATION_MEMBER', 1, 1, 1, 'APPROVED', 'nina');
@@ -22,17 +28,17 @@ VALUES(1, 'asdfjk01', '2099-08-15', 1);
 INSERT INTO organization_invitation_code(id, code, expiration_date, organization_id)
 VALUES(2, 'asdfjklo', '2099-08-15', 2);
 
-INSERT INTO posting(id, scope, amount_in_cents, date, purpose, type, activity_id, organization_id, person_of_organization_id)
-VALUES(1, 'organization', 1000, '2025-09-11', 'Test', 'DEBIT', null, 1, 1);
+INSERT INTO posting(id, scope, amount_in_cents, date, purpose, type, activity_id, organization_id, person_of_organization_id, organization_budget_category_id)
+VALUES(1, 'organization', 1000, '2025-09-11', 'Test', 'DEBIT', null, 1, 1, 0);
 
-INSERT INTO posting(id, scope, amount_in_cents, date, purpose, type, activity_id, organization_id, person_of_organization_id)
-VALUES(3, 'organization', 1000, '2025-09-11', 'Test', 'DEBIT', null, 1, 2);
+INSERT INTO posting(id, scope, amount_in_cents, date, purpose, type, activity_id, organization_id, person_of_organization_id, organization_budget_category_id)
+VALUES(3, 'organization', 1000, '2025-09-11', 'Test', 'DEBIT', null, 1, 2, 0);
 
 INSERT INTO activity(id, name, location, date, organization_id)
 VALUES(1, 'Halloween-Party', 'Soderso', '2025-10-31', 1);
 
-INSERT INTO posting(id, scope, amount_in_cents, date, purpose, type, activity_id, organization_id, person_of_organization_id)
-VALUES(2, 'activity', 10000, '2025-09-11', 'Test', 'CREDIT', 1, null, 1);
+INSERT INTO posting(id, scope, amount_in_cents, date, purpose, type, activity_id, organization_id, person_of_organization_id, organization_budget_category_id)
+VALUES(2, 'activity', 10000, '2025-09-11', 'Test', 'CREDIT', 1, null, 1, 0);
 
-INSERT INTO posting(id, scope, amount_in_cents, date, purpose, type, activity_id, organization_id, person_of_organization_id)
-VALUES(4, 'activity', 10000, '2025-09-11', 'Test', 'CREDIT', 1, null, 2);
+INSERT INTO posting(id, scope, amount_in_cents, date, purpose, type, activity_id, organization_id, person_of_organization_id, organization_budget_category_id)
+VALUES(4, 'activity', 10000, '2025-09-11', 'Test', 'CREDIT', 1, null, 2, 0);

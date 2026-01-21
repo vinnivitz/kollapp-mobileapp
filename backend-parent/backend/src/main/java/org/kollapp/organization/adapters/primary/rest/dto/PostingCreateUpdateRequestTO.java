@@ -38,6 +38,9 @@ public class PostingCreateUpdateRequestTO {
     @Size(max = 50, message = "{validation.posting.purpose.maxlength}")
     private String purpose;
 
-    @NotNull(message = "{validation.posting.person-of-organization-id.required}")
+    @Min(value = 0, message = "{validation.posting.personOfOrganizationId.min}")
     private long personOfOrganizationId;
+
+    @Min(value = 0, message = "{validation.posting.budgetCategoryId.min}")
+    private long organizationBudgetCategoryId;
 }
