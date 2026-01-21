@@ -17,7 +17,7 @@
 		postings: PostingTO[];
 	}
 
-	const MINIMAL_POSTINGS_FOR_INTERACTION = 3;
+	const MINIMAL_POSTINGS_FOR_INTERACTION = 1;
 	const INITIAL_DISPLAY_COUNT = 5;
 
 	let { postings }: Properties = $props();

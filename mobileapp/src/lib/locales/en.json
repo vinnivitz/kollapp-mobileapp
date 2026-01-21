@@ -62,9 +62,6 @@
           "purpose": {
             "max": "Purpose exceeds maximum of 200 characters",
             "required": "Purpose is required"
-          },
-          "person-of-organization-id": {
-            "required": "The member id is required or 0 if the posting is not assigned to a member."
           }
         },
         "update-posting": {
@@ -701,6 +698,12 @@
                     "from": "From",
                     "to": "To"
                   },
+                  "budget-category": {
+                    "all-selected": "All categories selected",
+                    "select": "Select categories",
+                    "search": "Search categories...",
+                    "none-selected": "None selected"
+                  },
                   "members": {
                     "all-selected": "All members selected",
                     "search-placeholder": "Search members...",
@@ -1074,6 +1077,10 @@
             "person-of-organization": {
               "select": "Assign member",
               "search": "Search members..."
+            },
+            "organization-budget-category": {
+              "select": "Assign a category",
+              "search": "Search categories..."
             }
           },
           "update-posting": {
@@ -1108,6 +1115,12 @@
               "title": "Filters",
               "from": "From",
               "to": "To",
+              "budget-category": {
+                "all-selected": "All categories selected",
+                "select": "Select categories",
+                "search": "Search categories...",
+                "none-selected": "None selected"
+              },
               "activities": {
                 "all-selected": "All events selected",
                 "select": "Select events",

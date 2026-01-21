@@ -24,9 +24,8 @@ export const createUpdatePostingSchema = (): ObjectSchema<PostingCreateUpdateReq
 		date: string()
 			.default(format(new TZDate(), 'yyyy-MM-dd'))
 			.required($t('api.validation.budget.create-posting.date.required')),
-		personOfOrganizationId: number()
-			.default(0)
-			.required($t('api.validation.budget.create-posting.person-of-organization-id.required')),
+		organizationBudgetCategoryId: number().min(0).optional().default(0),
+		personOfOrganizationId: number().min(0).optional().default(0),
 		purpose: string()
 			.default('')
 			.trim()

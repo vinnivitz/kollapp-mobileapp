@@ -82,6 +82,7 @@
 
 	type PostingsFilterDraft = {
 		activityIds: number[];
+		budgetCategoryIds: number[];
 		fromDate: string;
 		personOfOrganizationIds: number[];
 		postingTypes: PostingType[];
@@ -122,6 +123,7 @@
 
 	let filteredPostings = $state<PostingTO[]>([]);
 	let postingsSearchValue = $state<string>('');
+	let previousPostingsCount = $state<number>(0);
 
 	let postingsFilterModalOpen = $state<boolean>(false);
 
@@ -193,10 +195,26 @@
 		}
 	]);
 
+	const budgetCategoryFilterItems = $derived<SelectItem[]>(
+		$organizationStore?.budgetCategories.map((category) => ({
+			data: { id: category.id, label: category.name },
+			selected: true
+		})) ?? []
+	);
+
+	const organizationBudgetCategoryCreateItems = $derived<SelectItem[]>(
+		$organizationStore?.budgetCategories.map((category) => ({
+			data: { id: category.id, label: category.name },
+			selected: category.defaultCategory
+		})) ?? []
+	);
+
 	let filteredActivityIds = $state<number[]>([]);
+	let filteredBudgetCategoryIds = $state<number[]>([]);
 	let filteredPersonOfOrganizationIds = $state<number[]>([]);
 	let postingsFilterDraft = $state<PostingsFilterDraft>({
 		activityIds: [],
+		budgetCategoryIds: [],
 		fromDate: format(new TZDate(), 'yyyy-MM-dd'),
 		personOfOrganizationIds: [],
 		postingTypes: ['DEBIT', 'CREDIT'],
@@ -274,10 +292,21 @@
 		if (initializedOrganizationId === $organizationStore?.id) return;
 		initializedOrganizationId = $organizationStore?.id;
 		applyDefaultPostingsFilters();
+		previousPostingsCount = postings.length;
 	});
 
 	$effect(() => {
-		if (postings) filteredPostings = getFilteredPostings();
+		const currentCount = postings.length;
+		if (
+			previousPostingsCount === 0 &&
+			currentCount > 0 &&
+			postingsSearchValue.trim() === '' &&
+			!hasNonSearchFiltersApplied
+		) {
+			applyDefaultPostingsFilters();
+		}
+		previousPostingsCount = currentCount;
+		filteredPostings = getFilteredPostings();
 	});
 
 	function getActivityPostingIdMap(): SvelteMap<number, ActivityTO> {
@@ -321,16 +350,19 @@
 		}
 
 		const defaultActivityIds = getDefaultActivityFilterIds();
+		const defaultBudgetCategoryIds = getDefaultBudgetCategoryFilterIds();
 		const defaultPersonIds = getDefaultPersonFilterIds();
 		const defaultFromDate = getMinPostingDate(postings);
 		const defaultToDate = getMaxPostingDate(postings);
 		const isDefaultPostingTypes = selectedPostingTypes.has('DEBIT') && selectedPostingTypes.has('CREDIT');
+		const isDefaultBudgetCategories = hasSameIdsAsSet(filteredBudgetCategoryIds, defaultBudgetCategoryIds);
 
 		hasNonSearchFiltersApplied =
 			!isDefaultPostingTypes ||
 			fromFilterDate !== defaultFromDate ||
 			toFilterDate !== defaultToDate ||
 			!hasSameIdsAsSet(filteredActivityIds, defaultActivityIds) ||
+			!isDefaultBudgetCategories ||
 			!hasSameIdsAsSet(filteredPersonOfOrganizationIds, defaultPersonIds);
 	}
 
@@ -375,6 +407,7 @@
 		const fromTime = new TZDate(fromFilterDate).getTime();
 		const toTime = new TZDate(toFilterDate).getTime();
 		const allowedActivityIds = new Set(filteredActivityIds);
+		const allowedBudgetCategoryIds = new Set(filteredBudgetCategoryIds);
 		const allowedPersonIds = new Set(filteredPersonOfOrganizationIds);
 		const search = postingsSearchValue.trim().toLowerCase();
 
@@ -383,6 +416,10 @@
 
 			const postingTime = new TZDate(posting.date).getTime();
 			if (postingTime < fromTime || postingTime > toTime) return false;
+
+			if (!allowedBudgetCategoryIds.has(posting.organizationBudgetCategoryId)) {
+				return false;
+			}
 
 			if (!allowedPersonIds.has(posting.personOfOrganizationId)) return false;
 
@@ -405,6 +442,10 @@
 		return activityFilterItems.length > 0 ? activityFilterItems.map((item) => item.data.id) : [0];
 	}
 
+	function getDefaultBudgetCategoryFilterIds(): number[] {
+		return $organizationStore?.budgetCategories.map((category) => category.id) ?? [];
+	}
+
 	function getDefaultPersonFilterIds(): number[] {
 		return personOfOrganizationFilterItems.map((item) => item.data.id);
 	}
@@ -419,6 +460,7 @@
 		selectedPostingTypes.add('CREDIT');
 
 		filteredActivityIds = getDefaultActivityFilterIds();
+		filteredBudgetCategoryIds = getDefaultBudgetCategoryFilterIds();
 		filteredPersonOfOrganizationIds = getDefaultPersonFilterIds();
 		syncDraftFilters();
 		hasNonSearchFiltersApplied = false;
@@ -427,6 +469,7 @@
 	function syncDraftFilters(): void {
 		postingsFilterDraft = {
 			activityIds: [...filteredActivityIds],
+			budgetCategoryIds: [...filteredBudgetCategoryIds],
 			fromDate: fromFilterDate,
 			personOfOrganizationIds: [...filteredPersonOfOrganizationIds],
 			postingTypes: [...selectedPostingTypes],
@@ -551,6 +594,7 @@
 		const defaultActivityFilterIds = getDefaultActivityFilterIds();
 		postingsFilterDraft = {
 			activityIds: defaultActivityFilterIds,
+			budgetCategoryIds: getDefaultBudgetCategoryFilterIds(),
 			fromDate: getMinPostingDate(postings),
 			personOfOrganizationIds: getDefaultPersonFilterIds(),
 			postingTypes: ['DEBIT', 'CREDIT'],
@@ -563,6 +607,7 @@
 		fromFilterDate = postingsFilterDraft.fromDate;
 		toFilterDate = postingsFilterDraft.toDate;
 		filteredActivityIds = [...postingsFilterDraft.activityIds];
+		filteredBudgetCategoryIds = [...postingsFilterDraft.budgetCategoryIds];
 		filteredPersonOfOrganizationIds = [...postingsFilterDraft.personOfOrganizationIds];
 		selectedPostingTypes.clear();
 		for (const type of postingsFilterDraft.postingTypes) {
@@ -596,6 +641,10 @@
 		postingsFilterDraft = { ...postingsFilterDraft, activityIds: ids };
 	}
 
+	function onConfirmSelectDraftPostingBudgetCategories(ids: number[]): void {
+		postingsFilterDraft = { ...postingsFilterDraft, budgetCategoryIds: ids };
+	}
+
 	function onConfirmSelectDraftPostingPersonsOfOrganization(ids: number[]): void {
 		postingsFilterDraft = { ...postingsFilterDraft, personOfOrganizationIds: ids };
 	}
@@ -611,6 +660,10 @@
 
 	function getUsernameByPersonOfOrganizationId(personOfOrganizationId: number): string | undefined {
 		return $organizationStore?.personsOfOrganization.find((person) => person.id === personOfOrganizationId)?.username;
+	}
+
+	function getBudgetCategoryNameById(categoryId: number): string {
+		return $organizationStore?.budgetCategories.find((category) => category.id === categoryId)?.name ?? '';
 	}
 </script>
 
@@ -840,38 +893,36 @@
 		iconColor={posting.type === 'CREDIT' ? 'success' : 'danger'}
 		icon={posting.type === 'CREDIT' ? trendingUpOutline : trendingDownOutline}
 	>
-		<div class="ms-1 mt-1 flex w-full flex-col justify-center" style="padding-left: 0px !important;">
-			<div class="flex gap-2">
-				<ion-text class="truncate">
-					{posting.purpose}
+		<div class="flex w-full flex-col items-center">
+			<div class="flex w-full items-center justify-between">
+				<ion-text class="font-semibold">{posting.purpose}</ion-text>
+				<ion-text color={posting.type === 'CREDIT' ? 'success' : 'danger'} class="font-bold text-nowrap">
+					{posting.type === 'CREDIT' ? '+' : '-'}
+					{formatter.currency(posting.amountInCents)}
 				</ion-text>
+			</div>
+			<div class="flex w-full flex-wrap items-center justify-start gap-2">
+				<ion-note class="flex items-center justify-center gap-1 text-sm">
+					<ion-icon icon={calendarClearOutline}></ion-icon>
+					<ion-label>{format(new TZDate(posting.date), 'PP')}</ion-label>
+				</ion-note>
+				<ion-note class="flex items-center justify-center gap-1 text-sm">
+					<ion-icon icon={cardOutline}></ion-icon>
+					<ion-label class="truncate">{getBudgetCategoryNameById(posting.organizationBudgetCategoryId)}</ion-label>
+				</ion-note>
 				{#if isActivityPosting(posting.id)}
-					<ion-text color="medium" class="flex items-center justify-center gap-1">
+					<ion-note class="flex items-center justify-center gap-1 text-sm">
 						<ion-icon icon={flashOutline}></ion-icon>
-						<div class="truncate">
-							{getActivityPosting(posting.id)?.name}
-						</div>
-					</ion-text>
+						<div class="truncate">{getActivityPosting(posting.id)?.name}</div>
+					</ion-note>
+				{/if}
+				{#if posting.personOfOrganizationId > 0}
+					<ion-note class="flex items-center justify-center gap-1 text-sm">
+						<ion-icon icon={personOutline}></ion-icon>
+						<div class="truncate">{getUsernameByPersonOfOrganizationId(posting.personOfOrganizationId)}</div>
+					</ion-note>
 				{/if}
 			</div>
-			<div class="flex w-full flex-wrap items-start justify-between gap-1 text-sm">
-				<ion-text color="medium" class="flex items-center justify-center gap-1">
-					<ion-icon icon={calendarClearOutline}></ion-icon>
-					<div>{format(new TZDate(posting.date), 'PP')}</div>
-				</ion-text>
-				<ion-text color="medium" class="flex items-center justify-center gap-1">
-					<ion-icon icon={cashOutline}></ion-icon>
-					<div>
-						{posting.type === 'CREDIT' ? '+' : '-'}{formatter.currency(posting.amountInCents)}
-					</div>
-				</ion-text>
-			</div>
-			{#if posting.personOfOrganizationId > 0}
-				<ion-text color="medium" class="ms-2 flex items-center justify-start gap-1 text-sm">
-					<ion-icon icon={personOutline}></ion-icon>
-					<div>{getUsernameByPersonOfOrganizationId(posting.personOfOrganizationId)}</div>
-				</ion-text>
-			{/if}
 		</div>
 	</CustomItem>
 {/snippet}
@@ -920,6 +971,14 @@
 					items={activitySelectItems}
 				/>
 			{/if}
+			<MultiSelectItem
+				name="organizationBudgetCategoryId"
+				icon={cardOutline}
+				multiple={false}
+				label={$t('routes.organization.page.modal.create-posting.organization-budget-category.select')}
+				searchPlaceholder={$t('routes.organization.page.modal.create-posting.organization-budget-category.search')}
+				items={organizationBudgetCategoryCreateItems}
+			/>
 		</form>
 	</Card>
 </Modal>
@@ -1063,6 +1122,16 @@
 			label={$t('routes.organization.page.modal.postings-filter.card.person-of-organization.select')}
 			searchPlaceholder={$t('routes.organization.page.modal.postings-filter.card.person-of-organization.search')}
 			items={personOfOrganizationFilterItems}
+		/>
+		<MultiSelectItem
+			value={postingsFilterDraft.budgetCategoryIds}
+			changed={onConfirmSelectDraftPostingBudgetCategories}
+			allSelectedText={$t('routes.organization.page.modal.postings-filter.card.budget-category.all-selected')}
+			noneSelectedText={$t('routes.organization.page.modal.postings-filter.card.budget-category.none-selected')}
+			icon={cardOutline}
+			label={$t('routes.organization.page.modal.postings-filter.card.budget-category.select')}
+			searchPlaceholder={$t('routes.organization.page.modal.postings-filter.card.budget-category.search')}
+			items={budgetCategoryFilterItems}
 		/>
 		{#if $organizationStore && $organizationStore.activities.length > 0}
 			<MultiSelectItem

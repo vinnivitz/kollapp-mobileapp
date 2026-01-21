@@ -87,7 +87,7 @@ class BudgetResource {
 	 * @returns {Promise<ResponseBody>} The response body.
 	 */
 	async removeOrganizationPosting(organizationId: number, postingId: number): Promise<ResponseBody> {
-		return customFetch(`${this.base(organizationId)}/${organizationId}/posting/${postingId}`, {
+		return customFetch(`${this.base(organizationId)}/posting/${postingId}`, {
 			method: RequestMethod.DELETE
 		});
 	}

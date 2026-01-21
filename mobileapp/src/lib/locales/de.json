@@ -415,6 +415,12 @@
                     "to": "Zu"
                   },
                   "debit": "Ausgabe",
+                  "budget-category": {
+                    "all-selected": "Alle Kategorien ausgewählt",
+                    "select": "Kategorien auswählen",
+                    "search": "Kategorien suchen...",
+                    "none-selected": "Keine ausgewählt"
+                  },
                   "members": {
                     "all-selected": "Alle Mitglieder ausgewählt",
                     "label": "Wähle Mitglieder aus",
@@ -752,6 +758,10 @@
             "person-of-organization": {
               "select": "Zugewiesenes Mitglied",
               "search": "Mitglieder suchen..."
+            },
+            "organization-budget-category": {
+              "select": "Eine Kategorie zuweisen",
+              "search": "Kategorien durchsuchen..."
             }
           },
           "delete-posting": {
@@ -763,6 +773,12 @@
           },
           "postings-filter": {
             "card": {
+              "budget-category": {
+                "all-selected": "Alle Kategorien ausgewählt",
+                "select": "Kategorien auswählen",
+                "search": "Kategorien suchen...",
+                "none-selected": "Keine ausgewählt"
+              },
               "activities": {
                 "all-selected": "Alle Veranstaltungen ausgewählt",
                 "search": "Veranstaltungen suchen...",
@@ -895,7 +911,7 @@
         "pending-requests": {
           "card": {
             "title": "Ausstehende Anfragen",
-            "content": "Die folgenden Benutzer möchten der Organisation beitreten:"
+            "content": "Die folgenden Benutzer möchten dem Kollektiv beitreten:"
           }
         }
       }
@@ -971,7 +987,8 @@
             "required": "Zweck ist erforderlich"
           },
           "person-of-organization-id": {
-            "required": "Die Mitglieds-ID ist erforderlich oder 0, wenn die Buchung keinem Mitglied zugeordnet ist."
+            "required": "Die Mitglieds-ID ist erforderlich oder 0, wenn die Buchung keinem Mitglied zugeordnet ist.",
+            "positive": "Die ID des Mitglieds muss positiv sein"
           }
         },
         "update-posting": {

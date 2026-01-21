@@ -83,6 +83,7 @@
 	};
 
 	type PostingsFilterDraft = {
+		budgetCategoryIds: number[];
 		fromDate: string;
 		personOfOrganizationIds: number[];
 		postingTypes: PostingType[];
@@ -143,10 +144,12 @@
 	let initialized = $state<boolean>(false);
 	let fromFilterDate = $state<string>(format(new TZDate(), 'yyyy-MM-dd'));
 	let toFilterDate = $state<string>(format(new TZDate(), 'yyyy-MM-dd'));
+	let filteredBudgetCategoryIds = $state<number[]>([]);
 	let filteredPersonOfOrganizationIds = $state<number[]>([]);
 	let hasNonSearchFiltersApplied = $state<boolean>(false);
 
 	let postingsFilterDraft = $state<PostingsFilterDraft>({
+		budgetCategoryIds: [],
 		fromDate: format(new TZDate(), 'yyyy-MM-dd'),
 		personOfOrganizationIds: [],
 		postingTypes: ['DEBIT', 'CREDIT'],
@@ -168,6 +171,13 @@
 			selected: true
 		}
 	]);
+
+	const budgetCategoryFilterItems = $derived<SelectItem[]>(
+		$organizationStore?.budgetCategories.map((category) => ({
+			data: { id: category.id, label: category.name },
+			selected: true
+		})) ?? []
+	);
 
 	const personOfOrganizationCreateItems = $derived<SelectItem[]>([
 		...($organizationStore?.personsOfOrganization.map((person) => ({
@@ -270,6 +280,10 @@
 		return personOfOrganizationFilterItems.map((item) => item.data.id);
 	}
 
+	function getDefaultBudgetCategoryFilterIds(): number[] {
+		return $organizationStore?.budgetCategories.map((category) => category.id) ?? [];
+	}
+
 	function updateHasNonSearchFiltersApplied(): void {
 		if (postings.length === 0) {
 			hasNonSearchFiltersApplied = false;
@@ -277,14 +291,17 @@
 		}
 
 		const defaultPersonIds = getDefaultPersonFilterIds();
+		const defaultBudgetCategoryIds = getDefaultBudgetCategoryFilterIds();
 		const defaultFromDate = getMinPostingDate(postings);
 		const defaultToDate = getMaxPostingDate(postings);
 		const isDefaultPostingTypes = selectedPostingTypes.has('DEBIT') && selectedPostingTypes.has('CREDIT');
+		const isDefaultBudgetCategories = hasSameIdsAsSet(filteredBudgetCategoryIds, defaultBudgetCategoryIds);
 
 		hasNonSearchFiltersApplied =
 			!isDefaultPostingTypes ||
 			fromFilterDate !== defaultFromDate ||
 			toFilterDate !== defaultToDate ||
+			!isDefaultBudgetCategories ||
 			!hasSameIdsAsSet(filteredPersonOfOrganizationIds, defaultPersonIds);
 	}
 
@@ -293,6 +310,7 @@
 
 		const fromTime = new TZDate(fromFilterDate).getTime();
 		const toTime = new TZDate(toFilterDate).getTime();
+		const allowedBudgetCategoryIds = new Set(filteredBudgetCategoryIds);
 		const allowedPersonIds = new Set(filteredPersonOfOrganizationIds);
 		const search = postingsSearchValue.trim().toLowerCase();
 
@@ -301,6 +319,10 @@
 
 			const postingTime = new TZDate(posting.date).getTime();
 			if (postingTime < fromTime || postingTime > toTime) return false;
+
+			if (!allowedBudgetCategoryIds.has(posting.organizationBudgetCategoryId)) {
+				return false;
+			}
 
 			if (!allowedPersonIds.has(posting.personOfOrganizationId)) return false;
 
@@ -321,6 +343,7 @@
 		selectedPostingTypes.add('DEBIT');
 		selectedPostingTypes.add('CREDIT');
 
+		filteredBudgetCategoryIds = getDefaultBudgetCategoryFilterIds();
 		filteredPersonOfOrganizationIds = getDefaultPersonFilterIds();
 		syncDraftFilters();
 		hasNonSearchFiltersApplied = false;
@@ -328,6 +351,7 @@
 
 	function syncDraftFilters(): void {
 		postingsFilterDraft = {
+			budgetCategoryIds: [...filteredBudgetCategoryIds],
 			fromDate: fromFilterDate,
 			personOfOrganizationIds: [...filteredPersonOfOrganizationIds],
 			postingTypes: [...selectedPostingTypes],
@@ -354,8 +378,13 @@
 		postingsFilterDraft = { ...postingsFilterDraft, personOfOrganizationIds: ids };
 	}
 
+	function onConfirmSelectDraftPostingBudgetCategories(ids: number[]): void {
+		postingsFilterDraft = { ...postingsFilterDraft, budgetCategoryIds: ids };
+	}
+
 	function resetDraftFilter(): void {
 		postingsFilterDraft = {
+			budgetCategoryIds: getDefaultBudgetCategoryFilterIds(),
 			fromDate: getMinPostingDate(postings),
 			personOfOrganizationIds: getDefaultPersonFilterIds(),
 			postingTypes: ['DEBIT', 'CREDIT'],
@@ -367,6 +396,7 @@
 	function applyDraftFilter(): void {
 		fromFilterDate = postingsFilterDraft.fromDate;
 		toFilterDate = postingsFilterDraft.toDate;
+		filteredBudgetCategoryIds = [...postingsFilterDraft.budgetCategoryIds];
 		filteredPersonOfOrganizationIds = [...postingsFilterDraft.personOfOrganizationIds];
 		selectedPostingTypes.clear();
 		for (const type of postingsFilterDraft.postingTypes) {
@@ -551,6 +581,10 @@
 		return $organizationStore?.personsOfOrganization.find((person) => person.id === personOfOrganizationId)?.username;
 	}
 
+	function getBudgetCategoryNameById(categoryId: number): string {
+		return $organizationStore?.budgetCategories.find((category) => category.id === categoryId)?.name ?? '';
+	}
+
 	function canEditPosting(personOfOrganizationId: number): boolean {
 		return isManager || currentPersonOfOrganizationId === personOfOrganizationId;
 	}
@@ -667,28 +701,30 @@
 		iconColor={posting.type === 'CREDIT' ? 'success' : 'danger'}
 		icon={posting.type === 'CREDIT' ? trendingUpOutline : trendingDownOutline}
 	>
-		<div class="mt-1 flex w-full flex-col justify-center">
-			<ion-text class="truncate">
-				{posting.purpose}
-			</ion-text>
-			<div class="flex w-full flex-wrap items-start justify-between text-sm">
-				<ion-text color="medium" class="flex items-center justify-center gap-1">
-					<ion-icon icon={calendarClearOutline}></ion-icon>
-					<div>{format(new TZDate(posting.date), 'PP')}</div>
-				</ion-text>
-				<ion-text color="medium" class="flex items-center justify-center gap-1">
-					<ion-icon icon={cashOutline}></ion-icon>
-					<div class="whitespace-nowrap">
-						{posting.type === 'CREDIT' ? '+' : '-'}{formatter.currency(posting.amountInCents)}
-					</div>
+		<div class="flex w-full flex-col items-center">
+			<div class="flex w-full items-center justify-between">
+				<ion-text class="truncate font-semibold">{posting.purpose}</ion-text>
+				<ion-text color={posting.type === 'CREDIT' ? 'success' : 'danger'} class="font-bold text-nowrap">
+					{posting.type === 'CREDIT' ? '+' : '-'}
+					{formatter.currency(posting.amountInCents)}
 				</ion-text>
 			</div>
-			{#if posting.personOfOrganizationId > 0}
-				<ion-text color="medium" class="ms-2 flex items-center justify-start gap-1 text-sm">
-					<ion-icon icon={personOutline}></ion-icon>
-					<div>{getUsernameByPersonOfOrganizationId(posting.personOfOrganizationId)}</div>
-				</ion-text>
-			{/if}
+			<div class="flex w-full flex-wrap items-center justify-start gap-2">
+				<ion-note class="flex items-center justify-center gap-1 text-sm">
+					<ion-icon icon={calendarClearOutline}></ion-icon>
+					<ion-label>{format(new TZDate(posting.date), 'PP')}</ion-label>
+				</ion-note>
+				<ion-note class="flex items-center justify-center gap-1 text-sm">
+					<ion-icon icon={cardOutline}></ion-icon>
+					<ion-label class="truncate">{getBudgetCategoryNameById(posting.organizationBudgetCategoryId)}</ion-label>
+				</ion-note>
+				{#if posting.personOfOrganizationId > 0}
+					<ion-note class="flex items-center justify-center gap-1 text-sm">
+						<ion-icon icon={personOutline}></ion-icon>
+						<div class="truncate">{getUsernameByPersonOfOrganizationId(posting.personOfOrganizationId)}</div>
+					</ion-note>
+				{/if}
+			</div>
 		</div>
 	</CustomItem>
 {/snippet}
@@ -900,6 +936,22 @@
 				'routes.organization.activities.slug.page.modal.activity-filter.card.members.search-placeholder'
 			)}
 			items={personOfOrganizationFilterItems}
+		/>
+		<MultiSelectItem
+			value={postingsFilterDraft.budgetCategoryIds}
+			changed={onConfirmSelectDraftPostingBudgetCategories}
+			allSelectedText={$t(
+				'routes.organization.activities.slug.page.modal.activity-filter.card.budget-category.all-selected'
+			)}
+			noneSelectedText={$t(
+				'routes.organization.activities.slug.page.modal.activity-filter.card.budget-category.none-selected'
+			)}
+			icon={cardOutline}
+			label={$t('routes.organization.activities.slug.page.modal.activity-filter.card.budget-category.select')}
+			searchPlaceholder={$t(
+				'routes.organization.activities.slug.page.modal.activity-filter.card.budget-category.search'
+			)}
+			items={budgetCategoryFilterItems}
 		/>
 		<div class="mt-2 flex items-center justify-center gap-2">
 			<Button
