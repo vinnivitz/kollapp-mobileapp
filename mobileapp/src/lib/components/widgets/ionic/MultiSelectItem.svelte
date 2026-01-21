@@ -2,7 +2,7 @@
 	import type { SelectItem } from '$lib/models/ui';
 
 	import { checkmarkOutline } from 'ionicons/icons';
-	import { onMount } from 'svelte';
+	import { SvelteSet } from 'svelte/reactivity';
 
 	import CustomItem from './CustomItem.svelte';
 	import Modal from './Modal.svelte';
@@ -15,14 +15,16 @@
 		label: string;
 		allSelectedText?: string;
 		classList?: string;
+		disabled?: boolean;
+		hidden?: boolean;
 		items?: SelectItem[];
 		multiple?: boolean;
 		noneSelectedText?: string;
+		readonly?: boolean;
 		search?: boolean;
 		searchPlaceholder?: string;
 		selectAllIcon?: string;
 		selectAllLabel?: string;
-		changed?: (ids: number[]) => void;
 	} & (
 		| { name: string; changed?: never; value?: never }
 		| { name?: never; value?: number[]; changed?: (ids: number[]) => void }
@@ -32,12 +34,15 @@
 		allSelectedText = $t('components.widgets.ionic.multi-select-item.all-selected'),
 		changed,
 		classList = '',
+		disabled,
+		hidden = false,
 		icon,
 		items = [],
 		label,
 		multiple = true,
 		name,
 		noneSelectedText = $t('components.widgets.ionic.multi-select-item.none-selected'),
+		readonly,
 		search = true,
 		searchPlaceholder = $t('components.widgets.ionic.multi-select-item.search-placeholder'),
 		selectAllIcon,
@@ -45,131 +50,194 @@
 		value = []
 	}: Properties = $props();
 
-	let modalOpen = $state<boolean>(false);
-	let filteredItems = $state<SelectItem[]>([]);
-	let selectedId = $state<number>();
-	let containerElement = $state<HTMLDivElement>();
+	let rootElement = $state<HTMLElement>();
 	let internalValue = $state<number[]>(value);
 
-	const allFilteredItemsSelected = $derived(filteredItems.length > 0 && filteredItems.every((item) => item.selected));
+	let modalOpen = $state<boolean>(false);
+	let selectedId = $state<number>();
+	let appliedSelectedId = $state<number>();
+	let searchValue = $state<string>('');
+	let draftSelectedIds = $state<Set<number>>(new Set());
+
+	const currentValue = $derived(name ? internalValue : value);
+
+	const effectiveValue = $derived(getEffectiveValue());
+	const visibleItems = $derived(
+		search && searchValue.trim().length > 0
+			? items.filter((item) => item.data.label.toLowerCase().includes(searchValue.trim().toLowerCase()))
+			: items
+	);
+	const displayedMultiItems = $derived(
+		visibleItems.map((item) => ({
+			...item,
+			selected: draftSelectedIds.has(item.data.id)
+		}))
+	);
+	const allFilteredItemsSelected = $derived(
+		items.length > 0 && items.every((item) => draftSelectedIds.has(item.data.id))
+	);
 	const displayedFilteredValues = $derived(getDisplayedFilteredValues());
 
 	$effect(() => {
-		internalValue = value;
+		if (!name || !rootElement) return;
+
+		rootElement.addEventListener('modelUpdate', modelUpdateHandler);
+		return () => rootElement?.removeEventListener('modelUpdate', modelUpdateHandler);
 	});
 
 	$effect(() => {
-		const currentValue = internalValue;
+		if (!name) {
+			internalValue = value;
+		}
 
-		filteredItems = items.map((item) => ({
-			...item,
-			selected: currentValue.includes(item.data.id)
-		}));
+		if (multiple && !modalOpen) {
+			draftSelectedIds = new Set(currentValue);
+		}
 
 		if (!multiple) {
-			selectedId = currentValue[0];
+			const explicit = currentValue[0];
+			appliedSelectedId = explicit === undefined ? effectiveValue[0] : explicit;
+
+			selectedId = appliedSelectedId;
 		}
 	});
 
-	function handleModelUpdate(event: Event): void {
-		const customEvent = event as CustomEvent;
-		const modelValue = customEvent.detail.value as number[];
-
-		if (Array.isArray(modelValue)) {
-			internalValue = modelValue;
-		}
+	function modelUpdateHandler(event: Event): void {
+		return onModelUpdate(event as CustomEvent);
 	}
 
-	onMount(() => {
-		if (!containerElement) return;
-
-		containerElement.addEventListener('modelUpdate', handleModelUpdate);
-
-		return () => {
-			if (containerElement) {
-				containerElement.removeEventListener('modelUpdate', handleModelUpdate);
-			}
-		};
-	});
-
-	function dispatchCustomChange(selectedIds: number[]): void {
-		if (containerElement && name) {
-			containerElement.dispatchEvent(
-				new CustomEvent('customChange', {
-					bubbles: true,
-					detail: {
-						key: name,
-						value: selectedIds
-					}
-				})
-			);
+	function getEffectiveValue(): number[] {
+		if (multiple) {
+			return currentValue;
 		}
+		const explicit = currentValue[0];
+		if (explicit !== undefined) return [explicit];
+
+		const firstSelected = items.find((item) => item.selected)?.data.id;
+		return firstSelected === undefined ? [] : [firstSelected];
 	}
 
 	function onSearch(event: CustomEvent): void {
-		const value = event.detail.value;
-		filteredItems = items
-			.filter((item) => item.data.label.toLowerCase().includes(value.toLowerCase()))
-			.map((item) => ({ ...item }));
+		searchValue = event.detail.value ?? '';
 	}
 
 	function toggleFilterItemsSelection(selected?: boolean): void {
-		filteredItems = filteredItems.map((item) => ({ ...item, selected: selected ?? false }));
+		draftSelectedIds = selected ? new Set(items.map((item) => item.data.id)) : new Set<number>();
 	}
 
 	function getDisplayedFilteredValues(): string {
-		const selectedItems = items.filter((item) => internalValue.includes(item.data.id));
-
 		if (!multiple) {
-			const selected = selectedItems[0];
+			const selected = items.find((item) => item.data.id === appliedSelectedId);
 			return selected ? selected.data.label : noneSelectedText;
 		}
+
+		const selectedItems = items.filter((item) => effectiveValue.includes(item.data.id));
 
 		if (selectedItems.length === 0) {
 			return noneSelectedText;
 		}
-		if (selectedItems.length === items.length) {
+		if (selectedItems.length > 0 && selectedItems.length === items.length) {
 			return allSelectedText;
 		}
 		return selectedItems.map((item) => item.data.label).join(', ');
 	}
 
 	function onConfirm(): void {
-		const selectedIds = filteredItems.filter((item) => item.selected).map((item) => item.data.id);
-
-		internalValue = selectedIds;
-
 		if (multiple) {
-			changed?.(selectedIds);
-			dispatchCustomChange(selectedIds);
+			const ids = [...draftSelectedIds];
+			if (name) {
+				internalValue = ids;
+				rootElement?.dispatchEvent(
+					new CustomEvent('customChange', {
+						bubbles: true,
+						detail: { key: name, value: ids }
+					})
+				);
+			} else {
+				changed?.(ids);
+			}
 		} else {
-			const ids = selectedId ? [selectedId] : [];
-			changed?.(ids);
-			dispatchCustomChange(ids);
+			appliedSelectedId = selectedId;
+			const nextId = selectedId ?? 0;
+			if (name) {
+				internalValue = nextId > 0 ? [nextId] : [];
+				rootElement?.dispatchEvent(
+					new CustomEvent('customChange', {
+						bubbles: true,
+						detail: { key: name, value: nextId }
+					})
+				);
+			} else {
+				const ids = selectedId === undefined ? [] : [selectedId];
+				changed?.(ids);
+			}
 		}
+		searchValue = '';
 		modalOpen = false;
 	}
 
 	function onDismiss(): void {
-		if (!multiple) {
-			selectedId = internalValue[0];
+		searchValue = '';
+		if (multiple) {
+			draftSelectedIds = new Set(currentValue);
 		}
-		filteredItems = items.map((item) => ({
-			...item,
-			selected: internalValue.includes(item.data.id)
-		}));
+		if (!multiple) {
+			selectedId = appliedSelectedId;
+		}
 		modalOpen = false;
 	}
 
 	function toggleItemSelection(itemId: number): void {
-		filteredItems = filteredItems.map((item) =>
-			item.data.id === itemId ? { ...item, selected: !item.selected } : item
-		);
+		const next = new SvelteSet(draftSelectedIds);
+		if (next.has(itemId)) {
+			next.delete(itemId);
+		} else {
+			next.add(itemId);
+		}
+		draftSelectedIds = next;
+	}
+
+	function openModal(): void {
+		searchValue = '';
+		if (multiple) {
+			draftSelectedIds = new Set(currentValue);
+		}
+		modalOpen = true;
+	}
+
+	function onModelUpdate(event: CustomEvent): void {
+		if (!name) return;
+		const next = event.detail?.value as unknown;
+		if (multiple) {
+			if (Array.isArray(next)) {
+				internalValue = next.map(Number).filter((value) => Number.isFinite(value) && value > 0);
+			} else if (typeof next === 'string') {
+				internalValue = next
+					.split(',')
+					.map((value) => Number(value.trim()))
+					.filter((value) => Number.isFinite(value) && value > 0);
+			} else if (typeof next === 'number') {
+				internalValue = next > 0 ? [next] : [];
+			} else {
+				internalValue = [];
+			}
+			return;
+		}
+
+		let single: number;
+		if (typeof next === 'number') {
+			single = next;
+		} else if (typeof next === 'string') {
+			single = Number(next);
+		} else {
+			single = 0;
+		}
+		internalValue = Number.isFinite(single) && single > 0 ? [single] : [];
 	}
 </script>
 
-<div bind:this={containerElement}>
-	<CustomItem {classList} {icon} clicked={() => (modalOpen = true)} {name}>
+<div bind:this={rootElement} data-name={name} class="contents" class:hidden>
+	<CustomItem {disabled} {readonly} {classList} {icon} clicked={openModal} {name} {hidden}>
 		<div class="flex flex-col">
 			<ion-text class="ms-3 pt-2 text-xs">{label}</ion-text>
 			<ion-text class="my-2 ms-4 truncate">
@@ -188,11 +256,18 @@
 	labels={false}
 >
 	{#if search}
-		<ion-searchbar class="w-full" debounce={100} placeholder={searchPlaceholder} onionInput={onSearch}> </ion-searchbar>
+		<ion-searchbar
+			class="w-full"
+			debounce={100}
+			placeholder={searchPlaceholder}
+			value={searchValue}
+			onionInput={onSearch}
+		>
+		</ion-searchbar>
 	{/if}
 	{#if multiple}
 		<ToggleItem
-			disabled={items.length !== filteredItems.length}
+			disabled={items.length !== visibleItems.length}
 			checked={allFilteredItemsSelected}
 			label={selectAllLabel}
 			icon={selectAllIcon}
@@ -201,7 +276,7 @@
 	{/if}
 	{#if multiple}
 		<ion-list>
-			{#each filteredItems as item (item.data.id)}
+			{#each displayedMultiItems as item (item.data.id)}
 				<CustomItem>
 					<ion-checkbox
 						value={item.data.id}
@@ -223,7 +298,7 @@
 		</ion-list>
 	{:else}
 		<ion-radio-group value={selectedId}>
-			{#each filteredItems as item (item.data.id)}
+			{#each visibleItems as item (item.data.id)}
 				<CustomItem>
 					<!-- svelte-ignore a11y_click_events_have_key_events -->
 					<!-- svelte-ignore a11y_no_static_element_interactions -->

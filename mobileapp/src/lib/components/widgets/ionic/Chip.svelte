@@ -45,7 +45,9 @@
 		{#if icon}
 			<ion-icon color={iconColor} class="ps-0 text-xs" {icon}></ion-icon>
 		{/if}
-		{label}
+		<ion-text class="text-center">
+			{label}
+		</ion-text>
 		{#if iconEnd}
 			<ion-icon color={iconColor} class="p-0 text-xs" icon={iconEnd}></ion-icon>
 		{/if}

@@ -1,4 +1,4 @@
-import type { AuthenticatedKollappUserTO, AuthTokenTO, LoginRequestTO } from '@kollapp/api-types';
+import type { AccessTokenTO, AuthTokensTO, LoginRequestTO } from '@kollapp/api-types';
 
 import { goto } from '$app/navigation';
 import { resolve } from '$app/paths';
@@ -13,9 +13,9 @@ class AuthenticationResource {
 	/**
 	 * Logs in a user and returns the validation result
 	 * @param model login model
-	 * @returns {Promise<ResponseBody<AuthenticatedUserTO>>} validation result
+	 * @returns {Promise<ResponseBody<AuthTokensTO>>} authentication tokens
 	 */
-	async login(model: LoginRequestTO): Promise<ResponseBody<AuthenticatedKollappUserTO>> {
+	async login(model: LoginRequestTO): Promise<ResponseBody<AuthTokensTO>> {
 		return customFetch(`${this.ENDPOINT}/signin`, {
 			authorizationType: AuthorizationType.NONE,
 			body: model,
@@ -27,9 +27,9 @@ class AuthenticationResource {
 	/**
 	 * Refreshes the access token
 	 * @param token refresh token
-	 * @returns {Promise<ResponseBody<TokenTO>>} new access token
+	 * @returns {Promise<ResponseBody<AccessTokenTO>>} new access token
 	 */
-	async refresh(token: string): Promise<ResponseBody<AuthTokenTO>> {
+	async refresh(token: string): Promise<ResponseBody<AccessTokenTO>> {
 		return customFetch(`${this.ENDPOINT}/refresh`, {
 			authorizationType: AuthorizationType.NONE,
 			query: { token },

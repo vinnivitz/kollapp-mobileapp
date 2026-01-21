@@ -12,6 +12,7 @@
 		classList?: string;
 		color?: Colors;
 		disabled?: boolean;
+		hidden?: boolean;
 		icon?: string;
 		iconColor?: Colors;
 		iconEnd?: string;
@@ -19,6 +20,7 @@
 		indexLabel?: string;
 		name?: string;
 		note?: string;
+		readonly?: boolean;
 		slidingOptions?: ItemSlidingOption[];
 		transparent?: boolean;
 		clicked?: () => void;
@@ -34,6 +36,7 @@
 		clicked,
 		color = 'light',
 		disabled,
+		hidden = false,
 		icon,
 		iconClick,
 		iconColor = color === 'light' || color === 'white' ? 'medium' : 'white',
@@ -42,6 +45,7 @@
 		indexLabel,
 		name,
 		note,
+		readonly,
 		slidingOptions,
 		transparent
 	}: Properties = $props();
@@ -50,23 +54,39 @@
 	void indexed;
 
 	let ionItemSlidingElement = $state<HTMLIonItemSlidingElement>();
+
+	readonly = readonly ?? disabled;
 </script>
 
 {#if slidingOptions}
-	<ion-item-sliding bind:this={ionItemSlidingElement} use:clickOutside onblur={ionItemSlidingElement?.close}>
+	<ion-item-sliding
+		bind:this={ionItemSlidingElement}
+		use:clickOutside
+		onblur={ionItemSlidingElement?.close}
+		class:hidden
+	>
 		{@render item()}
 		<ion-item-options slot="end">
 			{#each slidingOptions as option (option.icon)}
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
 				<ion-item-option color={option.color} onclick={() => option.handler()}>
-					<ion-icon slot="icon-only" icon={option.icon}></ion-icon>
+					{#if option.label}
+						<div class="flex flex-col items-center justify-center">
+							<ion-icon icon={option.icon}></ion-icon>
+							<ion-label class="text-xs">{option.label}</ion-label>
+						</div>
+					{:else}
+						<ion-icon slot="icon-only" icon={option.icon}></ion-icon>
+					{/if}
 				</ion-item-option>
 			{/each}
 		</ion-item-options>
 	</ion-item-sliding>
 {:else}
-	{@render item()}
+	<div class="contents" class:hidden>
+		{@render item()}
+	</div>
 {/if}
 
 {#snippet item()}
@@ -74,17 +94,17 @@
 		<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 		<ion-item
 			data-name={name}
-			onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && clicked?.()}
+			onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && !readonly && clicked?.()}
 			{disabled}
 			id={indexLabel}
 			data-card={card}
-			button={!!clicked}
-			role={clicked ? 'button' : undefined}
-			tabindex={clicked ? 0 : undefined}
+			button={!!clicked && !readonly}
+			role={clicked && !readonly ? 'button' : undefined}
+			tabindex={clicked && !readonly ? 0 : undefined}
 			{color}
-			detail={!!(clicked || slidingOptions) && !iconEnd}
+			detail={!!((clicked && !readonly) || slidingOptions) && !iconEnd}
 			data-transparent={transparent}
-			onclick={() => (slidingOptions ? ionItemSlidingElement?.open('end') : clicked?.())}
+			onclick={() => (slidingOptions ? ionItemSlidingElement?.open('end') : !readonly && clicked?.())}
 			class={classList}
 			style="--ion-color-shade: var(--border-color) !important;"
 		>
@@ -96,7 +116,7 @@
 			{/if}
 			{#if iconEnd}
 				<ion-button
-					onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && clicked?.()}
+					onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && !readonly && clicked?.()}
 					role="button"
 					tabindex="0"
 					class="ms-0"

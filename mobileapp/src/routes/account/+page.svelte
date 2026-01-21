@@ -4,7 +4,6 @@
 	import { actionSheetController } from '@ionic/core';
 	import {
 		bugOutline,
-		buildOutline,
 		colorPaletteOutline,
 		colorWandOutline,
 		constructOutline,
@@ -16,20 +15,22 @@
 		logoApple,
 		moonOutline,
 		notificationsOutline,
+		personOutline,
 		refreshOutline,
-		sunnyOutline,
-		trashOutline
+		sunnyOutline
 	} from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
+	import germanFlag from '$lib/assets/locale/de.svg';
+	import englishFlag from '$lib/assets/locale/gb.svg';
 	import LayoutComponent from '$lib/components/layout/Layout.svelte';
 	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
 	import { Locale, t } from '$lib/locales';
 	import { Layout, Theme } from '$lib/models/ui';
 	import { layoutStore, localeStore, themeStore } from '$lib/stores';
-	import { featureNotImplementedAlert } from '$lib/utility';
+	import { confirmationModal, featureNotImplementedAlert } from '$lib/utility';
 
 	async function openActionSheet(header: string, buttons: ActionSheetButton[]): Promise<void> {
 		const actionsheet = await actionSheetController.create({
@@ -45,13 +46,13 @@
 		await openActionSheet($t('routes.account.page.modal.language.title'), [
 			{
 				handler: () => localeStore.set(Locale.DE),
-				icon: '/locale/de.svg',
+				icon: germanFlag,
 				role: $localeStore === Locale.DE ? 'selected' : undefined,
 				text: $t('routes.account.page.modal.language.german')
 			},
 			{
 				handler: () => localeStore.set(Locale.EN),
-				icon: '/locale/gb.svg',
+				icon: englishFlag,
 				role: $localeStore === Locale.EN ? 'selected' : undefined,
 				text: $t('routes.account.page.modal.language.english')
 			}
@@ -105,6 +106,13 @@
 	}
 
 	async function onRestoreApplicationDefaults(): Promise<void> {
+		await confirmationModal({
+			handler: restoreApplicationDefaults,
+			message: $t('routes.account.page.modal.restore-defaults.confirm')
+		});
+	}
+
+	async function restoreApplicationDefaults(): Promise<void> {
 		await Promise.all([themeStore.reset(), layoutStore.reset(), localeStore.reset()]);
 	}
 </script>
@@ -127,7 +135,7 @@
 		<LabeledItem
 			indexed="/account/update-data"
 			clicked={() => goto(resolve('/account/update-data'))}
-			icon={buildOutline}
+			icon={personOutline}
 			label={$t('routes.account.page.list.personal.my-data')}
 		/>
 		<LabeledItem
@@ -135,12 +143,6 @@
 			clicked={() => goto(resolve('/account/privacy-and-security'))}
 			icon={lockClosedOutline}
 			label={$t('routes.account.page.list.personal.privacy-and-security')}
-		/>
-		<LabeledItem
-			indexed="/account/delete"
-			clicked={() => goto(resolve('/account/delete'))}
-			icon={trashOutline}
-			label={$t('routes.account.page.list.personal.delete-account')}
 		/>
 	</ion-list>
 {/snippet}
@@ -181,8 +183,8 @@
 		<LabeledItem
 			label={$t('routes.account.page.list.miscellaneous.app-version')}
 			icon={constructOutline}
-			clicked={() => goto(resolve('/account/privacy-and-security/app-version'))}
-			indexed="/account/privacy-and-security/app-version"
+			clicked={() => goto(resolve('/account/app-version'))}
+			indexed="/account/app-version"
 		/>
 		<LabeledItem
 			label={$t('routes.account.page.list.miscellaneous.report-bug')}

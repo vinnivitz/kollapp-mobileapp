@@ -1,2 +1,1 @@
-export * from './create-posting.validation';
-export * from './update-posting.validation';
+export * from './create-update-posting.validation';

@@ -11,7 +11,7 @@ import { t } from '$lib/locales';
  * Creates a schema for validating the `PostingCreateUpdateRequestTO`.
  * @returns {ObjectSchema<PostingCreateUpdateRequestTO>} The schema for validating the `PostingCreateUpdateRequestTO`.
  */
-export const createPostingSchema = (): ObjectSchema<PostingCreateUpdateRequestTO> => {
+export const createUpdatePostingSchema = (): ObjectSchema<PostingCreateUpdateRequestTO> => {
 	const $t = get(t);
 	const types = Object.values({ CREDIT: 'CREDIT', DEBIT: 'DEBIT' } satisfies Record<PostingType, PostingType>);
 
@@ -24,6 +24,9 @@ export const createPostingSchema = (): ObjectSchema<PostingCreateUpdateRequestTO
 		date: string()
 			.default(format(new TZDate(), 'yyyy-MM-dd'))
 			.required($t('api.validation.budget.create-posting.date.required')),
+		personOfOrganizationId: number()
+			.default(0)
+			.required($t('api.validation.budget.create-posting.person-of-organization-id.required')),
 		purpose: string()
 			.default('')
 			.trim()

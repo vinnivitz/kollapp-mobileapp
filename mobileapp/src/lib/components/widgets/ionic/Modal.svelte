@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { getPlatforms, modalController } from '@ionic/core';
+	import { Device } from '@capacitor/device';
+	import { modalController } from '@ionic/core';
 	import { saveOutline, trashBinOutline } from 'ionicons/icons';
 	import { onDestroy, type Snippet } from 'svelte';
 
@@ -64,8 +65,9 @@
 		};
 	});
 
-	function isPlatformWeb(): boolean {
-		return getPlatforms().includes('mobileweb') || getPlatforms().includes('desktop');
+	async function isPlatformWeb(): Promise<boolean> {
+		const deviceInfo = await Device.getInfo();
+		return deviceInfo.platform === 'web';
 	}
 
 	async function onDismiss(): Promise<void> {
@@ -89,7 +91,7 @@
 	}
 
 	onDestroy(async () => {
-		if (!isPlatformWeb()) return;
+		if (!(await isPlatformWeb())) return;
 		const self = _modalController;
 		const controller = await modalController.getTop();
 		if (controller && controller === self) {

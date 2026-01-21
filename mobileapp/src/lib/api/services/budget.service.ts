@@ -104,6 +104,39 @@ class BudgetResource {
 			method: RequestMethod.DELETE
 		});
 	}
+
+	/**
+	 * Transfers an organization posting to the collective.
+	 * This removes the assignment to a specific member.
+	 * Only managers can transfer postings.
+	 * @param organizationId The organization ID.
+	 * @param postingId The posting ID.
+	 * @returns {Promise<ResponseBody<PostingTO>>} The transferred posting.
+	 */
+	async transferOrganizationPosting(organizationId: number, postingId: number): Promise<ResponseBody<PostingTO>> {
+		return customFetch(`${this.base(organizationId)}/posting/${postingId}`, {
+			method: RequestMethod.PATCH
+		});
+	}
+
+	/**
+	 * Transfers an activity posting to the collective.
+	 * This removes the assignment to a specific member.
+	 * Only managers can transfer postings.
+	 * @param organizationId The organization ID.
+	 * @param activityId The activity ID.
+	 * @param postingId The posting ID.
+	 * @returns {Promise<ResponseBody<PostingTO>>} The transferred posting.
+	 */
+	async transferActivityPosting(
+		organizationId: number,
+		activityId: number,
+		postingId: number
+	): Promise<ResponseBody<PostingTO>> {
+		return customFetch(`${this.base(organizationId)}/activity/${activityId}/posting/${postingId}`, {
+			method: RequestMethod.PATCH
+		});
+	}
 }
 
 export const budgetService = new BudgetResource();

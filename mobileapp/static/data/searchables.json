@@ -6,7 +6,7 @@
     "route": "/account/notifications"
   },
   {
-    "icon": "buildOutline",
+    "icon": "personOutline",
     "id": 2,
     "label": "routes.account.page.list.personal.my-data",
     "route": "/account/update-data"
@@ -18,52 +18,52 @@
     "route": "/account/privacy-and-security"
   },
   {
-    "icon": "trashOutline",
-    "id": 4,
-    "label": "routes.account.page.list.personal.delete-account",
-    "route": "/account/delete"
-  },
-  {
     "icon": "languageOutline",
-    "id": 5,
+    "id": 4,
     "label": "routes.account.page.list.application.language",
     "route": "/account"
   },
   {
     "icon": "colorPaletteOutline",
-    "id": 6,
+    "id": 5,
     "label": "routes.account.page.list.application.color-theme",
     "route": "/account"
   },
   {
     "icon": "colorWandOutline",
-    "id": 7,
+    "id": 6,
     "label": "routes.account.page.list.application.layout",
     "route": "/account"
   },
   {
     "icon": "refreshOutline",
-    "id": 8,
+    "id": 7,
     "label": "routes.account.page.list.application.restore-defaults",
     "route": "/account"
   },
   {
     "icon": "constructOutline",
-    "id": 9,
+    "id": 8,
     "label": "routes.account.page.list.miscellaneous.app-version",
-    "route": "/account/privacy-and-security/app-version"
+    "route": "/account/app-version"
   },
   {
     "icon": "receiptOutline",
-    "id": 10,
+    "id": 9,
     "label": "routes.account.privacy-and-security.page.list.privacy.legal",
     "route": "/account/privacy-and-security/legal"
   },
   {
     "icon": "keyOutline",
-    "id": 11,
+    "id": 10,
     "label": "routes.account.privacy-and-security.page.list.security.change-password",
     "route": "/account/privacy-and-security/change-password"
+  },
+  {
+    "icon": "trashOutline",
+    "id": 11,
+    "label": "routes.account.privacy-and-security.page.list.security.delete-account",
+    "route": "/account/privacy-and-security/delete"
   },
   {
     "icon": "calendarClearOutline",
@@ -85,32 +85,39 @@
     "route": "/organization/update-data"
   },
   {
-    "icon": "swapHorizontalOutline",
+    "accessible": "ROLE_ORGANIZATION_MANAGER",
+    "icon": "cardOutline",
     "id": 15,
+    "label": "routes.organization.page.collective-list.list.budget-categories",
+    "route": "/organization/budget-categories"
+  },
+  {
+    "icon": "swapHorizontalOutline",
+    "id": 16,
     "label": "routes.organization.page.collective-list.list.change-collective",
     "route": "/organization"
   },
   {
     "icon": "logOutOutline",
-    "id": 16,
+    "id": 17,
     "label": "routes.organization.page.collective-list.list.leave",
     "route": "/organization/leave"
   },
   {
     "icon": "createOutline",
-    "id": 17,
+    "id": 18,
     "label": "routes.organization.page.general.list.register",
     "route": "/organization/register"
   },
   {
     "icon": "personAddOutline",
-    "id": 18,
+    "id": 19,
     "label": "routes.organization.page.general.list.join",
     "route": "/organization/join"
   },
   {
     "icon": "createOutline",
-    "id": 19,
+    "id": 20,
     "label": "routes.organization.activities.page.activities.fab.create",
     "route": "/organization/activities"
   }

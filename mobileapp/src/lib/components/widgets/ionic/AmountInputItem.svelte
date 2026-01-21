@@ -55,6 +55,7 @@
 		currency?: Currency;
 		disabled?: boolean;
 		helperText?: string;
+		hidden?: boolean;
 		icon?: string;
 		inputIcon?: string;
 		readonly?: boolean;
@@ -73,6 +74,7 @@
 		currency = Currency.EUR,
 		disabled,
 		helperText,
+		hidden = false,
 		icon = cashOutline,
 		inputElement,
 		inputIcon,
@@ -117,13 +119,14 @@
 		})
 	);
 	const plain = $derived(tokensToPlainString(tokens));
+	let intervalId: ReturnType<typeof setInterval> | undefined;
 
 	$effect(() => {
 		if (element) inputElement?.(element);
 	});
 
 	$effect(() => {
-		if (value && element) {
+		if (value !== undefined && element) {
 			element.getInputElement().then((native) => {
 				if (native) {
 					edit = createStateFromCents(value);
@@ -349,43 +352,6 @@
 		return tokens.map((token) => token.text).join('');
 	}
 
-	let intervalId: ReturnType<typeof setInterval> | undefined;
-
-	onMount(async () => {
-		const native = await element?.getInputElement();
-		if (native) {
-			applyNativeMaskStyles(native);
-
-			if (native.value && native.value !== plain) {
-				edit =
-					native.value === '' || native.value.replaceAll(/\D/g, '').length === 0
-						? createStateFromCents(0)
-						: onPasteToState(native.value);
-			}
-		}
-
-		intervalId = setInterval(async () => {
-			const native = await element?.getInputElement();
-			if (native && native.value !== plain) {
-				const parsedState = onPasteToState(native.value);
-				if (parsedState.cents !== edit.cents) {
-					edit = parsedState;
-					notifyChange(edit.cents);
-				}
-			}
-			if (element) {
-				const currentError = element.classList.contains('ion-invalid') || !!element.errorText;
-				if (currentError !== hasError) {
-					hasError = currentError;
-				}
-			}
-		}, 100);
-	});
-
-	onDestroy(() => {
-		if (intervalId) clearInterval(intervalId);
-	});
-
 	function getDecimalSeparator(): string {
 		return getLocaleSeparators(get(localeStore) ?? Locale.DE).decimal;
 	}
@@ -540,10 +506,45 @@
 		}
 		requestAnimationFrame(() => native.setSelectionRange(index, index));
 	}
+
+	onMount(async () => {
+		const native = await element?.getInputElement();
+		if (native) {
+			applyNativeMaskStyles(native);
+
+			if (native.value && native.value !== plain) {
+				edit =
+					native.value === '' || native.value.replaceAll(/\D/g, '').length === 0
+						? createStateFromCents(0)
+						: onPasteToState(native.value);
+			}
+		}
+
+		intervalId = setInterval(async () => {
+			const native = await element?.getInputElement();
+			if (native && native.value !== plain) {
+				const parsedState = onPasteToState(native.value);
+				if (parsedState.cents !== edit.cents) {
+					edit = parsedState;
+					notifyChange(edit.cents);
+				}
+			}
+			if (element) {
+				const currentError = element.classList.contains('ion-invalid') || !!element.errorText;
+				if (currentError !== hasError) {
+					hasError = currentError;
+				}
+			}
+		}, 100);
+	});
+
+	onDestroy(() => {
+		if (intervalId) clearInterval(intervalId);
+	});
 </script>
 
-<div bind:this={containerElement}>
-	<CustomItem {card} {color} {icon} iconEnd={inputIcon} iconClick={inputIconClicked} {classList}>
+<div bind:this={containerElement} data-name={name} class="contents" class:hidden>
+	<CustomItem {card} {color} {icon} iconEnd={inputIcon} iconClick={inputIconClicked} {classList} {name} {hidden}>
 		<div class="relative">
 			<div
 				class="ghost pointer-events-none absolute inset-0 -mt-1 flex items-center"

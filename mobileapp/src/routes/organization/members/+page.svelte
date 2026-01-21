@@ -12,6 +12,8 @@
 		accessibilityOutline,
 		checkmarkOutline,
 		clipboardOutline,
+		closeOutline,
+		informationCircleOutline,
 		logOutOutline,
 		mailOutline,
 		medalOutline,
@@ -22,12 +24,13 @@
 		qrCodeOutline,
 		refreshCircleOutline,
 		ribbonOutline,
-		shareOutline,
-		trashOutline
+		shareOutline
 	} from 'ionicons/icons';
 	import { SvelteMap } from 'svelte/reactivity';
 
 	import { dev } from '$app/environment';
+	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 
 	import { organizationService } from '$lib/api/services';
 	import FadeInOut from '$lib/components/layout/FadeInOut.svelte';
@@ -47,6 +50,7 @@
 		getDateFnsLocale,
 		getRoleTranslationFromRole,
 		hasOrganizationRole,
+		informationModal,
 		showAlert,
 		StatusCheck
 	} from '$lib/utility';
@@ -66,7 +70,7 @@
 	const members = $derived(
 		($organizationStore?.personsOfOrganization ?? [])
 			.toSorted((a, b) => a.username.localeCompare(b.username))
-			.filter((member) => member.userId !== userId && member.status === 'APPROVED')
+			.filter((member) => member.status === 'APPROVED')
 	);
 
 	const filteredMembers = $derived(
@@ -87,32 +91,63 @@
 
 	function getMemberSlidingOptions(member: PersonOfOrganizationTO): ItemSlidingOption[] {
 		return [
+			{ color: 'secondary', handler: () => onViewMemberDetails(member), icon: informationCircleOutline },
 			{ color: 'tertiary', handler: () => onSelectRole(member), icon: ribbonOutline },
-			{ color: 'danger', handler: () => onRemoveUserPrompt(member.id), icon: logOutOutline }
+			{ color: 'danger', handler: () => onRemoveUserPrompt(member), icon: logOutOutline }
 		];
+	}
+
+	function onViewMemberDetails(member: PersonOfOrganizationTO): void {
+		goto(resolve(`/organization/members/${member.id}`));
 	}
 
 	function getPendingMemberSlidingOptions(member: PersonOfOrganizationTO): ItemSlidingOption[] {
 		return [
-			{ color: 'success', handler: () => onApproveMemberPrompt(member.id), icon: checkmarkOutline },
-			{ color: 'danger', handler: () => onRemoveUserPrompt(member.id), icon: trashOutline }
+			{ color: 'success', handler: () => onApproveMemberPrompt(member), icon: checkmarkOutline },
+			{ color: 'danger', handler: () => onDenyMembershipRequestPrompt(member), icon: closeOutline }
 		];
 	}
 
-	async function onApproveMemberPrompt(memberId: number): Promise<void> {
+	async function onApproveMemberPrompt(member: PersonOfOrganizationTO): Promise<void> {
 		return confirmationModal({
 			confirmText: $t('routes.organization.members.page.modal.approve-member.confirm'),
-			handler: async () => await approveUser(memberId),
+			handler: async () => await approveUser(member.id),
 			header: $t('routes.organization.members.page.modal.approve-member.header'),
-			message: $t('routes.organization.members.page.modal.approve-member.message')
+			message: $t('routes.organization.members.page.modal.approve-member.message', { value: member.username })
 		});
 	}
 
-	async function onRemoveUserPrompt(memberId: number): Promise<void> {
+	async function onRemoveUserPrompt(member: PersonOfOrganizationTO): Promise<void> {
+		const untransferredPostings = getUntransferredPostingsForMember(member.id);
+
+		if (untransferredPostings.length > 0) {
+			const message = `${$t('routes.organization.members.page.modal.untransferred-postings.message', { value: member.username })}`;
+			return informationModal($t('routes.organization.members.page.modal.untransferred-postings.header'), message);
+		}
+
 		return confirmationModal({
 			confirmText: $t('routes.organization.members.page.modal.remove-member.confirm'),
-			handler: async () => await removeUser(memberId),
-			message: $t('routes.organization.members.page.modal.remove-member.message')
+			handler: async () => await removeUser(member.id),
+			message: $t('routes.organization.members.page.modal.remove-member.message', { value: member.username })
+		});
+	}
+
+	function getUntransferredPostingsForMember(
+		personOfOrganizationId: number
+	): { amountInCents: number; purpose: string }[] {
+		const organizationPostings = $organizationStore?.organizationPostings ?? [];
+		const activityPostings = $organizationStore?.activities.flatMap((a) => a.activityPostings) ?? [];
+		const allPostings = [...organizationPostings, ...activityPostings];
+
+		return allPostings
+			.filter((posting) => posting.personOfOrganizationId === personOfOrganizationId)
+			.map((posting) => ({ amountInCents: posting.amountInCents, purpose: posting.purpose }));
+	}
+
+	async function onDenyMembershipRequestPrompt(member: PersonOfOrganizationTO): Promise<void> {
+		return confirmationModal({
+			handler: async () => await removeUser(member.id),
+			message: $t('routes.organization.members.page.modal.deny-membership-request.message', { value: member.username })
 		});
 	}
 
@@ -180,6 +215,7 @@
 		role: OrganizationRole
 	): Promise<void> {
 		await organizationService.grantRole(organizationId, memberId, role);
+		await organizationStore.update(organizationId);
 	}
 
 	function getGroupedMembers(members: PersonOfOrganizationTO[]): [string, PersonOfOrganizationTO[]][] {
@@ -272,7 +308,7 @@
 
 	<ion-searchbar
 		debounce={100}
-		placeholder={$t('components.menu.header.toolbar.searchbar.placeholder')}
+		placeholder={$t('routes.organization.members.page.searchbar.placeholder')}
 		onionInput={onSearch}
 		value={searchValue}
 	></ion-searchbar>
@@ -335,7 +371,9 @@
 
 {#snippet memberItem(member: PersonOfOrganizationTO)}
 	<CustomItem
-		slidingOptions={hasOrganizationRole('ROLE_ORGANIZATION_MANAGER') ? getMemberSlidingOptions(member) : undefined}
+		slidingOptions={hasOrganizationRole('ROLE_ORGANIZATION_MANAGER') && member.userId !== userId
+			? getMemberSlidingOptions(member)
+			: undefined}
 	>
 		<ion-avatar class="mb-2">
 			<ion-icon icon={personCircleOutline} class="h-10 w-10" color="medium"></ion-icon>
@@ -399,21 +437,23 @@
 
 <!-- QR Code Modal -->
 <Popover extended open={qrModalOpen} dismissed={() => (qrModalOpen = false)}>
-	<div class="pt-2 text-center">
-		<ion-label class="font-bold">{$t('routes.organization.members.page.modal.qr-code.info-text')}</ion-label>
-		<ion-breadcrumbs>
-			<ion-breadcrumb class="flex items-center justify-center font-normal text-(--ion-text-color-step-200)">
-				<ion-icon class="text-(--ion-text-color-step-200)" slot="start" icon={accessibilityOutline}></ion-icon>
-				{$t('routes.organization.members.page.modal.qr-code.breadcrumb.first')}
-			</ion-breadcrumb>
-			<ion-breadcrumb class="flex items-center justify-center font-normal text-(--ion-text-color-step-200)">
-				<ion-icon class="text-(--ion-text-color-step-200)" slot="start" icon={personAddOutline}></ion-icon>Join
-				{$t('routes.organization.members.page.modal.qr-code.breadcrumb.second')}
-			</ion-breadcrumb>
-			<ion-breadcrumb class="flex items-center justify-center font-normal text-(--ion-text-color-step-200)">
-				<ion-icon class="text-(--ion-text-color-step-200)" slot="start" icon={qrCodeOutline}></ion-icon>
-			</ion-breadcrumb>
-		</ion-breadcrumbs>
-	</div>
-	<QRCode content={invitationCode} responsive="true" padding="0" />
+	{#if invitationCode}
+		<div class="pt-2 text-center">
+			<ion-label class="font-bold">{$t('routes.organization.members.page.modal.qr-code.info-text')}</ion-label>
+			<ion-breadcrumbs>
+				<ion-breadcrumb class="flex items-center justify-center font-normal text-(--ion-text-color-step-200)">
+					<ion-icon class="text-(--ion-text-color-step-200)" slot="start" icon={accessibilityOutline}></ion-icon>
+					{$t('routes.organization.members.page.modal.qr-code.breadcrumb.first')}
+				</ion-breadcrumb>
+				<ion-breadcrumb class="flex items-center justify-center font-normal text-(--ion-text-color-step-200)">
+					<ion-icon class="text-(--ion-text-color-step-200)" slot="start" icon={personAddOutline}></ion-icon>Join
+					{$t('routes.organization.members.page.modal.qr-code.breadcrumb.second')}
+				</ion-breadcrumb>
+				<ion-breadcrumb class="flex items-center justify-center font-normal text-(--ion-text-color-step-200)">
+					<ion-icon class="text-(--ion-text-color-step-200)" slot="start" icon={qrCodeOutline}></ion-icon>
+				</ion-breadcrumb>
+			</ion-breadcrumbs>
+		</div>
+		<QRCode content={invitationCode} responsive="true" padding="0" />
+	{/if}
 </Popover>

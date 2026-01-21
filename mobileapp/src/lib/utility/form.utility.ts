@@ -25,7 +25,7 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 		fields[input.name] = input;
 	}
 	const customInputs = [...node.querySelectorAll('[data-name]')] as HTMLElement[];
-	const keys = Object.keys(data.model as object);
+	let keys: string[] = [];
 	const passwordIcons: Map<HTMLIonInputElement, HTMLIonIconElement> = new Map();
 	const teardowns: Array<() => void> = [];
 
@@ -43,6 +43,7 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 
 	setupKeyEventHandlers();
 	initializeHiddenFields();
+	keys = Object.keys(data.model as object);
 	initializeInputs();
 
 	addListener(node, 'ionInput', (event) => {
@@ -57,7 +58,9 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 		const key = customEvent.detail.key as keyof T;
 		const value = customEvent.detail.value as T[keyof T];
 		if (keys.includes(key as string)) {
-			onCustomChange(key, value);
+			const parser = data.config.parsers?.[key as keyof T];
+			const parsed = parser && typeof (value as unknown) === 'string' ? (parser(value as string) as T[keyof T]) : value;
+			onCustomChange(key, parsed);
 		}
 	});
 
@@ -116,12 +119,12 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 		const value = data.model[key];
 		const formatter = data.config.formatters?.[key];
 
-		if (typeof value === 'string' && formatter) {
+		if (formatter && value !== undefined) {
 			input.value = formatter(value as T[keyof T]) as string;
 		} else if (typeof value === 'string') {
 			input.value = value;
 		} else {
-			input.value = value ? String(value) : '';
+			input.value = value == undefined ? '' : String(value);
 		}
 
 		if (isIonInputElement(input) && input.type === 'password') {
@@ -132,7 +135,7 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 
 	function initializeCustomInput(customInput: HTMLElement): void {
 		const key = customInput.dataset.name as keyof T;
-		if (key && data.model[key] !== undefined) {
+		if (key) {
 			customInput.dispatchEvent(
 				new CustomEvent('modelUpdate', {
 					bubbles: true,
@@ -171,7 +174,8 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 	}
 
 	function setModel(model?: T): void {
-		data.model = model ?? (data.config.schema.cast({}) as T);
+		data.model = model ?? (data.config.schema.getDefault() as T);
+		keys = Object.keys(data.model as object);
 
 		resetInputValidations();
 
@@ -187,7 +191,7 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 		for (const input of customInputs) {
 			removeCustomValidationFeedback(input);
 			const key = input.dataset.name as keyof T;
-			if (key && data.model[key] !== undefined) {
+			if (key) {
 				input.dispatchEvent(
 					new CustomEvent('modelUpdate', {
 						bubbles: true,
@@ -255,7 +259,7 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 
 	function updatePasswordIconVisibility(input: HTMLIonInputElement | HTMLIonTextareaElement, value?: string): void {
 		if (isIonInputElement(input) && (input.type === 'password' || input.type === 'text')) {
-			const icon = input.nextElementSibling as HTMLIonIconElement | null;
+			const icon = input.nextElementSibling as HTMLIonIconElement | undefined;
 			if (icon?.tagName === 'ION-ICON' && icon.getAttribute('slot') === 'end') {
 				icon.classList.toggle('invisible', !value || value.length === 0);
 			}
@@ -269,7 +273,7 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 			const key = input.name as keyof T;
 			const value = data.model[key];
 			const formatter = data.config.formatters?.[key];
-			if (typeof value === 'string' && formatter) {
+			if (formatter && value !== undefined) {
 				input.value = formatter(value as T[keyof T]) as string;
 			} else if (typeof value === 'string') {
 				input.value = value;

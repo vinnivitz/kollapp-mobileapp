@@ -1,5 +1,6 @@
 export * from './activity.service';
 export * from './authentication.service';
+export * from './budget-category.service';
 export * from './budget.service';
 export * from './meta.service';
 export * from './organization.service';

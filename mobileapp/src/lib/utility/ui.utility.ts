@@ -199,12 +199,9 @@ export async function informationModal(header: string, message: string): Promise
 	const alert = await alertController.create({
 		buttons: [{ role: 'confirm', text: $t('utility.ui.information-modal.ok') }],
 		header,
-		message
+		message,
+		translucent: true
 	});
 	await alert.present();
 	await alert.onDidDismiss();
-}
-
-export function updateValueByKey<T>(model: T, key: keyof T, value: T[keyof T]): T {
-	return { ...model, [key]: value };
 }

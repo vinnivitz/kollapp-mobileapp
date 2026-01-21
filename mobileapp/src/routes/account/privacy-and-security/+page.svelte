@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { LoginRequestTO } from '@kollapp/api-types';
 
-	import { fingerPrintOutline, keyOutline, notificationsOutline, receiptOutline } from 'ionicons/icons';
+	import { fingerPrintOutline, keyOutline, notificationsOutline, receiptOutline, trashOutline } from 'ionicons/icons';
 	import { onMount } from 'svelte';
 
 	import { dev } from '$app/environment';
@@ -86,6 +86,11 @@
 </script>
 
 <Layout title={$t('routes.account.privacy-and-security.page.title')} showBackButton>
+	{@render privacyList()}
+	{@render securityList()}
+</Layout>
+
+{#snippet privacyList()}
 	<ion-list inset>
 		<ion-list-header>{$t('routes.account.privacy-and-security.page.list.privacy.header')}</ion-list-header>
 		<LabeledItem
@@ -100,6 +105,9 @@
 			clicked={() => goto(resolve('/account/privacy-and-security/legal'))}
 		/>
 	</ion-list>
+{/snippet}
+
+{#snippet securityList()}
 	<ion-list inset>
 		<ion-list-header>{$t('routes.account.privacy-and-security.page.list.security.header')}</ion-list-header>
 		<LabeledItem
@@ -126,8 +134,14 @@
 				</ion-toggle>
 			</CustomItem>
 		{/await}
+		<LabeledItem
+			indexed="/account/privacy-and-security/delete"
+			clicked={() => goto(resolve('/account/privacy-and-security/delete'))}
+			icon={trashOutline}
+			label={$t('routes.account.privacy-and-security.page.list.security.delete-account')}
+		/>
 	</ion-list>
-</Layout>
+{/snippet}
 
 <Popover extended open={showPasswordPrompt} dismissed={onPasswordPromptDismiss}>
 	<Card title={$t('routes.account.privacy-and-security.page.modal.password.card.title')}>

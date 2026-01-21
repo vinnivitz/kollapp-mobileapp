@@ -48,6 +48,7 @@
 					name="username"
 					label={$t('routes.account.update-data.page.card.form.username')}
 					icon={personOutline}
+					helperText={$t('routes.account.update-data.page.card.form.username-helper-text')}
 				/>
 				<InputItem
 					name="email"

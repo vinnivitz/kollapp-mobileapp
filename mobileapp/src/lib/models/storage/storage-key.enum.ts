@@ -2,7 +2,6 @@
  * Enum for key names for preferences stored in local storage.
  */
 export enum StorageKey {
-	ACCOUNT_POSTINGS = 'account-postings',
 	API_VERSION = 'app-version',
 	AUTHENTICATION = 'authentication',
 	BIOMETRICS_ENABLED = 'biometrics-enabled',

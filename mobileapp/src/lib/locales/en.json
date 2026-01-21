@@ -62,21 +62,16 @@
           "purpose": {
             "max": "Purpose exceeds maximum of 200 characters",
             "required": "Purpose is required"
+          },
+          "person-of-organization-id": {
+            "required": "The member id is required or 0 if the posting is not assigned to a member."
           }
         },
         "update-posting": {
-          "amount": {
-            "min": "Amount should be a positive value",
-            "max": "Amount exceeds maximum of 10,000,000",
-            "required": "Amount is required"
-          },
-          "date": {
-            "required": "Date is required"
-          },
-          "purpose": {
-            "required": "Purpose is required",
-            "max": "Purpose exceed maximum of 200 characters"
-          }
+          "amount": {},
+          "date": {},
+          "purpose": {},
+          "person-of-organization-id": {}
         }
       },
       "organization": {
@@ -88,6 +83,9 @@
           "name": {
             "max": "Name exceeds maximum of 50 characters",
             "required": "Name is required"
+          },
+          "date": {
+            "required": "Date of the event is required"
           }
         },
         "create-organization": {
@@ -117,6 +115,9 @@
           "name": {
             "max": "Name exceeds maximum of 50 characters",
             "required": "Name is required"
+          },
+          "date": {
+            "required": "Date of event is required"
           }
         },
         "update-organization": {
@@ -131,6 +132,15 @@
             "max": "Place exceeds maximum of 50 characters",
             "required": "Place is required"
           }
+        }
+      },
+      "budget-category": {
+        "name": {
+          "max": "Category name exceeds maximum of 50 characters",
+          "required": "Category name is required"
+        },
+        "default-category": {
+          "required": "Default category flag is required"
         }
       },
       "user": {
@@ -155,6 +165,11 @@
             "min": "Username should be at least 2 characters long",
             "max": "Username exceeds maximum of 50 characters",
             "required": "Username is required"
+          }
+        },
+        "delete-account": {
+          "password": {
+            "required": "Password is required"
           }
         }
       }
@@ -215,17 +230,20 @@
         },
         "multi-select-item": {
           "all-selected": "All selected",
-          "none-selected": "None selected",
+          "none-selected": "Not assigned",
           "search-placeholder": "Search...",
-          "select-all": "Select all events"
+          "select-all": "Select all"
         }
       },
       "budget-card": {
         "heading": "Budget overview",
-        "no-postings": "No postings found.",
+        "no-postings": "No transactionss found.",
         "all": "All",
         "credit": "Income",
-        "debit": "Expense"
+        "debit": "Expenses",
+        "others": "Others",
+        "show-less": "Show less",
+        "show-more": "Show all"
       },
       "leaflet-map": {
         "searchbar": {
@@ -316,17 +334,25 @@
         "page": {
           "title": "Delete account",
           "card": {
-            "title": "Are you sure?",
+            "title": "Delete your account",
             "submit": "Delete account",
             "note": "This cannot be undone.",
             "manager-hint": {
               "heading": "You are the last manager of the following collectives:",
               "message": "Deleting the account will delete these collectives."
-            }
+            },
+            "assigned-postings-warning": "You still have transactions assigned to you. Deleting your account is only possible once no transaction is assigned to you."
           },
           "modal": {
             "confirm": "Delete account",
-            "header": "All your data will be deleted."
+            "header": "All your data will be deleted.",
+            "password": {
+              "card": {
+                "form": {
+                  "submit": "Delete account"
+                }
+              }
+            }
           }
         }
       },
@@ -397,19 +423,20 @@
           "list": {
             "privacy": {
               "header": "Privacy",
-              "notifications": "Notifications",
+              "notifications": "Notification settings",
               "legal": "Legal"
             },
             "security": {
               "header": "Security",
               "change-password": "Change password",
-              "login-with-biometrics": "Log in with biometrics"
+              "login-with-biometrics": "Log in with biometrics",
+              "delete-account": "Delete account"
             }
           },
           "modal": {
             "password": {
               "card": {
-                "title": "Confirm your password",
+                "title": "Confirm with password",
                 "form": {
                   "password": "Password",
                   "submit": "Confirm"
@@ -427,7 +454,8 @@
             "form": {
               "username": "Username",
               "email": "Email",
-              "submit": "Update"
+              "submit": "Update",
+              "username-helper-text": "If username is changed you have to login again"
             }
           }
         }
@@ -450,6 +478,9 @@
             "light": "Light",
             "dark": "Dark",
             "grayscale": "Black and white"
+          },
+          "restore-defaults": {
+            "confirm": "All settings for color theme, layout and language will be restored."
           }
         },
         "title": "Account",
@@ -458,8 +489,7 @@
             "header": "Personal",
             "notifications": "Notifications",
             "my-data": "My data",
-            "privacy-and-security": "Privacy and security",
-            "delete-account": "Delete account"
+            "privacy-and-security": "Privacy and security"
           },
           "application": {
             "header": "Application",
@@ -547,7 +577,7 @@
               "card": {
                 "login": {
                   "content": "You are already registered?",
-                  "link": "Log&nbsp;in"
+                  "link": "Login"
                 }
               }
             }
@@ -599,7 +629,6 @@
           "page": {
             "fab": {
               "delete": "Delete event",
-              "archieve": "Archieve event",
               "edit": "Edit event"
             },
             "filter-members": {},
@@ -611,6 +640,11 @@
                 "modal": {
                   "confirm": "Delete transaction"
                 }
+              },
+              "transfer-posting": {
+                "confirm": "Transfer",
+                "header": "Transfer transaction?",
+                "message": "This transaction will be marked as processed and assigned to the collective."
               },
               "update-activity": {
                 "confirm": "Update",
@@ -629,7 +663,12 @@
                   "debit": "Expense",
                   "amount": "Amount",
                   "date": "Date",
-                  "purpose": "Purpose"
+                  "purpose": "Purpose",
+                  "person-of-organization": {
+                    "unassigned": "Not assigned",
+                    "label": "Assigned member",
+                    "search": "Search members..."
+                  }
                 }
               },
               "update-posting": {
@@ -640,13 +679,17 @@
                     "debit": "Expense",
                     "purpose": "Purpose",
                     "amount": "Amount",
-                    "date": "Date"
+                    "date": "Date",
+                    "person-of-organization": {
+                      "label": "Assigned member",
+                      "search": "Search members..."
+                    }
                   }
                 }
               },
-              "transaction-history": {
+              "posting-history": {
                 "searchbar": "Search transactions...",
-                "no-transactions": "No transactions found.",
+                "no-postings": "No transactions found.",
                 "reset-filters": "Reset filters"
               },
               "activity-filter": {
@@ -660,10 +703,9 @@
                   },
                   "members": {
                     "all-selected": "All members selected",
-                    "none-selected": "No members selected",
                     "search-placeholder": "Search members...",
-                    "select-all": "Select all members",
-                    "label": "Select members"
+                    "label": "Select members",
+                    "unassigned": "Not assigned"
                   },
                   "reset": "Reset",
                   "apply": "Apply"
@@ -691,9 +733,9 @@
               "heading": "Event balance",
               "total-credit": "Total income: {{value}}",
               "total-debit": "Total expense: {{value}}",
-              "add-credit": "Add income",
-              "add-debit": "Add expense",
-              "transaction-history": "Transaction history"
+              "posting-history": "Transaction history",
+              "add-posting": "Add transaction",
+              "total-postings": "Total transactions: {{value}}"
             }
           }
         },
@@ -708,7 +750,7 @@
           },
           "title": "Events",
           "calendar": {
-            "apply": "Create event"
+            "no-events": "No event found for {{value}}"
           },
           "activities": {
             "fab": {
@@ -718,7 +760,9 @@
               "placeholder": "Search events..."
             },
             "not-found": "No events found",
-            "no-results": "No results for \"{{value}}\""
+            "no-results": "No events for \"{{value}}\"",
+            "reset-filters": "Reset filters",
+            "no-results-filtered": "No events found."
           },
           "modal": {
             "create-activity": {
@@ -727,8 +771,39 @@
                 "title": "Create event",
                 "form": {
                   "name": "Title",
-                  "location": "Location"
+                  "location": "Location",
+                  "date": "Date"
                 }
+              }
+            },
+            "filter": {
+              "card": {
+                "title": "Filter events",
+                "time-filter": {
+                  "all": "All",
+                  "past": "Past",
+                  "future": "Upcoming",
+                  "label": "Time period"
+                },
+                "date": {
+                  "from": "From",
+                  "to": "To"
+                },
+                "has-postings": {
+                  "label": "Transactions",
+                  "all": "All",
+                  "with": "With transactions",
+                  "without": "Without transactions"
+                },
+                "balance": {
+                  "label": "Balance",
+                  "all": "All",
+                  "positive": "Positive",
+                  "negative": "Negative",
+                  "neutral": "Neutral"
+                },
+                "reset": "Reset filters",
+                "apply": "Apply filters"
               }
             }
           }
@@ -784,24 +859,67 @@
             "title": "Leave the collective",
             "note": "All personal data related to the collective will be deleted.",
             "warning": "are the last manager of this organization. Leaving will delete the organization.",
+            "assigned-postings-warning": "You still have the following transactions assigned to you. Leaving is only possible once no transaction is assigned to you.",
             "button": {
-              "members": "Grant manager role to another member",
+              "members": "Grant manager role",
               "leave": "Leave collective"
             }
           }
         }
       },
       "members": {
+        "slug": {
+          "page": {
+            "title": "Member details",
+            "not-found": "Member not found",
+            "card": {
+              "info": {
+                "title": "Member information",
+                "role": "Role"
+              },
+              "postings": {
+                "title": "Transaction Statistics",
+                "total": "Total Transactions",
+                "credit": "Total Income",
+                "debit": "Total Expenses",
+                "balance": "Balance"
+              },
+              "open-postings": {
+                "title": "Open Transactions",
+                "search-placeholder": "Search transactions....",
+                "no-results": "No transactions found for \"{{value}}\""
+              }
+            },
+            "modal": {
+              "transfer-posting": {
+                "header": "Settle transaction",
+                "message": "This transaction will be settled and assigned to the collective."
+              },
+              "update-posting": {
+                "title": "Update transaction",
+                "credit": "Income",
+                "debit": "Expense",
+                "purpose": "Purpose",
+                "amount": "Amount",
+                "date": "Date"
+              }
+            }
+          }
+        },
         "page": {
           "modal": {
             "approve-member": {
               "confirm": "Approve",
               "header": "Approve member",
-              "message": "User will be granted access to the collective"
+              "message": "Membership request from {{value}} will be approved"
             },
             "remove-member": {
               "confirm": "Remove",
-              "message": "User will be removed from the collective."
+              "message": "User {{value}} will be removed from the collective"
+            },
+            "untransferred-postings": {
+              "header": "Open transactions",
+              "message": "The member {{value}} still has pending transactions assigned. These must be processed before the member can be removed."
             },
             "select-role": {
               "manager": "Manager",
@@ -830,6 +948,9 @@
                 "first": "Collective",
                 "second": "Join Collective"
               }
+            },
+            "deny-membership-request": {
+              "message": "Membership request from {{value}} will be denied"
             }
           },
           "invitation-code": {
@@ -862,7 +983,39 @@
             }
           },
           "no-members": "No other members found.",
-          "invite": "Invite person"
+          "invite": "Invite person",
+          "searchbar": {
+            "placeholder": "Search members..."
+          }
+        }
+      },
+      "budget-categories": {
+        "page": {
+          "title": "Transaction categories",
+          "empty": "No budget categories yet.",
+          "default-badge": "Default",
+          "modal": {
+            "create": {
+              "title": "Create Category"
+            },
+            "update": {
+              "title": "Edit Category"
+            },
+            "delete": {
+              "header": "Delete Category?",
+              "message": "Category \"{{value}}\" will be deleted."
+            }
+          },
+          "form": {
+            "name": "Category Name",
+            "default-category": "Default Category",
+            "submit": {}
+          },
+          "category-list": {
+            "card": {
+              "title": "Categories"
+            }
+          }
         }
       },
       "register": {
@@ -895,7 +1048,7 @@
       },
       "page": {
         "activity-filter-item": {
-          "not-assigned-to-activity": "Not assigned to event"
+          "not-assigned-to-activity": "Not assigned"
         },
         "modal": {
           "select-organization": {
@@ -904,17 +1057,24 @@
           "delete-posting": {
             "confirm-text": "Delete transaction"
           },
+          "transfer-posting": {
+            "header": "Settle transaction",
+            "message": "This transaction will be settled and assigned to the collective."
+          },
           "create-posting": {
             "credit": "Income",
             "debit": "Expense",
             "date": "Date",
             "activities": {
-              "all-selected": "All events selected",
-              "select": "Select event",
+              "select": "Assign event",
               "search": "Search events..."
             },
             "purpose": "Purpose",
-            "amount": "Amount"
+            "amount": "Amount",
+            "person-of-organization": {
+              "select": "Assign member",
+              "search": "Search members..."
+            }
           },
           "update-posting": {
             "card": {
@@ -925,16 +1085,21 @@
               "date": "Date",
               "activities": {
                 "all-selected": "All events selected",
-                "select": "Select event",
-                "search": "Search events..."
+                "select": "Assigned event",
+                "none-selected": "Not assigned"
               },
-              "title": "Update posting"
+              "title": "Update transaction",
+              "person-of-organization": {
+                "select": "Assigned member",
+                "none-selected": "Not assigned"
+              }
             }
           },
           "postings-history": {
             "search": "Search transactions...",
-            "not-found": "No transactions found.",
-            "reset-filters": "Reset filters"
+            "reset-filters": "Reset filters",
+            "no-results": "No transactions found for \"{{value}}\"",
+            "no-postings": "No transactions found."
           },
           "postings-filter": {
             "card": {
@@ -945,11 +1110,16 @@
               "to": "To",
               "activities": {
                 "all-selected": "All events selected",
-                "select": "Select event",
+                "select": "Select events",
                 "search": "Search events..."
               },
               "reset": "Reset filters",
-              "apply": "Apply filters"
+              "apply": "Apply filters",
+              "person-of-organization": {
+                "all-selected": "All members selected",
+                "select": "Select members",
+                "search": "Search members..."
+              }
             }
           }
         },
@@ -965,14 +1135,15 @@
           "list": {
             "create-event": "Create event",
             "header": "Events",
-            "manage-events": "Manage events"
+            "manage-events": "Events"
           }
         },
         "collective-list": {
           "list": {
             "header": "Collective",
-            "members": "Manage members",
+            "members": "Members",
             "update-info": "Update collective info",
+            "budget-categories": "Budget categories",
             "leave": "Leave collective",
             "change-collective": "Change collective"
           }
@@ -989,15 +1160,20 @@
             "collective-balance": "Collective balance",
             "total-credit": "Total income: {{value}}",
             "total-debit": "Total expense: {{value}}",
-            "add-credit": "Add income",
-            "add-debit": "Add expense",
-            "postings-history": "Transaction history"
+            "postings-history": "Transaction history",
+            "add-posting": "Add transaction"
           }
         },
         "upcoming-event": {
           "card": {
             "title": "Upcoming event"
           }
+        },
+        "person-of-organization-filter-item": {
+          "unassigned": "Not assigned"
+        },
+        "collective-info": {
+          "role": "You are a {{value}}"
         }
       }
     },
@@ -1050,6 +1226,12 @@
         "pending-organization-join-request-card": {
           "card": {
             "note": "You have a pending request for joining:"
+          }
+        },
+        "pending-requests": {
+          "card": {
+            "title": "Pending requests",
+            "content": "The following users want to join the organization:"
           }
         }
       }

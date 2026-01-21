@@ -4,12 +4,13 @@ import { get, writable } from 'svelte/store';
 
 import { dev } from '$app/environment';
 
+import { initializationStore } from './initialization.store';
+
 import { t } from '$lib/locales';
 import { AlertType, AppStateType } from '$lib/models/ui';
 import {
 	authenticationStore,
 	connectionStore,
-	initializationStore,
 	layoutStore,
 	localeStore,
 	organizationStore,
@@ -21,6 +22,13 @@ import { clearRequestCache, showAlert } from '$lib/utility';
 function createAppStateStore(): AppStateStore {
 	const { set, subscribe } = writable<AppStateType>(AppStateType.UNINITIALIZED);
 	const $t = get(t);
+
+	const unsubscribe = initializationStore.loaded.subscribe((value) => {
+		if (value) {
+			set(AppStateType.READY);
+			unsubscribe();
+		}
+	});
 
 	let isInitialized = false;
 
@@ -49,12 +57,6 @@ function createAppStateStore(): AppStateStore {
 				void organizationStore.reset();
 			}
 			void connectionStore.init();
-			const unsubscribe = initializationStore.loaded.subscribe((value) => {
-				if (value) {
-					set(AppStateType.READY);
-					unsubscribe();
-				}
-			});
 		} catch (error) {
 			set(AppStateType.ERROR);
 			await showAlert($t('stores.app-state.error'));

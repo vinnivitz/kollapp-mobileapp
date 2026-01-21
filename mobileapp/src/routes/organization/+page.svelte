@@ -2,6 +2,7 @@
 	import type {
 		ActivityTO,
 		OrganizationTO,
+		PersonOfOrganizationTO,
 		PostingCreateUpdateRequestTO,
 		PostingTO,
 		PostingType
@@ -27,23 +28,25 @@
 		logOutOutline,
 		peopleOutline,
 		personAddOutline,
+		personOutline,
 		refreshOutline,
 		ribbonOutline,
 		saveOutline,
+		sendOutline,
 		swapHorizontalOutline,
 		trashBinOutline,
 		trendingDownOutline,
 		trendingUpOutline,
-		walletOutline,
 		warningOutline
 	} from 'ionicons/icons';
-	import { SvelteSet } from 'svelte/reactivity';
+	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
+	import { number } from 'yup';
 
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
 	import { budgetService } from '$lib/api/services';
-	import { createPostingSchema } from '$lib/api/validation/budget';
+	import { createUpdatePostingSchema } from '$lib/api/validation/budget';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import AmountInputItem from '$lib/components/widgets/ionic/AmountInputItem.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
@@ -60,7 +63,6 @@
 	import { Form, type FormActions, type ItemSlidingOption, type SelectItem } from '$lib/models/ui';
 	import { localeStore, organizationStore, userStore } from '$lib/stores';
 	import {
-		clone,
 		confirmationModal,
 		customForm,
 		formatter,
@@ -78,27 +80,52 @@
 		debit: string;
 	};
 
+	type PostingsFilterDraft = {
+		activityIds: number[];
+		fromDate: string;
+		personOfOrganizationIds: number[];
+		postingTypes: PostingType[];
+		toDate: string;
+	};
+
+	type PostingFormModel = PostingCreateUpdateRequestTO & { activityId: number };
+
+	const postingFormSchema = createUpdatePostingSchema().shape({
+		activityId: number().optional().default(0)
+	});
+	let initializedOrganizationId = $state<number>();
 	const organizations = $derived(organizationStore.organizations);
-	const postings = $derived([
-		...($organizationStore?.organizationPostings ?? []),
-		...($organizationStore?.activities.flatMap((activity) => activity.activityPostings) ?? [])
-	]);
+	const postings = $derived(
+		[
+			...($organizationStore?.organizationPostings ?? []),
+			...($organizationStore?.activities.flatMap((activity) => activity.activityPostings) ?? [])
+		].toSorted((a, b) => new TZDate(b.date).getTime() - new TZDate(a.date).getTime())
+	);
+	const activityByPostingId = $derived(getActivityPostingIdMap());
+	const organizationPostingIdSet = $derived(
+		new Set<number>(($organizationStore?.organizationPostings ?? []).map((posting) => posting.id))
+	);
 	const balance = $derived(calculateBalance(postings ?? []));
 	const organizationRole = $derived(
 		$organizationStore?.personsOfOrganization.find((person) => person.userId === $userStore?.id)?.organizationRole
 	);
-	let createPostingFormActions = $state<FormActions<PostingCreateUpdateRequestTO>>();
-	let updatePostingFormActions = $state<FormActions<PostingCreateUpdateRequestTO>>();
+	const currentPersonOfOrganizationId = $derived(
+		$organizationStore?.personsOfOrganization.find((person) => person.userId === $userStore?.id)?.id ?? 0
+	);
+	const isManager = $derived(hasOrganizationRole('ROLE_ORGANIZATION_MANAGER'));
+	let createPostingFormActions = $state<FormActions<PostingFormModel>>();
+	let updatePostingFormActions = $state<FormActions<PostingFormModel>>();
 
-	let createPostingModalOpen = $state<boolean>(false);
-	let updatePostingModalOpen = $state<boolean>(false);
+	let postingCreateModalOpen = $state<boolean>(false);
+	let postingUpdateModalOpen = $state<boolean>(false);
 	let postingsHistoryModalOpen = $state<boolean>(false);
 
-	let updatePostingModelTouched = $state<boolean>(false);
 	let filteredPostings = $state<PostingTO[]>([]);
 	let postingsSearchValue = $state<string>('');
 
-	let postingsFilterOpen = $state<boolean>(false);
+	let postingsFilterModalOpen = $state<boolean>(false);
+
+	let isAssignedToPersonOfOrganization = $state<boolean>(false);
 
 	let selectedPosting = $state<PostingTO>();
 	let selectedPostingType = $state<PostingType>('DEBIT');
@@ -106,6 +133,19 @@
 	let descriptionExpanded = $state<boolean>(false);
 	let fromFilterDate = $state<string>(format(new TZDate(), 'yyyy-MM-dd'));
 	let toFilterDate = $state<string>(format(new TZDate(), 'yyyy-MM-dd'));
+
+	const activitySelectItems = $derived<SelectItem[]>([
+		...($organizationStore?.activities.map((activity) => ({
+			data: { id: activity.id, label: activity.name },
+			selected: false
+		})) ?? []),
+		{
+			color: 'tertiary',
+			data: { id: 0, label: $t('routes.organization.page.activity-filter-item.not-assigned-to-activity') },
+			icon: flashOffOutline,
+			selected: true
+		}
+	]);
 
 	const activityFilterItems = $derived<SelectItem[]>([
 		...($organizationStore?.activities.map((activity) => ({
@@ -120,7 +160,49 @@
 		}
 	]);
 
-	let filteredActivityFilterItems = $state<number[]>([]);
+	const personOfOrganizationCreateItems = $derived<SelectItem[]>([
+		...($organizationStore?.personsOfOrganization.map((person: PersonOfOrganizationTO) => ({
+			data: { id: person.id, label: person.username },
+			selected: false
+		})) ?? []),
+		{
+			color: 'tertiary',
+			data: { id: 0, label: $t('routes.organization.page.person-of-organization-filter-item.unassigned') },
+			icon: personAddOutline,
+			selected: false
+		}
+	]);
+
+	const personOfOrganizationUpdateItems = $derived<SelectItem[]>(
+		$organizationStore?.personsOfOrganization.map((person: PersonOfOrganizationTO) => ({
+			data: { id: person.id, label: person.username },
+			selected: false
+		})) ?? []
+	);
+
+	const personOfOrganizationFilterItems = $derived<SelectItem[]>([
+		...($organizationStore?.personsOfOrganization.map((person: PersonOfOrganizationTO) => ({
+			data: { id: person.id, label: person.username },
+			selected: true
+		})) ?? []),
+		{
+			color: 'tertiary',
+			data: { id: 0, label: $t('routes.organization.page.person-of-organization-filter-item.unassigned') },
+			icon: personAddOutline,
+			selected: true
+		}
+	]);
+
+	let filteredActivityIds = $state<number[]>([]);
+	let filteredPersonOfOrganizationIds = $state<number[]>([]);
+	let postingsFilterDraft = $state<PostingsFilterDraft>({
+		activityIds: [],
+		fromDate: format(new TZDate(), 'yyyy-MM-dd'),
+		personOfOrganizationIds: [],
+		postingTypes: ['DEBIT', 'CREDIT'],
+		toDate: format(new TZDate(), 'yyyy-MM-dd')
+	});
+	let hasNonSearchFiltersApplied = $state<boolean>(false);
 
 	const pendingMembersCount = $derived(
 		$organizationStore?.personsOfOrganization.filter(
@@ -128,62 +210,88 @@
 		).length ?? 0
 	);
 
-	let selectedActivity = $state<ActivityTO>();
 	let organizationDescriptionNote = $state<HTMLIonNoteElement>();
 
 	const organizationDescriptionNoteTruncated = $derived(
 		organizationDescriptionNote && organizationDescriptionNote?.scrollWidth > organizationDescriptionNote?.clientWidth
 	);
 
-	const createPostingForm = new Form({
-		completed: async () => {
+	const createPostingForm = new Form<PostingFormModel>({
+		completed: async ({ actions }) => {
 			await organizationStore.update($organizationStore?.id!);
-			createPostingModalOpen = false;
+			postingCreateModalOpen = false;
+			actions.setModel(postingFormSchema.getDefault());
 		},
 		exposedActions: (exposedActions) => (createPostingFormActions = exposedActions),
-		formatters: { amountInCents: formatter.currency, date: formatter.date },
-		parsers: { amountInCents: parser.currency, date: parser.date },
+		formatters: { amountInCents: formatter.currency },
+		parsers: { amountInCents: parser.currency },
 		request: async (model) => {
-			return selectedActivity && selectedActivity.id > 0
-				? budgetService.createActivityPosting($organizationStore?.id!, selectedActivity.id, model)
-				: budgetService.createOrganizationPosting($organizationStore?.id!, model);
+			const { activityId, ...postingModel } = model;
+			return activityId > 0
+				? budgetService.createActivityPosting(
+						$organizationStore?.id!,
+						activityId,
+						postingModel as PostingCreateUpdateRequestTO
+					)
+				: budgetService.createOrganizationPosting(
+						$organizationStore?.id!,
+						postingModel as PostingCreateUpdateRequestTO
+					);
 		},
-		schema: createPostingSchema()
+		schema: postingFormSchema
 	});
 
-	const updatePostingForm = new Form({
-		completed: async () => {
+	const updatePostingForm = new Form<PostingFormModel>({
+		completed: async ({ actions }) => {
 			await organizationStore.update($organizationStore?.id!);
-			updatePostingModalOpen = false;
-			updatePostingModelTouched = false;
+			postingUpdateModalOpen = false;
+			actions.setModel(postingFormSchema.getDefault());
 		},
 		exposedActions: (exposedActions) => (updatePostingFormActions = exposedActions),
-		formatters: { amountInCents: formatter.currency, date: formatter.date },
-		onTouched: () => (updatePostingModelTouched = true),
-		parsers: { amountInCents: parser.currency, date: parser.date },
-		request: async (model) =>
-			budgetService.updateOrganizationPosting($organizationStore?.id!, selectedPosting?.id!, model),
-		schema: createPostingSchema()
+		formatters: { amountInCents: formatter.currency },
+		parsers: { amountInCents: parser.currency },
+		request: async (model) => {
+			const { activityId, ...postingModel } = model;
+			const organizationId = $organizationStore?.id!;
+			const postingId = selectedPosting?.id!;
+			return activityId > 0
+				? budgetService.updateActivityPosting(
+						organizationId,
+						activityId,
+						postingId,
+						postingModel as PostingCreateUpdateRequestTO
+					)
+				: budgetService.updateOrganizationPosting(
+						organizationId,
+						postingId,
+						postingModel as PostingCreateUpdateRequestTO
+					);
+		},
+		schema: postingFormSchema
 	});
 
 	$effect(() => {
-		if (postings && activityFilterItems.length > 0 && filteredActivityFilterItems.length === 0) {
-			fromFilterDate = getMinPostingDate(postings);
-			toFilterDate = getMaxPostingDate(postings);
-			filteredActivityFilterItems = activityFilterItems.map((item) => item.data.id);
-		}
+		if (initializedOrganizationId === $organizationStore?.id) return;
+		initializedOrganizationId = $organizationStore?.id;
+		applyDefaultPostingsFilters();
 	});
 
 	$effect(() => {
 		if (postings) filteredPostings = getFilteredPostings();
 	});
 
+	function getActivityPostingIdMap(): SvelteMap<number, ActivityTO> {
+		const map = new SvelteMap<number, ActivityTO>();
+		for (const activity of $organizationStore?.activities ?? []) {
+			for (const activityPosting of activity.activityPostings ?? []) {
+				map.set(activityPosting.id, activity);
+			}
+		}
+		return map;
+	}
+
 	function isActivityPosting(postingId: number): boolean {
-		return (
-			$organizationStore?.activities.some((activity) =>
-				activity.activityPostings.some((activityPosting) => activityPosting.id === postingId)
-			) ?? false
-		);
+		return activityByPostingId.has(postingId);
 	}
 
 	function getMinPostingDate(postings: PostingTO[]): string {
@@ -198,8 +306,36 @@
 			: new TZDate().toISOString();
 	}
 
+	function hasSameIdsAsSet(a: number[], b: number[]): boolean {
+		const set = new Set(a);
+		for (const id of b) {
+			if (!set.has(id)) return false;
+		}
+		return true;
+	}
+
+	function updateHasNonSearchFiltersApplied(): void {
+		if (postings.length === 0) {
+			hasNonSearchFiltersApplied = false;
+			return;
+		}
+
+		const defaultActivityIds = getDefaultActivityFilterIds();
+		const defaultPersonIds = getDefaultPersonFilterIds();
+		const defaultFromDate = getMinPostingDate(postings);
+		const defaultToDate = getMaxPostingDate(postings);
+		const isDefaultPostingTypes = selectedPostingTypes.has('DEBIT') && selectedPostingTypes.has('CREDIT');
+
+		hasNonSearchFiltersApplied =
+			!isDefaultPostingTypes ||
+			fromFilterDate !== defaultFromDate ||
+			toFilterDate !== defaultToDate ||
+			!hasSameIdsAsSet(filteredActivityIds, defaultActivityIds) ||
+			!hasSameIdsAsSet(filteredPersonOfOrganizationIds, defaultPersonIds);
+	}
+
 	function getPostingItemSlidingOptions(posting: PostingTO): ItemSlidingOption[] {
-		return [
+		const options: ItemSlidingOption[] = [
 			{
 				color: 'danger',
 				handler: () => onDeletePosting(posting.id),
@@ -211,48 +347,91 @@
 				icon: createOutline
 			}
 		];
+
+		if (isManager && posting.personOfOrganizationId > 0) {
+			options.push({
+				color: 'tertiary',
+				handler: () => onTransferPosting(posting),
+				icon: sendOutline
+			});
+		}
+
+		return options;
 	}
 
-	function setSelectedPostingType(type: PostingType): void {
+	function setSelectedPostingType(
+		type: PostingType,
+		model: PostingFormModel,
+		actions?: FormActions<PostingFormModel>
+	): void {
 		selectedPostingType = type;
-		updatePostingFormActions?.setModel({
-			...updatePostingForm.model,
+		actions?.setModel({
+			...model,
 			type: selectedPostingType
 		});
-		updatePostingModelTouched = true;
 	}
 
 	function getFilteredPostings(): PostingTO[] {
+		const fromTime = new TZDate(fromFilterDate).getTime();
+		const toTime = new TZDate(toFilterDate).getTime();
+		const allowedActivityIds = new Set(filteredActivityIds);
+		const allowedPersonIds = new Set(filteredPersonOfOrganizationIds);
+		const search = postingsSearchValue.trim().toLowerCase();
+
 		return postings.filter((posting) => {
-			const matchesType = selectedPostingTypes.has(posting.type);
-			const matchesDateRange =
-				new TZDate(posting.date) >= new TZDate(fromFilterDate) && new TZDate(posting.date) <= new TZDate(toFilterDate);
+			if (!selectedPostingTypes.has(posting.type)) return false;
 
-			const postingActivity = $organizationStore?.activities.find((activity) =>
-				activity.activityPostings.some((activityPosting) => activityPosting.id === posting.id)
+			const postingTime = new TZDate(posting.date).getTime();
+			if (postingTime < fromTime || postingTime > toTime) return false;
+
+			if (!allowedPersonIds.has(posting.personOfOrganizationId)) return false;
+
+			const postingActivity = activityByPostingId.get(posting.id);
+			const isOrganizationPosting = organizationPostingIdSet.has(posting.id);
+			const matchesActivities =
+				(allowedActivityIds.has(0) && isOrganizationPosting) ||
+				(!!postingActivity && allowedActivityIds.has(postingActivity.id));
+			if (!matchesActivities) return false;
+
+			if (search === '') return true;
+			return (
+				posting.purpose.toLowerCase().includes(search) ||
+				(postingActivity?.name.toLowerCase().includes(search) ?? false)
 			);
-			const isOrganizationPosting = $organizationStore?.organizationPostings.some(
-				(organizationPosting) => organizationPosting.id === posting.id
-			);
-
-			const matchesActivities = filteredActivityFilterItems.some((activityId) => {
-				if (activityId === 0) {
-					return isOrganizationPosting;
-				}
-				return postingActivity?.id === activityId;
-			});
-
-			let matchesSearch = true;
-			if (postingsSearchValue.trim() !== '') {
-				const matchesPurpose = posting.purpose.toLowerCase().includes(postingsSearchValue.toLowerCase());
-				const matchesActivityName =
-					postingActivity?.name.toLowerCase().includes(postingsSearchValue.toLowerCase()) ?? false;
-
-				matchesSearch = matchesPurpose || matchesActivityName;
-			}
-
-			return matchesActivities && matchesType && matchesDateRange && matchesSearch;
 		});
+	}
+
+	function getDefaultActivityFilterIds(): number[] {
+		return activityFilterItems.length > 0 ? activityFilterItems.map((item) => item.data.id) : [0];
+	}
+
+	function getDefaultPersonFilterIds(): number[] {
+		return personOfOrganizationFilterItems.map((item) => item.data.id);
+	}
+
+	function applyDefaultPostingsFilters(): void {
+		fromFilterDate = getMinPostingDate(postings);
+		toFilterDate = getMaxPostingDate(postings);
+		postingsSearchValue = '';
+
+		selectedPostingTypes.clear();
+		selectedPostingTypes.add('DEBIT');
+		selectedPostingTypes.add('CREDIT');
+
+		filteredActivityIds = getDefaultActivityFilterIds();
+		filteredPersonOfOrganizationIds = getDefaultPersonFilterIds();
+		syncDraftFilters();
+		hasNonSearchFiltersApplied = false;
+	}
+
+	function syncDraftFilters(): void {
+		postingsFilterDraft = {
+			activityIds: [...filteredActivityIds],
+			fromDate: fromFilterDate,
+			personOfOrganizationIds: [...filteredPersonOfOrganizationIds],
+			postingTypes: [...selectedPostingTypes],
+			toDate: toFilterDate
+		};
 	}
 
 	function calculateBalance(postings: PostingTO[]): Balance {
@@ -279,21 +458,20 @@
 			})),
 			header: $t('routes.organization.page.modal.select-organization.header')
 		});
-
 		await actionSheet.present();
 	}
 
-	async function onOpenCreatePosting(type: PostingType): Promise<void> {
-		selectedPostingType = type;
+	async function onOpenCreatePosting(): Promise<void> {
+		selectedPostingType = createPostingForm.model.type;
 		createPostingFormActions?.setModel(
-			createPostingSchema().cast({
-				type: selectedPostingType
-			} satisfies Partial<PostingCreateUpdateRequestTO>)
+			postingFormSchema.cast({
+				personOfOrganizationId: currentPersonOfOrganizationId
+			} satisfies Partial<PostingFormModel>)
 		);
-		createPostingModalOpen = true;
+		postingCreateModalOpen = true;
 	}
 
-	function getPostingTranslation(type: PostingType): string {
+	function getPostingTypeTranslationByPostingType(type: PostingType): string {
 		return type === 'DEBIT'
 			? $t('routes.organization.page.posting-translation.debit')
 			: $t('routes.organization.page.posting-translation.cedit');
@@ -301,7 +479,6 @@
 
 	async function onSearchPostings(event: CustomEvent): Promise<void> {
 		postingsSearchValue = event.detail.value;
-		getFilteredPostings();
 	}
 
 	async function onDeletePosting(postingId: number): Promise<void> {
@@ -314,12 +491,35 @@
 	async function deletePosting(postingId: number): Promise<void> {
 		const loader = await loadingController.create({});
 		await loader.present();
-		const organizationId = $organizationStore?.id;
-		if (organizationId) {
-			const result = getValidationResult(await budgetService.removeOrganizationPosting(organizationId, postingId));
-			if (result.valid) {
-				await organizationStore.update(organizationId);
-			}
+		const organizationId = $organizationStore?.id!;
+		const activity = activityByPostingId.get(postingId);
+		const result = activity
+			? getValidationResult(await budgetService.removeActivityPosting(organizationId, activity.id, postingId))
+			: getValidationResult(await budgetService.removeOrganizationPosting(organizationId, postingId));
+		if (result.valid) {
+			await organizationStore.update(organizationId);
+		}
+		await loader.dismiss();
+	}
+
+	async function onTransferPosting(posting: PostingTO): Promise<void> {
+		await confirmationModal({
+			handler: () => transferPosting(posting.id),
+			header: $t('routes.organization.page.modal.transfer-posting.header'),
+			message: $t('routes.organization.page.modal.transfer-posting.message')
+		});
+	}
+
+	async function transferPosting(postingId: number): Promise<void> {
+		const loader = await loadingController.create({});
+		await loader.present();
+		const organizationId = $organizationStore?.id!;
+		const activity = activityByPostingId.get(postingId);
+		const result = activity
+			? getValidationResult(await budgetService.transferActivityPosting(organizationId, activity.id, postingId))
+			: getValidationResult(await budgetService.transferOrganizationPosting(organizationId, postingId));
+		if (result.valid) {
+			await organizationStore.update(organizationId);
 		}
 		await loader.dismiss();
 	}
@@ -327,58 +527,90 @@
 	function onOpenUpdatePostingModal(posting: PostingTO): void {
 		selectedPosting = posting;
 		selectedPostingType = posting.type;
-		updatePostingFormActions?.setModel(clone(selectedPosting));
-		updatePostingModalOpen = true;
-	}
-
-	function onApplyFromFilterDate(date: string): void {
-		fromFilterDate = date;
-		filteredPostings = getFilteredPostings();
+		const activityId = activityByPostingId.get(posting.id)?.id ?? 0;
+		updatePostingFormActions?.setModel(
+			postingFormSchema.cast({
+				activityId,
+				amountInCents: posting.amountInCents,
+				date: posting.date,
+				personOfOrganizationId: posting.personOfOrganizationId ?? 0,
+				purpose: posting.purpose,
+				type: posting.type
+			}) as PostingFormModel
+		);
+		isAssignedToPersonOfOrganization = posting.personOfOrganizationId !== 0;
+		postingUpdateModalOpen = true;
 	}
 
 	function resetFilter(): void {
-		fromFilterDate = getMinPostingDate(postings);
-		toFilterDate = getMaxPostingDate(postings);
-		postingsSearchValue = '';
+		applyDefaultPostingsFilters();
+		postingsFilterModalOpen = false;
+	}
+
+	function resetDraftFilter(): void {
+		const defaultActivityFilterIds = getDefaultActivityFilterIds();
+		postingsFilterDraft = {
+			activityIds: defaultActivityFilterIds,
+			fromDate: getMinPostingDate(postings),
+			personOfOrganizationIds: getDefaultPersonFilterIds(),
+			postingTypes: ['DEBIT', 'CREDIT'],
+			toDate: getMaxPostingDate(postings)
+		};
+		applyDraftFilter();
+	}
+
+	function applyDraftFilter(): void {
+		fromFilterDate = postingsFilterDraft.fromDate;
+		toFilterDate = postingsFilterDraft.toDate;
+		filteredActivityIds = [...postingsFilterDraft.activityIds];
+		filteredPersonOfOrganizationIds = [...postingsFilterDraft.personOfOrganizationIds];
 		selectedPostingTypes.clear();
-		selectedPostingTypes.add('DEBIT');
-		selectedPostingTypes.add('CREDIT');
-		filteredActivityFilterItems = activityFilterItems.map((item) => item.data.id);
-		postingsFilterOpen = false;
-	}
-
-	function onConfirmSelectCreatePostingActivity(ids: number[]): void {
-		selectedActivity = $organizationStore?.activities.find((activity) => activity.id === ids[0]);
-		createPostingFormActions?.setModel({
-			...createPostingForm.model
-		} satisfies PostingCreateUpdateRequestTO);
-	}
-
-	function onConfirmSelectUpdatePostingActivity(ids: number[]): void {
-		selectedActivity = $organizationStore?.activities.find((activity) => activity.id === ids[0]);
-		updatePostingFormActions?.setModel({
-			...updatePostingForm.model
-		} satisfies PostingCreateUpdateRequestTO);
+		for (const type of postingsFilterDraft.postingTypes) {
+			selectedPostingTypes.add(type);
+		}
+		postingsFilterModalOpen = false;
+		syncDraftFilters();
+		updateHasNonSearchFiltersApplied();
 	}
 
 	function getActivityPosting(postingId: number): ActivityTO | undefined {
-		return $organizationStore?.activities.find((activity) =>
-			activity.activityPostings.some((activityPosting) => activityPosting.id === postingId)
-		);
+		return activityByPostingId.get(postingId);
 	}
 
-	function togglePostingTypeSelected(type: PostingType): void {
-		if (selectedPostingTypes.has(type)) {
-			selectedPostingTypes.delete(type);
-		} else {
-			selectedPostingTypes.add(type);
+	function toggleDraftPostingTypeSelected(type: PostingType): void {
+		if (postingsFilterDraft.postingTypes.includes(type)) {
+			postingsFilterDraft = {
+				...postingsFilterDraft,
+				postingTypes: postingsFilterDraft.postingTypes.filter((t) => t !== type)
+			};
+			return;
 		}
-		filteredPostings = postings.filter((posting) => selectedPostingTypes.has(posting.type));
+
+		postingsFilterDraft = {
+			...postingsFilterDraft,
+			postingTypes: [...postingsFilterDraft.postingTypes, type]
+		};
 	}
 
-	function onConfirmSelectPostingActivities(ids: number[]): void {
-		filteredActivityFilterItems = ids;
-		filteredPostings = getFilteredPostings();
+	function onConfirmSelectDraftPostingActivities(ids: number[]): void {
+		postingsFilterDraft = { ...postingsFilterDraft, activityIds: ids };
+	}
+
+	function onConfirmSelectDraftPostingPersonsOfOrganization(ids: number[]): void {
+		postingsFilterDraft = { ...postingsFilterDraft, personOfOrganizationIds: ids };
+	}
+
+	function canEditPosting(personOfOrganizationId: number): boolean {
+		return isManager || currentPersonOfOrganizationId === personOfOrganizationId;
+	}
+
+	function onPostingFilterModalDismiss(): void {
+		postingsFilterModalOpen = false;
+		resetDraftFilter();
+	}
+
+	function getUsernameByPersonOfOrganizationId(personOfOrganizationId: number): string | undefined {
+		return $organizationStore?.personsOfOrganization.find((person) => person.id === personOfOrganizationId)?.username;
 	}
 </script>
 
@@ -440,14 +672,16 @@
 {#snippet eventsList()}
 	<ion-list inset class="mt-0 pt-0">
 		<ion-list-header>{$t('routes.organization.page.event-list.list.header')}</ion-list-header>
-		<LabeledItem
-			label={$t('routes.organization.page.event-list.list.create-event')}
-			icon={flashOutline}
-			clicked={async () => {
-				await goto(resolve('/organization/activities'));
-				triggerClickByLabel($t('routes.organization.page.event-list.list.create-event'));
-			}}
-		/>
+		{#if isManager}
+			<LabeledItem
+				label={$t('routes.organization.page.event-list.list.create-event')}
+				icon={flashOutline}
+				clicked={async () => {
+					await goto(resolve('/organization/activities'));
+					triggerClickByLabel($t('routes.organization.page.event-list.list.create-event'));
+				}}
+			/>
+		{/if}
 		<LabeledItem
 			label={$t('routes.organization.page.event-list.list.manage-events')}
 			icon={calendarClearOutline}
@@ -480,14 +714,18 @@
 			>
 				{$organizationStore?.description}
 			</ion-text>
-			<div class="flex flex-row items-start justify-center gap-1">
+			<div class="flex flex-row items-center justify-center gap-1">
 				<ion-icon icon={locationOutline}></ion-icon>
 				<ion-text>{$organizationStore?.place}</ion-text>
 			</div>
 		</div>
 		<div class="mt-3 flex flex-row items-center justify-center gap-1">
 			<ion-icon icon={ribbonOutline}></ion-icon>
-			<ion-text class="font-semibold">You are a {getRoleTranslationFromRole(organizationRole!)}</ion-text>
+			<ion-text class="font-semibold">
+				{$t('routes.organization.page.collective-info.role', {
+					value: getRoleTranslationFromRole(organizationRole!)
+				})}
+			</ion-text>
 		</div>
 	</Card>
 {/snippet}
@@ -509,6 +747,13 @@
 				clicked={() => goto(resolve('/organization/update-data'))}
 				icon={buildOutline}
 				label={$t('routes.organization.page.collective-list.list.update-info')}
+			/>
+			<LabeledItem
+				indexed="/organization/budget-categories"
+				accessible="ROLE_ORGANIZATION_MANAGER"
+				clicked={() => goto(resolve('/organization/budget-categories'))}
+				icon={cardOutline}
+				label={$t('routes.organization.page.collective-list.list.budget-categories')}
 			/>
 		{/if}
 		{#if $organizations.length > 1}
@@ -570,38 +815,28 @@
 				</ion-text>
 			</div>
 		</div>
-		{#if hasOrganizationRole('ROLE_ORGANIZATION_MANAGER')}
-			<div class="mt-3 flex items-center justify-center gap-2">
-				<Button
-					label={$t('routes.organization.page.budget-card.card.add-credit')}
-					color="primary"
-					icon={cashOutline}
-					clicked={() => onOpenCreatePosting('CREDIT')}
-				/>
-				<Button
-					label={$t('routes.organization.page.budget-card.card.add-debit')}
-					color="tertiary"
-					icon={walletOutline}
-					clicked={() => onOpenCreatePosting('DEBIT')}
-				/>
-			</div>
-		{/if}
-		<Button
-			icon={listOutline}
-			classList="mx-2 mt-3"
-			expand="block"
-			fill="outline"
-			label={$t('routes.organization.page.budget-card.card.postings-history')}
-			clicked={() => (postingsHistoryModalOpen = true)}
-		/>
+		<div class="mt-3 flex flex-col gap-1">
+			<Button
+				expand="block"
+				label={$t('routes.organization.page.budget-card.card.add-posting')}
+				color="primary"
+				icon={cashOutline}
+				clicked={onOpenCreatePosting}
+			/>
+			<Button
+				icon={listOutline}
+				expand="block"
+				fill="outline"
+				label={$t('routes.organization.page.budget-card.card.postings-history')}
+				clicked={() => (postingsHistoryModalOpen = true)}
+			/>
+		</div>
 	</Card>
 {/snippet}
 
 {#snippet postingItem(posting: PostingTO)}
 	<CustomItem
-		slidingOptions={hasOrganizationRole('ROLE_ORGANIZATION_MANAGER')
-			? getPostingItemSlidingOptions(posting)
-			: undefined}
+		slidingOptions={canEditPosting(posting.personOfOrganizationId) ? getPostingItemSlidingOptions(posting) : undefined}
 		iconColor={posting.type === 'CREDIT' ? 'success' : 'danger'}
 		icon={posting.type === 'CREDIT' ? trendingUpOutline : trendingDownOutline}
 	>
@@ -622,7 +857,7 @@
 			<div class="flex w-full flex-wrap items-start justify-between gap-1 text-sm">
 				<ion-text color="medium" class="flex items-center justify-center gap-1">
 					<ion-icon icon={calendarClearOutline}></ion-icon>
-					<div>{format(new TZDate(posting.date), 'PPP')}</div>
+					<div>{format(new TZDate(posting.date), 'PP')}</div>
 				</ion-text>
 				<ion-text color="medium" class="flex items-center justify-center gap-1">
 					<ion-icon icon={cashOutline}></ion-icon>
@@ -631,6 +866,12 @@
 					</div>
 				</ion-text>
 			</div>
+			{#if posting.personOfOrganizationId > 0}
+				<ion-text color="medium" class="ms-2 flex items-center justify-start gap-1 text-sm">
+					<ion-icon icon={personOutline}></ion-icon>
+					<div>{getUsernameByPersonOfOrganizationId(posting.personOfOrganizationId)}</div>
+				</ion-text>
+			{/if}
 		</div>
 	</CustomItem>
 {/snippet}
@@ -638,19 +879,19 @@
 <!-- Modals -->
 
 <!-- Create Posting Modal -->
-<Modal open={createPostingModalOpen} dismissed={() => (createPostingModalOpen = false)}>
-	<Card title={getPostingTranslation(selectedPostingType)}>
+<Modal open={postingCreateModalOpen} dismissed={() => (postingCreateModalOpen = false)}>
+	<Card title={getPostingTypeTranslationByPostingType(selectedPostingType)}>
 		<form use:customForm={createPostingForm}>
 			<div class="mb-3 flex items-center justify-center gap-2">
 				<Chip
 					selected={selectedPostingType === 'CREDIT'}
 					label={$t('routes.organization.page.modal.create-posting.credit')}
-					clicked={() => setSelectedPostingType('CREDIT')}
+					clicked={() => setSelectedPostingType('CREDIT', createPostingForm.model, createPostingFormActions)}
 				/>
 				<Chip
 					selected={selectedPostingType === 'DEBIT'}
 					label={$t('routes.organization.page.modal.create-posting.debit')}
-					clicked={() => setSelectedPostingType('DEBIT')}
+					clicked={() => setSelectedPostingType('DEBIT', createPostingForm.model, createPostingFormActions)}
 				/>
 			</div>
 			<InputItem
@@ -660,15 +901,23 @@
 			/>
 			<AmountInputItem name="amountInCents" label={$t('routes.organization.page.modal.create-posting.amount')} />
 			<DatetimeInputItem name="date" label={$t('routes.organization.page.modal.create-posting.date')} />
+			<MultiSelectItem
+				hidden={!isManager}
+				name="personOfOrganizationId"
+				icon={peopleOutline}
+				multiple={false}
+				label={$t('routes.organization.page.modal.create-posting.person-of-organization.select')}
+				searchPlaceholder={$t('routes.organization.page.modal.create-posting.person-of-organization.search')}
+				items={personOfOrganizationCreateItems}
+			/>
 			{#if $organizationStore && $organizationStore.activities.length > 0}
 				<MultiSelectItem
-					changed={onConfirmSelectCreatePostingActivity}
-					allSelectedText={$t('routes.organization.page.modal.create-posting.activities.all-selected')}
+					name="activityId"
 					icon={flashOutline}
 					multiple={false}
 					label={$t('routes.organization.page.modal.create-posting.activities.select')}
 					searchPlaceholder={$t('routes.organization.page.modal.create-posting.activities.search')}
-					items={activityFilterItems}
+					items={activitySelectItems}
 				/>
 			{/if}
 		</form>
@@ -676,23 +925,19 @@
 </Modal>
 
 <!-- Update Posting Modal -->
-<Modal
-	open={updatePostingModalOpen}
-	touched={updatePostingModelTouched}
-	dismissed={() => (updatePostingModalOpen = false)}
->
+<Modal open={postingUpdateModalOpen} dismissed={() => (postingUpdateModalOpen = false)}>
 	<Card title={$t('routes.organization.page.modal.update-posting.card.title')}>
 		<form use:customForm={updatePostingForm}>
 			<div class="mb-3 flex items-center justify-center gap-2">
 				<Chip
 					selected={selectedPostingType === 'CREDIT'}
 					label={$t('routes.organization.page.modal.update-posting.card.credit')}
-					clicked={() => setSelectedPostingType('CREDIT')}
+					clicked={() => setSelectedPostingType('CREDIT', updatePostingForm.model, updatePostingFormActions)}
 				/>
 				<Chip
 					selected={selectedPostingType === 'DEBIT'}
 					label={$t('routes.organization.page.modal.update-posting.card.debit')}
-					clicked={() => setSelectedPostingType('DEBIT')}
+					clicked={() => setSelectedPostingType('DEBIT', updatePostingForm.model, updatePostingFormActions)}
 				/>
 			</div>
 			<InputItem
@@ -702,17 +947,24 @@
 			/>
 			<AmountInputItem name="amountInCents" label={$t('routes.organization.page.modal.update-posting.card.amount')} />
 			<DatetimeInputItem name="date" label={$t('routes.organization.page.modal.update-posting.card.date')} />
-			{#if $organizationStore && $organizationStore.activities.length > 0}
-				<MultiSelectItem
-					changed={onConfirmSelectUpdatePostingActivity}
-					allSelectedText={$t('routes.organization.page.modal.update-posting.card.activities.all-selected')}
-					icon={flashOutline}
-					multiple={false}
-					label={$t('routes.organization.page.modal.update-posting.card.activities.select')}
-					searchPlaceholder={$t('routes.organization.page.modal.update-posting.card.activities.search')}
-					items={activityFilterItems}
-				/>
-			{/if}
+			<MultiSelectItem
+				hidden={!isManager || !isAssignedToPersonOfOrganization}
+				name="personOfOrganizationId"
+				icon={peopleOutline}
+				multiple={false}
+				label={$t('routes.organization.page.modal.update-posting.card.person-of-organization.select')}
+				noneSelectedText={$t('routes.organization.page.modal.update-posting.card.person-of-organization.none-selected')}
+				items={personOfOrganizationUpdateItems}
+			/>
+			<MultiSelectItem
+				readonly
+				name="activityId"
+				allSelectedText={$t('routes.organization.page.modal.update-posting.card.activities.all-selected')}
+				icon={flashOutline}
+				noneSelectedText={$t('routes.organization.page.modal.update-posting.card.activities.none-selected')}
+				label={$t('routes.organization.page.modal.update-posting.card.activities.select')}
+				items={activitySelectItems}
+			/>
 		</form>
 	</Card>
 </Modal>
@@ -726,26 +978,41 @@
 	lazy
 >
 	<div class="relative">
-		<div class="sticky top-0 left-0 z-10 flex items-center justify-center gap-2">
-			<ion-searchbar
-				class="w-full"
-				debounce={100}
-				placeholder={$t('routes.organization.page.modal.postings-history.search')}
-				value={postingsSearchValue}
-				onionInput={onSearchPostings}
-			></ion-searchbar>
-			<Button icon={filterOutline} clicked={() => (postingsFilterOpen = true)} />
-		</div>
-		{#if filteredPostings.length === 0}
-			<div class="mt-3 flex flex-col items-center justify-center gap-2 text-center">
-				<ion-note>{$t('routes.organization.page.modal.postings-history.not-found')}</ion-note>
-				{#if postings.length > 0}
+		<div class="sticky top-0 left-0 z-10 mb-3 flex flex-col">
+			<div class="flex items-center justify-center gap-2">
+				<ion-searchbar
+					class="w-full"
+					debounce={100}
+					placeholder={$t('routes.organization.page.modal.postings-history.search')}
+					value={postingsSearchValue}
+					onionInput={onSearchPostings}
+				></ion-searchbar>
+				<Button icon={filterOutline} clicked={() => (postingsFilterModalOpen = true)} />
+			</div>
+			{#if hasNonSearchFiltersApplied}
+				<div class="flex justify-center">
 					<Button
+						size="small"
+						fill="outline"
+						color="danger"
 						icon={refreshOutline}
 						label={$t('routes.organization.page.modal.postings-history.reset-filters')}
 						clicked={resetFilter}
 					/>
-				{/if}
+				</div>
+			{/if}
+		</div>
+		{#if filteredPostings.length === 0}
+			<div class="mt-3 flex flex-col items-center justify-center gap-2 text-center">
+				<ion-note>
+					{#if postingsSearchValue.trim() === ''}
+						{$t('routes.organization.page.modal.postings-history.no-postings')}
+					{:else}
+						{$t('routes.organization.page.modal.postings-history.no-results', {
+							value: postingsSearchValue.trim()
+						})}
+					{/if}
+				</ion-note>
 			</div>
 		{:else}
 			<ion-list>
@@ -758,40 +1025,49 @@
 </Modal>
 
 <!-- Filter Popover Modal -->
-<Popover extended open={postingsFilterOpen} dismissed={() => (postingsFilterOpen = false)} lazy>
+<Popover extended open={postingsFilterModalOpen} dismissed={onPostingFilterModalDismiss} lazy>
 	<Card title={$t('routes.organization.page.modal.postings-filter.card.title')} classList="m-0">
 		<div class="flex items-center justify-center gap-2">
 			<Chip
-				clicked={() => togglePostingTypeSelected('DEBIT')}
+				clicked={() => toggleDraftPostingTypeSelected('CREDIT')}
 				color="success"
-				selected={selectedPostingTypes.has('DEBIT')}
+				selected={postingsFilterDraft.postingTypes.includes('CREDIT')}
 				icon={trendingUpOutline}
 				label={$t('routes.organization.page.modal.postings-filter.card.credit')}
 			/>
 			<Chip
-				clicked={() => togglePostingTypeSelected('CREDIT')}
+				clicked={() => toggleDraftPostingTypeSelected('DEBIT')}
 				color="danger"
-				selected={selectedPostingTypes.has('CREDIT')}
+				selected={postingsFilterDraft.postingTypes.includes('DEBIT')}
 				icon={trendingDownOutline}
 				label={$t('routes.organization.page.modal.postings-filter.card.debit')}
 			/>
 		</div>
 		<DatetimeInputItem
-			max={toFilterDate}
+			max={postingsFilterDraft.toDate}
 			label={$t('routes.organization.page.modal.postings-filter.card.from')}
-			value={fromFilterDate}
-			changed={onApplyFromFilterDate}
+			value={postingsFilterDraft.fromDate}
+			changed={(value) => (postingsFilterDraft = { ...postingsFilterDraft, fromDate: value })}
 		/>
 		<DatetimeInputItem
-			min={fromFilterDate}
+			min={postingsFilterDraft.fromDate}
 			label={$t('routes.organization.page.modal.postings-filter.card.to')}
-			value={toFilterDate}
-			changed={(value) => (toFilterDate = value)}
+			value={postingsFilterDraft.toDate}
+			changed={(value) => (postingsFilterDraft = { ...postingsFilterDraft, toDate: value })}
+		/>
+		<MultiSelectItem
+			value={postingsFilterDraft.personOfOrganizationIds}
+			changed={onConfirmSelectDraftPostingPersonsOfOrganization}
+			allSelectedText={$t('routes.organization.page.modal.postings-filter.card.person-of-organization.all-selected')}
+			icon={peopleOutline}
+			label={$t('routes.organization.page.modal.postings-filter.card.person-of-organization.select')}
+			searchPlaceholder={$t('routes.organization.page.modal.postings-filter.card.person-of-organization.search')}
+			items={personOfOrganizationFilterItems}
 		/>
 		{#if $organizationStore && $organizationStore.activities.length > 0}
 			<MultiSelectItem
-				value={filteredActivityFilterItems}
-				changed={onConfirmSelectPostingActivities}
+				value={postingsFilterDraft.activityIds}
+				changed={onConfirmSelectDraftPostingActivities}
 				allSelectedText={$t('routes.organization.page.modal.postings-filter.card.activities.all-selected')}
 				icon={albumsOutline}
 				label={$t('routes.organization.page.modal.postings-filter.card.activities.select')}
@@ -805,13 +1081,13 @@
 				color="danger"
 				icon={refreshOutline}
 				fill="outline"
-				clicked={resetFilter}
+				clicked={resetDraftFilter}
 			/>
 			<Button
 				label={$t('routes.organization.page.modal.postings-filter.card.apply')}
 				icon={saveOutline}
 				fill="outline"
-				clicked={() => (postingsFilterOpen = false)}
+				clicked={applyDraftFilter}
 			/>
 		</div>
 	</Card>

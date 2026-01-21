@@ -1,4 +1,9 @@
-import type { KollappUserTO, KollappUserUpdateRequestTO, PasswordChangeRequestTO } from '@kollapp/api-types';
+import type {
+	DeleteAccountRequestTO,
+	KollappUserTO,
+	KollappUserUpdateRequestTO,
+	PasswordChangeRequestTO
+} from '@kollapp/api-types';
 
 import { RequestMethod, type ResponseBody } from '$lib/models/api';
 import { customFetch } from '$lib/utility';
@@ -38,8 +43,9 @@ class UserResource {
 	/** Deletes the account of the authenticated user
 	 * @returns {Promise<ResponseBody>} response body
 	 */
-	async remove(): Promise<ResponseBody> {
+	async remove(model: DeleteAccountRequestTO): Promise<ResponseBody> {
 		return customFetch(`${this.ENDPOINT}`, {
+			body: model,
 			method: RequestMethod.DELETE
 		});
 	}

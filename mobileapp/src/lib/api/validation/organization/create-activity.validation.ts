@@ -1,5 +1,7 @@
 import type { ActivityCreationRequestTO } from '@kollapp/api-types';
 
+import { TZDate } from '@date-fns/tz';
+import { format } from 'date-fns';
 import { get } from 'svelte/store';
 import { type AnyObject, object, ObjectSchema, string } from 'yup';
 
@@ -12,6 +14,9 @@ import { t } from '$lib/locales';
 export const createActivitySchema = (): ObjectSchema<ActivityCreationRequestTO> => {
 	const $t = get(t);
 	return object({
+		date: string()
+			.default(format(new TZDate(), 'yyyy-MM-dd'))
+			.required($t('api.validation.organization.create-activity.date.required')),
 		location: string()
 			.default('')
 			.trim()

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { DatetimeChangeEventDetail } from '@ionic/core';
+	import type { DatetimeChangeEventDetail, DatetimeHighlight } from '@ionic/core';
 
 	import { TZDate } from '@date-fns/tz';
 	import { addYears, format } from 'date-fns';
@@ -12,6 +12,7 @@
 	type Properties = {
 		applyText?: string;
 		color?: Colors;
+		dates?: string[];
 		dismissText?: string;
 		max?: string;
 		min?: string;
@@ -27,6 +28,7 @@
 		applied,
 		applyText = $t('components.widgets.ionic.datetime.apply'),
 		color = 'secondary',
+		dates = [],
 		dismissed,
 		dismissText = $t('components.widgets.ionic.datetime.dismiss'),
 		max = format(addYears(new TZDate(), 10), 'yyyy-MM-dd'),
@@ -36,6 +38,21 @@
 		type = DateTimePickerType.DATE,
 		value
 	}: Properties = $props();
+
+	let element = $state<HTMLIonDatetimeElement>();
+
+	const highlightedDates = $derived<DatetimeHighlight[]>(
+		dates.map((date) => ({
+			border: '3px solid var(--ion-color-secondary)',
+			date
+		}))
+	);
+
+	$effect(() => {
+		if (element) {
+			element.highlightedDates = highlightedDates;
+		}
+	});
 
 	function onDismiss(): void {
 		dismissed?.();
@@ -48,6 +65,8 @@
 </script>
 
 <ion-datetime
+	bind:this={element}
+	highlighted-dates={highlightedDates}
 	{value}
 	{min}
 	{max}

@@ -20,7 +20,6 @@ function createStore(): ThemeStore {
 	}
 
 	async function _set(value: Theme): Promise<void> {
-		console.log('set');
 		setClass(value);
 		await storeValue(StorageKey.THEME, value);
 		set(value);

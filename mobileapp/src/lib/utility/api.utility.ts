@@ -1,5 +1,5 @@
 import type { AuthenticationModel } from '$lib/models/models';
-import type { OrganizationRole, SystemRole } from '@kollapp/api-types';
+import type { OrganizationRole, SystemRoleTO } from '@kollapp/api-types';
 
 import { TZDate } from '@date-fns/tz';
 import { format } from 'date-fns';
@@ -52,12 +52,10 @@ export async function customFetch<T = never>(url: string, config?: CustomFetchCo
 		silentOnSuccess = false
 	} = config ?? {};
 
-	const hasBody = hasRequestBody(method);
-
 	function buildHeaders(): Headers {
 		const headers = new Headers();
 		headers.set(HeaderKey.ACCEPT_LANGUAGE, get(localeStore) ?? Locale.DE);
-		if (hasBody) {
+		if (body) {
 			headers.set(HeaderKey.CONTENT_TYPE, ContentType.JSON);
 		}
 		return headers;
@@ -65,7 +63,7 @@ export async function customFetch<T = never>(url: string, config?: CustomFetchCo
 
 	function buildOptions(headers: Headers): RequestInit {
 		const options: RequestInit = { headers, method };
-		if (hasBody && body !== undefined) {
+		if (body) {
 			options.body = typeof body === 'string' ? body : JSON.stringify(body);
 		}
 		return options;
@@ -178,7 +176,7 @@ export function hasOrganizationRole(role: OrganizationRole): boolean {
  * @param role SystemRole to check.
  * @returns {boolean} True if the user has the role; otherwise, false.
  */
-export function hasSystemRole(role: SystemRole): boolean {
+export function hasSystemRole(role: SystemRoleTO): boolean {
 	return get(userStore)?.role === role;
 }
 
@@ -256,10 +254,6 @@ async function getResponseBody<T>(
 		status,
 		validationField
 	};
-}
-
-function hasRequestBody(method: RequestMethod): boolean {
-	return method === RequestMethod.POST || method === RequestMethod.PUT || method === RequestMethod.PATCH;
 }
 
 async function getEnhancedUrl(url: string, query: Record<string, string> | undefined): Promise<string> {

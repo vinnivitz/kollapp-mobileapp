@@ -24,7 +24,7 @@
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import { t } from '$lib/locales';
 	import { localeStore, organizationStore, userStore } from '$lib/stores';
-	import { getDateFnsLocale } from '$lib/utility';
+	import { getDateFnsLocale, hasOrganizationRole } from '$lib/utility';
 
 	const activity = $derived($organizationStore?.activities && $organizationStore.activities[0]);
 	const postings = $derived(
@@ -51,6 +51,10 @@
 		{/if}
 
 		{@render accountCard($userStore)}
+
+		{#if $organizationStore?.personsOfOrganization.some((person) => person.status === 'PENDING') && hasOrganizationRole('ROLE_ORGANIZATION_MANAGER')}
+			{@render pendingMembers()}
+		{/if}
 
 		{#if $organizationStore}
 			{#if activity}
@@ -184,4 +188,20 @@
 
 {#snippet budgetChartCard()}
 	<BudgetChart {postings} />
+{/snippet}
+
+{#snippet pendingMembers()}
+	<Card
+		clicked={() => goto(resolve('/organization/members'))}
+		title={$t('routes.page.page.pending-requests.card.title')}
+		titleIconEnd={arrowForwardOutline}
+		border="warning"
+	>
+		<ion-text>{$t('routes.page.page.pending-requests.card.content')}</ion-text>
+		<ul class="list-disc">
+			{#each $organizationStore?.personsOfOrganization.filter((person) => person.status === 'PENDING') as user (user.id)}
+				<li class="font-bold">{user.username}</li>
+			{/each}
+		</ul>
+	</Card>
 {/snippet}

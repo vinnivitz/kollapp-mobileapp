@@ -12,13 +12,24 @@
 		card?: boolean;
 		classList?: string;
 		helperText?: string;
+		hidden?: boolean;
 		icon?: string;
 	} & (
 		| { name: string; changed?: never; value?: never }
 		| { name?: never; value?: string; changed?: (value: string) => void }
 	);
 
-	let { card, changed, classList = '', helperText, icon = locationOutline, label, name, value }: Properties = $props();
+	let {
+		card,
+		changed,
+		classList = '',
+		helperText,
+		hidden = false,
+		icon = locationOutline,
+		label,
+		name,
+		value
+	}: Properties = $props();
 
 	let cachedLocation = $state<string>('');
 	let open = $state<boolean>(false);
@@ -42,6 +53,7 @@
 	{classList}
 	{helperText}
 	{card}
+	{hidden}
 	inputElement={(element) => (inputElement = element)}
 	{...name ? { name } : { value: value ?? '' }}
 	{label}

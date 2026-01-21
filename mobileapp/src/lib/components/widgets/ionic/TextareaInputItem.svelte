@@ -10,6 +10,7 @@
 		classList?: string;
 		color?: Colors;
 		disabled?: boolean;
+		hidden?: boolean;
 		icon?: string;
 		iconEnd?: string;
 		maxlength?: number;
@@ -27,6 +28,7 @@
 		classList = '',
 		color,
 		disabled = false,
+		hidden = false,
 		icon,
 		iconEnd,
 		inputIconClicked,
@@ -43,7 +45,7 @@
 	}
 </script>
 
-<CustomItem {color} {icon} {iconEnd} iconClick={inputIconClicked} {card} {classList}>
+<CustomItem {color} {icon} {iconEnd} iconClick={inputIconClicked} {card} {classList} {name} {hidden}>
 	<ion-textarea
 		{readonly}
 		{name}

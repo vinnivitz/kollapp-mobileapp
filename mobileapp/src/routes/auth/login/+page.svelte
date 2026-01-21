@@ -1,6 +1,5 @@
 <script lang="ts">
-	import type { AuthenticationModel } from '$lib/models/models';
-	import type { AuthenticatedKollappUserTO, LoginRequestTO } from '@kollapp/api-types';
+	import type { AuthTokensTO, LoginRequestTO } from '@kollapp/api-types';
 
 	import { loadingController } from '@ionic/core';
 	import {
@@ -70,7 +69,7 @@
 			password: credentials.password,
 			username: credentials.username
 		} satisfies LoginRequestTO);
-		const result = getValidationResult<AuthenticatedKollappUserTO>(response);
+		const result = getValidationResult<AuthTokensTO>(response);
 		await (result.valid
 			? handleLogin(response.data)
 			: Promise.all([
@@ -80,12 +79,8 @@
 		await loading.dismiss();
 	}
 
-	async function handleLogin(model: AuthenticatedKollappUserTO): Promise<void> {
-		const authenticationModel: AuthenticationModel = {
-			accessToken: model.accessToken,
-			refreshToken: model.refreshToken
-		};
-		await authenticationStore.set(authenticationModel);
+	async function handleLogin(model: AuthTokensTO): Promise<void> {
+		await authenticationStore.set(model);
 		await appStateStore.initializeBaseData();
 		await promptBiometricSetup();
 		await goto(resolve('/'));

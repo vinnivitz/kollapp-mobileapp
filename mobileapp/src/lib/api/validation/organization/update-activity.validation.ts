@@ -12,6 +12,7 @@ import { t } from '$lib/locales';
 export const updateActivitySchema = (): ObjectSchema<ActivityUpdateRequestTO> => {
 	const $t = get(t);
 	return object({
+		date: string().default('').required($t('api.validation.organization.update-activity.date.required')),
 		location: string()
 			.default('')
 			.trim()

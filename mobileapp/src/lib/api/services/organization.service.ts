@@ -127,7 +127,8 @@ class OrganizationResource {
 	 */
 	async joinByInvitationCode(code: string): Promise<ResponseBody> {
 		return customFetch(`${this.ENDPOINT}/invitation/${code}`, {
-			method: RequestMethod.POST
+			method: RequestMethod.POST,
+			silentOnSuccess: true
 		});
 	}
 

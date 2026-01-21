@@ -10,19 +10,31 @@
 		classList?: string;
 		disabled?: boolean;
 		element?: HTMLIonToggleElement;
+		hidden?: boolean;
 		icon?: string;
 		indexed?: string;
 		changed: (value?: boolean) => void;
 	};
 
-	let { card, changed, checked, classList, disabled, element, icon, indexed, label }: Properties = $props();
+	let {
+		card,
+		changed,
+		checked,
+		classList,
+		disabled,
+		element,
+		hidden = false,
+		icon,
+		indexed,
+		label
+	}: Properties = $props();
 
 	// workaround to avoid reference linting error
 	void indexed;
 	void element;
 </script>
 
-<CustomItem {icon} {card} {classList}>
+<CustomItem {icon} {card} {classList} {hidden}>
 	<ion-toggle
 		{disabled}
 		bind:this={element}

@@ -19,10 +19,6 @@ export async function navigateBack(): Promise<void> {
 
 	const currentPathname = page.url.pathname;
 
-	if (history.length > 1) {
-		return history.back();
-	}
-
 	const segments = currentPathname.split('/').filter(Boolean);
 	if (segments.length > 0) {
 		segments.pop();
