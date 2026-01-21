@@ -4,7 +4,6 @@
 	import { Clipboard } from '@capacitor/clipboard';
 	import { Share } from '@capacitor/share';
 	import { TZDate } from '@date-fns/tz';
-	import { actionSheetController } from '@ionic/core';
 	import QRCode from '@trasherdk/svelte-qrcode';
 	import { EmailComposer } from 'capacitor-email-composer';
 	import { formatDistanceToNow } from 'date-fns';
@@ -47,6 +46,7 @@
 		getDateFnsLocale,
 		getRoleTranslationFromRole,
 		hasOrganizationRole,
+		presentActionSheet,
 		showAlert,
 		StatusCheck
 	} from '$lib/utility';
@@ -136,7 +136,7 @@
 
 	async function onSelectRole(member: PersonOfOrganizationTO): Promise<void> {
 		const organizationId = $organizationStore?.id as number;
-		const actionsheet = await actionSheetController.create({
+		await presentActionSheet({
 			buttons: [
 				{
 					handler: () => onGrantOrganizationRolePrompt(member.id, organizationId, 'ROLE_ORGANIZATION_MANAGER'),
@@ -154,7 +154,6 @@
 			header: $t('routes.organization.members.page.modal.select-role.header'),
 			translucent: true
 		});
-		await actionsheet.present();
 	}
 
 	async function onGrantOrganizationRolePrompt(

@@ -4,12 +4,15 @@ import { resolve } from '$app/paths';
 import { page } from '$app/state';
 import type { RouteId } from '$app/types';
 
-import { modalStore } from '$lib/stores';
+import { actionSheetStore, modalStore } from '$lib/stores';
 
 /**
  * Navigates back in the browser history if history is present otherwise one hirarchy up.
  */
 export async function navigateBack(): Promise<void> {
+	const hasActionSheet = actionSheetStore.closeLastIfExists();
+	if (hasActionSheet) return;
+
 	const hasModal = modalStore.closeLastIfExists();
 	if (hasModal) return;
 

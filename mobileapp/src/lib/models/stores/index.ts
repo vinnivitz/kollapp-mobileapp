@@ -1,3 +1,4 @@
+export * from './action-sheet-store.type';
 export * from './app-state-store.type';
 export * from './authentication-store.type';
 export * from './base-store.type';

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { ActionSheetButton } from '@ionic/core';
 
-	import { actionSheetController } from '@ionic/core';
 	import {
 		buildOutline,
 		colorPaletteOutline,
@@ -27,15 +26,14 @@
 	import { Locale, t } from '$lib/locales';
 	import { Layout, Theme } from '$lib/models/ui';
 	import { layoutStore, localeStore, themeStore } from '$lib/stores';
+	import { presentActionSheet } from '$lib/utility';
 
 	async function openActionSheet(header: string, buttons: ActionSheetButton[]): Promise<void> {
-		const actionsheet = await actionSheetController.create({
+		await presentActionSheet({
 			buttons,
 			header,
 			translucent: true
 		});
-
-		await actionsheet.present();
 	}
 
 	async function openLocaleActionSheet(): Promise<void> {

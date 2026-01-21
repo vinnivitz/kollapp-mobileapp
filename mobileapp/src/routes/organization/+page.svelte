@@ -8,7 +8,7 @@
 	} from '@kollapp/api-types';
 
 	import { TZDate } from '@date-fns/tz';
-	import { actionSheetController, loadingController } from '@ionic/core';
+	import { loadingController } from '@ionic/core';
 	import { addDays, format, formatDistanceToNow } from 'date-fns';
 	import {
 		albumsOutline,
@@ -69,6 +69,7 @@
 		getValidationResult,
 		hasOrganizationRole,
 		parser,
+		presentActionSheet,
 		triggerClickByLabel
 	} from '$lib/utility';
 
@@ -271,7 +272,7 @@
 	}
 
 	async function onOrganizationSelect(): Promise<void> {
-		const actionSheet = await actionSheetController.create({
+		await presentActionSheet({
 			buttons: $organizations.map((organization) => ({
 				handler: async () => await organizationStore.update(organization.id),
 				role: $organizationStore?.id === organization.id ? 'selected' : undefined,
@@ -279,8 +280,6 @@
 			})),
 			header: $t('routes.organization.page.modal.select-organization.header')
 		});
-
-		await actionSheet.present();
 	}
 
 	async function onOpenCreatePosting(type: PostingType): Promise<void> {

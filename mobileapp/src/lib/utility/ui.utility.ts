@@ -2,11 +2,12 @@ import type { ConfirmModalConfig } from '$lib/models/ui';
 import type { OrganizationRole } from '@kollapp/api-types';
 import type { AnyObject, ObjectSchema } from 'yup';
 
-import { alertController } from '@ionic/core';
+import { actionSheetController, type ActionSheetOptions, alertController } from '@ionic/core';
 import { type Locale as DateFnsLocale, de, enUS } from 'date-fns/locale';
 import { get } from 'svelte/store';
 
 import { Locale, t } from '$lib/locales';
+import { actionSheetStore } from '$lib/stores';
 
 /**
  * Creates a clickable element with a ripple effect
@@ -207,4 +208,17 @@ export async function informationModal(header: string, message: string): Promise
 
 export function updateValueByKey<T>(model: T, key: keyof T, value: T[keyof T]): T {
 	return { ...model, [key]: value };
+}
+
+/**
+ * Creates and presents an action sheet that is automatically registered with the actionSheetStore.
+ * This ensures back navigation closes the action sheet before navigating.
+ * @param options ActionSheetOptions for the action sheet
+ * @returns The created HTMLIonActionSheetElement
+ */
+export async function presentActionSheet(options: ActionSheetOptions): Promise<HTMLIonActionSheetElement> {
+	const actionSheet = await actionSheetController.create(options);
+	actionSheetStore.add(actionSheet);
+	await actionSheet.present();
+	return actionSheet;
 }
