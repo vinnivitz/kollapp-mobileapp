@@ -1,13 +1,11 @@
 import type { AuthenticationModel } from '$lib/models/models';
 import type { OrganizationRole, SystemRole } from '@kollapp/api-types';
 
-import { TZDate } from '@date-fns/tz';
-import { format } from 'date-fns';
 import { get } from 'svelte/store';
 
 import { dev } from '$app/environment';
 
-import { authenticationService, metaService } from '$lib/api/services';
+import { authenticationService } from '$lib/api/services';
 import environment from '$lib/environment';
 import { Locale, t } from '$lib/locales';
 import {
@@ -29,7 +27,7 @@ import {
 	organizationStore,
 	userStore
 } from '$lib/stores';
-import { getStoredValue, informationModal, removeStoredValue, showAlert, storeValue } from '$lib/utility';
+import { getStoredValue, showAlert } from '$lib/utility';
 
 let refreshPromise: Promise<string | undefined> | undefined;
 
@@ -180,34 +178,6 @@ export function hasOrganizationRole(role: OrganizationRole): boolean {
  */
 export function hasSystemRole(role: SystemRole): boolean {
 	return get(userStore)?.role === role;
-}
-
-/**
- * Checks if there is an active maintenance schedule.
- * If there is, it shows an alert with the schedule time.
- * If the schedule is in the past or not set, it removes the stored value.
- * @returns {Promise<void>}
- */
-export async function checkMaintenance(): Promise<void> {
-	const $t = get(t);
-	const response = await metaService.getMaintenanceInfo();
-	if (StatusCheck.isOK(response.status)) {
-		const schedule = new TZDate(response.data.scheduled);
-		if (!response.data.scheduled || schedule <= new TZDate()) {
-			removeStoredValue(StorageKey.MAINTENANCE_SCHEDULE);
-		} else {
-			const storedSchedule = await getStoredValue<Date>(StorageKey.MAINTENANCE_SCHEDULE);
-			if (!storedSchedule || schedule !== storedSchedule) {
-				Promise.all([
-					informationModal(
-						$t('utility.api.maintenance.alert.header'),
-						$t('utility.api.maintenance.message', { value: format(schedule, 'PPP p') })
-					),
-					storeValue(StorageKey.MAINTENANCE_SCHEDULE, schedule)
-				]);
-			}
-		}
-	}
 }
 
 async function handleAuthorizationError(): Promise<ResponseBody> {

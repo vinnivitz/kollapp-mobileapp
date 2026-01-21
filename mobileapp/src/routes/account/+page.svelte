@@ -3,11 +3,9 @@
 
 	import { actionSheetController } from '@ionic/core';
 	import {
-		bugOutline,
 		buildOutline,
 		colorPaletteOutline,
 		colorWandOutline,
-		constructOutline,
 		contrastOutline,
 		desktopOutline,
 		languageOutline,
@@ -29,7 +27,6 @@
 	import { Locale, t } from '$lib/locales';
 	import { Layout, Theme } from '$lib/models/ui';
 	import { layoutStore, localeStore, themeStore } from '$lib/stores';
-	import { featureNotImplementedAlert } from '$lib/utility';
 
 	async function openActionSheet(header: string, buttons: ActionSheetButton[]): Promise<void> {
 		const actionsheet = await actionSheetController.create({
@@ -112,7 +109,6 @@
 <LayoutComponent title={$t('routes.account.page.title')}>
 	{@render accountList()}
 	{@render applicationList()}
-	{@render miscellaneousList()}
 </LayoutComponent>
 
 {#snippet accountList()}
@@ -171,23 +167,6 @@
 			clicked={onRestoreApplicationDefaults}
 			icon={refreshOutline}
 			label={$t('routes.account.page.list.application.restore-defaults')}
-		/>
-	</ion-list>
-{/snippet}
-
-{#snippet miscellaneousList()}
-	<ion-list inset>
-		<ion-list-header>{$t('routes.account.page.list.miscellaneous.header')}</ion-list-header>
-		<LabeledItem
-			label={$t('routes.account.page.list.miscellaneous.app-version')}
-			icon={constructOutline}
-			clicked={() => goto(resolve('/account/privacy-and-security/app-version'))}
-			indexed="/account/privacy-and-security/app-version"
-		/>
-		<LabeledItem
-			label={$t('routes.account.page.list.miscellaneous.report-bug')}
-			icon={bugOutline}
-			clicked={() => featureNotImplementedAlert()}
 		/>
 	</ion-list>
 {/snippet}
