@@ -202,7 +202,7 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
      * @return The updated posting.
      * @throws PersonNotRegisteredInOrganizationException If the new referenced
      * person of organization is not part of the organization.
-     * @throws UnsupportedOperationException If the id of the reference person of organization is set to zero. The posting
+     * @throws PostingIsAlreadyTransferredException If the id of the reference person of organization is set to zero. The posting
      * transfer method has to be used instead.
      */
     private Posting updatePosting(Organization organization, Posting postingToBeEdited, Posting updatedPosting) {
