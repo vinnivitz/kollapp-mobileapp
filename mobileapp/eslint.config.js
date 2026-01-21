@@ -107,7 +107,7 @@ export default defineConfig(
 			'sonarjs/no-unused-collection': 'off',
 			'sonarjs/no-use-of-empty-return-value': 'off',
 			'sonarjs/slow-regex': 'off',
-			'sonarjs/unused-import': 'error',
+			'sonarjs/unused-import': 'off',
 			'sonarjs/void-use': 'off',
 			'svelte/event-directive-deprecated': 'off',
 			'svelte/no-unused-svelte-ignore': 'off',
