@@ -299,8 +299,6 @@ async function createErrorResponse(status: number, message: string, silent: bool
 	const log = `status: ${status}, message: ${message}`;
 	if (dev) {
 		console.warn(log);
-	} else if (!StatusCheck.isUnauthorized(status)) {
-		metaService.reportErrorLog(log);
 	}
 	return { data: {} as never, message, status };
 }

@@ -31,9 +31,7 @@
 		title
 	}: Properties = $props();
 
-	const loadedCache = $derived($initializationStore.loadedCache);
-	const loadedServer = $derived($initializationStore.loadedServer);
-	const loaded = $derived($loadedCache || $loadedServer);
+	const loaded = $derived(initializationStore.loaded);
 
 	let refresher = $state<HTMLIonRefresherElement>();
 	let menuComponent = $state<ReturnType<typeof Menu>>();
@@ -81,7 +79,7 @@
 	{#if title}
 		<Header {title} {showBackButton} {loading}></Header>
 	{/if}
-	{#if loaded && !loading}
+	{#if $loaded && !loading}
 		<ion-content class="ion-padding" in:fade={{ delay: 0, duration: 200 }} class:no-overflow={!scrollable}>
 			<ion-refresher bind:this={refresher} slot="fixed" onionRefresh={doRefresh}>
 				<ion-refresher-content></ion-refresher-content>

@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 
 import org.springframework.stereotype.Service;
 
+import org.kollapp.organization.application.exception.BudgetCategoryIsNotAssignableException;
 import org.kollapp.organization.application.exception.OrganizationAuthorizationException;
 import org.kollapp.organization.application.exception.OrganizationNotFoundException;
 import org.kollapp.organization.application.exception.PersonNotRegisteredInOrganizationException;
@@ -16,6 +17,7 @@ import org.kollapp.organization.application.exception.PostingTransferNotPossible
 import org.kollapp.organization.application.model.Activity;
 import org.kollapp.organization.application.model.ActivityPosting;
 import org.kollapp.organization.application.model.Organization;
+import org.kollapp.organization.application.model.OrganizationBudgetCategory;
 import org.kollapp.organization.application.model.OrganizationPosting;
 import org.kollapp.organization.application.model.PersonOfOrganization;
 import org.kollapp.organization.application.model.Posting;
@@ -46,6 +48,8 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
         Organization organization =
                 organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
         checkOrganizationMemberSelfAssignment(organization, posting);
+        long budgetCategoryId = getAssignableBudgetCategory(organization, posting);
+        posting.setOrganizationBudgetCategoryId(budgetCategoryId);
         List<Long> personOfOrganizationIdsOfOrganization = organization.getPersonOfOrganizationIds();
         if (posting.getPersonOfOrganizationId() == 0
                 || personOfOrganizationIdsOfOrganization.contains(posting.getPersonOfOrganizationId())) {
@@ -65,7 +69,7 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
         organizationRoleHelper.verifyOrganizationMember(organizationId);
         Organization organization =
                 organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
-        OrganizationPosting postingToBeEdited = organization.getOrganizationPostingById(postingId);
+        OrganizationPosting postingToBeEdited = organization.findOrganizationPostingById(postingId);
         return updatePosting(organization, postingToBeEdited, updatedPosting);
     }
 
@@ -78,7 +82,7 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
         organizationRoleHelper.verifyOrganizationMember(organizationId);
         Organization organization =
                 organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
-        OrganizationPosting postingToBeRemoved = organization.getOrganizationPostingById(postingId);
+        OrganizationPosting postingToBeRemoved = organization.findOrganizationPostingById(postingId);
         checkOrganizationMemberSelfAssignment(organization, postingToBeRemoved);
         organization.getOrganizationPostings().remove(postingToBeRemoved);
     }
@@ -92,7 +96,7 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
         organizationRoleHelper.verifyOrganizationManager(organizationId);
         Organization organization =
                 organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
-        OrganizationPosting organizationPosting = organization.getOrganizationPostingById(postingId);
+        OrganizationPosting organizationPosting = organization.findOrganizationPostingById(postingId);
         checkPostingTransferability(organizationPosting);
         organizationPosting.transfer();
         return organizationPosting;
@@ -107,8 +111,10 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
         organizationRoleHelper.verifyOrganizationMember(organizationId);
         Organization organization =
                 organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
-        Activity activity = organization.getActivityById(activityId);
+        Activity activity = organization.findActivityById(activityId);
         checkOrganizationMemberSelfAssignment(organization, posting);
+        long budgetCategoryId = getAssignableBudgetCategory(organization, posting);
+        posting.setOrganizationBudgetCategoryId(budgetCategoryId);
         List<Long> personOfOrganizationIdsOfOrganization = organization.getPersonOfOrganizationIds();
         if (posting.getPersonOfOrganizationId() == 0
                 || personOfOrganizationIdsOfOrganization.contains(posting.getPersonOfOrganizationId())) {
@@ -129,7 +135,7 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
         organizationRoleHelper.verifyOrganizationMember(organizationId);
         Organization organization =
                 organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
-        Activity activity = organization.getActivityById(activityId);
+        Activity activity = organization.findActivityById(activityId);
         ActivityPosting postingToBeEdited = activity.getActivityPostingById(postingId);
         return updatePosting(organization, postingToBeEdited, updatedPosting);
     }
@@ -143,7 +149,7 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
         organizationRoleHelper.verifyOrganizationMember(organizationId);
         Organization organization =
                 organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
-        Activity activity = organization.getActivityById(activityId);
+        Activity activity = organization.findActivityById(activityId);
         ActivityPosting postingToBeRemoved = activity.getActivityPostingById(postingId);
         checkOrganizationMemberSelfAssignment(organization, postingToBeRemoved);
         activity.getActivityPostings().remove(postingToBeRemoved);
@@ -158,11 +164,26 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
         organizationRoleHelper.verifyOrganizationManager(organizationId);
         Organization organization =
                 organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
-        Activity activity = organization.getActivityById(activityId);
+        Activity activity = organization.findActivityById(activityId);
         ActivityPosting activityPosting = activity.getActivityPostingById(postingId);
         checkPostingTransferability(activityPosting);
         activityPosting.transfer();
         return activityPosting;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @RequiresKollappOrganizationMemberRole
+    public void assignPostingsOfBudgetCategoryToDefaultBudgetCategory(
+            Organization organization, OrganizationBudgetCategory sourceBudgetCategory) {
+        List<Posting> postingsOfCategory =
+                organization.findAllOrganizationAndActivityPostingsByBudgetCategoryId(sourceBudgetCategory.getId());
+        OrganizationBudgetCategory defaultCategory = organization.findDefaultBudgetCategory();
+        postingsOfCategory.forEach(posting -> {
+            posting.setOrganizationBudgetCategoryId(defaultCategory.getId());
+        });
     }
 
     /**
@@ -186,7 +207,7 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
     private void checkOrganizationMemberSelfAssignment(Organization organization, Posting posting) {
         KollappUser loggedInKollappUser = kollappUserService.getLoggedInKollappUser();
         PersonOfOrganization loggedInPersonOfOrganization =
-                organization.getPersonOfOrganizationByUserId(loggedInKollappUser.getId());
+                organization.findPersonOfOrganizationByUserId(loggedInKollappUser.getId());
         boolean postingIsSelfAssigned = posting.getPersonOfOrganizationId() == loggedInPersonOfOrganization.getId();
         if (loggedInPersonOfOrganization.isMember() && !postingIsSelfAssigned) {
             throw new OrganizationAuthorizationException();
@@ -202,7 +223,7 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
      * @return The updated posting.
      * @throws PersonNotRegisteredInOrganizationException If the new referenced
      * person of organization is not part of the organization.
-     * @throws UnsupportedOperationException If the id of the reference person of organization is set to zero. The posting
+     * @throws PostingIsAlreadyTransferredException If the id of the reference person of organization is set to zero. The posting
      * transfer method has to be used instead.
      */
     private Posting updatePosting(Organization organization, Posting postingToBeEdited, Posting updatedPosting) {
@@ -219,11 +240,32 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
         if (postingToBeEdited.getPersonOfOrganizationId() == 0 && updatedPosting.getPersonOfOrganizationId() != 0) {
             throw new PostingIsAlreadyTransferredException();
         }
+        long budgetCategoryId = getAssignableBudgetCategory(organization, updatedPosting);
         postingToBeEdited.setDate(updatedPosting.getDate());
         postingToBeEdited.setPurpose(updatedPosting.getPurpose());
         postingToBeEdited.setAmountInCents(updatedPosting.getAmountInCents());
         postingToBeEdited.setType(updatedPosting.getType());
         postingToBeEdited.setPersonOfOrganizationId(updatedPosting.getPersonOfOrganizationId());
+        postingToBeEdited.setOrganizationBudgetCategoryId(budgetCategoryId);
         return postingToBeEdited;
+    }
+
+    /**
+     * Get the assignable budget category for the posting. The provided budget category id is assignable
+     * if it is part of the same organization as the posting. If no budget category id is provided
+     * the posting is assigned to the default budget category of the organization.
+     */
+    private long getAssignableBudgetCategory(Organization organization, Posting posting) {
+        boolean budgetCategoryIdIsProvided = posting.getOrganizationBudgetCategoryId() != 0;
+        if (!budgetCategoryIdIsProvided) {
+            return organization.findDefaultBudgetCategory().getId();
+        }
+        List<Long> budgetCategoryIdsOfOrganization = organization.getBudgetCategoryIds();
+        boolean categoryIsAssignable =
+                budgetCategoryIdsOfOrganization.contains(posting.getOrganizationBudgetCategoryId());
+        if (!categoryIsAssignable) {
+            throw new BudgetCategoryIsNotAssignableException();
+        }
+        return posting.getOrganizationBudgetCategoryId();
     }
 }

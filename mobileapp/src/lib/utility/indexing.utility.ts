@@ -13,7 +13,7 @@ import type { RouteId } from '$app/types';
  * Directory to scan and output file path.
  */
 const SRC_DIR = './';
-const OUTPUT_FILE = './src/lib/assets/data/searchables.json';
+const OUTPUT_FILE = './static/data/searchables.json';
 const ROLE_PREFIX = 'ROLE_ORGANIZATION_';
 
 /**

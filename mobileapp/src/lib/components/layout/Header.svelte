@@ -4,6 +4,7 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
+	import logo from '$lib/assets/logo.png';
 	import { initializationStore } from '$lib/stores';
 	import { navigateBack } from '$lib/utility';
 
@@ -15,7 +16,7 @@
 
 	let { loading, showBackButton, title }: Properties = $props();
 
-	const loaded = $derived($initializationStore.loadedServer);
+	const loaded = $derived(initializationStore.loadedServer);
 
 	let timer: ReturnType<typeof setTimeout>;
 	let showProgressBar = $state<boolean>(false);
@@ -51,7 +52,7 @@
 				{#if showBackButton}
 					<ion-back-button default-href="/"> </ion-back-button>
 				{:else}
-					<img src="/logo.png" alt="Logo" class="h-8 w-8 bw:grayscale" />
+					<img src={logo} alt="Logo" class="h-8 w-8 bw:grayscale" />
 				{/if}
 			</ion-button>
 		</ion-buttons>

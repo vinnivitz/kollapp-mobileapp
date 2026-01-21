@@ -1,6 +1,8 @@
 package org.kollapp.organization.application.service;
 
 import org.kollapp.organization.application.model.ActivityPosting;
+import org.kollapp.organization.application.model.Organization;
+import org.kollapp.organization.application.model.OrganizationBudgetCategory;
 import org.kollapp.organization.application.model.OrganizationPosting;
 import org.kollapp.organization.application.model.Posting;
 
@@ -81,4 +83,12 @@ public interface BudgetAccountService {
      * @return The transferred posting.
      */
     Posting transferActivityPosting(long organizationId, long activityId, long postingId);
+
+    /**
+     * Assigns all postings of a budget category to the default budget category of the corresponding organization.
+     * @param organization The organization.
+     * @param sourceBudgetCategoryId The budget category to take the postings from.
+     */
+    void assignPostingsOfBudgetCategoryToDefaultBudgetCategory(
+            Organization organization, OrganizationBudgetCategory sourceBudgetCategoryId);
 }

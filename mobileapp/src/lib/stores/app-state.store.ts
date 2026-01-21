@@ -9,6 +9,7 @@ import { AlertType, AppStateType } from '$lib/models/ui';
 import {
 	authenticationStore,
 	connectionStore,
+	initializationStore,
 	layoutStore,
 	localeStore,
 	organizationStore,
@@ -24,12 +25,6 @@ function createAppStateStore(): AppStateStore {
 	let isInitialized = false;
 
 	async function initialize(): Promise<void> {
-		const currentState = get(appStateStore);
-
-		if (currentState === AppStateType.UNINITIALIZED) {
-			isInitialized = false;
-		}
-
 		if (isInitialized) return;
 		isInitialized = true;
 
@@ -46,13 +41,20 @@ function createAppStateStore(): AppStateStore {
 
 			if (isAuthenticated) {
 				set(AppStateType.INITIALIZING_BASE_DATA);
-				await Promise.all([userStore.init(), organizationStore.init()]);
+				void userStore.init();
+				void organizationStore.init();
 				if (dev) console.info('Base data stores initialized.');
 			} else {
-				await Promise.all([userStore.reset(), organizationStore.reset()]);
+				void userStore.reset();
+				void organizationStore.reset();
 			}
 			void connectionStore.init();
-			set(AppStateType.READY);
+			const unsubscribe = initializationStore.loaded.subscribe((value) => {
+				if (value) {
+					set(AppStateType.READY);
+					unsubscribe();
+				}
+			});
 		} catch (error) {
 			set(AppStateType.ERROR);
 			await showAlert($t('stores.app-state.error'));

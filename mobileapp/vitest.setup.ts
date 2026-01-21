@@ -90,20 +90,23 @@ vi.mock('$lib/stores', () => {
 	return {
 		globalPopoverStore: { datetimeInputItem },
 		initializationStore: {
-			subscribe: (
-				run: (v: {
-					loadedCache: { subscribe: (r: (v: boolean) => void) => () => void };
-					loadedServer: { subscribe: (r: (v: boolean) => void) => () => void };
-				}) => void
-			) => {
-				const readableTrue = {
-					subscribe: (r: (v: boolean) => void) => {
-						r(true);
-						return vi.fn();
-					}
-				};
-				run({ loadedCache: readableTrue, loadedServer: readableTrue });
-				return vi.fn();
+			loaded: {
+				subscribe: (run: (v: boolean) => void) => {
+					run(true);
+					return vi.fn();
+				}
+			},
+			loadedCache: {
+				subscribe: (run: (v: boolean) => void) => {
+					run(true);
+					return vi.fn();
+				}
+			},
+			loadedServer: {
+				subscribe: (run: (v: boolean) => void) => {
+					run(true);
+					return vi.fn();
+				}
 			}
 		},
 		localeStore: {

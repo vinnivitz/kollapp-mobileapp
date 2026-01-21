@@ -36,7 +36,7 @@ class BudgetResource {
 		activityId: number,
 		model: PostingCreateUpdateRequestTO
 	): Promise<ResponseBody<PostingTO>> {
-		return customFetch(`${this.base(organizationId)}/${activityId}/posting`, {
+		return customFetch(`${this.base(organizationId)}/activity/${activityId}/posting`, {
 			body: model,
 			method: RequestMethod.POST
 		});
@@ -56,7 +56,7 @@ class BudgetResource {
 		postingId: number,
 		model: PostingCreateUpdateRequestTO
 	): Promise<ResponseBody<PostingTO>> {
-		return customFetch(`${this.base(organizationId)}/${activityId}/posting/${postingId}`, {
+		return customFetch(`${this.base(organizationId)}/activity/${activityId}/posting/${postingId}`, {
 			body: model,
 			method: RequestMethod.PUT
 		});
@@ -100,7 +100,7 @@ class BudgetResource {
 	 * @returns {Promise<ResponseBody>} The response body.
 	 */
 	async removeActivityPosting(organizationId: number, activityId: number, postingId: number): Promise<ResponseBody> {
-		return customFetch(`${this.base(organizationId)}/${activityId}/posting/${postingId}`, {
+		return customFetch(`${this.base(organizationId)}/activity/${activityId}/posting/${postingId}`, {
 			method: RequestMethod.DELETE
 		});
 	}

@@ -2,6 +2,7 @@ package org.kollapp.organization.adapters.primary.rest.dto;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -33,8 +34,13 @@ public class PostingCreateUpdateRequestTO {
     @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "{validation.posting.date.format}")
     private String date;
 
+    @NotEmpty(message = "{validation.posting.purpose.required}")
     @Size(max = 50, message = "{validation.posting.purpose.maxlength}")
     private String purpose;
 
+    @Min(value = 0, message = "{validation.posting.personOfOrganizationId.min}")
     private long personOfOrganizationId;
+
+    @Min(value = 0, message = "{validation.posting.budgetCategoryId.min}")
+    private long organizationBudgetCategoryId;
 }
