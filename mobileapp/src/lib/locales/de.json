@@ -563,7 +563,10 @@
             }
           },
           "no-members": "Keine weiteren Mitglieder gefunden.",
-          "title": "Mitglieder"
+          "title": "Mitglieder",
+          "search": {
+            "placeholder": "Mitglieder suchen..."
+          }
         }
       },
       "page": {

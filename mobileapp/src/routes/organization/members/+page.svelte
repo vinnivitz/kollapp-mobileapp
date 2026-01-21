@@ -272,7 +272,7 @@
 
 	<ion-searchbar
 		debounce={100}
-		placeholder={$t('components.menu.header.toolbar.searchbar.placeholder')}
+		placeholder={$t('routes.organization.members.page.search.placeholder')}
 		onionInput={onSearch}
 		value={searchValue}
 	></ion-searchbar>

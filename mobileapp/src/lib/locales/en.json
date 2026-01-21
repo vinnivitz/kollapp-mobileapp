@@ -862,7 +862,10 @@
             }
           },
           "no-members": "No other members found.",
-          "invite": "Invite person"
+          "invite": "Invite person",
+          "search": {
+            "placeholder": "Search members..."
+          }
         }
       },
       "register": {
