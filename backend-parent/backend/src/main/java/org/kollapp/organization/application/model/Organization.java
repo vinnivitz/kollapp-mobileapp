@@ -26,6 +26,7 @@ import org.hibernate.Hibernate;
 
 import org.kollapp.organization.application.exception.ActivityNotFoundException;
 import org.kollapp.organization.application.exception.BudgetCategoryNotFoundException;
+import org.kollapp.organization.application.exception.NoDefaultBudgetCategoryExistsException;
 import org.kollapp.organization.application.exception.PersonNotRegisteredInOrganizationException;
 import org.kollapp.organization.application.exception.PostingDoesNotExistException;
 
@@ -107,7 +108,7 @@ public class Organization {
         return organizationInvitationCode;
     }
 
-    public OrganizationPosting getOrganizationPostingById(long postingId) {
+    public OrganizationPosting findOrganizationPostingById(long postingId) {
         return getOrganizationPostings().stream()
                 .filter(p -> p.getId() == postingId)
                 .findFirst()
@@ -120,27 +121,40 @@ public class Organization {
                 .toList();
     }
 
-    public PersonOfOrganization getPersonOfOrganizationByUserId(long userId) {
+    public List<Long> getBudgetCategoryIds() {
+        return getBudgetCategories().stream()
+                .map(OrganizationBudgetCategory::getId)
+                .toList();
+    }
+
+    public PersonOfOrganization findPersonOfOrganizationByUserId(long userId) {
         return getPersonsOfOrganization().stream()
                 .filter(p -> p.getUserId() == userId)
                 .findFirst()
                 .orElseThrow(PersonNotRegisteredInOrganizationException::new);
     }
 
-    public Activity getActivityById(long activityId) {
+    public Activity findActivityById(long activityId) {
         return getActivities().stream()
                 .filter(a -> a.getId() == activityId)
                 .findFirst()
                 .orElseThrow(ActivityNotFoundException::new);
     }
 
-    public List<Posting> getAllOrganizationAndActivityPostings() {
+    public List<Posting> findAllOrganizationAndActivityPostings() {
         List<Posting> postings = new ArrayList<>(organizationPostings);
         List<Posting> activityPostings = activities.stream().map(Activity::getActivityPostings).toList().stream()
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
         postings.addAll(activityPostings);
         return postings;
+    }
+
+    public List<Posting> findAllOrganizationAndActivityPostingsByBudgetCategoryId(long budgetCategoryId) {
+        List<Posting> allPostings = findAllOrganizationAndActivityPostings();
+        return allPostings.stream()
+                .filter(p -> p.getOrganizationBudgetCategoryId() == budgetCategoryId)
+                .collect(Collectors.toList());
     }
 
     public void addBudgetCategory(OrganizationBudgetCategory budgetCategory) {
@@ -155,6 +169,13 @@ public class Organization {
                 .filter(b -> b.getId() == id)
                 .findFirst()
                 .orElseThrow(BudgetCategoryNotFoundException::new);
+    }
+
+    public OrganizationBudgetCategory findDefaultBudgetCategory() {
+        return budgetCategories.stream()
+                .filter(OrganizationBudgetCategory::isDefaultCategory)
+                .findFirst()
+                .orElseThrow(NoDefaultBudgetCategoryExistsException::new);
     }
 
     private String generateInvitationCode() {
