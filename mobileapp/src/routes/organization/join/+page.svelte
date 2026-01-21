@@ -3,6 +3,7 @@
 	import { Haptics } from '@capacitor/haptics';
 	import { keyOutline, qrCodeOutline, saveOutline } from 'ionicons/icons';
 
+	import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
@@ -37,8 +38,7 @@
 				await showAlert($t('routes.organization.join.page.qr-code.invalid'));
 			}
 		} catch (error) {
-			console.error('Error scanning QR code:', error);
-			await showAlert($t('routes.organization.join.page.qr-code.error'));
+			if (dev) console.info('Error scanning QR code:', error);
 		}
 	}
 
