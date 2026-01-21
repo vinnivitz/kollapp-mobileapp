@@ -19,7 +19,6 @@ public class ApplicationProperties {
     private String host;
     private String production;
     private String version;
-    private String minApiVersion;
     private String port;
     private int staticCacheDays;
     private int organizationInvitationValidityDays;

@@ -14,16 +14,12 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.core.adapters.primary.rest.dto.ErrorResponseTO;
-import org.kollapp.core.config.properties.ApplicationProperties;
 
 @Component
 public class ApiVersionValidationInterceptor implements HandlerInterceptor {
 
     @Autowired
     private MessageUtil messageUtil;
-
-    @Autowired
-    private ApplicationProperties applicationProperties;
 
     @Autowired
     private MappingJackson2HttpMessageConverter messageConverter;
@@ -47,8 +43,10 @@ public class ApiVersionValidationInterceptor implements HandlerInterceptor {
         }
 
         String requestVersion = (String) request.getAttribute(ApiVersionInterceptor.API_VERSION_ATTRIBUTE);
+
+        // If no version header was sent, assume client is on the latest version
         if (requestVersion == null) {
-            requestVersion = applicationProperties.getMinApiVersion();
+            return true;
         }
 
         if (!isVersionAtLeast(requestVersion, apiVersion.min())) {

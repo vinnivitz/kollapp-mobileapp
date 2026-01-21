@@ -1,4 +1,4 @@
-package org.kollapp.core.adapters.primary.rest.dto;
+package org.kollapp.meta.adapters.primary.rest.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
@@ -13,7 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ApiVersionTO {
+public class MetaTO {
     @NotBlank
-    private String version;
+    private String clientVersion;
 }
