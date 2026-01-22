@@ -62,6 +62,8 @@
 
 	const userId = $derived($userStore?.id);
 
+	const isManager = $derived(hasOrganizationRole('ROLE_ORGANIZATION_MANAGER'));
+
 	const invitationCodeExpiration = $derived(
 		new TZDate($organizationStore?.organizationInvitationCode.expirationDate ?? '')
 	);
@@ -92,11 +94,24 @@
 	const isExpired = $derived(invitationCodeExpiration.getTime() <= Date.now());
 
 	function getPersonOfOrganizationSlidingOptions(personOfOrganization: PersonOfOrganizationTO): ItemSlidingOption[] {
-		return [
-			{ color: 'secondary', handler: () => onViewMemberDetails(personOfOrganization), icon: informationCircleOutline },
-			{ color: 'tertiary', handler: () => onSelectRole(personOfOrganization), icon: ribbonOutline },
-			{ color: 'danger', handler: () => onRemovePersonOfOrganizationPrompt(personOfOrganization), icon: logOutOutline }
+		const options: ItemSlidingOption[] = [
+			{
+				color: 'primary',
+				handler: () => onViewMemberDetails(personOfOrganization),
+				icon: informationCircleOutline
+			}
 		];
+		if (isManager) {
+			options.push(
+				{ color: 'tertiary', handler: () => onSelectRole(personOfOrganization), icon: ribbonOutline },
+				{
+					color: 'danger',
+					handler: () => onRemovePersonOfOrganizationPrompt(personOfOrganization),
+					icon: logOutOutline
+				}
+			);
+		}
+		return options;
 	}
 
 	function onViewMemberDetails(personOfOrganization: PersonOfOrganizationTO): void {
@@ -384,9 +399,9 @@
 
 {#snippet personOfOrganizationItem(personOfOrganization: PersonOfOrganizationTO)}
 	<CustomItem
-		slidingOptions={hasOrganizationRole('ROLE_ORGANIZATION_MANAGER') && personOfOrganization.userId !== userId
-			? getPersonOfOrganizationSlidingOptions(personOfOrganization)
-			: undefined}
+		slidingOptions={personOfOrganization.userId === userId
+			? undefined
+			: getPersonOfOrganizationSlidingOptions(personOfOrganization)}
 	>
 		<ion-avatar class="mb-2">
 			<ion-icon icon={personCircleOutline} class="h-10 w-10" color="medium"></ion-icon>

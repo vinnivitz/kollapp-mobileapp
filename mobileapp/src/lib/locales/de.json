@@ -564,7 +564,9 @@
               "open-postings": {
                 "title": "Offene Buchungen",
                 "search-placeholder": "Buchungen suchen...",
-                "no-results": "Keine Buchung für „{{value}}“ gefunden"
+                "no-results": "Keine Buchung für „{{value}}“ gefunden",
+                "no-results-filtered": "Keine Buchungen gefunden.",
+                "reset-filters": "Filter zurücksetzen"
               }
             },
             "modal": {
@@ -579,6 +581,26 @@
                 "purpose": "Zweck",
                 "amount": "Betrag",
                 "date": "Datum"
+              },
+              "filter": {
+                "card": {
+                  "title": "Buchungen filtern",
+                  "type-filter": {
+                    "label": "Buchungstyp",
+                    "all": "Alle",
+                    "credit": "Einnahmen",
+                    "debit": "Ausgaben"
+                  },
+                  "date": {
+                    "from": "Von",
+                    "to": "To"
+                  },
+                  "reset": "Filter zurücksetzen",
+                  "apply": "Filter anwenden",
+                  "date-range": {
+                    "label": "Zeitraum"
+                  }
+                }
               }
             }
           }

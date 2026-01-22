@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type {
+		ActivityTO,
 		OrganizationRole,
 		PersonOfOrganizationTO,
 		PostingCreateUpdateRequestTO,
@@ -11,29 +12,37 @@
 	import { actionSheetController, loadingController } from '@ionic/core';
 	import { format } from 'date-fns';
 	import {
+		calendarClearOutline,
 		cardOutline,
 		cashOutline,
 		createOutline,
 		documentOutline,
+		filterOutline,
+		flashOutline,
 		medalOutline,
 		personCircleOutline,
 		personOutline,
+		refreshOutline,
 		ribbonOutline,
+		saveOutline,
 		sendOutline,
 		trendingDownOutline,
 		trendingUpOutline
 	} from 'ionicons/icons';
+	import { SvelteMap } from 'svelte/reactivity';
 
 	import { createUpdatePostingSchema } from '$lib/api/schema/budget/index.js';
 	import { budgetService, organizationService } from '$lib/api/services';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import AmountInputItem from '$lib/components/widgets/ionic/AmountInputItem.svelte';
+	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import Chip from '$lib/components/widgets/ionic/Chip.svelte';
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
 	import DatetimeInputItem from '$lib/components/widgets/ionic/DatetimeInputItem.svelte';
 	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
+	import Popover from '$lib/components/widgets/ionic/Popover.svelte';
 	import { t } from '$lib/locales';
 	import { Form, type FormActions, type ItemSlidingOption } from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';
@@ -84,15 +93,104 @@
 		personOfOrganization ? getRoleTranslationFromRole(personOfOrganization.organizationRole) : ''
 	);
 
+	const activityByPostingId = $derived(getActivityPostingIdMap());
+
 	const isManager = $derived(hasOrganizationRole('ROLE_ORGANIZATION_MANAGER'));
 
+	type TypeFilter = 'all' | 'credit' | 'debit';
+
+	type PostingsFilterDraft = {
+		fromDate: string;
+		toDate: string;
+		typeFilter: TypeFilter;
+	};
+
 	let searchValue = $state<string>('');
+	let filterOpen = $state<boolean>(false);
+
+	let fromFilterDate = $state<string>('');
+	let toFilterDate = $state<string>('');
+	let typeFilter = $state<TypeFilter>('all');
+	let hasNonSearchFiltersApplied = $state<boolean>(false);
+
+	let filterDraft = $state<PostingsFilterDraft>({
+		fromDate: '',
+		toDate: '',
+		typeFilter: 'all'
+	});
+
+	let initialized = $state<boolean>(false);
+
+	$effect(() => {
+		if (openPostings.length > 0 && !initialized) {
+			const minDate = getMinPostingDate();
+			const maxDate = getMaxPostingDate();
+			fromFilterDate = minDate;
+			toFilterDate = maxDate;
+			filterDraft = {
+				...filterDraft,
+				fromDate: minDate,
+				toDate: maxDate
+			};
+			initialized = true;
+		}
+	});
 
 	const filteredOpenPostings = $derived<PostingTO[]>(
-		searchValue
-			? openPostings.filter((posting) => posting.purpose.toLowerCase().includes(searchValue.toLowerCase().trim()))
-			: openPostings
+		filterPostings(openPostings, searchValue, typeFilter, fromFilterDate, toFilterDate)
 	);
+
+	function filterPostings(
+		postings: PostingTO[],
+		search: string,
+		type: TypeFilter,
+		fromDate: string,
+		toDate: string
+	): PostingTO[] {
+		const searchTerm = search.trim().toLowerCase();
+
+		return postings.filter((posting) => {
+			return (
+				matchesSearch(posting, searchTerm) &&
+				matchesTypeFilter(posting, type) &&
+				matchesDateRange(posting, fromDate, toDate)
+			);
+		});
+	}
+
+	function matchesSearch(posting: PostingTO, searchTerm: string): boolean {
+		return searchTerm === '' || posting.purpose.toLowerCase().includes(searchTerm);
+	}
+
+	function matchesTypeFilter(posting: PostingTO, type: TypeFilter): boolean {
+		if (type === 'credit') return posting.type === 'CREDIT';
+		if (type === 'debit') return posting.type === 'DEBIT';
+		return true;
+	}
+
+	function matchesDateRange(posting: PostingTO, fromDate: string, toDate: string): boolean {
+		if (fromDate && posting.date < fromDate) return false;
+		if (toDate && posting.date > toDate) return false;
+		return true;
+	}
+
+	function getMinPostingDate(): string {
+		if (openPostings.length === 0) return format(new TZDate(), 'yyyy-MM-dd');
+		let min = openPostings[0]!.date;
+		for (const posting of openPostings) {
+			if (posting.date < min) min = posting.date;
+		}
+		return min;
+	}
+
+	function getMaxPostingDate(): string {
+		if (openPostings.length === 0) return format(new TZDate(), 'yyyy-MM-dd');
+		let max = openPostings[0]!.date;
+		for (const posting of openPostings) {
+			if (posting.date > max) max = posting.date;
+		}
+		return max;
+	}
 
 	let postingUpdateModalOpen = $state<boolean>(false);
 	let selectedPosting = $state<PostingTO>();
@@ -120,6 +218,24 @@
 		},
 		schema: createUpdatePostingSchema()
 	});
+
+	function getActivityPostingIdMap(): SvelteMap<number, ActivityTO> {
+		const map = new SvelteMap<number, ActivityTO>();
+		for (const activity of $organizationStore?.activities ?? []) {
+			for (const activityPosting of activity.activityPostings ?? []) {
+				map.set(activityPosting.id, activity);
+			}
+		}
+		return map;
+	}
+
+	function isActivityPosting(postingId: number): boolean {
+		return activityByPostingId.has(postingId);
+	}
+
+	function getActivityPosting(postingId: number): ActivityTO | undefined {
+		return activityByPostingId.get(postingId);
+	}
 
 	function getPostingSlidingOptions(posting: PostingTO): ItemSlidingOption[] {
 		return [
@@ -185,6 +301,10 @@
 		await actionsheet.present();
 	}
 
+	function getBudgetCategoryNameById(categoryId: number): string {
+		return $organizationStore?.budgetCategories.find((category) => category.id === categoryId)?.name ?? '';
+	}
+
 	async function onGrantOrganizationRolePrompt(
 		personOfOrganizationId: number,
 		organizationId: number,
@@ -236,17 +356,51 @@
 	function onSearch(event: CustomEvent): void {
 		searchValue = event.detail.value ?? '';
 	}
+
+	function applyDraftFilter(): void {
+		typeFilter = filterDraft.typeFilter;
+		fromFilterDate = filterDraft.fromDate;
+		toFilterDate = filterDraft.toDate;
+		hasNonSearchFiltersApplied =
+			typeFilter !== 'all' || fromFilterDate !== getMinPostingDate() || toFilterDate !== getMaxPostingDate();
+		filterOpen = false;
+	}
+
+	function resetDraftFilter(): void {
+		const minDate = getMinPostingDate();
+		const maxDate = getMaxPostingDate();
+		filterDraft = {
+			fromDate: minDate,
+			toDate: maxDate,
+			typeFilter: 'all'
+		};
+		typeFilter = 'all';
+		fromFilterDate = minDate;
+		toFilterDate = maxDate;
+		hasNonSearchFiltersApplied = false;
+	}
+
+	function onFilterModalDismiss(): void {
+		filterDraft = {
+			fromDate: fromFilterDate,
+			toDate: toFilterDate,
+			typeFilter
+		};
+		filterOpen = false;
+	}
+
+	function setDraftTypeFilter(value: TypeFilter): void {
+		filterDraft = { ...filterDraft, typeFilter: value };
+	}
 </script>
 
 <Layout title={$t('routes.organization.members.slug.page.title')} showBackButton>
 	{#if personOfOrganization}
 		{@render personOfOrganizationHeader()}
 		{@render infoCard()}
-		{#if isManager}
-			{@render postingsOverviewCard()}
-			{#if openPostings.length > 0}
-				{@render openPostingsCard()}
-			{/if}
+		{@render postingsOverviewCard()}
+		{#if openPostings.length > 0}
+			{@render openPostingsCard()}
 		{/if}
 	{:else}
 		{@render notFound()}
@@ -264,7 +418,7 @@
 
 {#snippet infoCard()}
 	<Card title={$t('routes.organization.members.slug.page.card.info.title')}>
-		<CustomItem clicked={onSelectRole} icon={ribbonOutline}>
+		<CustomItem clicked={isManager ? onSelectRole : undefined} icon={ribbonOutline}>
 			<div class="flex w-full items-center justify-between">
 				<ion-label>{$t('routes.organization.members.slug.page.card.info.role')}</ion-label>
 				<ion-text>{roleLabel}</ion-text>
@@ -304,16 +458,31 @@
 
 {#snippet openPostingsCard()}
 	<Card title={$t('routes.organization.members.slug.page.card.open-postings.title')}>
-		<ion-searchbar
-			debounce={100}
-			placeholder={$t('routes.organization.members.slug.page.card.open-postings.search-placeholder')}
-			onionInput={onSearch}
-			value={searchValue}
-		></ion-searchbar>
+		<div class="flex items-center justify-between gap-2">
+			<ion-searchbar
+				debounce={100}
+				placeholder={$t('routes.organization.members.slug.page.card.open-postings.search-placeholder')}
+				onionInput={onSearch}
+				value={searchValue}
+			></ion-searchbar>
+			<Button fill="solid" color="secondary" clicked={() => (filterOpen = true)} icon={filterOutline} />
+		</div>
+		{#if hasNonSearchFiltersApplied}
+			<div class="flex justify-center">
+				<Button
+					size="small"
+					fill="outline"
+					color="danger"
+					icon={refreshOutline}
+					label={$t('routes.organization.members.slug.page.card.open-postings.reset-filters')}
+					clicked={resetDraftFilter}
+				/>
+			</div>
+		{/if}
 		{#each filteredOpenPostings as posting (posting.id)}
 			{@render postingItem(posting)}
 		{/each}
-		{#if filteredOpenPostings.length === 0 && searchValue}
+		{#if filteredOpenPostings.length === 0}
 			{@render noSearchResults()}
 		{/if}
 	</Card>
@@ -321,30 +490,49 @@
 
 {#snippet postingItem(posting: PostingTO)}
 	<CustomItem
+		slidingOptions={isManager ? getPostingSlidingOptions(posting) : undefined}
+		iconColor={posting.type === 'CREDIT' ? 'success' : 'danger'}
 		icon={posting.type === 'CREDIT' ? trendingUpOutline : trendingDownOutline}
-		slidingOptions={getPostingSlidingOptions(posting)}
 	>
-		<div class="flex w-full items-center justify-between">
-			<div class="flex flex-col">
-				<ion-text class="font-medium">{posting.purpose}</ion-text>
-				<ion-note class="ms-2 text-xs">
-					{format(new TZDate(posting.date), 'PP')}
-				</ion-note>
+		<div class="mt-2 flex w-full flex-col items-center gap-2">
+			<div class="flex w-full items-center justify-between">
+				<ion-text class="font-semibold">{posting.purpose}</ion-text>
+				<ion-text color={posting.type === 'CREDIT' ? 'success' : 'danger'} class="font-bold text-nowrap">
+					{posting.type === 'CREDIT' ? '+' : '-'}
+					{formatter.currency(posting.amountInCents)}
+				</ion-text>
 			</div>
-			<ion-text color={posting.type === 'CREDIT' ? 'success' : 'danger'}>
-				{formatter.currency(posting.amountInCents)}
-			</ion-text>
+			<div class="flex w-full flex-wrap items-center justify-start gap-2">
+				<ion-note class="flex items-center justify-center gap-1 text-sm">
+					<ion-icon icon={calendarClearOutline}></ion-icon>
+					<ion-label>{format(new TZDate(posting.date), 'PP')}</ion-label>
+				</ion-note>
+				<ion-note class="flex items-center justify-center gap-1 text-sm">
+					<ion-icon icon={cardOutline}></ion-icon>
+					<ion-label class="truncate">{getBudgetCategoryNameById(posting.organizationBudgetCategoryId)}</ion-label>
+				</ion-note>
+				{#if isActivityPosting(posting.id)}
+					<ion-note class="flex items-center justify-center gap-1 text-sm">
+						<ion-icon icon={flashOutline}></ion-icon>
+						<div class="truncate">{getActivityPosting(posting.id)?.name}</div>
+					</ion-note>
+				{/if}
+			</div>
 		</div>
 	</CustomItem>
 {/snippet}
 
 {#snippet noSearchResults()}
 	<div class="flex items-center justify-center py-4">
-		<ion-text>
-			{$t('routes.organization.members.slug.page.card.open-postings.no-results', {
-				value: searchValue.trim()
-			})}
-		</ion-text>
+		<ion-note>
+			{#if searchValue}
+				{$t('routes.organization.members.slug.page.card.open-postings.no-results', {
+					value: searchValue.trim()
+				})}
+			{:else}
+				{$t('routes.organization.members.slug.page.card.open-postings.no-results-filtered')}
+			{/if}
+		</ion-note>
 	</div>
 {/snippet}
 
@@ -385,3 +573,68 @@
 		</form>
 	</Card>
 </Modal>
+
+<!-- Postings Filter Popover -->
+<Popover extended open={filterOpen} dismissed={onFilterModalDismiss} lazy>
+	<Card title={$t('routes.organization.members.slug.page.modal.filter.card.title')} classList="m-0">
+		<div class="mb-3 text-sm">
+			<ion-text color="medium">
+				{$t('routes.organization.members.slug.page.modal.filter.card.type-filter.label')}
+			</ion-text>
+			<div class="mt-1 flex items-center justify-center gap-2">
+				<Chip
+					clicked={() => setDraftTypeFilter('all')}
+					selected={filterDraft.typeFilter === 'all'}
+					label={$t('routes.organization.members.slug.page.modal.filter.card.type-filter.all')}
+				/>
+				<Chip
+					clicked={() => setDraftTypeFilter('credit')}
+					selected={filterDraft.typeFilter === 'credit'}
+					color="success"
+					icon={trendingUpOutline}
+					label={$t('routes.organization.members.slug.page.modal.filter.card.type-filter.credit')}
+				/>
+				<Chip
+					clicked={() => setDraftTypeFilter('debit')}
+					selected={filterDraft.typeFilter === 'debit'}
+					color="danger"
+					icon={trendingDownOutline}
+					label={$t('routes.organization.members.slug.page.modal.filter.card.type-filter.debit')}
+				/>
+			</div>
+		</div>
+		<ion-text color="medium" class="text-sm">
+			{$t('routes.organization.members.slug.page.modal.filter.card.date-range.label')}
+		</ion-text>
+		<DatetimeInputItem
+			max={filterDraft.toDate || getMaxPostingDate()}
+			min={getMinPostingDate()}
+			label={$t('routes.organization.members.slug.page.modal.filter.card.date.from')}
+			value={filterDraft.fromDate}
+			changed={(value) => (filterDraft = { ...filterDraft, fromDate: value })}
+		/>
+		<DatetimeInputItem
+			min={filterDraft.fromDate || getMinPostingDate()}
+			max={getMaxPostingDate()}
+			label={$t('routes.organization.members.slug.page.modal.filter.card.date.to')}
+			value={filterDraft.toDate}
+			changed={(value) => (filterDraft = { ...filterDraft, toDate: value })}
+		/>
+
+		<div class="mt-4 flex items-center justify-center gap-2">
+			<Button
+				label={$t('routes.organization.members.slug.page.modal.filter.card.reset')}
+				color="danger"
+				icon={refreshOutline}
+				fill="outline"
+				clicked={resetDraftFilter}
+			/>
+			<Button
+				label={$t('routes.organization.members.slug.page.modal.filter.card.apply')}
+				icon={saveOutline}
+				fill="outline"
+				clicked={applyDraftFilter}
+			/>
+		</div>
+	</Card>
+</Popover>

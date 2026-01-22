@@ -864,7 +864,9 @@
               "open-postings": {
                 "title": "Open Transactions",
                 "search-placeholder": "Search transactions....",
-                "no-results": "No transactions found for \"{{value}}\""
+                "no-results": "No transactions found for \"{{value}}\"",
+                "reset-filters": "Reset filters",
+                "no-results-filtered": "No transactions found."
               }
             },
             "modal": {
@@ -879,6 +881,26 @@
                 "purpose": "Purpose",
                 "amount": "Amount",
                 "date": "Date"
+              },
+              "filter": {
+                "card": {
+                  "title": "Filter transactions",
+                  "type-filter": {
+                    "label": "Transaction type",
+                    "all": "All",
+                    "credit": "Income",
+                    "debit": "Expenses"
+                  },
+                  "date": {
+                    "from": "From",
+                    "to": "Bis"
+                  },
+                  "reset": "Reset filter",
+                  "apply": "Apply filter",
+                  "date-range": {
+                    "label": "Time period"
+                  }
+                }
               }
             }
           }
