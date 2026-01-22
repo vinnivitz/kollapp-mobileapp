@@ -24,8 +24,8 @@
 		trendingUpOutline
 	} from 'ionicons/icons';
 
+	import { createUpdatePostingSchema } from '$lib/api/schema/budget/index.js';
 	import { budgetService, organizationService } from '$lib/api/services';
-	import { createUpdatePostingSchema } from '$lib/api/validation/budget';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import AmountInputItem from '$lib/components/widgets/ionic/AmountInputItem.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';

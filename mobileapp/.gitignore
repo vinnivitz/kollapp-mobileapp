@@ -17,3 +17,6 @@ coverage/
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Indexing
+static/data/searchables.json

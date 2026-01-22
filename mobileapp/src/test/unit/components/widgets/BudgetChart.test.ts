@@ -39,6 +39,7 @@ function makePostings(): PostingTO[] {
 			amountInCents: 10_000,
 			date: new Date().toISOString(),
 			id: 1,
+			organizationBudgetCategoryId: 1,
 			personOfOrganizationId: 1,
 			purpose: 'A',
 			type: 'CREDIT'
@@ -47,6 +48,7 @@ function makePostings(): PostingTO[] {
 			amountInCents: 2500,
 			date: new Date().toISOString(),
 			id: 2,
+			organizationBudgetCategoryId: 2,
 			personOfOrganizationId: 1,
 			purpose: 'B',
 			type: 'DEBIT'
@@ -55,6 +57,7 @@ function makePostings(): PostingTO[] {
 			amountInCents: 3000,
 			date: new Date().toISOString(),
 			id: 3,
+			organizationBudgetCategoryId: 3,
 			personOfOrganizationId: 1,
 			purpose: 'C',
 			type: 'CREDIT'
@@ -63,6 +66,7 @@ function makePostings(): PostingTO[] {
 			amountInCents: 1000,
 			date: new Date().toISOString(),
 			id: 4,
+			organizationBudgetCategoryId: 4,
 			personOfOrganizationId: 1,
 			purpose: 'D',
 			type: 'DEBIT'
@@ -71,6 +75,7 @@ function makePostings(): PostingTO[] {
 			amountInCents: 2000,
 			date: new Date().toISOString(),
 			id: 5,
+			organizationBudgetCategoryId: 5,
 			personOfOrganizationId: 1,
 			purpose: 'E',
 			type: 'CREDIT'
@@ -83,6 +88,7 @@ function makeManyPostings(count: number, type: 'CREDIT' | 'DEBIT'): PostingTO[] 
 		amountInCents: (count - index) * 1000,
 		date: new Date().toISOString(),
 		id: index + 1,
+		organizationBudgetCategoryId: index + 1,
 		personOfOrganizationId: 1,
 		purpose: `Posting ${index + 1}`,
 		type
@@ -119,24 +125,67 @@ describe('widgets/BudgetChart', () => {
 		expect(getBudgetTotal(container)).toBeTruthy();
 	});
 
-	it('BudgetChart: below interaction threshold renders no chips', () => {
+	it('BudgetChart: with minimal postings shows chips (threshold is 1)', async () => {
 		const now = new Date().toISOString();
 		const postings: PostingTO[] = [
-			{ amountInCents: 1000, date: now, id: 1, personOfOrganizationId: 1, purpose: 'A', type: 'CREDIT' },
-			{ amountInCents: 500, date: now, id: 2, personOfOrganizationId: 1, purpose: 'B', type: 'DEBIT' }
+			{
+				amountInCents: 1000,
+				date: now,
+				id: 1,
+				organizationBudgetCategoryId: 1,
+				personOfOrganizationId: 1,
+				purpose: 'A',
+				type: 'CREDIT'
+			},
+			{
+				amountInCents: 500,
+				date: now,
+				id: 2,
+				organizationBudgetCategoryId: 2,
+				personOfOrganizationId: 1,
+				purpose: 'B',
+				type: 'DEBIT'
+			}
 		];
 		const { container } = render(BudgetChart, { ...defaultProps, postings });
-		const chips = container.querySelectorAll('ion-chip');
-		expect(chips.length).toBe(0);
+
+		await waitFor(() => {
+			const chips = container.querySelectorAll('ion-chip');
+			expect(chips.length).toBe(3);
+		});
 		expect(getBudgetTotal(container)).toBeTruthy();
 	});
 
 	it('BudgetChart: only credits render credit chip and switching hides total', async () => {
 		const now = new Date().toISOString();
 		const postings: PostingTO[] = [
-			{ amountInCents: 2000, date: now, id: 1, personOfOrganizationId: 1, purpose: 'A', type: 'CREDIT' },
-			{ amountInCents: 3000, date: now, id: 2, personOfOrganizationId: 1, purpose: 'B', type: 'CREDIT' },
-			{ amountInCents: 4000, date: now, id: 3, personOfOrganizationId: 1, purpose: 'C', type: 'CREDIT' }
+			{
+				amountInCents: 2000,
+				date: now,
+				id: 1,
+				organizationBudgetCategoryId: 1,
+				personOfOrganizationId: 1,
+				purpose: 'A',
+				type: 'CREDIT'
+			},
+			{
+				amountInCents: 3000,
+				date: now,
+				id: 2,
+				organizationBudgetCategoryId: 2,
+				personOfOrganizationId: 1,
+				purpose: 'B',
+				type: 'CREDIT'
+			},
+			{
+				amountInCents: 4000,
+				date: now,
+				id: 3,
+				organizationBudgetCategoryId: 3,
+				personOfOrganizationId: 1,
+				purpose: 'C',
+				type: 'CREDIT'
+			}
 		];
 		const { container } = render(BudgetChart, { ...defaultProps, postings });
 
@@ -155,9 +204,33 @@ describe('widgets/BudgetChart', () => {
 	it('BudgetChart: interaction threshold exactly met shows chips', async () => {
 		const now = new Date().toISOString();
 		const postings: PostingTO[] = [
-			{ amountInCents: 1000, date: now, id: 1, personOfOrganizationId: 1, purpose: 'X', type: 'DEBIT' },
-			{ amountInCents: 1000, date: now, id: 2, personOfOrganizationId: 1, purpose: 'Y', type: 'DEBIT' },
-			{ amountInCents: 1000, date: now, id: 3, personOfOrganizationId: 1, purpose: 'Z', type: 'DEBIT' }
+			{
+				amountInCents: 1000,
+				date: now,
+				id: 1,
+				organizationBudgetCategoryId: 1,
+				personOfOrganizationId: 1,
+				purpose: 'X',
+				type: 'DEBIT'
+			},
+			{
+				amountInCents: 1000,
+				date: now,
+				id: 2,
+				organizationBudgetCategoryId: 2,
+				personOfOrganizationId: 1,
+				purpose: 'Y',
+				type: 'DEBIT'
+			},
+			{
+				amountInCents: 1000,
+				date: now,
+				id: 3,
+				organizationBudgetCategoryId: 3,
+				personOfOrganizationId: 1,
+				purpose: 'Z',
+				type: 'DEBIT'
+			}
 		];
 		const { container } = render(BudgetChart, { ...defaultProps, postings });
 
@@ -170,9 +243,33 @@ describe('widgets/BudgetChart', () => {
 	it('BudgetChart: only debits render debit chip and switching hides total', async () => {
 		const now = new Date().toISOString();
 		const postings: PostingTO[] = [
-			{ amountInCents: 1200, date: now, id: 1, personOfOrganizationId: 1, purpose: 'D1', type: 'DEBIT' },
-			{ amountInCents: 800, date: now, id: 2, personOfOrganizationId: 1, purpose: 'D2', type: 'DEBIT' },
-			{ amountInCents: 600, date: now, id: 3, personOfOrganizationId: 1, purpose: 'D3', type: 'DEBIT' }
+			{
+				amountInCents: 1200,
+				date: now,
+				id: 1,
+				organizationBudgetCategoryId: 1,
+				personOfOrganizationId: 1,
+				purpose: 'D1',
+				type: 'DEBIT'
+			},
+			{
+				amountInCents: 800,
+				date: now,
+				id: 2,
+				organizationBudgetCategoryId: 2,
+				personOfOrganizationId: 1,
+				purpose: 'D2',
+				type: 'DEBIT'
+			},
+			{
+				amountInCents: 600,
+				date: now,
+				id: 3,
+				organizationBudgetCategoryId: 3,
+				personOfOrganizationId: 1,
+				purpose: 'D3',
+				type: 'DEBIT'
+			}
 		];
 		const { container } = render(BudgetChart, { ...defaultProps, postings });
 
@@ -225,11 +322,51 @@ describe('widgets/BudgetChart', () => {
 	it('BudgetChart: mixed dataset renders all chips and toggles appropriately', async () => {
 		const now = new Date().toISOString();
 		const postings: PostingTO[] = [
-			{ amountInCents: 5000, date: now, id: 1, personOfOrganizationId: 1, purpose: 'Income A', type: 'CREDIT' },
-			{ amountInCents: 2000, date: now, id: 2, personOfOrganizationId: 1, purpose: 'Expense A', type: 'DEBIT' },
-			{ amountInCents: 1000, date: now, id: 3, personOfOrganizationId: 1, purpose: 'Expense B', type: 'DEBIT' },
-			{ amountInCents: 1500, date: now, id: 4, personOfOrganizationId: 1, purpose: 'Income B', type: 'CREDIT' },
-			{ amountInCents: 1200, date: now, id: 5, personOfOrganizationId: 1, purpose: 'Expense C', type: 'DEBIT' }
+			{
+				amountInCents: 5000,
+				date: now,
+				id: 1,
+				organizationBudgetCategoryId: 1,
+				personOfOrganizationId: 1,
+				purpose: 'Income A',
+				type: 'CREDIT'
+			},
+			{
+				amountInCents: 2000,
+				date: now,
+				id: 2,
+				organizationBudgetCategoryId: 2,
+				personOfOrganizationId: 1,
+				purpose: 'Expense A',
+				type: 'DEBIT'
+			},
+			{
+				amountInCents: 1000,
+				date: now,
+				id: 3,
+				organizationBudgetCategoryId: 3,
+				personOfOrganizationId: 1,
+				purpose: 'Expense B',
+				type: 'DEBIT'
+			},
+			{
+				amountInCents: 1500,
+				date: now,
+				id: 4,
+				organizationBudgetCategoryId: 4,
+				personOfOrganizationId: 1,
+				purpose: 'Income B',
+				type: 'CREDIT'
+			},
+			{
+				amountInCents: 1200,
+				date: now,
+				id: 5,
+				organizationBudgetCategoryId: 5,
+				personOfOrganizationId: 1,
+				purpose: 'Expense C',
+				type: 'DEBIT'
+			}
 		];
 		const { container } = render(BudgetChart, { ...defaultProps, postings });
 

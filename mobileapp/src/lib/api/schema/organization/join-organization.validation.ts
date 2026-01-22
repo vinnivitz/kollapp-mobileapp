@@ -1,4 +1,4 @@
-import type { JoinOrganizationTO } from '$lib/api/dtos';
+import type { JoinOrganizationTO } from '$lib/api/dto';
 
 import { get } from 'svelte/store';
 import { type AnyObject, object, type ObjectSchema, string } from 'yup';

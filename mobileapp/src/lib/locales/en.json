@@ -63,12 +63,6 @@
             "max": "Purpose exceeds maximum of 200 characters",
             "required": "Purpose is required"
           }
-        },
-        "update-posting": {
-          "amount": {},
-          "date": {},
-          "purpose": {},
-          "person-of-organization-id": {}
         }
       },
       "organization": {
@@ -277,12 +271,6 @@
     },
     "api": {
       "server-not-reachable": "Server not reachable",
-      "maintenance": {
-        "alert": {
-          "header": "Maintenance"
-        },
-        "message": "The app will probably be unavailable on {{value}} for some minutes."
-      },
       "error": {
         "authorization": "Authorization error",
         "generic": "An error occurred"
@@ -302,7 +290,7 @@
         "no-match": "Must match the password"
       }
     },
-    "preferences": {
+    "storage": {
       "failure": {
         "store": "Failed to store value",
         "retreive": "Failed to retrieve value",
@@ -364,14 +352,6 @@
         }
       },
       "privacy-and-security": {
-        "app-version": {
-          "page": {
-            "title": "App version",
-            "card": {
-              "title": "Version {{value}}"
-            }
-          }
-        },
         "change-password": {
           "page": {
             "title": "Change password",
@@ -494,11 +474,6 @@
             "color-theme": "Change color theme",
             "layout": "Change layout",
             "restore-defaults": "Restore default"
-          },
-          "miscellaneous": {
-            "header": "Miscellaneous",
-            "app-version": "App version",
-            "report-bug": "Report bug"
           }
         }
       }

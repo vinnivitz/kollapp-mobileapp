@@ -3,8 +3,8 @@
 
 	import { createOutline, trashOutline } from 'ionicons/icons';
 
+	import { budgetCategorySchema } from '$lib/api/schema/budget-category';
 	import { budgetCategoryService } from '$lib/api/services';
-	import { budgetCategorySchema } from '$lib/api/validation/budget-category';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { SearchableItemTO } from '$lib/api/dtos';
+	import type { SearchableItemTO } from '$lib/api/dto';
 	import type { Snippet } from 'svelte';
 
 	import * as icons from 'ionicons/icons';

@@ -1,4 +1,4 @@
-import type { SearchableItemTO } from '$lib/api/dtos';
+import type { SearchableItemTO } from '$lib/api/dto';
 
 import { get } from 'svelte/store';
 

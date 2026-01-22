@@ -4,8 +4,8 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
+	import { changePasswordSchema } from '$lib/api/schema/user';
 	import { userService } from '$lib/api/services';
-	import { changePasswordSchema } from '$lib/api/validation/user';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';

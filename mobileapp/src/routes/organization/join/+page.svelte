@@ -6,8 +6,8 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
+	import { joinOrganizationSchema } from '$lib/api/schema/organization';
 	import { organizationService } from '$lib/api/services';
-	import { joinOrganizationSchema } from '$lib/api/validation/organization/join-organization.validation';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';

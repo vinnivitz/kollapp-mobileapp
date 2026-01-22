@@ -6,7 +6,7 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
-	import { resendConfirmationSchema } from '$lib/api/validation/authentication';
+	import { resendConfirmationSchema } from '$lib/api/schema/authentication';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';

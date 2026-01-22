@@ -3,8 +3,8 @@
 
 	import { keyOutline, trashOutline, warningOutline } from 'ionicons/icons';
 
+	import { deleteAccountSchema } from '$lib/api/schema/user';
 	import { authenticationService, organizationService, userService } from '$lib/api/services';
-	import { deleteAccountSchema } from '$lib/api/validation/user';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';

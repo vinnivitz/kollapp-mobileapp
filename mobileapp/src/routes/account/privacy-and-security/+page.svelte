@@ -8,8 +8,8 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
+	import { loginSchema } from '$lib/api/schema/authentication';
 	import { authenticationService } from '$lib/api/services';
-	import { loginSchema } from '$lib/api/validation/authentication';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';

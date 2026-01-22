@@ -31,14 +31,6 @@
             }
           }
         },
-        "app-version": {
-          "page": {
-            "card": {
-              "title": "Version {{value}}"
-            },
-            "title": "App-Version"
-          }
-        },
         "change-password": {
           "page": {
             "card": {
@@ -125,11 +117,6 @@
             "language": "Sprache ändern",
             "layout": "Layout ändern",
             "restore-defaults": "Standard wiederherstellen"
-          },
-          "miscellaneous": {
-            "app-version": "App-Version",
-            "header": "Verschiedenes",
-            "report-bug": "Fehler melden"
           },
           "personal": {
             "header": "Persönlich",
@@ -985,17 +972,7 @@
           "purpose": {
             "max": "Der Zweck überschreitet die maximale Länge von 200 Zeichen",
             "required": "Zweck ist erforderlich"
-          },
-          "person-of-organization-id": {
-            "required": "Die Mitglieds-ID ist erforderlich oder 0, wenn die Buchung keinem Mitglied zugeordnet ist.",
-            "positive": "Die ID des Mitglieds muss positiv sein"
           }
-        },
-        "update-posting": {
-          "amount": {},
-          "date": {},
-          "purpose": {},
-          "person-of-organization-id": {}
         }
       },
       "organization": {
@@ -1202,12 +1179,6 @@
         "authorization": "Autorisierungsfehler",
         "generic": "Es ist ein Fehler aufgetreten"
       },
-      "maintenance": {
-        "alert": {
-          "header": "Wartung"
-        },
-        "message": "Die App wird am {{value}} wahrscheinlich einige Minuten lang nicht verfügbar sein."
-      },
       "request-successful": "Anfrage erfolgreich",
       "server-not-reachable": "Server nicht erreichbar"
     },
@@ -1224,7 +1195,7 @@
         "no-match": "Muss mit dem Passwort übereinstimmen"
       }
     },
-    "preferences": {
+    "storage": {
       "failure": {
         "remove": "Wert konnte nicht entfernt werden",
         "retreive": "Wert konnte nicht abgerufen werden",

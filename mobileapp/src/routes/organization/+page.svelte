@@ -45,8 +45,8 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
+	import { createUpdatePostingSchema } from '$lib/api/schema/budget';
 	import { budgetService } from '$lib/api/services';
-	import { createUpdatePostingSchema } from '$lib/api/validation/budget';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import AmountInputItem from '$lib/components/widgets/ionic/AmountInputItem.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';

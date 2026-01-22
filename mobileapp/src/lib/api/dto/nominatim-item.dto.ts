@@ -1,4 +1,4 @@
-import type { NominatimAddressItemTO } from '$lib/api/dtos';
+import type { NominatimAddressItemTO } from '$lib/api/dto';
 
 /**
  * Data Transfer Object for Nominatim item information.

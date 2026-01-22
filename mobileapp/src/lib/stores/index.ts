@@ -9,4 +9,3 @@ export * from './modal.store';
 export * from './organization.store';
 export * from './theme.store';
 export * from './user.store';
-export * from './version.store';

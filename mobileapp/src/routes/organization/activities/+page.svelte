@@ -21,8 +21,8 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
+	import { createActivitySchema } from '$lib/api/schema/organization';
 	import { activityService } from '$lib/api/services';
-	import { createActivitySchema } from '$lib/api/validation/organization';
 	import FadeInOut from '$lib/components/layout/FadeInOut.svelte';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
