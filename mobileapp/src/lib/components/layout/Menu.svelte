@@ -40,7 +40,7 @@
 
 	async function onSearch(event: CustomEvent): Promise<void> {
 		searchValue = event.detail.value;
-		searchedItems = await searchableService.filter(searchValue.toLowerCase());
+		searchedItems = await searchableService.filter(searchValue.toLowerCase().trim());
 	}
 </script>
 
@@ -69,7 +69,7 @@
 		</ion-toolbar>
 	</ion-header>
 	<ion-content class="ion-padding relative text-center">
-		{#if searchValue !== ''}
+		{#if searchValue.trim() !== ''}
 			<ion-list>
 				<ion-list-header>
 					{#if searchedItems.length > 0}

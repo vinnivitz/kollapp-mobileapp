@@ -16,7 +16,7 @@
 		label?: string;
 		labelColor?: Colors;
 		readonly?: boolean;
-		shape?: 'round';
+		shape?: 'round' | 'square';
 		size?: 'default' | 'large' | 'small';
 		type?: 'button' | 'reset' | 'submit';
 		clicked?: (event?: MouseEvent) => void;
@@ -62,7 +62,7 @@
 <ion-button
 	onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && clicked?.()}
 	style={`pointer-events: ${readonly ? 'none' : 'auto'};`}
-	{shape}
+	shape={shape === 'round' ? 'round' : undefined}
 	{color}
 	{expand}
 	{fill}

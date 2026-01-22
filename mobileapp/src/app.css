@@ -52,6 +52,9 @@
 		--background: var(--ion-background-color-step-50);
 		--border: 1px solid var(--ion-border-color);
 	}
+	ion-note {
+		--color: var(--ion-color-medium);
+	}
 }
 
 body {

@@ -11,5 +11,6 @@ export enum StorageKey {
 	ORGANIZATION = 'organization',
 	POSITION = 'position',
 	THEME = 'theme',
-	USER = 'user'
+	USER = 'user',
+	WELCOME_SHOWN = 'welcome-shown'
 }

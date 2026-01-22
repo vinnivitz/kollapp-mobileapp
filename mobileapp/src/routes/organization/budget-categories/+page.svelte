@@ -115,7 +115,12 @@
 	{@render categoryList()}
 	{@render createModal()}
 	{@render updateModal()}
-	<FabButton icon={createOutline} clicked={onOpenCreateModal} />
+	<FabButton
+		indexed="/organization/budget-categories"
+		indexLabel={$t('routes.organization.budget-categories.page.budget-categories-card.card.add-category')}
+		icon={createOutline}
+		clicked={onOpenCreateModal}
+	/>
 </Layout>
 
 <!-- Snippets -->
@@ -156,7 +161,7 @@
 				<ToggleItem
 					label={$t('routes.organization.budget-categories.page.form.default-category')}
 					checked={createForm.model.defaultCategory}
-					changed={(value) => (createForm.model.defaultCategory = value ?? false)}
+					changed={(value) => createFormActions?.updateModelByKey('defaultCategory', value ?? false)}
 				/>
 			</form>
 		</Card>
@@ -170,9 +175,9 @@
 				<InputItem name="name" label={$t('routes.organization.budget-categories.page.form.name')} />
 				<ToggleItem
 					label={$t('routes.organization.budget-categories.page.form.default-category')}
-					checked={updateForm.model.defaultCategory}
+					checked={selectedCategory?.defaultCategory}
 					disabled={selectedCategory?.defaultCategory}
-					changed={(value) => (updateForm.model.defaultCategory = value ?? false)}
+					changed={(value) => updateFormActions?.updateModelByKey('defaultCategory', value ?? false)}
 				/>
 			</form>
 		</Card>

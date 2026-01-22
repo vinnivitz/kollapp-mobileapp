@@ -508,6 +508,10 @@
           "forgot-password": {
             "question": "Forgot your password?",
             "link": "Reset"
+          },
+          "welcome-modal": {
+            "header": "Welcome to Kollapp!",
+            "message": "Great to have you on board!\nKollapp makes managing your collective easy.\n📊 Keep track of finances - record income and expenses transparently\n📅 Plan activities - organize and coordinate events\n👥 Manage members - collaborate in a structured way\nGet started now by creating or joining a collective.\nThe Kollapp team wishes you every success!"
           }
         }
       },
@@ -563,6 +567,12 @@
                   "link": "Login"
                 }
               }
+            }
+          },
+          "modal": {
+            "success": {
+              "title": "Successfully registered!",
+              "message": "We sent you an email with a confirmation link to {{value}} "
             }
           }
         }
@@ -651,6 +661,10 @@
                     "unassigned": "Not assigned",
                     "label": "Assigned member",
                     "search": "Search members..."
+                  },
+                  "budget-category": {
+                    "label": "Select category",
+                    "search": "Search categories..."
                   }
                 }
               },
@@ -666,13 +680,18 @@
                     "person-of-organization": {
                       "label": "Assigned member",
                       "search": "Search members..."
+                    },
+                    "budget-category": {
+                      "label": "Select category",
+                      "search": "Search categories..."
                     }
                   }
                 }
               },
               "posting-history": {
                 "searchbar": "Search transactions...",
-                "no-postings": "No transactions found."
+                "no-postings": "No transactions found.",
+                "no-search-results": "No transactions found for \"{{value}}\""
               },
               "activity-filter": {
                 "card": {
@@ -788,6 +807,9 @@
                   "positive": "Positive",
                   "negative": "Negative",
                   "neutral": "Neutral"
+                },
+                "date-range": {
+                  "label": "Time period"
                 }
               }
             }
@@ -893,7 +915,6 @@
                   "title": "Filter transactions",
                   "type-filter": {
                     "label": "Transaction type",
-                    "all": "All",
                     "credit": "Income",
                     "debit": "Expenses"
                   },
@@ -906,8 +927,23 @@
                     "input-label": "Selected categories",
                     "all-selected": "All categories selected",
                     "search-placeholder": "Search categories..."
+                  },
+                  "activities": {
+                    "all-selected": "All event selected",
+                    "select": "Selected events",
+                    "label": "Events",
+                    "search": "Search events..."
                   }
                 }
+              }
+            },
+            "activity-filter-items": {
+              "not-assigned": "Not assigned"
+            },
+            "item": {
+              "sliding": {
+                "edit": "Edit",
+                "transfer": "Settle"
               }
             }
           }
@@ -1030,6 +1066,11 @@
           "sliding-options": {
             "edit": "Edit",
             "delete": "Delete"
+          },
+          "budget-categories-card": {
+            "card": {
+              "add-category": "Add category"
+            }
           }
         }
       },
@@ -1147,8 +1188,8 @@
           }
         },
         "posting-translation": {
-          "debit": "Expense",
-          "cedit": "Income"
+          "debit": "Add expense",
+          "cedit": "Add income"
         },
         "title": "Collective",
         "no-collective": {
@@ -1221,7 +1262,8 @@
         "error": {
           "heading": "Initialization Error",
           "content": "An error occurred while starting the app."
-        }
+        },
+        "welcome-modal": {}
       }
     },
     "page": {
@@ -1261,6 +1303,18 @@
             "title": "Pending requests",
             "content": "The following users want to join the organization:"
           }
+        },
+        "new-posting-button": {
+          "label": "Add transaction"
+        },
+        "create-activity-button": {
+          "label": "Create event"
+        },
+        "budget-categories-button": {
+          "label": "Add budget category"
+        },
+        "person-of-organization-button": {
+          "label": "Invite member"
         }
       }
     }

@@ -8,6 +8,8 @@
 		accessibilityOutline,
 		arrowForwardOutline,
 		calendarClearOutline,
+		cardOutline,
+		cashOutline,
 		flashOutline,
 		notificationsOffOutline,
 		peopleOutline,
@@ -24,7 +26,7 @@
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import { t } from '$lib/locales';
 	import { localeStore, organizationStore, userStore } from '$lib/stores';
-	import { getDateFnsLocale, hasOrganizationRole } from '$lib/utility';
+	import { getDateFnsLocale, hasOrganizationRole, triggerClickByLabel } from '$lib/utility';
 
 	const activity = $derived($organizationStore?.activities && $organizationStore.activities[0]);
 	const postings = $derived(
@@ -37,10 +39,34 @@
 	);
 	const organizations = $derived(organizationStore.organizations);
 
+	const isManager = $derived(hasOrganizationRole('ROLE_ORGANIZATION_MANAGER'));
+
 	function onNavigateActivity(): void {
 		if ($organizationStore?.activities[0]?.id) {
 			goto(resolve('/organization/activities/[slug]', { slug: $organizationStore.activities[0].id.toString() }));
 		}
+	}
+
+	async function onAddPosting(): Promise<void> {
+		await goto(resolve('/organization'));
+		await triggerClickByLabel($t('routes.organization.page.budget-card.card.add-posting'));
+	}
+
+	async function onCreateActivity(): Promise<void> {
+		await goto(resolve('/organization'));
+		await triggerClickByLabel($t('routes.organization.page.activity-list.list.create-activity'));
+	}
+
+	async function onAddBudgetCategory(): Promise<void> {
+		await goto(resolve('/organization/budget-categories'));
+		await triggerClickByLabel(
+			$t('routes.organization.budget-categories.page.budget-categories-card.card.add-category')
+		);
+	}
+
+	async function onAddPersonOfOrganization(): Promise<void> {
+		await goto(resolve('/organization/members'));
+		await triggerClickByLabel($t('routes.organization.members.page.fab.invite-members.title'));
 	}
 </script>
 
@@ -52,7 +78,7 @@
 			{@render pendingOrganizationJoinRequestCard()}
 		{/if}
 
-		{#if $organizationStore?.personsOfOrganization.some((person) => person.status === 'PENDING') && hasOrganizationRole('ROLE_ORGANIZATION_MANAGER')}
+		{#if $organizationStore?.personsOfOrganization.some((person) => person.status === 'PENDING') && isManager}
 			{@render pendingMembers()}
 		{/if}
 
@@ -61,6 +87,7 @@
 				{@render upcomingActivityCard(activity)}
 			{/if}
 			{@render organizationCard($organizationStore)}
+			{@render quickAccess()}
 			{@render budgetChartCard()}
 		{:else if $organizations.length === 0}
 			{@render noCollectivesCard()}
@@ -184,6 +211,57 @@
 			</div>
 		</div>
 	</Card>
+{/snippet}
+
+{#snippet quickAccess()}
+	<div class="mx-3 flex items-center justify-center gap-2">
+		<Button
+			classList="flex-1"
+			clicked={onAddPosting}
+			expand="block"
+			shape="square"
+			fill="outline"
+			color="tertiary"
+			label={$t('routes.page.page.new-posting-button.label')}
+			icon={cashOutline}
+		/>
+		{#if isManager}
+			<Button
+				classList="flex-1"
+				clicked={onCreateActivity}
+				expand="block"
+				shape="square"
+				fill="outline"
+				color="tertiary"
+				label={$t('routes.page.page.create-activity-button.label')}
+				icon={flashOutline}
+			/>
+		{/if}
+	</div>
+	{#if isManager}
+		<div class="mx-3 flex items-center justify-center gap-2">
+			<Button
+				classList="flex-1"
+				clicked={onAddBudgetCategory}
+				expand="block"
+				shape="square"
+				fill="outline"
+				color="tertiary"
+				label={$t('routes.page.page.budget-categories-button.label')}
+				icon={cardOutline}
+			/>
+			<Button
+				classList="flex-1"
+				clicked={onAddPersonOfOrganization}
+				expand="block"
+				shape="square"
+				fill="outline"
+				color="tertiary"
+				label={$t('routes.page.page.person-of-organization-button.label')}
+				icon={personAddOutline}
+			/>
+		</div>
+	{/if}
 {/snippet}
 
 {#snippet budgetChartCard()}

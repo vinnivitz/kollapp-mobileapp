@@ -57,15 +57,19 @@ export function getRoleTranslationFromRole(role: OrganizationRole): string {
  * @param label label of the element to click
  */
 export async function triggerClickByLabel(label: string): Promise<void> {
+	label = label.replaceAll(/['"]/g, '').trim();
 	const element =
-		[...document.querySelectorAll('ion-label')].find((element) => element.textContent === label)?.closest('ion-item') ??
-		[...document.querySelectorAll('ion-card')].find((element) => element.id === label) ??
+		[...document.querySelectorAll('ion-label')]
+			.find((element) => element.textContent.trim() === label)
+			?.closest('ion-item') ??
+		[...document.querySelectorAll('ion-card')].find((element) => element.id.trim() === label) ??
 		[...document.querySelectorAll('ion-fab')]
-			.find((element) => element.id === label)
+			.find((element) => element.id.trim() === label)
 			?.querySelector('ion-fab-button') ??
 		[...document.querySelectorAll('ion-label')]
-			.find((element) => element.textContent === label)
-			?.closest('ion-segment-button');
+			.find((element) => element.textContent.trim() === label)
+			?.closest('ion-segment-button') ??
+		[...document.querySelectorAll('ion-button')].find((element) => element.textContent.trim() === label);
 	setTimeout(() => element?.click(), 10);
 }
 
@@ -198,6 +202,7 @@ export async function informationModal(header: string, message: string): Promise
 	const $t = get(t);
 	const alert = await alertController.create({
 		buttons: [{ role: 'confirm', text: $t('utility.ui.information-modal.ok') }],
+		cssClass: 'whitespace-pre-line',
 		header,
 		message,
 		translucent: true

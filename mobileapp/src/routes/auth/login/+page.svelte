@@ -24,6 +24,7 @@
 		customForm,
 		getStoredValue,
 		getValidationResult,
+		informationModal,
 		isBiometricAvailable,
 		isBiometricEnabled,
 		promptBiometricAuthentication,
@@ -74,6 +75,14 @@
 		await appStateStore.initializeBaseData();
 		await promptBiometricSetup();
 		await goto(resolve('/'));
+		const isFirstVisit = !!(await getStoredValue(StorageKey.WELCOME_SHOWN));
+		if (!isFirstVisit) {
+			await storeValue(StorageKey.WELCOME_SHOWN, true);
+			await informationModal(
+				$t('routes.auth.login.page.welcome-modal.header'),
+				$t('routes.auth.login.page.welcome-modal.message')
+			);
+		}
 	}
 
 	async function promptBiometricSetup(): Promise<void> {

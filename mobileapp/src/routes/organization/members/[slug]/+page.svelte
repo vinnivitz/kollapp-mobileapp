@@ -12,12 +12,12 @@
 	import { actionSheetController, loadingController } from '@ionic/core';
 	import { format } from 'date-fns';
 	import {
-		calendarClearOutline,
+		albumsOutline,
 		cardOutline,
 		cashOutline,
 		createOutline,
 		documentOutline,
-		flashOutline,
+		flashOffOutline,
 		medalOutline,
 		personCircleOutline,
 		personOutline,
@@ -39,9 +39,10 @@
 	import DatetimeInputItem from '$lib/components/widgets/ionic/DatetimeInputItem.svelte';
 	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
+	import PostingItem from '$lib/components/widgets/PostingItem.svelte';
 	import { t } from '$lib/locales';
 	import {
-		chipSection,
+		chipMultiSection,
 		dateRangeSection,
 		type FilterConfig,
 		Form,
@@ -61,12 +62,11 @@
 		parser
 	} from '$lib/utility';
 
-	type TypeFilter = 'all' | 'credit' | 'debit';
-
 	type PostingsFilterState = {
+		activityIds: number[];
 		budgetCategoryIds: number[];
 		dateRange: { from: string; to: string };
-		typeFilter: TypeFilter;
+		postingTypes: PostingType[];
 	};
 
 	const { data } = $props();
@@ -108,28 +108,37 @@
 
 	const activityByPostingId = $derived(getActivityPostingIdMap());
 
+	const organizationPostingIdSet = $derived(
+		new Set<number>(($organizationStore?.organizationPostings ?? []).map((posting) => posting.id))
+	);
+
 	const isManager = $derived(hasOrganizationRole('ROLE_ORGANIZATION_MANAGER'));
 
 	let searchValue = $state<string>('');
+	let initializedPersonId = $state<number>();
+	let previousPostingsCount = $state<number>(0);
 
 	let filterState = $state<PostingsFilterState>({
-		budgetCategoryIds: getDefaultBudgetCategoryFilterIds(),
-		dateRange: { from: '', to: '' },
-		typeFilter: 'all'
+		activityIds: [],
+		budgetCategoryIds: [],
+		dateRange: { from: format(new TZDate(), 'yyyy-MM-dd'), to: format(new TZDate(), 'yyyy-MM-dd') },
+		postingTypes: ['DEBIT', 'CREDIT']
 	});
 
-	let initialized = $state<boolean>(false);
+	const filteredOpenPostings = $derived<PostingTO[]>(getFilteredPostings());
 
-	const filteredOpenPostings = $derived<PostingTO[]>(
-		filterPostings(
-			openPostings,
-			searchValue,
-			filterState.typeFilter,
-			filterState.dateRange.from,
-			filterState.dateRange.to,
-			filterState.budgetCategoryIds
-		)
-	);
+	const activityFilterItems = $derived<SelectItem[]>([
+		...($organizationStore?.activities.map((activity) => ({
+			data: { id: activity.id, label: activity.name },
+			selected: true
+		})) ?? []),
+		{
+			color: 'tertiary',
+			data: { id: 0, label: $t('routes.organization.members.slug.page.activity-filter-items.not-assigned') },
+			icon: flashOffOutline,
+			selected: true
+		}
+	]);
 
 	let postingUpdateModalOpen = $state<boolean>(false);
 	let selectedPosting = $state<PostingTO>();
@@ -169,6 +178,20 @@
 		return $organizationStore?.budgetCategories.map((category) => category.id) ?? [];
 	}
 
+	function getDefaultActivityFilterIds(): number[] {
+		return activityFilterItems.length > 0 ? activityFilterItems.map((item) => item.data.id) : [0];
+	}
+
+	function applyDefaultPostingsFilters(): void {
+		searchValue = '';
+		filterState = {
+			activityIds: getDefaultActivityFilterIds(),
+			budgetCategoryIds: getDefaultBudgetCategoryFilterIds(),
+			dateRange: { from: getMinPostingDate(), to: getMaxPostingDate() },
+			postingTypes: ['DEBIT', 'CREDIT']
+		};
+	}
+
 	const filterConfig = $derived<FilterConfig<PostingsFilterState>>({
 		onApply: (state) => (filterState = state),
 		searchbar: {
@@ -176,34 +199,28 @@
 			placeholder: $t('routes.organization.members.slug.page.card.open-postings.search-placeholder')
 		},
 		sections: [
-			chipSection<TypeFilter>('typeFilter', {
-				defaultValue: 'all',
+			chipMultiSection<PostingType>('postingTypes', {
+				defaultValue: ['DEBIT', 'CREDIT'],
 				label: $t('routes.organization.members.slug.page.modal.filter.card.type-filter.label'),
 				options: [
-					{
-						label: $t('routes.organization.members.slug.page.modal.filter.card.type-filter.all'),
-						value: 'all'
-					},
 					{
 						color: 'success',
 						icon: trendingUpOutline,
 						label: $t('routes.organization.members.slug.page.modal.filter.card.type-filter.credit'),
-						value: 'credit'
+						value: 'CREDIT'
 					},
 					{
 						color: 'danger',
 						icon: trendingDownOutline,
 						label: $t('routes.organization.members.slug.page.modal.filter.card.type-filter.debit'),
-						value: 'debit'
+						value: 'DEBIT'
 					}
 				]
 			}),
 			dateRangeSection('dateRange', {
 				defaultFromValue: getMinPostingDate(),
 				defaultToValue: getMaxPostingDate(),
-				label: $t('routes.organization.members.slug.page.modal.filter.card.date-range.label'),
-				max: getMaxPostingDate(),
-				min: getMinPostingDate()
+				label: $t('routes.organization.members.slug.page.modal.filter.card.date-range.label')
 			}),
 			multiSelectSection('budgetCategoryIds', {
 				allSelectedText: $t('routes.organization.members.slug.page.modal.filter.card.budget-categories.all-selected'),
@@ -215,61 +232,71 @@
 				searchPlaceholder: $t(
 					'routes.organization.members.slug.page.modal.filter.card.budget-categories.search-placeholder'
 				)
-			})
+			}),
+			...($organizationStore && $organizationStore.activities.length > 0
+				? [
+						multiSelectSection('activityIds', {
+							allSelectedText: $t('routes.organization.members.slug.page.modal.filter.card.activities.all-selected'),
+							defaultValue: getDefaultActivityFilterIds(),
+							icon: albumsOutline,
+							inputLabel: $t('routes.organization.members.slug.page.modal.filter.card.activities.select'),
+							items: activityFilterItems,
+							label: $t('routes.organization.members.slug.page.modal.filter.card.activities.label'),
+							searchPlaceholder: $t('routes.organization.members.slug.page.modal.filter.card.activities.search')
+						})
+					]
+				: [])
 		],
 		state: filterState,
 		title: $t('routes.organization.members.slug.page.modal.filter.card.title')
 	});
 
 	$effect(() => {
-		if (openPostings.length > 0 && !initialized) {
-			const minDate = getMinPostingDate();
-			const maxDate = getMaxPostingDate();
-			filterState = {
-				...filterState,
-				dateRange: { from: minDate, to: maxDate }
-			};
-			initialized = true;
-		}
+		if (initializedPersonId === data.personOfOrganizationId) return;
+		initializedPersonId = data.personOfOrganizationId;
+		applyDefaultPostingsFilters();
+		previousPostingsCount = openPostings.length;
 	});
 
-	function filterPostings(
-		postings: PostingTO[],
-		search: string,
-		type: TypeFilter,
-		fromDate: string,
-		toDate: string,
-		budgetCategoryIds: number[]
-	): PostingTO[] {
-		const searchTerm = search.trim().toLowerCase();
+	$effect(() => {
+		const currentCount = openPostings.length;
+		if (previousPostingsCount === 0 && currentCount > 0 && searchValue.trim() === '') {
+			applyDefaultPostingsFilters();
+		}
+		previousPostingsCount = currentCount;
+	});
 
-		return postings.filter(
-			(posting) =>
-				matchesSearch(posting, searchTerm) &&
-				matchesTypeFilter(posting, type) &&
-				matchesDateRange(posting, fromDate, toDate) &&
-				matchesBudgetCategoryFilter(posting, budgetCategoryIds)
-		);
-	}
+	function getFilteredPostings(): PostingTO[] {
+		const fromTime = new TZDate(filterState.dateRange.from).getTime();
+		const toTime = new TZDate(filterState.dateRange.to).getTime();
+		const allowedPostingTypes = new Set(filterState.postingTypes);
+		const allowedActivityIds = new Set(filterState.activityIds);
+		const allowedBudgetCategoryIds = new Set(filterState.budgetCategoryIds);
+		const search = searchValue.trim().toLowerCase();
 
-	function matchesBudgetCategoryFilter(posting: PostingTO, budgetCategoryIds: number[]): boolean {
-		return budgetCategoryIds.includes(posting.organizationBudgetCategoryId);
-	}
+		return openPostings.filter((posting) => {
+			if (!allowedPostingTypes.has(posting.type)) return false;
 
-	function matchesSearch(posting: PostingTO, searchTerm: string): boolean {
-		return searchTerm === '' || posting.purpose.toLowerCase().includes(searchTerm);
-	}
+			const postingTime = new TZDate(posting.date).getTime();
+			if (postingTime < fromTime || postingTime > toTime) return false;
 
-	function matchesTypeFilter(posting: PostingTO, type: TypeFilter): boolean {
-		if (type === 'credit') return posting.type === 'CREDIT';
-		if (type === 'debit') return posting.type === 'DEBIT';
-		return true;
-	}
+			if (!allowedBudgetCategoryIds.has(posting.organizationBudgetCategoryId)) {
+				return false;
+			}
 
-	function matchesDateRange(posting: PostingTO, fromDate: string, toDate: string): boolean {
-		if (fromDate && posting.date < fromDate) return false;
-		if (toDate && posting.date > toDate) return false;
-		return true;
+			const postingActivity = activityByPostingId.get(posting.id);
+			const isOrganizationPosting = organizationPostingIdSet.has(posting.id);
+			const matchesActivities =
+				(allowedActivityIds.has(0) && isOrganizationPosting) ||
+				(!!postingActivity && allowedActivityIds.has(postingActivity.id));
+			if (!matchesActivities) return false;
+
+			if (search === '') return true;
+			return (
+				posting.purpose.toLowerCase().includes(search) ||
+				(postingActivity?.name.toLowerCase().includes(search) ?? false)
+			);
+		});
 	}
 
 	function getMinPostingDate(): string {
@@ -313,12 +340,14 @@
 			{
 				color: 'primary',
 				handler: () => onOpenUpdatePostingModal(posting),
-				icon: createOutline
+				icon: createOutline,
+				label: $t('routes.organization.members.slug.page.item.sliding.edit')
 			},
 			{
 				color: 'tertiary',
 				handler: () => onTransferPosting(posting),
-				icon: sendOutline
+				icon: sendOutline,
+				label: $t('routes.organization.members.slug.page.item.sliding.transfer')
 			}
 		];
 	}
@@ -500,37 +529,12 @@
 {/snippet}
 
 {#snippet postingItem(posting: PostingTO)}
-	<CustomItem
+	<PostingItem
+		{posting}
+		budgetCategoryName={getBudgetCategoryNameById(posting.organizationBudgetCategoryId)}
 		slidingOptions={isManager ? getPostingSlidingOptions(posting) : undefined}
-		iconColor={posting.type === 'CREDIT' ? 'success' : 'danger'}
-		icon={posting.type === 'CREDIT' ? trendingUpOutline : trendingDownOutline}
-	>
-		<div class="mt-2 flex w-full flex-col items-center gap-2">
-			<div class="flex w-full items-center justify-between">
-				<ion-text class="font-semibold">{posting.purpose}</ion-text>
-				<ion-text color={posting.type === 'CREDIT' ? 'success' : 'danger'} class="font-bold text-nowrap">
-					{posting.type === 'CREDIT' ? '+' : '-'}
-					{formatter.currency(posting.amountInCents)}
-				</ion-text>
-			</div>
-			<div class="flex w-full flex-wrap items-center justify-start gap-2">
-				<ion-note class="flex items-center justify-center gap-1 text-sm">
-					<ion-icon icon={calendarClearOutline}></ion-icon>
-					<ion-label>{format(new TZDate(posting.date), 'PP')}</ion-label>
-				</ion-note>
-				<ion-note class="flex items-center justify-center gap-1 text-sm">
-					<ion-icon icon={cardOutline}></ion-icon>
-					<ion-label class="truncate">{getBudgetCategoryNameById(posting.organizationBudgetCategoryId)}</ion-label>
-				</ion-note>
-				{#if isActivityPosting(posting.id)}
-					<ion-note class="flex items-center justify-center gap-1 text-sm">
-						<ion-icon icon={flashOutline}></ion-icon>
-						<div class="truncate">{getActivityPosting(posting.id)?.name}</div>
-					</ion-note>
-				{/if}
-			</div>
-		</div>
-	</CustomItem>
+		activityName={isActivityPosting(posting.id) ? getActivityPosting(posting.id)?.name : undefined}
+	/>
 {/snippet}
 
 {#snippet noSearchResults()}

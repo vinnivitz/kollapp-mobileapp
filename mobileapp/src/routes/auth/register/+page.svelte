@@ -13,10 +13,16 @@
 	import Welcome from '$lib/components/widgets/Welcome.svelte';
 	import { t } from '$lib/locales';
 	import { Form } from '$lib/models/ui';
-	import { customForm, passwordConfirmationValidator } from '$lib/utility';
+	import { customForm, informationModal, passwordConfirmationValidator } from '$lib/utility';
 
 	const form = new Form({
-		completed: async () => goto(resolve('/auth/login')),
+		completed: async ({ model }) => {
+			await informationModal(
+				$t('routes.auth.register.page.modal.success.title'),
+				$t('routes.auth.register.page.modal.success.message', { value: model.email })
+			);
+			await goto(resolve('/auth/login'));
+		},
 		customValidators: {
 			confirmPassword: passwordConfirmationValidator('password', 'confirmPassword')
 		},

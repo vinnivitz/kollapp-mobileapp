@@ -24,7 +24,6 @@
 		mapOutline,
 		peopleOutline,
 		personAddOutline,
-		personOutline,
 		sendOutline,
 		trashBinOutline,
 		trashOutline,
@@ -44,13 +43,13 @@
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import Chip from '$lib/components/widgets/ionic/Chip.svelte';
-	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
 	import DatetimeInputItem from '$lib/components/widgets/ionic/DatetimeInputItem.svelte';
 	import FabButton from '$lib/components/widgets/ionic/FabButton.svelte';
 	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import LocationInputItem from '$lib/components/widgets/ionic/LocationInputItem.svelte';
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
 	import MultiSelectItem from '$lib/components/widgets/ionic/MultiSelectItem.svelte';
+	import PostingItem from '$lib/components/widgets/PostingItem.svelte';
 	import { t } from '$lib/locales';
 	import {
 		chipMultiSection,
@@ -280,8 +279,8 @@
 		const toTime = new TZDate(filterState.dateRange.to).getTime();
 		const allowedPostingTypes = new Set(filterState.postingTypes);
 		const allowedBudgetCategoryIds = new Set(filterState.budgetCategoryIds);
-		const allowedPersonIds = new Set(filterState.personOfOrganizationIds);
-		const search = postingsSearchValue.trim().toLowerCase();
+		const allowedPersonOfOrganizationIds = new Set(filterState.personOfOrganizationIds);
+		const searchValue = postingsSearchValue.trim().toLowerCase();
 
 		return postings.filter((posting) => {
 			if (!allowedPostingTypes.has(posting.type)) return false;
@@ -289,17 +288,20 @@
 			const postingTime = new TZDate(posting.date).getTime();
 			if (postingTime < fromTime || postingTime > toTime) return false;
 
-			if (!allowedBudgetCategoryIds.has(posting.organizationBudgetCategoryId)) {
-				return false;
-			}
+			if (!allowedBudgetCategoryIds.has(posting.organizationBudgetCategoryId)) return false;
 
-			if (!allowedPersonIds.has(posting.personOfOrganizationId)) return false;
+			if (!allowedPersonOfOrganizationIds.has(posting.personOfOrganizationId)) return false;
 
-			if (search === '') return true;
+			if (searchValue === '') return true;
 
-			const matchesPurpose = posting.purpose.toLowerCase().includes(search);
-			const matchesActivityName = activity?.name.toLowerCase().includes(search) ?? false;
-			return matchesPurpose || matchesActivityName;
+			const matchesPurpose = posting.purpose.toLowerCase().includes(searchValue);
+			const matchesCategoryName = getBudgetCategoryNameById(posting.organizationBudgetCategoryId)
+				.toLowerCase()
+				.includes(searchValue);
+			const matchesUsername = !!getUsernameByPersonOfOrganizationId(posting.personOfOrganizationId)
+				?.toLowerCase()
+				.includes(searchValue);
+			return matchesPurpose || matchesCategoryName || matchesUsername;
 		});
 	}
 
@@ -581,9 +583,8 @@
 			<div class="flex w-1/2 items-center gap-1">
 				<ion-icon icon={calendarClearOutline}></ion-icon>
 				<ion-text>
-					{formatDistanceToNow(addDays(new TZDate(), 5), {
+					{formatDistanceToNow(new TZDate(activity?.date!), {
 						addSuffix: true,
-						includeSeconds: true,
 						locale: getDateFnsLocale($localeStore)
 					})}
 				</ion-text>
@@ -663,37 +664,14 @@
 {/snippet}
 
 {#snippet postingItem(posting: PostingTO)}
-	<CustomItem
+	<PostingItem
+		{posting}
+		budgetCategoryName={getBudgetCategoryNameById(posting.organizationBudgetCategoryId)}
+		username={posting.personOfOrganizationId > 0
+			? getUsernameByPersonOfOrganizationId(posting.personOfOrganizationId)
+			: undefined}
 		slidingOptions={canEditPosting(posting.personOfOrganizationId) ? getPostingItemSlidingOptions(posting) : undefined}
-		iconColor={posting.type === 'CREDIT' ? 'success' : 'danger'}
-		icon={posting.type === 'CREDIT' ? trendingUpOutline : trendingDownOutline}
-	>
-		<div class="mt-2 flex w-full flex-col items-center gap-2">
-			<div class="flex w-full items-center justify-between">
-				<ion-text class="truncate font-semibold">{posting.purpose}</ion-text>
-				<ion-text color={posting.type === 'CREDIT' ? 'success' : 'danger'} class="font-bold text-nowrap">
-					{posting.type === 'CREDIT' ? '+' : '-'}
-					{formatter.currency(posting.amountInCents)}
-				</ion-text>
-			</div>
-			<div class="flex w-full flex-wrap items-center justify-start gap-2">
-				<ion-note class="flex items-center justify-center gap-1 text-sm">
-					<ion-icon icon={calendarClearOutline}></ion-icon>
-					<ion-label>{format(new TZDate(posting.date), 'PP')}</ion-label>
-				</ion-note>
-				<ion-note class="flex items-center justify-center gap-1 text-sm">
-					<ion-icon icon={cardOutline}></ion-icon>
-					<ion-label class="truncate">{getBudgetCategoryNameById(posting.organizationBudgetCategoryId)}</ion-label>
-				</ion-note>
-				{#if posting.personOfOrganizationId > 0}
-					<ion-note class="flex items-center justify-center gap-1 text-sm">
-						<ion-icon icon={personOutline}></ion-icon>
-						<div class="truncate">{getUsernameByPersonOfOrganizationId(posting.personOfOrganizationId)}</div>
-					</ion-note>
-				{/if}
-			</div>
-		</div>
-	</CustomItem>
+	/>
 {/snippet}
 
 <!-- Modals -->
@@ -753,18 +731,27 @@
 				label={$t('routes.organization.activities.slug.page.modal.create-posting.form.date')}
 				name="date"
 			/>
-			{#if isManager}
-				<MultiSelectItem
-					name="personOfOrganizationId"
-					icon={peopleOutline}
-					multiple={false}
-					label={$t('routes.organization.activities.slug.page.modal.create-posting.form.person-of-organization.label')}
-					searchPlaceholder={$t(
-						'routes.organization.activities.slug.page.modal.create-posting.form.person-of-organization.search'
-					)}
-					items={personOfOrganizationCreateItems}
-				/>
-			{/if}
+			<MultiSelectItem
+				name="personOfOrganizationId"
+				hidden={!isManager}
+				icon={peopleOutline}
+				multiple={false}
+				label={$t('routes.organization.activities.slug.page.modal.create-posting.form.person-of-organization.label')}
+				searchPlaceholder={$t(
+					'routes.organization.activities.slug.page.modal.create-posting.form.person-of-organization.search'
+				)}
+				items={personOfOrganizationCreateItems}
+			/>
+			<MultiSelectItem
+				name="organizationBudgetCategoryId"
+				icon={cardOutline}
+				multiple={false}
+				label={$t('routes.organization.activities.slug.page.modal.create-posting.form.budget-category.label')}
+				searchPlaceholder={$t(
+					'routes.organization.activities.slug.page.modal.create-posting.form.budget-category.search'
+				)}
+				items={budgetCategoryFilterItems}
+			/>
 		</form>
 	</Card>
 </Modal>
@@ -811,6 +798,16 @@
 				)}
 				items={personOfOrganizationUpdateItems}
 			/>
+			<MultiSelectItem
+				name="organizationBudgetCategoryId"
+				icon={cardOutline}
+				multiple={false}
+				label={$t('routes.organization.activities.slug.page.modal.update-posting.card.form.budget-category.label')}
+				searchPlaceholder={$t(
+					'routes.organization.activities.slug.page.modal.update-posting.card.form.budget-category.search'
+				)}
+				items={budgetCategoryFilterItems}
+			/>
 		</form>
 	</Card>
 </Modal>
@@ -829,7 +826,15 @@
 		</div>
 		{#if filteredPostings.length === 0}
 			<div class="mt-3 flex flex-col items-center justify-center gap-2 text-center">
-				<ion-note>{$t('routes.organization.activities.slug.page.modal.posting-history.no-postings')}</ion-note>
+				<ion-note>
+					{#if postingsSearchValue.trim() !== ''}
+						{$t('routes.organization.activities.slug.page.modal.posting-history.no-search-results', {
+							value: postingsSearchValue
+						})}
+					{:else}
+						{$t('routes.organization.activities.slug.page.modal.posting-history.no-postings')}
+					{/if}
+				</ion-note>
 			</div>
 		{:else}
 			<ion-list>

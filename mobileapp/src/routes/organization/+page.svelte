@@ -10,7 +10,7 @@
 
 	import { TZDate } from '@date-fns/tz';
 	import { actionSheetController, loadingController } from '@ionic/core';
-	import { addDays, format, formatDistanceToNow } from 'date-fns';
+	import { format, formatDistanceToNow } from 'date-fns';
 	import {
 		albumsOutline,
 		arrowForwardOutline,
@@ -27,7 +27,6 @@
 		logOutOutline,
 		peopleOutline,
 		personAddOutline,
-		personOutline,
 		ribbonOutline,
 		sendOutline,
 		swapHorizontalOutline,
@@ -50,12 +49,12 @@
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import Chip from '$lib/components/widgets/ionic/Chip.svelte';
-	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
 	import DatetimeInputItem from '$lib/components/widgets/ionic/DatetimeInputItem.svelte';
 	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
 	import MultiSelectItem from '$lib/components/widgets/ionic/MultiSelectItem.svelte';
+	import PostingItem from '$lib/components/widgets/PostingItem.svelte';
 	import { t } from '$lib/locales';
 	import {
 		chipMultiSection,
@@ -106,6 +105,11 @@
 			...($organizationStore?.organizationPostings ?? []),
 			...($organizationStore?.activities.flatMap((activity) => activity.activityPostings) ?? [])
 		].toSorted((a, b) => new TZDate(b.date).getTime() - new TZDate(a.date).getTime())
+	);
+	const activities = $derived(
+		($organizationStore?.activities ?? []).toSorted(
+			(a, b) => new TZDate(a.date).getTime() - new TZDate(b.date).getTime()
+		)
 	);
 	const activityByPostingId = $derived(getActivityPostingIdMap());
 	const organizationPostingIdSet = $derived(
@@ -437,8 +441,8 @@
 		const allowedPostingTypes = new Set(filterState.postingTypes);
 		const allowedActivityIds = new Set(filterState.activityIds);
 		const allowedBudgetCategoryIds = new Set(filterState.budgetCategoryIds);
-		const allowedPersonIds = new Set(filterState.personOfOrganizationIds);
-		const search = postingsSearchValue.trim().toLowerCase();
+		const allowedPersonOfOrganizationIds = new Set(filterState.personOfOrganizationIds);
+		const searchValue = postingsSearchValue.trim().toLowerCase();
 
 		return postings.filter((posting) => {
 			if (!allowedPostingTypes.has(posting.type)) return false;
@@ -446,29 +450,32 @@
 			const postingTime = new TZDate(posting.date).getTime();
 			if (postingTime < fromTime || postingTime > toTime) return false;
 
-			if (!allowedBudgetCategoryIds.has(posting.organizationBudgetCategoryId)) {
-				return false;
-			}
+			if (!allowedBudgetCategoryIds.has(posting.organizationBudgetCategoryId)) return false;
 
-			if (!allowedPersonIds.has(posting.personOfOrganizationId)) return false;
+			if (!allowedPersonOfOrganizationIds.has(posting.personOfOrganizationId)) return false;
 
-			const postingActivity = activityByPostingId.get(posting.id);
 			const isOrganizationPosting = organizationPostingIdSet.has(posting.id);
+			const postingActivity = activityByPostingId.get(posting.id);
 			const matchesActivities =
-				(allowedActivityIds.has(0) && isOrganizationPosting) ||
-				(!!postingActivity && allowedActivityIds.has(postingActivity.id));
+				isOrganizationPosting || (!!postingActivity && allowedActivityIds.has(postingActivity.id));
 			if (!matchesActivities) return false;
 
-			if (search === '') return true;
-			return (
-				posting.purpose.toLowerCase().includes(search) ||
-				(postingActivity?.name.toLowerCase().includes(search) ?? false)
-			);
+			if (searchValue === '') return true;
+
+			const matchesPurpose = posting.purpose.toLowerCase().includes(searchValue);
+			const matchesCategoryName = getBudgetCategoryNameById(posting.organizationBudgetCategoryId)
+				.toLowerCase()
+				.includes(searchValue);
+			const matchesUsername = !!getUsernameByPersonOfOrganizationId(posting.personOfOrganizationId)
+				?.toLowerCase()
+				.includes(searchValue);
+			const matchesActivitiy = postingActivity?.name.toLowerCase().includes(searchValue);
+			return matchesPurpose || matchesCategoryName || matchesUsername || matchesActivitiy;
 		});
 	}
 
 	function getDefaultActivityFilterIds(): number[] {
-		return activityFilterItems.length > 0 ? activityFilterItems.map((item) => item.data.id) : [0];
+		return activityFilterItems.length > 0 ? activityFilterItems.map((item) => item.data.id) : [];
 	}
 
 	function getDefaultBudgetCategoryFilterIds(): number[] {
@@ -616,8 +623,8 @@
 		{@render collectiveName($organizationStore)}
 		{@render collectiveInfo()}
 		{@render budgetCard()}
-		{#if $organizationStore.activities.length > 0}
-			{@render upcomingActivity($organizationStore.activities)}
+		{#if activities.length > 0}
+			{@render upcomingActivity(activities)}
 		{/if}
 		{@render activityList()}
 		{@render collectiveList()}
@@ -656,7 +663,7 @@
 			<div class="flex items-center gap-2">
 				<ion-icon icon={calendarClearOutline}></ion-icon>
 				<ion-text>
-					{formatDistanceToNow(addDays(new TZDate(), 5), {
+					{formatDistanceToNow(new TZDate(activities[0]?.date!), {
 						addSuffix: true,
 						locale: getDateFnsLocale($localeStore)
 					})}
@@ -675,7 +682,7 @@
 				icon={flashOutline}
 				clicked={async () => {
 					await goto(resolve('/organization/activities'));
-					triggerClickByLabel($t('routes.organization.page.activity-list.list.create-activity'));
+					await triggerClickByLabel($t('routes.organization.page.activity-list.list.create-activity'));
 				}}
 			/>
 		{/if}
@@ -814,6 +821,7 @@
 		</div>
 		<div class="mt-3 flex flex-col gap-1">
 			<Button
+				indexed="/organization"
 				expand="block"
 				label={$t('routes.organization.page.budget-card.card.add-posting')}
 				color="primary"
@@ -821,6 +829,7 @@
 				clicked={onOpenCreatePosting}
 			/>
 			<Button
+				indexed="/organization"
 				icon={listOutline}
 				expand="block"
 				fill="outline"
@@ -832,43 +841,15 @@
 {/snippet}
 
 {#snippet postingItem(posting: PostingTO)}
-	<CustomItem
+	<PostingItem
+		{posting}
 		slidingOptions={canEditPosting(posting.personOfOrganizationId) ? getPostingItemSlidingOptions(posting) : undefined}
-		iconColor={posting.type === 'CREDIT' ? 'success' : 'danger'}
-		icon={posting.type === 'CREDIT' ? trendingUpOutline : trendingDownOutline}
-	>
-		<div class="mt-2 flex w-full flex-col items-center gap-2">
-			<div class="flex w-full items-center justify-between">
-				<ion-text class="font-semibold">{posting.purpose}</ion-text>
-				<ion-text color={posting.type === 'CREDIT' ? 'success' : 'danger'} class="font-bold text-nowrap">
-					{posting.type === 'CREDIT' ? '+' : '-'}
-					{formatter.currency(posting.amountInCents)}
-				</ion-text>
-			</div>
-			<div class="flex w-full flex-wrap items-center justify-start gap-2">
-				<ion-note class="flex items-center justify-center gap-1 text-sm">
-					<ion-icon icon={calendarClearOutline}></ion-icon>
-					<ion-label>{format(new TZDate(posting.date), 'PP')}</ion-label>
-				</ion-note>
-				<ion-note class="flex items-center justify-center gap-1 text-sm">
-					<ion-icon icon={cardOutline}></ion-icon>
-					<ion-label class="truncate">{getBudgetCategoryNameById(posting.organizationBudgetCategoryId)}</ion-label>
-				</ion-note>
-				{#if isActivityPosting(posting.id)}
-					<ion-note class="flex items-center justify-center gap-1 text-sm">
-						<ion-icon icon={flashOutline}></ion-icon>
-						<div class="truncate">{getActivityPosting(posting.id)?.name}</div>
-					</ion-note>
-				{/if}
-				{#if posting.personOfOrganizationId > 0}
-					<ion-note class="flex items-center justify-center gap-1 text-sm">
-						<ion-icon icon={personOutline}></ion-icon>
-						<div class="truncate">{getUsernameByPersonOfOrganizationId(posting.personOfOrganizationId)}</div>
-					</ion-note>
-				{/if}
-			</div>
-		</div>
-	</CustomItem>
+		activityName={isActivityPosting(posting.id) ? getActivityPosting(posting.id)?.name : undefined}
+		budgetCategoryName={getBudgetCategoryNameById(posting.organizationBudgetCategoryId)}
+		username={posting.personOfOrganizationId > 0
+			? getUsernameByPersonOfOrganizationId(posting.personOfOrganizationId)
+			: undefined}
+	/>
 {/snippet}
 
 <!-- Modals -->

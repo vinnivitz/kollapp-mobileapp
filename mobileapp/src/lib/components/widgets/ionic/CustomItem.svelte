@@ -72,8 +72,8 @@
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
 				<ion-item-option color={option.color} onclick={() => option.handler()}>
 					{#if option.label}
-						<div class="flex flex-col items-center justify-center">
-							<ion-icon class="text-3xl" icon={option.icon}></ion-icon>
+						<div class="flex min-w-12 flex-col items-center justify-center">
+							<ion-icon class="text-2xl" icon={option.icon}></ion-icon>
 							<ion-text class="text-xs">{option.label}</ion-text>
 						</div>
 					{:else}

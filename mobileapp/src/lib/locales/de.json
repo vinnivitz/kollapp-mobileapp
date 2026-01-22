@@ -183,6 +183,10 @@
           "register": {
             "link": "Registrieren",
             "question": "Du bist noch nicht registriert?"
+          },
+          "welcome-modal": {
+            "header": "Willkommen bei Kollapp!",
+            "message": "Schön, dass du dabei bist!\nMit Kollapp verwaltest du dein Kollektiv ganz einfach.\n📊 Finanzen im Blick - Einnahmen und Ausgaben transparent erfassen\n📅 Aktivitäten planen - Events organisieren und koordinieren\n👥 Mitglieder verwalten - strukturiert zusammenarbeiten\nStarte jetzt, indem du ein Kollektiv anlegst oder einem beitrittst.\nViel Erfolg wünsch das Team von Kollapp!"
           }
         }
       },
@@ -204,7 +208,7 @@
                     "already-member": "Du bist bereits Mitglied dieses Kollektivs.",
                     "not-authenticated": "Du musst angemeldet sein, um einem Kollektiv beizutreten."
                   },
-                  "login": "Einloggen",
+                  "login": "Anmelden",
                   "name": "Name",
                   "place": "Ort",
                   "submit": "Tritt dem Kollektiv bei"
@@ -220,14 +224,14 @@
         "page": {
           "card": {
             "join": {
-              "content": "Wende dich an einen Kollektivadministrator, um dir den Einladungscode für den Beitritt zu seinem Kollektiv zu geben.",
+              "content": "Wende dich an einen Kollektivadministrator, um den Einladungscode für den Beitritt zu seinem Kollektiv zu erhalten.",
               "title": "Einem Kollektiv beitreten?"
             },
             "register": {
               "card": {
                 "login": {
                   "content": "Du bist bereits registriert?",
-                  "link": "Protokoll"
+                  "link": "Anmelden"
                 }
               },
               "form": {
@@ -238,6 +242,12 @@
                 "username": "Benutzername"
               },
               "title": "Registriere dich bei Kollapp"
+            }
+          },
+          "modal": {
+            "success": {
+              "message": "Wir haben dir eine E-Mail mit einem Bestätigungslink an {{value}} gesendet.",
+              "title": "Erfolgreich registriert!"
             }
           }
         }
@@ -297,7 +307,8 @@
           "home": "Startseite",
           "organization": "Kollektiv"
         },
-        "title": "Kollapp - Die Kollektiv App"
+        "title": "Kollapp - Die Kollektiv App",
+        "welcome-modal": {}
       }
     },
     "organization": {
@@ -355,6 +366,9 @@
                   "positive": "Positiv",
                   "negative": "Negativ",
                   "neutral": "Ausgeglichen"
+                },
+                "date-range": {
+                  "label": "Zeitraum"
                 }
               }
             }
@@ -421,6 +435,10 @@
                     "unassigned": "Nicht zugewiesen",
                     "label": "Zugewiesenes Mitglied",
                     "search": "Mitglieder suchen..."
+                  },
+                  "budget-category": {
+                    "label": "Kategorie auswählen",
+                    "search": "Kategorien durchsuchen..."
                   }
                 }
               },
@@ -439,7 +457,8 @@
               },
               "posting-history": {
                 "no-postings": "Keine Buchungen gefunden.",
-                "searchbar": "Buchungen suchen..."
+                "searchbar": "Buchungen suchen...",
+                "no-search-results": "Keine Buchungen für „{{value}}“ gefunden"
               },
               "update-activity": {
                 "card": {
@@ -463,6 +482,9 @@
                     "person-of-organization": {
                       "label": "Zugewiesenes Mitglied",
                       "search": "Mitglieder suchen..."
+                    },
+                    "budget-category": {
+                      "label": "Kategorie auswählen"
                     }
                   },
                   "title": "Buchung aktualisieren"
@@ -582,7 +604,6 @@
                   "title": "Buchungen filtern",
                   "type-filter": {
                     "label": "Buchungstyp",
-                    "all": "Alle",
                     "credit": "Einnahmen",
                     "debit": "Ausgaben"
                   },
@@ -595,8 +616,23 @@
                     "input-label": "Ausgewählte Kategorien",
                     "all-selected": "Alle Kategorien ausgewählt",
                     "search-placeholder": "Kategorien durchsuchen..."
+                  },
+                  "activities": {
+                    "all-selected": "Alle Veranstaltungen ausgewählt",
+                    "select": "Ausgewählte Veranstaltungen",
+                    "label": "Veranstaltungen",
+                    "search": "Veranstaltungen suchen..."
                   }
                 }
+              }
+            },
+            "activity-filter-items": {
+              "not-assigned": "Nicht zugewiesen"
+            },
+            "item": {
+              "sliding": {
+                "edit": "Bearbeiten",
+                "transfer": "Abrechnen"
               }
             }
           }
@@ -717,6 +753,11 @@
           "sliding-options": {
             "edit": "Bearbeiten",
             "delete": "Löschen"
+          },
+          "budget-categories-card": {
+            "card": {
+              "add-category": "Kategorie hinzufügen"
+            }
           }
         }
       },
@@ -842,8 +883,8 @@
           "note": "Du bist kein Mitglied eines Kollektivs."
         },
         "posting-translation": {
-          "cedit": "Einnahme",
-          "debit": "Ausgabe"
+          "cedit": "Einnahme hinzufügen",
+          "debit": "Ausgabe hinzufügen"
         },
         "title": "Kollektiv",
         "upcoming-activity": {
@@ -929,6 +970,18 @@
             "title": "Ausstehende Anfragen",
             "content": "Die folgenden Benutzer möchten dem Kollektiv beitreten:"
           }
+        },
+        "new-posting-button": {
+          "label": "Buchung anlegen"
+        },
+        "create-activity-button": {
+          "label": "Veranstaltung erstellen"
+        },
+        "budget-categories-button": {
+          "label": "Budget-Kategorie hinzufügen"
+        },
+        "person-of-organization-button": {
+          "label": "Mitglied einladen"
         }
       }
     }
