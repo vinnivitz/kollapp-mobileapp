@@ -124,10 +124,10 @@ vi.mock('$lib/stores', () => {
 			}
 		},
 		organizationStore: {
-			init: vi.fn().mockResolvedValue(vi.fn())
+			initialize: vi.fn().mockResolvedValue(vi.fn())
 		},
 		userStore: {
-			init: vi.fn().mockResolvedValue(vi.fn())
+			initialize: vi.fn().mockResolvedValue(vi.fn())
 		}
 	};
 });
