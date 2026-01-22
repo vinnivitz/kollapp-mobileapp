@@ -60,11 +60,11 @@
 	import {
 		chipMultiSection,
 		dateRangeSection,
-		Form,
-		multiSelectSection,
 		type FilterConfig,
+		Form,
 		type FormActions,
 		type ItemSlidingOption,
+		multiSelectSection,
 		type SelectItem
 	} from '$lib/models/ui';
 	import { localeStore, organizationStore, userStore } from '$lib/stores';
