@@ -2,7 +2,7 @@ import type { SearchableItemTO } from '$lib/api/dto';
 import type { OrganizationRole } from '@kollapp/api-types';
 import type { Expression, Identifier, MemberExpression } from 'estree';
 
-import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
 import { type AST, parse } from 'svelte/compiler';
@@ -27,6 +27,7 @@ let idCounter = 0;
  */
 function indexSearchables(): void {
 	scanDirectory(SRC_DIR);
+	mkdirSync(path.dirname(OUTPUT_FILE), { recursive: true });
 	writeFileSync(OUTPUT_FILE, JSON.stringify(searchableItems, undefined, 2), 'utf8');
 	console.info(`\nWrote ${searchableItems.length} entries to ${OUTPUT_FILE}`);
 }
