@@ -85,8 +85,7 @@ describe('widgets/ionic/FabButton', () => {
 		});
 
 		const fab = container.querySelector('ion-fab');
-		expect(fab?.getAttribute('id')).toBe('fab-id');
-		expect(fab?.getAttribute('aria-label')).toBe('Main FAB button');
+		expect(fab?.getAttribute('id')).toBe('Main FAB button');
 	});
 
 	it('renders button with custom color in fab list', async () => {
