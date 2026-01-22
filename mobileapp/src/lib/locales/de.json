@@ -316,7 +316,7 @@
             "no-results-filtered": "Keine Veranstaltungen gefunden."
           },
           "calendar": {
-            "no-events": "Für den {{value}} wurde keine Veranstaltung gefunden"
+            "no-activities": "Für den {{value}} wurde keine Veranstaltung gefunden"
           },
           "filters": {
             "card": {},
@@ -384,7 +384,7 @@
                 "debit": "Ausgabe hinzufügen"
               }
             },
-            "event-summary": {
+            "activity-summary": {
               "add-to-calendar": "Zum Kalender hinzufügen",
               "open-in-map": "Karte öffnen"
             },
@@ -479,7 +479,7 @@
               }
             },
             "postings-summary": {
-              "heading": "Veranstaltungsübersicht",
+              "heading": "Veranstaltungsbilanz",
               "total-credit": "Gesamteinnahmen: {{value}}",
               "total-debit": "Gesamtausgaben: {{value}}",
               "posting-history": "Buchungsverlauf",
@@ -699,7 +699,7 @@
         },
         "budget-card": {
           "card": {
-            "collective-balance": "Kollektivübersicht",
+            "collective-balance": "Kollektivbilanz",
             "postings-history": "Buchungsverlauf",
             "total-credit": "Gesamteinnahmen: {{value}}",
             "total-debit": "Gesamtausgaben: {{value}}",
@@ -716,11 +716,11 @@
             "update-info": "Kollektivinformationen aktualisieren"
           }
         },
-        "event-list": {
+        "activity-list": {
           "list": {
-            "create-event": "Veranstaltung erstellen",
+            "create-activity": "Veranstaltung erstellen",
             "header": "Veranstaltungen",
-            "manage-events": "Veranstaltungen"
+            "manage-activities": "Veranstaltungen"
           }
         },
         "general": {
@@ -821,7 +821,7 @@
           "debit": "Ausgabe"
         },
         "title": "Kollektiv",
-        "upcoming-event": {
+        "upcoming-activity": {
           "card": {
             "title": "Nächste Veranstaltung"
           }
@@ -889,7 +889,7 @@
           }
         },
         "title": "Kollapp",
-        "upcoming-event-card": {
+        "upcoming-activity-card": {
           "card": {
             "title": "Nächste Veranstaltung"
           }

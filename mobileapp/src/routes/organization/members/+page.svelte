@@ -309,6 +309,7 @@
 <Layout title={$t('routes.organization.members.page.title')} showBackButton>
 	{#if hasOrganizationRole('ROLE_ORGANIZATION_MANAGER')}
 		<FabButton
+			indexed="/organization/members"
 			indexLabel={$t('routes.organization.members.page.fab.invite-members.title')}
 			icon={personAddOutline}
 			clicked={() => (invitationCodeModalOpen = true)}

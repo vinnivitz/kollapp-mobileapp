@@ -626,7 +626,12 @@
 <!-- Snippets -->
 
 {#snippet activitySummary()}
-	<Card border="secondary" title={activity?.name} classList="mb-5" clicked={onOpenActivityModal}>
+	<Card
+		border="secondary"
+		title={activity?.name}
+		classList="mb-5"
+		clicked={isManager ? onOpenActivityModal : undefined}
+	>
 		<div class="flex flex-wrap items-center justify-center gap-3">
 			<div class="flex w-1/2 items-center gap-1">
 				<ion-icon icon={locationOutline}></ion-icon>
@@ -649,7 +654,7 @@
 				size="small"
 				fill="solid"
 				color="light"
-				label={$t('routes.organization.activities.slug.page.event-summary.open-in-map')}
+				label={$t('routes.organization.activities.slug.page.activity-summary.open-in-map')}
 				clicked={onOpenLocation}
 			/>
 			<Button
@@ -657,7 +662,7 @@
 				size="small"
 				fill="solid"
 				color="light"
-				label={$t('routes.organization.activities.slug.page.event-summary.add-to-calendar')}
+				label={$t('routes.organization.activities.slug.page.activity-summary.add-to-calendar')}
 				clicked={onAddToCalendar}
 			/>
 		</div>

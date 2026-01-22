@@ -701,7 +701,7 @@
               "error": "Calendar is not available"
             },
             "title": "Event Details",
-            "event-summary": {
+            "activity-summary": {
               "add-to-calendar": "Add to calendar",
               "open-in-map": "Open in map"
             },
@@ -728,7 +728,7 @@
           },
           "title": "Events",
           "calendar": {
-            "no-events": "No event found for {{value}}"
+            "no-activities": "No event found for {{value}}"
           },
           "activities": {
             "fab": {
@@ -1118,11 +1118,11 @@
         "no-collective": {
           "note": "You are not part of any collective."
         },
-        "event-list": {
+        "activity-list": {
           "list": {
-            "create-event": "Create event",
+            "create-activity": "Create event",
             "header": "Events",
-            "manage-events": "Events"
+            "manage-activities": "Events"
           }
         },
         "collective-list": {
@@ -1151,7 +1151,7 @@
             "add-posting": "Add transaction"
           }
         },
-        "upcoming-event": {
+        "upcoming-activity": {
           "card": {
             "title": "Upcoming event"
           }
@@ -1192,7 +1192,7 @@
             "no-notes": "No new notifications"
           }
         },
-        "upcoming-event-card": {
+        "upcoming-activity-card": {
           "card": {
             "title": "Upcoming event"
           }

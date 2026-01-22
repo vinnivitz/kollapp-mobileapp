@@ -61,7 +61,7 @@ export async function triggerClickByLabel(label: string): Promise<void> {
 		[...document.querySelectorAll('ion-label')].find((element) => element.textContent === label)?.closest('ion-item') ??
 		[...document.querySelectorAll('ion-card')].find((element) => element.id === label) ??
 		[...document.querySelectorAll('ion-fab')]
-			.find((element) => element.ariaLabel === label)
+			.find((element) => element.id === label)
 			?.querySelector('ion-fab-button') ??
 		[...document.querySelectorAll('ion-label')]
 			.find((element) => element.textContent === label)

@@ -281,7 +281,7 @@
 		selectedDate = date;
 	}
 
-	function onSearchEvents(event: CustomEvent): void {
+	function onSearchActivities(event: CustomEvent): void {
 		searchActivityValue = event.detail.value ?? '';
 	}
 
@@ -336,7 +336,7 @@
 			show-clear-button="always"
 			debounce={100}
 			placeholder={$t('routes.organization.activities.page.activities.search.placeholder')}
-			onionInput={onSearchEvents}
+			onionInput={onSearchActivities}
 			value={searchActivityValue}
 		></ion-searchbar>
 		<Button fill="solid" color="secondary" clicked={() => (filterOpen = true)} icon={filterOutline} />
@@ -421,7 +421,7 @@
 	{:else}
 		<FadeInOut classList="mt-4 text-center">
 			<ion-note>
-				{$t('routes.organization.activities.page.calendar.no-events', {
+				{$t('routes.organization.activities.page.calendar.no-activities', {
 					value: format(selectedDate, 'PPP')
 				})}
 			</ion-note>

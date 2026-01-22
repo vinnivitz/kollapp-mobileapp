@@ -37,7 +37,7 @@
 	);
 	const organizations = $derived(organizationStore.organizations);
 
-	function onNavigateEvent(): void {
+	function onNavigateActivity(): void {
 		if ($organizationStore?.activities[0]?.id) {
 			goto(resolve('/organization/activities/[slug]', { slug: $organizationStore.activities[0].id.toString() }));
 		}
@@ -46,11 +46,11 @@
 
 <Layout title={$t('routes.page.page.title')}>
 	{#if $userStore}
+		{@render accountCard($userStore)}
+
 		{#if !$organizationStore && $organizations.length > 0}
 			{@render pendingOrganizationJoinRequestCard()}
 		{/if}
-
-		{@render accountCard($userStore)}
 
 		{#if $organizationStore?.personsOfOrganization.some((person) => person.status === 'PENDING') && hasOrganizationRole('ROLE_ORGANIZATION_MANAGER')}
 			{@render pendingMembers()}
@@ -58,7 +58,7 @@
 
 		{#if $organizationStore}
 			{#if activity}
-				{@render upcomingEventCard(activity)}
+				{@render upcomingActivityCard(activity)}
 			{/if}
 			{@render organizationCard($organizationStore)}
 			{@render budgetChartCard()}
@@ -88,11 +88,11 @@
 	</div>
 {/snippet}
 
-{#snippet upcomingEventCard(activity: ActivityModel)}
+{#snippet upcomingActivityCard(activity: ActivityModel)}
 	<Card
-		title={$t('routes.page.page.upcoming-event-card.card.title')}
+		title={$t('routes.page.page.upcoming-activity-card.card.title')}
 		border="secondary"
-		clicked={onNavigateEvent}
+		clicked={onNavigateActivity}
 		titleIconEnd={arrowForwardOutline}
 	>
 		<div class="mb-3 flex flex-wrap items-center justify-center gap-5">

@@ -673,9 +673,9 @@
 		{@render collectiveInfo()}
 		{@render budgetCard()}
 		{#if $organizationStore.activities.length > 0}
-			{@render upcomingEvent($organizationStore.activities)}
+			{@render upcomingActivity($organizationStore.activities)}
 		{/if}
-		{@render eventsList()}
+		{@render activityList()}
 		{@render collectiveList()}
 	{:else if $organizations.length === 0}
 		{@render noCollectiveCard()}
@@ -696,10 +696,10 @@
 	</Card>
 {/snippet}
 
-{#snippet upcomingEvent(activities: ActivityTO[])}
+{#snippet upcomingActivity(activities: ActivityTO[])}
 	<Card
 		border="secondary"
-		title={$t('routes.organization.page.upcoming-event.card.title')}
+		title={$t('routes.organization.page.upcoming-activity.card.title')}
 		classList="mt-5"
 		clicked={() => goto(resolve('/organization/activities/[slug]', { slug: activities[0]!.id.toString() }))}
 		titleIconEnd={arrowForwardOutline}
@@ -722,21 +722,21 @@
 	</Card>
 {/snippet}
 
-{#snippet eventsList()}
+{#snippet activityList()}
 	<ion-list inset class="mt-0 pt-0">
-		<ion-list-header>{$t('routes.organization.page.event-list.list.header')}</ion-list-header>
+		<ion-list-header>{$t('routes.organization.page.activity-list.list.header')}</ion-list-header>
 		{#if isManager}
 			<LabeledItem
-				label={$t('routes.organization.page.event-list.list.create-event')}
+				label={$t('routes.organization.page.activity-list.list.create-activity')}
 				icon={flashOutline}
 				clicked={async () => {
 					await goto(resolve('/organization/activities'));
-					triggerClickByLabel($t('routes.organization.page.event-list.list.create-event'));
+					triggerClickByLabel($t('routes.organization.page.activity-list.list.create-activity'));
 				}}
 			/>
 		{/if}
 		<LabeledItem
-			label={$t('routes.organization.page.event-list.list.manage-events')}
+			label={$t('routes.organization.page.activity-list.list.manage-activities')}
 			icon={calendarClearOutline}
 			indexed="/organization/activities"
 			clicked={() => goto(resolve('/organization/activities'))}
