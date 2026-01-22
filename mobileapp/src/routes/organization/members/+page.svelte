@@ -67,68 +67,76 @@
 	);
 	const invitationCode = $derived($organizationStore?.organizationInvitationCode.code ?? '');
 
-	const members = $derived(
+	const personsOfOrganization = $derived(
 		($organizationStore?.personsOfOrganization ?? [])
 			.toSorted((a, b) => a.username.localeCompare(b.username))
-			.filter((member) => member.status === 'APPROVED')
+			.filter((person) => person.status === 'APPROVED')
 	);
 
-	const filteredMembers = $derived(
+	const filteredPersonsOfOrganization = $derived(
 		searchValue
-			? members.filter((member) => member.username.toLowerCase().includes(searchValue.toLowerCase()))
-			: members
+			? personsOfOrganization.filter((personOfOrganization) =>
+					personOfOrganization.username.toLowerCase().includes(searchValue.toLowerCase())
+				)
+			: personsOfOrganization
 	);
 
-	const pendingMembers = $derived(
+	const pendingPersonsOfOrganization = $derived(
 		($organizationStore?.personsOfOrganization ?? []).filter(
-			(member) => member.userId !== userId && member.status === 'PENDING'
+			(person) => person.userId !== userId && person.status === 'PENDING'
 		)
 	);
 
-	const memberGroups = $derived(getGroupedMembers(filteredMembers));
+	const personOfOrganizationGroups = $derived(getGroupedMembers(filteredPersonsOfOrganization));
 
 	const isExpired = $derived(invitationCodeExpiration.getTime() <= Date.now());
 
-	function getMemberSlidingOptions(member: PersonOfOrganizationTO): ItemSlidingOption[] {
+	function getPersonOfOrganizationSlidingOptions(personOfOrganization: PersonOfOrganizationTO): ItemSlidingOption[] {
 		return [
-			{ color: 'secondary', handler: () => onViewMemberDetails(member), icon: informationCircleOutline },
-			{ color: 'tertiary', handler: () => onSelectRole(member), icon: ribbonOutline },
-			{ color: 'danger', handler: () => onRemoveUserPrompt(member), icon: logOutOutline }
+			{ color: 'secondary', handler: () => onViewMemberDetails(personOfOrganization), icon: informationCircleOutline },
+			{ color: 'tertiary', handler: () => onSelectRole(personOfOrganization), icon: ribbonOutline },
+			{ color: 'danger', handler: () => onRemovePersonOfOrganizationPrompt(personOfOrganization), icon: logOutOutline }
 		];
 	}
 
-	function onViewMemberDetails(member: PersonOfOrganizationTO): void {
-		goto(resolve(`/organization/members/${member.id}`));
+	function onViewMemberDetails(personOfOrganization: PersonOfOrganizationTO): void {
+		goto(resolve(`/organization/members/${personOfOrganization.id}`));
 	}
 
-	function getPendingMemberSlidingOptions(member: PersonOfOrganizationTO): ItemSlidingOption[] {
+	function getPendingPersonOfOrganizationSlidingOptions(
+		personOfOrganization: PersonOfOrganizationTO
+	): ItemSlidingOption[] {
 		return [
-			{ color: 'success', handler: () => onApproveMemberPrompt(member), icon: checkmarkOutline },
-			{ color: 'danger', handler: () => onDenyMembershipRequestPrompt(member), icon: closeOutline }
+			{ color: 'success', handler: () => onApproveMemberPrompt(personOfOrganization), icon: checkmarkOutline },
+			{ color: 'danger', handler: () => onDenyMembershipRequestPrompt(personOfOrganization), icon: closeOutline }
 		];
 	}
 
-	async function onApproveMemberPrompt(member: PersonOfOrganizationTO): Promise<void> {
+	async function onApproveMemberPrompt(personOfOrganization: PersonOfOrganizationTO): Promise<void> {
 		return confirmationModal({
 			confirmText: $t('routes.organization.members.page.modal.approve-member.confirm'),
-			handler: async () => await approveUser(member.id),
+			handler: async () => await approveUser(personOfOrganization.id),
 			header: $t('routes.organization.members.page.modal.approve-member.header'),
-			message: $t('routes.organization.members.page.modal.approve-member.message', { value: member.username })
+			message: $t('routes.organization.members.page.modal.approve-member.message', {
+				value: personOfOrganization.username
+			})
 		});
 	}
 
-	async function onRemoveUserPrompt(member: PersonOfOrganizationTO): Promise<void> {
-		const untransferredPostings = getUntransferredPostingsForMember(member.id);
+	async function onRemovePersonOfOrganizationPrompt(personOfOrganization: PersonOfOrganizationTO): Promise<void> {
+		const untransferredPostings = getUntransferredPostingsForMember(personOfOrganization.id);
 
 		if (untransferredPostings.length > 0) {
-			const message = `${$t('routes.organization.members.page.modal.untransferred-postings.message', { value: member.username })}`;
+			const message = `${$t('routes.organization.members.page.modal.untransferred-postings.message', { value: personOfOrganization.username })}`;
 			return informationModal($t('routes.organization.members.page.modal.untransferred-postings.header'), message);
 		}
 
 		return confirmationModal({
 			confirmText: $t('routes.organization.members.page.modal.remove-member.confirm'),
-			handler: async () => await removeUser(member.id),
-			message: $t('routes.organization.members.page.modal.remove-member.message', { value: member.username })
+			handler: async () => await removePersonOfOrganization(personOfOrganization.id),
+			message: $t('routes.organization.members.page.modal.remove-member.message', {
+				value: personOfOrganization.username
+			})
 		});
 	}
 
@@ -144,45 +152,49 @@
 			.map((posting) => ({ amountInCents: posting.amountInCents, purpose: posting.purpose }));
 	}
 
-	async function onDenyMembershipRequestPrompt(member: PersonOfOrganizationTO): Promise<void> {
+	async function onDenyMembershipRequestPrompt(personOfOrganization: PersonOfOrganizationTO): Promise<void> {
 		return confirmationModal({
-			handler: async () => await removeUser(member.id),
-			message: $t('routes.organization.members.page.modal.deny-membership-request.message', { value: member.username })
+			handler: async () => await removePersonOfOrganization(personOfOrganization.id),
+			message: $t('routes.organization.members.page.modal.deny-membership-request.message', {
+				value: personOfOrganization.username
+			})
 		});
 	}
 
-	async function approveUser(memberId: number): Promise<void> {
+	async function approveUser(personOfOrganizationId: number): Promise<void> {
 		const organizationId = $organizationStore?.id;
 		if (!organizationId) return;
-		const response = await organizationService.approveUser(organizationId, memberId);
+		const response = await organizationService.approveUser(organizationId, personOfOrganizationId);
 		if (StatusCheck.isOK(response.status)) {
 			await organizationStore.update(organizationId);
 		}
 	}
 
-	async function removeUser(memberId: number): Promise<void> {
+	async function removePersonOfOrganization(personOfOrganizationId: number): Promise<void> {
 		const organizationId = $organizationStore?.id;
 		if (!organizationId) return;
-		const response = await organizationService.removeUser(organizationId, memberId);
+		const response = await organizationService.removePersonOfOrganization(organizationId, personOfOrganizationId);
 		if (StatusCheck.isOK(response.status)) {
 			await organizationStore.update(organizationId);
 		}
 	}
 
-	async function onSelectRole(member: PersonOfOrganizationTO): Promise<void> {
+	async function onSelectRole(personOfOrganization: PersonOfOrganizationTO): Promise<void> {
 		const organizationId = $organizationStore?.id as number;
 		const actionsheet = await actionSheetController.create({
 			buttons: [
 				{
-					handler: () => onGrantOrganizationRolePrompt(member.id, organizationId, 'ROLE_ORGANIZATION_MANAGER'),
+					handler: () =>
+						onGrantOrganizationRolePrompt(personOfOrganization.id, organizationId, 'ROLE_ORGANIZATION_MANAGER'),
 					icon: medalOutline,
-					role: member.organizationRole === 'ROLE_ORGANIZATION_MANAGER' ? 'selected' : undefined,
+					role: personOfOrganization.organizationRole === 'ROLE_ORGANIZATION_MANAGER' ? 'selected' : undefined,
 					text: $t('routes.organization.members.page.modal.select-role.manager')
 				},
 				{
-					handler: () => onGrantOrganizationRolePrompt(member.id, organizationId, 'ROLE_ORGANIZATION_MEMBER'),
+					handler: () =>
+						onGrantOrganizationRolePrompt(personOfOrganization.id, organizationId, 'ROLE_ORGANIZATION_MEMBER'),
 					icon: personOutline,
-					role: member.organizationRole === 'ROLE_ORGANIZATION_MEMBER' ? 'selected' : undefined,
+					role: personOfOrganization.organizationRole === 'ROLE_ORGANIZATION_MEMBER' ? 'selected' : undefined,
 					text: $t('routes.organization.members.page.modal.select-role.member')
 				}
 			],
@@ -193,15 +205,15 @@
 	}
 
 	async function onGrantOrganizationRolePrompt(
-		memberId: number,
+		personOfOrganizationId: number,
 		organizationId: number,
 		role: OrganizationRole
 	): Promise<void> {
-		if (role === members.find((member) => member.id === memberId)?.organizationRole) {
+		if (role === personsOfOrganization.find((person) => person.id === personOfOrganizationId)?.organizationRole) {
 			return;
 		}
 		await confirmationModal({
-			handler: async () => await grantOrganizationRole(memberId, organizationId, role),
+			handler: async () => await grantOrganizationRole(personOfOrganizationId, organizationId, role),
 			header: $t('routes.organization.members.page.modal.change-role.header'),
 			message: $t('routes.organization.members.page.modal.change-role.message', {
 				value: getRoleTranslationFromRole(role)
@@ -210,23 +222,23 @@
 	}
 
 	async function grantOrganizationRole(
-		memberId: number,
+		personOfOrganizationId: number,
 		organizationId: number,
 		role: OrganizationRole
 	): Promise<void> {
-		await organizationService.grantRole(organizationId, memberId, role);
+		await organizationService.grantRole(organizationId, personOfOrganizationId, role);
 		await organizationStore.update(organizationId);
 	}
 
-	function getGroupedMembers(members: PersonOfOrganizationTO[]): [string, PersonOfOrganizationTO[]][] {
+	function getGroupedMembers(personsOfOrganization: PersonOfOrganizationTO[]): [string, PersonOfOrganizationTO[]][] {
 		const result: Map<string, PersonOfOrganizationTO[]> = new SvelteMap();
 
-		for (const member of members) {
-			const key = member.username.charAt(0).toUpperCase();
+		for (const person of personsOfOrganization) {
+			const key = person.username.charAt(0).toUpperCase();
 			if (!result.has(key)) {
 				result.set(key, []);
 			}
-			result.get(key)!.push(member);
+			result.get(key)!.push(person);
 		}
 
 		return [...result.entries()].toSorted(([a], [b]) => a.localeCompare(b));
@@ -301,7 +313,7 @@
 			icon={personAddOutline}
 			clicked={() => (invitationCodeModalOpen = true)}
 		/>
-		{#if pendingMembers.length > 0}
+		{#if pendingPersonsOfOrganization.length > 0}
 			{@render pendingMembersCard()}
 		{/if}
 	{/if}
@@ -313,8 +325,8 @@
 		value={searchValue}
 	></ion-searchbar>
 
-	{#if filteredMembers.length > 0}
-		{@render memberList()}
+	{#if filteredPersonsOfOrganization.length > 0}
+		{@render personsOfOrganizationList()}
 	{:else if searchValue}
 		{@render noSearchResults()}
 	{:else}
@@ -326,8 +338,8 @@
 
 {#snippet pendingMembersCard()}
 	<Card title={$t('routes.organization.members.page.card.pending-members.title')} border="warning" classList="mt-5">
-		{#each pendingMembers as member (member.id)}
-			{@render pendingMemberItem(member)}
+		{#each pendingPersonsOfOrganization as person (person.id)}
+			{@render pendingMemberItem(person)}
 		{/each}
 	</Card>
 {/snippet}
@@ -351,17 +363,17 @@
 	</FadeInOut>
 {/snippet}
 
-{#snippet memberList()}
+{#snippet personsOfOrganizationList()}
 	<FadeInOut>
 		<ion-list>
-			{#each memberGroups as [letter, memberGroup] (letter)}
+			{#each personOfOrganizationGroups as [letter, personOfOrganizationGroup] (letter)}
 				<ion-item-group>
 					<ion-item-divider class="bg-transparent">
 						<ion-label>{letter}</ion-label>
 					</ion-item-divider>
 
-					{#each memberGroup as member (member.id)}
-						{@render memberItem(member)}
+					{#each personOfOrganizationGroup as personOfOrganization (personOfOrganization.id)}
+						{@render personOfOrganizationItem(personOfOrganization)}
 					{/each}
 				</ion-item-group>
 			{/each}
@@ -369,25 +381,25 @@
 	</FadeInOut>
 {/snippet}
 
-{#snippet memberItem(member: PersonOfOrganizationTO)}
+{#snippet personOfOrganizationItem(personOfOrganization: PersonOfOrganizationTO)}
 	<CustomItem
-		slidingOptions={hasOrganizationRole('ROLE_ORGANIZATION_MANAGER') && member.userId !== userId
-			? getMemberSlidingOptions(member)
+		slidingOptions={hasOrganizationRole('ROLE_ORGANIZATION_MANAGER') && personOfOrganization.userId !== userId
+			? getPersonOfOrganizationSlidingOptions(personOfOrganization)
 			: undefined}
 	>
 		<ion-avatar class="mb-2">
 			<ion-icon icon={personCircleOutline} class="h-10 w-10" color="medium"></ion-icon>
 		</ion-avatar>
-		<ion-label class="ms-6">{member.username}</ion-label>
+		<ion-label class="ms-6">{personOfOrganization.username}</ion-label>
 	</CustomItem>
 {/snippet}
 
-{#snippet pendingMemberItem(member: PersonOfOrganizationTO)}
-	<CustomItem slidingOptions={getPendingMemberSlidingOptions(member)}>
+{#snippet pendingMemberItem(personOfOrganization: PersonOfOrganizationTO)}
+	<CustomItem slidingOptions={getPendingPersonOfOrganizationSlidingOptions(personOfOrganization)}>
 		<ion-avatar class="mb-2">
 			<ion-icon icon={personCircleOutline} class="h-10 w-10" color="medium"></ion-icon>
 		</ion-avatar>
-		<ion-label class="my-0 ms-6">{member.username}</ion-label>
+		<ion-label class="my-0 ms-6">{personOfOrganization.username}</ion-label>
 	</CustomItem>
 {/snippet}
 

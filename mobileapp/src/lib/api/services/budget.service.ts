@@ -107,7 +107,7 @@ class BudgetResource {
 
 	/**
 	 * Transfers an organization posting to the collective.
-	 * This removes the assignment to a specific member.
+	 * This removes the assignment to a specific person of organization.
 	 * Only managers can transfer postings.
 	 * @param organizationId The organization ID.
 	 * @param postingId The posting ID.
@@ -121,7 +121,7 @@ class BudgetResource {
 
 	/**
 	 * Transfers an activity posting to the collective.
-	 * This removes the assignment to a specific member.
+	 * This removes the assignment to a specific person of organization.
 	 * Only managers can transfer postings.
 	 * @param organizationId The organization ID.
 	 * @param activityId The activity ID.

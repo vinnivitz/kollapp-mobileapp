@@ -22,7 +22,7 @@
 	const isLastManager = $derived(
 		isManager &&
 			$organizationStore?.personsOfOrganization.filter(
-				(member) => member.organizationRole === 'ROLE_ORGANIZATION_MANAGER'
+				(personOfOrganization) => personOfOrganization.organizationRole === 'ROLE_ORGANIZATION_MANAGER'
 			).length === 1
 	);
 

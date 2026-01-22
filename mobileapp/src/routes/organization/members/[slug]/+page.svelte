@@ -49,8 +49,8 @@
 
 	const { data } = $props();
 
-	const member = $derived<PersonOfOrganizationTO | undefined>(
-		$organizationStore?.personsOfOrganization.find((p) => p.id === data.personOfOrganizationId)
+	const personOfOrganization = $derived<PersonOfOrganizationTO | undefined>(
+		$organizationStore?.personsOfOrganization.find((person) => person.id === data.personOfOrganizationId)
 	);
 
 	const postings = $derived<PostingTO[]>([
@@ -58,27 +58,31 @@
 		...($organizationStore?.activities.flatMap((activity) => activity.activityPostings) ?? [])
 	]);
 
-	const memberPostings = $derived<PostingTO[]>(
+	const personOfOrganizationPostings = $derived<PostingTO[]>(
 		postings.filter((posting) => posting.personOfOrganizationId === data.personOfOrganizationId)
 	);
 
-	const openPostings = $derived<PostingTO[]>(memberPostings.filter((posting) => posting.personOfOrganizationId > 0));
+	const openPostings = $derived<PostingTO[]>(
+		personOfOrganizationPostings.filter((posting) => posting.personOfOrganizationId > 0)
+	);
 
 	const totalCredit = $derived(
-		memberPostings
+		personOfOrganizationPostings
 			.filter((posting) => posting.type === 'CREDIT')
 			.reduce((sum, posting) => sum + posting.amountInCents, 0)
 	);
 
 	const totalDebit = $derived(
-		memberPostings
+		personOfOrganizationPostings
 			.filter((posting) => posting.type === 'DEBIT')
 			.reduce((sum, posting) => sum + posting.amountInCents, 0)
 	);
 
 	const balance = $derived(totalCredit - totalDebit);
 
-	const roleLabel = $derived(member ? getRoleTranslationFromRole(member.organizationRole) : '');
+	const roleLabel = $derived(
+		personOfOrganization ? getRoleTranslationFromRole(personOfOrganization.organizationRole) : ''
+	);
 
 	const isManager = $derived(hasOrganizationRole('ROLE_ORGANIZATION_MANAGER'));
 
@@ -156,20 +160,22 @@
 	}
 
 	async function onSelectRole(): Promise<void> {
-		if (!member) return;
+		if (!personOfOrganization) return;
 		const organizationId = $organizationStore?.id!;
 		const actionsheet = await actionSheetController.create({
 			buttons: [
 				{
-					handler: () => onGrantOrganizationRolePrompt(member.id, organizationId, 'ROLE_ORGANIZATION_MANAGER'),
+					handler: () =>
+						onGrantOrganizationRolePrompt(personOfOrganization.id, organizationId, 'ROLE_ORGANIZATION_MANAGER'),
 					icon: medalOutline,
-					role: member.organizationRole === 'ROLE_ORGANIZATION_MANAGER' ? 'selected' : undefined,
+					role: personOfOrganization.organizationRole === 'ROLE_ORGANIZATION_MANAGER' ? 'selected' : undefined,
 					text: $t('routes.organization.members.page.modal.select-role.manager')
 				},
 				{
-					handler: () => onGrantOrganizationRolePrompt(member.id, organizationId, 'ROLE_ORGANIZATION_MEMBER'),
+					handler: () =>
+						onGrantOrganizationRolePrompt(personOfOrganization.id, organizationId, 'ROLE_ORGANIZATION_MEMBER'),
 					icon: personOutline,
-					role: member.organizationRole === 'ROLE_ORGANIZATION_MEMBER' ? 'selected' : undefined,
+					role: personOfOrganization.organizationRole === 'ROLE_ORGANIZATION_MEMBER' ? 'selected' : undefined,
 					text: $t('routes.organization.members.page.modal.select-role.member')
 				}
 			],
@@ -180,15 +186,15 @@
 	}
 
 	async function onGrantOrganizationRolePrompt(
-		memberId: number,
+		personOfOrganizationId: number,
 		organizationId: number,
 		role: OrganizationRole
 	): Promise<void> {
-		if (role === member?.organizationRole) {
+		if (role === personOfOrganization?.organizationRole) {
 			return;
 		}
 		await confirmationModal({
-			handler: async () => await grantOrganizationRole(memberId, organizationId, role),
+			handler: async () => await grantOrganizationRole(personOfOrganizationId, organizationId, role),
 			header: $t('routes.organization.members.page.modal.change-role.header'),
 			message: $t('routes.organization.members.page.modal.change-role.message', {
 				value: getRoleTranslationFromRole(role)
@@ -197,11 +203,11 @@
 	}
 
 	async function grantOrganizationRole(
-		memberId: number,
+		personOfOrganizationId: number,
 		organizationId: number,
 		role: OrganizationRole
 	): Promise<void> {
-		await organizationService.grantRole(organizationId, memberId, role);
+		await organizationService.grantRole(organizationId, personOfOrganizationId, role);
 		await organizationStore.update(organizationId);
 	}
 
@@ -233,8 +239,8 @@
 </script>
 
 <Layout title={$t('routes.organization.members.slug.page.title')} showBackButton>
-	{#if member}
-		{@render memberHeader()}
+	{#if personOfOrganization}
+		{@render personOfOrganizationHeader()}
 		{@render infoCard()}
 		{#if isManager}
 			{@render postingsOverviewCard()}
@@ -249,10 +255,10 @@
 
 <!-- Snippets -->
 
-{#snippet memberHeader()}
+{#snippet personOfOrganizationHeader()}
 	<div class="flex flex-col items-center gap-4 py-4">
 		<ion-icon color="medium" icon={personCircleOutline} class="h-24 w-24"></ion-icon>
-		<h1 class="text-2xl font-bold">{member!.username}</h1>
+		<h1 class="text-2xl font-bold">{personOfOrganization!.username}</h1>
 	</div>
 {/snippet}
 
@@ -272,7 +278,7 @@
 		<CustomItem icon={cashOutline}>
 			<div class="flex w-full items-center justify-between">
 				<ion-label>{$t('routes.organization.members.slug.page.card.postings.total')}</ion-label>
-				<ion-text>{memberPostings.length}</ion-text>
+				<ion-text>{personOfOrganizationPostings.length}</ion-text>
 			</div>
 		</CustomItem>
 		<CustomItem icon={trendingUpOutline}>

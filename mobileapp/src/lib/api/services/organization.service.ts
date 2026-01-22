@@ -71,7 +71,10 @@ class OrganizationResource {
 	 * @param personOfOrganizationId The id of the person of organization.
 	 * @returns {Promise<ResponseBody<OrganizationTO>>} The response body.
 	 */
-	async removeUser(organizationId: number, personOfOrganizationId: number): Promise<ResponseBody<OrganizationTO>> {
+	async removePersonOfOrganization(
+		organizationId: number,
+		personOfOrganizationId: number
+	): Promise<ResponseBody<OrganizationTO>> {
 		return customFetch(`${this.ENDPOINT}/${organizationId}/person/${personOfOrganizationId}`, {
 			method: RequestMethod.DELETE
 		});
