@@ -10,4 +10,3 @@ export * from './modal-store.type';
 export * from './organization-store.type';
 export * from './theme-store.type';
 export * from './user-store.type';
-export * from './version-store.type';

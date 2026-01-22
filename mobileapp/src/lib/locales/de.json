@@ -521,7 +521,6 @@
             }
           },
           "qr-code": {
-            "error": "Beim Scannen des QR-Codes ist ein Fehler aufgetreten. \nBitte versuche es erneut.",
             "invalid": "QR-Code ist ungültig."
           },
           "title": "Tritt dem Kollektiv bei"
@@ -661,7 +660,7 @@
           "no-members": "Keine weiteren Mitglieder gefunden.",
           "title": "Mitglieder",
           "searchbar": {
-            "placeholder": "Mitglieder durchsuchen..."
+            "placeholder": "Mitglieder suchen..."
           }
         }
       },

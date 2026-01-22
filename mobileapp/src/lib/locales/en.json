@@ -807,8 +807,7 @@
       "join": {
         "page": {
           "qr-code": {
-            "invalid": "QR code is not valid.",
-            "error": "An error occurred while scanning the QR code. Please try again."
+            "invalid": "QR code is not valid."
           },
           "modal": {
             "join": {
