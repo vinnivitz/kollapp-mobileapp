@@ -18,7 +18,7 @@
 
 	const form = new Form({
 		completed: async () => {
-			await organizationStore.init();
+			await organizationStore.initialize();
 			touched = false;
 		},
 		exposedActions: (actions) => {

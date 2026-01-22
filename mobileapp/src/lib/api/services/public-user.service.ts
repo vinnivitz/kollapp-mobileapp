@@ -3,7 +3,7 @@ import type { ForgotPasswordRequestTO, KollappUserSignupRequestTO, ResetPassword
 import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/models/api';
 import { customFetch } from '$lib/utility';
 
-class PublicUserResource {
+class PublicUserService {
 	ENDPOINT = 'public/user';
 
 	/** Registers a new manager
@@ -45,4 +45,4 @@ class PublicUserResource {
 	}
 }
 
-export const publicUserService = new PublicUserResource();
+export const publicUserService = new PublicUserService();

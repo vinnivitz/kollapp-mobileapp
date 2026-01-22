@@ -113,7 +113,7 @@
 		formatAmountTokens({
 			cents: edit.cents,
 			currency,
-			locale: get(localeStore),
+			locale: $localeStore,
 			phase: edit.phase,
 			typedFractalDigits: edit.typedFractalDigits
 		})
@@ -535,7 +535,7 @@
 					hasError = currentError;
 				}
 			}
-		}, 100);
+		}, 200);
 	});
 
 	onDestroy(() => {

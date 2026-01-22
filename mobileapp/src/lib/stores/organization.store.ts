@@ -16,7 +16,7 @@ function createStore(): OrganizationStore {
 	const loadedServer = writable(false);
 	const organizations = writable<OrganizationMinifiedTO[]>([]);
 
-	async function init(): Promise<void> {
+	async function initialize(): Promise<void> {
 		return deduplicateRequest(ORGANIZATION_STORE_INIT_REQUEST_KEY, async () => {
 			const storedOrganization = await getStoredValue<OrganizationTO>(StorageKey.ORGANIZATION);
 			if (storedOrganization) {
@@ -62,7 +62,7 @@ function createStore(): OrganizationStore {
 	}
 
 	return {
-		init,
+		initialize,
 		loadedCache,
 		loadedServer,
 		organizations,

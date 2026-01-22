@@ -3,7 +3,7 @@ import type { PostingCreateUpdateRequestTO, PostingTO } from '@kollapp/api-types
 import { RequestMethod, type ResponseBody } from '$lib/models/api';
 import { customFetch } from '$lib/utility';
 
-class BudgetResource {
+class BudgetService {
 	private base(organizationId: number): string {
 		return `organization/${organizationId}`;
 	}
@@ -139,4 +139,4 @@ class BudgetResource {
 	}
 }
 
-export const budgetService = new BudgetResource();
+export const budgetService = new BudgetService();

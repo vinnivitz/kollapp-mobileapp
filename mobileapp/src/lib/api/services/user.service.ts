@@ -8,7 +8,7 @@ import type {
 import { RequestMethod, type ResponseBody } from '$lib/models/api';
 import { customFetch } from '$lib/utility';
 
-class UserResource {
+class UserService {
 	ENDPOINT = 'user';
 
 	/** Gets the data of authenticated user
@@ -51,4 +51,4 @@ class UserResource {
 	}
 }
 
-export const userService = new UserResource();
+export const userService = new UserService();

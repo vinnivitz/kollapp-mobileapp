@@ -9,7 +9,7 @@ import type {
 import { AuthorizationType, RequestMethod, type ResponseBody, StatusCode } from '$lib/models/api';
 import { customFetch } from '$lib/utility';
 
-class OrganizationResource {
+class OrganizationService {
 	ENDPOINT = 'organization';
 
 	/**
@@ -148,4 +148,4 @@ class OrganizationResource {
 	}
 }
 
-export const organizationService = new OrganizationResource();
+export const organizationService = new OrganizationService();

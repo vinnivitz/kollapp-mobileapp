@@ -9,7 +9,7 @@ import { getStoredValue, storeValue } from '$lib/utility';
 function createStore(): LayoutStore {
 	const { set, subscribe } = writable<Layout | undefined>();
 
-	async function init(): Promise<void> {
+	async function initialize(): Promise<void> {
 		const value = await getStoredValue<Layout>(StorageKey.LAYOUT);
 		if (value) {
 			set(value);
@@ -33,7 +33,7 @@ function createStore(): LayoutStore {
 	}
 
 	return {
-		init,
+		initialize,
 		reset,
 		set: _set,
 		subscribe

@@ -8,7 +8,7 @@ import { getStoredValue, storeValue } from '$lib/utility';
 function createStore(): ThemeStore {
 	const { set, subscribe } = writable<Theme | undefined>();
 
-	async function init(): Promise<void> {
+	async function initialize(): Promise<void> {
 		const theme = await getStoredValue<Theme>(StorageKey.THEME);
 		if (theme) {
 			setClass(theme);
@@ -43,7 +43,7 @@ function createStore(): ThemeStore {
 	}
 
 	return {
-		init,
+		initialize,
 		reset,
 		set: _set,
 		subscribe

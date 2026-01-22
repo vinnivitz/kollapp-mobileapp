@@ -9,8 +9,6 @@ import { t } from '$lib/locales';
 import { type StorageKey, StorageStrategy } from '$lib/models/storage';
 import { showAlert } from '$lib/utility';
 
-const $t = get(t);
-
 /**
  * Stores a value in the storage store
  * @param key key name
@@ -19,6 +17,7 @@ const $t = get(t);
  * @returns {Promise<void>}
  */
 export async function storeValue<T>(key: StorageKey, value: T, strategy = StorageStrategy.DEFAULT): Promise<void> {
+	const $t = get(t);
 	try {
 		if (strategy === StorageStrategy.SECURE && !dev) {
 			const success = await SecureStoragePlugin.set({ key: getKey(key), value: JSON.stringify(value) });
@@ -43,6 +42,7 @@ export async function getStoredValue<T = string>(
 	key: StorageKey,
 	strategy = StorageStrategy.DEFAULT
 ): Promise<T | undefined> {
+	const $t = get(t);
 	try {
 		let result: GetResult;
 		if (strategy === StorageStrategy.SECURE && !dev) {
@@ -73,6 +73,7 @@ export async function getStoredValue<T = string>(
  * @returns {Promise<void>}
  */
 export async function removeStoredValue(key: StorageKey, strategy = StorageStrategy.DEFAULT): Promise<void> {
+	const $t = get(t);
 	try {
 		if (strategy === StorageStrategy.SECURE && !dev) {
 			try {

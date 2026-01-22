@@ -96,8 +96,8 @@ describe('Layout', () => {
 
 		refresher.dispatchEvent(new CustomEvent('ionRefresh', { detail: {} }));
 		await waitFor(() => {
-			expect(userStore.init).toHaveBeenCalled();
-			expect(organizationStore.init).toHaveBeenCalled();
+			expect(userStore.initialize).toHaveBeenCalled();
+			expect(organizationStore.initialize).toHaveBeenCalled();
 			expect(refresher.complete).toHaveBeenCalled();
 		});
 	});
@@ -128,8 +128,8 @@ describe('Layout', () => {
 		refresher.dispatchEvent(new CustomEvent('ionRefresh', { detail: {} }));
 		await waitFor(() => {
 			expect(onRefresh).toHaveBeenCalled();
-			expect(userStore.init).not.toHaveBeenCalled();
-			expect(organizationStore.init).not.toHaveBeenCalled();
+			expect(userStore.initialize).not.toHaveBeenCalled();
+			expect(organizationStore.initialize).not.toHaveBeenCalled();
 			expect(refresher.complete).toHaveBeenCalled();
 		});
 	});

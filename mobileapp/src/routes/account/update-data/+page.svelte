@@ -26,7 +26,7 @@
 			if ((await isBiometricAvailable()) && (await isBiometricEnabled())) {
 				await updateUsernameBiometricCredentials(model.username);
 			}
-			await userStore.init();
+			await userStore.initialize();
 		},
 		exposedActions: (actions) => {
 			actions.setModel({

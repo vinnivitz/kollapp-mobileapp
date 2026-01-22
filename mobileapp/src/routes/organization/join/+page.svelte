@@ -43,7 +43,7 @@
 	}
 
 	async function onCompleted(code: string): Promise<void> {
-		await organizationStore.init();
+		await organizationStore.initialize();
 		const organizationResponse = await organizationService.getByInvitationCode(code);
 		if (!StatusCheck.isOK(organizationResponse.status)) return;
 		const organization = organizationResponse.data;

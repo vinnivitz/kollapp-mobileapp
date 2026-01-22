@@ -3,7 +3,7 @@ import type { ActivityCreationRequestTO, ActivityUpdateRequestTO } from '@kollap
 import { RequestMethod, type ResponseBody } from '$lib/models/api';
 import { customFetch } from '$lib/utility';
 
-class ActivityResource {
+class ActivityService {
 	ENDPOINT = 'organization';
 
 	/**
@@ -46,4 +46,4 @@ class ActivityResource {
 	}
 }
 
-export const activityService = new ActivityResource();
+export const activityService = new ActivityService();

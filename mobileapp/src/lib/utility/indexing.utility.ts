@@ -52,9 +52,13 @@ function scanDirectory(directoryPath: string): void {
  * Reads and parses a Svelte file to find `<LabeledItem>` components.
  */
 function scanSvelteFile(filePath: string): void {
-	const fileContent = readFileSync(filePath, 'utf8');
-	const ast = parse(fileContent, { modern: true });
-	findSearchableComponents(ast);
+	try {
+		const fileContent = readFileSync(filePath, 'utf8');
+		const ast = parse(fileContent, { modern: true });
+		findSearchableComponents(ast);
+	} catch (error) {
+		console.info(`Error processing file ${filePath}:`, error);
+	}
 }
 
 /**

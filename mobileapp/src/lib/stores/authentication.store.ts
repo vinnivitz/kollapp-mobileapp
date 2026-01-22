@@ -10,7 +10,7 @@ function createStore(): AuthenticationStore {
 	const { set, subscribe } = writable<AuthenticationModel | undefined>();
 	const initialized = writable(false);
 
-	async function init(): Promise<void> {
+	async function initialize(): Promise<void> {
 		const model = await getStoredValue<AuthenticationModel>(StorageKey.AUTHENTICATION, StorageStrategy.SECURE);
 		if (model) {
 			set(model);
@@ -30,7 +30,7 @@ function createStore(): AuthenticationStore {
 	}
 
 	return {
-		init,
+		initialize,
 		initialized,
 		reset,
 		set: _set,

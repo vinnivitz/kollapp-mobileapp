@@ -37,7 +37,7 @@
 	let menuComponent = $state<ReturnType<typeof Menu>>();
 
 	async function doRefresh(): Promise<void> {
-		await (onRefresh ? onRefresh() : Promise.all([userStore.init(), organizationStore.init()]));
+		await (onRefresh ? onRefresh() : Promise.all([userStore.initialize(), organizationStore.initialize()]));
 		refresher?.complete?.();
 	}
 </script>

@@ -14,7 +14,7 @@ function createStore(): UserStore {
 	const loadedCache = writable(false);
 	const loadedServer = writable(false);
 
-	async function init(): Promise<void> {
+	async function initialize(): Promise<void> {
 		return deduplicateRequest(USER_STORE_INIT_REQUEST_KEY, async () => {
 			const storedUser = await getStoredValue<KollappUserTO>(StorageKey.USER);
 			if (storedUser) {
@@ -46,7 +46,7 @@ function createStore(): UserStore {
 	}
 
 	return {
-		init,
+		initialize,
 		loadedCache,
 		loadedServer,
 		reset,

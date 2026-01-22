@@ -21,7 +21,7 @@
 
 	const form = new Form({
 		completed: async ({ response }) => {
-			await organizationStore.init();
+			await organizationStore.initialize();
 			await organizationStore.update(response.id);
 			await goto(resolve('/organization'));
 		},

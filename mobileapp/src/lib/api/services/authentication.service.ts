@@ -7,7 +7,7 @@ import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/models
 import { appStateStore } from '$lib/stores';
 import { customFetch } from '$lib/utility';
 
-class AuthenticationResource {
+class AuthenticationService {
 	ENDPOINT = 'public/auth';
 
 	/**
@@ -46,4 +46,4 @@ class AuthenticationResource {
 	}
 }
 
-export const authenticationService = new AuthenticationResource();
+export const authenticationService = new AuthenticationService();

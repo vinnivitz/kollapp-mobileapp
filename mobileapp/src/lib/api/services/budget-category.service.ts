@@ -7,7 +7,7 @@ import { customFetch } from '$lib/utility';
  * Service for managing budget categories within an organization.
  * Budget categories are used to classify postings for better organization and reporting.
  */
-class BudgetCategoryResource {
+class BudgetCategoryService {
 	/**
 	 * Constructs the base URL for budget category endpoints.
 	 * @param organizationId The organization ID.
@@ -69,4 +69,4 @@ class BudgetCategoryResource {
 	}
 }
 
-export const budgetCategoryService = new BudgetCategoryResource();
+export const budgetCategoryService = new BudgetCategoryService();

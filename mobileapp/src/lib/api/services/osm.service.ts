@@ -5,30 +5,30 @@ import type { LatLng } from 'leaflet';
 import { get } from 'svelte/store';
 
 import { t } from '$lib/locales';
-import { AlertType } from '$lib/models/ui';
 import { showAlert } from '$lib/utility';
 
 const $t = get(t);
 
-class OsmResource {
+class OsmService {
 	/** Fetches locations based on a query string using the Nominatim API.
 	 * @param query The search query.
 	 * @return {Promise<AddressModel[]>} The list of address models.
 	 */
 	async getLocationsByQuery(query: string): Promise<AddressModel[]> {
 		try {
+			const encodedQuery = encodeURIComponent(query);
 			const response = await fetch(
-				`https://nominatim.openstreetmap.org/search?q=${query}&format=jsonv2&addressdetails=1&limit=5&countrycodes=DE&class=place&type=residential`
+				`https://nominatim.openstreetmap.org/search?q=${encodedQuery}&format=jsonv2&addressdetails=1&limit=5&countrycodes=DE&class=place&type=residential`
 			);
 			if (response.ok) {
 				const result = (await response.json()) as NominatimItemDto[];
 				return result.map((item) => this.getAddress(item)).filter((item) => !this.isEmptyAddress(item));
 			} else {
-				await showAlert($t('api.services.osm.location-query-error'), { type: AlertType.ERROR });
+				await showAlert($t('api.services.osm.location-query-error'));
 				return [];
 			}
 		} catch {
-			await showAlert($t('api.services.osm.location-query-error'), { type: AlertType.ERROR });
+			await showAlert($t('api.services.osm.location-query-error'));
 			return [];
 		}
 	}
@@ -46,10 +46,10 @@ class OsmResource {
 				const result = (await response.json()) as NominatimItemDto;
 				return this.getAddress(result);
 			} else {
-				await showAlert($t('api.services.osm.location-query-error'), { type: AlertType.ERROR });
+				await showAlert($t('api.services.osm.location-query-error'));
 			}
 		} catch {
-			await showAlert($t('api.services.osm.location-query-error'), { type: AlertType.ERROR });
+			await showAlert($t('api.services.osm.location-query-error'));
 		}
 	}
 
@@ -70,4 +70,4 @@ class OsmResource {
 	}
 }
 
-export const osmService = new OsmResource();
+export const osmService = new OsmService();

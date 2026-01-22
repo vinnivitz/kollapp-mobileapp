@@ -38,25 +38,23 @@ function createAppStateStore(): AppStateStore {
 
 		try {
 			set(AppStateType.INITIALIZING_CORE);
-			await Promise.all([themeStore.init(), layoutStore.init(), localeStore.init()]);
+			await Promise.all([themeStore.initialize(), layoutStore.initialize(), localeStore.initialize()]);
 			if (dev) console.info('Core stores initialized.');
 
 			set(AppStateType.INITIALIZING_AUTH);
-			await authenticationStore.init();
+			await authenticationStore.initialize();
 			if (dev) console.info('Authentication store initialized.');
 
 			const isAuthenticated = !!get(authenticationStore);
 
 			if (isAuthenticated) {
 				set(AppStateType.INITIALIZING_BASE_DATA);
-				void userStore.init();
-				void organizationStore.init();
+				void Promise.all([userStore.initialize(), organizationStore.initialize()]);
 				if (dev) console.info('Base data stores initialized.');
 			} else {
-				void userStore.reset();
-				void organizationStore.reset();
+				void Promise.all([userStore.reset(), organizationStore.reset()]);
 			}
-			void connectionStore.init();
+			void connectionStore.initialize();
 		} catch (error) {
 			set(AppStateType.ERROR);
 			await showAlert($t('stores.app-state.error'));
@@ -74,7 +72,7 @@ function createAppStateStore(): AppStateStore {
 	async function initializeBaseData(): Promise<void> {
 		try {
 			set(AppStateType.INITIALIZING_BASE_DATA);
-			await Promise.all([userStore.init(), organizationStore.init()]);
+			await Promise.all([userStore.initialize(), organizationStore.initialize()]);
 			if (dev) console.info('Base data stores initialized.');
 			set(AppStateType.READY);
 		} catch (error) {

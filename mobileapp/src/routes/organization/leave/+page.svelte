@@ -58,7 +58,7 @@
 		const organizationId = $organizationStore?.id;
 		if (organizationId) {
 			await organizationService.leave(organizationId);
-			await organizationStore.init();
+			await organizationStore.initialize();
 		}
 		await loader.dismiss();
 		await goto(resolve('/organization'));

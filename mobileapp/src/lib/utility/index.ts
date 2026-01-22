@@ -6,7 +6,6 @@ export * from './form-validators.utility';
 export * from './form.utility';
 export * from './formatter.utility';
 export * from './parser.utility';
-export * from './push-notifications.utility';
 export * from './request-cache.utility';
 export * from './routes.utility';
 export * from './storage.utility';

@@ -13,7 +13,7 @@ function createStore(): ConnectionStore {
 	const { set, subscribe } = writable<boolean | undefined>();
 	let isInitialized = false;
 
-	async function init(): Promise<void> {
+	async function initialize(): Promise<void> {
 		if (isInitialized) return;
 		isInitialized = true;
 
@@ -68,7 +68,7 @@ function createStore(): ConnectionStore {
 
 	return {
 		check,
-		init,
+		initialize,
 		reset,
 		set: _set,
 		subscribe

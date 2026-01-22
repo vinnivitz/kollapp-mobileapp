@@ -1,4 +1,4 @@
-import type { LoadableModel } from '$lib/models/models';
+import type { InitializationModel } from '$lib/models/models';
 import type { BaseStore } from '$lib/models/stores';
 
 /**
@@ -6,4 +6,4 @@ import type { BaseStore } from '$lib/models/stores';
  *
  * @template T - The type of the data stored in the store.
  */
-export type LoadableStore<T> = BaseStore<T> & LoadableModel;
+export type LoadableStore<T> = BaseStore<T> & InitializationModel;
