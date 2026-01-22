@@ -242,14 +242,27 @@
 		schema: updateActivitySchema()
 	});
 
+	let previousPostingsCount = $state<number>(0);
+
 	$effect(() => {
 		if (initialized) return;
 		initialized = true;
 		applyDefaultPostingsFilters();
+		previousPostingsCount = postings.length;
 	});
 
 	$effect(() => {
-		if (postings) filteredPostings = getFilteredPostings();
+		const currentCount = postings.length;
+		if (
+			previousPostingsCount === 0 &&
+			currentCount > 0 &&
+			postingsSearchValue.trim() === '' &&
+			!hasNonSearchFiltersApplied
+		) {
+			applyDefaultPostingsFilters();
+		}
+		previousPostingsCount = currentCount;
+		filteredPostings = getFilteredPostings();
 	});
 
 	$effect(() => {
@@ -573,8 +586,16 @@
 		filterOpen = false;
 	}
 
-	function setPostingType(type: PostingType): void {
+	function setPostingType(
+		type: PostingType,
+		model: PostingCreateUpdateRequestTO,
+		actions?: FormActions<PostingCreateUpdateRequestTO>
+	): void {
 		selectedPostingType = type;
+		actions?.setModel({
+			...model,
+			type: selectedPostingType
+		});
 	}
 
 	function getUsernameByPersonOfOrganizationId(personOfOrganizationId: number): string | undefined {
@@ -607,11 +628,11 @@
 {#snippet activitySummary()}
 	<Card border="secondary" title={activity?.name} classList="mb-5" clicked={onOpenActivityModal}>
 		<div class="flex flex-wrap items-center justify-center gap-3">
-			<div class="flex items-center gap-1">
+			<div class="flex w-1/2 items-center gap-1">
 				<ion-icon icon={locationOutline}></ion-icon>
 				<ion-text>{activity?.location}</ion-text>
 			</div>
-			<div class="flex items-center gap-1">
+			<div class="flex w-1/2 items-center gap-1">
 				<ion-icon icon={calendarClearOutline}></ion-icon>
 				<ion-text>
 					{formatDistanceToNow(addDays(new TZDate(), 5), {
@@ -701,7 +722,7 @@
 		iconColor={posting.type === 'CREDIT' ? 'success' : 'danger'}
 		icon={posting.type === 'CREDIT' ? trendingUpOutline : trendingDownOutline}
 	>
-		<div class="flex w-full flex-col items-center">
+		<div class="mt-2 flex w-full flex-col items-center gap-2">
 			<div class="flex w-full items-center justify-between">
 				<ion-text class="truncate font-semibold">{posting.purpose}</ion-text>
 				<ion-text color={posting.type === 'CREDIT' ? 'success' : 'danger'} class="font-bold text-nowrap">
@@ -765,12 +786,12 @@
 				<Chip
 					selected={selectedPostingType === 'CREDIT'}
 					label={$t('routes.organization.activities.slug.page.modal.create-posting.form.credit')}
-					clicked={() => (selectedPostingType = 'CREDIT')}
+					clicked={() => setPostingType('CREDIT', createPostingForm.model, createPostingFormActions)}
 				/>
 				<Chip
 					selected={selectedPostingType === 'DEBIT'}
 					label={$t('routes.organization.activities.slug.page.modal.create-posting.form.debit')}
-					clicked={() => (selectedPostingType = 'DEBIT')}
+					clicked={() => setPostingType('DEBIT', createPostingForm.model, createPostingFormActions)}
 				/>
 			</div>
 			<InputItem
@@ -810,12 +831,12 @@
 				<Chip
 					selected={selectedPostingType === 'CREDIT'}
 					label={$t('routes.organization.activities.slug.page.modal.update-posting.card.form.credit')}
-					clicked={() => setPostingType('CREDIT')}
+					clicked={() => setPostingType('CREDIT', updatePostingForm.model, updatePostingFormActions)}
 				/>
 				<Chip
 					selected={selectedPostingType === 'DEBIT'}
 					label={$t('routes.organization.activities.slug.page.modal.update-posting.card.form.debit')}
-					clicked={() => setPostingType('DEBIT')}
+					clicked={() => setPostingType('DEBIT', updatePostingForm.model, updatePostingFormActions)}
 				/>
 			</div>
 			<InputItem

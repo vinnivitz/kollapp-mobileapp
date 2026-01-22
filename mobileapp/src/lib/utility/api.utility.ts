@@ -47,7 +47,7 @@ export async function customFetch<T = never>(url: string, config?: CustomFetchCo
 		method = RequestMethod.GET,
 		query,
 		silentOnError = false,
-		silentOnSuccess = false
+		silentOnSuccess = true
 	} = config ?? {};
 
 	function buildHeaders(): Headers {

@@ -893,7 +893,7 @@
 		iconColor={posting.type === 'CREDIT' ? 'success' : 'danger'}
 		icon={posting.type === 'CREDIT' ? trendingUpOutline : trendingDownOutline}
 	>
-		<div class="flex w-full flex-col items-center">
+		<div class="mt-2 flex w-full flex-col items-center gap-2">
 			<div class="flex w-full items-center justify-between">
 				<ion-text class="font-semibold">{posting.purpose}</ion-text>
 				<ion-text color={posting.type === 'CREDIT' ? 'success' : 'danger'} class="font-bold text-nowrap">

@@ -19,8 +19,7 @@ class OrganizationService {
 	 */
 	async getById(id: number): Promise<ResponseBody<OrganizationTO>> {
 		return customFetch(`${this.ENDPOINT}/${id}`, {
-			silentOnSpecificStatus: [StatusCode.FORBIDDEN],
-			silentOnSuccess: true
+			silentOnSpecificStatus: [StatusCode.FORBIDDEN]
 		});
 	}
 
@@ -29,7 +28,7 @@ class OrganizationService {
 	 * @returns {Promise<ResponseBody<OrganizationMinifiedTO[]>>} The organizations.
 	 */
 	async getAll(): Promise<ResponseBody<OrganizationMinifiedTO[]>> {
-		return customFetch(this.ENDPOINT, { silentOnSuccess: true });
+		return customFetch(this.ENDPOINT);
 	}
 
 	/**
@@ -105,8 +104,7 @@ class OrganizationService {
 	 */
 	async renewInvitationCode(organizationId: number): Promise<ResponseBody<OrganizationTO>> {
 		return customFetch(`${this.ENDPOINT}/${organizationId}/invitation-code`, {
-			method: RequestMethod.PATCH,
-			silentOnSuccess: true
+			method: RequestMethod.PATCH
 		});
 	}
 
@@ -118,8 +116,7 @@ class OrganizationService {
 	async getByInvitationCode(code: string): Promise<ResponseBody<OrganizationMinifiedTO>> {
 		return customFetch(`${this.ENDPOINT}/invitation/${code}`, {
 			authorizationType: AuthorizationType.NONE,
-			silentOnError: true,
-			silentOnSuccess: true
+			silentOnError: true
 		});
 	}
 
@@ -130,8 +127,7 @@ class OrganizationService {
 	 */
 	async joinByInvitationCode(code: string): Promise<ResponseBody> {
 		return customFetch(`${this.ENDPOINT}/invitation/${code}`, {
-			method: RequestMethod.POST,
-			silentOnSuccess: true
+			method: RequestMethod.POST
 		});
 	}
 

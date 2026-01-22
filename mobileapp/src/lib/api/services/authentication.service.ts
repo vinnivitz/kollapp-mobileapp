@@ -19,8 +19,7 @@ class AuthenticationService {
 		return customFetch(`${this.ENDPOINT}/signin`, {
 			authorizationType: AuthorizationType.NONE,
 			body: model,
-			method: RequestMethod.POST,
-			silentOnSuccess: true
+			method: RequestMethod.POST
 		});
 	}
 
@@ -32,8 +31,7 @@ class AuthenticationService {
 	async refresh(token: string): Promise<ResponseBody<AccessTokenTO>> {
 		return customFetch(`${this.ENDPOINT}/refresh`, {
 			authorizationType: AuthorizationType.NONE,
-			query: { token },
-			silentOnSuccess: true
+			query: { token }
 		});
 	}
 
