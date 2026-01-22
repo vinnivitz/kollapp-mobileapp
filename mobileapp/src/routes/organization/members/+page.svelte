@@ -98,16 +98,23 @@
 			{
 				color: 'primary',
 				handler: () => onViewMemberDetails(personOfOrganization),
-				icon: informationCircleOutline
+				icon: informationCircleOutline,
+				label: $t('routes.organization.members.page.sliding-options.view-details')
 			}
 		];
 		if (isManager) {
 			options.push(
-				{ color: 'tertiary', handler: () => onSelectRole(personOfOrganization), icon: ribbonOutline },
+				{
+					color: 'tertiary',
+					handler: () => onSelectRole(personOfOrganization),
+					icon: ribbonOutline,
+					label: $t('routes.organization.members.page.sliding-options.select-role')
+				},
 				{
 					color: 'danger',
 					handler: () => onRemovePersonOfOrganizationPrompt(personOfOrganization),
-					icon: logOutOutline
+					icon: logOutOutline,
+					label: $t('routes.organization.members.page.sliding-options.remove-member')
 				}
 			);
 		}

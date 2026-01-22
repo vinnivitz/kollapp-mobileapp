@@ -9,11 +9,8 @@
 		cardOutline,
 		createOutline,
 		documentOutline,
-		filterOutline,
 		flashOutline,
 		locationOutline,
-		refreshOutline,
-		saveOutline,
 		trendingDownOutline,
 		trendingUpOutline
 	} from 'ionicons/icons';
@@ -25,19 +22,17 @@
 	import { activityService } from '$lib/api/services';
 	import FadeInOut from '$lib/components/layout/FadeInOut.svelte';
 	import Layout from '$lib/components/layout/Layout.svelte';
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
+	import Filter from '$lib/components/widgets/Filter.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import Chip from '$lib/components/widgets/ionic/Chip.svelte';
 	import Datetime from '$lib/components/widgets/ionic/Datetime.svelte';
 	import DatetimeInputItem from '$lib/components/widgets/ionic/DatetimeInputItem.svelte';
 	import FabButton from '$lib/components/widgets/ionic/FabButton.svelte';
 	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import LocationInputItem from '$lib/components/widgets/ionic/LocationInputItem.svelte';
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
-	import Popover from '$lib/components/widgets/ionic/Popover.svelte';
 	import SegmentItem from '$lib/components/widgets/ionic/SegmentItem.svelte';
 	import { t } from '$lib/locales';
-	import { Form, type SegmentConfig } from '$lib/models/ui';
+	import { chipSection, dateRangeSection, type FilterConfig, Form, type SegmentConfig } from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';
 	import { customForm, hasOrganizationRole } from '$lib/utility';
 
@@ -45,12 +40,11 @@
 	type BalanceFilter = 'all' | 'negative' | 'neutral' | 'positive';
 	type HasPostingsFilter = 'all' | 'with' | 'without';
 
-	type ActivitiesFilterDraft = {
+	type ActivitiesFilterState = {
 		balanceFilter: BalanceFilter;
-		fromDate: string;
+		dateRange: { from: string; to: string };
 		hasPostings: HasPostingsFilter;
 		timeFilter: TimeFilter;
-		toDate: string;
 	};
 
 	enum ActivityView {
@@ -81,25 +75,16 @@
 	const activityDates = $derived(activityItems.map((activity) => activity.date));
 
 	let createActivityModalOpen = $state<boolean>(false);
-	let filterOpen = $state<boolean>(false);
 
 	let searchActivityValue = $state<string>('');
 	let selectedDate = $state<string>(format(new TZDate(), 'yyyy-MM-dd'));
 
 	// Filter state
-	let fromFilterDate = $state<string>('');
-	let toFilterDate = $state<string>('');
-	let timeFilter = $state<TimeFilter>('all');
-	let hasPostingsFilter = $state<HasPostingsFilter>('all');
-	let balanceFilter = $state<BalanceFilter>('all');
-	let hasNonSearchFiltersApplied = $state<boolean>(false);
-
-	let filterDraft = $state<ActivitiesFilterDraft>({
+	let filterState = $state<ActivitiesFilterState>({
 		balanceFilter: 'all',
-		fromDate: '',
+		dateRange: { from: '', to: '' },
 		hasPostings: 'all',
-		timeFilter: 'all',
-		toDate: ''
+		timeFilter: 'all'
 	});
 
 	const activitiesForSelectedDate = $derived(activityItems.filter((activity) => activity.date === selectedDate));
@@ -110,12 +95,9 @@
 		if (activityItems.length > 0 && !initialized) {
 			const minDate = getMinActivityDate();
 			const maxDate = getMaxActivityDate();
-			fromFilterDate = minDate;
-			toFilterDate = maxDate;
-			filterDraft = {
-				...filterDraft,
-				fromDate: minDate,
-				toDate: maxDate
+			filterState = {
+				...filterState,
+				dateRange: { from: minDate, to: maxDate }
 			};
 			initialized = true;
 		}
@@ -135,11 +117,11 @@
 		filterActivities(
 			activityItems,
 			searchActivityValue,
-			timeFilter,
-			fromFilterDate,
-			toFilterDate,
-			hasPostingsFilter,
-			balanceFilter
+			filterState.timeFilter,
+			filterState.dateRange.from,
+			filterState.dateRange.to,
+			filterState.hasPostings,
+			filterState.balanceFilter
 		)
 	);
 
@@ -224,54 +206,6 @@
 		return max;
 	}
 
-	function syncDraftFilters(): void {
-		filterDraft = {
-			balanceFilter: balanceFilter,
-			fromDate: fromFilterDate,
-			hasPostings: hasPostingsFilter,
-			timeFilter: timeFilter,
-			toDate: toFilterDate
-		};
-	}
-
-	function updateHasNonSearchFiltersApplied(): void {
-		const minDate = getMinActivityDate();
-		const maxDate = getMaxActivityDate();
-		hasNonSearchFiltersApplied =
-			timeFilter !== 'all' ||
-			fromFilterDate !== minDate ||
-			toFilterDate !== maxDate ||
-			hasPostingsFilter !== 'all' ||
-			balanceFilter !== 'all';
-	}
-
-	function applyDraftFilter(): void {
-		fromFilterDate = filterDraft.fromDate;
-		toFilterDate = filterDraft.toDate;
-		timeFilter = filterDraft.timeFilter;
-		hasPostingsFilter = filterDraft.hasPostings;
-		balanceFilter = filterDraft.balanceFilter;
-		filterOpen = false;
-		syncDraftFilters();
-		updateHasNonSearchFiltersApplied();
-	}
-
-	function resetDraftFilter(): void {
-		filterDraft = {
-			balanceFilter: 'all',
-			fromDate: getMinActivityDate(),
-			hasPostings: 'all',
-			timeFilter: 'all',
-			toDate: getMaxActivityDate()
-		};
-		applyDraftFilter();
-	}
-
-	function onFilterModalDismiss(): void {
-		filterOpen = false;
-		syncDraftFilters();
-	}
-
 	function onCreateActivity(date: string): void {
 		selectedDate = date;
 		createActivityModalOpen = true;
@@ -281,21 +215,88 @@
 		selectedDate = date;
 	}
 
-	function onSearchActivities(event: CustomEvent): void {
-		searchActivityValue = event.detail.value ?? '';
-	}
-
-	function setDraftTimeFilter(value: TimeFilter): void {
-		filterDraft = { ...filterDraft, timeFilter: value };
-	}
-
-	function setDraftBalanceFilter(value: BalanceFilter): void {
-		filterDraft = { ...filterDraft, balanceFilter: value };
-	}
-
-	function setDraftHasPostings(value: HasPostingsFilter): void {
-		filterDraft = { ...filterDraft, hasPostings: value };
-	}
+	const filterConfig = $derived<FilterConfig<ActivitiesFilterState>>({
+		onApply: (state) => (filterState = state),
+		searchbar: {
+			onSearch: (value) => (searchActivityValue = value),
+			placeholder: $t('routes.organization.activities.page.activities.search.placeholder')
+		},
+		sections: [
+			chipSection<TimeFilter>('timeFilter', {
+				defaultValue: 'all',
+				label: $t('routes.organization.activities.page.modal.filter.card.time-filter.label'),
+				options: [
+					{
+						label: $t('routes.organization.activities.page.modal.filter.card.time-filter.all'),
+						value: 'all'
+					},
+					{
+						label: $t('routes.organization.activities.page.modal.filter.card.time-filter.past'),
+						value: 'past'
+					},
+					{
+						label: $t('routes.organization.activities.page.modal.filter.card.time-filter.future'),
+						value: 'future'
+					}
+				]
+			}),
+			dateRangeSection('dateRange', {
+				defaultFromValue: getMinActivityDate(),
+				defaultToValue: getMaxActivityDate(),
+				label: $t('routes.organization.activities.page.modal.filter.card.date-range.label'),
+				max: getMaxActivityDate(),
+				min: getMinActivityDate()
+			}),
+			chipSection<HasPostingsFilter>('hasPostings', {
+				defaultValue: 'all',
+				label: $t('routes.organization.activities.page.modal.filter.card.has-postings.label'),
+				options: [
+					{
+						label: $t('routes.organization.activities.page.modal.filter.card.has-postings.all'),
+						value: 'all'
+					},
+					{
+						label: $t('routes.organization.activities.page.modal.filter.card.has-postings.with'),
+						value: 'with'
+					},
+					{
+						label: $t('routes.organization.activities.page.modal.filter.card.has-postings.without'),
+						value: 'without'
+					}
+				]
+			}),
+			chipSection<BalanceFilter>('balanceFilter', {
+				defaultValue: 'all',
+				label: $t('routes.organization.activities.page.modal.filter.card.balance.label'),
+				options: [
+					{
+						label: $t('routes.organization.activities.page.modal.filter.card.balance.all'),
+						value: 'all'
+					},
+					{
+						color: 'success',
+						icon: trendingUpOutline,
+						label: $t('routes.organization.activities.page.modal.filter.card.balance.positive'),
+						value: 'positive'
+					},
+					{
+						color: 'danger',
+						icon: trendingDownOutline,
+						label: $t('routes.organization.activities.page.modal.filter.card.balance.negative'),
+						value: 'negative'
+					},
+					{
+						color: 'tertiary',
+						icon: barbellOutline,
+						label: $t('routes.organization.activities.page.modal.filter.card.balance.neutral'),
+						value: 'neutral'
+					}
+				]
+			})
+		],
+		state: filterState,
+		title: $t('routes.organization.activities.page.modal.filter.card.title')
+	});
 </script>
 
 <Layout
@@ -329,30 +330,7 @@
 		/>
 	{/if}
 
-	<div class="flex items-center justify-between gap-2">
-		<ion-searchbar
-			class="flex-1"
-			color="light"
-			show-clear-button="always"
-			debounce={100}
-			placeholder={$t('routes.organization.activities.page.activities.search.placeholder')}
-			onionInput={onSearchActivities}
-			value={searchActivityValue}
-		></ion-searchbar>
-		<Button fill="solid" color="secondary" clicked={() => (filterOpen = true)} icon={filterOutline} />
-	</div>
-	{#if hasNonSearchFiltersApplied}
-		<div class="flex justify-center">
-			<Button
-				size="small"
-				fill="outline"
-				color="danger"
-				icon={refreshOutline}
-				label={$t('routes.organization.activities.page.activities.reset-filters')}
-				clicked={resetDraftFilter}
-			/>
-		</div>
-	{/if}
+	<Filter config={filterConfig} />
 	<div class="scroll-viewport">
 		{@render activityList()}
 	</div>
@@ -455,119 +433,3 @@
 		</form>
 	</Card>
 </Modal>
-
-<!-- Activities Filter Popover -->
-<Popover extended open={filterOpen} dismissed={onFilterModalDismiss} lazy>
-	<Card title={$t('routes.organization.activities.page.modal.filter.card.title')} classList="m-0">
-		<div class="mb-3">
-			<ion-text color="medium" class="text-sm">
-				{$t('routes.organization.activities.page.modal.filter.card.time-filter.label')}
-			</ion-text>
-			<div class="mt-1 flex items-center justify-center gap-2">
-				<Chip
-					clicked={() => setDraftTimeFilter('all')}
-					selected={filterDraft.timeFilter === 'all'}
-					label={$t('routes.organization.activities.page.modal.filter.card.time-filter.all')}
-				/>
-				<Chip
-					clicked={() => setDraftTimeFilter('past')}
-					selected={filterDraft.timeFilter === 'past'}
-					label={$t('routes.organization.activities.page.modal.filter.card.time-filter.past')}
-				/>
-				<Chip
-					clicked={() => setDraftTimeFilter('future')}
-					selected={filterDraft.timeFilter === 'future'}
-					label={$t('routes.organization.activities.page.modal.filter.card.time-filter.future')}
-				/>
-			</div>
-		</div>
-
-		<DatetimeInputItem
-			max={filterDraft.toDate || getMaxActivityDate()}
-			min={getMinActivityDate()}
-			label={$t('routes.organization.activities.page.modal.filter.card.date.from')}
-			value={filterDraft.fromDate}
-			changed={(value) => (filterDraft = { ...filterDraft, fromDate: value })}
-		/>
-		<DatetimeInputItem
-			min={filterDraft.fromDate || getMinActivityDate()}
-			max={getMaxActivityDate()}
-			label={$t('routes.organization.activities.page.modal.filter.card.date.to')}
-			value={filterDraft.toDate}
-			changed={(value) => (filterDraft = { ...filterDraft, toDate: value })}
-		/>
-
-		<div class="my-3">
-			<ion-text color="medium" class="text-sm">
-				{$t('routes.organization.activities.page.modal.filter.card.has-postings.label')}
-			</ion-text>
-			<div class="mt-1 flex items-center justify-center gap-2">
-				<Chip
-					clicked={() => setDraftHasPostings('all')}
-					selected={filterDraft.hasPostings === 'all'}
-					label={$t('routes.organization.activities.page.modal.filter.card.has-postings.all')}
-				/>
-				<Chip
-					clicked={() => setDraftHasPostings('with')}
-					selected={filterDraft.hasPostings === 'with'}
-					label={$t('routes.organization.activities.page.modal.filter.card.has-postings.with')}
-				/>
-				<Chip
-					clicked={() => setDraftHasPostings('without')}
-					selected={filterDraft.hasPostings === 'without'}
-					label={$t('routes.organization.activities.page.modal.filter.card.has-postings.without')}
-				/>
-			</div>
-		</div>
-
-		<div class="mb-3">
-			<ion-text color="medium" class="text-sm">
-				{$t('routes.organization.activities.page.modal.filter.card.balance.label')}
-			</ion-text>
-			<div class="mt-1 flex flex-wrap items-center justify-center gap-2">
-				<Chip
-					clicked={() => setDraftBalanceFilter('all')}
-					selected={filterDraft.balanceFilter === 'all'}
-					label={$t('routes.organization.activities.page.modal.filter.card.balance.all')}
-				/>
-				<Chip
-					clicked={() => setDraftBalanceFilter('positive')}
-					selected={filterDraft.balanceFilter === 'positive'}
-					color="success"
-					icon={trendingUpOutline}
-					label={$t('routes.organization.activities.page.modal.filter.card.balance.positive')}
-				/>
-				<Chip
-					clicked={() => setDraftBalanceFilter('negative')}
-					selected={filterDraft.balanceFilter === 'negative'}
-					color="danger"
-					icon={trendingDownOutline}
-					label={$t('routes.organization.activities.page.modal.filter.card.balance.negative')}
-				/>
-				<Chip
-					color="tertiary"
-					icon={barbellOutline}
-					clicked={() => setDraftBalanceFilter('neutral')}
-					selected={filterDraft.balanceFilter === 'neutral'}
-					label={$t('routes.organization.activities.page.modal.filter.card.balance.neutral')}
-				/>
-			</div>
-		</div>
-
-		<div class="mt-2 flex items-center justify-center gap-2">
-			<Button
-				label={$t('routes.organization.activities.page.modal.filter.card.reset')}
-				color="danger"
-				icon={refreshOutline}
-				fill="outline"
-				clicked={resetDraftFilter}
-			/>
-			<Button
-				label={$t('routes.organization.activities.page.modal.filter.card.apply')}
-				icon={saveOutline}
-				fill="outline"
-				clicked={applyDraftFilter}
-			/>
-		</div>
-	</Card>
-</Popover>

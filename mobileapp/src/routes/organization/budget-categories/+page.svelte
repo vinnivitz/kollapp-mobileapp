@@ -63,10 +63,20 @@
 
 	function getSlidingOptions(category: OrganizationBudgetCategoryResponseTO): ItemSlidingOption[] {
 		const options: ItemSlidingOption[] = [
-			{ color: 'primary', handler: () => onEditCategory(category), icon: createOutline }
+			{
+				color: 'primary',
+				handler: () => onEditCategory(category),
+				icon: createOutline,
+				label: $t('routes.organization.budget-categories.page.sliding-options.edit')
+			}
 		];
 		if (!category.defaultCategory) {
-			options.push({ color: 'danger', handler: () => onDeleteCategoryPrompt(category), icon: trashOutline });
+			options.push({
+				color: 'danger',
+				handler: () => onDeleteCategoryPrompt(category),
+				icon: trashOutline,
+				label: $t('routes.organization.budget-categories.page.sliding-options.delete')
+			});
 		}
 		return options;
 	}

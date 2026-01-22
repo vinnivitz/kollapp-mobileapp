@@ -17,14 +17,11 @@
 		cashOutline,
 		createOutline,
 		documentOutline,
-		filterOutline,
 		flashOutline,
 		medalOutline,
 		personCircleOutline,
 		personOutline,
-		refreshOutline,
 		ribbonOutline,
-		saveOutline,
 		sendOutline,
 		trendingDownOutline,
 		trendingUpOutline
@@ -34,17 +31,25 @@
 	import { createUpdatePostingSchema } from '$lib/api/schema/budget/index.js';
 	import { budgetService, organizationService } from '$lib/api/services';
 	import Layout from '$lib/components/layout/Layout.svelte';
+	import Filter from '$lib/components/widgets/Filter.svelte';
 	import AmountInputItem from '$lib/components/widgets/ionic/AmountInputItem.svelte';
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import Chip from '$lib/components/widgets/ionic/Chip.svelte';
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
 	import DatetimeInputItem from '$lib/components/widgets/ionic/DatetimeInputItem.svelte';
 	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
-	import Popover from '$lib/components/widgets/ionic/Popover.svelte';
 	import { t } from '$lib/locales';
-	import { Form, type FormActions, type ItemSlidingOption } from '$lib/models/ui';
+	import {
+		chipSection,
+		dateRangeSection,
+		type FilterConfig,
+		Form,
+		type FormActions,
+		type ItemSlidingOption,
+		multiSelectSection,
+		type SelectItem
+	} from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';
 	import {
 		confirmationModal,
@@ -55,6 +60,14 @@
 		hasOrganizationRole,
 		parser
 	} from '$lib/utility';
+
+	type TypeFilter = 'all' | 'credit' | 'debit';
+
+	type PostingsFilterState = {
+		budgetCategoryIds: number[];
+		dateRange: { from: string; to: string };
+		typeFilter: TypeFilter;
+	};
 
 	const { data } = $props();
 
@@ -97,65 +110,150 @@
 
 	const isManager = $derived(hasOrganizationRole('ROLE_ORGANIZATION_MANAGER'));
 
-	type TypeFilter = 'all' | 'credit' | 'debit';
-
-	type PostingsFilterDraft = {
-		fromDate: string;
-		toDate: string;
-		typeFilter: TypeFilter;
-	};
-
 	let searchValue = $state<string>('');
-	let filterOpen = $state<boolean>(false);
 
-	let fromFilterDate = $state<string>('');
-	let toFilterDate = $state<string>('');
-	let typeFilter = $state<TypeFilter>('all');
-	let hasNonSearchFiltersApplied = $state<boolean>(false);
-
-	let filterDraft = $state<PostingsFilterDraft>({
-		fromDate: '',
-		toDate: '',
+	let filterState = $state<PostingsFilterState>({
+		budgetCategoryIds: getDefaultBudgetCategoryFilterIds(),
+		dateRange: { from: '', to: '' },
 		typeFilter: 'all'
 	});
 
 	let initialized = $state<boolean>(false);
 
+	const filteredOpenPostings = $derived<PostingTO[]>(
+		filterPostings(
+			openPostings,
+			searchValue,
+			filterState.typeFilter,
+			filterState.dateRange.from,
+			filterState.dateRange.to,
+			filterState.budgetCategoryIds
+		)
+	);
+
+	let postingUpdateModalOpen = $state<boolean>(false);
+	let selectedPosting = $state<PostingTO>();
+	let selectedPostingType = $state<PostingType>('DEBIT');
+	let updatePostingFormActions = $state<FormActions<PostingCreateUpdateRequestTO>>();
+
+	const updatePostingForm = new Form<PostingCreateUpdateRequestTO>({
+		completed: async ({ actions }) => {
+			await organizationStore.update($organizationStore?.id!);
+			postingUpdateModalOpen = false;
+			actions.setModel(createUpdatePostingSchema().getDefault());
+		},
+		exposedActions: (exposedActions) => (updatePostingFormActions = exposedActions),
+		formatters: { amountInCents: formatter.currency },
+		parsers: { amountInCents: parser.currency },
+		request: async (model) => {
+			const organizationId = $organizationStore?.id!;
+			const postingId = selectedPosting?.id!;
+			const activity = $organizationStore?.activities.find((activity) =>
+				activity.activityPostings.some((activityPosting) => activityPosting.id === postingId)
+			);
+			return activity
+				? budgetService.updateActivityPosting(organizationId, activity.id, postingId, model)
+				: budgetService.updateOrganizationPosting(organizationId, postingId, model);
+		},
+		schema: createUpdatePostingSchema()
+	});
+
+	const budgetCategoryFilterItems = $derived<SelectItem[]>(
+		$organizationStore?.budgetCategories.map((category) => ({
+			data: { id: category.id, label: category.name },
+			selected: true
+		})) ?? []
+	);
+
+	function getDefaultBudgetCategoryFilterIds(): number[] {
+		return $organizationStore?.budgetCategories.map((category) => category.id) ?? [];
+	}
+
+	const filterConfig = $derived<FilterConfig<PostingsFilterState>>({
+		onApply: (state) => (filterState = state),
+		searchbar: {
+			onSearch: (value) => (searchValue = value),
+			placeholder: $t('routes.organization.members.slug.page.card.open-postings.search-placeholder')
+		},
+		sections: [
+			chipSection<TypeFilter>('typeFilter', {
+				defaultValue: 'all',
+				label: $t('routes.organization.members.slug.page.modal.filter.card.type-filter.label'),
+				options: [
+					{
+						label: $t('routes.organization.members.slug.page.modal.filter.card.type-filter.all'),
+						value: 'all'
+					},
+					{
+						color: 'success',
+						icon: trendingUpOutline,
+						label: $t('routes.organization.members.slug.page.modal.filter.card.type-filter.credit'),
+						value: 'credit'
+					},
+					{
+						color: 'danger',
+						icon: trendingDownOutline,
+						label: $t('routes.organization.members.slug.page.modal.filter.card.type-filter.debit'),
+						value: 'debit'
+					}
+				]
+			}),
+			dateRangeSection('dateRange', {
+				defaultFromValue: getMinPostingDate(),
+				defaultToValue: getMaxPostingDate(),
+				label: $t('routes.organization.members.slug.page.modal.filter.card.date-range.label'),
+				max: getMaxPostingDate(),
+				min: getMinPostingDate()
+			}),
+			multiSelectSection('budgetCategoryIds', {
+				allSelectedText: $t('routes.organization.members.slug.page.modal.filter.card.budget-categories.all-selected'),
+				defaultValue: getDefaultBudgetCategoryFilterIds(),
+				icon: cardOutline,
+				inputLabel: $t('routes.organization.members.slug.page.modal.filter.card.budget-categories.input-label'),
+				items: budgetCategoryFilterItems,
+				label: $t('routes.organization.members.slug.page.modal.filter.card.budget-categories.label'),
+				searchPlaceholder: $t(
+					'routes.organization.members.slug.page.modal.filter.card.budget-categories.search-placeholder'
+				)
+			})
+		],
+		state: filterState,
+		title: $t('routes.organization.members.slug.page.modal.filter.card.title')
+	});
+
 	$effect(() => {
 		if (openPostings.length > 0 && !initialized) {
 			const minDate = getMinPostingDate();
 			const maxDate = getMaxPostingDate();
-			fromFilterDate = minDate;
-			toFilterDate = maxDate;
-			filterDraft = {
-				...filterDraft,
-				fromDate: minDate,
-				toDate: maxDate
+			filterState = {
+				...filterState,
+				dateRange: { from: minDate, to: maxDate }
 			};
 			initialized = true;
 		}
 	});
-
-	const filteredOpenPostings = $derived<PostingTO[]>(
-		filterPostings(openPostings, searchValue, typeFilter, fromFilterDate, toFilterDate)
-	);
 
 	function filterPostings(
 		postings: PostingTO[],
 		search: string,
 		type: TypeFilter,
 		fromDate: string,
-		toDate: string
+		toDate: string,
+		budgetCategoryIds: number[]
 	): PostingTO[] {
 		const searchTerm = search.trim().toLowerCase();
 
-		return postings.filter((posting) => {
-			return (
+		return postings.filter(
+			(posting) =>
 				matchesSearch(posting, searchTerm) &&
 				matchesTypeFilter(posting, type) &&
-				matchesDateRange(posting, fromDate, toDate)
-			);
-		});
+				matchesDateRange(posting, fromDate, toDate) &&
+				matchesBudgetCategoryFilter(posting, budgetCategoryIds)
+		);
+	}
+
+	function matchesBudgetCategoryFilter(posting: PostingTO, budgetCategoryIds: number[]): boolean {
+		return budgetCategoryIds.includes(posting.organizationBudgetCategoryId);
 	}
 
 	function matchesSearch(posting: PostingTO, searchTerm: string): boolean {
@@ -191,33 +289,6 @@
 		}
 		return max;
 	}
-
-	let postingUpdateModalOpen = $state<boolean>(false);
-	let selectedPosting = $state<PostingTO>();
-	let selectedPostingType = $state<PostingType>('DEBIT');
-	let updatePostingFormActions = $state<FormActions<PostingCreateUpdateRequestTO>>();
-
-	const updatePostingForm = new Form<PostingCreateUpdateRequestTO>({
-		completed: async ({ actions }) => {
-			await organizationStore.update($organizationStore?.id!);
-			postingUpdateModalOpen = false;
-			actions.setModel(createUpdatePostingSchema().getDefault());
-		},
-		exposedActions: (exposedActions) => (updatePostingFormActions = exposedActions),
-		formatters: { amountInCents: formatter.currency },
-		parsers: { amountInCents: parser.currency },
-		request: async (model) => {
-			const organizationId = $organizationStore?.id!;
-			const postingId = selectedPosting?.id!;
-			const activity = $organizationStore?.activities.find((activity) =>
-				activity.activityPostings.some((activityPosting) => activityPosting.id === postingId)
-			);
-			return activity
-				? budgetService.updateActivityPosting(organizationId, activity.id, postingId, model)
-				: budgetService.updateOrganizationPosting(organizationId, postingId, model);
-		},
-		schema: createUpdatePostingSchema()
-	});
 
 	function getActivityPostingIdMap(): SvelteMap<number, ActivityTO> {
 		const map = new SvelteMap<number, ActivityTO>();
@@ -352,46 +423,6 @@
 		}
 		await loader.dismiss();
 	}
-
-	function onSearch(event: CustomEvent): void {
-		searchValue = event.detail.value ?? '';
-	}
-
-	function applyDraftFilter(): void {
-		typeFilter = filterDraft.typeFilter;
-		fromFilterDate = filterDraft.fromDate;
-		toFilterDate = filterDraft.toDate;
-		hasNonSearchFiltersApplied =
-			typeFilter !== 'all' || fromFilterDate !== getMinPostingDate() || toFilterDate !== getMaxPostingDate();
-		filterOpen = false;
-	}
-
-	function resetDraftFilter(): void {
-		const minDate = getMinPostingDate();
-		const maxDate = getMaxPostingDate();
-		filterDraft = {
-			fromDate: minDate,
-			toDate: maxDate,
-			typeFilter: 'all'
-		};
-		typeFilter = 'all';
-		fromFilterDate = minDate;
-		toFilterDate = maxDate;
-		hasNonSearchFiltersApplied = false;
-	}
-
-	function onFilterModalDismiss(): void {
-		filterDraft = {
-			fromDate: fromFilterDate,
-			toDate: toFilterDate,
-			typeFilter
-		};
-		filterOpen = false;
-	}
-
-	function setDraftTypeFilter(value: TypeFilter): void {
-		filterDraft = { ...filterDraft, typeFilter: value };
-	}
 </script>
 
 <Layout title={$t('routes.organization.members.slug.page.title')} showBackButton>
@@ -458,27 +489,7 @@
 
 {#snippet openPostingsCard()}
 	<Card title={$t('routes.organization.members.slug.page.card.open-postings.title')}>
-		<div class="flex items-center justify-between gap-2">
-			<ion-searchbar
-				debounce={100}
-				placeholder={$t('routes.organization.members.slug.page.card.open-postings.search-placeholder')}
-				onionInput={onSearch}
-				value={searchValue}
-			></ion-searchbar>
-			<Button fill="solid" color="secondary" clicked={() => (filterOpen = true)} icon={filterOutline} />
-		</div>
-		{#if hasNonSearchFiltersApplied}
-			<div class="flex justify-center">
-				<Button
-					size="small"
-					fill="outline"
-					color="danger"
-					icon={refreshOutline}
-					label={$t('routes.organization.members.slug.page.card.open-postings.reset-filters')}
-					clicked={resetDraftFilter}
-				/>
-			</div>
-		{/if}
+		<Filter config={filterConfig} />
 		{#each filteredOpenPostings as posting (posting.id)}
 			{@render postingItem(posting)}
 		{/each}
@@ -573,68 +584,3 @@
 		</form>
 	</Card>
 </Modal>
-
-<!-- Postings Filter Popover -->
-<Popover extended open={filterOpen} dismissed={onFilterModalDismiss} lazy>
-	<Card title={$t('routes.organization.members.slug.page.modal.filter.card.title')} classList="m-0">
-		<div class="mb-3 text-sm">
-			<ion-text color="medium">
-				{$t('routes.organization.members.slug.page.modal.filter.card.type-filter.label')}
-			</ion-text>
-			<div class="mt-1 flex items-center justify-center gap-2">
-				<Chip
-					clicked={() => setDraftTypeFilter('all')}
-					selected={filterDraft.typeFilter === 'all'}
-					label={$t('routes.organization.members.slug.page.modal.filter.card.type-filter.all')}
-				/>
-				<Chip
-					clicked={() => setDraftTypeFilter('credit')}
-					selected={filterDraft.typeFilter === 'credit'}
-					color="success"
-					icon={trendingUpOutline}
-					label={$t('routes.organization.members.slug.page.modal.filter.card.type-filter.credit')}
-				/>
-				<Chip
-					clicked={() => setDraftTypeFilter('debit')}
-					selected={filterDraft.typeFilter === 'debit'}
-					color="danger"
-					icon={trendingDownOutline}
-					label={$t('routes.organization.members.slug.page.modal.filter.card.type-filter.debit')}
-				/>
-			</div>
-		</div>
-		<ion-text color="medium" class="text-sm">
-			{$t('routes.organization.members.slug.page.modal.filter.card.date-range.label')}
-		</ion-text>
-		<DatetimeInputItem
-			max={filterDraft.toDate || getMaxPostingDate()}
-			min={getMinPostingDate()}
-			label={$t('routes.organization.members.slug.page.modal.filter.card.date.from')}
-			value={filterDraft.fromDate}
-			changed={(value) => (filterDraft = { ...filterDraft, fromDate: value })}
-		/>
-		<DatetimeInputItem
-			min={filterDraft.fromDate || getMinPostingDate()}
-			max={getMaxPostingDate()}
-			label={$t('routes.organization.members.slug.page.modal.filter.card.date.to')}
-			value={filterDraft.toDate}
-			changed={(value) => (filterDraft = { ...filterDraft, toDate: value })}
-		/>
-
-		<div class="mt-4 flex items-center justify-center gap-2">
-			<Button
-				label={$t('routes.organization.members.slug.page.modal.filter.card.reset')}
-				color="danger"
-				icon={refreshOutline}
-				fill="outline"
-				clicked={resetDraftFilter}
-			/>
-			<Button
-				label={$t('routes.organization.members.slug.page.modal.filter.card.apply')}
-				icon={saveOutline}
-				fill="outline"
-				clicked={applyDraftFilter}
-			/>
-		</div>
-	</Card>
-</Popover>

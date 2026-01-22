@@ -5,6 +5,7 @@ export * from './confirm-modal-config.type';
 export * from './currency.enum';
 export * from './datetime.type';
 export * from './fab-button.type';
+export * from './filter.type';
 export * from './form.type';
 export * from './global-popover.type';
 export * from './item-sliding-option.type';

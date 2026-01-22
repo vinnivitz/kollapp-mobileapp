@@ -73,8 +73,8 @@
 				<ion-item-option color={option.color} onclick={() => option.handler()}>
 					{#if option.label}
 						<div class="flex flex-col items-center justify-center">
-							<ion-icon icon={option.icon}></ion-icon>
-							<ion-label class="text-xs">{option.label}</ion-label>
+							<ion-icon class="text-3xl" icon={option.icon}></ion-icon>
+							<ion-text class="text-xs">{option.label}</ion-text>
 						</div>
 					{:else}
 						<ion-icon slot="icon-only" icon={option.icon}></ion-icon>

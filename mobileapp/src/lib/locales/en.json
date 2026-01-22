@@ -250,6 +250,17 @@
       "welcome": {
         "heading": "Welcome to Kollapp!",
         "subheading": "The app for all the collectives out there."
+      },
+      "filter": {
+        "reset-filter": {},
+        "date-range": {
+          "from": "From",
+          "to": "To"
+        },
+        "search-placeholder": "Search...",
+        "reset-filters": "Reset filter",
+        "reset": "Reset filter",
+        "apply": "Apply filter"
       }
     }
   },
@@ -661,32 +672,29 @@
               },
               "posting-history": {
                 "searchbar": "Search transactions...",
-                "no-postings": "No transactions found.",
-                "reset-filters": "Reset filters"
+                "no-postings": "No transactions found."
               },
               "activity-filter": {
                 "card": {
                   "title": "Filters",
                   "credit": "Income",
                   "debit": "Expense",
-                  "date": {
-                    "from": "From",
-                    "to": "To"
-                  },
+                  "date": {},
                   "budget-category": {
                     "all-selected": "All categories selected",
-                    "select": "Select categories",
+                    "select": "Selected categories",
                     "search": "Search categories...",
-                    "none-selected": "None selected"
+                    "section-label": "Events"
                   },
                   "members": {
                     "all-selected": "All members selected",
                     "search-placeholder": "Search members...",
-                    "label": "Select members",
-                    "unassigned": "Not assigned"
+                    "label": "Selected members",
+                    "unassigned": "Not assigned",
+                    "section-label": "Members"
                   },
-                  "reset": "Reset",
-                  "apply": "Apply"
+                  "posting-types": "Transaction type",
+                  "date-range": "Time period"
                 }
               }
             },
@@ -714,6 +722,11 @@
               "posting-history": "Transaction history",
               "add-posting": "Add transaction",
               "total-postings": "Total transactions: {{value}}"
+            },
+            "sliding-options": {
+              "delete-posting": "Delete",
+              "edit-posting": "Edit",
+              "transfer-posting": "Settle"
             }
           }
         },
@@ -739,7 +752,6 @@
             },
             "not-found": "No events found",
             "no-results": "No events for \"{{value}}\"",
-            "reset-filters": "Reset filters",
             "no-results-filtered": "No events found."
           },
           "modal": {
@@ -763,10 +775,7 @@
                   "future": "Upcoming",
                   "label": "Time period"
                 },
-                "date": {
-                  "from": "From",
-                  "to": "To"
-                },
+                "date": {},
                 "has-postings": {
                   "label": "Transactions",
                   "all": "All",
@@ -779,9 +788,7 @@
                   "positive": "Positive",
                   "negative": "Negative",
                   "neutral": "Neutral"
-                },
-                "reset": "Reset filters",
-                "apply": "Apply filters"
+                }
               }
             }
           }
@@ -865,7 +872,6 @@
                 "title": "Open Transactions",
                 "search-placeholder": "Search transactions....",
                 "no-results": "No transactions found for \"{{value}}\"",
-                "reset-filters": "Reset filters",
                 "no-results-filtered": "No transactions found."
               }
             },
@@ -891,14 +897,15 @@
                     "credit": "Income",
                     "debit": "Expenses"
                   },
-                  "date": {
-                    "from": "From",
-                    "to": "Bis"
-                  },
-                  "reset": "Reset filter",
-                  "apply": "Apply filter",
+                  "date": {},
                   "date-range": {
                     "label": "Time period"
+                  },
+                  "budget-categories": {
+                    "label": "Categories",
+                    "input-label": "Selected categories",
+                    "all-selected": "All categories selected",
+                    "search-placeholder": "Search categories..."
                   }
                 }
               }
@@ -985,6 +992,11 @@
           "invite": "Invite person",
           "searchbar": {
             "placeholder": "Search members..."
+          },
+          "sliding-options": {
+            "view-details": "Details",
+            "remove-member": "Remove",
+            "select-role": "Role"
           }
         }
       },
@@ -1014,6 +1026,10 @@
             "card": {
               "title": "Categories"
             }
+          },
+          "sliding-options": {
+            "edit": "Edit",
+            "delete": "Delete"
           }
         }
       },
@@ -1100,7 +1116,6 @@
           },
           "postings-history": {
             "search": "Search transactions...",
-            "reset-filters": "Reset filters",
             "no-results": "No transactions found for \"{{value}}\"",
             "no-postings": "No transactions found."
           },
@@ -1108,27 +1123,26 @@
             "card": {
               "credit": "Income",
               "debit": "Expense",
-              "title": "Filters",
-              "from": "From",
-              "to": "To",
+              "title": "Transaction type",
               "budget-category": {
                 "all-selected": "All categories selected",
-                "select": "Select categories",
+                "select": "Selected categories",
                 "search": "Search categories...",
-                "none-selected": "None selected"
+                "label": "Categories"
               },
               "activities": {
                 "all-selected": "All events selected",
-                "select": "Select events",
-                "search": "Search events..."
+                "select": "Selected events",
+                "search": "Search events...",
+                "label": "Events"
               },
-              "reset": "Reset filters",
-              "apply": "Apply filters",
               "person-of-organization": {
                 "all-selected": "All members selected",
-                "select": "Select members",
-                "search": "Search members..."
-              }
+                "select": "Selected members",
+                "search": "Search members...",
+                "label": "Members"
+              },
+              "date-range": "Time period"
             }
           }
         },
@@ -1183,6 +1197,11 @@
         },
         "collective-info": {
           "role": "You are a {{value}}"
+        },
+        "sliding-options": {
+          "delete-posting": "Delete",
+          "edit-posting": "Edit",
+          "transfer-posting": "Settle"
         }
       }
     },

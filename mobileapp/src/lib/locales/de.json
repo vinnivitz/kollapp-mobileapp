@@ -312,7 +312,6 @@
             "search": {
               "placeholder": "Veranstaltungen suchen..."
             },
-            "reset-filters": "Filter zurücksetzen",
             "no-results-filtered": "Keine Veranstaltungen gefunden."
           },
           "calendar": {
@@ -343,10 +342,7 @@
                   "future": "Ausstehend",
                   "label": "Zeitraum"
                 },
-                "date": {
-                  "from": "Von",
-                  "to": "Bis"
-                },
+                "date": {},
                 "has-postings": {
                   "label": "Buchungen",
                   "all": "Alle",
@@ -359,9 +355,7 @@
                   "positive": "Positiv",
                   "negative": "Negativ",
                   "neutral": "Ausgeglichen"
-                },
-                "reset": "Filter zurücksetzen",
-                "apply": "Filter anwenden"
+                }
               }
             }
           },
@@ -395,27 +389,25 @@
             "modal": {
               "activity-filter": {
                 "card": {
-                  "apply": "Anwenden",
                   "credit": "Einnahme",
-                  "date": {
-                    "from": "Aus",
-                    "to": "Zu"
-                  },
+                  "date": {},
                   "debit": "Ausgabe",
                   "budget-category": {
                     "all-selected": "Alle Kategorien ausgewählt",
-                    "select": "Kategorien auswählen",
+                    "select": "Ausgwählte Kategorien",
                     "search": "Kategorien suchen...",
-                    "none-selected": "Keine ausgewählt"
+                    "section-label": "Veranstaltungen"
                   },
                   "members": {
                     "all-selected": "Alle Mitglieder ausgewählt",
-                    "label": "Wähle Mitglieder aus",
+                    "label": "Ausgewählte Mitglieder",
                     "search-placeholder": "Mitglieder suchen...",
-                    "unassigned": "Nicht zugewiesen"
+                    "unassigned": "Nicht zugewiesen",
+                    "section-label": "Mitglieder"
                   },
-                  "reset": "Zurücksetzen",
-                  "title": "Filter"
+                  "title": "Filter",
+                  "posting-types": "Buchuntstyp",
+                  "date-range": "Zeitraum"
                 }
               },
               "create-posting": {
@@ -447,7 +439,6 @@
               },
               "posting-history": {
                 "no-postings": "Keine Buchungen gefunden.",
-                "reset-filters": "Filter zurücksetzen",
                 "searchbar": "Buchungen suchen..."
               },
               "update-activity": {
@@ -486,7 +477,12 @@
               "add-posting": "Buchung hinzufügen",
               "total-postings": "Gesamtbuchungen: {{value}}"
             },
-            "title": "Veranstaltungsdetails"
+            "title": "Veranstaltungsdetails",
+            "sliding-options": {
+              "delete-posting": "Löschen",
+              "edit-posting": "Bearbeiten",
+              "transfer-posting": "Abrechnen"
+            }
           }
         }
       },
@@ -565,14 +561,13 @@
                 "title": "Offene Buchungen",
                 "search-placeholder": "Buchungen suchen...",
                 "no-results": "Keine Buchung für „{{value}}“ gefunden",
-                "no-results-filtered": "Keine Buchungen gefunden.",
-                "reset-filters": "Filter zurücksetzen"
+                "no-results-filtered": "Keine Buchungen gefunden."
               }
             },
             "modal": {
               "transfer-posting": {
-                "header": "Buchung ausgleichen",
-                "message": "Diese Buchung wird ausgeglichen und dem Kollektiv zugeordnet."
+                "header": "Buchung abrechnen",
+                "message": "Diese Buchung wird abgerechnet und dem Kollektiv zugeordnet."
               },
               "update-posting": {
                 "title": "Buchung aktualisieren",
@@ -591,14 +586,15 @@
                     "credit": "Einnahmen",
                     "debit": "Ausgaben"
                   },
-                  "date": {
-                    "from": "Von",
-                    "to": "To"
-                  },
-                  "reset": "Filter zurücksetzen",
-                  "apply": "Filter anwenden",
+                  "date": {},
                   "date-range": {
                     "label": "Zeitraum"
+                  },
+                  "budget-categories": {
+                    "label": "Kategorien",
+                    "input-label": "Ausgewählte Kategorien",
+                    "all-selected": "Alle Kategorien ausgewählt",
+                    "search-placeholder": "Kategorien durchsuchen..."
                   }
                 }
               }
@@ -683,6 +679,11 @@
           "title": "Mitglieder",
           "searchbar": {
             "placeholder": "Mitglieder suchen..."
+          },
+          "sliding-options": {
+            "view-details": "Details",
+            "remove-member": "Entfernen",
+            "select-role": "Rolle"
           }
         }
       },
@@ -712,6 +713,10 @@
             "card": {
               "title": "Kategorien"
             }
+          },
+          "sliding-options": {
+            "edit": "Bearbeiten",
+            "delete": "Löschen"
           }
         }
       },
@@ -776,8 +781,8 @@
             "confirm-text": "Buchung löschen"
           },
           "transfer-posting": {
-            "header": "Buchung ausgleichen",
-            "message": "Diese Buchung wird ausgeglichen und dem Kollektiv zugeordnet."
+            "header": "Buchung abrechnen",
+            "message": "Diese Buchung wird abgerechnet und dem Kollektiv zugeordnet."
           },
           "postings-filter": {
             "card": {
@@ -785,29 +790,27 @@
                 "all-selected": "Alle Kategorien ausgewählt",
                 "select": "Kategorien auswählen",
                 "search": "Kategorien suchen...",
-                "none-selected": "Keine ausgewählt"
+                "label": "Kategorien"
               },
               "activities": {
                 "all-selected": "Alle Veranstaltungen ausgewählt",
                 "search": "Veranstaltungen suchen...",
-                "select": "Ausgewählte Veranstaltungen"
+                "select": "Ausgewählte Veranstaltungen",
+                "label": "Veranstaltungen"
               },
-              "apply": "Filter anwenden",
               "credit": "Einnahme",
               "debit": "Ausgabe",
-              "from": "Von",
-              "reset": "Filter zurücksetzen",
-              "title": "Filter",
-              "to": "Bis",
+              "title": "Buchungstyp",
               "person-of-organization": {
                 "all-selected": "Alle Mitglieder ausgewählt",
                 "select": "Ausgewählte Mitglieder",
-                "search": "Mitglieder suchen..."
-              }
+                "search": "Mitglieder suchen...",
+                "label": "Mitglieder"
+              },
+              "date-range": "Zeitraum"
             }
           },
           "postings-history": {
-            "reset-filters": "Filter zurücksetzen",
             "search": "Buchungen suchen...",
             "no-results": "Keine Buchungen für „{{value}}“ gefunden",
             "no-postings": "Keine Buchungen gefunden."
@@ -853,6 +856,11 @@
         },
         "collective-info": {
           "role": "Du bist ein {{value}}"
+        },
+        "sliding-options": {
+          "edit-posting": "Bearbeiten",
+          "delete-posting": "Löschen",
+          "transfer-posting": "Abrechnen"
         }
       },
       "register": {
@@ -1157,7 +1165,7 @@
         },
         "multi-select-item": {
           "all-selected": "Alle ausgewählt",
-          "none-selected": "Nicht zugewiesen",
+          "none-selected": "Nichts ausgewählt",
           "search-placeholder": "Suchen...",
           "select-all": "Alles auswählen"
         }
@@ -1176,6 +1184,17 @@
       "welcome": {
         "heading": "Willkommen bei Kollapp!",
         "subheading": "Die App für alle Kollektive da draußen."
+      },
+      "filter": {
+        "reset-filter": {},
+        "date-range": {
+          "from": "Von",
+          "to": "Bis"
+        },
+        "search-placeholder": "Suchen...",
+        "reset-filters": "Filter zurücksetzen",
+        "reset": "Filter zurücksetzen",
+        "apply": "Filter anwenden"
       }
     }
   },
