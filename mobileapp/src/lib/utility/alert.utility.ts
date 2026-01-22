@@ -9,6 +9,7 @@ import { t } from '$lib/locales';
 import { type AlertConfig, AlertType } from '$lib/models/ui';
 
 let toast: HTMLIonToastElement | undefined;
+let pendingToast: Promise<void> | undefined;
 
 /**
  * Shows an alert when a feature is not implemented
@@ -21,38 +22,40 @@ export async function featureNotImplementedAlert(): Promise<void> {
 }
 
 export async function showAlert(message: string, config?: AlertConfig): Promise<void> {
+	if (pendingToast) {
+		await pendingToast;
+	}
+
 	try {
 		const $t = get(t);
 		const type = config?.type ?? AlertType.ERROR;
 
-		const sanitizedMessage = sanitizeMessage(message);
-
-		if (toast?.message === sanitizedMessage && toast.color === type) return;
+		if (toast?.message === message && toast.color === type) return;
 
 		if (toast) {
 			await toast.dismiss();
 			toast = undefined;
 		}
 
-		toast = await toastController.create({
-			buttons: [$t('utility.alert.toast.button')],
-			color: type,
-			duration: config?.duration ?? environment.toastDuration,
-			icon: type === AlertType.ERROR ? alertCircleOutline : checkmarkCircleSharp,
-			message: sanitizedMessage,
-			swipeGesture: 'vertical'
-		});
+		pendingToast = (async () => {
+			toast = await toastController.create({
+				buttons: [$t('utility.alert.toast.button')],
+				color: type,
+				duration: config?.duration ?? environment.toastDuration,
+				icon: type === AlertType.ERROR ? alertCircleOutline : checkmarkCircleSharp,
+				message,
+				swipeGesture: 'vertical'
+			});
 
-		toast.onDidDismiss().then(() => (toast = undefined));
+			toast.onDidDismiss().then(() => (toast = undefined));
 
-		return toast.present();
+			await toast.present();
+		})();
+
+		await pendingToast;
+		pendingToast = undefined;
 	} catch (error) {
+		pendingToast = undefined;
 		if (dev) console.warn('Failed to show toast:', message, error);
 	}
-}
-
-function sanitizeMessage(message: string): string {
-	const div = document.createElement('div');
-	div.textContent = message;
-	return div.innerHTML;
 }

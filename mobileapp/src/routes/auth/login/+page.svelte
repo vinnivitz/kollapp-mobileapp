@@ -2,16 +2,7 @@
 	import type { AuthTokensTO, LoginRequestTO } from '@kollapp/api-types';
 
 	import { loadingController } from '@ionic/core';
-	import {
-		fingerPrintOutline,
-		keyOutline,
-		logInOutline,
-		logoApple,
-		logoGithub,
-		logoGoogle,
-		logoSlack,
-		personOutline
-	} from 'ionicons/icons';
+	import { fingerPrintOutline, keyOutline, logInOutline, personOutline } from 'ionicons/icons';
 	import { onMount } from 'svelte';
 
 	import { dev } from '$app/environment';
@@ -31,7 +22,6 @@
 	import { appStateStore, authenticationStore } from '$lib/stores';
 	import {
 		customForm,
-		featureNotImplementedAlert,
 		getStoredValue,
 		getValidationResult,
 		isBiometricAvailable,
@@ -129,14 +119,6 @@
 			/>
 		{/if}
 	{/await}
-	{#if dev}
-		<div class="mx-3 flex justify-between gap-2">
-			<Button color="tertiary" size="large" fill="outline" icon={logoGoogle} clicked={featureNotImplementedAlert} />
-			<Button color="tertiary" size="large" fill="outline" icon={logoApple} clicked={featureNotImplementedAlert} />
-			<Button color="tertiary" size="large" fill="outline" icon={logoSlack} clicked={featureNotImplementedAlert} />
-			<Button color="tertiary" size="large" fill="outline" icon={logoGithub} clicked={featureNotImplementedAlert} />
-		</div>
-	{/if}
 	<Card color="light" clicked={() => goto(resolve('/auth/register'))} classList="text-center flex flex-wrap gap-1">
 		<ion-text>{$t('routes.auth.login.page.register.question')}</ion-text>
 		<ion-text color="secondary">{$t('routes.auth.login.page.register.link')}</ion-text>
