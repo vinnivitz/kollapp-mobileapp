@@ -322,7 +322,7 @@
 {#snippet activitiesView()}
 	{#if hasOrganizationRole('ROLE_ORGANIZATION_MANAGER')}
 		<FabButton
-			indexedLabel={$t('routes.organization.activities.page.activities.fab.create')}
+			indexLabel={$t('routes.organization.activities.page.activities.fab.create')}
 			clicked={() => onCreateActivity(format(new TZDate(), 'yyyy-MM-dd'))}
 			icon={createOutline}
 			indexed="/organization/activities"

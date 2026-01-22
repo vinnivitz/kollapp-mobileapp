@@ -160,7 +160,7 @@
 			<FabButton
 				horizontal="center"
 				icon={addOutline}
-				indexedLabel="Add"
+				indexLabel="Add"
 				buttons={[
 					{
 						handler: async () => await showAlert('Add clicked', { type: AlertType.SUCCESS }),

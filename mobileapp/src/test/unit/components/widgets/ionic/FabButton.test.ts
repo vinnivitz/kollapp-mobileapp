@@ -79,9 +79,9 @@ describe('widgets/ionic/FabButton', () => {
 		expect(clicked).not.toHaveBeenCalled();
 	});
 
-	it('renders with indexLabel and indexedLabel', () => {
+	it('renders with indexLabel', () => {
 		const { container } = render(FabButton, {
-			props: { icon: 'add', indexedLabel: 'Main FAB button', indexLabel: 'fab-id' }
+			props: { icon: 'add', indexLabel: 'Main FAB button' }
 		});
 
 		const fab = container.querySelector('ion-fab');

@@ -12,7 +12,6 @@
 		color?: Colors;
 		horizontal?: 'center' | 'end' | 'start';
 		indexed?: RouteId;
-		indexedLabel?: string;
 		indexLabel?: string;
 		vertical?: 'bottom' | 'center' | 'top';
 		clicked?: () => void;
@@ -26,7 +25,6 @@
 		horizontal = 'end',
 		icon,
 		indexed,
-		indexedLabel,
 		indexLabel,
 		vertical = 'bottom'
 	}: Properties = $props();
@@ -43,7 +41,6 @@
 	{vertical}
 	{horizontal}
 	id={indexLabel}
-	aria-label={indexedLabel}
 	use:clickOutside
 	onblur={fabButtonElement?.close}
 >

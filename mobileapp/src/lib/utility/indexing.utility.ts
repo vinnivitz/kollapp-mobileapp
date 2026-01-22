@@ -125,7 +125,7 @@ function exploreChildNodes(node: ASTComponent): void {
 
 function addSearchableItem(node: ASTComponent): void {
 	const route = getAttributeValue(node, 'indexed') as RouteId;
-	const label = getAttributeValue(node, 'label') ?? getAttributeValue(node, 'indexedLabel');
+	const label = getAttributeValue(node, 'label') ?? getAttributeValue(node, 'indexLabel');
 	const icon = getAttributeValue(node, 'icon');
 	const accessible = getAttributeValue(node, 'accessible') as OrganizationRole;
 

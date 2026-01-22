@@ -595,7 +595,7 @@
 	{@render postingsSummary()}
 	{#if isManager}
 		<FabButton
-			indexedLabel={$t('routes.organization.activities.slug.page.action-button')}
+			indexLabel={$t('routes.organization.activities.slug.page.action-button')}
 			icon={addOutline}
 			buttons={activityEventButtons}
 		/>
