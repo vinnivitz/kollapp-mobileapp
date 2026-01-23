@@ -485,7 +485,8 @@
                       "search": "Mitglieder suchen..."
                     },
                     "budget-category": {
-                      "label": "Kategorie auswählen"
+                      "label": "Kategorie auswählen",
+                      "search": "Kategorien durchsuchen..."
                     }
                   },
                   "title": "Buchung aktualisieren"
@@ -498,7 +499,10 @@
               "total-debit": "Gesamtausgaben: {{value}}",
               "posting-history": "Buchungsverlauf",
               "add-posting": "Buchung hinzufügen",
-              "total-postings": "Gesamtbuchungen: {{value}}"
+              "total-postings": "Gesamtbuchungen: {{value}}",
+              "export": {
+                "title": "Buchungsübersicht"
+              }
             },
             "title": "Veranstaltungsdetails",
             "sliding-options": {
@@ -582,7 +586,7 @@
               },
               "open-postings": {
                 "title": "Offene Buchungen",
-                "search-placeholder": "Buchungen suchen...",
+                "search-placeholder": "Suchen....",
                 "no-results": "Keine Buchung für „{{value}}“ gefunden",
                 "no-results-filtered": "Keine Buchungen gefunden."
               }
@@ -855,7 +859,12 @@
           "postings-history": {
             "search": "Buchungen suchen...",
             "no-results": "Keine Buchungen für „{{value}}“ gefunden",
-            "no-postings": "Keine Buchungen gefunden."
+            "no-postings": "Keine Buchungen gefunden.",
+            "export": {
+              "title": "Buchungsübersicht",
+              "csv": "Als CSV exportieren",
+              "pdf": "Als PDF exportieren"
+            }
           },
           "select-organization": {
             "header": "Kollektiv wechseln"
@@ -1338,7 +1347,6 @@
           "title": "Kollektivbilanz",
           "description": "Zeigt Infos über die Finanzen des Kollektivs an, einschließlich Saldo, Einnahmen und Ausgaben des Kollektivs. \nDu kannst Buchungen hinzufügen und anzeigen lassen."
         },
-        "org-activities": {},
         "activities-list": {
           "title": "Veranstaltungs-Übersicht",
           "description": "Alle Veranstaltungen nach Datum sortiert, falls welche vorhanden sind. Tippe auf eine Veranstaltung für Details."
@@ -1375,13 +1383,10 @@
           "title": "Kommende Veranstaltung",
           "description": "Hier wird die bevorstehende Veranstaltung mit Namen, der verbleibenden Zeit und der Anzahl der zugewiesenen Buchungen angezeigt. \nTippe darauf für weitere Infos."
         },
-        "org-upcoming-activity": {},
-        "org-organization": {},
         "org-info": {
           "title": "Kollektivlinfo",
           "description": "Hier werden einige Informationen über das Kollektiv angezeigt, z. B. die Beschreibung, der Standort oder deine Rolle im Kollektiv."
         },
-        "org-misc": {},
         "activities-segments": {
           "title": "Veranstaltungsansichten",
           "description": "Hier kannst du zwischen einer Listen- und Kalenderansicht für die Anzeige von Veranstaltungen wechseln."
@@ -1391,6 +1396,25 @@
           "description": "Viel Spaß mit Kollapp! Und wenn dir irgendwas in der App auffällt, du Fragen oder Verbesserungsvorschläge hast, dann kontaktier uns gern!"
         }
       }
+    },
+    "export": {
+      "date": "Datum",
+      "type": "Typ",
+      "amount": "Betrag",
+      "purpose": "Zweck",
+      "category": "Kategorie",
+      "person-of-organization": "Mitglied",
+      "debit": "Ausgabe",
+      "credit": "Einnahme",
+      "no-member": "Nicht zugewiesen",
+      "total-credit": "Gesamteinnahmen",
+      "total-debit": "Gesamtausgaben",
+      "balance": "Saldo",
+      "generated-at": "Erstellt am {{value}}",
+      "postings": "buchungen",
+      "organization": "Kollektiv: {{value}}",
+      "activity": "Veranstaltung",
+      "no-activity": "Nicht zugewiesen"
     }
   }
 }

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { ExportPostingsConfig, ExportPostingsFormat } from '$lib/models/export-postings';
 	import type {
 		ActivityTO,
 		OrganizationRole,
@@ -17,7 +18,9 @@
 		cashOutline,
 		createOutline,
 		documentOutline,
+		downloadOutline,
 		flashOffOutline,
+		listOutline,
 		medalOutline,
 		personCircleOutline,
 		personOutline,
@@ -33,6 +36,7 @@
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Filter from '$lib/components/widgets/Filter.svelte';
 	import AmountInputItem from '$lib/components/widgets/ionic/AmountInputItem.svelte';
+	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import Chip from '$lib/components/widgets/ionic/Chip.svelte';
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
@@ -55,6 +59,7 @@
 	import {
 		confirmationModal,
 		customForm,
+		exportPostings,
 		formatter,
 		getRoleTranslationFromRole,
 		getValidationResult,
@@ -174,24 +179,6 @@
 		})) ?? []
 	);
 
-	function getDefaultBudgetCategoryFilterIds(): number[] {
-		return $organizationStore?.budgetCategories.map((category) => category.id) ?? [];
-	}
-
-	function getDefaultActivityFilterIds(): number[] {
-		return activityFilterItems.length > 0 ? activityFilterItems.map((item) => item.data.id) : [0];
-	}
-
-	function applyDefaultPostingsFilters(): void {
-		searchValue = '';
-		filterState = {
-			activityIds: getDefaultActivityFilterIds(),
-			budgetCategoryIds: getDefaultBudgetCategoryFilterIds(),
-			dateRange: { from: getMinPostingDate(), to: getMaxPostingDate() },
-			postingTypes: ['DEBIT', 'CREDIT']
-		};
-	}
-
 	const filterConfig = $derived<FilterConfig<PostingsFilterState>>({
 		onApply: (state) => (filterState = state),
 		searchbar: {
@@ -250,6 +237,24 @@
 		state: filterState,
 		title: $t('routes.organization.members.slug.page.modal.filter.card.title')
 	});
+
+	function getDefaultBudgetCategoryFilterIds(): number[] {
+		return $organizationStore?.budgetCategories.map((category) => category.id) ?? [];
+	}
+
+	function getDefaultActivityFilterIds(): number[] {
+		return activityFilterItems.length > 0 ? activityFilterItems.map((item) => item.data.id) : [0];
+	}
+
+	function applyDefaultPostingsFilters(): void {
+		searchValue = '';
+		filterState = {
+			activityIds: getDefaultActivityFilterIds(),
+			budgetCategoryIds: getDefaultBudgetCategoryFilterIds(),
+			dateRange: { from: getMinPostingDate(), to: getMaxPostingDate() },
+			postingTypes: ['DEBIT', 'CREDIT']
+		};
+	}
 
 	$effect(() => {
 		if (initializedPersonId === data.personOfOrganizationId) return;
@@ -452,6 +457,40 @@
 		}
 		await loader.dismiss();
 	}
+
+	async function onExportPostings(): Promise<void> {
+		const actionSheet = await actionSheetController.create({
+			buttons: [
+				{
+					handler: () => handleExportPostings('pdf'),
+					icon: documentOutline,
+					text: $t('routes.organization.page.modal.postings-history.export.pdf')
+				},
+				{
+					handler: () => handleExportPostings('csv'),
+					icon: listOutline,
+					text: $t('routes.organization.page.modal.postings-history.export.csv')
+				}
+			],
+			header: $t('routes.organization.page.modal.postings-history.export.title')
+		});
+		await actionSheet.present();
+	}
+
+	function handleExportPostings(format: ExportPostingsFormat): void {
+		if (!$organizationStore) return;
+
+		const config: ExportPostingsConfig = {
+			activities: $organizationStore.activities,
+			categories: $organizationStore.budgetCategories,
+			memberName: personOfOrganization?.username,
+			members: $organizationStore.personsOfOrganization,
+			organizationName: $organizationStore.name,
+			title: $t('routes.organization.activities.slug.page.postings-summary.export.title')
+		};
+
+		exportPostings(filteredOpenPostings, config, format);
+	}
 </script>
 
 <Layout title={$t('routes.organization.members.slug.page.title')} showBackButton>
@@ -518,7 +557,12 @@
 
 {#snippet openPostingsCard()}
 	<Card title={$t('routes.organization.members.slug.page.card.open-postings.title')}>
-		<Filter config={filterConfig} />
+		<div class="flex flex-row items-center justify-between gap-2">
+			<div class="flex-1">
+				<Filter config={filterConfig} />
+			</div>
+			<Button color="tertiary" icon={downloadOutline} clicked={() => onExportPostings()}></Button>
+		</div>
 		{#each filteredOpenPostings as posting (posting.id)}
 			{@render postingItem(posting)}
 		{/each}

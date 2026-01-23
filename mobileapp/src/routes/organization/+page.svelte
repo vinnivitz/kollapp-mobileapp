@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { ExportPostingsConfig, ExportPostingsFormat } from '$lib/models/export-postings';
 	import type {
 		ActivityTO,
 		OrganizationTO,
@@ -19,6 +20,7 @@
 		cashOutline,
 		createOutline,
 		documentOutline,
+		downloadOutline,
 		flashOffOutline,
 		flashOutline,
 		listOutline,
@@ -70,6 +72,7 @@
 	import {
 		confirmationModal,
 		customForm,
+		exportPostings,
 		formatter,
 		getRoleTranslationFromRole,
 		getValidationResult,
@@ -610,6 +613,39 @@
 	function getBudgetCategoryNameById(categoryId: number): string {
 		return $organizationStore?.budgetCategories.find((category) => category.id === categoryId)?.name ?? '';
 	}
+
+	function handleExportPostings(format: ExportPostingsFormat): void {
+		if (!$organizationStore) return;
+
+		const config: ExportPostingsConfig = {
+			activities: $organizationStore.activities,
+			categories: $organizationStore.budgetCategories,
+			members: $organizationStore.personsOfOrganization,
+			organizationName: $organizationStore.name,
+			title: $t('routes.organization.page.modal.postings-history.export.title')
+		};
+
+		exportPostings(filteredPostings, config, format);
+	}
+
+	async function onExportPostings(): Promise<void> {
+		const actionSheet = await actionSheetController.create({
+			buttons: [
+				{
+					handler: () => handleExportPostings('pdf'),
+					icon: documentOutline,
+					text: $t('routes.organization.page.modal.postings-history.export.pdf')
+				},
+				{
+					handler: () => handleExportPostings('csv'),
+					icon: listOutline,
+					text: $t('routes.organization.page.modal.postings-history.export.csv')
+				}
+			],
+			header: $t('routes.organization.page.modal.postings-history.export.title')
+		});
+		await actionSheet.present();
+	}
 </script>
 
 <Layout title={$t('routes.organization.page.title')}>
@@ -840,6 +876,7 @@
 				name="purpose"
 				label={$t('routes.organization.page.modal.create-posting.purpose')}
 				icon={documentOutline}
+				maxlength={50}
 			/>
 			<AmountInputItem name="amountInCents" label={$t('routes.organization.page.modal.create-posting.amount')} />
 			<DatetimeInputItem name="date" label={$t('routes.organization.page.modal.create-posting.date')} />
@@ -894,6 +931,7 @@
 				name="purpose"
 				label={$t('routes.organization.page.modal.update-posting.card.purpose')}
 				icon={documentOutline}
+				maxlength={50}
 			/>
 			<AmountInputItem name="amountInCents" label={$t('routes.organization.page.modal.update-posting.card.amount')} />
 			<DatetimeInputItem name="date" label={$t('routes.organization.page.modal.update-posting.card.date')} />
@@ -928,8 +966,13 @@
 	lazy
 >
 	<div class="relative">
-		<div class="sticky top-0 left-0 z-10 mb-3 flex flex-col">
-			<Filter config={postingsFilterConfig} />
+		<div class="sticky top-0 left-0 z-10 mb-3">
+			<div class="flex flex-row items-center justify-between gap-2">
+				<div class="flex-1">
+					<Filter config={postingsFilterConfig} />
+				</div>
+				<Button color="tertiary" icon={downloadOutline} clicked={() => onExportPostings()}></Button>
+			</div>
 		</div>
 		{#if filteredPostings.length === 0}
 			<div class="mt-3 flex flex-col items-center justify-center gap-2 text-center">

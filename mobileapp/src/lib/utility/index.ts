@@ -2,6 +2,7 @@ export * from './alert.utility';
 export * from './api.utility';
 export * from './biometrics.utility';
 export * from './device-calendar.utility';
+export * from './export-postings.utility';
 export * from './form-validators.utility';
 export * from './form.utility';
 export * from './formatter.utility';
