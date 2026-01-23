@@ -28,7 +28,7 @@
 	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
 	import { Locale, t } from '$lib/locales';
 	import { Layout, Theme, TourStepId } from '$lib/models/ui';
-	import { layoutStore, localeStore, themeStore } from '$lib/stores';
+	import { layoutStore, localeStore, organizationStore, themeStore } from '$lib/stores';
 	import { confirmationModal, resetTour, startTour } from '$lib/utility';
 
 	async function openActionSheet(header: string, buttons: ActionSheetButton[]): Promise<void> {
@@ -178,11 +178,13 @@
 			icon={refreshOutline}
 			label={$t('routes.account.page.list.application.restore-defaults')}
 		/>
-		<LabeledItem
-			indexed="/account"
-			clicked={onRestartTour}
-			icon={helpCircleOutline}
-			label={$t('routes.account.page.list.application.restart-tour')}
-		/>
+		{#if $organizationStore}
+			<LabeledItem
+				indexed="/account"
+				clicked={onRestartTour}
+				icon={helpCircleOutline}
+				label={$t('routes.account.page.list.application.restart-tour')}
+			/>
+		{/if}
 	</ion-list>
 {/snippet}

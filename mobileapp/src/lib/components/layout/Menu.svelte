@@ -90,7 +90,7 @@
 		{:else}
 			{@render children()}
 		{/if}
-		{#if searchValue === ''}
+		{#if searchValue.trim() === ''}
 			<Button
 				size="default"
 				fill="outline"

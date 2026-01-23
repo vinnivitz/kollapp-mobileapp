@@ -25,11 +25,10 @@ class SearchableService {
 					const hasTerm = $t(item.label).toLowerCase().includes(value.toLowerCase());
 					const validRole = item.accessible ? hasOrganizationRole(item.accessible) : true;
 					const accessible =
-						item.route.startsWith('/organization' satisfies RouteId) && !organization
-							? item.route === '/organization' ||
-								item.route === '/organization/register' ||
-								item.route === '/organization/join'
-							: true;
+						!!organization ||
+						item.route === '/organization/join' ||
+						item.route === '/organization/register' ||
+						item.route.startsWith('/account' as RouteId);
 					return hasTerm && validRole && accessible;
 				})
 				.map((item) => ({ ...item, label: $t(item.label) }));

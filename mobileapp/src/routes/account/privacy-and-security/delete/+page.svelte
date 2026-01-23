@@ -206,6 +206,7 @@
 				classList="mt-3"
 				expand="block"
 				type="submit"
+				color="danger"
 				label={$t('routes.account.delete.page.modal.password.card.form.submit')}
 				icon={keyOutline}
 			/>

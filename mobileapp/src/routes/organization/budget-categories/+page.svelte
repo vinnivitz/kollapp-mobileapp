@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { OrganizationBudgetCategoryRequestTO, OrganizationBudgetCategoryResponseTO } from '@kollapp/api-types';
 
-	import { createOutline, trashOutline } from 'ionicons/icons';
+	import { cardOutline, createOutline, starOutline, trashOutline } from 'ionicons/icons';
 
 	import { budgetCategorySchema } from '$lib/api/schema/budget-category';
 	import { budgetCategoryService } from '$lib/api/services';
@@ -162,10 +162,11 @@
 	<Modal open={createModalOpen} dismissed={() => (createModalOpen = false)}>
 		<Card title={$t('routes.organization.budget-categories.page.modal.create.title')}>
 			<form use:customForm={createForm}>
-				<InputItem name="name" label={$t('routes.organization.budget-categories.page.form.name')} />
+				<InputItem icon={cardOutline} name="name" label={$t('routes.organization.budget-categories.page.form.name')} />
 				<ToggleItem
+					icon={starOutline}
 					label={$t('routes.organization.budget-categories.page.form.default-category')}
-					checked={createForm.model.defaultCategory}
+					checked={false}
 					changed={(value) => createFormActions?.updateModelByKey('defaultCategory', value ?? false)}
 				/>
 			</form>
@@ -177,13 +178,16 @@
 	<Modal open={updateModalOpen} dismissed={() => (updateModalOpen = false)}>
 		<Card title={$t('routes.organization.budget-categories.page.modal.update.title')}>
 			<form use:customForm={updateForm}>
-				<InputItem name="name" label={$t('routes.organization.budget-categories.page.form.name')} />
-				<ToggleItem
-					label={$t('routes.organization.budget-categories.page.form.default-category')}
-					checked={selectedCategory?.defaultCategory}
-					disabled={selectedCategory?.defaultCategory}
-					changed={(value) => updateFormActions?.updateModelByKey('defaultCategory', value ?? false)}
-				/>
+				<InputItem icon={cardOutline} name="name" label={$t('routes.organization.budget-categories.page.form.name')} />
+				{#key selectedCategory}
+					<ToggleItem
+						icon={starOutline}
+						label={$t('routes.organization.budget-categories.page.form.default-category')}
+						checked={selectedCategory?.defaultCategory}
+						disabled={selectedCategory?.defaultCategory}
+						changed={(value) => updateFormActions?.updateModelByKey('defaultCategory', value ?? false)}
+					/>
+				{/key}
 			</form>
 		</Card>
 	</Modal>

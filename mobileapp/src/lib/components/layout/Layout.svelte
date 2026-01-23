@@ -51,12 +51,14 @@
 				icon={personOutline}
 				label={$t('components.layout.menu.list.account.label')}
 			/>
-			<LabeledItem
-				transparent
-				clicked={() => menuComponent?.navigate('/organization/activities')}
-				icon={flashOutline}
-				label={$t('components.layout.menu.list.activities.label')}
-			/>
+			{#if $organizationStore}
+				<LabeledItem
+					transparent
+					clicked={() => menuComponent?.navigate('/organization/activities')}
+					icon={flashOutline}
+					label={$t('components.layout.menu.list.activities.label')}
+				/>
+			{/if}
 			<LabeledItem
 				transparent
 				clicked={() => menuComponent?.navigate('/organization')}
