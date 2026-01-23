@@ -122,6 +122,7 @@
 		indexLabel={$t('routes.organization.budget-categories.page.budget-categories-card.card.add-category')}
 		icon={createOutline}
 		clicked={onOpenCreateModal}
+		accessible="ROLE_ORGANIZATION_MANAGER"
 	/>
 </Layout>
 

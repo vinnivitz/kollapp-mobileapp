@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Colors, FabButtonButtons } from '$lib/models/ui';
+	import type { OrganizationRole } from '@kollapp/api-types';
 
 	import type { RouteId } from '$app/types';
 
@@ -7,6 +8,7 @@
 
 	type Properties = {
 		icon: string;
+		accessible?: OrganizationRole;
 		buttons?: FabButtonButtons[];
 		classList?: string;
 		color?: Colors;
@@ -19,6 +21,7 @@
 	};
 
 	let {
+		accessible,
 		buttons = [],
 		classList = '',
 		clicked,
@@ -35,6 +38,7 @@
 
 	// workaround to avoid reference linting error
 	void indexed;
+	void accessible;
 </script>
 
 <ion-fab

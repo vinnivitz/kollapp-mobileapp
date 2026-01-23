@@ -337,6 +337,7 @@
 			indexLabel={$t('routes.organization.members.page.fab.invite-members.title')}
 			icon={personAddOutline}
 			clicked={() => (invitationCodeModalOpen = true)}
+			accessible="ROLE_ORGANIZATION_MANAGER"
 		/>
 		{#if pendingPersonsOfOrganization.length > 0}
 			{@render pendingMembersCard()}

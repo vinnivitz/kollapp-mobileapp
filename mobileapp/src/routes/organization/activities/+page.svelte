@@ -324,6 +324,7 @@
 {#snippet activitiesView()}
 	{#if hasOrganizationRole('ROLE_ORGANIZATION_MANAGER')}
 		<FabButton
+			accessible="ROLE_ORGANIZATION_MANAGER"
 			tourId={TourStepId.ACTIVITIES.CREATE}
 			indexLabel={$t('routes.organization.activities.page.activities.fab.create')}
 			clicked={() => onCreateActivity(format(new TZDate(), 'yyyy-MM-dd'))}
