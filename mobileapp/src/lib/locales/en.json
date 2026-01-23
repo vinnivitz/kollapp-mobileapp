@@ -308,8 +308,8 @@
           "description": "This section is for event related stuff like viewing all events."
         },
         "activities-list": {
-          "title": "Activity list",
-          "description": "All events organized by date if you have some. Tap on any activity to view its details."
+          "title": "Event list",
+          "description": "All events organized by date if you have some. Tap on any event to view its details."
         },
         "activities-fab": {
           "title": "Create event",

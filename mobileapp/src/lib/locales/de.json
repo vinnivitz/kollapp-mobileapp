@@ -1342,7 +1342,7 @@
           "description": "Dieser Abschnitt ist für veranstaltungsbezogenen Dinge, wie der Anzeige aller Veranstaltungen."
         },
         "activities-list": {
-          "title": "Aktivitäten-Kalender",
+          "title": "Veranstaltungs-Übersicht",
           "description": "Alle Veranstaltungen nach Datum sortiert, falls welche vorhanden sind. Tippe auf eine Veranstaltung für Details."
         },
         "activities-fab": {
@@ -1387,7 +1387,7 @@
         },
         "org-info": {
           "title": "Kollektivlinfo",
-          "description": "Hier werden einige Informationen über das Kollektiv angezeigt, z. B. die Beschreibung, der Standort oder deine Rolle im Kollektiv."
+          "description": "Hier werden einige Informationen über das Kollektiv angezeigt, z. B. die Beschreibung, der Standort oder deine Rolle im Kollektiv."
         },
         "org-misc": {
           "title": "Abschnitt „Verschiedenes“.",
