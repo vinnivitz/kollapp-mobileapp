@@ -1,6 +1,5 @@
 <script lang="ts">
-	import type { ActivityModel } from '$lib/models/models';
-	import type { KollappUserTO, OrganizationTO } from '@kollapp/api-types';
+	import type { ActivityTO, KollappUserTO, OrganizationTO } from '@kollapp/api-types';
 
 	import { TZDate } from '@date-fns/tz';
 	import { addDays, formatDistanceToNow } from 'date-fns';
@@ -116,7 +115,7 @@
 	</div>
 {/snippet}
 
-{#snippet upcomingActivityCard(activity: ActivityModel)}
+{#snippet upcomingActivityCard(activity: ActivityTO)}
 	<Card
 		tourId={TourStepId.HOME.UPCOMING_ACTIVITY}
 		title={$t('routes.page.page.upcoming-activity-card.card.title')}

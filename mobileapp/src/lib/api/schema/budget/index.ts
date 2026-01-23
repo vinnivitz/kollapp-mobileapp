@@ -1,1 +1,1 @@
-export * from './create-update-posting.validation';
+export * from './create-update-posting.schema';

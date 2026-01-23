@@ -1,5 +1,4 @@
-import type { AuthenticationModel } from '$lib/models/models';
-import type { OrganizationRole, SystemRoleTO } from '@kollapp/api-types';
+import type { AuthTokensTO, OrganizationRole, SystemRoleTO } from '@kollapp/api-types';
 
 import { get } from 'svelte/store';
 
@@ -122,8 +121,7 @@ export async function customFetch<T = never>(url: string, config?: CustomFetchCo
  */
 export async function isAuthenticated(): Promise<boolean> {
 	const model =
-		get(authenticationStore) ||
-		(await getStoredValue<AuthenticationModel>(StorageKey.AUTHENTICATION, StorageStrategy.SECURE));
+		get(authenticationStore) || (await getStoredValue<AuthTokensTO>(StorageKey.AUTHENTICATION, StorageStrategy.SECURE));
 	return !!model?.accessToken;
 }
 

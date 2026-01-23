@@ -1,3 +1,3 @@
-export * from './change-password.validation';
-export * from './delete-account.validation';
-export * from './update-user-data.validation';
+export * from './change-password.schema';
+export * from './delete-account.schema';
+export * from './update-user-data.schema';

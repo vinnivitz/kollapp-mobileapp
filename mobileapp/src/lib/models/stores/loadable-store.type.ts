@@ -1,5 +1,4 @@
-import type { InitializationModel } from '$lib/models/models';
-import type { BaseStore } from '$lib/models/stores';
+import type { BaseStore, InitializationModel } from '$lib/models/stores';
 
 /**
  * Loadable store type that combines a base store with loadable model properties.

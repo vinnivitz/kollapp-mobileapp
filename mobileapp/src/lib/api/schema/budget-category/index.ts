@@ -1,1 +1,1 @@
-export * from './budget-category.validation';
+export * from './budget-category.schema';
