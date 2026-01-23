@@ -116,7 +116,8 @@
             "header": "Anwendung",
             "language": "Sprache ändern",
             "layout": "Layout ändern",
-            "restore-defaults": "Standard wiederherstellen"
+            "restore-defaults": "Standard wiederherstellen",
+            "restart-tour": "App-Tour neu starten"
           },
           "personal": {
             "header": "Persönlich",
@@ -184,10 +185,7 @@
             "link": "Registrieren",
             "question": "Du bist noch nicht registriert?"
           },
-          "welcome-modal": {
-            "header": "Willkommen bei Kollapp!",
-            "message": "Schön, dass du dabei bist!\nMit Kollapp verwaltest du dein Kollektiv ganz einfach.\n📊 Finanzen im Blick - Einnahmen und Ausgaben transparent erfassen\n📅 Aktivitäten planen - Events organisieren und koordinieren\n👥 Mitglieder verwalten - strukturiert zusammenarbeiten\nStarte jetzt, indem du ein Kollektiv anlegst oder einem beitrittst.\nViel Erfolg wünsch das Team von Kollapp!"
-          }
+          "welcome-modal": {}
         }
       },
       "organization": {
@@ -1308,6 +1306,101 @@
       },
       "information-modal": {
         "ok": "Okay"
+      }
+    },
+    "tour": {
+      "next": "Weiter",
+      "previous": "Zurück",
+      "done": "Fertig",
+      "steps": {
+        "welcome": {
+          "title": "Willkommen bei Kollapp! 👋",
+          "description": "Wir führen dich etwas herum und helfen dir beim Einstieg in Kollapp!"
+        },
+        "menu": {
+          "title": "Navigationsmenü",
+          "description": "Tippe hier, um das Menü zu öffnen und auf alle Funktionen der App zuzugreifen."
+        },
+        "organization": {
+          "title": "Dein Kollektiv",
+          "description": "Dies zeigt das Kollektiv mit ein paar Infos. \nTippe darauf, um Finanzen, Veranstaltungen, Mitglieder und mehr zu verwalten."
+        },
+        "quick-access": {
+          "title": "Schnellzugriff",
+          "description": "Verwende diese Schaltflächen für schnellen Zugriff auf häufig verwendete Funktionen."
+        },
+        "budget": {
+          "title": "Bilanz-Übersicht",
+          "description": "Hier hast du einen visuellen Überblick über die Finanzen des Kollektivs, sofern bereits Buchungen angelegt wurden."
+        },
+        "org-budget": {
+          "title": "Kollektivbilanz",
+          "description": "Zeigt Infos über die Finanzen des Kollektivs an, einschließlich Saldo, Einnahmen und Ausgaben des Kollektivs. \nDu kannst Buchungen hinzufügen und anzeigen lassen."
+        },
+        "org-activities": {
+          "title": "Veranstaltungsbereich",
+          "description": "Dieser Abschnitt ist für veranstaltungsbezogenen Dinge, wie der Anzeige aller Veranstaltungen."
+        },
+        "activities-list": {
+          "title": "Aktivitäten-Kalender",
+          "description": "Alle Veranstaltungen nach Datum sortiert, falls welche vorhanden sind. Tippe auf eine Veranstaltung für Details."
+        },
+        "activities-fab": {
+          "title": "Veranstaltung erstellen",
+          "description": "Tippe hier, um eine neue Veranstaltung für das Kollektiv zu erstellen."
+        },
+        "budget-categories-list": {
+          "title": "Budget-Kategorien",
+          "description": "Organisiere deine Finanzen mit Kategorien. Kategorien helfen, Einnahmen oder Ausgaben zu sortieren. Standartmäßig sind alle Buchungen der Kategorie \"General\" zugeordnet."
+        },
+        "budget-categories-fab": {
+          "title": "Kategorie hinzufügen",
+          "description": "Erstelle neue Budget-Kategorien, um die Finanzen deines Kollektivs besser zu organisieren."
+        },
+        "members-list": {
+          "title": "Mitglieder-Verzeichnis",
+          "description": "Hier siehst du alle Mitglieder des Kollektivs. \nDu sieht ihre Rollen und kannst sie verwalten, wenn du ein Administrator bist."
+        },
+        "members-fab": {
+          "title": "Mitglieder einladen",
+          "description": "Lade neue Leute ein, dem Kollektiv beizutreten, indem du einen Einladungscode teilen. \nDu kannst ihn per E-Mail versenden, mit deinem Telefon teilen oder einen QR-Code anzeigen, den andere scannen können."
+        },
+        "account-personal": {
+          "title": "Persönliche Einstellungen",
+          "description": "Verwalte hier dein Profil, Benachrichtigungseinstellungen und sicherheitsrelevante Dinge."
+        },
+        "account-application": {
+          "title": "App-Einstellungen",
+          "description": "Passe die App mit deinen Sprach- und Theme-Einstellungen an und starte die Tour jederzeit neu."
+        },
+        "upcoming-activity": {
+          "title": "Kommende Veranstaltung",
+          "description": "Hier wird die bevorstehende Veranstaltung mit ein paar Infos angezeigt. \nTippe drauf, um weitere Infos zu erhalten."
+        },
+        "org-upcoming-activity": {
+          "title": "Kommende Veranstaltung",
+          "description": "Hier siehst du noch einmal die bevorstehende Veranstaltung des Kollektivs. \nFür weitere Infos tippen."
+        },
+        "org-organization": {
+          "title": "Kollektivbereich",
+          "description": "Dieser Abschnitt ist für kollektivbezogene Dinge wie die Verwaltung von Mitgliedern oder das Verlassen des Kollektivs."
+        },
+        "org-info": {
+          "title": "Kollektivlinfo",
+          "description": "Hier werden einige Informationen über das Kollektiv angezeigt, z. B. die Beschreibung, der Standort oder deine Rolle im Kollektiv."
+        },
+        "org-misc": {
+          "title": "Abschnitt „Verschiedenes“.",
+          "description": "Dieser Abschnitt ist für verschiedene Dinge da, wie der Registrierung eines neuen Kollektivs oder den Beitritt zu einem."
+        },
+        "activities-segments": {
+          "title": "Veranstaltungsansichten",
+          "description": "Hier kannst du zwischen einer Listen- und Kalenderansicht für die Anzeige von Veranstaltungen wechseln."
+        },
+        "conclusion": {
+          "title": "Dank für deine Aufmerksamkeit!",
+          "description": "Viel Spaß mit Kollapp! Und wenn dir irgendwas in der App auffällt, du Fragen oder Verbesserungsvorschläge hast, dann kontaktier uns gern!"
+        }
       }
     }
   }

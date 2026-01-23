@@ -11,6 +11,6 @@ export enum StorageKey {
 	ORGANIZATION = 'organization',
 	POSITION = 'position',
 	THEME = 'theme',
-	USER = 'user',
-	WELCOME_SHOWN = 'welcome-shown'
+	TOUR_COMPLETED = 'tour-completed',
+	USER = 'user'
 }

@@ -12,6 +12,7 @@
 		iconEnd?: string;
 		indexed?: RouteId;
 		selected?: boolean;
+		tourId?: string;
 		clicked?: () => void;
 	};
 
@@ -24,7 +25,8 @@
 		iconEnd,
 		indexed,
 		label,
-		selected
+		selected,
+		tourId
 	}: Properties = $props();
 
 	// workaround to avoid reference linting error
@@ -36,6 +38,7 @@
 	tabindex="0"
 	class={classList}
 	{color}
+	data-tour={tourId}
 	style:background-color={selected ? `color-mix(in srgb, var(--ion-color-${color}) 30%, black 0%)` : 'transparent'}
 	outline={!selected}
 	onclick={clicked}

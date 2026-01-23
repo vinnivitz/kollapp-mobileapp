@@ -18,6 +18,7 @@
 		readonly?: boolean;
 		shape?: 'round' | 'square';
 		size?: 'default' | 'large' | 'small';
+		tourId?: string;
 		type?: 'button' | 'reset' | 'submit';
 		clicked?: (event?: MouseEvent) => void;
 	} & (
@@ -45,6 +46,7 @@
 		readonly,
 		shape = 'round',
 		size,
+		tourId,
 		type
 	}: Properties = $props();
 
@@ -63,6 +65,7 @@
 	onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && clicked?.()}
 	style={`pointer-events: ${readonly ? 'none' : 'auto'};`}
 	shape={shape === 'round' ? 'round' : undefined}
+	data-tour={tourId}
 	{color}
 	{expand}
 	{fill}

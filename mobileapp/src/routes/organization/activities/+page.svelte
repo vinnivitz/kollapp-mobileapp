@@ -32,6 +32,7 @@
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
 	import SegmentItem from '$lib/components/widgets/ionic/SegmentItem.svelte';
 	import { t } from '$lib/locales';
+	import { TourStepId } from '$lib/models/tour';
 	import { chipSection, dateRangeSection, type FilterConfig, Form, type SegmentConfig } from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';
 	import { customForm, hasOrganizationRole } from '$lib/utility';
@@ -304,7 +305,7 @@
 	showBackButton
 	scrollable={activityView === ActivityView.CALENDAR}
 >
-	<SegmentItem config={segmentConfig}>
+	<SegmentItem tourId={TourStepId.ACTIVITIES.SEGMENTS} config={segmentConfig}>
 		<div class={activityView === ActivityView.ACTIVITIES ? 'flex h-full flex-col pb-6' : ''}>
 			{#if activityView === ActivityView.ACTIVITIES}
 				{@render activitiesView()}
@@ -323,6 +324,7 @@
 {#snippet activitiesView()}
 	{#if hasOrganizationRole('ROLE_ORGANIZATION_MANAGER')}
 		<FabButton
+			tourId={TourStepId.ACTIVITIES.CREATE}
 			indexLabel={$t('routes.organization.activities.page.activities.fab.create')}
 			clicked={() => onCreateActivity(format(new TZDate(), 'yyyy-MM-dd'))}
 			icon={createOutline}
@@ -331,7 +333,7 @@
 	{/if}
 
 	<Filter config={filterConfig} />
-	<div class="scroll-viewport">
+	<div class="scroll-viewport" data-tour={TourStepId.ACTIVITIES.LIST}>
 		{@render activityList()}
 	</div>
 {/snippet}

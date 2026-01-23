@@ -15,12 +15,13 @@
 
 	interface Properties {
 		postings: PostingTO[];
+		tourId?: string;
 	}
 
 	const MINIMAL_POSTINGS_FOR_INTERACTION = 1;
 	const INITIAL_DISPLAY_COUNT = 5;
 
-	let { postings }: Properties = $props();
+	let { postings, tourId }: Properties = $props();
 
 	let selectedChart = $state<ChartType>('all');
 	let showAllCredits = $state<boolean>(false);
@@ -167,65 +168,67 @@
 	});
 </script>
 
-<h1 class="mt-5 mb-2 text-center">{$t('components.widgets.budget-card.heading')}</h1>
+<div data-tour={tourId}>
+	<h1 class="mt-5 mb-2 text-center">{$t('components.widgets.budget-card.heading')}</h1>
 
-{#if postings && postings.length > 0}
-	{#if hasEnoughForInteraction}
-		<div class="flex items-center justify-center gap-2">
-			<Chip
-				icon={cashOutline}
-				label={$t('components.widgets.budget-card.all')}
-				color="secondary"
-				selected={selectedChart === 'all'}
-				clicked={() => (selectedChart = 'all')}
-			/>
-			{#if creditCount > 0}
+	{#if postings && postings.length > 0}
+		{#if hasEnoughForInteraction}
+			<div class="flex items-center justify-center gap-2">
 				<Chip
-					icon={trendingUp}
-					label={$t('components.widgets.budget-card.credit')}
-					color="success"
-					selected={selectedChart === 'credit'}
-					clicked={() => (selectedChart = 'credit')}
+					icon={cashOutline}
+					label={$t('components.widgets.budget-card.all')}
+					color="secondary"
+					selected={selectedChart === 'all'}
+					clicked={() => (selectedChart = 'all')}
 				/>
+				{#if creditCount > 0}
+					<Chip
+						icon={trendingUp}
+						label={$t('components.widgets.budget-card.credit')}
+						color="success"
+						selected={selectedChart === 'credit'}
+						clicked={() => (selectedChart = 'credit')}
+					/>
+				{/if}
+				{#if debitCount > 0}
+					<Chip
+						icon={trendingDown}
+						label={$t('components.widgets.budget-card.debit')}
+						color="danger"
+						selected={selectedChart === 'debit'}
+						clicked={() => (selectedChart = 'debit')}
+					/>
+				{/if}
+			</div>
+		{/if}
+
+		<div class="relative h-[350px]">
+			{#if selectedChart === 'all'}
+				<ion-text class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-7 text-center text-xl font-bold">
+					{formatter.currency(totalBudget)}
+				</ion-text>
 			{/if}
-			{#if debitCount > 0}
-				<Chip
-					icon={trendingDown}
-					label={$t('components.widgets.budget-card.debit')}
-					color="danger"
-					selected={selectedChart === 'debit'}
-					clicked={() => (selectedChart = 'debit')}
-				/>
+			{#if mounted}
+				<Chart options={chartOptions}></Chart>
 			{/if}
 		</div>
-	{/if}
 
-	<div class="relative h-[350px]">
-		{#if selectedChart === 'all'}
-			<ion-text class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-7 text-center text-xl font-bold">
-				{formatter.currency(totalBudget)}
-			</ion-text>
+		{#if showExpandButton}
+			<div class="flex justify-center">
+				<Button
+					size="small"
+					fill="outline"
+					icon={isExpanded ? chevronUpOutline : chevronDownOutline}
+					label={isExpanded
+						? $t('components.widgets.budget-card.show-less')
+						: $t('components.widgets.budget-card.show-more')}
+					clicked={toggleExpand}
+				/>
+			</div>
 		{/if}
-		{#if mounted}
-			<Chart options={chartOptions}></Chart>
-		{/if}
-	</div>
-
-	{#if showExpandButton}
-		<div class="flex justify-center">
-			<Button
-				size="small"
-				fill="outline"
-				icon={isExpanded ? chevronUpOutline : chevronDownOutline}
-				label={isExpanded
-					? $t('components.widgets.budget-card.show-less')
-					: $t('components.widgets.budget-card.show-more')}
-				clicked={toggleExpand}
-			/>
+	{:else}
+		<div class="text-medium mt-5 text-center">
+			<ion-note>{$t('components.widgets.budget-card.no-postings')}</ion-note>
 		</div>
 	{/if}
-{:else}
-	<div class="text-medium mt-5 text-center">
-		<ion-note>{$t('components.widgets.budget-card.no-postings')}</ion-note>
-	</div>
-{/if}
+</div>

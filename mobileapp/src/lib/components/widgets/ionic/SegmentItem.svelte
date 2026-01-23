@@ -10,14 +10,15 @@
 		config: SegmentConfig[];
 		children?: Snippet;
 		classList?: string;
+		tourId?: string;
 	};
 
-	let { children, classList, config }: Properties = $props();
+	let { children, classList, config, tourId }: Properties = $props();
 
 	const selectedClass = $derived(config.find((item) => item.selected)?.class ?? '');
 </script>
 
-<div class="text-center">
+<div class="text-center" data-tour={tourId}>
 	<div class="mb-2 flex items-center justify-center gap-3 rounded-full bg-(--ion-background-color-step-50) px-5 py-1">
 		{#each config as item (item.label)}
 			<Chip

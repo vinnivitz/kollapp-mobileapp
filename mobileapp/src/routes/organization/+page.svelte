@@ -56,6 +56,7 @@
 	import MultiSelectItem from '$lib/components/widgets/ionic/MultiSelectItem.svelte';
 	import PostingItem from '$lib/components/widgets/PostingItem.svelte';
 	import { t } from '$lib/locales';
+	import { TourStepId } from '$lib/models/tour';
 	import {
 		chipMultiSection,
 		dateRangeSection,
@@ -631,7 +632,7 @@
 	{:else if $organizations.length === 0}
 		{@render noCollectiveCard()}
 	{/if}
-	{@render generalList()}
+	{@render miscellaneousList()}
 </Layout>
 
 <!-- Snippets -->
@@ -649,6 +650,7 @@
 
 {#snippet upcomingActivity(activities: ActivityTO[])}
 	<Card
+		tourId={TourStepId.ORGANIZATION.UPCOMING_ACTIVITY}
 		border="secondary"
 		title={$t('routes.organization.page.upcoming-activity.card.title')}
 		classList="mt-5"
@@ -674,7 +676,7 @@
 {/snippet}
 
 {#snippet activityList()}
-	<ion-list inset class="mt-0 pt-0">
+	<ion-list inset class="mt-0 pt-0" data-tour={TourStepId.ORGANIZATION.ACTIVITIES}>
 		<ion-list-header>{$t('routes.organization.page.activity-list.list.header')}</ion-list-header>
 		{#if isManager}
 			<LabeledItem
@@ -706,6 +708,7 @@
 
 {#snippet collectiveInfo()}
 	<Card
+		tourId={TourStepId.ORGANIZATION.INFO}
 		classList="text-center cursor-pointer"
 		clicked={organizationDescriptionNoteTruncated ? () => (descriptionExpanded = !descriptionExpanded) : undefined}
 	>
@@ -735,7 +738,7 @@
 {/snippet}
 
 {#snippet collectiveList()}
-	<ion-list inset>
+	<ion-list inset data-tour={TourStepId.ORGANIZATION.ORGANIZATION}>
 		<ion-list-header>{$t('routes.organization.page.collective-list.list.header')}</ion-list-header>
 		<LabeledItem
 			badge={pendingMembersCount > 0 ? `${pendingMembersCount}` : undefined}
@@ -777,8 +780,8 @@
 	</ion-list>
 {/snippet}
 
-{#snippet generalList()}
-	<ion-list inset>
+{#snippet miscellaneousList()}
+	<ion-list inset data-tour={TourStepId.ORGANIZATION.MISCELLANEOUS}>
 		<ion-list-header>{$t('routes.organization.page.general.list.header')}</ion-list-header>
 
 		<LabeledItem
@@ -797,7 +800,7 @@
 {/snippet}
 
 {#snippet budgetCard()}
-	<Card>
+	<Card tourId={TourStepId.ORGANIZATION.BUDGET}>
 		<div class="flex flex-col items-center justify-center gap-2">
 			<div class="flex items-center justify-center gap-2">
 				<ion-icon icon={cardOutline} class="text-xl"></ion-icon>

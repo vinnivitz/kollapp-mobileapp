@@ -13,6 +13,7 @@
 		horizontal?: 'center' | 'end' | 'start';
 		indexed?: RouteId;
 		indexLabel?: string;
+		tourId?: string;
 		vertical?: 'bottom' | 'center' | 'top';
 		clicked?: () => void;
 	};
@@ -26,6 +27,7 @@
 		icon,
 		indexed,
 		indexLabel,
+		tourId,
 		vertical = 'bottom'
 	}: Properties = $props();
 
@@ -41,6 +43,7 @@
 	{vertical}
 	{horizontal}
 	id={indexLabel}
+	data-tour={tourId}
 	use:clickOutside
 	onblur={fabButtonElement?.close}
 >

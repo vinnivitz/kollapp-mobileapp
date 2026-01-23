@@ -274,6 +274,101 @@
     }
   },
   "utility": {
+    "tour": {
+      "next": "Next",
+      "previous": "Back",
+      "done": "Done",
+      "steps": {
+        "welcome": {
+          "title": "Welcome to Kollapp! 👋",
+          "description": "Let us show you around a bit and help you get started with Kollapp!"
+        },
+        "menu": {
+          "title": "Navigation Menu",
+          "description": "Tap here to open the menu and access all features of the app."
+        },
+        "organization": {
+          "title": "Your Collective",
+          "description": "This shows your collective with some info. Tap it to manage finances, events, members and more."
+        },
+        "quick-access": {
+          "title": "Quick Actions",
+          "description": "Use these buttons for quick access to frequently used features."
+        },
+        "budget": {
+          "title": "Balance overview",
+          "description": "Here you can see a visual overview of your collective's finances at a glance if you have already added transactions."
+        },
+        "org-budget": {
+          "title": "Collective balance",
+          "description": "View detailed financial information including balance, income and expenses of the collective. You can add and view transaction."
+        },
+        "org-activities": {
+          "title": "Event section",
+          "description": "This section is for event related stuff like viewing all events."
+        },
+        "activities-list": {
+          "title": "Activity list",
+          "description": "All events organized by date if you have some. Tap on any activity to view its details."
+        },
+        "activities-fab": {
+          "title": "Create event",
+          "description": "Tap here to create a new event for your collective."
+        },
+        "budget-categories-list": {
+          "title": "Budget categories",
+          "description": "Organize your finances with categories. Each category helps track specific types of income or expenses. Per default every transaction is assigned to the category \"General\"."
+        },
+        "budget-categories-fab": {
+          "title": "Add category",
+          "description": "Create new categories to better organize and track your collective's finances."
+        },
+        "members-list": {
+          "title": "Member directory",
+          "description": "View all members of your collective. See their roles and manage them if you are an admin."
+        },
+        "members-fab": {
+          "title": "Invite members",
+          "description": "Invite new people to join your collective by sharing an invitation code. You can send it per mail, share it via your phone or provide a QR code that others can scan."
+        },
+        "account-personal": {
+          "title": "Personal settings",
+          "description": "Manage your profile, notification preferences and security related stuff here."
+        },
+        "account-application": {
+          "title": "App settings",
+          "description": "Customize the app with your language, theme settings and restart the welcome tour anytime."
+        },
+        "upcoming-activity": {
+          "title": "Upcoming event",
+          "description": "This shows you the upcoming event with some info. Tap it for more details."
+        },
+        "org-upcoming-activity": {
+          "title": "Upcoming event",
+          "description": "Here you see again the upcoming event of the collective. Tap for more info."
+        },
+        "org-organization": {
+          "title": "Collective section",
+          "description": "This section is for collective related stuff like managing members or leaving the collective."
+        },
+        "org-info": {
+          "title": "Collective info",
+          "description": "This shows some info about the collective like the description, where its based or your role in the collective."
+        },
+        "org-misc": {
+          "title": "Miscellaneous section",
+          "description": "This section is for miscellaneous stuff like registering a new collective or joining one."
+        },
+        "activities-segments": {
+          "title": "Event views",
+          "description": "Here you can switch between a listing and calendar view for displaying events."
+        },
+        "conclusion": {
+          "title": "Thanks for your attention!",
+          "description": "Have fun with Kollapp! And if you notice anything in the app, have any questions, or suggestions for improvement, please feel free to contact us!"
+        }
+      }
+    },
     "alert": {
       "feature-not-implemented": "Feature is not implemented yet",
       "toast": {
@@ -484,7 +579,8 @@
             "language": "Change Language",
             "color-theme": "Change color theme",
             "layout": "Change layout",
-            "restore-defaults": "Restore default"
+            "restore-defaults": "Restore default",
+            "restart-tour": "Restart app tour "
           }
         }
       }
@@ -509,10 +605,7 @@
             "question": "Forgot your password?",
             "link": "Reset"
           },
-          "welcome-modal": {
-            "header": "Welcome to Kollapp!",
-            "message": "Great to have you on board!\nKollapp makes managing your collective easy.\n📊 Keep track of finances - record income and expenses transparently\n📅 Plan activities - organize and coordinate events\n👥 Manage members - collaborate in a structured way\nGet started now by creating or joining a collective.\nThe Kollapp team wishes you every success!"
-          }
+          "welcome-modal": {}
         }
       },
       "organization": {

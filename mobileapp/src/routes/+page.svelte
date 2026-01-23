@@ -25,6 +25,7 @@
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import { t } from '$lib/locales';
+	import { TourStepId } from '$lib/models/tour';
 	import { localeStore, organizationStore, userStore } from '$lib/stores';
 	import { getDateFnsLocale, hasOrganizationRole, triggerClickByLabel } from '$lib/utility';
 
@@ -117,6 +118,7 @@
 
 {#snippet upcomingActivityCard(activity: ActivityModel)}
 	<Card
+		tourId={TourStepId.HOME.UPCOMING_ACTIVITY}
 		title={$t('routes.page.page.upcoming-activity-card.card.title')}
 		border="secondary"
 		clicked={onNavigateActivity}
@@ -147,6 +149,7 @@
 		title={organization.name}
 		clicked={() => goto(resolve('/organization'))}
 		titleIconEnd={arrowForwardOutline}
+		tourId={TourStepId.HOME.ORGANIZATION}
 	>
 		<div class="flex flex-wrap items-center justify-center gap-2">
 			<Button
@@ -214,58 +217,60 @@
 {/snippet}
 
 {#snippet quickAccess()}
-	<div class="mx-3 flex items-center justify-center gap-2">
-		<Button
-			classList="flex-1"
-			clicked={onAddPosting}
-			expand="block"
-			shape="square"
-			fill="outline"
-			color="tertiary"
-			label={$t('routes.page.page.new-posting-button.label')}
-			icon={cashOutline}
-		/>
-		{#if isManager}
-			<Button
-				classList="flex-1"
-				clicked={onCreateActivity}
-				expand="block"
-				shape="square"
-				fill="outline"
-				color="tertiary"
-				label={$t('routes.page.page.create-activity-button.label')}
-				icon={flashOutline}
-			/>
-		{/if}
-	</div>
-	{#if isManager}
+	<div data-tour={TourStepId.HOME.QUICK_ACCESS} class="flex flex-col gap-2">
 		<div class="mx-3 flex items-center justify-center gap-2">
 			<Button
 				classList="flex-1"
-				clicked={onAddBudgetCategory}
+				clicked={onAddPosting}
 				expand="block"
 				shape="square"
 				fill="outline"
 				color="tertiary"
-				label={$t('routes.page.page.budget-categories-button.label')}
-				icon={cardOutline}
+				label={$t('routes.page.page.new-posting-button.label')}
+				icon={cashOutline}
 			/>
-			<Button
-				classList="flex-1"
-				clicked={onAddPersonOfOrganization}
-				expand="block"
-				shape="square"
-				fill="outline"
-				color="tertiary"
-				label={$t('routes.page.page.person-of-organization-button.label')}
-				icon={personAddOutline}
-			/>
+			{#if isManager}
+				<Button
+					classList="flex-1"
+					clicked={onCreateActivity}
+					expand="block"
+					shape="square"
+					fill="outline"
+					color="tertiary"
+					label={$t('routes.page.page.create-activity-button.label')}
+					icon={flashOutline}
+				/>
+			{/if}
 		</div>
-	{/if}
+		{#if isManager}
+			<div class="mx-3 flex items-center justify-center gap-2">
+				<Button
+					classList="flex-1"
+					clicked={onAddBudgetCategory}
+					expand="block"
+					shape="square"
+					fill="outline"
+					color="tertiary"
+					label={$t('routes.page.page.budget-categories-button.label')}
+					icon={cardOutline}
+				/>
+				<Button
+					classList="flex-1"
+					clicked={onAddPersonOfOrganization}
+					expand="block"
+					shape="square"
+					fill="outline"
+					color="tertiary"
+					label={$t('routes.page.page.person-of-organization-button.label')}
+					icon={personAddOutline}
+				/>
+			</div>
+		{/if}
+	</div>
 {/snippet}
 
 {#snippet budgetChartCard()}
-	<BudgetChart {postings} />
+	<BudgetChart {postings} tourId={TourStepId.HOME.BUDGET_CHART} />
 {/snippet}
 
 {#snippet pendingMembers()}

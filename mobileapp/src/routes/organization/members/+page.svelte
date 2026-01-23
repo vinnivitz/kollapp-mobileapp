@@ -43,6 +43,7 @@
 	import Popover from '$lib/components/widgets/ionic/Popover.svelte';
 	import environment from '$lib/environment';
 	import { t } from '$lib/locales';
+	import { TourStepId } from '$lib/models/tour';
 	import { AlertType, type ItemSlidingOption } from '$lib/models/ui';
 	import { localeStore, organizationStore, userStore } from '$lib/stores';
 	import {
@@ -331,6 +332,7 @@
 <Layout title={$t('routes.organization.members.page.title')} showBackButton>
 	{#if hasOrganizationRole('ROLE_ORGANIZATION_MANAGER')}
 		<FabButton
+			tourId={TourStepId.MEMBERS.INVITE}
 			indexed="/organization/members"
 			indexLabel={$t('routes.organization.members.page.fab.invite-members.title')}
 			icon={personAddOutline}
@@ -388,7 +390,7 @@
 
 {#snippet personsOfOrganizationList()}
 	<FadeInOut>
-		<ion-list>
+		<ion-list data-tour={TourStepId.MEMBERS.LIST}>
 			{#each personOfOrganizationGroups as [letter, personOfOrganizationGroup] (letter)}
 				<ion-item-group>
 					<ion-item-divider class="bg-transparent">

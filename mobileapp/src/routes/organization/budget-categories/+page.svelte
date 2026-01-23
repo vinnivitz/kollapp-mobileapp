@@ -13,6 +13,7 @@
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
 	import ToggleItem from '$lib/components/widgets/ionic/ToggleItem.svelte';
 	import { t } from '$lib/locales';
+	import { TourStepId } from '$lib/models/tour';
 	import { Form, type FormActions, type ItemSlidingOption } from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';
 	import { confirmationModal, customForm, StatusCheck } from '$lib/utility';
@@ -116,6 +117,7 @@
 	{@render createModal()}
 	{@render updateModal()}
 	<FabButton
+		tourId={TourStepId.BUDGET_CATEGORIES.ADD}
 		indexed="/organization/budget-categories"
 		indexLabel={$t('routes.organization.budget-categories.page.budget-categories-card.card.add-category')}
 		icon={createOutline}
@@ -127,7 +129,10 @@
 
 {#snippet categoryList()}
 	{#if categories.length > 0}
-		<Card title={$t('routes.organization.budget-categories.page.category-list.card.title')}>
+		<Card
+			tourId={TourStepId.BUDGET_CATEGORIES.LIST}
+			title={$t('routes.organization.budget-categories.page.category-list.card.title')}
+		>
 			<ion-list>
 				{#each categories as category (category.id)}
 					<CustomItem

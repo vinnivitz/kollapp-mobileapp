@@ -18,6 +18,7 @@
 		title?: string;
 		titleIconEnd?: string;
 		titleIconStart?: string;
+		tourId?: string;
 		clicked?: () => void;
 	};
 
@@ -35,7 +36,8 @@
 		subtitle,
 		title,
 		titleIconEnd,
-		titleIconStart
+		titleIconStart,
+		tourId
 	}: Properties = $props();
 
 	// workaround to avoid reference linting error
@@ -53,6 +55,7 @@
 		tabindex="0"
 		style={`pointer-events: ${readonly ? 'none' : 'auto'}; border: ${borderStyle}`}
 		id={indexLabel}
+		data-tour={tourId}
 		{color}
 		button
 		class={classList}
@@ -61,7 +64,7 @@
 		{@render content()}
 	</ion-card>
 {:else}
-	<ion-card id={indexLabel} {color} class={classList} style={`border: ${borderStyle}`}>
+	<ion-card id={indexLabel} data-tour={tourId} {color} class={classList} style={`border: ${borderStyle}`}>
 		{@render content()}
 	</ion-card>
 {/if}

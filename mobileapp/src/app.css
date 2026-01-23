@@ -2,6 +2,8 @@
 @import 'tailwindcss/theme.css' layer(theme);
 @import 'tailwindcss/utilities.css' layer(utilities);
 
+@import 'driver.js/dist/driver.css';
+
 @plugin '@tailwindcss/typography';
 @plugin 'tailwind-scrollbar-hide';
 
@@ -108,4 +110,41 @@ body {
 	ion-segment-button::part(native) {
 		font-size: 3vw;
 	}
+}
+
+/* Driver.js Tour Customization */
+.driver-popover {
+	background-color: var(--ion-background-color);
+	color: var(--ion-text-color);
+}
+
+.driver-popover-title {
+	font-size: 1.25rem;
+	font-weight: 600;
+}
+
+.driver-popover-description {
+	color: var(--ion-color-medium);
+}
+
+.driver-popover-navigation-btns button {
+	background-color: var(--ion-color-primary);
+	color: var(--ion-color-primary-contrast);
+	border-radius: 8px;
+	padding: 8px 16px;
+	font-weight: 500;
+}
+
+.driver-popover-navigation-btns button:hover {
+	background-color: var(--ion-color-primary-shade);
+}
+
+.driver-popover-prev-btn {
+	background-color: var(--ion-color-secondary) !important;
+	color: var(--ion-color-secondary-contrast) !important;
+}
+
+.driver-popover-progress-text {
+	color: var(--ion-color-medium);
+	font-size: 0.875rem;
 }

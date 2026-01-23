@@ -5,7 +5,14 @@ import { writable } from 'svelte/store';
 
 import { organizationService } from '$lib/api/services';
 import { StorageKey } from '$lib/models/storage';
-import { deduplicateRequest, getStoredValue, removeStoredValue, StatusCheck, storeValue } from '$lib/utility';
+import {
+	deduplicateRequest,
+	getStoredValue,
+	removeStoredValue,
+	startTour,
+	StatusCheck,
+	storeValue
+} from '$lib/utility';
 
 const ORGANIZATION_STORE_INIT_REQUEST_KEY = 'organization-store-init';
 const ORGANIZATION_STORE_UPDATE_REQUEST_KEY = (id: number): string => `organization-store-update-${id}`;
@@ -57,6 +64,7 @@ function createStore(): OrganizationStore {
 			const response = await organizationService.getById(id);
 			if (StatusCheck.isOK(response.status)) {
 				await _set(response.data);
+				void startTour();
 			}
 		});
 	}
