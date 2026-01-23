@@ -2,7 +2,7 @@
 	import type { ActivityTO, KollappUserTO, OrganizationTO } from '@kollapp/api-types';
 
 	import { TZDate } from '@date-fns/tz';
-	import { addDays, formatDistanceToNow } from 'date-fns';
+	import { formatDistanceToNow } from 'date-fns';
 	import {
 		accessibilityOutline,
 		arrowForwardOutline,
@@ -24,7 +24,7 @@
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import { t } from '$lib/locales';
-	import { TourStepId } from '$lib/models/tour';
+	import { TourStepId } from '$lib/models/ui';
 	import { localeStore, organizationStore, userStore } from '$lib/stores';
 	import { getDateFnsLocale, hasOrganizationRole, triggerClickByLabel } from '$lib/utility';
 
@@ -131,12 +131,15 @@
 			<div class="flex items-center gap-2">
 				<ion-icon icon={calendarClearOutline}></ion-icon>
 				<ion-text>
-					{formatDistanceToNow(addDays(new TZDate(), 5), {
+					{formatDistanceToNow(new TZDate(activity.date), {
 						addSuffix: true,
-						includeSeconds: true,
 						locale: getDateFnsLocale($localeStore)
 					})}
 				</ion-text>
+			</div>
+			<div class="flex items-center gap-2">
+				<ion-icon icon={cardOutline}></ion-icon>
+				<ion-text>{activity.activityPostings.length}</ion-text>
 			</div>
 		</div>
 	</Card>

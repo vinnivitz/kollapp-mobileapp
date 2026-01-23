@@ -27,8 +27,7 @@
 	import LayoutComponent from '$lib/components/layout/Layout.svelte';
 	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
 	import { Locale, t } from '$lib/locales';
-	import { TourStepId } from '$lib/models/tour';
-	import { Layout, Theme } from '$lib/models/ui';
+	import { Layout, Theme, TourStepId } from '$lib/models/ui';
 	import { layoutStore, localeStore, themeStore } from '$lib/stores';
 	import { confirmationModal, resetTour, startTour } from '$lib/utility';
 

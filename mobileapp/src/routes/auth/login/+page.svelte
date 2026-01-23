@@ -4,6 +4,7 @@
 	import { loadingController } from '@ionic/core';
 	import { fingerPrintOutline, keyOutline, logInOutline, personOutline } from 'ionicons/icons';
 	import { onMount } from 'svelte';
+	import { get } from 'svelte/store';
 
 	import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
@@ -19,11 +20,12 @@
 	import { t } from '$lib/locales';
 	import { StorageKey } from '$lib/models/storage';
 	import { Form } from '$lib/models/ui';
-	import { appStateStore, authenticationStore } from '$lib/stores';
+	import { appStateStore, authenticationStore, organizationStore } from '$lib/stores';
 	import {
 		customForm,
 		getStoredValue,
 		getValidationResult,
+		informationModal,
 		isBiometricAvailable,
 		isBiometricEnabled,
 		promptBiometricAuthentication,
@@ -74,6 +76,14 @@
 		await appStateStore.initializeBaseData();
 		await promptBiometricSetup();
 		await goto(resolve('/'));
+		const welcomeShown = await getStoredValue(StorageKey.WELCOME_SHOWN);
+		if (!welcomeShown && !get(organizationStore)) {
+			await storeValue(StorageKey.WELCOME_SHOWN, true);
+			await informationModal(
+				$t('routes.auth.login.page.welcome-modal.title'),
+				$t('routes.auth.login.page.welcome-modal.message')
+			);
+		}
 	}
 
 	async function promptBiometricSetup(): Promise<void> {

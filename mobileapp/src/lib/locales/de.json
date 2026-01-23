@@ -185,7 +185,10 @@
             "link": "Registrieren",
             "question": "Du bist noch nicht registriert?"
           },
-          "welcome-modal": {}
+          "welcome-modal": {
+            "title": "Willkommen bei Kollapp! \n👋",
+            "message": "Wir freuen uns, dass du da bist! \nUm richtig loszulegen, registriere dein Kollektiv oder tritt einem bei!\n\nViel Spaß!"
+          }
         }
       },
       "organization": {
@@ -886,9 +889,7 @@
         },
         "title": "Kollektiv",
         "upcoming-activity": {
-          "card": {
-            "title": "Nächste Veranstaltung"
-          }
+          "card": {}
         },
         "person-of-organization-filter-item": {
           "unassigned": "Nicht zugewiesen"
@@ -1323,7 +1324,7 @@
         },
         "organization": {
           "title": "Dein Kollektiv",
-          "description": "Dies zeigt das Kollektiv mit ein paar Infos. \nTippe darauf, um Finanzen, Veranstaltungen, Mitglieder und mehr zu verwalten."
+          "description": "Hier wird das Kollektiv mit der Anzahl der Mitglieder und Veranstaltungen angezeigt. \nTippe darauf für weitere Infos."
         },
         "quick-access": {
           "title": "Schnellzugriff",
@@ -1337,10 +1338,7 @@
           "title": "Kollektivbilanz",
           "description": "Zeigt Infos über die Finanzen des Kollektivs an, einschließlich Saldo, Einnahmen und Ausgaben des Kollektivs. \nDu kannst Buchungen hinzufügen und anzeigen lassen."
         },
-        "org-activities": {
-          "title": "Veranstaltungsbereich",
-          "description": "Dieser Abschnitt ist für veranstaltungsbezogenen Dinge, wie der Anzeige aller Veranstaltungen."
-        },
+        "org-activities": {},
         "activities-list": {
           "title": "Veranstaltungs-Übersicht",
           "description": "Alle Veranstaltungen nach Datum sortiert, falls welche vorhanden sind. Tippe auf eine Veranstaltung für Details."
@@ -1355,11 +1353,11 @@
         },
         "budget-categories-fab": {
           "title": "Kategorie hinzufügen",
-          "description": "Erstelle neue Budget-Kategorien, um die Finanzen deines Kollektivs besser zu organisieren."
+          "description": "Hier kannst du eine neue Kategorie hinzufügen."
         },
         "members-list": {
           "title": "Mitglieder-Verzeichnis",
-          "description": "Hier siehst du alle Mitglieder des Kollektivs. \nDu sieht ihre Rollen und kannst sie verwalten, wenn du ein Administrator bist."
+          "description": "Hier werden alle Mitglieder des Kollektivs aufgelistet. \nDu siehst ihre Rollen, zugewiesenen Buchungen und mehr."
         },
         "members-fab": {
           "title": "Mitglieder einladen",
@@ -1375,24 +1373,15 @@
         },
         "upcoming-activity": {
           "title": "Kommende Veranstaltung",
-          "description": "Hier wird die bevorstehende Veranstaltung mit ein paar Infos angezeigt. \nTippe drauf, um weitere Infos zu erhalten."
+          "description": "Hier wird die bevorstehende Veranstaltung mit Namen, der verbleibenden Zeit und der Anzahl der zugewiesenen Buchungen angezeigt. \nTippe darauf für weitere Infos."
         },
-        "org-upcoming-activity": {
-          "title": "Kommende Veranstaltung",
-          "description": "Hier siehst du noch einmal die bevorstehende Veranstaltung des Kollektivs. \nFür weitere Infos tippen."
-        },
-        "org-organization": {
-          "title": "Kollektivbereich",
-          "description": "Dieser Abschnitt ist für kollektivbezogene Dinge wie die Verwaltung von Mitgliedern oder das Verlassen des Kollektivs."
-        },
+        "org-upcoming-activity": {},
+        "org-organization": {},
         "org-info": {
           "title": "Kollektivlinfo",
           "description": "Hier werden einige Informationen über das Kollektiv angezeigt, z. B. die Beschreibung, der Standort oder deine Rolle im Kollektiv."
         },
-        "org-misc": {
-          "title": "Abschnitt „Verschiedenes“.",
-          "description": "Dieser Abschnitt ist für verschiedene Dinge da, wie der Registrierung eines neuen Kollektivs oder den Beitritt zu einem."
-        },
+        "org-misc": {},
         "activities-segments": {
           "title": "Veranstaltungsansichten",
           "description": "Hier kannst du zwischen einer Listen- und Kalenderansicht für die Anzeige von Veranstaltungen wechseln."

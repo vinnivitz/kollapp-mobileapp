@@ -10,10 +10,9 @@
 
 	import { TZDate } from '@date-fns/tz';
 	import { actionSheetController, loadingController } from '@ionic/core';
-	import { format, formatDistanceToNow } from 'date-fns';
+	import { format } from 'date-fns';
 	import {
 		albumsOutline,
-		arrowForwardOutline,
 		buildOutline,
 		calendarClearOutline,
 		cardOutline,
@@ -56,7 +55,6 @@
 	import MultiSelectItem from '$lib/components/widgets/ionic/MultiSelectItem.svelte';
 	import PostingItem from '$lib/components/widgets/PostingItem.svelte';
 	import { t } from '$lib/locales';
-	import { TourStepId } from '$lib/models/tour';
 	import {
 		chipMultiSection,
 		dateRangeSection,
@@ -65,14 +63,14 @@
 		type FormActions,
 		type ItemSlidingOption,
 		multiSelectSection,
-		type SelectItem
+		type SelectItem,
+		TourStepId
 	} from '$lib/models/ui';
-	import { localeStore, organizationStore, userStore } from '$lib/stores';
+	import { organizationStore, userStore } from '$lib/stores';
 	import {
 		confirmationModal,
 		customForm,
 		formatter,
-		getDateFnsLocale,
 		getRoleTranslationFromRole,
 		getValidationResult,
 		hasOrganizationRole,
@@ -106,11 +104,6 @@
 			...($organizationStore?.organizationPostings ?? []),
 			...($organizationStore?.activities.flatMap((activity) => activity.activityPostings) ?? [])
 		].toSorted((a, b) => new TZDate(b.date).getTime() - new TZDate(a.date).getTime())
-	);
-	const activities = $derived(
-		($organizationStore?.activities ?? []).toSorted(
-			(a, b) => new TZDate(a.date).getTime() - new TZDate(b.date).getTime()
-		)
 	);
 	const activityByPostingId = $derived(getActivityPostingIdMap());
 	const organizationPostingIdSet = $derived(
@@ -624,9 +617,6 @@
 		{@render collectiveName($organizationStore)}
 		{@render collectiveInfo()}
 		{@render budgetCard()}
-		{#if activities.length > 0}
-			{@render upcomingActivity(activities)}
-		{/if}
 		{@render activityList()}
 		{@render collectiveList()}
 	{:else if $organizations.length === 0}
@@ -648,35 +638,8 @@
 	</Card>
 {/snippet}
 
-{#snippet upcomingActivity(activities: ActivityTO[])}
-	<Card
-		tourId={TourStepId.ORGANIZATION.UPCOMING_ACTIVITY}
-		border="secondary"
-		title={$t('routes.organization.page.upcoming-activity.card.title')}
-		classList="mt-5"
-		clicked={() => goto(resolve('/organization/activities/[slug]', { slug: activities[0]!.id.toString() }))}
-		titleIconEnd={arrowForwardOutline}
-	>
-		<div class="flex flex-wrap items-center justify-center gap-5">
-			<div class="flex items-center gap-2">
-				<ion-icon icon={flashOutline}></ion-icon>
-				<ion-text>{activities[0]?.name}</ion-text>
-			</div>
-			<div class="flex items-center gap-2">
-				<ion-icon icon={calendarClearOutline}></ion-icon>
-				<ion-text>
-					{formatDistanceToNow(new TZDate(activities[0]?.date!), {
-						addSuffix: true,
-						locale: getDateFnsLocale($localeStore)
-					})}
-				</ion-text>
-			</div>
-		</div>
-	</Card>
-{/snippet}
-
 {#snippet activityList()}
-	<ion-list inset class="mt-0 pt-0" data-tour={TourStepId.ORGANIZATION.ACTIVITIES}>
+	<ion-list inset class="mt-0 pt-0">
 		<ion-list-header>{$t('routes.organization.page.activity-list.list.header')}</ion-list-header>
 		{#if isManager}
 			<LabeledItem
@@ -738,7 +701,7 @@
 {/snippet}
 
 {#snippet collectiveList()}
-	<ion-list inset data-tour={TourStepId.ORGANIZATION.ORGANIZATION}>
+	<ion-list inset>
 		<ion-list-header>{$t('routes.organization.page.collective-list.list.header')}</ion-list-header>
 		<LabeledItem
 			badge={pendingMembersCount > 0 ? `${pendingMembersCount}` : undefined}
@@ -781,7 +744,7 @@
 {/snippet}
 
 {#snippet miscellaneousList()}
-	<ion-list inset data-tour={TourStepId.ORGANIZATION.MISCELLANEOUS}>
+	<ion-list inset>
 		<ion-list-header>{$t('routes.organization.page.general.list.header')}</ion-list-header>
 
 		<LabeledItem

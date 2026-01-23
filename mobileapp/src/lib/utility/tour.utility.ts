@@ -8,16 +8,12 @@ import type { RouteId } from '$app/types';
 
 import { t } from '$lib/locales';
 import { StorageKey } from '$lib/models/storage';
-import { tourSelector, TourStepId } from '$lib/models/tour';
+import { TourStepId } from '$lib/models/ui';
 import { organizationStore } from '$lib/stores';
 import { getStoredValue, hasOrganizationRole, storeValue } from '$lib/utility';
 
-/** Maximum time to wait for an element to appear in the DOM (ms) */
 const ELEMENT_WAIT_TIMEOUT = 3000;
-/** Polling interval for element detection (ms) */
 const ELEMENT_POLL_INTERVAL = 50;
-
-const TOUR_STORAGE_KEY = StorageKey.TOUR_COMPLETED;
 
 /**
  * Extended tour step with route information for cross-page navigation
@@ -33,21 +29,30 @@ export interface TourStep extends Omit<DriveStep, 'element'> {
  * Check if the app tour has already been completed
  */
 export async function isTourCompleted(): Promise<boolean> {
-	return !!(await getStoredValue<boolean>(TOUR_STORAGE_KEY));
+	return !!(await getStoredValue<boolean>(StorageKey.TOUR_COMPLETED));
 }
 
 /**
  * Mark the tour as completed
  */
 export async function markTourCompleted(): Promise<void> {
-	await storeValue(TOUR_STORAGE_KEY, true);
+	await storeValue(StorageKey.TOUR_COMPLETED, true);
 }
 
 /**
  * Reset the tour so it will show again
  */
 export async function resetTour(): Promise<void> {
-	await storeValue(TOUR_STORAGE_KEY, false);
+	await storeValue(StorageKey.TOUR_COMPLETED, false);
+}
+
+/**
+ * Creates a CSS selector for a tour step ID
+ * @param id - The tour step ID
+ * @returns CSS selector string
+ */
+export function tourSelector(id: string): string {
+	return `[data-tour="${id}"]`;
 }
 
 /**
@@ -159,50 +164,6 @@ function getAllTourSteps(): TourStep[] {
 				description: $t('utility.tour.steps.org-budget.description'),
 				side: 'bottom',
 				title: $t('utility.tour.steps.org-budget.title')
-			},
-			route: '/organization'
-		},
-		...(hasActivities
-			? [
-					{
-						element: tourSelector(TourStepId.ORGANIZATION.UPCOMING_ACTIVITY),
-						popover: {
-							align: 'center' as const,
-							description: $t('utility.tour.steps.org-upcoming-activity.description'),
-							side: 'top' as const,
-							title: $t('utility.tour.steps.org-upcoming-activity.title')
-						},
-						route: '/organization' as RouteId
-					}
-				]
-			: []),
-		{
-			element: tourSelector(TourStepId.ORGANIZATION.ACTIVITIES),
-			popover: {
-				align: 'center',
-				description: $t('utility.tour.steps.org-activities.description'),
-				side: 'top',
-				title: $t('utility.tour.steps.org-activities.title')
-			},
-			route: '/organization'
-		},
-		{
-			element: tourSelector(TourStepId.ORGANIZATION.ORGANIZATION),
-			popover: {
-				align: 'center',
-				description: $t('utility.tour.steps.org-organization.description'),
-				side: 'bottom',
-				title: $t('utility.tour.steps.org-organization.title')
-			},
-			route: '/organization'
-		},
-		{
-			element: tourSelector(TourStepId.ORGANIZATION.MISCELLANEOUS),
-			popover: {
-				align: 'center',
-				description: $t('utility.tour.steps.org-misc.description'),
-				side: 'top',
-				title: $t('utility.tour.steps.org-misc.title')
 			},
 			route: '/organization'
 		},

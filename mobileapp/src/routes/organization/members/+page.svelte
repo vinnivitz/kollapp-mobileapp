@@ -43,8 +43,7 @@
 	import Popover from '$lib/components/widgets/ionic/Popover.svelte';
 	import environment from '$lib/environment';
 	import { t } from '$lib/locales';
-	import { TourStepId } from '$lib/models/tour';
-	import { AlertType, type ItemSlidingOption } from '$lib/models/ui';
+	import { AlertType, type ItemSlidingOption, TourStepId } from '$lib/models/ui';
 	import { localeStore, organizationStore, userStore } from '$lib/stores';
 	import {
 		confirmationModal,

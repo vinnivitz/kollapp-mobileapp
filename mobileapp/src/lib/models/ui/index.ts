@@ -15,4 +15,5 @@ export * from './segment-config.type';
 export * from './select-item.type';
 export * from './tab-config.type';
 export * from './theme.enum';
+export * from './tour-step-id.type';
 export * from './validation.type';

@@ -13,8 +13,7 @@
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
 	import ToggleItem from '$lib/components/widgets/ionic/ToggleItem.svelte';
 	import { t } from '$lib/locales';
-	import { TourStepId } from '$lib/models/tour';
-	import { Form, type FormActions, type ItemSlidingOption } from '$lib/models/ui';
+	import { Form, type FormActions, type ItemSlidingOption, TourStepId } from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';
 	import { confirmationModal, customForm, StatusCheck } from '$lib/utility';
 

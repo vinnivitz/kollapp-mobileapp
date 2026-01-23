@@ -34,30 +34,10 @@ export const TourStepId = {
 	},
 
 	ORGANIZATION: {
-		ACTIVITIES: generateTourId(),
 		BUDGET: generateTourId(),
-		INFO: generateTourId(),
-		MISCELLANEOUS: generateTourId(),
-		ORGANIZATION: generateTourId(),
-		UPCOMING_ACTIVITY: generateTourId()
+		INFO: generateTourId()
 	}
 } as const;
-
-/**
- * Type for all valid tour step IDs
- */
-type NestedValues<T> = T extends object
-	? { [K in keyof T]: T[K] extends object ? NestedValues<T[K]> : T[K] }[keyof T]
-	: T;
-
-export type TourStepIdType = NestedValues<typeof TourStepId>;
-
-/**
- * Creates a CSS selector for a tour step ID
- */
-export function tourSelector(id: TourStepIdType): string {
-	return `[data-tour="${id}"]`;
-}
 
 function generateTourId(): string {
 	return `tour-step-${++tourIdCounter}`;

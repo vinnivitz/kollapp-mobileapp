@@ -289,7 +289,7 @@
         },
         "organization": {
           "title": "Your Collective",
-          "description": "This shows your collective with some info. Tap it to manage finances, events, members and more."
+          "description": "This shows your collective with the number of members and events. Tap it for more details."
         },
         "quick-access": {
           "title": "Quick Actions",
@@ -303,10 +303,7 @@
           "title": "Collective balance",
           "description": "View detailed financial information including balance, income and expenses of the collective. You can add and view transaction."
         },
-        "org-activities": {
-          "title": "Event section",
-          "description": "This section is for event related stuff like viewing all events."
-        },
+        "org-activities": {},
         "activities-list": {
           "title": "Event list",
           "description": "All events organized by date if you have some. Tap on any event to view its details."
@@ -321,11 +318,11 @@
         },
         "budget-categories-fab": {
           "title": "Add category",
-          "description": "Create new categories to better organize and track your collective's finances."
+          "description": "Here you can add a new category."
         },
         "members-list": {
           "title": "Member directory",
-          "description": "View all members of your collective. See their roles and manage them if you are an admin."
+          "description": "View all members of your collective. See their roles, assigned transactions and more."
         },
         "members-fab": {
           "title": "Invite members",
@@ -341,24 +338,15 @@
         },
         "upcoming-activity": {
           "title": "Upcoming event",
-          "description": "This shows you the upcoming event with some info. Tap it for more details."
+          "description": "This shows you the upcoming event with name, the time left and the number of assigned transactions. Tap it for more details."
         },
-        "org-upcoming-activity": {
-          "title": "Upcoming event",
-          "description": "Here you see again the upcoming event of the collective. Tap for more info."
-        },
-        "org-organization": {
-          "title": "Collective section",
-          "description": "This section is for collective related stuff like managing members or leaving the collective."
-        },
+        "org-upcoming-activity": {},
+        "org-organization": {},
         "org-info": {
           "title": "Collective info",
           "description": "This shows some info about the collective like the description, where its based or your role in the collective."
         },
-        "org-misc": {
-          "title": "Miscellaneous section",
-          "description": "This section is for miscellaneous stuff like registering a new collective or joining one."
-        },
+        "org-misc": {},
         "activities-segments": {
           "title": "Event views",
           "description": "Here you can switch between a listing and calendar view for displaying events."
@@ -605,7 +593,10 @@
             "question": "Forgot your password?",
             "link": "Reset"
           },
-          "welcome-modal": {}
+          "welcome-modal": {
+            "title": "Welcome to Kollapp! 👋",
+            "message": "We are flattered to have you! To really get started register your collective or join one!\n\nHave fun!"
+          }
         }
       },
       "organization": {
@@ -1322,9 +1313,7 @@
           }
         },
         "upcoming-activity": {
-          "card": {
-            "title": "Upcoming event"
-          }
+          "card": {}
         },
         "person-of-organization-filter-item": {
           "unassigned": "Not assigned"

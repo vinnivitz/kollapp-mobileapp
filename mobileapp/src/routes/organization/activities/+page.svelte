@@ -32,8 +32,14 @@
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
 	import SegmentItem from '$lib/components/widgets/ionic/SegmentItem.svelte';
 	import { t } from '$lib/locales';
-	import { TourStepId } from '$lib/models/tour';
-	import { chipSection, dateRangeSection, type FilterConfig, Form, type SegmentConfig } from '$lib/models/ui';
+	import {
+		chipSection,
+		dateRangeSection,
+		type FilterConfig,
+		Form,
+		type SegmentConfig,
+		TourStepId
+	} from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';
 	import { customForm, hasOrganizationRole } from '$lib/utility';
 
