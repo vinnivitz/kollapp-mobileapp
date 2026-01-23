@@ -148,3 +148,7 @@ body {
 	color: var(--ion-color-medium);
 	font-size: 0.875rem;
 }
+
+.driver-popover-footer button {
+	text-shadow: none !important;
+}

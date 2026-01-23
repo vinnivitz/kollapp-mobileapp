@@ -9,7 +9,8 @@ import type { RouteId } from '$app/types';
 import { t } from '$lib/locales';
 import { StorageKey } from '$lib/models/storage';
 import { tourSelector, TourStepId } from '$lib/models/tour';
-import { getStoredValue, storeValue } from '$lib/utility';
+import { organizationStore } from '$lib/stores';
+import { getStoredValue, hasOrganizationRole, storeValue } from '$lib/utility';
 
 /** Maximum time to wait for an element to appear in the DOM (ms) */
 const ELEMENT_WAIT_TIMEOUT = 3000;
@@ -74,6 +75,9 @@ function getTourConfig(): Omit<Config, 'steps'> {
  */
 function getAllTourSteps(): TourStep[] {
 	const $t = get(t);
+	const organization = get(organizationStore)!;
+	const isManager = hasOrganizationRole('ROLE_ORGANIZATION_MANAGER');
+	const hasActivities = organization?.activities.length > 0;
 
 	return [
 		{
@@ -94,16 +98,20 @@ function getAllTourSteps(): TourStep[] {
 			},
 			route: '/'
 		},
-		{
-			element: tourSelector(TourStepId.HOME.UPCOMING_ACTIVITY),
-			popover: {
-				align: 'center',
-				description: $t('utility.tour.steps.upcoming-activity.description'),
-				side: 'bottom',
-				title: $t('utility.tour.steps.upcoming-activity.title')
-			},
-			route: '/'
-		},
+		...(hasActivities
+			? [
+					{
+						element: tourSelector(TourStepId.HOME.UPCOMING_ACTIVITY),
+						popover: {
+							align: 'center' as const,
+							description: $t('utility.tour.steps.upcoming-activity.description'),
+							side: 'bottom' as const,
+							title: $t('utility.tour.steps.upcoming-activity.title')
+						},
+						route: '/' as RouteId
+					}
+				]
+			: []),
 		{
 			element: tourSelector(TourStepId.HOME.ORGANIZATION),
 			popover: {
@@ -154,16 +162,20 @@ function getAllTourSteps(): TourStep[] {
 			},
 			route: '/organization'
 		},
-		{
-			element: tourSelector(TourStepId.ORGANIZATION.UPCOMING_ACTIVITY),
-			popover: {
-				align: 'center',
-				description: $t('utility.tour.steps.org-upcoming-activity.description'),
-				side: 'top',
-				title: $t('utility.tour.steps.org-upcoming-activity.title')
-			},
-			route: '/organization'
-		},
+		...(hasActivities
+			? [
+					{
+						element: tourSelector(TourStepId.ORGANIZATION.UPCOMING_ACTIVITY),
+						popover: {
+							align: 'center' as const,
+							description: $t('utility.tour.steps.org-upcoming-activity.description'),
+							side: 'top' as const,
+							title: $t('utility.tour.steps.org-upcoming-activity.title')
+						},
+						route: '/organization' as RouteId
+					}
+				]
+			: []),
 		{
 			element: tourSelector(TourStepId.ORGANIZATION.ACTIVITIES),
 			popover: {
@@ -214,36 +226,44 @@ function getAllTourSteps(): TourStep[] {
 			},
 			route: '/organization/activities'
 		},
-		{
-			element: tourSelector(TourStepId.ACTIVITIES.CREATE),
-			popover: {
-				align: 'center',
-				description: $t('utility.tour.steps.activities-fab.description'),
-				side: 'left',
-				title: $t('utility.tour.steps.activities-fab.title')
-			},
-			route: '/organization/activities'
-		},
-		{
-			element: tourSelector(TourStepId.BUDGET_CATEGORIES.LIST),
-			popover: {
-				align: 'center',
-				description: $t('utility.tour.steps.budget-categories-list.description'),
-				side: 'bottom',
-				title: $t('utility.tour.steps.budget-categories-list.title')
-			},
-			route: '/organization/budget-categories'
-		},
-		{
-			element: tourSelector(TourStepId.BUDGET_CATEGORIES.ADD),
-			popover: {
-				align: 'center',
-				description: $t('utility.tour.steps.budget-categories-fab.description'),
-				side: 'left',
-				title: $t('utility.tour.steps.budget-categories-fab.title')
-			},
-			route: '/organization/budget-categories'
-		},
+		...(isManager
+			? [
+					{
+						element: tourSelector(TourStepId.ACTIVITIES.CREATE),
+						popover: {
+							align: 'center' as const,
+							description: $t('utility.tour.steps.activities-fab.description'),
+							side: 'left' as const,
+							title: $t('utility.tour.steps.activities-fab.title')
+						},
+						route: '/organization/activities' as RouteId
+					}
+				]
+			: []),
+		...(isManager
+			? [
+					{
+						element: tourSelector(TourStepId.BUDGET_CATEGORIES.LIST),
+						popover: {
+							align: 'center' as const,
+							description: $t('utility.tour.steps.budget-categories-list.description'),
+							side: 'bottom' as const,
+							title: $t('utility.tour.steps.budget-categories-list.title')
+						},
+						route: '/organization/budget-categories' as RouteId
+					},
+					{
+						element: tourSelector(TourStepId.BUDGET_CATEGORIES.ADD),
+						popover: {
+							align: 'center' as const,
+							description: $t('utility.tour.steps.budget-categories-fab.description'),
+							side: 'left' as const,
+							title: $t('utility.tour.steps.budget-categories-fab.title')
+						},
+						route: '/organization/budget-categories' as RouteId
+					}
+				]
+			: []),
 		{
 			element: tourSelector(TourStepId.MEMBERS.LIST),
 			popover: {
@@ -254,16 +274,20 @@ function getAllTourSteps(): TourStep[] {
 			},
 			route: '/organization/members'
 		},
-		{
-			element: tourSelector(TourStepId.MEMBERS.INVITE),
-			popover: {
-				align: 'center',
-				description: $t('utility.tour.steps.members-fab.description'),
-				side: 'left',
-				title: $t('utility.tour.steps.members-fab.title')
-			},
-			route: '/organization/members'
-		},
+		...(isManager
+			? [
+					{
+						element: tourSelector(TourStepId.MEMBERS.INVITE),
+						popover: {
+							align: 'center' as const,
+							description: $t('utility.tour.steps.members-fab.description'),
+							side: 'left' as const,
+							title: $t('utility.tour.steps.members-fab.title')
+						},
+						route: '/organization/members' as RouteId
+					}
+				]
+			: []),
 		{
 			element: tourSelector(TourStepId.ACCOUNT.PERSONAL),
 			popover: {

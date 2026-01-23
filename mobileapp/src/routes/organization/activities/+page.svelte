@@ -126,6 +126,89 @@
 		)
 	);
 
+	const filterConfig = $derived<FilterConfig<ActivitiesFilterState>>({
+		onApply: (state) => (filterState = state),
+		searchbar: {
+			onSearch: (value) => (searchActivityValue = value),
+			placeholder: $t('routes.organization.activities.page.activities.search.placeholder')
+		},
+		sections: [
+			chipSection<TimeFilter>('timeFilter', {
+				defaultValue: 'all',
+				label: $t('routes.organization.activities.page.modal.filter.card.time-filter.label'),
+				options: [
+					{
+						label: $t('routes.organization.activities.page.modal.filter.card.time-filter.all'),
+						value: 'all'
+					},
+					{
+						label: $t('routes.organization.activities.page.modal.filter.card.time-filter.past'),
+						value: 'past'
+					},
+					{
+						label: $t('routes.organization.activities.page.modal.filter.card.time-filter.future'),
+						value: 'future'
+					}
+				]
+			}),
+			dateRangeSection('dateRange', {
+				defaultFromValue: getMinActivityDate(),
+				defaultToValue: getMaxActivityDate(),
+				label: $t('routes.organization.activities.page.modal.filter.card.date-range.label'),
+				max: getMaxActivityDate(),
+				min: getMinActivityDate()
+			}),
+			chipSection<HasPostingsFilter>('hasPostings', {
+				defaultValue: 'all',
+				label: $t('routes.organization.activities.page.modal.filter.card.has-postings.label'),
+				options: [
+					{
+						label: $t('routes.organization.activities.page.modal.filter.card.has-postings.all'),
+						value: 'all'
+					},
+					{
+						label: $t('routes.organization.activities.page.modal.filter.card.has-postings.with'),
+						value: 'with'
+					},
+					{
+						label: $t('routes.organization.activities.page.modal.filter.card.has-postings.without'),
+						value: 'without'
+					}
+				]
+			}),
+			chipSection<BalanceFilter>('balanceFilter', {
+				defaultValue: 'all',
+				label: $t('routes.organization.activities.page.modal.filter.card.balance.label'),
+				options: [
+					{
+						label: $t('routes.organization.activities.page.modal.filter.card.balance.all'),
+						value: 'all'
+					},
+					{
+						color: 'success',
+						icon: trendingUpOutline,
+						label: $t('routes.organization.activities.page.modal.filter.card.balance.positive'),
+						value: 'positive'
+					},
+					{
+						color: 'danger',
+						icon: trendingDownOutline,
+						label: $t('routes.organization.activities.page.modal.filter.card.balance.negative'),
+						value: 'negative'
+					},
+					{
+						color: 'tertiary',
+						icon: barbellOutline,
+						label: $t('routes.organization.activities.page.modal.filter.card.balance.neutral'),
+						value: 'neutral'
+					}
+				]
+			})
+		],
+		state: filterState,
+		title: $t('routes.organization.activities.page.modal.filter.card.title')
+	});
+
 	function filterActivities(
 		activities: ActivityTO[],
 		search: string,
@@ -215,89 +298,6 @@
 	function onDateSelected(date: string): void {
 		selectedDate = date;
 	}
-
-	const filterConfig = $derived<FilterConfig<ActivitiesFilterState>>({
-		onApply: (state) => (filterState = state),
-		searchbar: {
-			onSearch: (value) => (searchActivityValue = value),
-			placeholder: $t('routes.organization.activities.page.activities.search.placeholder')
-		},
-		sections: [
-			chipSection<TimeFilter>('timeFilter', {
-				defaultValue: 'all',
-				label: $t('routes.organization.activities.page.modal.filter.card.time-filter.label'),
-				options: [
-					{
-						label: $t('routes.organization.activities.page.modal.filter.card.time-filter.all'),
-						value: 'all'
-					},
-					{
-						label: $t('routes.organization.activities.page.modal.filter.card.time-filter.past'),
-						value: 'past'
-					},
-					{
-						label: $t('routes.organization.activities.page.modal.filter.card.time-filter.future'),
-						value: 'future'
-					}
-				]
-			}),
-			dateRangeSection('dateRange', {
-				defaultFromValue: getMinActivityDate(),
-				defaultToValue: getMaxActivityDate(),
-				label: $t('routes.organization.activities.page.modal.filter.card.date-range.label'),
-				max: getMaxActivityDate(),
-				min: getMinActivityDate()
-			}),
-			chipSection<HasPostingsFilter>('hasPostings', {
-				defaultValue: 'all',
-				label: $t('routes.organization.activities.page.modal.filter.card.has-postings.label'),
-				options: [
-					{
-						label: $t('routes.organization.activities.page.modal.filter.card.has-postings.all'),
-						value: 'all'
-					},
-					{
-						label: $t('routes.organization.activities.page.modal.filter.card.has-postings.with'),
-						value: 'with'
-					},
-					{
-						label: $t('routes.organization.activities.page.modal.filter.card.has-postings.without'),
-						value: 'without'
-					}
-				]
-			}),
-			chipSection<BalanceFilter>('balanceFilter', {
-				defaultValue: 'all',
-				label: $t('routes.organization.activities.page.modal.filter.card.balance.label'),
-				options: [
-					{
-						label: $t('routes.organization.activities.page.modal.filter.card.balance.all'),
-						value: 'all'
-					},
-					{
-						color: 'success',
-						icon: trendingUpOutline,
-						label: $t('routes.organization.activities.page.modal.filter.card.balance.positive'),
-						value: 'positive'
-					},
-					{
-						color: 'danger',
-						icon: trendingDownOutline,
-						label: $t('routes.organization.activities.page.modal.filter.card.balance.negative'),
-						value: 'negative'
-					},
-					{
-						color: 'tertiary',
-						icon: barbellOutline,
-						label: $t('routes.organization.activities.page.modal.filter.card.balance.neutral'),
-						value: 'neutral'
-					}
-				]
-			})
-		],
-		state: filterState,
-		title: $t('routes.organization.activities.page.modal.filter.card.title')
-	});
 </script>
 
 <Layout
