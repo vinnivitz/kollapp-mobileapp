@@ -17,6 +17,10 @@ export async function navigateBack(): Promise<void> {
 		return goto(resolve('/'));
 	}
 
+	if (history.length > 1) {
+		return history.back();
+	}
+
 	const currentPathname = page.url.pathname;
 
 	const segments = currentPathname.split('/').filter(Boolean);
