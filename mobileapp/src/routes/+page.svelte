@@ -123,7 +123,7 @@
 		clicked={onNavigateActivity}
 		titleIconEnd={arrowForwardOutline}
 	>
-		<div class="mb-3 flex flex-wrap items-center justify-center gap-5">
+		<div class="mb-3 flex flex-wrap items-center justify-center gap-5 text-sm">
 			<div class="flex items-center gap-2">
 				<ion-icon icon={flashOutline}></ion-icon>
 				<ion-text>{activity.name}</ion-text>
@@ -174,6 +174,19 @@
 				color="light"
 				clicked={() => goto(resolve('/organization/activities'))}
 			/>
+			<Button
+				icon={cardOutline}
+				label={$t('routes.page.page.organization-card.card.postings', {
+					value: $organizationStore?.budgetCategories.length ?? 0
+				})}
+				size="small"
+				fill="solid"
+				color="light"
+				clicked={async () => {
+					await goto(resolve('/organization'));
+					await triggerClickByLabel($t('routes.organization.page.budget-card.card.add-posting'));
+				}}
+			/>
 		</div>
 	</Card>
 {/snippet}
@@ -219,54 +232,25 @@
 {/snippet}
 
 {#snippet quickAccess()}
-	<div data-tour={TourStepId.HOME.QUICK_ACCESS} class="flex flex-col gap-2">
-		<div class="mx-3 flex items-center justify-center gap-2">
-			<Button
-				classList="flex-1"
-				clicked={onAddPosting}
-				expand="block"
-				shape="square"
-				fill="outline"
-				color="tertiary"
-				label={$t('routes.page.page.new-posting-button.label')}
-				icon={cashOutline}
-			/>
-			{#if isManager}
-				<Button
-					classList="flex-1"
-					clicked={onCreateActivity}
-					expand="block"
-					shape="square"
-					fill="outline"
-					color="tertiary"
-					label={$t('routes.page.page.create-activity-button.label')}
-					icon={flashOutline}
-				/>
-			{/if}
-		</div>
+	<div data-tour={TourStepId.HOME.QUICK_ACCESS} class="grid grid-cols-2">
+		<Card titleIconStart={cashOutline} classList="text-center" clicked={onAddPosting} border="tertiary">
+			<ion-text>{$t('routes.page.page.quick-access.card.add-posting')}</ion-text>
+		</Card>
+		<Card titleIconStart={flashOutline} classList="text-center" clicked={onCreateActivity} border="tertiary">
+			<ion-text>{$t('routes.page.page.quick-access.card.create-activity')}</ion-text>
+		</Card>
 		{#if isManager}
-			<div class="mx-3 flex items-center justify-center gap-2">
-				<Button
-					classList="flex-1"
-					clicked={onAddBudgetCategory}
-					expand="block"
-					shape="square"
-					fill="outline"
-					color="tertiary"
-					label={$t('routes.page.page.budget-categories-button.label')}
-					icon={cardOutline}
-				/>
-				<Button
-					classList="flex-1"
-					clicked={onAddPersonOfOrganization}
-					expand="block"
-					shape="square"
-					fill="outline"
-					color="tertiary"
-					label={$t('routes.page.page.person-of-organization-button.label')}
-					icon={personAddOutline}
-				/>
-			</div>
+			<Card titleIconStart={cardOutline} classList="text-center" clicked={onAddBudgetCategory} border="tertiary">
+				<ion-text>{$t('routes.page.page.quick-access.card.budget-categories')}</ion-text>
+			</Card>
+			<Card
+				titleIconStart={personAddOutline}
+				classList="text-center"
+				clicked={onAddPersonOfOrganization}
+				border="tertiary"
+			>
+				<ion-text>{$t('routes.page.page.quick-access.card.invite-person-of-organization')}</ion-text>
+			</Card>
 		{/if}
 	</div>
 {/snippet}

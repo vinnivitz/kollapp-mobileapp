@@ -3,64 +3,43 @@
 		ActivityTO,
 		OrganizationRole,
 		PersonOfOrganizationTO,
-		PostingCreateUpdateRequestTO,
 		PostingTO,
 		PostingType
 	} from '@kollapp/api-types';
 
 	import { TZDate } from '@date-fns/tz';
-	import { actionSheetController, loadingController } from '@ionic/core';
+	import { actionSheetController } from '@ionic/core';
 	import { format } from 'date-fns';
 	import {
 		albumsOutline,
 		cardOutline,
 		cashOutline,
-		createOutline,
-		documentOutline,
 		flashOffOutline,
 		medalOutline,
 		personCircleOutline,
 		personOutline,
 		ribbonOutline,
-		sendOutline,
 		trendingDownOutline,
 		trendingUpOutline
 	} from 'ionicons/icons';
 	import { SvelteMap } from 'svelte/reactivity';
 
-	import { createUpdatePostingSchema } from '$lib/api/schema/budget/index.js';
-	import { budgetService, organizationService } from '$lib/api/services';
+	import { organizationService } from '$lib/api/services';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Filter from '$lib/components/widgets/Filter.svelte';
-	import AmountInputItem from '$lib/components/widgets/ionic/AmountInputItem.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import Chip from '$lib/components/widgets/ionic/Chip.svelte';
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
-	import DatetimeInputItem from '$lib/components/widgets/ionic/DatetimeInputItem.svelte';
-	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
-	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
 	import PostingItem from '$lib/components/widgets/PostingItem.svelte';
 	import { t } from '$lib/locales';
 	import {
 		chipMultiSection,
 		dateRangeSection,
 		type FilterConfig,
-		Form,
-		type FormActions,
-		type ItemSlidingOption,
 		multiSelectSection,
 		type SelectItem
 	} from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';
-	import {
-		confirmationModal,
-		customForm,
-		formatter,
-		getRoleTranslationFromRole,
-		getValidationResult,
-		hasOrganizationRole,
-		parser
-	} from '$lib/utility';
+	import { confirmationModal, formatter, getRoleTranslationFromRole, hasOrganizationRole } from '$lib/utility';
 
 	type PostingsFilterState = {
 		activityIds: number[];
@@ -139,33 +118,6 @@
 			selected: true
 		}
 	]);
-
-	let postingUpdateModalOpen = $state<boolean>(false);
-	let selectedPosting = $state<PostingTO>();
-	let selectedPostingType = $state<PostingType>('DEBIT');
-	let updatePostingFormActions = $state<FormActions<PostingCreateUpdateRequestTO>>();
-
-	const updatePostingForm = new Form<PostingCreateUpdateRequestTO>({
-		completed: async ({ actions }) => {
-			await organizationStore.update($organizationStore?.id!);
-			postingUpdateModalOpen = false;
-			actions.setModel(createUpdatePostingSchema().getDefault());
-		},
-		exposedActions: (exposedActions) => (updatePostingFormActions = exposedActions),
-		formatters: { amountInCents: formatter.currency },
-		parsers: { amountInCents: parser.currency },
-		request: async (model) => {
-			const organizationId = $organizationStore?.id!;
-			const postingId = selectedPosting?.id!;
-			const activity = $organizationStore?.activities.find((activity) =>
-				activity.activityPostings.some((activityPosting) => activityPosting.id === postingId)
-			);
-			return activity
-				? budgetService.updateActivityPosting(organizationId, activity.id, postingId, model)
-				: budgetService.updateOrganizationPosting(organizationId, postingId, model);
-		},
-		schema: createUpdatePostingSchema()
-	});
 
 	const budgetCategoryFilterItems = $derived<SelectItem[]>(
 		$organizationStore?.budgetCategories.map((category) => ({
@@ -327,52 +279,8 @@
 		return map;
 	}
 
-	function isActivityPosting(postingId: number): boolean {
-		return activityByPostingId.has(postingId);
-	}
-
 	function getActivityPosting(postingId: number): ActivityTO | undefined {
 		return activityByPostingId.get(postingId);
-	}
-
-	function getPostingSlidingOptions(posting: PostingTO): ItemSlidingOption[] {
-		return [
-			{
-				color: 'primary',
-				handler: () => onOpenUpdatePostingModal(posting),
-				icon: createOutline,
-				label: $t('routes.organization.members.slug.page.item.sliding.edit')
-			},
-			{
-				color: 'tertiary',
-				handler: () => onTransferPosting(posting),
-				icon: sendOutline,
-				label: $t('routes.organization.members.slug.page.item.sliding.transfer')
-			}
-		];
-	}
-
-	function onOpenUpdatePostingModal(posting: PostingTO): void {
-		selectedPosting = posting;
-		selectedPostingType = posting.type;
-		updatePostingFormActions?.setModel(
-			createUpdatePostingSchema().cast({
-				amountInCents: posting.amountInCents,
-				date: posting.date,
-				personOfOrganizationId: posting.personOfOrganizationId ?? 0,
-				purpose: posting.purpose,
-				type: posting.type
-			}) as PostingCreateUpdateRequestTO
-		);
-		postingUpdateModalOpen = true;
-	}
-
-	function setSelectedPostingType(type: PostingType): void {
-		selectedPostingType = type;
-		updatePostingFormActions?.setModel({
-			...updatePostingForm.model,
-			type
-		});
 	}
 
 	async function onSelectRole(): Promise<void> {
@@ -429,28 +337,6 @@
 	): Promise<void> {
 		await organizationService.grantRole(organizationId, personOfOrganizationId, role);
 		await organizationStore.update(organizationId);
-	}
-
-	async function onTransferPosting(posting: PostingTO): Promise<void> {
-		await confirmationModal({
-			handler: () => transferPosting(posting),
-			header: $t('routes.organization.members.slug.page.modal.transfer-posting.header'),
-			message: $t('routes.organization.members.slug.page.modal.transfer-posting.message')
-		});
-	}
-
-	async function transferPosting(posting: PostingTO): Promise<void> {
-		const loader = await loadingController.create({});
-		await loader.present();
-		const organizationId = $organizationStore?.id!;
-		const activity = $organizationStore?.activities.find((a) => a.activityPostings.some((ap) => ap.id === posting.id));
-		const result = activity
-			? getValidationResult(await budgetService.transferActivityPosting(organizationId, activity.id, posting.id))
-			: getValidationResult(await budgetService.transferOrganizationPosting(organizationId, posting.id));
-		if (result.valid) {
-			await organizationStore.update(organizationId);
-		}
-		await loader.dismiss();
 	}
 </script>
 
@@ -529,11 +415,13 @@
 {/snippet}
 
 {#snippet postingItem(posting: PostingTO)}
+	{@const activity = getActivityPosting(posting.id)}
 	<PostingItem
 		{posting}
+		{activity}
 		budgetCategoryName={getBudgetCategoryNameById(posting.organizationBudgetCategoryId)}
-		slidingOptions={isManager ? getPostingSlidingOptions(posting) : undefined}
-		activityName={isActivityPosting(posting.id) ? getActivityPosting(posting.id)?.name : undefined}
+		canEdit={isManager}
+		canTransfer={isManager}
 	/>
 {/snippet}
 
@@ -558,33 +446,3 @@
 {/snippet}
 
 <!-- Modals -->
-
-<!-- Update Posting Modal -->
-<Modal open={postingUpdateModalOpen} dismissed={() => (postingUpdateModalOpen = false)}>
-	<Card title={$t('routes.organization.members.slug.page.modal.update-posting.title')}>
-		<form use:customForm={updatePostingForm}>
-			<div class="mb-3 flex items-center justify-center gap-2">
-				<Chip
-					selected={selectedPostingType === 'CREDIT'}
-					label={$t('routes.organization.members.slug.page.modal.update-posting.credit')}
-					clicked={() => setSelectedPostingType('CREDIT')}
-				/>
-				<Chip
-					selected={selectedPostingType === 'DEBIT'}
-					label={$t('routes.organization.members.slug.page.modal.update-posting.debit')}
-					clicked={() => setSelectedPostingType('DEBIT')}
-				/>
-			</div>
-			<InputItem
-				name="purpose"
-				label={$t('routes.organization.members.slug.page.modal.update-posting.purpose')}
-				icon={documentOutline}
-			/>
-			<AmountInputItem
-				name="amountInCents"
-				label={$t('routes.organization.members.slug.page.modal.update-posting.amount')}
-			/>
-			<DatetimeInputItem name="date" label={$t('routes.organization.members.slug.page.modal.update-posting.date')} />
-		</form>
-	</Card>
-</Modal>

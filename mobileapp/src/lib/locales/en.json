@@ -262,6 +262,38 @@
         "reset": "Reset filter",
         "apply": "Apply filter"
       }
+    },
+    "posting-item": {
+      "sliding-options": {
+        "delete": "Delete",
+        "edit": "Edit",
+        "transfer": "Settle"
+      },
+      "modal": {
+        "delete": {
+          "confirm": "Delete"
+        },
+        "transfer": {
+          "header": "Settle transaction",
+          "message": "Do you want to settle this transaction to the collective? It will no longer be assigned to the current member.",
+          "confirm": "Settle"
+        },
+        "edit": {
+          "title": "Edit transaction",
+          "credit": "Income",
+          "debit": "Expense",
+          "purpose": "Purpose",
+          "amount": "Amount",
+          "date": "Date",
+          "member": {
+            "label": "Assigned to",
+            "none-selected": "Not assigned"
+          },
+          "budget-category": {
+            "label": "Category"
+          }
+        }
+      }
     }
   },
   "stores": {
@@ -714,15 +746,9 @@
                 "confirm": "Delete event"
               },
               "delete-posting": {
-                "modal": {
-                  "confirm": "Delete transaction"
-                }
+                "modal": {}
               },
-              "transfer-posting": {
-                "confirm": "Transfer",
-                "header": "Transfer transaction?",
-                "message": "This transaction will be marked as processed and assigned to the collective."
-              },
+              "transfer-posting": {},
               "update-activity": {
                 "confirm": "Update",
                 "card": {
@@ -754,25 +780,13 @@
               },
               "update-posting": {
                 "card": {
-                  "title": "Update transaction",
                   "form": {
-                    "credit": "Income",
-                    "debit": "Expense",
-                    "purpose": "Purpose",
-                    "amount": "Amount",
-                    "date": "Date",
-                    "person-of-organization": {
-                      "label": "Assigned member",
-                      "search": "Search members..."
-                    },
-                    "budget-category": {
-                      "label": "Select category",
-                      "search": "Search categories..."
-                    }
+                    "person-of-organization": {},
+                    "budget-category": {}
                   }
                 }
               },
-              "posting-history": {
+              "posting-overview": {
                 "searchbar": "Search transactions...",
                 "no-postings": "No transactions found.",
                 "no-search-results": "No transactions found for \"{{value}}\""
@@ -819,18 +833,14 @@
             "posting-summary": {},
             "action-button": "Event actions",
             "postings-summary": {
-              "heading": "Event balance",
               "total-credit": "Total income: {{value}}",
               "total-debit": "Total expense: {{value}}",
-              "posting-history": "Transaction history",
+              "posting-overview": "Transaction overview",
               "add-posting": "Add transaction",
-              "total-postings": "Total transactions: {{value}}"
+              "total-postings": "Total transactions: {{value}}",
+              "title": "Event balance"
             },
-            "sliding-options": {
-              "delete-posting": "Delete",
-              "edit-posting": "Edit",
-              "transfer-posting": "Settle"
-            }
+            "sliding-options": {}
           }
         },
         "page": {
@@ -982,18 +992,8 @@
               }
             },
             "modal": {
-              "transfer-posting": {
-                "header": "Settle transaction",
-                "message": "This transaction will be settled and assigned to the collective."
-              },
-              "update-posting": {
-                "title": "Update transaction",
-                "credit": "Income",
-                "debit": "Expense",
-                "purpose": "Purpose",
-                "amount": "Amount",
-                "date": "Date"
-              },
+              "transfer-posting": {},
+              "update-posting": {},
               "filter": {
                 "card": {
                   "title": "Filter transactions",
@@ -1025,10 +1025,7 @@
               "not-assigned": "Not assigned"
             },
             "item": {
-              "sliding": {
-                "edit": "Edit",
-                "transfer": "Settle"
-              }
+              "sliding": {}
             }
           }
         },
@@ -1194,13 +1191,8 @@
           "select-organization": {
             "header": "Change collective"
           },
-          "delete-posting": {
-            "confirm-text": "Delete transaction"
-          },
-          "transfer-posting": {
-            "header": "Settle transaction",
-            "message": "This transaction will be settled and assigned to the collective."
-          },
+          "delete-posting": {},
+          "transfer-posting": {},
           "create-posting": {
             "credit": "Income",
             "debit": "Expense",
@@ -1222,24 +1214,11 @@
           },
           "update-posting": {
             "card": {
-              "credit": "Income",
-              "debit": "Expense",
-              "purpose": "Purpose",
-              "amount": "Amount",
-              "date": "Date",
-              "activities": {
-                "all-selected": "All events selected",
-                "select": "Assigned event",
-                "none-selected": "Not assigned"
-              },
-              "title": "Update transaction",
-              "person-of-organization": {
-                "select": "Assigned member",
-                "none-selected": "Not assigned"
-              }
+              "activities": {},
+              "person-of-organization": {}
             }
           },
-          "postings-history": {
+          "postings-overview": {
             "search": "Search transactions...",
             "no-results": "No transactions found for \"{{value}}\"",
             "no-postings": "No transactions found."
@@ -1305,11 +1284,12 @@
         },
         "budget-card": {
           "card": {
-            "collective-balance": "Collective balance",
             "total-credit": "Total income: {{value}}",
             "total-debit": "Total expense: {{value}}",
-            "postings-history": "Transaction history",
-            "add-posting": "Add transaction"
+            "postings-overview": "Transaction overview",
+            "add-posting": "Add transaction",
+            "statistics": "Statistics",
+            "title": "Collective balance"
           }
         },
         "upcoming-activity": {
@@ -1321,10 +1301,44 @@
         "collective-info": {
           "role": "You are a {{value}}"
         },
-        "sliding-options": {
-          "delete-posting": "Delete",
-          "edit-posting": "Edit",
-          "transfer-posting": "Settle"
+        "sliding-options": {}
+      },
+      "budget-statistics": {
+        "page": {
+          "title": "Finance statistics",
+          "no-postings": "No transactions available for statistics.",
+          "filter": {
+            "all": "All",
+            "3months": "3 Months",
+            "6months": "6 Months",
+            "12months": "12 Months"
+          },
+          "overview": {
+            "credit": "Total Income",
+            "debit": "Total Expenses",
+            "balance": "Balance",
+            "avg": "Ø Transaction"
+          },
+          "trend": {
+            "title": "Monthly Trend"
+          },
+          "categories": {
+            "title": "By Category"
+          },
+          "members": {
+            "title": "By Member"
+          },
+          "top-credits": {
+            "title": "Top Income"
+          },
+          "top-debits": {
+            "title": "Top Expenses"
+          },
+          "chart": {
+            "credit": "Income",
+            "debit": "Expenses"
+          },
+          "transaction-count": "{{value}} transactions in selected period"
         }
       }
     },
@@ -1365,7 +1379,8 @@
         "organization-card": {
           "card": {
             "members": "{{value}} members",
-            "activities": "{{value}} events"
+            "activities": "{{value}} events",
+            "postings": "{{value}} transactions"
           }
         },
         "no-collectives-card": {
@@ -1386,17 +1401,17 @@
             "content": "The following users want to join the organization:"
           }
         },
-        "new-posting-button": {
-          "label": "Add transaction"
-        },
-        "create-activity-button": {
-          "label": "Create event"
-        },
-        "budget-categories-button": {
-          "label": "Add budget category"
-        },
-        "person-of-organization-button": {
-          "label": "Invite member"
+        "new-posting-button": {},
+        "create-activity-button": {},
+        "budget-categories-button": {},
+        "person-of-organization-button": {},
+        "quick-access": {
+          "card": {
+            "add-posting": "Add transaction",
+            "create-activity": "Create event",
+            "budget-categories": "Add category",
+            "invite-person-of-organization": "Invite member"
+          }
         }
       }
     }

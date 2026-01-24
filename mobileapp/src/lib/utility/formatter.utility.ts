@@ -9,13 +9,14 @@ import { localeStore } from '$lib/stores';
  * Formatter for form based currency input in €
  * @returns The formatter
  */
-function currency(cents: number): string {
+function currency(cents: number, hideCents = false): string {
 	const numberFormat = new Intl.NumberFormat(get(localeStore) ?? 'de', {
 		currency: Currency.EUR,
-		maximumFractionDigits: 2,
-		minimumFractionDigits: 2,
+		maximumFractionDigits: hideCents ? 0 : 2,
+		minimumFractionDigits: hideCents ? 0 : 2,
 		style: 'currency'
 	});
+
 	return numberFormat.format(cents / 100);
 }
 

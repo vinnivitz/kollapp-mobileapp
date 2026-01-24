@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type {
 		ActivityTO,
-		OrganizationTO,
 		PersonOfOrganizationTO,
 		PostingCreateUpdateRequestTO,
 		PostingTO,
@@ -9,7 +8,7 @@
 	} from '@kollapp/api-types';
 
 	import { TZDate } from '@date-fns/tz';
-	import { actionSheetController, loadingController } from '@ionic/core';
+	import { actionSheetController } from '@ionic/core';
 	import { format } from 'date-fns';
 	import {
 		albumsOutline,
@@ -27,9 +26,8 @@
 		peopleOutline,
 		personAddOutline,
 		ribbonOutline,
-		sendOutline,
+		statsChartOutline,
 		swapHorizontalOutline,
-		trashBinOutline,
 		trendingDownOutline,
 		trendingUpOutline,
 		warningOutline
@@ -61,18 +59,15 @@
 		type FilterConfig,
 		Form,
 		type FormActions,
-		type ItemSlidingOption,
 		multiSelectSection,
 		type SelectItem,
 		TourStepId
 	} from '$lib/models/ui';
 	import { organizationStore, userStore } from '$lib/stores';
 	import {
-		confirmationModal,
 		customForm,
 		formatter,
 		getRoleTranslationFromRole,
-		getValidationResult,
 		hasOrganizationRole,
 		parser,
 		triggerClickByLabel
@@ -118,19 +113,14 @@
 	);
 	const isManager = $derived(hasOrganizationRole('ROLE_ORGANIZATION_MANAGER'));
 	let createPostingFormActions = $state<FormActions<PostingFormModel>>();
-	let updatePostingFormActions = $state<FormActions<PostingFormModel>>();
 
 	let postingCreateModalOpen = $state<boolean>(false);
-	let postingUpdateModalOpen = $state<boolean>(false);
 	let postingsHistoryModalOpen = $state<boolean>(false);
 
 	let filteredPostings = $state<PostingTO[]>([]);
 	let postingsSearchValue = $state<string>('');
 	let previousPostingsCount = $state<number>(0);
 
-	let isAssignedToPersonOfOrganization = $state<boolean>(false);
-
-	let selectedPosting = $state<PostingTO>();
 	let selectedPostingType = $state<PostingType>('DEBIT');
 	let descriptionExpanded = $state<boolean>(false);
 
@@ -180,13 +170,6 @@
 			selected: false
 		}
 	]);
-
-	const personOfOrganizationUpdateItems = $derived<SelectItem[]>(
-		$organizationStore?.personsOfOrganization.map((person: PersonOfOrganizationTO) => ({
-			data: { id: person.id, label: person.username },
-			selected: false
-		})) ?? []
-	);
 
 	const personOfOrganizationFilterItems = $derived<SelectItem[]>([
 		...($organizationStore?.personsOfOrganization.map((person: PersonOfOrganizationTO) => ({
@@ -252,40 +235,11 @@
 		schema: postingFormSchema
 	});
 
-	const updatePostingForm = new Form<PostingFormModel>({
-		completed: async ({ actions }) => {
-			await organizationStore.update($organizationStore?.id!);
-			postingUpdateModalOpen = false;
-			actions.setModel(postingFormSchema.getDefault());
-		},
-		exposedActions: (exposedActions) => (updatePostingFormActions = exposedActions),
-		formatters: { amountInCents: formatter.currency },
-		parsers: { amountInCents: parser.currency },
-		request: async (model) => {
-			const { activityId, ...postingModel } = model;
-			const organizationId = $organizationStore?.id!;
-			const postingId = selectedPosting?.id!;
-			return activityId > 0
-				? budgetService.updateActivityPosting(
-						organizationId,
-						activityId,
-						postingId,
-						postingModel as PostingCreateUpdateRequestTO
-					)
-				: budgetService.updateOrganizationPosting(
-						organizationId,
-						postingId,
-						postingModel as PostingCreateUpdateRequestTO
-					);
-		},
-		schema: postingFormSchema
-	});
-
 	const postingsFilterConfig = $derived<FilterConfig<PostingsFilterState>>({
 		onApply: (state) => (filterState = state),
 		searchbar: {
 			onSearch: (value) => (postingsSearchValue = value),
-			placeholder: $t('routes.organization.page.modal.postings-history.search')
+			placeholder: $t('routes.organization.page.modal.postings-overview.search')
 		},
 		sections: [
 			chipMultiSection<PostingType>('postingTypes', {
@@ -373,10 +327,6 @@
 		return map;
 	}
 
-	function isActivityPosting(postingId: number): boolean {
-		return activityByPostingId.has(postingId);
-	}
-
 	function getMinPostingDate(postings: PostingTO[]): string {
 		return postings.length > 0
 			? new TZDate(Math.min(...postings.map((posting) => new TZDate(posting.date).getTime()))).toISOString()
@@ -387,34 +337,6 @@
 		return postings.length > 0
 			? new TZDate(Math.max(...postings.map((posting) => new TZDate(posting.date).getTime()))).toISOString()
 			: new TZDate().toISOString();
-	}
-
-	function getPostingItemSlidingOptions(posting: PostingTO): ItemSlidingOption[] {
-		const options: ItemSlidingOption[] = [
-			{
-				color: 'danger',
-				handler: () => onDeletePosting(posting.id),
-				icon: trashBinOutline,
-				label: $t('routes.organization.page.sliding-options.delete-posting')
-			},
-			{
-				color: 'primary',
-				handler: () => onOpenUpdatePostingModal(posting),
-				icon: createOutline,
-				label: $t('routes.organization.page.sliding-options.edit-posting')
-			}
-		];
-
-		if (isManager && posting.personOfOrganizationId > 0) {
-			options.push({
-				color: 'tertiary',
-				handler: () => onTransferPosting(posting),
-				icon: sendOutline,
-				label: $t('routes.organization.page.sliding-options.transfer-posting')
-			});
-		}
-
-		return options;
 	}
 
 	function setSelectedPostingType(
@@ -534,67 +456,6 @@
 			: $t('routes.organization.page.posting-translation.cedit');
 	}
 
-	async function onDeletePosting(postingId: number): Promise<void> {
-		await confirmationModal({
-			confirmText: $t('routes.organization.page.modal.delete-posting.confirm-text'),
-			handler: () => deletePosting(postingId)
-		});
-	}
-
-	async function deletePosting(postingId: number): Promise<void> {
-		const loader = await loadingController.create({});
-		await loader.present();
-		const organizationId = $organizationStore?.id!;
-		const activity = activityByPostingId.get(postingId);
-		const result = activity
-			? getValidationResult(await budgetService.removeActivityPosting(organizationId, activity.id, postingId))
-			: getValidationResult(await budgetService.removeOrganizationPosting(organizationId, postingId));
-		if (result.valid) {
-			await organizationStore.update(organizationId);
-		}
-		await loader.dismiss();
-	}
-
-	async function onTransferPosting(posting: PostingTO): Promise<void> {
-		await confirmationModal({
-			handler: () => transferPosting(posting.id),
-			header: $t('routes.organization.page.modal.transfer-posting.header'),
-			message: $t('routes.organization.page.modal.transfer-posting.message')
-		});
-	}
-
-	async function transferPosting(postingId: number): Promise<void> {
-		const loader = await loadingController.create({});
-		await loader.present();
-		const organizationId = $organizationStore?.id!;
-		const activity = activityByPostingId.get(postingId);
-		const result = activity
-			? getValidationResult(await budgetService.transferActivityPosting(organizationId, activity.id, postingId))
-			: getValidationResult(await budgetService.transferOrganizationPosting(organizationId, postingId));
-		if (result.valid) {
-			await organizationStore.update(organizationId);
-		}
-		await loader.dismiss();
-	}
-
-	function onOpenUpdatePostingModal(posting: PostingTO): void {
-		selectedPosting = posting;
-		selectedPostingType = posting.type;
-		const activityId = activityByPostingId.get(posting.id)?.id ?? 0;
-		updatePostingFormActions?.setModel(
-			postingFormSchema.cast({
-				activityId,
-				amountInCents: posting.amountInCents,
-				date: posting.date,
-				personOfOrganizationId: posting.personOfOrganizationId ?? 0,
-				purpose: posting.purpose,
-				type: posting.type
-			}) as PostingFormModel
-		);
-		isAssignedToPersonOfOrganization = posting.personOfOrganizationId !== 0;
-		postingUpdateModalOpen = true;
-	}
-
 	function getActivityPosting(postingId: number): ActivityTO | undefined {
 		return activityByPostingId.get(postingId);
 	}
@@ -614,7 +475,7 @@
 
 <Layout title={$t('routes.organization.page.title')}>
 	{#if $organizationStore}
-		{@render collectiveName($organizationStore)}
+		{@render collectiveName()}
 		{@render collectiveInfo()}
 		{@render budgetCard()}
 		{@render activityList()}
@@ -660,9 +521,9 @@
 	</ion-list>
 {/snippet}
 
-{#snippet collectiveName(model: OrganizationTO)}
+{#snippet collectiveName()}
 	<div class="flex items-center justify-center gap-4 text-2xl">
-		<ion-text class="font-bold">{model.name}</ion-text>
+		<ion-text class="font-bold">{$organizationStore?.name}</ion-text>
 		{#if $organizations.length > 1}
 			<Button fill="outline" clicked={onOrganizationSelect} icon={swapHorizontalOutline} />
 		{/if}
@@ -671,6 +532,7 @@
 
 {#snippet collectiveInfo()}
 	<Card
+		border="primary"
 		tourId={TourStepId.ORGANIZATION.INFO}
 		classList="text-center cursor-pointer"
 		clicked={organizationDescriptionNoteTruncated ? () => (descriptionExpanded = !descriptionExpanded) : undefined}
@@ -763,14 +625,13 @@
 {/snippet}
 
 {#snippet budgetCard()}
-	<Card tourId={TourStepId.ORGANIZATION.BUDGET}>
+	<Card
+		border="secondary"
+		tourId={TourStepId.ORGANIZATION.BUDGET}
+		titleIconStart={cardOutline}
+		title={$t('routes.organization.page.budget-card.card.title')}
+	>
 		<div class="flex flex-col items-center justify-center gap-2">
-			<div class="flex items-center justify-center gap-2">
-				<ion-icon icon={cardOutline} class="text-xl"></ion-icon>
-				<ion-text class="text-lg font-bold">
-					{$t('routes.organization.page.budget-card.card.collective-balance')}
-				</ion-text>
-			</div>
 			<ion-text class="text-xl font-bold">{balance?.balance}</ion-text>
 			<div class="flex items-center justify-center gap-2">
 				<ion-icon color="success" icon={trendingUpOutline}></ion-icon>
@@ -799,19 +660,32 @@
 				icon={listOutline}
 				expand="block"
 				fill="outline"
-				label={$t('routes.organization.page.budget-card.card.postings-history')}
+				label={$t('routes.organization.page.budget-card.card.postings-overview')}
 				clicked={() => (postingsHistoryModalOpen = true)}
+			/>
+			<Button
+				indexed="/organization/budget-statistics"
+				icon={statsChartOutline}
+				expand="block"
+				fill="outline"
+				label={$t('routes.organization.page.budget-card.card.statistics')}
+				clicked={() => goto(resolve('/organization/budget-statistics'))}
 			/>
 		</div>
 	</Card>
 {/snippet}
 
 {#snippet postingItem(posting: PostingTO)}
+	{@const canEdit = canEditPosting(posting.personOfOrganizationId)}
+	{@const activity = getActivityPosting(posting.id)}
 	<PostingItem
 		{posting}
-		slidingOptions={canEditPosting(posting.personOfOrganizationId) ? getPostingItemSlidingOptions(posting) : undefined}
-		activityName={isActivityPosting(posting.id) ? getActivityPosting(posting.id)?.name : undefined}
+		{activity}
 		budgetCategoryName={getBudgetCategoryNameById(posting.organizationBudgetCategoryId)}
+		canDelete={canEdit}
+		{canEdit}
+		canTransfer={isManager && posting.personOfOrganizationId > 0}
+		showMemberSelect={isManager}
 		username={posting.personOfOrganizationId > 0
 			? getUsernameByPersonOfOrganizationId(posting.personOfOrganizationId)
 			: undefined}
@@ -874,51 +748,6 @@
 	</Card>
 </Modal>
 
-<!-- Update Posting Modal -->
-<Modal open={postingUpdateModalOpen} dismissed={() => (postingUpdateModalOpen = false)}>
-	<Card title={$t('routes.organization.page.modal.update-posting.card.title')}>
-		<form use:customForm={updatePostingForm}>
-			<div class="mb-3 flex items-center justify-center gap-2">
-				<Chip
-					selected={selectedPostingType === 'CREDIT'}
-					label={$t('routes.organization.page.modal.update-posting.card.credit')}
-					clicked={() => setSelectedPostingType('CREDIT', updatePostingForm.model, updatePostingFormActions)}
-				/>
-				<Chip
-					selected={selectedPostingType === 'DEBIT'}
-					label={$t('routes.organization.page.modal.update-posting.card.debit')}
-					clicked={() => setSelectedPostingType('DEBIT', updatePostingForm.model, updatePostingFormActions)}
-				/>
-			</div>
-			<InputItem
-				name="purpose"
-				label={$t('routes.organization.page.modal.update-posting.card.purpose')}
-				icon={documentOutline}
-			/>
-			<AmountInputItem name="amountInCents" label={$t('routes.organization.page.modal.update-posting.card.amount')} />
-			<DatetimeInputItem name="date" label={$t('routes.organization.page.modal.update-posting.card.date')} />
-			<MultiSelectItem
-				hidden={!isManager || !isAssignedToPersonOfOrganization}
-				name="personOfOrganizationId"
-				icon={peopleOutline}
-				multiple={false}
-				label={$t('routes.organization.page.modal.update-posting.card.person-of-organization.select')}
-				noneSelectedText={$t('routes.organization.page.modal.update-posting.card.person-of-organization.none-selected')}
-				items={personOfOrganizationUpdateItems}
-			/>
-			<MultiSelectItem
-				readonly
-				name="activityId"
-				allSelectedText={$t('routes.organization.page.modal.update-posting.card.activities.all-selected')}
-				icon={flashOutline}
-				noneSelectedText={$t('routes.organization.page.modal.update-posting.card.activities.none-selected')}
-				label={$t('routes.organization.page.modal.update-posting.card.activities.select')}
-				items={activitySelectItems}
-			/>
-		</form>
-	</Card>
-</Modal>
-
 <!-- Postings History Modal -->
 <Modal
 	open={postingsHistoryModalOpen}
@@ -935,9 +764,9 @@
 			<div class="mt-3 flex flex-col items-center justify-center gap-2 text-center">
 				<ion-note>
 					{#if postingsSearchValue.trim() === ''}
-						{$t('routes.organization.page.modal.postings-history.no-postings')}
+						{$t('routes.organization.page.modal.postings-overview.no-postings')}
 					{:else}
-						{$t('routes.organization.page.modal.postings-history.no-results', {
+						{$t('routes.organization.page.modal.postings-overview.no-results', {
 							value: postingsSearchValue.trim()
 						})}
 					{/if}

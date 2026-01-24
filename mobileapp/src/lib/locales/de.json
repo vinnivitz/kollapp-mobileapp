@@ -447,16 +447,10 @@
                 "confirm": "Veranstaltung löschen"
               },
               "delete-posting": {
-                "modal": {
-                  "confirm": "Buchung löschen"
-                }
+                "modal": {}
               },
-              "transfer-posting": {
-                "confirm": "Übertragen",
-                "header": "Buchung übertragen?",
-                "message": "Diese Buchung wird als verarbeitet markiert und dem Kollektiv zugewiesen."
-              },
-              "posting-history": {
+              "transfer-posting": {},
+              "posting-overview": {
                 "no-postings": "Keine Buchungen gefunden.",
                 "searchbar": "Buchungen suchen...",
                 "no-search-results": "Keine Buchungen für „{{value}}“ gefunden"
@@ -475,37 +469,22 @@
               "update-posting": {
                 "card": {
                   "form": {
-                    "amount": "Betrag",
-                    "credit": "Einnahme",
-                    "date": "Datum",
-                    "debit": "Ausgabe",
-                    "purpose": "Zweck",
-                    "person-of-organization": {
-                      "label": "Zugewiesenes Mitglied",
-                      "search": "Mitglieder suchen..."
-                    },
-                    "budget-category": {
-                      "label": "Kategorie auswählen"
-                    }
-                  },
-                  "title": "Buchung aktualisieren"
+                    "person-of-organization": {},
+                    "budget-category": {}
+                  }
                 }
               }
             },
             "postings-summary": {
-              "heading": "Veranstaltungsbilanz",
               "total-credit": "Gesamteinnahmen: {{value}}",
               "total-debit": "Gesamtausgaben: {{value}}",
-              "posting-history": "Buchungsverlauf",
+              "posting-overview": "Buchungsübersicht",
               "add-posting": "Buchung hinzufügen",
-              "total-postings": "Gesamtbuchungen: {{value}}"
+              "total-postings": "Gesamtbuchungen: {{value}}",
+              "title": "Veranstaltungsbilanz"
             },
             "title": "Veranstaltungsdetails",
-            "sliding-options": {
-              "delete-posting": "Löschen",
-              "edit-posting": "Bearbeiten",
-              "transfer-posting": "Abrechnen"
-            }
+            "sliding-options": {}
           }
         }
       },
@@ -588,18 +567,8 @@
               }
             },
             "modal": {
-              "transfer-posting": {
-                "header": "Buchung abrechnen",
-                "message": "Diese Buchung wird abgerechnet und dem Kollektiv zugeordnet."
-              },
-              "update-posting": {
-                "title": "Buchung aktualisieren",
-                "credit": "Einnahme",
-                "debit": "Ausgabe",
-                "purpose": "Zweck",
-                "amount": "Betrag",
-                "date": "Datum"
-              },
+              "transfer-posting": {},
+              "update-posting": {},
               "filter": {
                 "card": {
                   "title": "Buchungen filtern",
@@ -631,10 +600,7 @@
               "not-assigned": "Nicht zugewiesen"
             },
             "item": {
-              "sliding": {
-                "edit": "Bearbeiten",
-                "transfer": "Abrechnen"
-              }
+              "sliding": {}
             }
           }
         },
@@ -768,11 +734,12 @@
         },
         "budget-card": {
           "card": {
-            "collective-balance": "Kollektivbilanz",
-            "postings-history": "Buchungsverlauf",
+            "postings-overview": "Buchungsübersicht",
             "total-credit": "Gesamteinnahmen: {{value}}",
             "total-debit": "Gesamtausgaben: {{value}}",
-            "add-posting": "Buchung hinzufügen"
+            "add-posting": "Buchung hinzufügen",
+            "statistics": "Statistik",
+            "title": "Kollektivbilanz"
           }
         },
         "collective-list": {
@@ -819,13 +786,8 @@
               "search": "Kategorien durchsuchen..."
             }
           },
-          "delete-posting": {
-            "confirm-text": "Buchung löschen"
-          },
-          "transfer-posting": {
-            "header": "Buchung abrechnen",
-            "message": "Diese Buchung wird abgerechnet und dem Kollektiv zugeordnet."
-          },
+          "delete-posting": {},
+          "transfer-posting": {},
           "postings-filter": {
             "card": {
               "budget-category": {
@@ -852,7 +814,7 @@
               "date-range": "Zeitraum"
             }
           },
-          "postings-history": {
+          "postings-overview": {
             "search": "Buchungen suchen...",
             "no-results": "Keine Buchungen für „{{value}}“ gefunden",
             "no-postings": "Keine Buchungen gefunden."
@@ -862,21 +824,8 @@
           },
           "update-posting": {
             "card": {
-              "activities": {
-                "all-selected": "Alle Veranstaltungen ausgewählt",
-                "select": "Zugewiesene Veranstaltung",
-                "none-selected": "Nicht zugewiesen"
-              },
-              "amount": "Betrag",
-              "credit": "Einnahme",
-              "date": "Datum",
-              "debit": "Ausgabe",
-              "purpose": "Zweck",
-              "title": "Buchung aktualisieren",
-              "person-of-organization": {
-                "select": "Zugewiesenes Mitglied",
-                "none-selected": "Nicht zugewiesen"
-              }
+              "activities": {},
+              "person-of-organization": {}
             }
           }
         },
@@ -897,11 +846,7 @@
         "collective-info": {
           "role": "Du bist ein {{value}}"
         },
-        "sliding-options": {
-          "edit-posting": "Bearbeiten",
-          "delete-posting": "Löschen",
-          "transfer-posting": "Abrechnen"
-        }
+        "sliding-options": {}
       },
       "register": {
         "page": {
@@ -930,6 +875,44 @@
           },
           "title": "Kollektivinformationen"
         }
+      },
+      "budget-statistics": {
+        "page": {
+          "title": "Finanzstatistik",
+          "no-postings": "Keine Buchungen für Statistiken vorhanden.",
+          "filter": {
+            "all": "Alle",
+            "3months": "3 Monate",
+            "6months": "6 Monate",
+            "12months": "12 Monate"
+          },
+          "overview": {
+            "credit": "Gesamteinnahmen",
+            "debit": "Gesamtausgaben",
+            "balance": "Saldo",
+            "avg": "Ø Buchung"
+          },
+          "trend": {
+            "title": "Monatlicher Verlauf"
+          },
+          "categories": {
+            "title": "Nach Kategorie"
+          },
+          "members": {
+            "title": "Nach Mitglied"
+          },
+          "top-credits": {
+            "title": "Top Einnahmen"
+          },
+          "top-debits": {
+            "title": "Top Ausgaben"
+          },
+          "chart": {
+            "credit": "Einnahmen",
+            "debit": "Ausgaben"
+          },
+          "transaction-count": "{{value}} Buchungen im gewählten Zeitraum"
+        }
       }
     },
     "page": {
@@ -950,7 +933,8 @@
         "organization-card": {
           "card": {
             "activities": "{{value}} Veranstaltungen",
-            "members": "{{value}} Mitglieder"
+            "members": "{{value}} Mitglieder",
+            "postings": "{{value}} Buchungen"
           }
         },
         "pending-organization-join-request-card": {
@@ -970,17 +954,17 @@
             "content": "Die folgenden Benutzer möchten dem Kollektiv beitreten:"
           }
         },
-        "new-posting-button": {
-          "label": "Buchung anlegen"
-        },
-        "create-activity-button": {
-          "label": "Veranstaltung erstellen"
-        },
-        "budget-categories-button": {
-          "label": "Budget-Kategorie hinzufügen"
-        },
-        "person-of-organization-button": {
-          "label": "Mitglied einladen"
+        "new-posting-button": {},
+        "create-activity-button": {},
+        "budget-categories-button": {},
+        "person-of-organization-button": {},
+        "quick-access": {
+          "card": {
+            "add-posting": "Buchung hinzufügen",
+            "create-activity": "Veranstaltung erstellen",
+            "budget-categories": "Kategorie hinzufügen",
+            "invite-person-of-organization": "Mitglied einladen"
+          }
         }
       }
     }
@@ -1180,7 +1164,7 @@
       "header": {
         "toolbar": {
           "searchbar": {
-            "placeholder": "Durchsuche die App..."
+            "placeholder": "App durchsuchen..."
           }
         }
       },
@@ -1247,6 +1231,38 @@
         "reset-filters": "Filter zurücksetzen",
         "reset": "Filter zurücksetzen",
         "apply": "Filter anwenden"
+      }
+    },
+    "posting-item": {
+      "sliding-options": {
+        "delete": "Löschen",
+        "edit": "Bearbeiten",
+        "transfer": "Abrechnen"
+      },
+      "modal": {
+        "delete": {
+          "confirm": "Löschen"
+        },
+        "transfer": {
+          "header": "Buchung abrechnen",
+          "message": "Möchtest du diese Buchung mit dem Kollektiv verrechnen? Sie wird dann nicht mehr dem aktuellen Mitglied zugeordnet sein.",
+          "confirm": "Abrechnen"
+        },
+        "edit": {
+          "title": "Buchung bearbeiten",
+          "credit": "Einnahme",
+          "debit": "Ausgabe",
+          "purpose": "Verwendungszweck",
+          "amount": "Betrag",
+          "date": "Datum",
+          "member": {
+            "label": "Zugewiesen an",
+            "none-selected": "Nicht zugewiesen"
+          },
+          "budget-category": {
+            "label": "Kategorie"
+          }
+        }
       }
     }
   },

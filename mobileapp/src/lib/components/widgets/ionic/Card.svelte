@@ -72,7 +72,7 @@
 {#snippet content()}
 	{#if title || subtitle || titleIconStart || titleIconEnd}
 		<ion-card-header>
-			<ion-card-title class="flex items-center justify-center gap-2 text-center text-2xl">
+			<ion-card-title class="flex items-center justify-center gap-2 text-center text-xl">
 				{#if titleIconStart}
 					<ion-icon icon={titleIconStart}></ion-icon>
 				{/if}

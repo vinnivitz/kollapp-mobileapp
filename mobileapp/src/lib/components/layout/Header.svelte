@@ -41,7 +41,7 @@
 
 <ion-header>
 	<ion-toolbar>
-		<ion-title>{title}</ion-title>
+		<ion-title class="text-center">{title}</ion-title>
 		<ion-buttons slot="start">
 			<ion-button
 				role="button"
