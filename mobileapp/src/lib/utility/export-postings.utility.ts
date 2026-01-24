@@ -15,12 +15,13 @@ import { documentOutline, downloadOutline, listOutline, mailOutline, shareOutlin
 import { jsPDF } from 'jspdf';
 import { get } from 'svelte/store';
 
+import { dev } from '$app/environment';
+
 import { showAlert } from './alert.utility';
 import { formatter } from './formatter.utility';
 
 import { t } from '$lib/locales';
 import { AlertType } from '$lib/models/ui';
-import { dev } from '$app/environment';
 
 /**
  * Handles the export postings action by showing an action sheet to choose the format
