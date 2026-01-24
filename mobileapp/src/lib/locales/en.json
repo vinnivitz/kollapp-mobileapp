@@ -423,7 +423,33 @@
       "postings": "transactions",
       "organization": "Collective: {{value}}",
       "activity": "Event",
-      "no-activity": "Not assigned"
+      "no-activity": "Not assigned",
+      "activity-title": "Event: {{value}}",
+      "activity-date": "Date of event: {{value}}",
+      "member-name": "Member: {{value}}"
+    },
+    "export-postings": {
+      "modal": {
+        "pdf": "Export as PDF",
+        "csv": "Export as CSV",
+        "header": "Export transactions",
+        "action-header": "What would you like to do?",
+        "download": "Download",
+        "share": "Share",
+        "email": "Send via email"
+      },
+      "share": {
+        "error": "Sharing is not supported on this device."
+      },
+      "email": {
+        "error": "No email account found.",
+        "unsupported": "Email is not supported on this device.",
+        "body": "Please find attached the transaction overview for {{value}}."
+      },
+      "download": {
+        "success": "File saved: {{value}}",
+        "error": "Could not save the file."
+      }
     }
   },
   "routes": {
@@ -1266,9 +1292,7 @@
             "no-results": "No transactions found for \"{{value}}\"",
             "no-postings": "No transactions found.",
             "export": {
-              "title": "Transaction overview",
-              "csv": "Export as CSV",
-              "pdf": "Export as PDF"
+              "title": "Transaction overview"
             }
           },
           "postings-filter": {
@@ -1420,7 +1444,7 @@
           "label": "Create event"
         },
         "budget-categories-button": {
-          "label": "Add budget category"
+          "label": "Add category"
         },
         "person-of-organization-button": {
           "label": "Invite member"

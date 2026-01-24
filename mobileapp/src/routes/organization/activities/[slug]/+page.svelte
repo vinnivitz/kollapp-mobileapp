@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ExportPostingsConfig, ExportPostingsFormat } from '$lib/models/export-postings';
+	import type { ExportPostingsConfig } from '$lib/models/export-postings';
 	import type { PageData } from './$types';
 	import type {
 		ActivityUpdateRequestTO,
@@ -11,7 +11,7 @@
 	import { AppLauncher } from '@capacitor/app-launcher';
 	import { TZDate } from '@date-fns/tz';
 	import { CapacitorCalendar } from '@ebarooni/capacitor-calendar';
-	import { actionSheetController, isPlatform, loadingController } from '@ionic/core';
+	import { isPlatform, loadingController } from '@ionic/core';
 	import { addDays, format, formatDistanceToNow } from 'date-fns';
 	import {
 		addOutline,
@@ -556,26 +556,7 @@
 		return isManager || currentPersonOfOrganizationId === personOfOrganizationId;
 	}
 
-	async function onExportPostings(): Promise<void> {
-		const actionSheet = await actionSheetController.create({
-			buttons: [
-				{
-					handler: () => handleExportPostings('pdf'),
-					icon: documentOutline,
-					text: $t('routes.organization.page.modal.postings-history.export.pdf')
-				},
-				{
-					handler: () => handleExportPostings('csv'),
-					icon: listOutline,
-					text: $t('routes.organization.page.modal.postings-history.export.csv')
-				}
-			],
-			header: $t('routes.organization.page.modal.postings-history.export.title')
-		});
-		await actionSheet.present();
-	}
-
-	function handleExportPostings(format: ExportPostingsFormat): void {
+	function onExportPostings(): void {
 		if (!$organizationStore) return;
 
 		const config: ExportPostingsConfig = {
@@ -588,7 +569,7 @@
 			title: $t('routes.organization.activities.slug.page.postings-summary.export.title')
 		};
 
-		exportPostings(filteredPostings, config, format);
+		exportPostings(filteredPostings, config);
 	}
 </script>
 
@@ -864,7 +845,7 @@
 				<div class="flex-1">
 					<Filter config={postingsFilterConfig} />
 				</div>
-				<Button color="tertiary" icon={downloadOutline} clicked={() => onExportPostings()}></Button>
+				<Button color="tertiary" icon={downloadOutline} clicked={onExportPostings}></Button>
 			</div>
 		</div>
 		{#if filteredPostings.length === 0}

@@ -26,6 +26,9 @@ importers:
       '@capacitor/device':
         specifier: ^7.0.2
         version: 7.0.2(@capacitor/core@7.4.4)
+      '@capacitor/filesystem':
+        specifier: ^8.1.0
+        version: 8.1.0(@capacitor/core@7.4.4)
       '@capacitor/haptics':
         specifier: ^7.0.2
         version: 7.0.2(@capacitor/core@7.4.4)
@@ -370,6 +373,11 @@ packages:
     peerDependencies:
       '@capacitor/core': '>=7.0.0'
 
+  '@capacitor/filesystem@8.1.0':
+    resolution: {integrity: sha512-AfawIxQ8xBmKsEn/vEpgurGQB9+hFXRtwEiCXR+SSS0MkTw4bJrvLGnloZ/PblegYefvnay1q079Yz3PQ6y1dA==}
+    peerDependencies:
+      '@capacitor/core': '>=8.0.0'
+
   '@capacitor/haptics@7.0.2':
     resolution: {integrity: sha512-vqfeEM6s2zMgLjpITCTUIy7P/hadq/Gr5E/RClFgMJPB41Y5FsqOKD+j85/uwh8N2cf/aWaPeXUmjnTzJbEB2g==}
     peerDependencies:
@@ -399,6 +407,9 @@ packages:
     resolution: {integrity: sha512-coAw2de3rRX0EfneK0/D9IZaDAUOtsPaE9ZNbSdCs2UtmXp0hdcr5Tsil01Kve707nQfLsd03pmvaesJYD60EA==}
     peerDependencies:
       '@capacitor/core': '>=7.0.0'
+
+  '@capacitor/synapse@1.0.4':
+    resolution: {integrity: sha512-/C1FUo8/OkKuAT4nCIu/34ny9siNHr9qtFezu4kxm6GY1wNFxrCFWjfYx5C1tUhVGz3fxBABegupkpjXvjCHrw==}
 
   '@capgo/capacitor-native-biometric@7.5.1':
     resolution: {integrity: sha512-RPxJFCflRQI9r5QX+BnzGb9zTaJ2tGd9tMpVbTUDI/R5Hyr4C0q+FQCgaNNmPkVonKFGREdkMBTxhzbKlNDPKQ==}
@@ -5944,6 +5955,11 @@ snapshots:
     dependencies:
       '@capacitor/core': 7.4.4
 
+  '@capacitor/filesystem@8.1.0(@capacitor/core@7.4.4)':
+    dependencies:
+      '@capacitor/core': 7.4.4
+      '@capacitor/synapse': 1.0.4
+
   '@capacitor/haptics@7.0.2(@capacitor/core@7.4.4)':
     dependencies:
       '@capacitor/core': 7.4.4
@@ -5967,6 +5983,8 @@ snapshots:
   '@capacitor/splash-screen@7.0.3(@capacitor/core@7.4.4)':
     dependencies:
       '@capacitor/core': 7.4.4
+
+  '@capacitor/synapse@1.0.4': {}
 
   '@capgo/capacitor-native-biometric@7.5.1(@capacitor/core@7.4.4)':
     dependencies:

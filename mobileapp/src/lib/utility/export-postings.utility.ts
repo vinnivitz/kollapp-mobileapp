@@ -1,4 +1,4 @@
-import type { ExportPostingsConfig, ExportPostingsFormat } from '$lib/models/export-postings';
+import type { ExportPostingsConfig } from '$lib/models/export-postings';
 import type {
 	ActivityTO,
 	OrganizationBudgetCategoryResponseTO,
@@ -6,22 +6,201 @@ import type {
 	PostingTO
 } from '@kollapp/api-types';
 
+import { Directory, Filesystem } from '@capacitor/filesystem';
+import { Share } from '@capacitor/share';
 import { TZDate } from '@date-fns/tz';
-import { saveAs } from 'file-saver';
+import { actionSheetController } from '@ionic/core';
+import { EmailComposer } from 'capacitor-email-composer';
+import { documentOutline, downloadOutline, listOutline, mailOutline, shareOutline } from 'ionicons/icons';
 import { jsPDF } from 'jspdf';
 import { get } from 'svelte/store';
 
+import { showAlert } from './alert.utility';
 import { formatter } from './formatter.utility';
 
 import { t } from '$lib/locales';
+import { AlertType } from '$lib/models/ui';
+import { dev } from '$app/environment';
 
 /**
- * Generates CSV content from postings
- * @param postings The postings to include in the CSV
+ * Handles the export postings action by showing an action sheet to choose the format
+ * and triggering the download
+ * @param postings The postings to export
  * @param config The export configuration
- * @returns {string} The generated CSV content
+ * @return {Promise<void>} A promise that resolves when the action is complete
  */
-export function generateCSV(postings: PostingTO[], config: ExportPostingsConfig): string {
+export async function exportPostings(postings: PostingTO[], config: ExportPostingsConfig): Promise<void> {
+	const $t = get(t);
+
+	const actionSheet = await actionSheetController.create({
+		buttons: [
+			{
+				handler: () => showExportActionSheet(postings, config, 'pdf'),
+				icon: documentOutline,
+				text: $t('utility.export-postings.modal.pdf')
+			},
+			{
+				handler: () => showExportActionSheet(postings, config, 'csv'),
+				icon: listOutline,
+				text: $t('utility.export-postings.modal.csv')
+			}
+		],
+		header: $t('utility.export-postings.modal.header')
+	});
+	await actionSheet.present();
+}
+
+async function showExportActionSheet(
+	postings: PostingTO[],
+	config: ExportPostingsConfig,
+	format: 'csv' | 'pdf'
+): Promise<void> {
+	const $t = get(t);
+
+	const actionSheet = await actionSheetController.create({
+		buttons: [
+			{
+				handler: () => downloadFile(postings, config, format),
+				icon: downloadOutline,
+				text: $t('utility.export-postings.modal.download')
+			},
+			{
+				handler: () => shareFile(postings, config, format),
+				icon: shareOutline,
+				text: $t('utility.export-postings.modal.share')
+			},
+			{
+				handler: () => sendEmail(postings, config, format),
+				icon: mailOutline,
+				text: $t('utility.export-postings.modal.email')
+			}
+		],
+		header: $t('utility.export-postings.modal.action-header')
+	});
+	await actionSheet.present();
+}
+
+async function shareFile(postings: PostingTO[], config: ExportPostingsConfig, format: 'csv' | 'pdf'): Promise<void> {
+	const $t = get(t);
+	const result = await Share.canShare();
+
+	if (!result.value) {
+		await showAlert($t('utility.export-postings.share.error'));
+		return;
+	}
+
+	try {
+		const filename = generateFilename(config.organizationName, format);
+		const base64 = format === 'pdf' ? generatePDFBase64(postings, config) : generateCSVBase64(postings, config);
+
+		const writeResult = await Filesystem.writeFile({
+			data: base64,
+			directory: Directory.Cache,
+			path: filename
+		});
+
+		await Share.share({
+			dialogTitle: config.title,
+			files: [writeResult.uri],
+			title: config.title
+		});
+
+		await Filesystem.deleteFile({
+			directory: Directory.Cache,
+			path: filename
+		});
+	} catch {
+		if (dev) console.info('Sharing not supported on this platform');
+	}
+}
+
+async function sendEmail(postings: PostingTO[], config: ExportPostingsConfig, format: 'csv' | 'pdf'): Promise<void> {
+	const $t = get(t);
+
+	try {
+		const hasAccountResult = await EmailComposer.hasAccount();
+
+		if (!hasAccountResult.hasAccount) {
+			await showAlert($t('utility.export-postings.email.error'));
+			return;
+		}
+
+		const filename = generateFilename(config.organizationName, format);
+		const base64 = format === 'pdf' ? generatePDFBase64(postings, config) : generateCSVBase64(postings, config);
+
+		await EmailComposer.open({
+			attachments: [
+				{
+					name: filename,
+					path: base64,
+					type: 'base64'
+				}
+			],
+			body: $t('utility.export-postings.email.body', { value: config.organizationName }),
+			subject: config.title
+		});
+	} catch {
+		await showAlert($t('utility.export-postings.email.unsupported'));
+	}
+}
+
+async function downloadFile(postings: PostingTO[], config: ExportPostingsConfig, format: 'csv' | 'pdf'): Promise<void> {
+	const $t = get(t);
+
+	try {
+		const filename = generateFilename(config.organizationName, format);
+		const base64 = format === 'pdf' ? generatePDFBase64(postings, config) : generateCSVBase64(postings, config);
+
+		try {
+			const permissionStatus = await Filesystem.checkPermissions();
+			if (permissionStatus.publicStorage !== 'granted') {
+				const requestResult = await Filesystem.requestPermissions();
+				if (requestResult.publicStorage !== 'granted') {
+					await Filesystem.writeFile({
+						data: base64,
+						directory: Directory.External,
+						path: filename,
+						recursive: true
+					});
+					await showAlert($t('utility.export-postings.download.success', { value: filename }), {
+						type: AlertType.SUCCESS
+					});
+					return;
+				}
+			}
+
+			await Filesystem.writeFile({
+				data: base64,
+				directory: Directory.Documents,
+				path: filename,
+				recursive: true
+			});
+		} catch {
+			await Filesystem.writeFile({
+				data: base64,
+				directory: Directory.External,
+				path: filename,
+				recursive: true
+			});
+		}
+
+		await showAlert($t('utility.export-postings.download.success', { value: filename }), { type: AlertType.SUCCESS });
+	} catch {
+		await showAlert($t('utility.export-postings.download.error'));
+	}
+}
+
+function generatePDFBase64(postings: PostingTO[], config: ExportPostingsConfig): string {
+	const document_ = generatePDF(postings, config);
+	return document_.output('datauristring').split(',')[1] ?? '';
+}
+
+function generateCSVBase64(postings: PostingTO[], config: ExportPostingsConfig): string {
+	const csvContent = generateCSV(postings, config);
+	return btoa(unescape(encodeURIComponent(csvContent)));
+}
+
+function generateCSV(postings: PostingTO[], config: ExportPostingsConfig): string {
 	const $t = get(t);
 	const { activities, categories, members } = config;
 
@@ -68,13 +247,7 @@ export function generateCSV(postings: PostingTO[], config: ExportPostingsConfig)
 	return rows.map((row) => row.join(',')).join('\n');
 }
 
-/**
- * Generates PDF document from postings
- * @param postings The postings to include in the PDF
- * @param config The export configuration
- * @returns {jsPDF} The generated jsPDF document
- */
-export function generatePDF(postings: PostingTO[], config: ExportPostingsConfig): jsPDF {
+function generatePDF(postings: PostingTO[], config: ExportPostingsConfig): jsPDF {
 	const $t = get(t);
 	const { activities, activityDate, activityName, categories, memberName, members, organizationName } = config;
 
@@ -154,19 +327,25 @@ function renderHeader(
 	document_.text($t('utility.export.organization', { value: organizationName }), margin, yPosition);
 	yPosition += 6;
 
-	const optionalFields = [
-		{ key: 'utility.export.activity-title', value: activityName },
-		{ key: 'utility.export.activity-date', value: activityDate ? formatter.date(activityDate) : undefined },
-		{ key: 'utility.export.member-name', value: memberName }
-	];
+	if (activityName) {
+		document_.setFontSize(12);
+		document_.setFont('helvetica', 'italic');
+		document_.text($t('utility.export.activity-title', { value: activityName }), margin, yPosition);
+		yPosition += 6;
+	}
 
-	for (const field of optionalFields) {
-		if (field.value) {
-			document_.setFontSize(12);
-			document_.setFont('helvetica', 'italic');
-			document_.text($t(field.key, { value: field.value }), margin, yPosition);
-			yPosition += 6;
-		}
+	if (activityDate) {
+		document_.setFontSize(12);
+		document_.setFont('helvetica', 'italic');
+		document_.text($t('utility.export.activity-date', { value: formatter.date(activityDate) }), margin, yPosition);
+		yPosition += 6;
+	}
+
+	if (memberName) {
+		document_.setFontSize(12);
+		document_.setFont('helvetica', 'italic');
+		document_.text($t('utility.export.member-name', { value: memberName }), margin, yPosition);
+		yPosition += 6;
 	}
 
 	return yPosition;
@@ -286,38 +465,6 @@ function truncateText(text: string, maxLength: number, truncateAt: number): stri
 	return text.length > maxLength ? text.slice(0, truncateAt) + '...' : text;
 }
 
-/**
- * Downloads postings as CSV file
- */
-export function downloadCSV(postings: PostingTO[], config: ExportPostingsConfig): void {
-	const csvContent = generateCSV(postings, config);
-	const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
-	saveAs(blob, generateFilename(config.organizationName, 'csv'));
-}
-
-/**
- * Downloads postings as PDF file
- */
-export function downloadPDF(postings: PostingTO[], config: ExportPostingsConfig): void {
-	const document_ = generatePDF(postings, config);
-	document_.save(generateFilename(config.organizationName, 'pdf'));
-}
-
-/**
- * Exports postings in the specified format
- */
-export function exportPostings(
-	postings: PostingTO[],
-	config: ExportPostingsConfig,
-	format: ExportPostingsFormat
-): void {
-	if (format === 'csv') {
-		downloadCSV(postings, config);
-	} else {
-		downloadPDF(postings, config);
-	}
-}
-
 function getMemberName(
 	personOfOrganizationId: number,
 	members: PersonOfOrganizationTO[],
@@ -348,7 +495,7 @@ function formatAmount(cents: number): string {
 function generateFilename(organizationName: string, extension: string): string {
 	const $t = get(t);
 	const safeName = organizationName.replaceAll(/[^a-zA-Z0-9]/g, '_').toLowerCase();
-	const dateString = new Date().toISOString().split('T')[0];
+	const dateString = new TZDate().toISOString().split('T')[0];
 	return `${safeName}_${$t('utility.export.postings')}_${dateString}.${extension}`;
 }
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ExportPostingsConfig, ExportPostingsFormat } from '$lib/models/export-postings';
+	import type { ExportPostingsConfig } from '$lib/models/export-postings';
 	import type {
 		ActivityTO,
 		OrganizationTO,
@@ -614,37 +614,16 @@
 		return $organizationStore?.budgetCategories.find((category) => category.id === categoryId)?.name ?? '';
 	}
 
-	function handleExportPostings(format: ExportPostingsFormat): void {
-		if (!$organizationStore) return;
-
+	async function onExportPostings(): Promise<void> {
 		const config: ExportPostingsConfig = {
-			activities: $organizationStore.activities,
-			categories: $organizationStore.budgetCategories,
-			members: $organizationStore.personsOfOrganization,
-			organizationName: $organizationStore.name,
+			activities: $organizationStore?.activities!,
+			categories: $organizationStore?.budgetCategories!,
+			members: $organizationStore?.personsOfOrganization!,
+			organizationName: $organizationStore?.name!,
 			title: $t('routes.organization.page.modal.postings-history.export.title')
 		};
 
-		exportPostings(filteredPostings, config, format);
-	}
-
-	async function onExportPostings(): Promise<void> {
-		const actionSheet = await actionSheetController.create({
-			buttons: [
-				{
-					handler: () => handleExportPostings('pdf'),
-					icon: documentOutline,
-					text: $t('routes.organization.page.modal.postings-history.export.pdf')
-				},
-				{
-					handler: () => handleExportPostings('csv'),
-					icon: listOutline,
-					text: $t('routes.organization.page.modal.postings-history.export.csv')
-				}
-			],
-			header: $t('routes.organization.page.modal.postings-history.export.title')
-		});
-		await actionSheet.present();
+		exportPostings(postings, config);
 	}
 </script>
 
@@ -971,7 +950,7 @@
 				<div class="flex-1">
 					<Filter config={postingsFilterConfig} />
 				</div>
-				<Button color="tertiary" icon={downloadOutline} clicked={() => onExportPostings()}></Button>
+				<Button color="tertiary" icon={downloadOutline} clicked={onExportPostings}></Button>
 			</div>
 		</div>
 		{#if filteredPostings.length === 0}

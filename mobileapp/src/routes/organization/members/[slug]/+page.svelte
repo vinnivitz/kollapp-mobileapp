@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ExportPostingsConfig, ExportPostingsFormat } from '$lib/models/export-postings';
+	import type { ExportPostingsConfig } from '$lib/models/export-postings';
 	import type {
 		ActivityTO,
 		OrganizationRole,
@@ -20,7 +20,6 @@
 		documentOutline,
 		downloadOutline,
 		flashOffOutline,
-		listOutline,
 		medalOutline,
 		personCircleOutline,
 		personOutline,
@@ -458,26 +457,7 @@
 		await loader.dismiss();
 	}
 
-	async function onExportPostings(): Promise<void> {
-		const actionSheet = await actionSheetController.create({
-			buttons: [
-				{
-					handler: () => handleExportPostings('pdf'),
-					icon: documentOutline,
-					text: $t('routes.organization.page.modal.postings-history.export.pdf')
-				},
-				{
-					handler: () => handleExportPostings('csv'),
-					icon: listOutline,
-					text: $t('routes.organization.page.modal.postings-history.export.csv')
-				}
-			],
-			header: $t('routes.organization.page.modal.postings-history.export.title')
-		});
-		await actionSheet.present();
-	}
-
-	function handleExportPostings(format: ExportPostingsFormat): void {
+	function onExportPostings(): void {
 		if (!$organizationStore) return;
 
 		const config: ExportPostingsConfig = {
@@ -489,7 +469,7 @@
 			title: $t('routes.organization.activities.slug.page.postings-summary.export.title')
 		};
 
-		exportPostings(filteredOpenPostings, config, format);
+		exportPostings(filteredOpenPostings, config);
 	}
 </script>
 
@@ -561,7 +541,7 @@
 			<div class="flex-1">
 				<Filter config={filterConfig} />
 			</div>
-			<Button color="tertiary" icon={downloadOutline} clicked={() => onExportPostings()}></Button>
+			<Button color="tertiary" icon={downloadOutline} clicked={onExportPostings}></Button>
 		</div>
 		{#each filteredOpenPostings as posting (posting.id)}
 			{@render postingItem(posting)}

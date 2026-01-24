@@ -861,9 +861,7 @@
             "no-results": "Keine Buchungen für „{{value}}“ gefunden",
             "no-postings": "Keine Buchungen gefunden.",
             "export": {
-              "title": "Buchungsübersicht",
-              "csv": "Als CSV exportieren",
-              "pdf": "Als PDF exportieren"
+              "title": "Buchungsübersicht"
             }
           },
           "select-organization": {
@@ -980,13 +978,13 @@
           }
         },
         "new-posting-button": {
-          "label": "Buchung anlegen"
+          "label": "Buchung hinzufügen"
         },
         "create-activity-button": {
           "label": "Veranstaltung erstellen"
         },
         "budget-categories-button": {
-          "label": "Budget-Kategorie hinzufügen"
+          "label": "Kategorie hinzufügen"
         },
         "person-of-organization-button": {
           "label": "Mitglied einladen"
@@ -1414,7 +1412,33 @@
       "postings": "buchungen",
       "organization": "Kollektiv: {{value}}",
       "activity": "Veranstaltung",
-      "no-activity": "Nicht zugewiesen"
+      "no-activity": "Nicht zugewiesen",
+      "activity-title": "Veranstaltung: {{value}}",
+      "activity-date": "Datum der Veranstaltung: {{value}}",
+      "member-name": "Mitglied: {{value}}"
+    },
+    "export-postings": {
+      "modal": {
+        "pdf": "Als PDF exportieren",
+        "csv": "Als CSV exportieren",
+        "header": "Buchungen exportieren",
+        "action-header": "Was möchtest du tun?",
+        "download": "Herunterladen",
+        "share": "Teilen",
+        "email": "Per E-Mail senden"
+      },
+      "share": {
+        "error": "Teilen wird auf diesem Gerät nicht unterstützt."
+      },
+      "email": {
+        "error": "Kein E-Mail-Konto gefunden.",
+        "unsupported": "E-Mail wird auf diesem Gerät nicht unterstützt.",
+        "body": "Anbei findest du die Buchungsübersicht für {{value}}."
+      },
+      "download": {
+        "success": "Datei wurde gespeichert: {{value}}",
+        "error": "Datei konnte nicht gespeichert werden."
+      }
     }
   }
 }
