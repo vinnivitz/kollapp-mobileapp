@@ -310,7 +310,9 @@
 
 	$effect(() => {
 		const currentCount = postings.length;
-		if (previousPostingsCount === 0 && currentCount > 0 && postingsSearchValue.trim() === '') {
+		const shouldResetFilters =
+			(previousPostingsCount === 0 && currentCount > 0) || (previousPostingsCount > 0 && currentCount === 0);
+		if (shouldResetFilters && postingsSearchValue.trim() === '') {
 			applyDefaultPostingsFilters();
 		}
 		previousPostingsCount = currentCount;

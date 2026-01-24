@@ -28,7 +28,17 @@
 	import { localeStore, organizationStore, userStore } from '$lib/stores';
 	import { getDateFnsLocale, hasOrganizationRole, triggerClickByLabel } from '$lib/utility';
 
-	const activity = $derived($organizationStore?.activities && $organizationStore.activities[0]);
+	const activity = $derived.by(() => {
+		if (!$organizationStore?.activities || $organizationStore.activities.length === 0) {
+			return;
+		}
+		const sorted = $organizationStore.activities.toSorted(
+			(a, b) => new TZDate(a.date).getTime() - new TZDate(b.date).getTime()
+		);
+		const upcoming = sorted.find((a) => new TZDate(a.date).getTime() > TZDate.now());
+		return upcoming;
+	});
+
 	const postings = $derived(
 		$organizationStore
 			? [

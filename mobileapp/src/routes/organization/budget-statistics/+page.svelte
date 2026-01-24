@@ -30,7 +30,8 @@
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
 	import PostingItem from '$lib/components/widgets/PostingItem.svelte';
 	import { t } from '$lib/locales';
-	import { organizationStore } from '$lib/stores';
+	import { Theme } from '$lib/models/ui';
+	import { organizationStore, themeStore } from '$lib/stores';
 	import { formatter, hasOrganizationRole } from '$lib/utility';
 
 	type TimeRange = '12months' | '3months' | '6months' | 'all';
@@ -42,6 +43,7 @@
 	let selectedTimeRange = $state<TimeRange>('all');
 
 	const isManager = $derived(hasOrganizationRole('ROLE_ORGANIZATION_MANAGER'));
+	const isDarkMode = $derived($themeStore === Theme.DARK);
 
 	const activityByPostingId = $derived<SvelteMap<number, ActivityTO | undefined>>(
 		new SvelteMap(
@@ -185,6 +187,9 @@
 			type: 'gradient'
 		},
 		legend: {
+			labels: {
+				colors: 'var(--ion-color-dark)'
+			},
 			position: 'top',
 			show: true
 		},
@@ -202,17 +207,26 @@
 			curve: 'smooth',
 			width: 2
 		},
+		tooltip: {
+			theme: isDarkMode ? 'dark' : 'light'
+		},
 		xaxis: {
 			categories: monthlyData.map((m) => m.month),
 			labels: {
 				rotate: -45,
 				rotateAlways: true,
-				style: { fontSize: '10px' }
+				style: {
+					colors: 'var(--ion-color-dark)',
+					fontSize: '10px'
+				}
 			}
 		},
 		yaxis: {
 			labels: {
-				formatter: (value: number) => formatter.currency(value * 100, true)
+				formatter: (value: number) => formatter.currency(value * 100, true),
+				style: {
+					colors: 'var(--ion-color-dark)'
+				}
 			}
 		}
 	});
@@ -234,6 +248,9 @@
 		},
 		labels: categoryStatistics.slice(0, 6).map((s) => s.category.name),
 		legend: {
+			labels: {
+				colors: 'var(--ion-color-dark)'
+			},
 			position: 'top',
 			show: true
 		},
@@ -253,16 +270,25 @@
 				name: $t('routes.organization.budget-statistics.page.chart.debit')
 			}
 		],
+		tooltip: {
+			theme: isDarkMode ? 'dark' : 'light'
+		},
 		xaxis: {
 			labels: {
 				formatter: (value: string) => formatter.currency(Number(value) * 100, true),
 				rotate: -45,
-				rotateAlways: true
+				rotateAlways: true,
+				style: {
+					colors: 'var(--ion-color-dark)'
+				}
 			}
 		},
 		yaxis: {
 			labels: {
-				style: { fontSize: '11px' }
+				style: {
+					colors: 'var(--ion-color-dark)',
+					fontSize: '11px'
+				}
 			}
 		}
 	});
