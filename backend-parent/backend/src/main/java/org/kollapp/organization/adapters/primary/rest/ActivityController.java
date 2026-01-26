@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -56,7 +57,7 @@ public class ActivityController {
         return ResponseEntity.ok(new DataResponseTO<>(activityTO, message));
     }
 
-    @PostMapping("/{organization-id}/activity/{activity-id}")
+    @PutMapping("/{organization-id}/activity/{activity-id}")
     @Operation(
             summary = "Update activity of organization",
             security = {@SecurityRequirement(name = "bearer-key")})

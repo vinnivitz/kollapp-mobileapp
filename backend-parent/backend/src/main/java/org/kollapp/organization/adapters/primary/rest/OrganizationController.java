@@ -104,11 +104,13 @@ public class OrganizationController {
     @Operation(
             summary = "Enter an organization based on its invitation code.",
             security = {@SecurityRequirement(name = "bearer-key")})
-    public ResponseEntity<MessageResponseTO> enterOrganizationBasedOnInvitationCode(
+    public ResponseEntity<DataResponseTO<OrganizationMinifiedTO>> enterOrganizationBasedOnInvitationCode(
             @PathVariable("invitation-code") String invitationCode) {
-        organizationService.enterOrganizationByInvitationCode(invitationCode);
+        Organization organization = organizationService.enterOrganizationByInvitationCode(invitationCode);
+        OrganizationMinifiedTO organizationMinifiedTO =
+                organizationMapper.organizationToOrganizationMinifiedTO(organization);
         String message = messageUtil.getMessage("success.organization.applied");
-        return ResponseEntity.ok(new MessageResponseTO(message));
+        return ResponseEntity.ok(new DataResponseTO<>(organizationMinifiedTO, message));
     }
 
     @PatchMapping("/{organization-id}/person/{person-id}/grant-role")
