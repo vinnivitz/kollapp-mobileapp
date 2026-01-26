@@ -161,7 +161,11 @@
             },
             "title": "Meine Daten"
           },
-          "title": "Meine Daten aktualisieren"
+          "title": "Meine Daten aktualisieren",
+          "modal": {
+            "message": "Überprüfe dein Postfach",
+            "title": "Wir haben dir eine E-Mail an {{value}} mit einem Link zur Bestätigung dieser E-Mail-Adresse gesendet.\n \nBitte überprüfe auch den Spam-Ordner."
+          }
         }
       }
     },
@@ -288,7 +292,11 @@
             },
             "title": "Gib deine E-Mail ein, um dein Passwort zurückzusetzen"
           },
-          "title": "Passwort zurücksetzen"
+          "title": "Passwort zurücksetzen",
+          "modal": {
+            "title": "Wir haben dir eine E-Mail an {{value}} mit einem Link zum Zurücksetzen deines Passworts gesendet.\n\nBitte überprüfen auch den Spam-Ordner.",
+            "message": "Überprüfen dein Postfach"
+          }
         }
       }
     },
@@ -308,8 +316,7 @@
           "home": "Startseite",
           "organization": "Kollektiv"
         },
-        "title": "Kollapp - Die Kollektiv App",
-        "welcome-modal": {}
+        "title": "Kollapp - Die Kollektiv App"
       }
     },
     "organization": {
@@ -328,10 +335,6 @@
           },
           "calendar": {
             "no-activities": "Für den {{value}} wurde keine Veranstaltung gefunden"
-          },
-          "filters": {
-            "card": {},
-            "type": {}
           },
           "modal": {
             "create-activity": {
@@ -354,7 +357,6 @@
                   "future": "Ausstehend",
                   "label": "Zeitraum"
                 },
-                "date": {},
                 "has-postings": {
                   "label": "Buchungen",
                   "all": "Alle",
@@ -388,10 +390,7 @@
               "error": "Der Kalender ist nicht verfügbar"
             },
             "create-posting": {
-              "title": {
-                "credit": "Einnahme hinzufügen",
-                "debit": "Ausgabe hinzufügen"
-              }
+              "title": {}
             },
             "activity-summary": {
               "add-to-calendar": "Zum Kalender hinzufügen",
@@ -404,57 +403,20 @@
             "modal": {
               "activity-filter": {
                 "card": {
-                  "credit": "Einnahme",
-                  "date": {},
-                  "debit": "Ausgabe",
-                  "budget-category": {
-                    "all-selected": "Alle Kategorien ausgewählt",
-                    "select": "Ausgwählte Kategorien",
-                    "search": "Kategorien suchen...",
-                    "section-label": "Veranstaltungen"
-                  },
-                  "members": {
-                    "all-selected": "Alle Mitglieder ausgewählt",
-                    "label": "Ausgewählte Mitglieder",
-                    "search-placeholder": "Mitglieder suchen...",
-                    "unassigned": "Nicht zugewiesen",
-                    "section-label": "Mitglieder"
-                  },
-                  "title": "Filter",
-                  "posting-types": "Buchuntstyp",
-                  "date-range": "Zeitraum"
+                  "budget-category": {},
+                  "members": {}
                 }
               },
               "create-posting": {
                 "form": {
-                  "amount": "Betrag",
-                  "credit": "Einnahme",
-                  "date": "Datum",
-                  "debit": "Ausgabe",
-                  "purpose": "Zweck",
-                  "person-of-organization": {
-                    "unassigned": "Nicht zugewiesen",
-                    "label": "Zugewiesenes Mitglied",
-                    "search": "Mitglieder suchen..."
-                  },
-                  "budget-category": {
-                    "label": "Kategorie auswählen",
-                    "search": "Kategorien durchsuchen..."
-                  }
+                  "person-of-organization": {},
+                  "budget-category": {}
                 }
               },
               "delete-activity": {
                 "confirm": "Veranstaltung löschen"
               },
-              "delete-posting": {
-                "modal": {}
-              },
-              "transfer-posting": {},
-              "posting-overview": {
-                "no-postings": "Keine Buchungen gefunden.",
-                "searchbar": "Buchungen suchen...",
-                "no-search-results": "Keine Buchungen für „{{value}}“ gefunden"
-              },
+              "posting-overview": {},
               "update-activity": {
                 "card": {
                   "form": {
@@ -465,26 +427,14 @@
                   "title": "Veranstaltung aktualisieren"
                 },
                 "confirm": "Aktualisieren"
-              },
-              "update-posting": {
-                "card": {
-                  "form": {
-                    "person-of-organization": {},
-                    "budget-category": {}
-                  }
-                }
               }
             },
             "postings-summary": {
-              "total-credit": "Gesamteinnahmen: {{value}}",
-              "total-debit": "Gesamtausgaben: {{value}}",
-              "posting-overview": "Buchungsübersicht",
-              "add-posting": "Buchung hinzufügen",
-              "total-postings": "Gesamtbuchungen: {{value}}",
-              "title": "Veranstaltungsbilanz"
+              "card": {
+                "title": "Veranstaltungsbilanz"
+              }
             },
-            "title": "Veranstaltungsdetails",
-            "sliding-options": {}
+            "title": "Veranstaltungsdetails"
           }
         }
       },
@@ -563,12 +513,11 @@
                 "title": "Offene Buchungen",
                 "search-placeholder": "Buchungen suchen...",
                 "no-results": "Keine Buchung für „{{value}}“ gefunden",
-                "no-results-filtered": "Keine Buchungen gefunden."
+                "no-results-filtered": "Keine Buchungen gefunden.",
+                "loading": "Laden..."
               }
             },
             "modal": {
-              "transfer-posting": {},
-              "update-posting": {},
               "filter": {
                 "card": {
                   "title": "Buchungen filtern",
@@ -577,7 +526,6 @@
                     "credit": "Einnahmen",
                     "debit": "Ausgaben"
                   },
-                  "date": {},
                   "date-range": {
                     "label": "Zeitraum"
                   },
@@ -598,9 +546,6 @@
             },
             "activity-filter-items": {
               "not-assigned": "Nicht zugewiesen"
-            },
-            "item": {
-              "sliding": {}
             }
           }
         },
@@ -709,8 +654,7 @@
           },
           "form": {
             "name": "Kategoriename",
-            "default-category": "Standard-Kategorie",
-            "submit": {}
+            "default-category": "Standard-Kategorie"
           },
           "category-list": {
             "card": {
@@ -729,16 +673,10 @@
         }
       },
       "page": {
-        "activity-filter-item": {
-          "not-assigned-to-activity": "Nicht zugewiesen"
-        },
+        "activity-filter-item": {},
         "budget-card": {
           "card": {
-            "postings-overview": "Buchungsübersicht",
-            "total-credit": "Gesamteinnahmen: {{value}}",
-            "total-debit": "Gesamtausgaben: {{value}}",
             "add-posting": "Buchung hinzufügen",
-            "statistics": "Statistik",
             "title": "Kollektivbilanz"
           }
         },
@@ -768,85 +706,31 @@
         },
         "modal": {
           "create-posting": {
-            "activities": {
-              "search": "Veranstaltungen suchen...",
-              "select": "Zugewiesene Veranstaltung"
-            },
-            "amount": "Betrag",
-            "credit": "Einnahme",
-            "date": "Datum",
-            "debit": "Ausgabe",
-            "purpose": "Zweck",
-            "person-of-organization": {
-              "select": "Zugewiesenes Mitglied",
-              "search": "Mitglieder suchen..."
-            },
-            "organization-budget-category": {
-              "select": "Eine Kategorie zuweisen",
-              "search": "Kategorien durchsuchen..."
-            }
+            "activities": {},
+            "person-of-organization": {},
+            "organization-budget-category": {}
           },
-          "delete-posting": {},
-          "transfer-posting": {},
           "postings-filter": {
             "card": {
-              "budget-category": {
-                "all-selected": "Alle Kategorien ausgewählt",
-                "select": "Kategorien auswählen",
-                "search": "Kategorien suchen...",
-                "label": "Kategorien"
-              },
-              "activities": {
-                "all-selected": "Alle Veranstaltungen ausgewählt",
-                "search": "Veranstaltungen suchen...",
-                "select": "Ausgewählte Veranstaltungen",
-                "label": "Veranstaltungen"
-              },
-              "credit": "Einnahme",
-              "debit": "Ausgabe",
-              "title": "Buchungstyp",
-              "person-of-organization": {
-                "all-selected": "Alle Mitglieder ausgewählt",
-                "select": "Ausgewählte Mitglieder",
-                "search": "Mitglieder suchen...",
-                "label": "Mitglieder"
-              },
-              "date-range": "Zeitraum"
-            }
-          },
-          "postings-overview": {
-            "search": "Buchungen suchen...",
-            "no-results": "Keine Buchungen für „{{value}}“ gefunden",
-            "no-postings": "Keine Buchungen gefunden."
-          },
-          "select-organization": {
-            "header": "Kollektiv wechseln"
-          },
-          "update-posting": {
-            "card": {
+              "budget-category": {},
               "activities": {},
               "person-of-organization": {}
             }
+          },
+          "postings-overview": {},
+          "select-organization": {
+            "header": "Kollektiv wechseln"
           }
         },
         "no-collective": {
           "note": "Du bist kein Mitglied eines Kollektivs."
         },
-        "posting-translation": {
-          "cedit": "Einnahme hinzufügen",
-          "debit": "Ausgabe hinzufügen"
-        },
+        "posting-translation": {},
         "title": "Kollektiv",
-        "upcoming-activity": {
-          "card": {}
-        },
-        "person-of-organization-filter-item": {
-          "unassigned": "Nicht zugewiesen"
-        },
+        "person-of-organization-filter-item": {},
         "collective-info": {
           "role": "Du bist ein {{value}}"
-        },
-        "sliding-options": {}
+        }
       },
       "register": {
         "page": {
@@ -921,6 +805,11 @@
           "greetings": "Hallo {{value}}",
           "notifications": {
             "no-notes": "Keine neuen Benachrichtigungen"
+          },
+          "open-postings": {
+            "button": {
+              "label": "Dir sind {{value}} Buchungen zugewiesen."
+            }
           }
         },
         "no-collectives-card": {
@@ -954,10 +843,6 @@
             "content": "Die folgenden Benutzer möchten dem Kollektiv beitreten:"
           }
         },
-        "new-posting-button": {},
-        "create-activity-button": {},
-        "budget-categories-button": {},
-        "person-of-organization-button": {},
         "quick-access": {
           "card": {
             "add-posting": "Buchung hinzufügen",
@@ -1222,7 +1107,6 @@
         "subheading": "Die App für alle Kollektive da draußen."
       },
       "filter": {
-        "reset-filter": {},
         "date-range": {
           "from": "Von",
           "to": "Bis"
@@ -1256,12 +1140,88 @@
           "amount": "Betrag",
           "date": "Datum",
           "member": {
-            "label": "Zugewiesen an",
+            "label": "Zugewiesenes Mitglied",
             "none-selected": "Nicht zugewiesen"
           },
           "budget-category": {
             "label": "Kategorie"
+          },
+          "activity": {
+            "label": "Zugewiesene Veranstaltung",
+            "none-selected": "Nicht zugewiesen"
           }
+        }
+      },
+      "activity-select": {}
+    },
+    "transaction-overview": {},
+    "posting-overview": {
+      "filter": {
+        "person-of-organization": {
+          "unassigned": "Nicht zugewiesen"
+        },
+        "posting-types": "Buchungsart",
+        "credit": "Einnahme",
+        "debit": "Ausgabe",
+        "date-range": "Zeitraum",
+        "person": {
+          "all-selected": "Alle Mitglieder ausgewählt",
+          "select": "Ausgewählte Mitglieder",
+          "label": "Mitglieder",
+          "search": "Mitglieder suchen..."
+        },
+        "budget-category": {
+          "all-selected": "Alle Kategorien ausgewählt",
+          "select": "Ausgewählte Kategorien",
+          "label": "Kategorien",
+          "search": "Kategorien durchsuchen..."
+        },
+        "activities": {
+          "all-selected": "Alle Veranstaltungen ausgewählt",
+          "select": "Ausgewählte Veranstaltungen",
+          "label": "Veranstaltungen",
+          "search": "Veranstaltungen suchen...",
+          "unassigned": "Nicht zugewiesen"
+        },
+        "title": "Buchungen filtern"
+      },
+      "search": {
+        "placeholder": "Buchungen durchsuchen..."
+      },
+      "no-postings": "Keine Buchungen gefunden.",
+      "no-results": "Keine Buchungen für „{{value}}“ gefunden",
+      "loading": "Laden..."
+    },
+    "budget-overview": {
+      "total-credit": "Gesamteinnahmen: {{value}}",
+      "total-debit": "Gesamtausgaben: {{value}}",
+      "total-postings": "Gesamtbuchungen: {{value}}",
+      "add-posting": "Buchung hinzufügen",
+      "posting-overview": "Buchungsübersicht",
+      "statistics": "Statistiken",
+      "modal": {
+        "title": {
+          "debit": "Ausgabe hinzufügen",
+          "credit": "Einnahme hinzufügen"
+        },
+        "credit": "Einnahme",
+        "debit": "Ausgabe",
+        "purpose": "Zweck",
+        "amount": "Betrag",
+        "date": "Datum",
+        "person-of-organization": {
+          "select": "Zugewiesenes Mitglied",
+          "search": "Mitglieder suchen...",
+          "none": "Nicht zugewiesen"
+        },
+        "activity": {
+          "select": "Zugewiesene Veranstaltung",
+          "search": "Veranstaltung suchen...",
+          "none": "Nicht zugewiesen"
+        },
+        "budget-category": {
+          "select": "Zugewiesene Kategorie",
+          "search": "Kategorien durchsuchen..."
         }
       }
     }
@@ -1288,7 +1248,11 @@
         "generic": "Es ist ein Fehler aufgetreten"
       },
       "request-successful": "Anfrage erfolgreich",
-      "server-not-reachable": "Server nicht erreichbar"
+      "server-not-reachable": "Server nicht erreichbar",
+      "get-role-translation": {
+        "manager": "Manager",
+        "member": "Mitglied"
+      }
     },
     "biometrics": {
       "not-available": "Biometrie nicht verfügbar",
@@ -1354,7 +1318,6 @@
           "title": "Kollektivbilanz",
           "description": "Zeigt Infos über die Finanzen des Kollektivs an, einschließlich Saldo, Einnahmen und Ausgaben des Kollektivs. \nDu kannst Buchungen hinzufügen und anzeigen lassen."
         },
-        "org-activities": {},
         "activities-list": {
           "title": "Veranstaltungs-Übersicht",
           "description": "Alle Veranstaltungen nach Datum sortiert, falls welche vorhanden sind. Tippe auf eine Veranstaltung für Details."
@@ -1391,20 +1354,17 @@
           "title": "Kommende Veranstaltung",
           "description": "Hier wird die bevorstehende Veranstaltung mit Namen, der verbleibenden Zeit und der Anzahl der zugewiesenen Buchungen angezeigt. \nTippe darauf für weitere Infos."
         },
-        "org-upcoming-activity": {},
-        "org-organization": {},
         "org-info": {
           "title": "Kollektivlinfo",
           "description": "Hier werden einige Informationen über das Kollektiv angezeigt, z. B. die Beschreibung, der Standort oder deine Rolle im Kollektiv."
         },
-        "org-misc": {},
         "activities-segments": {
           "title": "Veranstaltungsansichten",
           "description": "Hier kannst du zwischen einer Listen- und Kalenderansicht für die Anzeige von Veranstaltungen wechseln."
         },
         "conclusion": {
           "title": "Dank für deine Aufmerksamkeit!",
-          "description": "Viel Spaß mit Kollapp! Und wenn dir irgendwas in der App auffällt, du Fragen oder Verbesserungsvorschläge hast, dann kontaktier uns gern!"
+          "description": "Viel Spaß mit Kollapp!\nUnd wenn dir irgendwas in der App auffällt, du Fragen oder Verbesserungsvorschläge hast, dann kontaktier uns gern!"
         }
       }
     }

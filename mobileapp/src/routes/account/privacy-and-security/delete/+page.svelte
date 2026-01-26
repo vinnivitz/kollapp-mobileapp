@@ -27,18 +27,16 @@
 	const userId = $derived($userStore?.id);
 	let showPasswordPrompt = $state<boolean>(false);
 	let actions: FormActions<DeleteAccountRequestTO>;
-	let organizationChecks = $state<OrganizationCheckResult[]>([]);
+	let organizationChecks = $state<OrganizationCheckResult[]>();
 
 	const form = new Form({
 		completed: async () => afterAccountDeletion(),
 		exposedActions: (exposedActions) => (actions = exposedActions),
-		request: async (model: DeleteAccountRequestTO) => userService.remove(model),
+		request: userService.remove,
 		schema: deleteAccountSchema()
 	});
 
-	$effect(() => {
-		loadOrganizationChecks();
-	});
+	$effect(() => void loadOrganizationChecks());
 
 	async function loadOrganizationChecks(): Promise<void> {
 		const results: OrganizationCheckResult[] = [];
@@ -67,16 +65,19 @@
 	}
 
 	const lastManagerOrganizations = $derived(
-		organizationChecks.filter((check) => check.isLastManager).map((check) => check.organization)
+		organizationChecks?.filter((check) => check.isLastManager).map((check) => check.organization) ?? []
 	);
 
 	const postingsByOrganization = $derived<OrganizationPostings[]>(
 		organizationChecks
-			.filter((check) => check.assignedPostings.length > 0)
-			.map((check) => ({
-				organizationName: check.organization.name,
-				postings: check.assignedPostings
-			}))
+			?.filter((check) => check.assignedPostings.length > 0)
+			.map(
+				(check) =>
+					({
+						organizationName: check.organization.name,
+						postings: check.assignedPostings
+					}) satisfies OrganizationPostings
+			) ?? []
 	);
 
 	const hasAssignedPostings = $derived(postingsByOrganization.length > 0);
@@ -121,7 +122,7 @@
 	}
 </script>
 
-<Layout title={$t('routes.account.delete.page.title')} showBackButton>
+<Layout title={$t('routes.account.delete.page.title')} showBackButton loading={!organizationChecks}>
 	{@render deleteAccountCard()}
 </Layout>
 

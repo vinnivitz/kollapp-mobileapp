@@ -1,3 +1,4 @@
+import { TZDate } from '@date-fns/tz';
 import { fireEvent, render, waitFor } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -24,7 +25,7 @@ describe('widgets/ionic/GlobalPopovers', () => {
 			min: undefined,
 			open: true,
 			type: DateTimePickerType.DATE,
-			value: new Date().toISOString()
+			value: new TZDate().toISOString()
 		});
 
 		const { container } = render(GlobalPopovers);
@@ -49,7 +50,7 @@ describe('widgets/ionic/GlobalPopovers', () => {
 			min: undefined,
 			open: true,
 			type: DateTimePickerType.DATE,
-			value: new Date().toISOString()
+			value: new TZDate().toISOString()
 		});
 
 		const { container } = render(GlobalPopovers);

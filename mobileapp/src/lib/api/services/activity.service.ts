@@ -1,48 +1,60 @@
-import type { ActivityCreationRequestTO, ActivityUpdateRequestTO } from '@kollapp/api-types';
+import type { ActivityCreationRequestTO, ActivityTO, ActivityUpdateRequestTO } from '@kollapp/api-types';
 
 import { RequestMethod, type ResponseBody } from '$lib/models/api';
-import { customFetch } from '$lib/utility';
+import { organizationStore } from '$lib/stores';
+import { customFetch, getOrganizationId, StatusCheck } from '$lib/utility';
 
 class ActivityService {
-	ENDPOINT = 'organization';
+	private get base(): string {
+		return `organization/${getOrganizationId()!}`;
+	}
 
 	/**
 	 * Creates a new activity for the given organization.
-	 * @param organizationId id of the organization
 	 * @param model activity model
-	 * @returns {Promise<ResponseBody>} response body
+	 * @returns {Promise<ResponseBody<ActivityTO>>} The created activity.
 	 */
-	async create(organizationId: number, model: ActivityCreationRequestTO): Promise<ResponseBody> {
-		return customFetch(`${this.ENDPOINT}/${organizationId}/activity`, {
+	async create(model: ActivityCreationRequestTO): Promise<ResponseBody<ActivityTO>> {
+		const response = await customFetch<ActivityTO>(`${this.base}/activity`, {
 			body: model,
 			method: RequestMethod.POST
 		});
+		if (StatusCheck.isOK(response.status)) {
+			await organizationStore.createActivity(response.data);
+		}
+		return response;
 	}
 
 	/**
 	 * Updates the activity of the given organization.
-	 * @param organizationId id of the organization
 	 * @param activityId id of the activity
 	 * @param model activity model
-	 * @returns {Promise<ResponseBody>} response body
+	 * @returns {Promise<ResponseBody<ActivityTO>>} The updated activity.
 	 */
-	async update(organizationId: number, activityId: number, model: ActivityUpdateRequestTO): Promise<ResponseBody> {
-		return customFetch(`${this.ENDPOINT}/${organizationId}/activity/${activityId}`, {
+	async update(activityId: number, model: ActivityUpdateRequestTO): Promise<ResponseBody<ActivityTO>> {
+		const response = await customFetch<ActivityTO>(`${this.base}/activity/${activityId}`, {
 			body: model,
 			method: RequestMethod.POST
 		});
+		if (StatusCheck.isOK(response.status)) {
+			await organizationStore.updateActivity(response.data);
+		}
+		return response;
 	}
 
 	/**
 	 * Deletes the activity of the given organization.
-	 * @param organizationId id of the organization
 	 * @param activityId id of the activity
 	 * @returns {Promise<ResponseBody>} response body
 	 */
-	async remove(organizationId: number, activityId: number): Promise<ResponseBody> {
-		return customFetch(`${this.ENDPOINT}/${organizationId}/activity/${activityId}`, {
+	async remove(activityId: number): Promise<ResponseBody> {
+		const response = await customFetch(`${this.base}/activity/${activityId}`, {
 			method: RequestMethod.DELETE
 		});
+		if (StatusCheck.isOK(response.status)) {
+			await organizationStore.removeActivity(activityId);
+		}
+		return response;
 	}
 }
 

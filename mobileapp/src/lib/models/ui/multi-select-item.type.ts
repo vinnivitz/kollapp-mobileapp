@@ -3,8 +3,8 @@ import type { Colors } from '$lib/models/ui';
 /**
  * Represents a select item schema with a selected state and a value.
  */
-export type SelectItem = {
-	data: SelectItemData;
+export type MultiSelectItem = {
+	data: MultiSelectItemData;
 	selected: boolean;
 	color?: Colors;
 	icon?: string;
@@ -13,7 +13,7 @@ export type SelectItem = {
 /**
  * Represents the data of a select item.
  */
-export type SelectItemData = {
+export type MultiSelectItemData = {
 	id: number;
 	label: string;
 };

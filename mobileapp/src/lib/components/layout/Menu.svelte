@@ -1,9 +1,9 @@
 <script lang="ts">
 	import type { SearchableItemTO } from '$lib/api/dto';
-	import type { Snippet } from 'svelte';
 
 	import * as icons from 'ionicons/icons';
 	import { notificationsOutline } from 'ionicons/icons';
+	import { onMount, type Snippet } from 'svelte';
 
 	import { goto } from '$app/navigation';
 	import type { RouteId } from '$app/types';
@@ -42,6 +42,10 @@
 		searchValue = event.detail.value;
 		searchedItems = await searchableService.filter(searchValue.toLowerCase().trim());
 	}
+
+	onMount(() => {
+		menuController.addEventListener('ionDidClose', () => (searchValue = ''));
+	});
 </script>
 
 <ion-menu side="end" content-id="menu" bind:this={menuController}>

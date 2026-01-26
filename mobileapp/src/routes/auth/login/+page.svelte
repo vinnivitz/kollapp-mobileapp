@@ -24,12 +24,12 @@
 	import {
 		customForm,
 		getStoredValue,
-		getValidationResult,
 		informationModal,
 		isBiometricAvailable,
 		isBiometricEnabled,
 		promptBiometricAuthentication,
 		showAlert,
+		StatusCheck,
 		storeBiometricCredentials,
 		storeValue,
 		verifyBiometricIdentity
@@ -42,7 +42,7 @@
 			loginCredentials = { password: model.password, username: model.username };
 			await handleLogin(response);
 		},
-		request: async (model: LoginRequestTO) => await authenticationService.login(model),
+		request: authenticationService.login,
 		schema: loginSchema()
 	});
 
@@ -61,8 +61,7 @@
 			password: credentials.password,
 			username: credentials.username
 		} satisfies LoginRequestTO);
-		const result = getValidationResult<AuthTokensTO>(response);
-		await (result.valid
+		await (StatusCheck.isOK(response.status)
 			? handleLogin(response.data)
 			: Promise.all([
 					showAlert($t('routes.auth.login.page.biometrics.wrong-credentials')),

@@ -7,7 +7,7 @@
 	import Card from './ionic/Card.svelte';
 	import Chip from './ionic/Chip.svelte';
 	import DatetimeInputItem from './ionic/DatetimeInputItem.svelte';
-	import MultiSelectItem from './ionic/MultiSelectItem.svelte';
+	import MultiSelectInputItem from './ionic/MultiSelectInputItem.svelte';
 	import Popover from './ionic/Popover.svelte';
 
 	import { t } from '$lib/locales';
@@ -19,24 +19,51 @@
 	let { config }: Properties = $props();
 
 	let open = $state(false);
-	let searchValue = $state<string>('');
 	let draft = $state<Record<string, unknown>>({});
 
 	const showSearchbar = $derived(!!config.searchbar);
 	const showFilterButton = $derived(config.sections.length > 0);
 
-	const hasFiltersApplied = $derived.by(() => {
+	function getDefaultsFromSections(): Record<string, unknown> {
+		const defaults: Record<string, unknown> = {};
 		for (const section of config.sections) {
-			const currentValue = config.state[section.key];
-			if (section.type === 'date-range') {
-				const dateValue = currentValue as { from: string; to: string } | undefined;
-				if (dateValue?.from !== section.defaultFromValue || dateValue?.to !== section.defaultToValue) {
-					return true;
+			switch (section.type) {
+				case 'multi-select': {
+					defaults[section.key] = section.items.filter((item) => item.selected).map((item) => item.data.id);
+					break;
 				}
-			} else {
-				if (JSON.stringify(currentValue) !== JSON.stringify(section.defaultValue)) {
-					return true;
+				case 'date-range': {
+					defaults[section.key] = {
+						from: section.defaultFromValue,
+						to: section.defaultToValue
+					};
+					break;
 				}
+				default: {
+					defaults[section.key] = section.defaultValue;
+					break;
+				}
+			}
+		}
+		return defaults;
+	}
+
+	const effectiveState = $derived(config.state ?? getDefaultsFromSections());
+
+	const multiSelectDefaultValue = $derived(
+		config.sections
+			.find((section) => section.type === 'multi-select')
+			?.items.filter((item) => item.selected)
+			.map((item) => item.data.id) ?? []
+	);
+
+	const hasFiltersApplied = $derived.by(() => {
+		const defaults = getDefaultsFromSections();
+		for (const section of config.sections) {
+			const currentValue = effectiveState[section.key];
+			const defaultValue = defaults[section.key];
+			if (JSON.stringify(currentValue) !== JSON.stringify(defaultValue)) {
+				return true;
 			}
 		}
 		return false;
@@ -44,7 +71,7 @@
 
 	$effect(() => {
 		if (open) {
-			draft = { ...config.state };
+			draft = { ...effectiveState };
 		}
 	});
 
@@ -66,29 +93,20 @@
 	}
 
 	function handleApply(): void {
-		config.onApply(draft as typeof config.state);
+		config.onApply(draft as NonNullable<typeof config.state>);
 		open = false;
 	}
 
 	function handleReset(): void {
-		const defaults: Record<string, unknown> = {};
-		for (const section of config.sections) {
-			defaults[section.key] =
-				section.type === 'date-range'
-					? {
-							from: section.defaultFromValue,
-							to: section.defaultToValue
-						}
-					: section.defaultValue;
-		}
+		const defaults = getDefaultsFromSections();
 		draft = defaults;
-		config.onApply(defaults as typeof config.state);
+		config.onApply(defaults as NonNullable<typeof config.state>);
 		config.onReset?.();
 		open = false;
 	}
 
 	function handleDismiss(): void {
-		draft = { ...config.state };
+		draft = { ...effectiveState };
 		open = false;
 	}
 
@@ -122,7 +140,6 @@
 
 	function handleSearchInput(event: CustomEvent): void {
 		const value = event.detail.value ?? '';
-		searchValue = value;
 		config.searchbar?.onSearch(value);
 	}
 
@@ -138,7 +155,7 @@
 				debounce={100}
 				placeholder={config.searchbar?.placeholder ?? $t('components.widgets.filter.search-placeholder')}
 				onionInput={handleSearchInput}
-				value={searchValue}
+				value={config.searchbar?.value ?? ''}
 			></ion-searchbar>
 		{/if}
 		{#if showFilterButton}
@@ -222,14 +239,14 @@
 					/>
 				</div>
 			{:else if isMultiSelectSection(section)}
-				{@const currentValue = getDraftValue(section.key, section.defaultValue)}
+				{@const currentValue = getDraftValue(section.key, multiSelectDefaultValue)}
 				<div class="mb-3">
 					{#if section.label}
 						<ion-text color="medium" class="text-sm">
 							{section.label}
 						</ion-text>
 					{/if}
-					<MultiSelectItem
+					<MultiSelectInputItem
 						value={currentValue}
 						changed={(value) => setDraftValue(section.key, value)}
 						allSelectedText={section.allSelectedText}

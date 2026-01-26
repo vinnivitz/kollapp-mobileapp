@@ -1,9 +1,11 @@
 <script lang="ts">
 	import { accessibilityOutline, diamondOutline, flashOutline, personOutline } from 'ionicons/icons';
 	import { type Snippet } from 'svelte';
-	import { fade } from 'svelte/transition';
 
 	import { dev } from '$app/environment';
+	import { navigating, page } from '$app/state';
+
+	import FadeInOut from './FadeInOut.svelte';
 
 	import Header from '$lib/components/layout/Header.svelte';
 	import Menu from '$lib/components/layout/Menu.svelte';
@@ -31,7 +33,11 @@
 		title
 	}: Properties = $props();
 
+	let currentRoute = $state<string>(page.route.id ?? '');
+
 	const loaded = $derived(initializationStore.loaded);
+
+	const isNavigating = $derived(navigating.to && navigating.to?.route.id !== currentRoute);
 
 	let refresher = $state<HTMLIonRefresherElement>();
 	let menuComponent = $state<ReturnType<typeof Menu>>();
@@ -81,12 +87,14 @@
 	{#if title}
 		<Header {title} {showBackButton} {loading}></Header>
 	{/if}
-	{#if $loaded && !loading}
-		<ion-content class="ion-padding" in:fade={{ delay: 0, duration: 200 }} class:no-overflow={!scrollable}>
+	{#if $loaded && !loading && !isNavigating}
+		<ion-content class="ion-padding" class:no-overflow={!scrollable}>
 			<ion-refresher bind:this={refresher} slot="fixed" onionRefresh={doRefresh}>
 				<ion-refresher-content></ion-refresher-content>
 			</ion-refresher>
-			{@render children?.()}
+			<FadeInOut>
+				{@render children?.()}
+			</FadeInOut>
 		</ion-content>
 	{/if}
 </div>

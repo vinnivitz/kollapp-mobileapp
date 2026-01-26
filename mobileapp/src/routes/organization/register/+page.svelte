@@ -1,6 +1,4 @@
 <script lang="ts">
-	import type { OrganizationCreationRequestTO } from '@kollapp/api-types';
-
 	import { accessibilityOutline, readerOutline, saveOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
@@ -16,16 +14,11 @@
 	import TextareaInputItem from '$lib/components/widgets/ionic/TextareaInputItem.svelte';
 	import { t } from '$lib/locales';
 	import { Form } from '$lib/models/ui';
-	import { organizationStore } from '$lib/stores';
 	import { customForm } from '$lib/utility';
 
 	const form = new Form({
-		completed: async ({ response }) => {
-			await organizationStore.initialize();
-			await organizationStore.update(response.id);
-			await goto(resolve('/organization'));
-		},
-		request: async (model: OrganizationCreationRequestTO) => organizationService.create(model),
+		completed: async () => await goto(resolve('/organization')),
+		request: organizationService.create,
 		schema: createOrganizationSchema()
 	});
 </script>

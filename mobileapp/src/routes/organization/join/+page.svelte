@@ -1,4 +1,6 @@
 <script lang="ts">
+	import type { OrganizationMinifiedTO } from '@kollapp/api-types';
+
 	import { CapacitorBarcodeScanner, CapacitorBarcodeScannerTypeHint } from '@capacitor/barcode-scanner';
 	import { Haptics } from '@capacitor/haptics';
 	import { keyOutline, qrCodeOutline, saveOutline } from 'ionicons/icons';
@@ -19,8 +21,8 @@
 	import { customForm, informationModal, showAlert, StatusCheck } from '$lib/utility';
 
 	const form = new Form({
-		completed: async ({ model }) => await onCompleted(model.code),
-		request: async (model) => organizationService.joinByInvitationCode(model.code),
+		completed: async ({ response }) => await onCompleted(response),
+		request: organizationService.joinByInvitationCode,
 		schema: joinOrganizationSchema()
 	});
 
@@ -29,10 +31,10 @@
 			const result = await CapacitorBarcodeScanner.scanBarcode({ hint: CapacitorBarcodeScannerTypeHint.QR_CODE });
 			const code = result.ScanResult;
 			if (code.length === 8) {
-				const response = await organizationService.joinByInvitationCode(code);
+				const response = await organizationService.joinByInvitationCode({ code });
 				if (StatusCheck.isOK(response.status)) {
 					await Haptics.vibrate({ duration: 1000 });
-					await onCompleted(code);
+					await onCompleted(response.data);
 				}
 			} else {
 				await showAlert($t('routes.organization.join.page.qr-code.invalid'));
@@ -42,11 +44,8 @@
 		}
 	}
 
-	async function onCompleted(code: string): Promise<void> {
+	async function onCompleted(organization: OrganizationMinifiedTO): Promise<void> {
 		await organizationStore.initialize();
-		const organizationResponse = await organizationService.getByInvitationCode(code);
-		if (!StatusCheck.isOK(organizationResponse.status)) return;
-		const organization = organizationResponse.data;
 		await informationModal(
 			$t('routes.organization.join.page.modal.join.header'),
 			$t('routes.organization.join.page.modal.join.message', { value: organization.name })

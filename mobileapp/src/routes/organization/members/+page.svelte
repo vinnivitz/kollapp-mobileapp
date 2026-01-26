@@ -184,37 +184,30 @@
 	}
 
 	async function approveUser(personOfOrganizationId: number): Promise<void> {
-		const organizationId = $organizationStore?.id;
-		if (!organizationId) return;
-		const response = await organizationService.approveUser(organizationId, personOfOrganizationId);
+		const response = await organizationService.approveUser(personOfOrganizationId);
 		if (StatusCheck.isOK(response.status)) {
-			await organizationStore.update(organizationId);
+			await organizationStore.update();
 		}
 	}
 
 	async function removePersonOfOrganization(personOfOrganizationId: number): Promise<void> {
-		const organizationId = $organizationStore?.id;
-		if (!organizationId) return;
-		const response = await organizationService.removePersonOfOrganization(organizationId, personOfOrganizationId);
+		const response = await organizationService.removePersonOfOrganization(personOfOrganizationId);
 		if (StatusCheck.isOK(response.status)) {
-			await organizationStore.update(organizationId);
+			await organizationStore.update();
 		}
 	}
 
 	async function onSelectRole(personOfOrganization: PersonOfOrganizationTO): Promise<void> {
-		const organizationId = $organizationStore?.id as number;
 		const actionsheet = await actionSheetController.create({
 			buttons: [
 				{
-					handler: () =>
-						onGrantOrganizationRolePrompt(personOfOrganization.id, organizationId, 'ROLE_ORGANIZATION_MANAGER'),
+					handler: () => onGrantOrganizationRolePrompt(personOfOrganization.id, 'ROLE_ORGANIZATION_MANAGER'),
 					icon: medalOutline,
 					role: personOfOrganization.organizationRole === 'ROLE_ORGANIZATION_MANAGER' ? 'selected' : undefined,
 					text: $t('routes.organization.members.page.modal.select-role.manager')
 				},
 				{
-					handler: () =>
-						onGrantOrganizationRolePrompt(personOfOrganization.id, organizationId, 'ROLE_ORGANIZATION_MEMBER'),
+					handler: () => onGrantOrganizationRolePrompt(personOfOrganization.id, 'ROLE_ORGANIZATION_MEMBER'),
 					icon: personOutline,
 					role: personOfOrganization.organizationRole === 'ROLE_ORGANIZATION_MEMBER' ? 'selected' : undefined,
 					text: $t('routes.organization.members.page.modal.select-role.member')
@@ -226,16 +219,12 @@
 		await actionsheet.present();
 	}
 
-	async function onGrantOrganizationRolePrompt(
-		personOfOrganizationId: number,
-		organizationId: number,
-		role: OrganizationRole
-	): Promise<void> {
+	async function onGrantOrganizationRolePrompt(personOfOrganizationId: number, role: OrganizationRole): Promise<void> {
 		if (role === personsOfOrganization.find((person) => person.id === personOfOrganizationId)?.organizationRole) {
 			return;
 		}
 		await confirmationModal({
-			handler: async () => await grantOrganizationRole(personOfOrganizationId, organizationId, role),
+			handler: async () => await grantOrganizationRole(personOfOrganizationId, role),
 			header: $t('routes.organization.members.page.modal.change-role.header'),
 			message: $t('routes.organization.members.page.modal.change-role.message', {
 				value: getRoleTranslationFromRole(role)
@@ -243,13 +232,9 @@
 		});
 	}
 
-	async function grantOrganizationRole(
-		personOfOrganizationId: number,
-		organizationId: number,
-		role: OrganizationRole
-	): Promise<void> {
-		await organizationService.grantRole(organizationId, personOfOrganizationId, role);
-		await organizationStore.update(organizationId);
+	async function grantOrganizationRole(personOfOrganizationId: number, role: OrganizationRole): Promise<void> {
+		await organizationService.grantRole(personOfOrganizationId, role);
+		await organizationStore.update();
 	}
 
 	function getGroupedMembers(personsOfOrganization: PersonOfOrganizationTO[]): [string, PersonOfOrganizationTO[]][] {
@@ -295,9 +280,9 @@
 	}
 
 	async function onRenewCode(): Promise<void> {
-		const response = await organizationService.renewInvitationCode($organizationStore?.id!);
+		const response = await organizationService.renewInvitationCode();
 		if (StatusCheck.isOK(response.status)) {
-			await organizationStore.update($organizationStore?.id!);
+			await organizationStore.update();
 		}
 	}
 

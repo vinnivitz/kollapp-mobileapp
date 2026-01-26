@@ -39,25 +39,23 @@
 
 	const createForm = new Form<OrganizationBudgetCategoryRequestTO>({
 		completed: async ({ actions }) => {
-			await organizationStore.update($organizationStore?.id!);
+			await organizationStore.update();
 			createModalOpen = false;
 			actions.setModel(schema.getDefault());
 		},
 		exposedActions: (actions) => (createFormActions = actions),
-		request: async (model) => budgetCategoryService.create($organizationStore?.id!, model),
+		request: budgetCategoryService.create,
 		schema
 	});
 
 	const updateForm = new Form<OrganizationBudgetCategoryRequestTO>({
 		completed: async ({ actions }) => {
-			await organizationStore.update($organizationStore?.id!);
+			await organizationStore.update();
 			updateModalOpen = false;
 			actions.setModel(schema.getDefault());
 		},
 		exposedActions: (actions) => (updateFormActions = actions),
-		request: async (model) => {
-			return budgetCategoryService.update($organizationStore?.id!, selectedCategory!.id, model);
-		},
+		request: async (model) => budgetCategoryService.update(selectedCategory?.id!, model),
 		schema
 	});
 
@@ -99,9 +97,9 @@
 	}
 
 	async function deleteCategory(categoryId: number): Promise<void> {
-		const response = await budgetCategoryService.remove($organizationStore?.id!, categoryId);
+		const response = await budgetCategoryService.remove(categoryId);
 		if (StatusCheck.isOK(response.status)) {
-			await organizationStore.update($organizationStore?.id!);
+			await organizationStore.update();
 		}
 	}
 

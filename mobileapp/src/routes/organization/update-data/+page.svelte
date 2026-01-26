@@ -23,9 +23,9 @@
 		},
 		exposedActions: (actions) => {
 			actions?.setModel({
-				description: $organizationStore!.description,
-				name: $organizationStore!.name,
-				place: $organizationStore!.place
+				description: $organizationStore?.description,
+				name: $organizationStore?.name!,
+				place: $organizationStore?.place!
 			});
 		},
 		failed: () => (touched = false),

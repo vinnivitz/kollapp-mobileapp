@@ -1,5 +1,6 @@
 import type { PostingTO } from '@kollapp/api-types';
 
+import { TZDate } from '@date-fns/tz';
 import { fireEvent, render, waitFor } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -37,7 +38,7 @@ function makePostings(): PostingTO[] {
 	return [
 		{
 			amountInCents: 10_000,
-			date: new Date().toISOString(),
+			date: new TZDate().toISOString(),
 			id: 1,
 			organizationBudgetCategoryId: 1,
 			personOfOrganizationId: 1,
@@ -46,7 +47,7 @@ function makePostings(): PostingTO[] {
 		},
 		{
 			amountInCents: 2500,
-			date: new Date().toISOString(),
+			date: new TZDate().toISOString(),
 			id: 2,
 			organizationBudgetCategoryId: 2,
 			personOfOrganizationId: 1,
@@ -55,7 +56,7 @@ function makePostings(): PostingTO[] {
 		},
 		{
 			amountInCents: 3000,
-			date: new Date().toISOString(),
+			date: new TZDate().toISOString(),
 			id: 3,
 			organizationBudgetCategoryId: 3,
 			personOfOrganizationId: 1,
@@ -64,7 +65,7 @@ function makePostings(): PostingTO[] {
 		},
 		{
 			amountInCents: 1000,
-			date: new Date().toISOString(),
+			date: new TZDate().toISOString(),
 			id: 4,
 			organizationBudgetCategoryId: 4,
 			personOfOrganizationId: 1,
@@ -73,7 +74,7 @@ function makePostings(): PostingTO[] {
 		},
 		{
 			amountInCents: 2000,
-			date: new Date().toISOString(),
+			date: new TZDate().toISOString(),
 			id: 5,
 			organizationBudgetCategoryId: 5,
 			personOfOrganizationId: 1,
@@ -86,7 +87,7 @@ function makePostings(): PostingTO[] {
 function makeManyPostings(count: number, type: 'CREDIT' | 'DEBIT'): PostingTO[] {
 	return Array.from({ length: count }, (_, index) => ({
 		amountInCents: (count - index) * 1000,
-		date: new Date().toISOString(),
+		date: new TZDate().toISOString(),
 		id: index + 1,
 		organizationBudgetCategoryId: index + 1,
 		personOfOrganizationId: 1,
@@ -126,7 +127,7 @@ describe('widgets/BudgetChart', () => {
 	});
 
 	it('BudgetChart: with minimal postings shows chips (threshold is 1)', async () => {
-		const now = new Date().toISOString();
+		const now = new TZDate().toISOString();
 		const postings: PostingTO[] = [
 			{
 				amountInCents: 1000,
@@ -157,7 +158,7 @@ describe('widgets/BudgetChart', () => {
 	});
 
 	it('BudgetChart: only credits render credit chip and switching hides total', async () => {
-		const now = new Date().toISOString();
+		const now = new TZDate().toISOString();
 		const postings: PostingTO[] = [
 			{
 				amountInCents: 2000,
@@ -202,7 +203,7 @@ describe('widgets/BudgetChart', () => {
 	});
 
 	it('BudgetChart: interaction threshold exactly met shows chips', async () => {
-		const now = new Date().toISOString();
+		const now = new TZDate().toISOString();
 		const postings: PostingTO[] = [
 			{
 				amountInCents: 1000,
@@ -241,7 +242,7 @@ describe('widgets/BudgetChart', () => {
 	});
 
 	it('BudgetChart: only debits render debit chip and switching hides total', async () => {
-		const now = new Date().toISOString();
+		const now = new TZDate().toISOString();
 		const postings: PostingTO[] = [
 			{
 				amountInCents: 1200,
@@ -320,7 +321,7 @@ describe('widgets/BudgetChart', () => {
 	});
 
 	it('BudgetChart: mixed dataset renders all chips and toggles appropriately', async () => {
-		const now = new Date().toISOString();
+		const now = new TZDate().toISOString();
 		const postings: PostingTO[] = [
 			{
 				amountInCents: 5000,

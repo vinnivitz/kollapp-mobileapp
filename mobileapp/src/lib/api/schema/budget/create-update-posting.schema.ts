@@ -24,13 +24,13 @@ export const createUpdatePostingSchema = (): ObjectSchema<PostingCreateUpdateReq
 		date: string()
 			.default(format(new TZDate(), 'yyyy-MM-dd'))
 			.required($t('api.validation.budget.create-posting.date.required')),
-		organizationBudgetCategoryId: number().min(0).optional().default(0),
-		personOfOrganizationId: number().min(0).optional().default(0),
+		organizationBudgetCategoryId: number().min(0).default(0),
+		personOfOrganizationId: number().min(0).default(0),
 		purpose: string()
 			.default('')
 			.trim()
 			.max(200, $t('api.validation.budget.create-posting.purpose.max'))
 			.required($t('api.validation.budget.create-posting.purpose.required')),
-		type: string().oneOf(Object.values(types)).default('CREDIT')
+		type: string().oneOf(Object.values(types)).default('DEBIT')
 	} satisfies Record<keyof PostingCreateUpdateRequestTO, AnyObject>);
 };

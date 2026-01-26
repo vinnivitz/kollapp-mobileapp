@@ -40,7 +40,7 @@
 		completed: async ({ model }) => onPasswordConfirmed($userStore?.username!, model.password),
 		exposedActions: (exposedActions) => (actions = exposedActions),
 		hiddenFields: { username: $userStore?.username! },
-		request: async (model: LoginRequestTO) => authenticationService.login(model),
+		request: authenticationService.login,
 		schema: loginSchema()
 	});
 
@@ -67,7 +67,7 @@
 	}
 
 	async function onPasswordPromptDismiss(): Promise<void> {
-		actions.setModel();
+		actions.setModel(loginSchema().getDefault());
 		showPasswordPrompt = false;
 		if (!isPasswordConfirmed) {
 			setToggleValue(false);

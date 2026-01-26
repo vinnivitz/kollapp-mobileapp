@@ -1,4 +1,4 @@
-import type { Colors, SelectItem } from '$lib/models/ui';
+import type { Colors, MultiSelectItem } from '$lib/models/ui';
 
 /**
  * Configuration for a chip option in a filter section.
@@ -59,14 +59,12 @@ export type FilterDateRangeSection = FilterSectionBase & {
  * A section with a multi-select dropdown.
  */
 export type FilterMultiSelectSection = FilterSectionBase & {
-	/** Default selected IDs */
-	defaultValue: number[];
 	/** Icon for the multi-select */
 	icon: string;
 	/** Label for the multi-select input */
 	inputLabel: string;
 	/** Items available for selection */
-	items: SelectItem[];
+	items: MultiSelectItem[];
 	type: 'multi-select';
 	/** Text shown when all items are selected */
 	allSelectedText?: string;
@@ -94,6 +92,8 @@ export type FilterState<T extends Record<string, unknown> = Record<string, unkno
  * Searchbar configuration for the filter.
  */
 export type FilterSearchbarConfig = {
+	/** Current search value */
+	value: string;
 	/** Placeholder text for the searchbar */
 	placeholder?: string;
 	/** Callback when search value changes */
@@ -106,8 +106,6 @@ export type FilterSearchbarConfig = {
 export type FilterConfig<TState extends Record<string, unknown> = Record<string, unknown>> = {
 	/** Filter sections to display */
 	sections: FilterSection[];
-	/** Current filter state (applied values) */
-	state: TState;
 	/** Title of the filter popover */
 	title: string;
 	/** Label for the apply button in the popover */
@@ -118,6 +116,8 @@ export type FilterConfig<TState extends Record<string, unknown> = Record<string,
 	resetLabel?: string;
 	/** Searchbar configuration - if provided, shows searchbar */
 	searchbar?: FilterSearchbarConfig;
+	/** Current filter state */
+	state?: TState;
 	/** Callback when filters are applied - receives the new state */
 	onApply: (state: TState) => void;
 	/** Callback when filters are reset */

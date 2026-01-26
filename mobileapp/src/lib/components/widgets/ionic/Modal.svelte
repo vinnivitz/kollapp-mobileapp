@@ -26,6 +26,7 @@
 		touched?: boolean;
 		confirmed?: () => void;
 		dismissed?: () => void;
+		presented?: () => void;
 	};
 
 	let {
@@ -43,6 +44,7 @@
 		labels = true,
 		lazy = false,
 		open,
+		presented,
 		title,
 		touched = true
 	}: Properties = $props();
@@ -110,6 +112,7 @@
 		bind:this={_modalController}
 		is-open={open}
 		onwillPresent={onPresent}
+		ondidPresent={presented}
 		ondidDismiss={dismissed}
 		breakpoints={breakpoints ? [0, 0.5, 0.75, 1] : undefined}
 		initial-breakpoint={initialBreakPoint}

@@ -1,5 +1,5 @@
 import type { OrganizationStore } from '$lib/models/stores';
-import type { OrganizationMinifiedTO, OrganizationTO } from '@kollapp/api-types';
+import type { ActivityTO, OrganizationMinifiedTO, OrganizationTO, PostingTO } from '@kollapp/api-types';
 
 import { writable } from 'svelte/store';
 
@@ -7,6 +7,7 @@ import { organizationService } from '$lib/api/services';
 import { StorageKey } from '$lib/models/storage';
 import {
 	deduplicateRequest,
+	getOrganizationId,
 	getStoredValue,
 	removeStoredValue,
 	startTour,
@@ -23,7 +24,7 @@ function createStore(): OrganizationStore {
 	const loadedServer = writable(false);
 	const organizations = writable<OrganizationMinifiedTO[]>([]);
 
-	async function initialize(): Promise<void> {
+	async function initialize(organizationId?: number): Promise<void> {
 		return deduplicateRequest(ORGANIZATION_STORE_INIT_REQUEST_KEY, async () => {
 			const storedOrganization = await getStoredValue<OrganizationTO>(StorageKey.ORGANIZATION);
 			if (storedOrganization) {
@@ -38,7 +39,7 @@ function createStore(): OrganizationStore {
 				const allOrganizations = response.data;
 				organizations.set(allOrganizations);
 
-				const organizationId = storedOrganization?.id ?? allOrganizations[0]?.id;
+				organizationId = organizationId ?? storedOrganization?.id ?? allOrganizations[0]?.id;
 
 				await (organizationId ? update(organizationId) : _set());
 			} else if (StatusCheck.isUnauthorized(response.status)) {
@@ -59,7 +60,8 @@ function createStore(): OrganizationStore {
 		await _set();
 	}
 
-	async function update(id: number): Promise<void> {
+	async function update(id?: number): Promise<void> {
+		id = id ?? getOrganizationId()!;
 		return deduplicateRequest(ORGANIZATION_STORE_UPDATE_REQUEST_KEY(id), async () => {
 			const response = await organizationService.getById(id);
 			if (StatusCheck.isOK(response.status)) {
@@ -69,15 +71,116 @@ function createStore(): OrganizationStore {
 		});
 	}
 
+	async function createActivity(activity: ActivityTO): Promise<void> {
+		const organization = await getStoredValue<OrganizationTO>(StorageKey.ORGANIZATION);
+		if (!organization) return;
+
+		organization.activities.push(activity);
+		await _set(organization);
+	}
+
+	async function updateActivity(activity: ActivityTO): Promise<void> {
+		const organization = await getStoredValue<OrganizationTO>(StorageKey.ORGANIZATION);
+		if (!organization) return;
+
+		const activityIndex = organization.activities.findIndex((a) => a.id === activity.id);
+		if (activityIndex !== -1) {
+			organization.activities[activityIndex] = activity;
+			await _set(organization);
+		}
+	}
+
+	async function removeActivity(activityId: number): Promise<void> {
+		const organization = await getStoredValue<OrganizationTO>(StorageKey.ORGANIZATION);
+		if (!organization) return;
+
+		organization.activities = organization.activities.filter((activity) => activity.id !== activityId);
+		await _set(organization);
+	}
+
+	async function createOrganizationPosting(posting: PostingTO): Promise<void> {
+		const organization = await getStoredValue<OrganizationTO>(StorageKey.ORGANIZATION);
+		if (!organization) return;
+
+		organization.organizationPostings.push(posting);
+		await _set(organization);
+	}
+
+	async function createActivityPosting(activityId: number, posting: PostingTO): Promise<void> {
+		const organization = await getStoredValue<OrganizationTO>(StorageKey.ORGANIZATION);
+		if (!organization) return;
+
+		const activity = organization.activities.find((activity) => activity.id === activityId);
+		if (!activity) return;
+
+		activity.activityPostings.push(posting);
+		await _set(organization);
+	}
+
+	async function updateOrganizationPosting(posting: PostingTO): Promise<void> {
+		const organization = await getStoredValue<OrganizationTO>(StorageKey.ORGANIZATION);
+		if (!organization) return;
+
+		const postingIndex = organization.organizationPostings.findIndex(
+			(organizationPosting) => organizationPosting.id === posting.id
+		);
+		if (postingIndex !== -1) {
+			organization.organizationPostings[postingIndex] = posting;
+			await _set(organization);
+		}
+	}
+
+	async function updateActivityPosting(activityId: number, posting: PostingTO): Promise<void> {
+		const organization = await getStoredValue<OrganizationTO>(StorageKey.ORGANIZATION);
+		if (!organization) return;
+
+		const activity = organization.activities.find((activity) => activity.id === activityId);
+		if (!activity) return;
+
+		const postingIndex = activity.activityPostings.findIndex((p) => p.id === posting.id);
+		if (postingIndex !== -1) {
+			activity.activityPostings[postingIndex] = posting;
+			await _set(organization);
+		}
+	}
+
+	async function removeOrganizationPosting(postingId: number): Promise<void> {
+		const organization = await getStoredValue<OrganizationTO>(StorageKey.ORGANIZATION);
+		if (!organization) return;
+
+		organization.organizationPostings = organization.organizationPostings.filter((posting) => posting.id !== postingId);
+		await _set(organization);
+	}
+
+	async function removeActivityPosting(activityId: number, postingId: number): Promise<void> {
+		const organization = await getStoredValue<OrganizationTO>(StorageKey.ORGANIZATION);
+		if (!organization) return;
+
+		const activity = organization.activities.find((activity) => activity.id === activityId);
+		if (!activity) return;
+
+		activity.activityPostings = activity.activityPostings.filter((posting) => posting.id !== postingId);
+		await _set(organization);
+	}
+
 	return {
+		createActivity,
+		createActivityPosting,
+		createOrganizationPosting,
 		initialize,
 		loadedCache,
 		loadedServer,
 		organizations,
+		removeActivity,
+		removeActivityPosting,
+		removeOrganizationPosting,
 		reset,
 		set: _set,
 		subscribe,
-		update
+		update,
+		updateActivity,
+		updateActivityPosting,
+		updateOrganizationPosting
 	};
 }
 

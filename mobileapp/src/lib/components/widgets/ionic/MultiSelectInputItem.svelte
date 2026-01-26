@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { SelectItem } from '$lib/models/ui';
+	import type { MultiSelectItem } from '$lib/models/ui';
 
 	import { checkmarkOutline } from 'ionicons/icons';
 	import { SvelteSet } from 'svelte/reactivity';
@@ -17,7 +17,7 @@
 		classList?: string;
 		disabled?: boolean;
 		hidden?: boolean;
-		items?: SelectItem[];
+		items?: MultiSelectItem[];
 		multiple?: boolean;
 		noneSelectedText?: string;
 		readonly?: boolean;

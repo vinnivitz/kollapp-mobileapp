@@ -27,16 +27,14 @@
 	});
 
 	const form = new Form({
-		completed: async () => goto(resolve('/auth/login')),
+		completed: async () => await goto(resolve('/auth/login')),
 		customValidators: {
 			confirmPassword: passwordConfirmationValidator<ResetPasswordRequestTO & { confirmPassword: string }>(
 				'password',
 				'confirmPassword'
 			)
 		},
-		request: async (model) => {
-			return publicUserService.resetPassword(model, data.token!);
-		},
+		request: async (model) => publicUserService.resetPassword(model, data.token!),
 		schema: resetPasswordSchema()
 	});
 </script>

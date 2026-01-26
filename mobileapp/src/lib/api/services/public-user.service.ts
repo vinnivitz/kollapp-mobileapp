@@ -4,14 +4,16 @@ import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/models
 import { customFetch } from '$lib/utility';
 
 class PublicUserService {
-	ENDPOINT = 'public/user';
+	private get base(): string {
+		return 'public/user';
+	}
 
 	/** Registers a new manager
 	 * @param model signup model
 	 * @returns {Promise<ResponseBody>} response body
 	 */
 	async register(model: KollappUserSignupRequestTO): Promise<ResponseBody> {
-		return customFetch(`${this.ENDPOINT}/signup`, {
+		return customFetch(`${this.base}/signup`, {
 			authorizationType: AuthorizationType.NONE,
 			body: model,
 			method: RequestMethod.POST
@@ -23,7 +25,7 @@ class PublicUserService {
 	 * @returns {Promise<ResponseBody>} response body
 	 */
 	async forgotPassword(model: ForgotPasswordRequestTO): Promise<ResponseBody> {
-		return customFetch(`${this.ENDPOINT}/forgot-password`, {
+		return customFetch(`${this.base}/forgot-password`, {
 			authorizationType: AuthorizationType.NONE,
 			body: model,
 			method: RequestMethod.POST
@@ -36,7 +38,7 @@ class PublicUserService {
 	 * @returns {Promise<ResponseBody>} response body
 	 */
 	async resetPassword(model: ResetPasswordRequestTO, token: string): Promise<ResponseBody> {
-		return customFetch(`${this.ENDPOINT}/reset-password`, {
+		return customFetch(`${this.base}/reset-password`, {
 			authorizationType: AuthorizationType.NONE,
 			body: model,
 			method: RequestMethod.POST,

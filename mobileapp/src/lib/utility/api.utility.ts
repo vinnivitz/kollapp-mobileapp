@@ -102,7 +102,7 @@ export async function customFetch<T = never>(url: string, config?: CustomFetchCo
 
 		connectionStore.check();
 
-		return getResponseBody<T>(response, silentOnSuccess, silentOnError, config?.silentOnSpecificStatus);
+		return getResponseBody<T>(response, silentOnSuccess, silentOnError, config?.silentOnStatus);
 	} catch (error) {
 		let message = $t('utility.api.error.generic');
 		let status = StatusCode.SERVICE_UNAVAILABLE;
@@ -130,14 +130,12 @@ export async function isAuthenticated(): Promise<boolean> {
  * @param body Fetch response.
  * @returns {ValidationResult<T>} Validation result containing errors and validity status.
  */
-export function getValidationResult<TField = unknown, TData = unknown>(
-	body: ResponseBody<TData>
-): ValidationResult<TField> {
+export function getValidationResult<T, R>(body: ResponseBody<R>): ValidationResult<T> {
 	const $t = get(t);
 	return {
 		errors: [
 			{
-				field: body.validationField as keyof TField,
+				field: body.validationField as keyof T,
 				message: body.message ?? $t('utility.api.error.generic')
 			}
 		],
@@ -174,6 +172,50 @@ export function hasOrganizationRole(role: OrganizationRole): boolean {
  */
 export function hasSystemRole(role: SystemRoleTO): boolean {
 	return get(userStore)?.role === role;
+}
+
+/**
+ * Gets the person of organization ID for the current user.
+ * @returns {number | undefined} Person of organization ID or undefined if not found.
+ */
+export function getPersonOfOrganizationId(): number | undefined {
+	const userId = get(userStore)?.id;
+	return get(organizationStore)?.personsOfOrganization.find(
+		(personOfOrganization) => personOfOrganization.userId === userId
+	)?.id;
+}
+
+/**
+ * Gets the username for a given person of organization ID.
+ * @param personOfOrganizationId Person of organization ID.
+ * @returns {string | undefined} Username or undefined if not found.
+ */
+export function getUsernameByPersonOfOrganizationId(personOfOrganizationId: number): string | undefined {
+	return get(organizationStore)?.personsOfOrganization.find(
+		(personOfOrganization) => personOfOrganization.id === personOfOrganizationId
+	)?.username;
+}
+
+/** Gets the budget category name by its ID.
+ * @param categoryId Budget category ID.
+ * @returns {string} Budget category name or empty string if not found.
+ */
+export function getBudgetCategoryNameById(categoryId: number): string {
+	return get(organizationStore)?.budgetCategories.find((category) => category.id === categoryId)?.name ?? '';
+}
+
+/** Gets the current organization ID.
+ * @returns {number | undefined} Organization ID or undefined if not set.
+ */
+export function getOrganizationId(): number | undefined {
+	return get(organizationStore)?.id;
+}
+
+/** Gets the current user ID.
+ * @returns {number | undefined} User ID or undefined if not set.
+ */
+export function getUserId(): number | undefined {
+	return get(userStore)?.id;
 }
 
 async function handleAuthorizationError(): Promise<ResponseBody> {

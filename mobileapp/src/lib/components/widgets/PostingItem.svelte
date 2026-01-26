@@ -1,5 +1,13 @@
 <script lang="ts">
-	import type { ActivityTO, PostingCreateUpdateRequestTO, PostingTO, PostingType } from '@kollapp/api-types';
+	import type { ResponseBody } from '$lib/models/api';
+	import type {
+		ActivityTO,
+		OrganizationBudgetCategoryResponseTO,
+		PersonOfOrganizationTO,
+		PostingCreateUpdateRequestTO,
+		PostingTO,
+		PostingType
+	} from '@kollapp/api-types';
 
 	import { TZDate } from '@date-fns/tz';
 	import { loadingController } from '@ionic/core';
@@ -17,6 +25,7 @@
 		trendingDownOutline,
 		trendingUpOutline
 	} from 'ionicons/icons';
+	import { number } from 'yup';
 
 	import AmountInputItem from './ionic/AmountInputItem.svelte';
 	import Card from './ionic/Card.svelte';
@@ -25,94 +34,136 @@
 	import DatetimeInputItem from './ionic/DatetimeInputItem.svelte';
 	import InputItem from './ionic/InputItem.svelte';
 	import Modal from './ionic/Modal.svelte';
-	import MultiSelectItem from './ionic/MultiSelectItem.svelte';
+	import MultiSelectInputItem from './ionic/MultiSelectInputItem.svelte';
 
 	import { createUpdatePostingSchema } from '$lib/api/schema/budget';
-	import { budgetService } from '$lib/api/services';
 	import { t } from '$lib/locales';
-	import { Form, type FormActions, type ItemSlidingOption, type SelectItem } from '$lib/models/ui';
-	import { organizationStore } from '$lib/stores';
-	import { confirmationModal, customForm, formatter, getValidationResult, parser } from '$lib/utility';
+	import { Form, type FormActions, type ItemSlidingOption, type MultiSelectItem } from '$lib/models/ui';
+	import {
+		confirmationModal,
+		customForm,
+		formatter,
+		getBudgetCategoryNameById,
+		getOrganizationId,
+		getPersonOfOrganizationId,
+		getUsernameByPersonOfOrganizationId,
+		getValidationResult,
+		hasOrganizationRole,
+		parser
+	} from '$lib/utility';
 
 	type Properties = {
-		budgetCategoryName: string;
+		activities: ActivityTO[];
+		budgetCategories: OrganizationBudgetCategoryResponseTO[];
+		personsOfOrganization: PersonOfOrganizationTO[];
 		posting: PostingTO;
 		activity?: ActivityTO;
-		canDelete?: boolean;
-		canEdit?: boolean;
-		canTransfer?: boolean;
-		showMemberSelect?: boolean;
-		username?: string;
+		onDeleteActivityPosting: (activityId: number, postingId: number) => Promise<ResponseBody>;
+		onDeleteOrganizationPosting: (postingId: number) => Promise<ResponseBody>;
+		onEditEnd: () => void;
+		onEditStart: () => void;
+		onTransferActivityPosting: (activityId: number, postingId: number) => Promise<ResponseBody<PostingTO>>;
+		onTransferOrganizationPosting: (postingId: number) => Promise<ResponseBody<PostingTO>>;
+		onUpdateActivityPosting: (
+			activityId: number,
+			postingId: number,
+			model: PostingCreateUpdateRequestTO
+		) => Promise<ResponseBody<PostingTO>>;
+		onUpdateOrganizationPosting: (
+			postingId: number,
+			model: PostingCreateUpdateRequestTO
+		) => Promise<ResponseBody<PostingTO>>;
+		onCompleted?: () => Promise<void>;
 	};
 
+	type PostingFormModel = PostingCreateUpdateRequestTO & { activityId: number };
+
 	let {
+		activities,
 		activity,
-		budgetCategoryName,
-		canDelete = false,
-		canEdit = false,
-		canTransfer = false,
-		posting,
-		showMemberSelect = false,
-		username
+		budgetCategories,
+		onCompleted,
+		onDeleteActivityPosting,
+		onDeleteOrganizationPosting,
+		onEditEnd,
+		onEditStart,
+		onTransferActivityPosting,
+		onTransferOrganizationPosting,
+		onUpdateActivityPosting,
+		onUpdateOrganizationPosting,
+		personsOfOrganization,
+		posting
 	}: Properties = $props();
+
+	const organizationId = getOrganizationId();
+	const isManager = $derived(hasOrganizationRole('ROLE_ORGANIZATION_MANAGER'));
+	const canEdit = $derived(isManager || posting.personOfOrganizationId === getPersonOfOrganizationId());
+	const canTransfer = $derived(isManager && posting.personOfOrganizationId > 0);
+	const activityId = activity?.id ?? 0;
 
 	let editModalOpen = $state<boolean>(false);
 	let selectedPostingType = $state<PostingType>(posting.type);
-	let formActions = $state<FormActions<PostingCreateUpdateRequestTO>>();
+	let formActions = $state<FormActions<PostingFormModel>>();
 
-	const budgetCategoryItems = $derived<SelectItem[]>(
-		$organizationStore?.budgetCategories.map((category) => ({
+	const postingFormSchema = createUpdatePostingSchema().shape({
+		activityId: number().default(0)
+	});
+
+	const budgetCategoryItems = $derived<MultiSelectItem[]>(
+		budgetCategories.map((category) => ({
 			data: { id: category.id, label: category.name },
-			selected: category.id === posting.organizationBudgetCategoryId
-		})) ?? []
+			selected: category.defaultCategory
+		}))
 	);
 
-	const personOfOrganizationItems = $derived<SelectItem[]>(
-		$organizationStore?.personsOfOrganization.map((person) => ({
-			data: { id: person.id, label: person.username },
-			selected: person.id === posting.personOfOrganizationId
-		})) ?? []
+	const personOfOrganizationItems = $derived<MultiSelectItem[]>(
+		personsOfOrganization.map((personOfOrganization) => ({
+			data: { id: personOfOrganization.id, label: personOfOrganization.username },
+			selected: personOfOrganization.id === posting.personOfOrganizationId
+		}))
 	);
 
-	const isAssignedToPersonOfOrganization = $derived(posting.personOfOrganizationId !== 0);
+	const activityItems = $derived<MultiSelectItem[]>(
+		activities.map((activityItem) => ({
+			data: { id: activityItem.id, label: activityItem.name },
+			selected: activityItem.id === activityId
+		}))
+	);
 
-	const updatePostingForm = new Form<PostingCreateUpdateRequestTO>({
+	const updatePostingForm = new Form<PostingFormModel>({
 		completed: async ({ actions }) => {
-			await organizationStore.update($organizationStore?.id!);
+			await onCompleted?.();
 			editModalOpen = false;
-			actions.setModel(createUpdatePostingSchema().getDefault());
+			actions.setModel(postingFormSchema.getDefault());
 		},
 		exposedActions: (exposedActions) => (formActions = exposedActions),
 		formatters: { amountInCents: formatter.currency },
 		parsers: { amountInCents: parser.currency },
-		request: async (model) => {
-			const organizationId = $organizationStore?.id!;
-			return activity?.id
-				? budgetService.updateActivityPosting(organizationId, activity.id, posting.id, model)
-				: budgetService.updateOrganizationPosting(organizationId, posting.id, model);
-		},
-		schema: createUpdatePostingSchema()
+		request: (model) =>
+			model.activityId > 0
+				? onUpdateActivityPosting(model.activityId, posting.id, model)
+				: onUpdateOrganizationPosting(posting.id, model),
+		schema: postingFormSchema
 	});
 
-	const slidingOptions = $derived.by((): ItemSlidingOption[] => {
+	const slidingOptions = $derived.by(() => {
 		const options: ItemSlidingOption[] = [];
 
-		if (canDelete) {
-			options.push({
-				color: 'danger',
-				handler: () => onDeletePosting(),
-				icon: trashBinOutline,
-				label: $t('components.posting-item.sliding-options.delete')
-			});
-		}
-
 		if (canEdit) {
-			options.push({
-				color: 'primary',
-				handler: onOpenEditModal,
-				icon: createOutline,
-				label: $t('components.posting-item.sliding-options.edit')
-			});
+			options.push(
+				{
+					color: 'danger',
+					handler: () => onDeletePosting(),
+					icon: trashBinOutline,
+					label: $t('components.posting-item.sliding-options.delete')
+				},
+				{
+					color: 'primary',
+					handler: onOpenEditModal,
+					icon: createOutline,
+					label: $t('components.posting-item.sliding-options.edit')
+				}
+			);
 		}
 
 		if (canTransfer) {
@@ -128,26 +179,20 @@
 	});
 
 	function onOpenEditModal(): void {
+		onEditStart();
 		selectedPostingType = posting.type;
 		formActions?.setModel(
-			createUpdatePostingSchema().cast({
-				amountInCents: posting.amountInCents,
-				date: posting.date,
-				organizationBudgetCategoryId: posting.organizationBudgetCategoryId,
-				personOfOrganizationId: posting.personOfOrganizationId ?? 0,
-				purpose: posting.purpose,
-				type: posting.type
-			}) as PostingCreateUpdateRequestTO
+			postingFormSchema.cast({
+				...posting,
+				activityId
+			} satisfies PostingFormModel)
 		);
 		editModalOpen = true;
 	}
 
 	function setSelectedPostingType(type: PostingType): void {
 		selectedPostingType = type;
-		formActions?.setModel({
-			...updatePostingForm.model,
-			type
-		});
+		formActions?.updateModelByKey('type', type);
 	}
 
 	async function onDeletePosting(): Promise<void> {
@@ -160,13 +205,14 @@
 	async function deletePosting(): Promise<void> {
 		const loader = await loadingController.create({});
 		await loader.present();
-		const organizationId = $organizationStore?.id;
 		if (organizationId) {
-			const result = activity?.id
-				? getValidationResult(await budgetService.removeActivityPosting(organizationId, activity.id, posting.id))
-				: getValidationResult(await budgetService.removeOrganizationPosting(organizationId, posting.id));
-			if (result.valid) {
-				await organizationStore.update(organizationId);
+			const result =
+				activityId > 0
+					? await onDeleteActivityPosting(activityId, posting.id)
+					: await onDeleteOrganizationPosting(posting.id);
+			const validationResult = getValidationResult(result);
+			if (validationResult.valid) {
+				await onCompleted?.();
 			}
 		}
 		await loader.dismiss();
@@ -184,16 +230,22 @@
 	async function transferPosting(): Promise<void> {
 		const loader = await loadingController.create({});
 		await loader.present();
-		const organizationId = $organizationStore?.id;
 		if (organizationId) {
-			const result = activity?.id
-				? getValidationResult(await budgetService.transferActivityPosting(organizationId, activity.id, posting.id))
-				: getValidationResult(await budgetService.transferOrganizationPosting(organizationId, posting.id));
-			if (result.valid) {
-				await organizationStore.update(organizationId);
+			const result =
+				activityId > 0
+					? await onTransferActivityPosting(activityId, posting.id)
+					: await onTransferOrganizationPosting(posting.id);
+			const validationResult = getValidationResult(result);
+			if (validationResult.valid) {
+				await onCompleted?.();
 			}
 		}
 		await loader.dismiss();
+	}
+
+	function onDismissed(): void {
+		editModalOpen = false;
+		onEditEnd();
 	}
 </script>
 
@@ -213,11 +265,11 @@
 		<div class="flex w-full flex-row items-center justify-start gap-2">
 			<ion-note class="flex items-center justify-center gap-1 text-sm">
 				<ion-icon icon={calendarClearOutline}></ion-icon>
-				<ion-label>{format(new TZDate(posting.date), 'PP')}</ion-label>
+				<ion-label class="truncate">{format(new TZDate(posting.date), 'PP')}</ion-label>
 			</ion-note>
 			<ion-note class="flex items-center justify-center gap-1 text-sm">
 				<ion-icon icon={cardOutline}></ion-icon>
-				<ion-label class="truncate">{budgetCategoryName}</ion-label>
+				<ion-label class="truncate">{getBudgetCategoryNameById(posting.organizationBudgetCategoryId)}</ion-label>
 			</ion-note>
 		</div>
 		<div class="flex w-full flex-row items-center justify-start gap-2">
@@ -227,19 +279,18 @@
 					<div class="truncate">{activity.name}</div>
 				</ion-note>
 			{/if}
-			{#if username}
+			{#if posting.personOfOrganizationId > 0}
 				<ion-note class="flex items-center justify-center gap-1 text-sm">
 					<ion-icon icon={personOutline}></ion-icon>
-					<div class="truncate">{username}</div>
+					<div class="truncate">{getUsernameByPersonOfOrganizationId(posting.personOfOrganizationId)}</div>
 				</ion-note>
 			{/if}
 		</div>
 	</div>
 </CustomItem>
 
-<!-- Edit Posting Modal -->
 {#if canEdit}
-	<Modal open={editModalOpen} dismissed={() => (editModalOpen = false)}>
+	<Modal open={editModalOpen} dismissed={onDismissed}>
 		<Card title={$t('components.posting-item.modal.edit.title')}>
 			<form use:customForm={updatePostingForm}>
 				<div class="mb-3 flex items-center justify-center gap-2">
@@ -257,8 +308,9 @@
 				<InputItem name="purpose" label={$t('components.posting-item.modal.edit.purpose')} icon={documentOutline} />
 				<AmountInputItem name="amountInCents" label={$t('components.posting-item.modal.edit.amount')} />
 				<DatetimeInputItem name="date" label={$t('components.posting-item.modal.edit.date')} />
-				<MultiSelectItem
-					hidden={!showMemberSelect || !isAssignedToPersonOfOrganization}
+				<MultiSelectInputItem
+					hidden={posting.personOfOrganizationId === 0}
+					readonly={!isManager}
 					name="personOfOrganizationId"
 					icon={peopleOutline}
 					multiple={false}
@@ -266,7 +318,17 @@
 					noneSelectedText={$t('components.posting-item.modal.edit.member.none-selected')}
 					items={personOfOrganizationItems}
 				/>
-				<MultiSelectItem
+				<MultiSelectInputItem
+					hidden={!activity}
+					name="activityId"
+					icon={flashOutline}
+					multiple={false}
+					readonly
+					label={$t('components.posting-item.modal.edit.activity.label')}
+					noneSelectedText={$t('components.posting-item.modal.edit.activity.none-selected')}
+					items={activityItems}
+				/>
+				<MultiSelectInputItem
 					name="organizationBudgetCategoryId"
 					icon={cardOutline}
 					multiple={false}

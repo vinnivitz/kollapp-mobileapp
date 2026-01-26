@@ -19,14 +19,18 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
+	import { budgetService } from '$lib/api/services';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import BudgetChart from '$lib/components/widgets/BudgetChart.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
+	import PostingOverviewModal from '$lib/components/widgets/PostingOverviewModal.svelte';
 	import { t } from '$lib/locales';
 	import { TourStepId } from '$lib/models/ui';
 	import { localeStore, organizationStore, userStore } from '$lib/stores';
 	import { getDateFnsLocale, hasOrganizationRole, triggerClickByLabel } from '$lib/utility';
+
+	let transactionOverviewOpen = $state<boolean>(false);
 
 	const activity = $derived.by(() => {
 		if (!$organizationStore?.activities || $organizationStore.activities.length === 0) {
@@ -39,13 +43,18 @@
 		return upcoming;
 	});
 
+	const personOfOrganizationId = $derived(
+		$organizationStore?.personsOfOrganization.find((person) => person.userId === $userStore?.id)?.id ?? 0
+	);
+
 	const postings = $derived(
-		$organizationStore
+		($organizationStore
 			? [
 					...$organizationStore.organizationPostings,
 					...$organizationStore.activities.flatMap((activity) => activity.activityPostings)
 				]
 			: []
+		).filter((posting) => posting.personOfOrganizationId === personOfOrganizationId)
 	);
 	const organizations = $derived(organizationStore.organizations);
 
@@ -115,13 +124,22 @@
 			</ion-text>
 		</div>
 		<Button
+			size="small"
 			fill="clear"
 			color="medium"
-			size="small"
 			icon={notificationsOffOutline}
 			label={$t('routes.page.page.account-card.notifications.no-notes')}
 			clicked={() => goto(resolve('/account/notifications'))}
 		/>
+		{#if postings.length > 0}
+			<Button
+				size="small"
+				icon={cardOutline}
+				fill="outline"
+				label={$t('routes.page.page.account-card.open-postings.button.label', { value: postings.length })}
+				clicked={() => (transactionOverviewOpen = true)}
+			/>
+		{/if}
 	</div>
 {/snippet}
 
@@ -243,13 +261,18 @@
 
 {#snippet quickAccess()}
 	<div data-tour={TourStepId.HOME.QUICK_ACCESS} class="grid grid-cols-2">
-		<Card titleIconStart={cashOutline} classList="text-center" clicked={onAddPosting} border="tertiary">
+		<Card
+			titleIconStart={cashOutline}
+			classList={isManager ? 'text-center' : 'text-center col-span-2'}
+			clicked={onAddPosting}
+			border="tertiary"
+		>
 			<ion-text>{$t('routes.page.page.quick-access.card.add-posting')}</ion-text>
 		</Card>
-		<Card titleIconStart={flashOutline} classList="text-center" clicked={onCreateActivity} border="tertiary">
-			<ion-text>{$t('routes.page.page.quick-access.card.create-activity')}</ion-text>
-		</Card>
 		{#if isManager}
+			<Card titleIconStart={flashOutline} classList="text-center" clicked={onCreateActivity} border="tertiary">
+				<ion-text>{$t('routes.page.page.quick-access.card.create-activity')}</ion-text>
+			</Card>
 			<Card titleIconStart={cardOutline} classList="text-center" clicked={onAddBudgetCategory} border="tertiary">
 				<ion-text>{$t('routes.page.page.quick-access.card.budget-categories')}</ion-text>
 			</Card>
@@ -284,3 +307,20 @@
 		</ul>
 	</Card>
 {/snippet}
+
+<PostingOverviewModal
+	open={transactionOverviewOpen}
+	dismissed={() => (transactionOverviewOpen = false)}
+	activities={$organizationStore?.activities!}
+	budgetCategories={$organizationStore?.budgetCategories!}
+	personsOfOrganization={$organizationStore?.personsOfOrganization!}
+	{postings}
+	showPersonOfOrganizationFilter={false}
+	onCompleted={organizationStore.update}
+	onUpdateOrganizationPosting={budgetService.updateOrganizationPosting}
+	onUpdateActivityPosting={budgetService.updateActivityPosting}
+	onTransferOrganizationPosting={budgetService.transferOrganizationPosting}
+	onTransferActivityPosting={budgetService.transferActivityPosting}
+	onDeleteOrganizationPosting={budgetService.deleteOrganizationPosting}
+	onDeleteActivityPosting={budgetService.deleteActivityPosting}
+/>

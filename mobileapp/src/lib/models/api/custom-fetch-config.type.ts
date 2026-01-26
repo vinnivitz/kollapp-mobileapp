@@ -17,6 +17,6 @@ type BaseCustomFetchConfig = {
 	authorizationType?: AuthorizationType;
 	query?: Record<string, string>;
 	silentOnError?: boolean;
-	silentOnSpecificStatus?: StatusCode[];
+	silentOnStatus?: StatusCode[];
 	silentOnSuccess?: boolean;
 };

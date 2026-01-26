@@ -12,30 +12,31 @@
 	import { t } from '$lib/locales';
 	import { Form } from '$lib/models/ui';
 	import { userStore } from '$lib/stores';
-	import {
-		customForm,
-		isBiometricAvailable,
-		isBiometricEnabled,
-		updateUsernameBiometricCredentials
-	} from '$lib/utility';
+	import { customForm, informationModal } from '$lib/utility';
 
 	let touched = $state<boolean>(false);
+	let currentEmail = $state<string>();
 
 	const form = new Form({
 		completed: async ({ model }) => {
-			if ((await isBiometricAvailable()) && (await isBiometricEnabled())) {
-				await updateUsernameBiometricCredentials(model.username);
+			if (currentEmail !== model.email) {
+				await informationModal(
+					$t('routes.account.update-data.page.modal.message'),
+					$t('routes.account.update-data.page.modal.title', { value: model.email })
+				);
 			}
-			await userStore.initialize();
 		},
 		exposedActions: (actions) => {
 			actions.setModel({
-				email: $userStore!.email,
-				username: $userStore!.username
+				email: $userStore?.email!,
+				username: $userStore?.username!
 			});
 		},
 		onTouched: () => (touched = true),
-		request: async (model: KollappUserUpdateRequestTO) => userService.update(model),
+		request: async (model: KollappUserUpdateRequestTO) => {
+			currentEmail = $userStore?.email;
+			return userService.update(model);
+		},
 		schema: updateUserDataSchema()
 	});
 </script>

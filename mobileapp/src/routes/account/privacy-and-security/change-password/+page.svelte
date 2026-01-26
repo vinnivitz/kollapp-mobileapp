@@ -12,25 +12,14 @@
 	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import { t } from '$lib/locales';
 	import { Form } from '$lib/models/ui';
-	import {
-		customForm,
-		isBiometricAvailable,
-		isBiometricEnabled,
-		passwordConfirmationValidator,
-		updatePasswordBiometricCredentials
-	} from '$lib/utility';
+	import { customForm, passwordConfirmationValidator } from '$lib/utility';
 
 	const form = new Form({
-		completed: async ({ model }) => {
-			if ((await isBiometricAvailable()) && (await isBiometricEnabled())) {
-				await updatePasswordBiometricCredentials(model.newPassword);
-			}
-			goto(resolve('/account'));
-		},
+		completed: async () => await goto(resolve('/account')),
 		customValidators: {
 			confirmNewPassword: passwordConfirmationValidator('newPassword', 'confirmNewPassword')
 		},
-		request: async (model) => userService.changePassword(model),
+		request: async (model) => await userService.changePassword(model),
 		schema: changePasswordSchema()
 	});
 </script>

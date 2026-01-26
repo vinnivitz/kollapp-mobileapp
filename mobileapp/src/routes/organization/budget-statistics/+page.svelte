@@ -24,6 +24,7 @@
 	import { onMount } from 'svelte';
 	import { SvelteMap } from 'svelte/reactivity';
 
+	import { budgetService } from '$lib/api/services';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import Chip from '$lib/components/widgets/ionic/Chip.svelte';
@@ -32,7 +33,7 @@
 	import { t } from '$lib/locales';
 	import { Theme } from '$lib/models/ui';
 	import { organizationStore, themeStore } from '$lib/stores';
-	import { formatter, hasOrganizationRole } from '$lib/utility';
+	import { formatter } from '$lib/utility';
 
 	type TimeRange = '12months' | '3months' | '6months' | 'all';
 	type CategoryStats = { category: OrganizationBudgetCategoryResponseTO; credit: number; debit: number };
@@ -41,8 +42,9 @@
 
 	let mounted = $state<boolean>(false);
 	let selectedTimeRange = $state<TimeRange>('all');
+	let isEditingPosting = $state<boolean>(false);
+	let stablePostings = $state<PostingTO[]>([]);
 
-	const isManager = $derived(hasOrganizationRole('ROLE_ORGANIZATION_MANAGER'));
 	const isDarkMode = $derived($themeStore === Theme.DARK);
 
 	const activityByPostingId = $derived<SvelteMap<number, ActivityTO | undefined>>(
@@ -59,7 +61,7 @@
 	]);
 
 	const filteredPostings = $derived.by<PostingTO[]>(() => {
-		if (selectedTimeRange === 'all') return postings;
+		if (selectedTimeRange === 'all') return stablePostings;
 
 		const now = new TZDate();
 		let months: number;
@@ -70,9 +72,9 @@
 		} else {
 			months = 12;
 		}
-		const cutoffDate = new Date(now.getFullYear(), now.getMonth() - months, now.getDate());
+		const cutoffDate = new TZDate(now.getFullYear(), now.getMonth() - months, now.getDate());
 
-		return postings.filter((p) => new TZDate(p.date) >= cutoffDate);
+		return stablePostings.filter((p) => new TZDate(p.date) >= cutoffDate);
 	});
 
 	const totalCredit = $derived(
@@ -293,27 +295,17 @@
 		}
 	});
 
-	function getCategoryName(categoryId: number): string {
-		return $organizationStore?.budgetCategories.find((category) => category.id === categoryId)?.name ?? '';
-	}
-
-	function getMemberName(personOfOrganizationId: number): string | undefined {
-		return $organizationStore?.personsOfOrganization.find(
-			(personOfOrganization) => personOfOrganization.id === personOfOrganizationId
-		)?.username;
-	}
-
-	function getActivity(postingId: number): ActivityTO | undefined {
-		return activityByPostingId.get(postingId);
-	}
-
-	onMount(() => {
-		mounted = true;
+	$effect(() => {
+		if (!isEditingPosting) {
+			stablePostings = [...postings];
+		}
 	});
+
+	onMount(() => (mounted = true));
 </script>
 
 <Layout title={$t('routes.organization.budget-statistics.page.title')} showBackButton>
-	{#if postings.length === 0}
+	{#if stablePostings.length === 0}
 		{@render emptyState()}
 	{:else}
 		{@render timeRangeFilter()}
@@ -482,14 +474,20 @@
 			>
 				{#each topCredits as posting (posting.id)}
 					<PostingItem
+						onEditStart={() => (isEditingPosting = true)}
+						onEditEnd={() => (isEditingPosting = false)}
+						personsOfOrganization={$organizationStore?.personsOfOrganization!}
 						{posting}
-						activity={getActivity(posting.id)}
-						budgetCategoryName={getCategoryName(posting.organizationBudgetCategoryId)}
-						canDelete={isManager}
-						canEdit={isManager}
-						canTransfer={isManager && posting.personOfOrganizationId > 0}
-						showMemberSelect={isManager}
-						username={getMemberName(posting.personOfOrganizationId)}
+						activity={activityByPostingId.get(posting.id)}
+						activities={$organizationStore?.activities!}
+						budgetCategories={$organizationStore?.budgetCategories!}
+						onCompleted={organizationStore.update}
+						onUpdateOrganizationPosting={budgetService.updateOrganizationPosting}
+						onUpdateActivityPosting={budgetService.updateActivityPosting}
+						onTransferOrganizationPosting={budgetService.transferOrganizationPosting}
+						onTransferActivityPosting={budgetService.transferActivityPosting}
+						onDeleteOrganizationPosting={budgetService.deleteOrganizationPosting}
+						onDeleteActivityPosting={budgetService.deleteActivityPosting}
 					/>
 				{/each}
 			</Card>
@@ -502,14 +500,20 @@
 			>
 				{#each topDebits as posting (posting.id)}
 					<PostingItem
+						onEditStart={() => {}}
+						onEditEnd={() => {}}
+						personsOfOrganization={$organizationStore?.personsOfOrganization!}
 						{posting}
-						activity={getActivity(posting.id)}
-						budgetCategoryName={getCategoryName(posting.organizationBudgetCategoryId)}
-						canDelete={isManager}
-						canEdit={isManager}
-						canTransfer={isManager && posting.personOfOrganizationId > 0}
-						showMemberSelect={isManager}
-						username={getMemberName(posting.personOfOrganizationId)}
+						activity={activityByPostingId.get(posting.id)}
+						activities={$organizationStore?.activities!}
+						budgetCategories={$organizationStore?.budgetCategories!}
+						onCompleted={organizationStore.update}
+						onUpdateOrganizationPosting={budgetService.updateOrganizationPosting}
+						onUpdateActivityPosting={budgetService.updateActivityPosting}
+						onTransferOrganizationPosting={budgetService.transferOrganizationPosting}
+						onTransferActivityPosting={budgetService.transferActivityPosting}
+						onDeleteOrganizationPosting={budgetService.deleteOrganizationPosting}
+						onDeleteActivityPosting={budgetService.deleteActivityPosting}
 					/>
 				{/each}
 			</Card>

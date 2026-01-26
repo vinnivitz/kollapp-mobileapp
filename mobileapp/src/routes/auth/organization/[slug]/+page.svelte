@@ -37,9 +37,8 @@
 	let authenticated = $state<boolean>(false);
 
 	async function onJoinCollective(): Promise<void> {
-		const result = await organizationService.joinByInvitationCode(data.code);
+		const result = await organizationService.joinByInvitationCode({ code: data.code });
 		if (StatusCheck.isOK(result.status)) {
-			await organizationStore.update($organizationStore?.id!);
 			await goto(resolve('/organization'));
 		}
 	}
@@ -51,8 +50,8 @@
 		]);
 		if (StatusCheck.isOK(organizationResult.status)) {
 			organization = organizationResult.data;
+			authenticated = authenticatedResult;
 		}
-		authenticated = authenticatedResult;
 		loading = false;
 	});
 </script>

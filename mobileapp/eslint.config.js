@@ -128,6 +128,8 @@ export default defineConfig(
 				HTMLIonCardTitleElement: 'readonly',
 				HTMLIonDatetimeElement: 'readonly',
 				HTMLIonFabElement: 'readonly',
+				HTMLIonInfiniteScrollContentElement: 'readonly',
+				HTMLIonInfiniteScrollElement: 'readonly',
 				HTMLIonInputElement: 'readonly',
 				HTMLIonItemSlidingElement: 'readonly',
 				HTMLIonListElement: 'readonly',

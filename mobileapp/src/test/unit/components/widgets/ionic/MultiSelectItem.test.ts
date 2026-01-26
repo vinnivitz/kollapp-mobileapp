@@ -1,24 +1,24 @@
-import type { SelectItem } from '$lib/models/ui';
+import type { MultiSelectItem } from '$lib/models/ui';
 
 import { fireEvent, render } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 
-import MultiSelectItem from '$lib/components/widgets/ionic/MultiSelectItem.svelte';
+import MultiSelectInputItem from '$lib/components/widgets/ionic/MultiSelectInputItem.svelte';
 
-describe('widgets/ionic/MultiSelectItem', () => {
-	const items: SelectItem[] = [
+describe('widgets/ionic/MultiSelectInputItem', () => {
+	const items: MultiSelectItem[] = [
 		{ color: 'primary', data: { id: 1, label: 'One' }, selected: false },
 		{ color: 'secondary', data: { id: 2, label: 'Two' }, selected: false }
 	];
 
-	const itemsWithIcon: SelectItem[] = [
+	const itemsWithIcon: MultiSelectItem[] = [
 		{ color: 'primary', data: { id: 1, label: 'One' }, icon: 'star', selected: false },
 		{ color: 'secondary', data: { id: 2, label: 'Two' }, icon: 'heart', selected: true }
 	];
 
 	it('opens modal, filters, toggles and confirms (multiple)', async () => {
 		const changed = vi.fn();
-		const { container } = render(MultiSelectItem, {
+		const { container } = render(MultiSelectInputItem, {
 			props: { changed, icon: 'list', items, label: 'Select', multiple: true, value: [1] }
 		});
 		await fireEvent.click(container.querySelector('ion-item') as HTMLIonItemElement);
@@ -34,7 +34,7 @@ describe('widgets/ionic/MultiSelectItem', () => {
 
 	it('single select sets selectedId and confirms', async () => {
 		const changed = vi.fn();
-		const { container } = render(MultiSelectItem, {
+		const { container } = render(MultiSelectInputItem, {
 			props: { changed, icon: 'list', items, label: 'Select', multiple: false, value: [2] }
 		});
 		await fireEvent.click(container.querySelector('ion-item') as HTMLIonItemElement);
@@ -46,7 +46,7 @@ describe('widgets/ionic/MultiSelectItem', () => {
 	});
 
 	it('displays all selected text when all items selected', () => {
-		const { container } = render(MultiSelectItem, {
+		const { container } = render(MultiSelectInputItem, {
 			props: { icon: 'list', items, label: 'Select', multiple: true, value: [1, 2] }
 		});
 
@@ -55,7 +55,7 @@ describe('widgets/ionic/MultiSelectItem', () => {
 	});
 
 	it('displays none selected text when no items selected', () => {
-		const { container } = render(MultiSelectItem, {
+		const { container } = render(MultiSelectInputItem, {
 			props: { icon: 'list', items, label: 'Select', multiple: true, value: [] }
 		});
 
@@ -64,12 +64,12 @@ describe('widgets/ionic/MultiSelectItem', () => {
 	});
 
 	it('displays comma-separated labels when some items selected', () => {
-		const threeItems: SelectItem[] = [
+		const threeItems: MultiSelectItem[] = [
 			{ color: 'primary', data: { id: 1, label: 'Alpha' }, selected: false },
 			{ color: 'secondary', data: { id: 2, label: 'Beta' }, selected: false },
 			{ color: 'tertiary', data: { id: 3, label: 'Gamma' }, selected: false }
 		];
-		const { container } = render(MultiSelectItem, {
+		const { container } = render(MultiSelectInputItem, {
 			props: { icon: 'list', items: threeItems, label: 'Select', multiple: true, value: [1, 2] }
 		});
 
@@ -80,7 +80,7 @@ describe('widgets/ionic/MultiSelectItem', () => {
 
 	it('dismisses modal and resets draft selection', async () => {
 		const changed = vi.fn();
-		const { container } = render(MultiSelectItem, {
+		const { container } = render(MultiSelectInputItem, {
 			props: { changed, icon: 'list', items, label: 'Select', multiple: true, value: [1] }
 		});
 
@@ -99,7 +99,7 @@ describe('widgets/ionic/MultiSelectItem', () => {
 
 	it('toggles item selection via checkbox', async () => {
 		const changed = vi.fn();
-		const { container } = render(MultiSelectItem, {
+		const { container } = render(MultiSelectInputItem, {
 			props: { changed, icon: 'list', items, label: 'Select', multiple: true, value: [] }
 		});
 
@@ -117,7 +117,7 @@ describe('widgets/ionic/MultiSelectItem', () => {
 
 	it('deselects all with toggle', async () => {
 		const changed = vi.fn();
-		const { container } = render(MultiSelectItem, {
+		const { container } = render(MultiSelectInputItem, {
 			props: { changed, icon: 'list', items, label: 'Select', multiple: true, value: [1, 2] }
 		});
 
@@ -133,7 +133,7 @@ describe('widgets/ionic/MultiSelectItem', () => {
 	});
 
 	it('renders with disabled prop', () => {
-		const { container } = render(MultiSelectItem, {
+		const { container } = render(MultiSelectInputItem, {
 			props: { disabled: true, icon: 'list', items, label: 'Select' }
 		});
 
@@ -142,7 +142,7 @@ describe('widgets/ionic/MultiSelectItem', () => {
 	});
 
 	it('renders with hidden prop', () => {
-		const { container } = render(MultiSelectItem, {
+		const { container } = render(MultiSelectInputItem, {
 			props: { hidden: true, icon: 'list', items, label: 'Select' }
 		});
 
@@ -151,7 +151,7 @@ describe('widgets/ionic/MultiSelectItem', () => {
 	});
 
 	it('renders without search when search=false', async () => {
-		const { container } = render(MultiSelectItem, {
+		const { container } = render(MultiSelectInputItem, {
 			props: { icon: 'list', items, label: 'Select', search: false }
 		});
 
@@ -162,7 +162,7 @@ describe('widgets/ionic/MultiSelectItem', () => {
 	});
 
 	it('renders items with icons in multiple mode', async () => {
-		const { container } = render(MultiSelectItem, {
+		const { container } = render(MultiSelectInputItem, {
 			props: { icon: 'list', items: itemsWithIcon, label: 'Select', multiple: true, value: [] }
 		});
 
@@ -173,7 +173,7 @@ describe('widgets/ionic/MultiSelectItem', () => {
 	});
 
 	it('renders items with icons in single mode', async () => {
-		const { container } = render(MultiSelectItem, {
+		const { container } = render(MultiSelectInputItem, {
 			props: { icon: 'list', items: itemsWithIcon, label: 'Select', multiple: false, value: [] }
 		});
 
@@ -184,7 +184,7 @@ describe('widgets/ionic/MultiSelectItem', () => {
 	});
 
 	it('uses first selected item as default in single mode', () => {
-		const { container } = render(MultiSelectItem, {
+		const { container } = render(MultiSelectInputItem, {
 			props: { icon: 'list', items: itemsWithIcon, label: 'Select', multiple: false, value: [] }
 		});
 
@@ -193,11 +193,11 @@ describe('widgets/ionic/MultiSelectItem', () => {
 	});
 
 	it('single select with no value shows none selected', () => {
-		const noSelectedItems: SelectItem[] = [
+		const noSelectedItems: MultiSelectItem[] = [
 			{ color: 'primary', data: { id: 1, label: 'One' }, selected: false },
 			{ color: 'secondary', data: { id: 2, label: 'Two' }, selected: false }
 		];
-		const { container } = render(MultiSelectItem, {
+		const { container } = render(MultiSelectInputItem, {
 			props: { icon: 'list', items: noSelectedItems, label: 'Select', multiple: false, value: [] }
 		});
 
@@ -207,7 +207,7 @@ describe('widgets/ionic/MultiSelectItem', () => {
 
 	it('dismisses single select and resets selectedId', async () => {
 		const changed = vi.fn();
-		const { container } = render(MultiSelectItem, {
+		const { container } = render(MultiSelectInputItem, {
 			props: { changed, icon: 'list', items, label: 'Select', multiple: false, value: [1] }
 		});
 
@@ -226,8 +226,8 @@ describe('widgets/ionic/MultiSelectItem', () => {
 
 	it('confirms single select with undefined selectedId', async () => {
 		const changed = vi.fn();
-		const noSelectedItems: SelectItem[] = [{ color: 'primary', data: { id: 1, label: 'One' }, selected: false }];
-		const { container } = render(MultiSelectItem, {
+		const noSelectedItems: MultiSelectItem[] = [{ color: 'primary', data: { id: 1, label: 'One' }, selected: false }];
+		const { container } = render(MultiSelectInputItem, {
 			props: { changed, icon: 'list', items: noSelectedItems, label: 'Select', multiple: false, value: [] }
 		});
 
@@ -240,7 +240,7 @@ describe('widgets/ionic/MultiSelectItem', () => {
 	});
 
 	it('renders with readonly prop', () => {
-		const { container } = render(MultiSelectItem, {
+		const { container } = render(MultiSelectInputItem, {
 			props: { icon: 'list', items, label: 'Select', readonly: true }
 		});
 
@@ -249,7 +249,7 @@ describe('widgets/ionic/MultiSelectItem', () => {
 	});
 
 	it('renders with custom classList', () => {
-		const { container } = render(MultiSelectItem, {
+		const { container } = render(MultiSelectInputItem, {
 			props: { classList: 'custom-select', icon: 'list', items, label: 'Select' }
 		});
 
@@ -258,7 +258,7 @@ describe('widgets/ionic/MultiSelectItem', () => {
 	});
 
 	it('dispatches customChange event when name is set (multiple)', async () => {
-		const { container } = render(MultiSelectItem, {
+		const { container } = render(MultiSelectInputItem, {
 			props: { icon: 'list', items, label: 'Select', multiple: true, name: 'mySelect' }
 		});
 
@@ -279,7 +279,7 @@ describe('widgets/ionic/MultiSelectItem', () => {
 	});
 
 	it('dispatches customChange event when name is set (single)', async () => {
-		const { container } = render(MultiSelectItem, {
+		const { container } = render(MultiSelectInputItem, {
 			props: { icon: 'list', items, label: 'Select', multiple: false, name: 'mySelect' }
 		});
 

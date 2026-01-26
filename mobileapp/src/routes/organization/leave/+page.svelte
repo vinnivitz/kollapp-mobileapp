@@ -55,11 +55,7 @@
 	async function leaveOrganization(): Promise<void> {
 		const loader = await loadingController.create({});
 		await loader.present();
-		const organizationId = $organizationStore?.id;
-		if (organizationId) {
-			await organizationService.leave(organizationId);
-			await organizationStore.initialize();
-		}
+		await organizationService.leave();
 		await loader.dismiss();
 		await goto(resolve('/organization'));
 	}

@@ -1,3 +1,4 @@
+import type { JoinOrganizationTO } from '../dto';
 import type {
 	OrganizationCreationRequestTO,
 	OrganizationMinifiedTO,
@@ -7,10 +8,13 @@ import type {
 } from '@kollapp/api-types';
 
 import { AuthorizationType, RequestMethod, type ResponseBody, StatusCode } from '$lib/models/api';
-import { customFetch } from '$lib/utility';
+import { organizationStore } from '$lib/stores';
+import { customFetch, getOrganizationId, StatusCheck } from '$lib/utility';
 
 class OrganizationService {
-	ENDPOINT = 'organization';
+	private get base(): string {
+		return 'organization';
+	}
 
 	/**
 	 * Retrieves the organization by id.
@@ -18,103 +22,124 @@ class OrganizationService {
 	 * @returns {Promise<ResponseBody<OrganizationTO>>} The organization.
 	 */
 	async getById(id: number): Promise<ResponseBody<OrganizationTO>> {
-		return customFetch(`${this.ENDPOINT}/${id}`, {
-			silentOnSpecificStatus: [StatusCode.FORBIDDEN]
+		return customFetch(`${this.base}/${id}`, {
+			silentOnStatus: [StatusCode.FORBIDDEN]
 		});
 	}
 
 	/**
 	 * Retrieves the organizations of the logged in user.
-	 * @returns {Promise<ResponseBody<OrganizationMinifiedTO[]>>} The organizations.
+	 * @returns {Promise<ResponseBody<OrganizationMinifiedTO[]>>} The minified organizations.
 	 */
 	async getAll(): Promise<ResponseBody<OrganizationMinifiedTO[]>> {
-		return customFetch(this.ENDPOINT);
+		return customFetch(this.base);
 	}
 
 	/**
 	 * Creates a new organization.
 	 * @param model The organization information.
-	 * @returns {Promise<ResponseBody<OrganizationTO>>} The response body.
+	 * @returns {Promise<ResponseBody<OrganizationTO>>} The organization.
 	 */
 	async create(model: OrganizationCreationRequestTO): Promise<ResponseBody<OrganizationTO>> {
-		return customFetch(this.ENDPOINT, {
+		const response = await customFetch<OrganizationTO>(this.base, {
 			body: model,
 			method: RequestMethod.POST
 		});
+		if (StatusCheck.isOK(response.status)) {
+			await organizationStore.initialize(response.data.id);
+		}
+		return response;
 	}
 
 	/**
 	 * Updates the organization information.
 	 * @param model	The organization information.
-	 * @returns {Promise<ResponseBody<OrganizationTO>>} The response body.
+	 * @returns {Promise<ResponseBody<OrganizationTO>>} The organization.
 	 */
 	async update(id: number, model: OrganizationUpdateRequestTO): Promise<ResponseBody<OrganizationTO>> {
-		return customFetch(`${this.ENDPOINT}/${id}`, {
+		const response = await customFetch<OrganizationTO>(`${this.base}/${id}`, {
 			body: model,
 			method: RequestMethod.PUT
 		});
+		if (StatusCheck.isOK(response.status)) {
+			await organizationStore.set(response.data);
+		}
+		return response;
 	}
 
 	/**
-	 * Deletes user from the organization and delete if last user with manager role.
+	 * Removes user from the organization and deletes organization if it was the last user with manager role.
 	 * @returns {Promise<ResponseBody>} The response body.
 	 */
-	async leave(organizationId: number): Promise<ResponseBody> {
-		return customFetch(`${this.ENDPOINT}/${organizationId}`, {
+	async leave(): Promise<ResponseBody> {
+		const response = await customFetch(`${this.base}/${getOrganizationId()!}`, {
 			method: RequestMethod.DELETE
 		});
+		if (StatusCheck.isOK(response.status)) {
+			await organizationStore.initialize();
+		}
+		return response;
 	}
 
 	/**
-	 * Removes user from the organization.
+	 * Removes person from the organization.
 	 * @param personOfOrganizationId The id of the person of organization.
-	 * @returns {Promise<ResponseBody<OrganizationTO>>} The response body.
+	 * @returns {Promise<ResponseBody<OrganizationTO>>} The organization without the removed person.
 	 */
-	async removePersonOfOrganization(
-		organizationId: number,
-		personOfOrganizationId: number
-	): Promise<ResponseBody<OrganizationTO>> {
-		return customFetch(`${this.ENDPOINT}/${organizationId}/person/${personOfOrganizationId}`, {
-			method: RequestMethod.DELETE
-		});
+	async removePersonOfOrganization(personOfOrganizationId: number): Promise<ResponseBody<OrganizationTO>> {
+		const response = await customFetch<OrganizationTO>(
+			`${this.base}/${getOrganizationId()!}/person/${personOfOrganizationId}`,
+			{
+				method: RequestMethod.DELETE
+			}
+		);
+		if (StatusCheck.isOK(response.status)) {
+			await organizationStore.set(response.data);
+		}
+		return response;
 	}
 
 	/**
 	 * Grants a organization a role in the organization.
 	 * @param personOfOrganizationId The id of the person of organization.
-	 * @param organizationId The organization id.
 	 * @param role The role to grant.
-	 * @returns {Promise<ResponseBody<OrganizationTO>>} The response body.
+	 * @returns {Promise<ResponseBody<OrganizationTO>>} The organization with the updated person role.
 	 */
-	async grantRole(
-		organizationId: number,
-		personOfOrganizationId: number,
-		role: OrganizationRole
-	): Promise<ResponseBody<OrganizationTO>> {
-		return customFetch(`${this.ENDPOINT}/${organizationId}/person/${personOfOrganizationId}/grant-role`, {
-			body: { role },
-			method: RequestMethod.PATCH
-		});
+	async grantRole(personOfOrganizationId: number, role: OrganizationRole): Promise<ResponseBody<OrganizationTO>> {
+		const response = await customFetch<OrganizationTO>(
+			`${this.base}/${getOrganizationId()!}/person/${personOfOrganizationId}/grant-role`,
+			{
+				body: { role },
+				method: RequestMethod.PATCH
+			}
+		);
+		if (StatusCheck.isOK(response.status)) {
+			await organizationStore.set(response.data);
+		}
+		return response;
 	}
 
 	/**
 	 * Renews the invitation code for the organization.
-	 * @param organizationId The organization id.
-	 * @returns {Promise<ResponseBody<OrganizationTO>>} The organization.
+	 * @returns {Promise<ResponseBody<OrganizationTO>>} The organization with the new invitation code.
 	 */
-	async renewInvitationCode(organizationId: number): Promise<ResponseBody<OrganizationTO>> {
-		return customFetch(`${this.ENDPOINT}/${organizationId}/invitation-code`, {
+	async renewInvitationCode(): Promise<ResponseBody<OrganizationTO>> {
+		const response = await customFetch<OrganizationTO>(`${this.base}/${getOrganizationId()!}/invitation-code`, {
 			method: RequestMethod.PATCH
 		});
+		if (StatusCheck.isOK(response.status)) {
+			await organizationStore.set(response.data);
+		}
+		return response;
 	}
 
 	/**
 	 * Retrieves the organization by invitation code.
 	 * @param code The invitation code.
-	 * @returns {Promise<ResponseBody<OrganizationMinifiedTO>>} The organization.
+	 * @returns {Promise<ResponseBody<OrganizationMinifiedTO>>} The minified organization.
 	 */
 	async getByInvitationCode(code: string): Promise<ResponseBody<OrganizationMinifiedTO>> {
-		return customFetch(`${this.ENDPOINT}/invitation/${code}`, {
+		return customFetch(`${this.base}/invitation/${code}`, {
 			authorizationType: AuthorizationType.NONE,
 			silentOnError: true
 		});
@@ -122,25 +147,35 @@ class OrganizationService {
 
 	/**
 	 * Joins an organization by invitation code.
-	 * @param code The invitation code.
-	 * @returns {Promise<ResponseBody>} The response body.
+	 * @param model The invitation code model.
+	 * @returns {Promise<ResponseBody<OrganizationMinifiedTO>>} The minified organization.
 	 */
-	async joinByInvitationCode(code: string): Promise<ResponseBody> {
-		return customFetch(`${this.ENDPOINT}/invitation/${code}`, {
+	async joinByInvitationCode(model: JoinOrganizationTO): Promise<ResponseBody<OrganizationMinifiedTO>> {
+		const response = await customFetch<OrganizationMinifiedTO>(`${this.base}/invitation/${model.code}`, {
 			method: RequestMethod.POST
 		});
+		if (StatusCheck.isOK(response.status)) {
+			await organizationStore.initialize();
+		}
+		return response;
 	}
 
 	/**
 	 * Approves a user to join the organization.
-	 * @param organizationId The organization id.
 	 * @param userId The user id.
 	 * @returns {Promise<ResponseBody<OrganizationTO>>} The response body.
 	 */
-	async approveUser(organizationId: number, userId: number): Promise<ResponseBody<OrganizationTO>> {
-		return customFetch(`${this.ENDPOINT}/${organizationId}/person/${userId}/approve`, {
-			method: RequestMethod.PATCH
-		});
+	async approveUser(userId: number): Promise<ResponseBody<OrganizationTO>> {
+		const response = await customFetch<OrganizationTO>(
+			`${this.base}/${getOrganizationId()!}/person/${userId}/approve`,
+			{
+				method: RequestMethod.PATCH
+			}
+		);
+		if (StatusCheck.isOK(response.status)) {
+			await organizationStore.initialize(response.data.id);
+		}
+		return response;
 	}
 }
 

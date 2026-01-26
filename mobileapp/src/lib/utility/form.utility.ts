@@ -409,9 +409,7 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 		dirty = true;
 		event?.preventDefault();
 
-		if (isSubmitting) {
-			return;
-		}
+		if (isSubmitting) return;
 
 		const validationResult = await validateForm();
 		if (!validationResult.valid) {
@@ -436,7 +434,7 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 
 		try {
 			const response = await data.submit();
-			const validationResult = getValidationResult<T>(response);
+			const validationResult = getValidationResult<T, R>(response);
 
 			if (validationResult.valid) {
 				data.config.completed?.({ actions, model: data.model, response: response.data });

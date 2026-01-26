@@ -1,3 +1,4 @@
+import { TZDate } from '@date-fns/tz';
 import { type Config, driver, type DriveStep } from 'driver.js';
 import { tick } from 'svelte';
 import { get } from 'svelte/store';
@@ -82,7 +83,9 @@ function getAllTourSteps(): TourStep[] {
 	const $t = get(t);
 	const organization = get(organizationStore)!;
 	const isManager = hasOrganizationRole('ROLE_ORGANIZATION_MANAGER');
-	const hasActivities = organization?.activities.length > 0;
+	const hasUpcomingActivities = organization?.activities.find(
+		(activity) => new TZDate(activity.date).getTime() >= new TZDate().getTime()
+	);
 
 	return [
 		{
@@ -103,7 +106,7 @@ function getAllTourSteps(): TourStep[] {
 			},
 			route: '/'
 		},
-		...(hasActivities
+		...(hasUpcomingActivities
 			? [
 					{
 						element: tourSelector(TourStepId.HOME.UPCOMING_ACTIVITY),

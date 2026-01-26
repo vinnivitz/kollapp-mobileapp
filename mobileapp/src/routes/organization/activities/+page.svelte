@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ActivityCreationRequestTO, ActivityTO } from '@kollapp/api-types';
+	import type { ActivityTO } from '@kollapp/api-types';
 
 	import { TZDate } from '@date-fns/tz';
 	import { format } from 'date-fns';
@@ -22,7 +22,6 @@
 	import { activityService } from '$lib/api/services';
 	import FadeInOut from '$lib/components/layout/FadeInOut.svelte';
 	import Layout from '$lib/components/layout/Layout.svelte';
-	import Filter from '$lib/components/widgets/Filter.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import Datetime from '$lib/components/widgets/ionic/Datetime.svelte';
 	import DatetimeInputItem from '$lib/components/widgets/ionic/DatetimeInputItem.svelte';
@@ -31,6 +30,7 @@
 	import LocationInputItem from '$lib/components/widgets/ionic/LocationInputItem.svelte';
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
 	import SegmentItem from '$lib/components/widgets/ionic/SegmentItem.svelte';
+	import Filter from '$lib/components/widgets/PostingFilter.svelte';
 	import { t } from '$lib/locales';
 	import {
 		chipSection,
@@ -112,11 +112,11 @@
 
 	const form = new Form({
 		completed: async ({ actions }) => {
-			await organizationStore.update($organizationStore?.id!);
+			await organizationStore.update();
 			createActivityModalOpen = false;
 			actions.setModel(createActivitySchema().getDefault());
 		},
-		request: async (model: ActivityCreationRequestTO) => activityService.create($organizationStore?.id!, model),
+		request: activityService.create,
 		schema: createActivitySchema()
 	});
 
@@ -136,7 +136,8 @@
 		onApply: (state) => (filterState = state),
 		searchbar: {
 			onSearch: (value) => (searchActivityValue = value),
-			placeholder: $t('routes.organization.activities.page.activities.search.placeholder')
+			placeholder: $t('routes.organization.activities.page.activities.search.placeholder'),
+			value: searchActivityValue
 		},
 		sections: [
 			chipSection<TimeFilter>('timeFilter', {
@@ -378,7 +379,7 @@
 	>
 		<div class="flex flex-col justify-center">
 			<ion-text class="truncate">{activity.name}</ion-text>
-			<div class="flex flex-wrap items-center gap-3">
+			<div class="flex flex-row items-center gap-3">
 				<div class="flex items-center justify-center gap-1">
 					<ion-icon icon={calendarClearOutline} color="medium"></ion-icon>
 					<ion-text color="medium" class="text-xs">{format(activity.date, 'PPP')}</ion-text>
@@ -387,6 +388,8 @@
 					<ion-icon icon={locationOutline} color="medium"></ion-icon>
 					<ion-text color="medium" class="max-w-[60vw] truncate text-xs">{activity.location}</ion-text>
 				</div>
+			</div>
+			<div class="mt-1 flex flex-row items-center gap-3">
 				<div class="flex items-center justify-center gap-1">
 					<ion-icon icon={cardOutline} color="medium"></ion-icon>
 					<ion-text color="medium" class="max-w-[60vw] truncate text-xs">{activity.activityPostings.length}</ion-text>

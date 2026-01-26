@@ -9,10 +9,15 @@
 	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import { t } from '$lib/locales';
 	import { Form } from '$lib/models/ui';
-	import { customForm } from '$lib/utility';
+	import { customForm, informationModal } from '$lib/utility';
 
 	const form = new Form({
-		request: async (model) => publicUserService.forgotPassword(model),
+		completed: async ({ model }) =>
+			await informationModal(
+				$t('routes.auth.reset-password.page.modal.message'),
+				$t('routes.auth.reset-password.page.modal.title', { value: model.email })
+			),
+		request: publicUserService.forgotPassword,
 		schema: forgotPasswordSchema()
 	});
 </script>
