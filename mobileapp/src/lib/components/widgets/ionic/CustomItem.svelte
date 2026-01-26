@@ -8,6 +8,7 @@
 		children: Snippet;
 		badge?: string;
 		badgeColor?: Colors;
+		badgeEnd?: string;
 		card?: boolean;
 		classList?: string;
 		color?: Colors;
@@ -30,6 +31,7 @@
 	let {
 		badge,
 		badgeColor = 'danger',
+		badgeEnd,
 		card,
 		children,
 		classList = '',
@@ -61,8 +63,7 @@
 {#if slidingOptions}
 	<ion-item-sliding
 		bind:this={ionItemSlidingElement}
-		use:clickOutside
-		onblur={ionItemSlidingElement?.close}
+		use:clickOutside={() => ionItemSlidingElement?.close()}
 		class:hidden
 	>
 		{@render item()}
@@ -70,7 +71,13 @@
 			{#each slidingOptions as option (option.icon)}
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
-				<ion-item-option color={option.color} onclick={() => option.handler()}>
+				<ion-item-option
+					color={option.color}
+					onclick={() => {
+						option.handler();
+						ionItemSlidingElement?.close();
+					}}
+				>
 					{#if option.label}
 						<div class="flex min-w-12 flex-col items-center justify-center">
 							<ion-icon class="text-2xl" icon={option.icon}></ion-icon>
@@ -127,10 +134,15 @@
 					<ion-icon icon={iconEnd} color="secondary" slot="icon-only" size="large"></ion-icon>
 				</ion-button>
 			{/if}
+			{#if badgeEnd}
+				<ion-badge slot="end" color={badgeColor} class="opacity-90">
+					{badgeEnd}
+				</ion-badge>
+			{/if}
 			{@render children()}
 		</ion-item>
 		{#if badge}
-			{@render badgeIcon()}
+			{@render badgeStartIcon()}
 		{:else}
 			<!-- Workaround to show item separator -->
 			<div></div>
@@ -138,7 +150,7 @@
 	</div>
 {/snippet}
 
-{#snippet badgeIcon()}
+{#snippet badgeStartIcon()}
 	<div class="absolute top-1 left-1 opacity-90" style="z-index: 90;">
 		<ion-badge color={badgeColor}>
 			{badge}

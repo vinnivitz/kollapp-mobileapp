@@ -31,6 +31,11 @@
 
 	// workaround to avoid reference linting error
 	void indexed;
+
+	function onClick(event: KeyboardEvent | MouseEvent): void {
+		event.stopPropagation();
+		clicked?.();
+	}
 </script>
 
 <ion-chip
@@ -41,8 +46,8 @@
 	data-tour={tourId}
 	style:background-color={selected ? `color-mix(in srgb, var(--ion-color-${color}) 30%, black 0%)` : 'transparent'}
 	outline={!selected}
-	onclick={clicked}
-	onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && clicked?.()}
+	onclick={onClick}
+	onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && onClick(event)}
 >
 	<div class="flex items-center justify-between gap-2">
 		{#if icon}

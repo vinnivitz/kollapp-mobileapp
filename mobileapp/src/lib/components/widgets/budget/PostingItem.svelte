@@ -27,14 +27,14 @@
 	} from 'ionicons/icons';
 	import { number } from 'yup';
 
-	import AmountInputItem from './ionic/AmountInputItem.svelte';
-	import Card from './ionic/Card.svelte';
-	import Chip from './ionic/Chip.svelte';
-	import CustomItem from './ionic/CustomItem.svelte';
-	import DatetimeInputItem from './ionic/DatetimeInputItem.svelte';
-	import InputItem from './ionic/InputItem.svelte';
-	import Modal from './ionic/Modal.svelte';
-	import MultiSelectInputItem from './ionic/MultiSelectInputItem.svelte';
+	import AmountInputItem from '../ionic/AmountInputItem.svelte';
+	import Card from '../ionic/Card.svelte';
+	import Chip from '../ionic/Chip.svelte';
+	import CustomItem from '../ionic/CustomItem.svelte';
+	import DatetimeInputItem from '../ionic/DatetimeInputItem.svelte';
+	import InputItem from '../ionic/InputItem.svelte';
+	import Modal from '../ionic/Modal.svelte';
+	import MultiSelectInputItem from '../ionic/MultiSelectInputItem.svelte';
 
 	import { createUpdatePostingSchema } from '$lib/api/schema/budget';
 	import { t } from '$lib/locales';

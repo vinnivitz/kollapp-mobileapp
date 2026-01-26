@@ -59,7 +59,7 @@
 		{color}
 		button
 		class={classList}
-		onclick={clicked}
+		onclick={readonly ? undefined : clicked}
 	>
 		{@render content()}
 	</ion-card>

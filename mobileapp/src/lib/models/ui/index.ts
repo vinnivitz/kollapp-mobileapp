@@ -12,6 +12,7 @@ export * from './item-sliding-option.type';
 export * from './layout.enum';
 export * from './multi-select-item.type';
 export * from './number-style.type';
+export * from './quick-access-item.type';
 export * from './segment-config.type';
 export * from './tab-config.type';
 export * from './theme.enum';

@@ -22,6 +22,7 @@
 	import { activityService } from '$lib/api/services';
 	import FadeInOut from '$lib/components/layout/FadeInOut.svelte';
 	import Layout from '$lib/components/layout/Layout.svelte';
+	import Filter from '$lib/components/widgets/budget/PostingFilter.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import Datetime from '$lib/components/widgets/ionic/Datetime.svelte';
 	import DatetimeInputItem from '$lib/components/widgets/ionic/DatetimeInputItem.svelte';
@@ -30,7 +31,6 @@
 	import LocationInputItem from '$lib/components/widgets/ionic/LocationInputItem.svelte';
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
 	import SegmentItem from '$lib/components/widgets/ionic/SegmentItem.svelte';
-	import Filter from '$lib/components/widgets/PostingFilter.svelte';
 	import { t } from '$lib/locales';
 	import {
 		chipSection,

@@ -23,10 +23,9 @@
 	} from 'ionicons/icons';
 	import { SvelteMap } from 'svelte/reactivity';
 
-	import Modal from './ionic/Modal.svelte';
-	import PostingFilter from './PostingFilter.svelte';
-	import PostingItem from './PostingItem.svelte';
-
+	import PostingFilter from '$lib/components/widgets/budget/PostingFilter.svelte';
+	import PostingItem from '$lib/components/widgets/budget/PostingItem.svelte';
+	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
 	import { t } from '$lib/locales';
 	import { chipMultiSection, dateRangeSection, multiSelectSection } from '$lib/models/ui';
 	import {

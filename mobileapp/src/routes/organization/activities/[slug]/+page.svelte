@@ -23,7 +23,7 @@
 	import { updateActivitySchema } from '$lib/api/schema/organization';
 	import { activityService, budgetService } from '$lib/api/services';
 	import Layout from '$lib/components/layout/Layout.svelte';
-	import BudgetOverviewCard from '$lib/components/widgets/BudgetOverviewCard.svelte';
+	import BudgetOverviewCard from '$lib/components/widgets/budget/BudgetOverviewCard.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import DatetimeInputItem from '$lib/components/widgets/ionic/DatetimeInputItem.svelte';

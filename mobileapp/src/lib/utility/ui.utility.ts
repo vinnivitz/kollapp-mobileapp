@@ -74,14 +74,19 @@ export async function triggerClickByLabel(label: string): Promise<void> {
 }
 
 /**
- * Apply this directive to any element to detect click outside of that element.
+ * Directive that dispatches a custom 'clickoutside' event when the user clicks outside the node.
  * @param node node to apply the directive to
+ * @param callback optional callback to call when clicked outside
  * @returns {object} The directive
  */
-export function clickOutside(node: Node): { destroy: () => void } {
+export function clickOutside(
+	node: Node,
+	callback?: () => void
+): { destroy: () => void; update: (callback_?: () => void) => void } {
 	const handleClick = (event: Event): void => {
 		if (node && !node.contains(event.target as Node) && !event.defaultPrevented) {
-			node.dispatchEvent(new CustomEvent('blur', node as object));
+			callback?.();
+			node.dispatchEvent(new CustomEvent('clickoutside', { detail: node }));
 		}
 	};
 
@@ -90,6 +95,9 @@ export function clickOutside(node: Node): { destroy: () => void } {
 	return {
 		destroy() {
 			document.removeEventListener('click', handleClick, true);
+		},
+		update(callback_?: () => void) {
+			callback = callback_;
 		}
 	};
 }

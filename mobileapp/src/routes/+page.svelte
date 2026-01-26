@@ -1,17 +1,11 @@
 <script lang="ts">
-	import type { ActivityTO, KollappUserTO, OrganizationTO } from '@kollapp/api-types';
+	import type { KollappUserTO } from '@kollapp/api-types';
 
-	import { TZDate } from '@date-fns/tz';
-	import { formatDistanceToNow } from 'date-fns';
 	import {
 		accessibilityOutline,
 		arrowForwardOutline,
-		calendarClearOutline,
 		cardOutline,
-		cashOutline,
-		flashOutline,
 		notificationsOffOutline,
-		peopleOutline,
 		personAddOutline,
 		warningOutline
 	} from 'ionicons/icons';
@@ -21,27 +15,15 @@
 
 	import { budgetService } from '$lib/api/services';
 	import Layout from '$lib/components/layout/Layout.svelte';
-	import BudgetChart from '$lib/components/widgets/BudgetChart.svelte';
+	import PostingOverviewModal from '$lib/components/widgets/budget/PostingOverviewModal.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import PostingOverviewModal from '$lib/components/widgets/PostingOverviewModal.svelte';
+	import QuickAccessGrid from '$lib/components/widgets/quick-access/QuickAccessGrid.svelte';
 	import { t } from '$lib/locales';
-	import { TourStepId } from '$lib/models/ui';
-	import { localeStore, organizationStore, userStore } from '$lib/stores';
-	import { getDateFnsLocale, hasOrganizationRole, triggerClickByLabel } from '$lib/utility';
+	import { organizationStore, userStore } from '$lib/stores';
+	import { hasOrganizationRole } from '$lib/utility';
 
 	let transactionOverviewOpen = $state<boolean>(false);
-
-	const activity = $derived.by(() => {
-		if (!$organizationStore?.activities || $organizationStore.activities.length === 0) {
-			return;
-		}
-		const sorted = $organizationStore.activities.toSorted(
-			(a, b) => new TZDate(a.date).getTime() - new TZDate(b.date).getTime()
-		);
-		const upcoming = sorted.find((a) => new TZDate(a.date).getTime() > TZDate.now());
-		return upcoming;
-	});
 
 	const personOfOrganizationId = $derived(
 		$organizationStore?.personsOfOrganization.find((person) => person.userId === $userStore?.id)?.id ?? 0
@@ -62,34 +44,6 @@
 	const organizations = $derived(organizationStore.organizations);
 
 	const isManager = $derived(hasOrganizationRole('ROLE_ORGANIZATION_MANAGER'));
-
-	function onNavigateActivity(): void {
-		if ($organizationStore?.activities[0]?.id) {
-			goto(resolve('/organization/activities/[slug]', { slug: $organizationStore.activities[0].id.toString() }));
-		}
-	}
-
-	async function onAddPosting(): Promise<void> {
-		await goto(resolve('/organization'));
-		await triggerClickByLabel($t('routes.organization.page.budget-card.card.add-posting'));
-	}
-
-	async function onCreateActivity(): Promise<void> {
-		await goto(resolve('/organization'));
-		await triggerClickByLabel($t('routes.organization.page.activity-list.list.create-activity'));
-	}
-
-	async function onAddBudgetCategory(): Promise<void> {
-		await goto(resolve('/organization/budget-categories'));
-		await triggerClickByLabel(
-			$t('routes.organization.budget-categories.page.budget-categories-card.card.add-category')
-		);
-	}
-
-	async function onAddPersonOfOrganization(): Promise<void> {
-		await goto(resolve('/organization/members'));
-		await triggerClickByLabel($t('routes.organization.members.page.fab.invite-members.title'));
-	}
 </script>
 
 <Layout title={$t('routes.page.page.title')}>
@@ -105,12 +59,7 @@
 		{/if}
 
 		{#if $organizationStore}
-			{#if activity}
-				{@render upcomingActivityCard(activity)}
-			{/if}
-			{@render organizationCard($organizationStore)}
 			{@render quickAccess()}
-			{@render budgetChartCard()}
 		{:else if $organizations.length === 0}
 			{@render noCollectivesCard()}
 		{/if}
@@ -144,78 +93,6 @@
 			/>
 		{/if}
 	</div>
-{/snippet}
-
-{#snippet upcomingActivityCard(activity: ActivityTO)}
-	<Card
-		tourId={TourStepId.HOME.UPCOMING_ACTIVITY}
-		title={$t('routes.page.page.upcoming-activity-card.card.title')}
-		border="secondary"
-		clicked={onNavigateActivity}
-		titleIconEnd={arrowForwardOutline}
-	>
-		<div class="flex flex-wrap items-center justify-center gap-2 text-sm">
-			<div class="flex items-center gap-1">
-				<ion-icon icon={flashOutline}></ion-icon>
-				<ion-text>{activity.name}</ion-text>
-			</div>
-			<div class="flex items-center gap-1">
-				<ion-icon icon={calendarClearOutline}></ion-icon>
-				<ion-text>
-					{formatDistanceToNow(new TZDate(activity.date), {
-						addSuffix: true,
-						locale: getDateFnsLocale($localeStore)
-					})}
-				</ion-text>
-			</div>
-			<div class="flex items-center gap-1">
-				<ion-icon icon={cardOutline}></ion-icon>
-				<ion-text>{activity.activityPostings.length}</ion-text>
-			</div>
-		</div>
-	</Card>
-{/snippet}
-
-{#snippet organizationCard(organization: OrganizationTO)}
-	<Card
-		border="primary"
-		title={organization.name}
-		clicked={() => goto(resolve('/organization'))}
-		titleIconEnd={arrowForwardOutline}
-		tourId={TourStepId.HOME.ORGANIZATION}
-	>
-		<ion-note class="flex flex-wrap items-center justify-center gap-2 text-sm">
-			<div class="flex items-center gap-1">
-				<ion-icon icon={peopleOutline}></ion-icon>
-				<ion-text>
-					{$t('routes.page.page.organization-card.card.members', {
-						value: organization.personsOfOrganization.length
-					})}
-				</ion-text>
-			</div>
-			<div class="flex items-center gap-1">
-				<ion-icon icon={flashOutline}></ion-icon>
-				<ion-text>
-					{$t('routes.page.page.organization-card.card.activities', {
-						value: $organizationStore?.activities.length ?? 0
-					})}
-				</ion-text>
-			</div>
-			<div class="flex items-center gap-1">
-				<ion-icon icon={cardOutline}></ion-icon>
-				<ion-text>
-					{$t('routes.page.page.organization-card.card.postings', {
-						value:
-							($organizationStore?.organizationPostings.length ?? 0) +
-							($organizationStore?.activities.reduce(
-								(total, activity) => total + activity.activityPostings.length,
-								0
-							) ?? 0)
-					})}
-				</ion-text>
-			</div>
-		</ion-note>
-	</Card>
 {/snippet}
 
 {#snippet noCollectivesCard()}
@@ -259,36 +136,7 @@
 {/snippet}
 
 {#snippet quickAccess()}
-	<div data-tour={TourStepId.HOME.QUICK_ACCESS} class="grid grid-cols-2">
-		<Card
-			titleIconStart={cashOutline}
-			classList={isManager ? 'text-center' : 'text-center col-span-2'}
-			clicked={onAddPosting}
-			border="tertiary"
-		>
-			<ion-text>{$t('routes.page.page.quick-access.card.add-posting')}</ion-text>
-		</Card>
-		{#if isManager}
-			<Card titleIconStart={flashOutline} classList="text-center" clicked={onCreateActivity} border="tertiary">
-				<ion-text>{$t('routes.page.page.quick-access.card.create-activity')}</ion-text>
-			</Card>
-			<Card titleIconStart={cardOutline} classList="text-center" clicked={onAddBudgetCategory} border="tertiary">
-				<ion-text>{$t('routes.page.page.quick-access.card.budget-categories')}</ion-text>
-			</Card>
-			<Card
-				titleIconStart={personAddOutline}
-				classList="text-center"
-				clicked={onAddPersonOfOrganization}
-				border="tertiary"
-			>
-				<ion-text>{$t('routes.page.page.quick-access.card.invite-person-of-organization')}</ion-text>
-			</Card>
-		{/if}
-	</div>
-{/snippet}
-
-{#snippet budgetChartCard()}
-	<BudgetChart {postings} tourId={TourStepId.HOME.BUDGET_CHART} />
+	<QuickAccessGrid />
 {/snippet}
 
 {#snippet pendingMembers()}

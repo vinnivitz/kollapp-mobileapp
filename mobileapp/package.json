@@ -92,6 +92,8 @@
 		"@capacitor/splash-screen": "^7.0.3",
 		"@capgo/capacitor-native-biometric": "^7.5.1",
 		"@date-fns/tz": "^1.4.1",
+		"@dnd-kit-svelte/svelte": "^0.1.5",
+		"@dnd-kit/helpers": "^0.2.3",
 		"@ebarooni/capacitor-calendar": "^7.2.0",
 		"@edde746/svelte-apexcharts": "^2.1.0",
 		"@ionic/core": "^8.7.9",

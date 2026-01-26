@@ -662,7 +662,6 @@
       "page": {
         "budget-card": {
           "card": {
-            "add-posting": "Buchung hinzufügen",
             "title": "Kollektivbilanz"
           }
         },
@@ -805,7 +804,8 @@
         "title": "Kollapp",
         "upcoming-activity-card": {
           "card": {
-            "title": "Nächste Veranstaltung"
+            "title": "Nächste Veranstaltung",
+            "no-upcoming-activity": "Keine kommende Veranstaltung"
           }
         },
         "pending-requests": {
@@ -815,11 +815,18 @@
           }
         },
         "quick-access": {
-          "card": {
-            "add-posting": "Buchung hinzufügen",
-            "create-activity": "Veranstaltung erstellen",
-            "budget-categories": "Kategorie hinzufügen",
-            "invite-person-of-organization": "Mitglied einladen"
+          "done": "Fertig",
+          "add": "Hinzufügen",
+          "remove": "Entfernen",
+          "hint": "Zum Bearbeiten lange auf Widgets drücken",
+          "modal": {
+            "title": "Schnellzugriff hinzufügen",
+            "search-placeholder": "Funktion suchen...",
+            "results-for": "{{value}} Ergebnisse für „{{value2}}“",
+            "no-results": "Keine Ergebnisse für „{{value}}“ gefunden",
+            "current-items-header": "Aktuelle Schnellzugriffe",
+            "all-functions": "Alle Funktionen",
+            "special-widgets-header": "Widgets"
           }
         }
       }
@@ -1025,7 +1032,7 @@
         }
       },
       "search-results": {
-        "found": "Suchergebnisse für „{{value}}“",
+        "found": "{{value2}} Suchergebnisse für „{{value}}“",
         "not-found": "Keine Ergebnisse für „{{value}}“ gefunden"
       }
     },
@@ -1084,6 +1091,11 @@
         "reset-filters": "Filter zurücksetzen",
         "reset": "Filter zurücksetzen",
         "apply": "Filter anwenden"
+      },
+      "quick-access": {
+        "special-widget": {
+          "badge": "Widget"
+        }
       }
     },
     "posting-item": {

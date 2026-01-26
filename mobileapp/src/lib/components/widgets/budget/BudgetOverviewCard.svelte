@@ -24,17 +24,16 @@
 
 	import type { RouteId } from '$app/types';
 
-	import AmountInputItem from './ionic/AmountInputItem.svelte';
-	import Button from './ionic/Button.svelte';
-	import Card from './ionic/Card.svelte';
-	import Chip from './ionic/Chip.svelte';
-	import DatetimeInputItem from './ionic/DatetimeInputItem.svelte';
-	import InputItem from './ionic/InputItem.svelte';
-	import Modal from './ionic/Modal.svelte';
-	import MultiSelectInputItem from './ionic/MultiSelectInputItem.svelte';
-	import PostingOverviewModal from './PostingOverviewModal.svelte';
-
 	import { createUpdatePostingSchema } from '$lib/api/schema/budget';
+	import PostingOverviewModal from '$lib/components/widgets/budget/PostingOverviewModal.svelte';
+	import AmountInputItem from '$lib/components/widgets/ionic/AmountInputItem.svelte';
+	import Button from '$lib/components/widgets/ionic/Button.svelte';
+	import Card from '$lib/components/widgets/ionic/Card.svelte';
+	import Chip from '$lib/components/widgets/ionic/Chip.svelte';
+	import DatetimeInputItem from '$lib/components/widgets/ionic/DatetimeInputItem.svelte';
+	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
+	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
+	import MultiSelectInputItem from '$lib/components/widgets/ionic/MultiSelectInputItem.svelte';
 	import { t } from '$lib/locales';
 	import { Form, type FormActions, type MultiSelectItem } from '$lib/models/ui';
 	import {
@@ -60,7 +59,7 @@
 		personsOfOrganization: PersonOfOrganizationTO[];
 		postings: PostingTO[];
 		title: string;
-		indexed?: RouteId;
+		index?: RouteId;
 		tourId?: string;
 		onCreateActivityPosting: (
 			activityId: number,
@@ -87,7 +86,7 @@
 	let {
 		activities,
 		budgetCategories,
-		indexed,
+		index,
 		onCompleted,
 		onCreateActivityPosting,
 		onCreateOrganizationPosting,
@@ -214,7 +213,7 @@
 	</div>
 	<div class="mt-3 flex flex-col gap-1">
 		<Button
-			{indexed}
+			indexed={index ? '/organization' : undefined}
 			expand="block"
 			label={$t('components.budget-overview.add-posting')}
 			color="primary"
@@ -222,7 +221,7 @@
 			clicked={onOpenCreatePosting}
 		/>
 		<Button
-			{indexed}
+			indexed={index ? '/organization' : undefined}
 			icon={listOutline}
 			expand="block"
 			fill="outline"
@@ -231,7 +230,7 @@
 		/>
 		{#if onOpenStatistics}
 			<Button
-				indexed={indexed ? `${indexed}/budget-statistics` : undefined}
+				indexed={index ? `/organization/budget-statistics` : undefined}
 				icon={statsChartOutline}
 				expand="block"
 				fill="outline"

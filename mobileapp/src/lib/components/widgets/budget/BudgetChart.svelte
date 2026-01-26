@@ -6,7 +6,10 @@
 	import { cashOutline, trendingDown, trendingUp } from 'ionicons/icons';
 	import { onMount } from 'svelte';
 
-	import Card from './ionic/Card.svelte';
+	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
+
+	import Card from '../ionic/Card.svelte';
 
 	import Chip from '$lib/components/widgets/ionic/Chip.svelte';
 	import { t } from '$lib/locales';
@@ -17,19 +20,18 @@
 	interface Properties {
 		postings: PostingTO[];
 		tourId?: string;
+		editMode?: boolean;
 	}
 
 	const MINIMAL_POSTINGS_FOR_INTERACTION = 1;
 	const DISPLAY_COUNT = 5;
 
-	let { postings, tourId }: Properties = $props();
+	let { editMode = false, postings, tourId }: Properties = $props();
 
 	let selectedChart = $state<ChartType>('all');
 	let mounted = $state<boolean>(false);
 
-	onMount(() => {
-		mounted = true;
-	});
+	onMount(() => (mounted = true));
 
 	const creditPostings = $derived(postings?.filter((p) => p.type === 'CREDIT') ?? []);
 	const debitPostings = $derived(postings?.filter((p) => p.type === 'DEBIT') ?? []);
@@ -144,9 +146,30 @@
 			enabled: false
 		}
 	});
+
+	function getTotalByType(type: ChartType): number {
+		switch (type) {
+			case 'credit': {
+				return creditTotal;
+			}
+			case 'debit': {
+				return debitTotal;
+			}
+			default: {
+				return totalBudget;
+			}
+		}
+	}
 </script>
 
-<Card title={$t('components.widgets.budget-card.heading')} titleIconStart={cashOutline} border="secondary" {tourId}>
+<Card
+	title={$t('components.widgets.budget-card.heading')}
+	titleIconStart={cashOutline}
+	border="secondary"
+	{tourId}
+	clicked={async () => await goto(resolve('/organization/budget-statistics'))}
+	readonly={editMode}
+>
 	{#if postings && postings.length > 0}
 		{#if hasEnoughForInteraction}
 			<div class="flex items-center justify-center gap-2">
@@ -182,11 +205,9 @@
 		{/if}
 
 		<div class="relative h-[340px]">
-			{#if selectedChart === 'all'}
-				<ion-text class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-8 text-center text-xl font-bold">
-					{formatter.currency(totalBudget)}
-				</ion-text>
-			{/if}
+			<ion-text class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-8 text-center text-xl font-bold">
+				{selectedChart === 'debit' ? '-' : ''}{formatter.currency(getTotalByType(selectedChart))}
+			</ion-text>
 			{#if mounted}
 				<div class="absolute -left-2">
 					<Chart options={chartOptions}></Chart>

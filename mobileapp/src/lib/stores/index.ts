@@ -7,5 +7,6 @@ export * from './layout.store';
 export * from './locale.store';
 export * from './modal.store';
 export * from './organization.store';
+export * from './quick-access.store';
 export * from './theme.store';
 export * from './user.store';

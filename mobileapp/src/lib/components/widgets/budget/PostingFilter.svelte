@@ -3,13 +3,12 @@
 
 	import { downloadOutline, filterOutline, refreshOutline, saveOutline } from 'ionicons/icons';
 
-	import Button from './ionic/Button.svelte';
-	import Card from './ionic/Card.svelte';
-	import Chip from './ionic/Chip.svelte';
-	import DatetimeInputItem from './ionic/DatetimeInputItem.svelte';
-	import MultiSelectInputItem from './ionic/MultiSelectInputItem.svelte';
-	import Popover from './ionic/Popover.svelte';
-
+	import Button from '$lib/components/widgets/ionic/Button.svelte';
+	import Card from '$lib/components/widgets/ionic/Card.svelte';
+	import Chip from '$lib/components/widgets/ionic/Chip.svelte';
+	import DatetimeInputItem from '$lib/components/widgets/ionic/DatetimeInputItem.svelte';
+	import MultiSelectInputItem from '$lib/components/widgets/ionic/MultiSelectInputItem.svelte';
+	import Popover from '$lib/components/widgets/ionic/Popover.svelte';
 	import { t } from '$lib/locales';
 
 	type Properties = {

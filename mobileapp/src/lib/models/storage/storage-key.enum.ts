@@ -10,6 +10,7 @@ export enum StorageKey {
 	ONLINE = 'online',
 	ORGANIZATION = 'organization',
 	POSITION = 'position',
+	QUICK_ACCESS = 'quick-access',
 	THEME = 'theme',
 	TOUR_COMPLETED = 'tour-completed',
 	USER = 'user',

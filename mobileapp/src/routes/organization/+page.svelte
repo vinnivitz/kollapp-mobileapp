@@ -21,7 +21,7 @@
 
 	import { budgetService } from '$lib/api/services';
 	import Layout from '$lib/components/layout/Layout.svelte';
-	import BudgetOverviewCard from '$lib/components/widgets/BudgetOverviewCard.svelte';
+	import BudgetOverviewCard from '$lib/components/widgets/budget/BudgetOverviewCard.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
@@ -223,7 +223,7 @@
 	<BudgetOverviewCard
 		activities={$organizationStore?.activities!}
 		budgetCategories={$organizationStore?.budgetCategories!}
-		indexed="/organization"
+		index="/organization"
 		personsOfOrganization={$organizationStore?.personsOfOrganization!}
 		{postings}
 		title={$t('routes.organization.page.budget-card.card.title')}

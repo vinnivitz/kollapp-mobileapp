@@ -235,6 +235,14 @@ function parseExpression(expression: Expression): string | undefined {
 			}
 			return '/' + parts.join('/');
 		}
+		case 'ConditionalExpression': {
+			const consequent = parseExpression(expression.consequent);
+			const alternate = parseExpression(expression.alternate);
+			return consequent ?? alternate ?? undefined;
+		}
+		case 'TemplateLiteral': {
+			return expression.quasis.map((element) => element.value.cooked).join('');
+		}
 		default: {
 			console.warn('Unhandled expression type:', expression.type, JSON.stringify(expression, undefined, 2));
 			return undefined;

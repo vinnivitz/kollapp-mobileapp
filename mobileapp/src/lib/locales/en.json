@@ -196,7 +196,7 @@
         }
       },
       "search-results": {
-        "found": "Search results for \"{{value}}\"",
+        "found": "{{value2}} search results for \"{{value}}\"",
         "not-found": "No results found for \"{{value}}\""
       },
       "button": {
@@ -258,6 +258,11 @@
         "reset-filters": "Reset filter",
         "reset": "Reset filter",
         "apply": "Apply filter"
+      },
+      "quick-access": {
+        "special-widget": {
+          "badge": "Widget"
+        }
       }
     },
     "posting-item": {
@@ -1268,14 +1273,45 @@
       "page": {
         "budget-card": {
           "card": {
-            "add-posting": "Add transaction"
+            "title": "Collective balance sheet"
           }
         },
         "activity-list": {
           "list": {
-            "create-activity": "Create event"
+            "create-activity": "Create event",
+            "header": "Events",
+            "manage-activities": "Events"
           }
-        }
+        },
+        "collective-info": {
+          "role": "You are a {{value}}"
+        },
+        "collective-list": {
+          "list": {
+            "budget-categories": "Budget categories",
+            "change-collective": "Change collectively",
+            "header": "Collective",
+            "leave": "Leave collectively",
+            "members": "members",
+            "update-info": "Update collective information"
+          }
+        },
+        "general": {
+          "list": {
+            "header": "Generally",
+            "join": "Join a collective",
+            "register": "Register new collective"
+          }
+        },
+        "modal": {
+          "select-organization": {
+            "header": "Change collectively"
+          }
+        },
+        "no-collective": {
+          "note": "You are not a member of a collective."
+        },
+        "title": "Collective"
       }
     },
     "error": {
@@ -1313,7 +1349,8 @@
         },
         "upcoming-activity-card": {
           "card": {
-            "title": "Upcoming event"
+            "title": "Upcoming event",
+            "no-upcoming-activity": "No upcoming event"
           }
         },
         "organization-card": {
@@ -1342,12 +1379,21 @@
           }
         },
         "quick-access": {
-          "card": {
-            "add-posting": "Add transaction",
-            "create-activity": "Create event",
-            "budget-categories": "Add category",
-            "invite-person-of-organization": "Invite member"
-          }
+          "card": {},
+          "done": "Done",
+          "add": "Add",
+          "remove": "Remove",
+          "hint": "Long press widgets to edit",
+          "modal": {
+            "title": "Add quick access",
+            "search-placeholder": "Search for features...",
+            "results-for": "{{value}} results for \"{{value2}}\"",
+            "no-results": "No results found for \"{{value}}\"",
+            "current-items-header": "Current quick access items",
+            "all-functions": "All functions",
+            "special-widgets-header": "Widgets"
+          },
+          "special-widgets": {}
         }
       }
     }

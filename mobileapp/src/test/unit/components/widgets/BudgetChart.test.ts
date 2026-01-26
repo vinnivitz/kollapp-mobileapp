@@ -4,7 +4,7 @@ import { TZDate } from '@date-fns/tz';
 import { fireEvent, render, waitFor } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 
-import BudgetChart from '$lib/components/widgets/BudgetChart.svelte';
+import BudgetChart from '$lib/components/widgets/budget/BudgetChart.svelte';
 
 vi.mock('@edde746/svelte-apexcharts', () => {
 	let lastOptions: unknown;
