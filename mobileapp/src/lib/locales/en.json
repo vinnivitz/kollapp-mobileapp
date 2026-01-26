@@ -473,10 +473,7 @@
         "generic": "An error occurred"
       },
       "request-successful": "Request successful",
-      "get-role-translation": {
-        "manager": "Manager",
-        "member": "Member"
-      }
+      "get-role-translation": {}
     },
     "biometrics": {
       "not-available": "Biometrics not available",
@@ -992,7 +989,6 @@
         "slug": {
           "page": {
             "title": "Member details",
-            "not-found": "Member not found",
             "card": {
               "info": {
                 "title": "Member information",

@@ -496,7 +496,6 @@
         "slug": {
           "page": {
             "title": "Mitgliedsdetails",
-            "not-found": "Mitglied nicht gefunden",
             "card": {
               "info": {
                 "title": "Mitgliedsinformationen",
@@ -1249,10 +1248,7 @@
       },
       "request-successful": "Anfrage erfolgreich",
       "server-not-reachable": "Server nicht erreichbar",
-      "get-role-translation": {
-        "manager": "Manager",
-        "member": "Mitglied"
-      }
+      "get-role-translation": {}
     },
     "biometrics": {
       "not-available": "Biometrie nicht verfügbar",
