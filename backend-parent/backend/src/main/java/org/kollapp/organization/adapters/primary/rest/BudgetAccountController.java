@@ -87,7 +87,7 @@ public class BudgetAccountController {
     @Operation(
             summary = "Transfer an existing organization posting.",
             security = {@SecurityRequirement(name = "bearer-key")})
-    public ResponseEntity<MessageResponseTO> transferOrganizationPosting(
+    public ResponseEntity<DataResponseTO<PostingTO>> transferOrganizationPosting(
             @PathVariable("organization-id") long organizationId, @PathVariable("posting-id") long postingId) {
         Posting transferedPosting = budgetAccountService.transferOrganizationPosting(organizationId, postingId);
         PostingTO postingTO = postingMapper.mapPostingToPostingTO(transferedPosting);
@@ -144,7 +144,7 @@ public class BudgetAccountController {
     @Operation(
             summary = "Transfer an existing activity posting.",
             security = {@SecurityRequirement(name = "bearer-key")})
-    public ResponseEntity<MessageResponseTO> transferOrganizationPosting(
+    public ResponseEntity<DataResponseTO<PostingTO>> transferOrganizationPosting(
             @PathVariable("organization-id") long organizationId,
             @PathVariable("activity-id") long activityId,
             @PathVariable("posting-id") long postingId) {
