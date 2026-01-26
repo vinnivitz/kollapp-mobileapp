@@ -48,13 +48,16 @@
 	);
 
 	const postings = $derived(
-		($organizationStore
+		$organizationStore
 			? [
 					...$organizationStore.organizationPostings,
 					...$organizationStore.activities.flatMap((activity) => activity.activityPostings)
 				]
 			: []
-		).filter((posting) => posting.personOfOrganizationId === personOfOrganizationId)
+	);
+
+	const userPostings = $derived(
+		postings.filter((posting) => posting.personOfOrganizationId === personOfOrganizationId)
 	);
 	const organizations = $derived(organizationStore.organizations);
 
@@ -131,12 +134,12 @@
 			label={$t('routes.page.page.account-card.notifications.no-notes')}
 			clicked={() => goto(resolve('/account/notifications'))}
 		/>
-		{#if postings.length > 0}
+		{#if userPostings.length > 0}
 			<Button
 				size="small"
 				icon={cardOutline}
 				fill="outline"
-				label={$t('routes.page.page.account-card.open-postings.button.label', { value: postings.length })}
+				label={$t('routes.page.page.account-card.open-postings.button.label', { value: userPostings.length })}
 				clicked={() => (transactionOverviewOpen = true)}
 			/>
 		{/if}
@@ -151,12 +154,12 @@
 		clicked={onNavigateActivity}
 		titleIconEnd={arrowForwardOutline}
 	>
-		<div class="mb-3 flex flex-wrap items-center justify-center gap-5 text-sm">
-			<div class="flex items-center gap-2">
+		<div class="flex flex-wrap items-center justify-center gap-2 text-sm">
+			<div class="flex items-center gap-1">
 				<ion-icon icon={flashOutline}></ion-icon>
 				<ion-text>{activity.name}</ion-text>
 			</div>
-			<div class="flex items-center gap-2">
+			<div class="flex items-center gap-1">
 				<ion-icon icon={calendarClearOutline}></ion-icon>
 				<ion-text>
 					{formatDistanceToNow(new TZDate(activity.date), {
@@ -165,7 +168,7 @@
 					})}
 				</ion-text>
 			</div>
-			<div class="flex items-center gap-2">
+			<div class="flex items-center gap-1">
 				<ion-icon icon={cardOutline}></ion-icon>
 				<ion-text>{activity.activityPostings.length}</ion-text>
 			</div>
@@ -181,41 +184,37 @@
 		titleIconEnd={arrowForwardOutline}
 		tourId={TourStepId.HOME.ORGANIZATION}
 	>
-		<div class="flex flex-wrap items-center justify-center gap-2">
-			<Button
-				size="small"
-				fill="solid"
-				color="light"
-				icon={peopleOutline}
-				label={$t('routes.page.page.organization-card.card.members', {
-					value: organization.personsOfOrganization.length
-				})}
-				clicked={() => goto(resolve('/organization/members'))}
-			/>
-			<Button
-				icon={flashOutline}
-				label={$t('routes.page.page.organization-card.card.activities', {
-					value: $organizationStore?.activities.length ?? 0
-				})}
-				size="small"
-				fill="solid"
-				color="light"
-				clicked={() => goto(resolve('/organization/activities'))}
-			/>
-			<Button
-				icon={cardOutline}
-				label={$t('routes.page.page.organization-card.card.postings', {
-					value: $organizationStore?.budgetCategories.length ?? 0
-				})}
-				size="small"
-				fill="solid"
-				color="light"
-				clicked={async () => {
-					await goto(resolve('/organization'));
-					await triggerClickByLabel($t('routes.organization.page.budget-card.card.add-posting'));
-				}}
-			/>
-		</div>
+		<ion-note class="flex flex-wrap items-center justify-center gap-2 text-sm">
+			<div class="flex items-center gap-1">
+				<ion-icon icon={peopleOutline}></ion-icon>
+				<ion-text>
+					{$t('routes.page.page.organization-card.card.members', {
+						value: organization.personsOfOrganization.length
+					})}
+				</ion-text>
+			</div>
+			<div class="flex items-center gap-1">
+				<ion-icon icon={flashOutline}></ion-icon>
+				<ion-text>
+					{$t('routes.page.page.organization-card.card.activities', {
+						value: $organizationStore?.activities.length ?? 0
+					})}
+				</ion-text>
+			</div>
+			<div class="flex items-center gap-1">
+				<ion-icon icon={cardOutline}></ion-icon>
+				<ion-text>
+					{$t('routes.page.page.organization-card.card.postings', {
+						value:
+							($organizationStore?.organizationPostings.length ?? 0) +
+							($organizationStore?.activities.reduce(
+								(total, activity) => total + activity.activityPostings.length,
+								0
+							) ?? 0)
+					})}
+				</ion-text>
+			</div>
+		</ion-note>
 	</Card>
 {/snippet}
 
@@ -314,7 +313,7 @@
 	activities={$organizationStore?.activities!}
 	budgetCategories={$organizationStore?.budgetCategories!}
 	personsOfOrganization={$organizationStore?.personsOfOrganization!}
-	{postings}
+	postings={userPostings}
 	showPersonOfOrganizationFilter={false}
 	onCompleted={organizationStore.update}
 	onUpdateOrganizationPosting={budgetService.updateOrganizationPosting}

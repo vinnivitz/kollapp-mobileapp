@@ -389,9 +389,6 @@
               "denied": "Der Kalenderzugriff wurde vom Benutzer verweigert",
               "error": "Der Kalender ist nicht verfügbar"
             },
-            "create-posting": {
-              "title": {}
-            },
             "activity-summary": {
               "add-to-calendar": "Zum Kalender hinzufügen",
               "open-in-map": "Karte öffnen"
@@ -401,22 +398,9 @@
               "edit": "Veranstaltung bearbeiten"
             },
             "modal": {
-              "activity-filter": {
-                "card": {
-                  "budget-category": {},
-                  "members": {}
-                }
-              },
-              "create-posting": {
-                "form": {
-                  "person-of-organization": {},
-                  "budget-category": {}
-                }
-              },
               "delete-activity": {
                 "confirm": "Veranstaltung löschen"
               },
-              "posting-overview": {},
               "update-activity": {
                 "card": {
                   "form": {
@@ -432,7 +416,11 @@
             "postings-summary": {
               "card": {
                 "title": "Veranstaltungsbilanz"
-              }
+              },
+              "export": {
+                "title": "Buchungsübersicht"
+              },
+              "title": "Buchungsübersicht"
             },
             "title": "Veranstaltungsdetails"
           }
@@ -510,7 +498,7 @@
               },
               "open-postings": {
                 "title": "Offene Buchungen",
-                "search-placeholder": "Buchungen suchen...",
+                "search-placeholder": "Suchen....",
                 "no-results": "Keine Buchung für „{{value}}“ gefunden",
                 "no-results-filtered": "Keine Buchungen gefunden.",
                 "loading": "Laden..."
@@ -672,7 +660,6 @@
         }
       },
       "page": {
-        "activity-filter-item": {},
         "budget-card": {
           "card": {
             "add-posting": "Buchung hinzufügen",
@@ -704,19 +691,6 @@
           }
         },
         "modal": {
-          "create-posting": {
-            "activities": {},
-            "person-of-organization": {},
-            "organization-budget-category": {}
-          },
-          "postings-filter": {
-            "card": {
-              "budget-category": {},
-              "activities": {},
-              "person-of-organization": {}
-            }
-          },
-          "postings-overview": {},
           "select-organization": {
             "header": "Kollektiv wechseln"
           }
@@ -724,9 +698,7 @@
         "no-collective": {
           "note": "Du bist kein Mitglied eines Kollektivs."
         },
-        "posting-translation": {},
         "title": "Kollektiv",
-        "person-of-organization-filter-item": {},
         "collective-info": {
           "role": "Du bist ein {{value}}"
         }
@@ -1064,9 +1036,7 @@
         "debit": "Ausgaben",
         "heading": "Budgetübersicht",
         "no-postings": "Keine Buchungen gefunden.",
-        "others": "Sonstige",
-        "show-less": "Weniger anzeigen",
-        "show-more": "Alle anzeigen"
+        "others": "Sonstige"
       },
       "ionic": {
         "datetime": {
@@ -1150,10 +1120,8 @@
             "none-selected": "Nicht zugewiesen"
           }
         }
-      },
-      "activity-select": {}
+      }
     },
-    "transaction-overview": {},
     "posting-overview": {
       "filter": {
         "person-of-organization": {
@@ -1247,8 +1215,7 @@
         "generic": "Es ist ein Fehler aufgetreten"
       },
       "request-successful": "Anfrage erfolgreich",
-      "server-not-reachable": "Server nicht erreichbar",
-      "get-role-translation": {}
+      "server-not-reachable": "Server nicht erreichbar"
     },
     "biometrics": {
       "not-available": "Biometrie nicht verfügbar",
@@ -1362,6 +1329,58 @@
           "title": "Dank für deine Aufmerksamkeit!",
           "description": "Viel Spaß mit Kollapp!\nUnd wenn dir irgendwas in der App auffällt, du Fragen oder Verbesserungsvorschläge hast, dann kontaktier uns gern!"
         }
+      }
+    },
+    "export": {
+      "date": "Datum",
+      "type": "Typ",
+      "amount": "Betrag",
+      "purpose": "Zweck",
+      "category": "Kategorie",
+      "person-of-organization": "Mitglied",
+      "debit": "Ausgabe",
+      "credit": "Einnahme",
+      "no-member": "Nicht zugewiesen",
+      "total-credit": "Gesamteinnahmen",
+      "total-debit": "Gesamtausgaben",
+      "balance": "Saldo",
+      "generated-at": "Erstellt am {{value}}",
+      "postings": "buchungen",
+      "organization": "Kollektiv: {{value}}",
+      "activity": "Veranstaltung",
+      "no-activity": "Nicht zugewiesen",
+      "activity-title": "Veranstaltung: {{value}}",
+      "activity-date": "Datum der Veranstaltung: {{value}}",
+      "member-name": "Mitglied: {{value}}"
+    },
+    "export-postings": {
+      "modal": {
+        "pdf": "Als PDF exportieren",
+        "csv": "Als CSV exportieren",
+        "header": "Buchungen exportieren",
+        "action-header": "Was möchtest du tun?",
+        "download": "Herunterladen",
+        "share": "Teilen",
+        "email": "Per E-Mail senden"
+      },
+      "share": {
+        "error": "Teilen wird auf diesem Gerät nicht unterstützt."
+      },
+      "email": {
+        "error": "Kein E-Mail-Konto gefunden.",
+        "unsupported": "E-Mail wird auf diesem Gerät nicht unterstützt.",
+        "body": "Anbei findest du die Buchungsübersicht für {{value}}."
+      },
+      "download": {
+        "error": "Datei konnte nicht gespeichert werden.",
+        "title": "Datei gespeichert!"
+      },
+      "download-external": {
+        "message": "Die Datei {{value}} wurde im externen Speicher des Telefons gespeichert."
+      },
+      "download-internal": {
+        "title": "Datei gespeichert!",
+        "message": "Die Datei {{value}} wurde im internen Speicher des Telefons gespeichert."
       }
     }
   }

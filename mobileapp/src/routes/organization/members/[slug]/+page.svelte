@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { ExportPostingsConfig } from '$lib/models/export-postings';
 	import type { ActivityTO, OrganizationRole, PostingTO, PostingType } from '@kollapp/api-types';
 
 	import { TZDate } from '@date-fns/tz';
@@ -8,6 +9,7 @@
 		albumsOutline,
 		cardOutline,
 		cashOutline,
+		downloadOutline,
 		flashOffOutline,
 		medalOutline,
 		personCircleOutline,
@@ -23,6 +25,7 @@
 
 	import { budgetService, organizationService } from '$lib/api/services';
 	import Layout from '$lib/components/layout/Layout.svelte';
+	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
 	import PostingFilter from '$lib/components/widgets/PostingFilter.svelte';
@@ -36,7 +39,14 @@
 		multiSelectSection
 	} from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';
-	import { confirmationModal, formatter, getRoleTranslationFromRole, hasOrganizationRole } from '$lib/utility';
+	import {
+		confirmationModal,
+		exportPostings,
+		formatter,
+		getOrganizationName,
+		getRoleTranslationFromRole,
+		hasOrganizationRole
+	} from '$lib/utility';
 
 	type PostingsFilterState = {
 		activityIds: number[];
@@ -291,6 +301,18 @@
 		displayCount += PAGE_SIZE;
 		(event.target as HTMLIonInfiniteScrollElement).complete();
 	}
+
+	function onExportPostings(): void {
+		const config: ExportPostingsConfig = {
+			activities: $organizationStore?.activities!,
+			budgetCategories: $organizationStore?.budgetCategories!,
+			organizationName: getOrganizationName()!,
+			personsOfOrganization: $organizationStore?.personsOfOrganization!,
+			title: $t('routes.organization.activities.slug.page.postings-summary.export.title')
+		};
+
+		exportPostings(filteredPostings, config);
+	}
 </script>
 
 <Layout title={$t('routes.organization.members.slug.page.title')} showBackButton>
@@ -353,8 +375,9 @@
 
 {#snippet assignedPostingsCard()}
 	<Card title={$t('routes.organization.members.slug.page.card.open-postings.title')}>
-		<div class="sticky top-0 left-0 z-10 mb-3 flex flex-col">
-			<PostingFilter config={filterConfig} />
+		<div class="sticky top-0 left-0 z-10 mb-3 flex flex-row items-center justify-between gap-2">
+			<PostingFilter classList="flex-1" config={filterConfig} />
+			<Button color="tertiary" icon={downloadOutline} clicked={onExportPostings}></Button>
 		</div>
 		<div class="overflow-auto">
 			<ion-list role="feed">

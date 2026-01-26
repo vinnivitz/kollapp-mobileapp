@@ -1,7 +1,7 @@
 <script lang="ts" generics="TState extends Record<string, unknown>">
 	import type { FilterConfig, FilterSection } from '$lib/models/ui';
 
-	import { filterOutline, refreshOutline, saveOutline } from 'ionicons/icons';
+	import { downloadOutline, filterOutline, refreshOutline, saveOutline } from 'ionicons/icons';
 
 	import Button from './ionic/Button.svelte';
 	import Card from './ionic/Card.svelte';
@@ -14,9 +14,11 @@
 
 	type Properties = {
 		config: FilterConfig<TState>;
+		classList?: string;
+		onExportPostings?: () => void;
 	};
 
-	let { config }: Properties = $props();
+	let { classList = '', config, onExportPostings }: Properties = $props();
 
 	let open = $state(false);
 	let draft = $state<Record<string, unknown>>({});
@@ -149,31 +151,36 @@
 </script>
 
 {#if showSearchbar || showFilterButton}
-	<div class="flex items-center justify-between gap-2">
-		{#if showSearchbar}
-			<ion-searchbar
-				debounce={100}
-				placeholder={config.searchbar?.placeholder ?? $t('components.widgets.filter.search-placeholder')}
-				onionInput={handleSearchInput}
-				value={config.searchbar?.value ?? ''}
-			></ion-searchbar>
-		{/if}
-		{#if showFilterButton}
-			<Button fill="solid" color="secondary" clicked={openPopover} icon={filterOutline} />
+	<div class={classList}>
+		<div class="flex items-center justify-between gap-2">
+			{#if showSearchbar}
+				<ion-searchbar
+					debounce={100}
+					placeholder={config.searchbar?.placeholder ?? $t('components.widgets.filter.search-placeholder')}
+					onionInput={handleSearchInput}
+					value={config.searchbar?.value ?? ''}
+				></ion-searchbar>
+			{/if}
+			{#if showFilterButton}
+				<Button fill="solid" color="secondary" clicked={openPopover} icon={filterOutline} />
+			{/if}
+			{#if onExportPostings}
+				<Button color="tertiary" icon={downloadOutline} clicked={() => onExportPostings?.()}></Button>
+			{/if}
+		</div>
+		{#if hasFiltersApplied}
+			<div class="flex justify-center">
+				<Button
+					size="small"
+					fill="outline"
+					color="danger"
+					icon={refreshOutline}
+					label={config.resetFiltersLabel ?? $t('components.widgets.filter.reset-filters')}
+					clicked={handleInlineReset}
+				/>
+			</div>
 		{/if}
 	</div>
-	{#if hasFiltersApplied}
-		<div class="flex justify-center">
-			<Button
-				size="small"
-				fill="outline"
-				color="danger"
-				icon={refreshOutline}
-				label={config.resetFiltersLabel ?? $t('components.widgets.filter.reset-filters')}
-				clicked={handleInlineReset}
-			/>
-		</div>
-	{/if}
 {/if}
 
 <Popover extended {open} dismissed={handleDismiss} lazy>

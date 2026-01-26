@@ -3,10 +3,11 @@
 	import type { ApexOptions } from 'apexcharts';
 
 	import Chart from '@edde746/svelte-apexcharts';
-	import { cashOutline, chevronDownOutline, chevronUpOutline, trendingDown, trendingUp } from 'ionicons/icons';
+	import { cashOutline, trendingDown, trendingUp } from 'ionicons/icons';
 	import { onMount } from 'svelte';
 
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
+	import Card from './ionic/Card.svelte';
+
 	import Chip from '$lib/components/widgets/ionic/Chip.svelte';
 	import { t } from '$lib/locales';
 	import { formatter } from '$lib/utility';
@@ -19,13 +20,11 @@
 	}
 
 	const MINIMAL_POSTINGS_FOR_INTERACTION = 1;
-	const INITIAL_DISPLAY_COUNT = 5;
+	const DISPLAY_COUNT = 5;
 
 	let { postings, tourId }: Properties = $props();
 
 	let selectedChart = $state<ChartType>('all');
-	let showAllCredits = $state<boolean>(false);
-	let showAllDebits = $state<boolean>(false);
 	let mounted = $state<boolean>(false);
 
 	onMount(() => {
@@ -38,18 +37,11 @@
 	const sortedCreditPostings = $derived([...creditPostings].toSorted((a, b) => b.amountInCents - a.amountInCents));
 	const sortedDebitPostings = $derived([...debitPostings].toSorted((a, b) => b.amountInCents - a.amountInCents));
 
-	const displayedCreditPostings = $derived(
-		showAllCredits ? sortedCreditPostings : sortedCreditPostings.slice(0, INITIAL_DISPLAY_COUNT)
-	);
-	const displayedDebitPostings = $derived(
-		showAllDebits ? sortedDebitPostings : sortedDebitPostings.slice(0, INITIAL_DISPLAY_COUNT)
-	);
+	const displayedCreditPostings = $derived(sortedCreditPostings.slice(0, DISPLAY_COUNT));
+	const displayedDebitPostings = $derived(sortedDebitPostings.slice(0, DISPLAY_COUNT));
 
 	const creditCount = $derived(creditPostings.length);
 	const debitCount = $derived(debitPostings.length);
-
-	const hasMoreCredits = $derived(creditCount > INITIAL_DISPLAY_COUNT);
-	const hasMoreDebits = $derived(debitCount > INITIAL_DISPLAY_COUNT);
 
 	const creditTotal = $derived(sumAmount(creditPostings));
 	const debitTotal = $derived(sumAmount(debitPostings));
@@ -66,8 +58,8 @@
 	function buildChartData(type: ChartType): { colors: string[]; labels: string[]; series: number[] } {
 		switch (type) {
 			case 'credit': {
-				const othersAmount = sumAmount(sortedCreditPostings.slice(INITIAL_DISPLAY_COUNT));
-				const hasOthers = !showAllCredits && othersAmount > 0;
+				const othersAmount = sumAmount(sortedCreditPostings.slice(DISPLAY_COUNT));
+				const hasOthers = othersAmount > 0;
 
 				return {
 					colors: [
@@ -85,8 +77,8 @@
 				};
 			}
 			case 'debit': {
-				const othersAmount = sumAmount(sortedDebitPostings.slice(INITIAL_DISPLAY_COUNT));
-				const hasOthers = !showAllDebits && othersAmount > 0;
+				const othersAmount = sumAmount(sortedDebitPostings.slice(DISPLAY_COUNT));
+				const hasOthers = othersAmount > 0;
 
 				return {
 					colors: [
@@ -114,20 +106,6 @@
 	}
 
 	const chartData = $derived(buildChartData(selectedChart));
-	const showExpandButton = $derived(
-		(selectedChart === 'credit' && hasMoreCredits) || (selectedChart === 'debit' && hasMoreDebits)
-	);
-	const isExpanded = $derived(
-		(selectedChart === 'credit' && showAllCredits) || (selectedChart === 'debit' && showAllDebits)
-	);
-
-	function toggleExpand(): void {
-		if (selectedChart === 'credit') {
-			showAllCredits = !showAllCredits;
-		} else if (selectedChart === 'debit') {
-			showAllDebits = !showAllDebits;
-		}
-	}
 
 	const chartOptions = $derived<ApexOptions>({
 		chart: {
@@ -143,7 +121,7 @@
 							}
 						: undefined
 			},
-			height: 350,
+			height: 340,
 			toolbar: { show: false },
 			type: 'donut'
 		},
@@ -168,13 +146,12 @@
 	});
 </script>
 
-<div data-tour={tourId}>
-	<h1 class="mt-5 mb-2 text-center">{$t('components.widgets.budget-card.heading')}</h1>
-
+<Card title={$t('components.widgets.budget-card.heading')} titleIconStart={cashOutline} border="secondary" {tourId}>
 	{#if postings && postings.length > 0}
 		{#if hasEnoughForInteraction}
 			<div class="flex items-center justify-center gap-2">
 				<Chip
+					classList="text-xs"
 					icon={cashOutline}
 					label={$t('components.widgets.budget-card.all')}
 					color="secondary"
@@ -183,6 +160,7 @@
 				/>
 				{#if creditCount > 0}
 					<Chip
+						classList="text-xs"
 						icon={trendingUp}
 						label={$t('components.widgets.budget-card.credit')}
 						color="success"
@@ -192,6 +170,7 @@
 				{/if}
 				{#if debitCount > 0}
 					<Chip
+						classList="text-xs"
 						icon={trendingDown}
 						label={$t('components.widgets.budget-card.debit')}
 						color="danger"
@@ -202,33 +181,21 @@
 			</div>
 		{/if}
 
-		<div class="relative h-[350px]">
+		<div class="relative h-[340px]">
 			{#if selectedChart === 'all'}
-				<ion-text class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-7 text-center text-xl font-bold">
+				<ion-text class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-8 text-center text-xl font-bold">
 					{formatter.currency(totalBudget)}
 				</ion-text>
 			{/if}
 			{#if mounted}
-				<Chart options={chartOptions}></Chart>
+				<div class="absolute -left-2">
+					<Chart options={chartOptions}></Chart>
+				</div>
 			{/if}
 		</div>
-
-		{#if showExpandButton}
-			<div class="flex justify-center">
-				<Button
-					size="small"
-					fill="outline"
-					icon={isExpanded ? chevronUpOutline : chevronDownOutline}
-					label={isExpanded
-						? $t('components.widgets.budget-card.show-less')
-						: $t('components.widgets.budget-card.show-more')}
-					clicked={toggleExpand}
-				/>
-			</div>
-		{/if}
 	{:else}
 		<div class="text-medium mt-5 text-center">
 			<ion-note>{$t('components.widgets.budget-card.no-postings')}</ion-note>
 		</div>
 	{/if}
-</div>
+</Card>

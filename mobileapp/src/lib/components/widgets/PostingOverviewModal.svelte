@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { ResponseBody } from '$lib/models/api';
+	import type { ExportPostingsConfig } from '$lib/models/export-postings';
 	import type { FilterConfig, MultiSelectItem } from '$lib/models/ui';
 	import type {
 		ActivityTO,
@@ -28,7 +29,12 @@
 
 	import { t } from '$lib/locales';
 	import { chipMultiSection, dateRangeSection, multiSelectSection } from '$lib/models/ui';
-	import { getBudgetCategoryNameById, getUsernameByPersonOfOrganizationId } from '$lib/utility';
+	import {
+		exportPostings,
+		getBudgetCategoryNameById,
+		getOrganizationName,
+		getUsernameByPersonOfOrganizationId
+	} from '$lib/utility';
 
 	type PostingsFilterState = {
 		activityIds: number[];
@@ -43,6 +49,7 @@
 		budgetCategories: OrganizationBudgetCategoryResponseTO[];
 		personsOfOrganization: PersonOfOrganizationTO[];
 		postings: PostingTO[];
+		activity?: ActivityTO;
 		open?: boolean;
 		showActivityFilter?: boolean;
 		showPersonOfOrganizationFilter?: boolean;
@@ -65,6 +72,7 @@
 
 	let {
 		activities,
+		activity,
 		budgetCategories,
 		dismissed,
 		onCompleted,
@@ -296,12 +304,34 @@
 		displayCount += PAGE_SIZE;
 		(event.target as HTMLIonInfiniteScrollElement).complete();
 	}
+
+	function onExportPostings(): void {
+		const config: ExportPostingsConfig = {
+			activities,
+			activityDate: activity?.date!,
+			activityName: activity?.name!,
+			budgetCategories,
+			organizationName: getOrganizationName()!,
+			personsOfOrganization,
+			title: $t('routes.organization.activities.slug.page.postings-summary.export.title')
+		};
+
+		exportPostings(filteredPostings, config);
+	}
 </script>
 
-<Modal {open} initialBreakPoint={0.75} {dismissed} presented={onModalPresented} informational lazy>
+<Modal
+	title={$t('routes.organization.activities.slug.page.postings-summary.title')}
+	{open}
+	initialBreakPoint={0.75}
+	{dismissed}
+	presented={onModalPresented}
+	informational
+	lazy
+>
 	<div class="relative">
-		<div class="sticky top-0 left-0 z-10 mb-3 flex flex-col">
-			<PostingFilter config={filterConfig} />
+		<div class="sticky top-0 left-0 z-10 mb-3 flex flex-row items-center justify-between gap-2">
+			<PostingFilter {onExportPostings} classList="flex-1" config={filterConfig} />
 		</div>
 		{#if isLoading}
 			<div class="mt-3 flex flex-col items-center justify-center gap-2 text-center">

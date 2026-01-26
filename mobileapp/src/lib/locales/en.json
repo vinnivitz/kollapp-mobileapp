@@ -232,9 +232,7 @@
         "all": "All",
         "credit": "Income",
         "debit": "Expenses",
-        "others": "Others",
-        "show-less": "Show less",
-        "show-more": "Show all"
+        "others": "Others"
       },
       "leaflet-map": {
         "searchbar": {
@@ -296,10 +294,8 @@
             "none-selected": "Not assigned"
           }
         }
-      },
-      "activity-select": {}
+      }
     },
-    "transaction-overview": {},
     "posting-overview": {
       "filter": {
         "person-of-organization": {
@@ -472,8 +468,7 @@
         "authorization": "Authorization error",
         "generic": "An error occurred"
       },
-      "request-successful": "Request successful",
-      "get-role-translation": {}
+      "request-successful": "Request successful"
     },
     "biometrics": {
       "not-available": "Biometrics not available",
@@ -508,6 +503,58 @@
       "get-role-translation": {
         "manager": "Manager",
         "member": "Member"
+      }
+    },
+    "export": {
+      "date": "Date",
+      "type": "Type",
+      "amount": "Amount",
+      "purpose": "Purpose",
+      "category": "Category",
+      "person-of-organization": "Member",
+      "credit": "Income",
+      "debit": "Expense",
+      "no-member": "Not assigned",
+      "total-credit": "Total income",
+      "total-debit": "Total expense",
+      "balance": "Balance",
+      "generated-at": "Generated at {{value}}",
+      "postings": "transactions",
+      "organization": "Collective: {{value}}",
+      "activity": "Event",
+      "no-activity": "Not assigned",
+      "activity-title": "Event: {{value}}",
+      "activity-date": "Date of event: {{value}}",
+      "member-name": "Member: {{value}}"
+    },
+    "export-postings": {
+      "modal": {
+        "pdf": "Export as PDF",
+        "csv": "Export as CSV",
+        "header": "Export transactions",
+        "action-header": "What would you like to do?",
+        "download": "Download",
+        "share": "Share",
+        "email": "Send via email"
+      },
+      "share": {
+        "error": "Sharing is not supported on this device."
+      },
+      "email": {
+        "error": "No email account found.",
+        "unsupported": "Email is not supported on this device.",
+        "body": "Please find attached the transaction overview for {{value}}."
+      },
+      "download": {
+        "error": "Could not save the file.",
+        "title": "File saved!"
+      },
+      "download-external": {
+        "message": "File {{value}} was saved in the external storage of the phone. "
+      },
+      "download-internal": {
+        "title": "File saved!",
+        "message": "File {{value}} was saved in the internal storage of the phone."
       }
     }
   },
@@ -834,23 +881,7 @@
                     "date": "Date"
                   }
                 }
-              },
-              "create-posting": {
-                "form": {
-                  "person-of-organization": {},
-                  "budget-category": {}
-                }
-              },
-              "posting-overview": {},
-              "activity-filter": {
-                "card": {
-                  "budget-category": {},
-                  "members": {}
-                }
               }
-            },
-            "create-posting": {
-              "title": {}
             },
             "calendar-request-prompt": {
               "denied": "Calendar access was denied by user",
@@ -865,7 +896,11 @@
             "postings-summary": {
               "card": {
                 "title": "Event balance"
-              }
+              },
+              "export": {
+                "title": "Transaction overview"
+              },
+              "title": "Transaction overview"
             }
           }
         },
@@ -1003,7 +1038,7 @@
               },
               "open-postings": {
                 "title": "Open Transactions",
-                "search-placeholder": "Search transactions....",
+                "search-placeholder": "Search....",
                 "no-results": "No transactions found for \"{{value}}\"",
                 "no-results-filtered": "No transactions found.",
                 "loading": "Loading..."
@@ -1192,66 +1227,6 @@
           }
         }
       },
-      "page": {
-        "activity-filter-item": {},
-        "modal": {
-          "select-organization": {
-            "header": "Change collective"
-          },
-          "create-posting": {
-            "activities": {},
-            "person-of-organization": {},
-            "organization-budget-category": {}
-          },
-          "postings-overview": {},
-          "postings-filter": {
-            "card": {
-              "budget-category": {},
-              "activities": {},
-              "person-of-organization": {}
-            }
-          }
-        },
-        "posting-translation": {},
-        "title": "Collective",
-        "no-collective": {
-          "note": "You are not part of any collective."
-        },
-        "activity-list": {
-          "list": {
-            "create-activity": "Create event",
-            "header": "Events",
-            "manage-activities": "Events"
-          }
-        },
-        "collective-list": {
-          "list": {
-            "header": "Collective",
-            "members": "Members",
-            "update-info": "Update collective info",
-            "budget-categories": "Budget categories",
-            "leave": "Leave collective",
-            "change-collective": "Change collective"
-          }
-        },
-        "general": {
-          "list": {
-            "header": "General",
-            "register": "Register new collective",
-            "join": "Join a collective"
-          }
-        },
-        "budget-card": {
-          "card": {
-            "add-posting": "Add transaction",
-            "title": "Collective balance"
-          }
-        },
-        "person-of-organization-filter-item": {},
-        "collective-info": {
-          "role": "You are a {{value}}"
-        }
-      },
       "budget-statistics": {
         "page": {
           "title": "Finance statistics",
@@ -1288,6 +1263,18 @@
             "debit": "Expenses"
           },
           "transaction-count": "{{value}} transactions in selected period"
+        }
+      },
+      "page": {
+        "budget-card": {
+          "card": {
+            "add-posting": "Add transaction"
+          }
+        },
+        "activity-list": {
+          "list": {
+            "create-activity": "Create event"
+          }
         }
       }
     },

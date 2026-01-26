@@ -43,7 +43,6 @@
 	const isManager = $derived(hasOrganizationRole('ROLE_ORGANIZATION_MANAGER'));
 
 	let descriptionExpanded = $state<boolean>(false);
-
 	const pendingMembersCount = $derived(
 		$organizationStore?.personsOfOrganization.filter(
 			(personOfOrganization) => personOfOrganization.status === 'PENDING'

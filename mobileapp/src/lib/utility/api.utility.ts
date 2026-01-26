@@ -211,6 +211,14 @@ export function getOrganizationId(): number | undefined {
 	return get(organizationStore)?.id;
 }
 
+/**
+ * Gets the current organization name.
+ * @returns {string | undefined} Organization name or undefined if not set.
+ */
+export function getOrganizationName(): string | undefined {
+	return get(organizationStore)?.name;
+}
+
 /** Gets the current user ID.
  * @returns {number | undefined} User ID or undefined if not set.
  */
