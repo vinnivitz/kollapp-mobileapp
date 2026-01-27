@@ -66,7 +66,7 @@
 			postingId: number,
 			model: PostingCreateUpdateRequestTO
 		) => Promise<ResponseBody<PostingTO>>;
-		onCompleted?: () => Promise<void>;
+		onCompleted?: () => Promise<void> | void;
 	};
 
 	let {

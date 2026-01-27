@@ -44,6 +44,12 @@
 	const organizations = $derived(organizationStore.organizations);
 
 	const isManager = $derived(hasOrganizationRole('ROLE_ORGANIZATION_MANAGER'));
+
+	function onPostingActionCompleted(): void {
+		if (postings.length === 0) {
+			transactionOverviewOpen = false;
+		}
+	}
 </script>
 
 <Layout title={$t('routes.page.page.title')}>
@@ -162,6 +168,7 @@
 	budgetCategories={$organizationStore?.budgetCategories!}
 	personsOfOrganization={$organizationStore?.personsOfOrganization!}
 	postings={userPostings}
+	onCompleted={onPostingActionCompleted}
 	showPersonOfOrganizationFilter={false}
 	onUpdateOrganizationPosting={budgetService.updateOrganizationPosting}
 	onUpdateActivityPosting={budgetService.updateActivityPosting}
