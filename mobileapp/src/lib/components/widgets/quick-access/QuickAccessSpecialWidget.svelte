@@ -59,10 +59,10 @@
 		index: () => index
 	});
 
-	function onNavigateActivity(): void {
-		if (activity?.id) {
-			goto(resolve('/organization/activities/[slug]', { slug: activity.id.toString() }));
-		}
+	async function onNavigateActivity(): Promise<void> {
+		await (activity?.id
+			? goto(resolve('/organization/activities/[slug]', { slug: activity.id.toString() }))
+			: goto(resolve('/organization/activities')));
 	}
 </script>
 
@@ -78,81 +78,16 @@
 >
 	{#if item.widgetType === 'special'}
 		{#if item.specialWidgetId === 'organization-card'}
-			<Card
-				border="primary"
-				title={organization?.name}
-				clicked={editMode ? undefined : () => goto(resolve('/organization'))}
-				titleIconEnd={editMode ? undefined : arrowForwardOutline}
-				tourId={TourStepId.HOME.ORGANIZATION}
-				readonly={editMode}
-			>
-				<ion-note class="flex flex-wrap items-center justify-center gap-2 text-sm">
-					<div class="flex items-center gap-1">
-						<ion-icon icon={peopleOutline}></ion-icon>
-						<ion-text>
-							{$t('routes.page.page.organization-card.card.members', {
-								value: organization?.personsOfOrganization.length
-							})}
-						</ion-text>
-					</div>
-					<div class="flex items-center gap-1">
-						<ion-icon icon={flashOutline}></ion-icon>
-						<ion-text>
-							{$t('routes.page.page.organization-card.card.activities', {
-								value: $organizationStore?.activities.length ?? 0
-							})}
-						</ion-text>
-					</div>
-					<div class="flex items-center gap-1">
-						<ion-icon icon={cardOutline}></ion-icon>
-						<ion-text>
-							{$t('routes.page.page.organization-card.card.postings', {
-								value:
-									($organizationStore?.organizationPostings.length ?? 0) +
-									($organizationStore?.activities.reduce((total, act) => total + act.activityPostings.length, 0) ?? 0)
-							})}
-						</ion-text>
-					</div>
-				</ion-note>
-			</Card>
+			<LazyRender>
+				{@render organizationCard()}
+			</LazyRender>
 		{:else if item.specialWidgetId === 'upcoming-activity-card'}
-			<Card
-				tourId={TourStepId.HOME.UPCOMING_ACTIVITY}
-				title={$t('routes.page.page.upcoming-activity-card.card.title')}
-				border="secondary"
-				clicked={editMode || !activity ? undefined : onNavigateActivity}
-				titleIconEnd={editMode || !activity ? undefined : arrowForwardOutline}
-				readonly={editMode}
-			>
-				{#if activity}
-					<div class="flex flex-wrap items-center justify-center gap-2 text-sm">
-						<div class="flex items-center gap-1">
-							<ion-icon icon={flashOutline}></ion-icon>
-							<ion-text>{activity.name}</ion-text>
-						</div>
-						<div class="flex items-center gap-1">
-							<ion-icon icon={calendarClearOutline}></ion-icon>
-							<ion-text>
-								{formatDistanceToNow(new TZDate(activity.date), {
-									addSuffix: true,
-									locale: getDateFnsLocale($localeStore)
-								})}
-							</ion-text>
-						</div>
-						<div class="flex items-center gap-1">
-							<ion-icon icon={cardOutline}></ion-icon>
-							<ion-text>{activity.activityPostings.length}</ion-text>
-						</div>
-					</div>
-				{:else}
-					<ion-note class="block text-center text-sm">
-						{$t('routes.page.page.upcoming-activity-card.card.no-upcoming-activity')}
-					</ion-note>
-				{/if}
-			</Card>
+			<LazyRender>
+				{@render upcomingActivityCard()}
+			</LazyRender>
 		{:else if item.specialWidgetId === 'budget-chart-card'}
 			<LazyRender>
-				<BudgetChart {editMode} {postings} tourId={TourStepId.HOME.BUDGET_CHART} />
+				{@render budgetChartCard()}
 			</LazyRender>
 		{/if}
 	{/if}
@@ -167,6 +102,87 @@
 		/>
 	{/if}
 </div>
+
+{#snippet organizationCard()}
+	<Card
+		border="primary"
+		title={organization?.name}
+		clicked={editMode ? undefined : () => goto(resolve('/organization'))}
+		titleIconEnd={editMode ? undefined : arrowForwardOutline}
+		tourId={TourStepId.HOME.ORGANIZATION}
+		readonly={editMode}
+	>
+		<ion-note class="flex flex-wrap items-center justify-center gap-3 text-sm">
+			<div class="flex items-center gap-1">
+				<ion-icon icon={peopleOutline}></ion-icon>
+				<ion-text>
+					{$t('routes.page.page.organization-card.card.members', {
+						value: organization?.personsOfOrganization.length
+					})}
+				</ion-text>
+			</div>
+			<div class="flex items-center gap-1">
+				<ion-icon icon={flashOutline}></ion-icon>
+				<ion-text>
+					{$t('routes.page.page.organization-card.card.activities', {
+						value: $organizationStore?.activities.length ?? 0
+					})}
+				</ion-text>
+			</div>
+			<div class="flex items-center gap-1">
+				<ion-icon icon={cardOutline}></ion-icon>
+				<ion-text>
+					{$t('routes.page.page.organization-card.card.postings', {
+						value:
+							($organizationStore?.organizationPostings.length ?? 0) +
+							($organizationStore?.activities.reduce((total, act) => total + act.activityPostings.length, 0) ?? 0)
+					})}
+				</ion-text>
+			</div>
+		</ion-note>
+	</Card>
+{/snippet}
+
+{#snippet upcomingActivityCard()}
+	<Card
+		tourId={TourStepId.HOME.UPCOMING_ACTIVITY}
+		title={$t('routes.page.page.upcoming-activity-card.card.title')}
+		border="secondary"
+		clicked={editMode ? undefined : onNavigateActivity}
+		titleIconEnd={editMode || !activity ? undefined : arrowForwardOutline}
+		readonly={editMode}
+	>
+		{#if activity}
+			<ion-note class="flex flex-wrap items-center justify-center gap-3 text-sm">
+				<div class="flex items-center gap-1">
+					<ion-icon icon={flashOutline}></ion-icon>
+					<ion-text>{activity.name}</ion-text>
+				</div>
+				<div class="flex items-center gap-1">
+					<ion-icon icon={calendarClearOutline}></ion-icon>
+					<ion-text>
+						{formatDistanceToNow(new TZDate(activity.date), {
+							addSuffix: true,
+							locale: getDateFnsLocale($localeStore)
+						})}
+					</ion-text>
+				</div>
+				<div class="flex items-center gap-1">
+					<ion-icon icon={cardOutline}></ion-icon>
+					<ion-text>{activity.activityPostings.length}</ion-text>
+				</div>
+			</ion-note>
+		{:else}
+			<ion-note class="block text-center text-sm">
+				{$t('routes.page.page.upcoming-activity-card.card.no-upcoming-activity')}
+			</ion-note>
+		{/if}
+	</Card>
+{/snippet}
+
+{#snippet budgetChartCard()}
+	<BudgetChart {editMode} {postings} tourId={TourStepId.HOME.BUDGET_CHART} />
+{/snippet}
 
 <style>
 	@keyframes wiggle {

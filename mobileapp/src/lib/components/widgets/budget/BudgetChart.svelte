@@ -137,6 +137,9 @@
 		},
 		labels: chartData.labels,
 		legend: {
+			labels: {
+				colors: 'var(--ion-color-dark)'
+			},
 			position: 'bottom',
 			show: true
 		},
