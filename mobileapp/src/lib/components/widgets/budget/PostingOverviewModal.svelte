@@ -357,7 +357,7 @@
 						{activities}
 						{budgetCategories}
 						{personsOfOrganization}
-						onCompleted={async () => await onCompleted?.()}
+						onCompleted={async () => onCompleted?.()}
 						onEditStart={() => (isEditing = true)}
 						onEditEnd={() => (isEditing = false)}
 						{onDeleteActivityPosting}

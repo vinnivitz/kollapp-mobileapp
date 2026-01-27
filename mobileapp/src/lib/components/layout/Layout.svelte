@@ -11,7 +11,8 @@
 	import Menu from '$lib/components/layout/Menu.svelte';
 	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
 	import { t } from '$lib/locales';
-	import { initializationStore, organizationStore, userStore } from '$lib/stores';
+	import { initializationStore, organizationStore } from '$lib/stores';
+	import { refreshDataStores } from '$lib/utility';
 
 	type Properties = {
 		children?: Snippet;
@@ -43,12 +44,12 @@
 	let menuComponent = $state<ReturnType<typeof Menu>>();
 
 	async function doRefresh(): Promise<void> {
-		await (onRefresh ? onRefresh() : Promise.all([userStore.initialize(), organizationStore.initialize()]));
+		await (onRefresh ? onRefresh() : refreshDataStores());
 		await refresher?.complete?.();
 	}
 </script>
 
-{#if title && !hideMenu}
+{#if title && !hideMenu && $loaded}
 	<Menu bind:this={menuComponent}>
 		<ion-list>
 			<LabeledItem

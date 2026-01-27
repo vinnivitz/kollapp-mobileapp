@@ -10,7 +10,6 @@
 	} from '@kollapp/api-types';
 
 	import { TZDate } from '@date-fns/tz';
-	import { loadingController } from '@ionic/core';
 	import { format } from 'date-fns';
 	import {
 		calendarClearOutline,
@@ -44,12 +43,12 @@
 		customForm,
 		formatter,
 		getBudgetCategoryNameById,
-		getOrganizationId,
 		getPersonOfOrganizationId,
 		getUsernameByPersonOfOrganizationId,
 		getValidationResult,
 		hasOrganizationRole,
-		parser
+		parser,
+		withLoader
 	} from '$lib/utility';
 
 	type Properties = {
@@ -95,7 +94,6 @@
 		posting
 	}: Properties = $props();
 
-	const organizationId = getOrganizationId();
 	const isManager = $derived(hasOrganizationRole('ROLE_ORGANIZATION_MANAGER'));
 	const canEdit = $derived(isManager || posting.personOfOrganizationId === getPersonOfOrganizationId());
 	const canTransfer = $derived(isManager && posting.personOfOrganizationId > 0);
@@ -203,9 +201,7 @@
 	}
 
 	async function deletePosting(): Promise<void> {
-		const loader = await loadingController.create({});
-		await loader.present();
-		if (organizationId) {
+		await withLoader(async () => {
 			const result =
 				activityId > 0
 					? await onDeleteActivityPosting(activityId, posting.id)
@@ -214,8 +210,7 @@
 			if (validationResult.valid) {
 				await onCompleted?.();
 			}
-		}
-		await loader.dismiss();
+		});
 	}
 
 	async function onTransferPosting(): Promise<void> {
@@ -228,9 +223,7 @@
 	}
 
 	async function transferPosting(): Promise<void> {
-		const loader = await loadingController.create({});
-		await loader.present();
-		if (organizationId) {
+		await withLoader(async () => {
 			const result =
 				activityId > 0
 					? await onTransferActivityPosting(activityId, posting.id)
@@ -239,8 +232,7 @@
 			if (validationResult.valid) {
 				await onCompleted?.();
 			}
-		}
-		await loader.dismiss();
+		});
 	}
 
 	function onDismissed(): void {

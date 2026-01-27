@@ -1,6 +1,4 @@
 <script lang="ts">
-	import type { AuthTokensTO, LoginRequestTO } from '@kollapp/api-types';
-
 	import { loadingController } from '@ionic/core';
 	import { fingerPrintOutline, keyOutline, logInOutline, personOutline } from 'ionicons/icons';
 	import { onMount } from 'svelte';
@@ -20,7 +18,7 @@
 	import { t } from '$lib/locales';
 	import { StorageKey } from '$lib/models/storage';
 	import { Form } from '$lib/models/ui';
-	import { appStateStore, authenticationStore, organizationStore } from '$lib/stores';
+	import { authenticationStore, organizationStore } from '$lib/stores';
 	import {
 		customForm,
 		getStoredValue,
@@ -30,23 +28,16 @@
 		promptBiometricAuthentication,
 		showAlert,
 		StatusCheck,
-		storeBiometricCredentials,
-		storeValue,
-		verifyBiometricIdentity
+		storeValue
 	} from '$lib/utility';
 
-	let loginCredentials = $state<LoginRequestTO>();
-
 	const form = new Form({
-		completed: async ({ model, response }) => {
-			loginCredentials = { password: model.password, username: model.username };
-			await handleLogin(response);
-		},
+		completed: onComplete,
 		request: authenticationService.login,
 		schema: loginSchema()
 	});
 
-	onMount(async () => await performBiometricVerification());
+	onMount(async () => performBiometricVerification());
 
 	async function performBiometricVerification(): Promise<void> {
 		if (dev || !(await isBiometricAvailable()) || !(await isBiometricEnabled()) || $authenticationStore) return;
@@ -57,23 +48,19 @@
 		const loading = await loadingController.create({});
 		await loading.present();
 
-		const response = await authenticationService.login({
-			password: credentials.password,
-			username: credentials.username
-		} satisfies LoginRequestTO);
-		await (StatusCheck.isOK(response.status)
-			? handleLogin(response.data)
-			: Promise.all([
-					showAlert($t('routes.auth.login.page.biometrics.wrong-credentials')),
-					storeValue(StorageKey.BIOMETRICS_ENABLED, false)
-				]));
+		const response = await authenticationService.login(credentials);
+		if (StatusCheck.isOK(response.status)) {
+			onComplete();
+		} else {
+			await Promise.all([
+				showAlert($t('routes.auth.login.page.biometrics.wrong-credentials')),
+				storeValue(StorageKey.BIOMETRICS_ENABLED, false)
+			]);
+		}
 		await loading.dismiss();
 	}
 
-	async function handleLogin(model: AuthTokensTO): Promise<void> {
-		await authenticationStore.set(model);
-		await appStateStore.initializeBaseData();
-		await promptBiometricSetup();
+	async function onComplete(): Promise<void> {
 		await goto(resolve('/'));
 		const welcomeShown = await getStoredValue(StorageKey.WELCOME_SHOWN);
 		if (!welcomeShown && !get(organizationStore)) {
@@ -83,16 +70,6 @@
 				$t('routes.auth.login.page.welcome-modal.message')
 			);
 		}
-	}
-
-	async function promptBiometricSetup(): Promise<void> {
-		if (dev || !(await isBiometricAvailable()) || (await isBiometricEnabled()) || !loginCredentials) return;
-		const verified = await verifyBiometricIdentity();
-		if (!verified) return;
-		await Promise.all([
-			storeValue(StorageKey.BIOMETRICS_ENABLED, true),
-			storeBiometricCredentials(loginCredentials.username, loginCredentials.password)
-		]);
 	}
 </script>
 

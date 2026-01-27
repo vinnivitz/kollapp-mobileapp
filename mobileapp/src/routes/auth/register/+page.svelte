@@ -26,7 +26,7 @@
 		customValidators: {
 			confirmPassword: passwordConfirmationValidator('password', 'confirmPassword')
 		},
-		request: async (model) => publicUserService.register(model),
+		request: async (model) => await publicUserService.register(model),
 		schema: registerSchema()
 	});
 </script>

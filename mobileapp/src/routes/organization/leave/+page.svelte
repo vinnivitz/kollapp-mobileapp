@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { loadingController } from '@ionic/core';
 	import { ribbonOutline, trashOutline, warningOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
@@ -11,7 +10,7 @@
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import { t } from '$lib/locales';
 	import { organizationStore, userStore } from '$lib/stores';
-	import { confirmationModal, hasOrganizationRole } from '$lib/utility';
+	import { confirmationModal, hasOrganizationRole, withLoader } from '$lib/utility';
 
 	const currentPersonOfOrganizationId = $derived(
 		$organizationStore?.personsOfOrganization.find((person) => person.userId === $userStore?.id)?.id ?? 0
@@ -53,10 +52,7 @@
 	}
 
 	async function leaveOrganization(): Promise<void> {
-		const loader = await loadingController.create({});
-		await loader.present();
-		await organizationService.leave();
-		await loader.dismiss();
+		await withLoader(() => organizationService.leave());
 		await goto(resolve('/organization'));
 	}
 </script>
@@ -103,7 +99,7 @@
 			classList="mt-3"
 			fill="default"
 			label={$t('routes.organization.leave.page.card.button.members')}
-			clicked={async () => await goto(resolve('/organization/members'))}
+			clicked={async () => goto(resolve('/organization/members'))}
 		/>
 	</Card>
 {/snippet}

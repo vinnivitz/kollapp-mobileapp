@@ -12,39 +12,39 @@ class PublicUserService {
 	 * @param model signup model
 	 * @returns {Promise<ResponseBody>} response body
 	 */
-	async register(model: KollappUserSignupRequestTO): Promise<ResponseBody> {
+	register = async (model: KollappUserSignupRequestTO): Promise<ResponseBody> => {
 		return customFetch(`${this.base}/signup`, {
 			authorizationType: AuthorizationType.NONE,
 			body: model,
 			method: RequestMethod.POST
 		});
-	}
+	};
 
 	/** Sends a password reset email to the user
 	 * @param model forgot password model
 	 * @returns {Promise<ResponseBody>} response body
 	 */
-	async forgotPassword(model: ForgotPasswordRequestTO): Promise<ResponseBody> {
+	forgotPassword = async (model: ForgotPasswordRequestTO): Promise<ResponseBody> => {
 		return customFetch(`${this.base}/forgot-password`, {
 			authorizationType: AuthorizationType.NONE,
 			body: model,
 			method: RequestMethod.POST
 		});
-	}
+	};
 
 	/** Resets the user password
 	 * @param model reset password model
 	 * @param token reset token
 	 * @returns {Promise<ResponseBody>} response body
 	 */
-	async resetPassword(model: ResetPasswordRequestTO, token: string): Promise<ResponseBody> {
+	resetPassword = async (model: ResetPasswordRequestTO, token: string): Promise<ResponseBody> => {
 		return customFetch(`${this.base}/reset-password`, {
 			authorizationType: AuthorizationType.NONE,
 			body: model,
 			method: RequestMethod.POST,
 			query: { token }
 		});
-	}
+	};
 }
 
 export const publicUserService = new PublicUserService();

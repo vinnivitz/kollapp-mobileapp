@@ -25,7 +25,7 @@
 	import TextareaInputItem from '$lib/components/widgets/ionic/TextareaInputItem.svelte';
 	import { t } from '$lib/locales';
 	import { organizationStore } from '$lib/stores';
-	import { isAuthenticated, StatusCheck } from '$lib/utility';
+	import { isAuthenticated, StatusCheck, withLoader } from '$lib/utility';
 
 	const { data }: { data: PageData } = $props();
 
@@ -37,7 +37,7 @@
 	let authenticated = $state<boolean>(false);
 
 	async function onJoinCollective(): Promise<void> {
-		const result = await organizationService.joinByInvitationCode({ code: data.code });
+		const result = await withLoader(() => organizationService.joinByInvitationCode({ code: data.code }));
 		if (StatusCheck.isOK(result.status)) {
 			await goto(resolve('/organization'));
 		}

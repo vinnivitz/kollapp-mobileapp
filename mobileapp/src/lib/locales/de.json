@@ -1212,6 +1212,13 @@
     "connection": {
       "offline": "Du bist offline",
       "online": "Du bist online"
+    },
+    "quick-access": {
+      "special-widgets": {
+        "organization-card": "Kollektivübersicht",
+        "upcoming-activity-card": "Übersicht für bevorstehende Veranstaltung",
+        "budget-chart-card": "Budgetübersicht"
+      }
     }
   },
   "utility": {

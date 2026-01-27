@@ -5,7 +5,7 @@
 	import { AppLauncher } from '@capacitor/app-launcher';
 	import { TZDate } from '@date-fns/tz';
 	import { CapacitorCalendar } from '@ebarooni/capacitor-calendar';
-	import { isPlatform, loadingController } from '@ionic/core';
+	import { isPlatform } from '@ionic/core';
 	import { addDays, formatDistanceToNow } from 'date-fns';
 	import {
 		addOutline,
@@ -40,7 +40,8 @@
 		customForm,
 		getDateFnsLocale,
 		hasOrganizationRole,
-		promptCalendarPermissionRequest
+		promptCalendarPermissionRequest,
+		withLoader
 	} from '$lib/utility';
 
 	const { data }: { data: PageData } = $props();
@@ -77,7 +78,6 @@
 
 	const updateActivityForm = new Form({
 		completed: async () => {
-			await organizationStore.update();
 			updateActivityModalOpen = false;
 			updateActivityModelTouched = false;
 		},
@@ -99,12 +99,10 @@
 	}
 
 	async function deleteActivity(): Promise<void> {
-		const loader = await loadingController.create({});
-		await loader.present();
-		await activityService.remove(activity?.id!);
-		await organizationStore.update();
-		updateActivityModalOpen = false;
-		await loader.dismiss();
+		await withLoader(async () => {
+			await activityService.remove(activity?.id!);
+			updateActivityModalOpen = false;
+		});
 		await goto(resolve('/organization/activities'));
 	}
 
@@ -203,7 +201,6 @@
 		onDeleteActivityPosting={budgetService.deleteActivityPosting}
 		onTransferOrganizationPosting={budgetService.transferOrganizationPosting}
 		onTransferActivityPosting={budgetService.transferActivityPosting}
-		onCompleted={organizationStore.update}
 	/>
 {/snippet}
 

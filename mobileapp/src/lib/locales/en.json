@@ -379,6 +379,13 @@
     "connection": {
       "offline": "You are offline",
       "online": "You are online"
+    },
+    "quick-access": {
+      "special-widgets": {
+        "organization-card": "Collective overview",
+        "upcoming-activity-card": "Upcoming event overview",
+        "budget-chart-card": "Budget overview"
+      }
     }
   },
   "utility": {

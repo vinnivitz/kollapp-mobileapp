@@ -17,6 +17,7 @@
 	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
 	import Popover from '$lib/components/widgets/ionic/Popover.svelte';
+	import ToggleItem from '$lib/components/widgets/ionic/ToggleItem.svelte';
 	import { t } from '$lib/locales';
 	import { StorageKey } from '$lib/models/storage';
 	import { Form, type FormActions } from '$lib/models/ui';
@@ -26,8 +27,7 @@
 		deleteBiometricCredentials,
 		featureNotImplementedAlert,
 		getStoredValue,
-		isBiometricAvailable,
-		storeBiometricCredentials
+		isBiometricAvailable
 	} from '$lib/utility';
 
 	let showPasswordPrompt = $state<boolean>(false);
@@ -37,7 +37,11 @@
 	let actions: FormActions<LoginRequestTO>;
 
 	const form = new Form({
-		completed: async ({ model }) => onPasswordConfirmed($userStore?.username!, model.password),
+		completed: async () => {
+			isPasswordConfirmed = true;
+			onPasswordPromptDismiss();
+			setToggleValue(true);
+		},
 		exposedActions: (exposedActions) => (actions = exposedActions),
 		hiddenFields: { username: $userStore?.username! },
 		request: authenticationService.login,
@@ -57,13 +61,6 @@
 			showPasswordPrompt = true;
 			isPasswordConfirmed = false;
 		}
-	}
-
-	async function onPasswordConfirmed(username: string, password: string): Promise<void> {
-		isPasswordConfirmed = true;
-		await storeBiometricCredentials(username, password);
-		onPasswordPromptDismiss();
-		setToggleValue(true);
 	}
 
 	async function onPasswordPromptDismiss(): Promise<void> {
@@ -122,16 +119,13 @@
 				indexLabel={$t('routes.account.privacy-and-security.page.list.security.login-with-biometrics')}
 				indexed="/account/privacy-and-security"
 			>
-				<ion-toggle
-					bind:this={toggle}
-					color="secondary"
-					enable-on-off-labels
-					class="ms-4"
+				<ToggleItem
+					element={toggle}
+					classList="ms-4"
 					disabled={!isAvailable}
-					onionChange={() => onToggleBiometrics()}
-				>
-					{$t('routes.account.privacy-and-security.page.list.security.login-with-biometrics')}
-				</ion-toggle>
+					changed={() => onToggleBiometrics()}
+					label={$t('routes.account.privacy-and-security.page.list.security.login-with-biometrics')}
+				/>
 			</CustomItem>
 		{/await}
 		<LabeledItem

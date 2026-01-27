@@ -17,10 +17,7 @@
 	let touched = $state<boolean>(false);
 
 	const form = new Form({
-		completed: async () => {
-			await organizationStore.initialize();
-			touched = false;
-		},
+		completed: async () => (touched = false),
 		exposedActions: (actions) => {
 			actions?.setModel({
 				description: $organizationStore?.description,

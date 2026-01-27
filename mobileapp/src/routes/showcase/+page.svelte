@@ -87,7 +87,7 @@
 				modalOpen = false;
 				await showAlert('Modal dismissed');
 			}}
-			confirmed={async () => await showAlert('Model confirmed', { type: AlertType.SUCCESS })}
+			confirmed={async () => showAlert('Model confirmed', { type: AlertType.SUCCESS })}
 			lazy
 		>
 			<ion-text>This is a modal.</ion-text>
@@ -96,43 +96,43 @@
 			<Button
 				label="Default"
 				icon={addOutline}
-				clicked={async () => await showAlert('Button clicked', { type: AlertType.SUCCESS })}
+				clicked={async () => showAlert('Button clicked', { type: AlertType.SUCCESS })}
 			/>
 			<Button
 				label="Outline"
 				fill="outline"
 				icon={addOutline}
-				clicked={async () => await showAlert('Button clicked', { type: AlertType.SUCCESS })}
+				clicked={async () => showAlert('Button clicked', { type: AlertType.SUCCESS })}
 			/>
 			<Button
 				label="Clear"
 				fill="clear"
 				icon={addOutline}
-				clicked={async () => await showAlert('Button clicked', { type: AlertType.SUCCESS })}
+				clicked={async () => showAlert('Button clicked', { type: AlertType.SUCCESS })}
 			/>
-			<Button icon={addOutline} clicked={async () => await showAlert('Button clicked', { type: AlertType.SUCCESS })} />
+			<Button icon={addOutline} clicked={async () => showAlert('Button clicked', { type: AlertType.SUCCESS })} />
 			<Button
 				label="Disabled"
 				disabled
 				icon={addOutline}
-				clicked={async () => await showAlert('Button clicked', { type: AlertType.SUCCESS })}
+				clicked={async () => showAlert('Button clicked', { type: AlertType.SUCCESS })}
 			/>
 			<Button
 				label="Icon right"
 				iconEnd={addOutline}
-				clicked={async () => await showAlert('Button clicked', { type: AlertType.SUCCESS })}
+				clicked={async () => showAlert('Button clicked', { type: AlertType.SUCCESS })}
 			/>
 			<Button
 				label="Icon big"
 				iconSize="large"
 				icon={addOutline}
-				clicked={async () => await showAlert('Button clicked', { type: AlertType.SUCCESS })}
+				clicked={async () => showAlert('Button clicked', { type: AlertType.SUCCESS })}
 			/>
 			<Button
 				label="Button large"
 				size="large"
 				icon={addOutline}
-				clicked={async () => await showAlert('Button clicked', { type: AlertType.SUCCESS })}
+				clicked={async () => showAlert('Button clicked', { type: AlertType.SUCCESS })}
 			/>
 		</div>
 	</Card>
@@ -141,17 +141,17 @@
 			card
 			icon={personOutline}
 			label="Toggle item with icon"
-			changed={async (value) => await showAlert('Toggle changed: ' + value, { type: AlertType.SUCCESS })}
+			changed={async (value) => showAlert('Toggle changed: ' + value, { type: AlertType.SUCCESS })}
 		/>
 		<ToggleItem
 			card
 			label="Toggle item"
-			changed={async (value) => await showAlert('Toggle changed: ' + value, { type: AlertType.SUCCESS })}
+			changed={async (value) => showAlert('Toggle changed: ' + value, { type: AlertType.SUCCESS })}
 		/>
 	</Card>
 	<Card title="Chips">
 		<Chip label="Chip label" />
-		<Chip label="Clickable chip" clicked={async () => await showAlert('Chip clicked', { type: AlertType.SUCCESS })} />
+		<Chip label="Clickable chip" clicked={async () => showAlert('Chip clicked', { type: AlertType.SUCCESS })} />
 		<Chip label="Chip with icon" icon={personOutline} />
 		<Chip label="Chip with end icon" iconEnd={personOutline} />
 	</Card>
@@ -163,7 +163,7 @@
 				indexLabel="Add"
 				buttons={[
 					{
-						handler: async () => await showAlert('Add clicked', { type: AlertType.SUCCESS }),
+						handler: async () => showAlert('Add clicked', { type: AlertType.SUCCESS }),
 						icon: addOutline,
 						label: 'Add'
 					}
@@ -179,7 +179,7 @@
 	</Card>
 	<Card title="Calendar">
 		<div class="flex flex-col gap-4">
-			<Calendar applied={async () => await showAlert('Date selected', { type: AlertType.SUCCESS })} />
+			<Calendar applied={async () => showAlert('Date selected', { type: AlertType.SUCCESS })} />
 			<Calendar showTitle={false} showButtons={false} />
 		</div>
 	</Card>
@@ -187,7 +187,7 @@
 		<CustomItem card>
 			<div class="flex w-full items-center justify-between gap-4">
 				<ion-label>Custom item</ion-label>
-				<Button clicked={async () => await showAlert('Button clicked', { type: AlertType.SUCCESS })} label="Click me" />
+				<Button clicked={async () => showAlert('Button clicked', { type: AlertType.SUCCESS })} label="Click me" />
 			</div>
 		</CustomItem>
 		<LabeledItem card label="Labeled item"></LabeledItem>
@@ -195,7 +195,7 @@
 		<LabeledItem
 			card
 			label="Clickable labeled item"
-			clicked={async () => await showAlert('Item clicked', { type: AlertType.SUCCESS })}
+			clicked={async () => showAlert('Item clicked', { type: AlertType.SUCCESS })}
 		></LabeledItem>
 		<LabeledItem card label="Labeled item with icon" icon={documentOutline} />
 		<InputItem card label="Input item" name="value" />
@@ -206,7 +206,7 @@
 			label="Input item with clickable icon"
 			name="value"
 			inputIcon={attachOutline}
-			inputIconClicked={async () => await showAlert('Item clicked', { type: AlertType.SUCCESS })}
+			inputIconClicked={async () => showAlert('Item clicked', { type: AlertType.SUCCESS })}
 		/>
 	</Card>
 	<Card title="Custom Input Items">

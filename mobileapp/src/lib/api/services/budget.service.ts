@@ -15,7 +15,7 @@ class BudgetService {
 	 * @returns {Promise<ResponseBody<PostingTO>>} The created posting.
 	 */
 	createOrganizationPosting = async (model: PostingCreateUpdateRequestTO): Promise<ResponseBody<PostingTO>> => {
-		const response = await customFetch(`${this.base}/posting`, {
+		const response = await customFetch<PostingTO>(`${this.base}/posting`, {
 			body: model,
 			method: RequestMethod.POST
 		});
@@ -35,7 +35,7 @@ class BudgetService {
 		activityId: number,
 		model: PostingCreateUpdateRequestTO
 	): Promise<ResponseBody<PostingTO>> => {
-		const response = await customFetch(`${this.base}/activity/${activityId}/posting`, {
+		const response = await customFetch<PostingTO>(`${this.base}/activity/${activityId}/posting`, {
 			body: model,
 			method: RequestMethod.POST
 		});
@@ -57,7 +57,7 @@ class BudgetService {
 		postingId: number,
 		model: PostingCreateUpdateRequestTO
 	): Promise<ResponseBody<PostingTO>> => {
-		const response = await customFetch(`${this.base}/activity/${activityId}/posting/${postingId}`, {
+		const response = await customFetch<PostingTO>(`${this.base}/activity/${activityId}/posting/${postingId}`, {
 			body: model,
 			method: RequestMethod.PUT
 		});

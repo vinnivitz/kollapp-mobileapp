@@ -15,11 +15,11 @@
 	import { customForm, passwordConfirmationValidator } from '$lib/utility';
 
 	const form = new Form({
-		completed: async () => await goto(resolve('/account')),
+		completed: async () => goto(resolve('/account')),
 		customValidators: {
 			confirmNewPassword: passwordConfirmationValidator('newPassword', 'confirmNewPassword')
 		},
-		request: async (model) => await userService.changePassword(model),
+		request: async (model) => userService.changePassword(model),
 		schema: changePasswordSchema()
 	});
 </script>

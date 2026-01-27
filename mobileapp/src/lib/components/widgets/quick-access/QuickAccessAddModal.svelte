@@ -12,7 +12,7 @@
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
 	import { t } from '$lib/locales';
-	import { AVAILABLE_SPECIAL_WIDGETS, quickAccessStore } from '$lib/stores';
+	import { quickAccessStore, SPECIAL_WIDGETS } from '$lib/stores';
 
 	type Properties = {
 		open: boolean;
@@ -32,9 +32,7 @@
 
 	// Check which special widgets are not yet added
 	const availableSpecialWidgets = $derived(
-		AVAILABLE_SPECIAL_WIDGETS.filter(
-			(widget) => !currentItems.some((item) => item.specialWidgetId === widget.specialWidgetId)
-		)
+		SPECIAL_WIDGETS().filter((widget) => !currentItems.some((item) => item.id === widget.id))
 	);
 
 	const availableItems = $derived(allItems.filter((item) => !isItemAdded(item)));
@@ -184,7 +182,7 @@
 						slidingOptions={getRemoveSlidingOptionById(widget.id)}
 					>
 						<ion-label class="ms-2">
-							{$t(`routes.page.page.quick-access.special-widgets.${widget.specialWidgetId}`)}
+							{widget.label}
 						</ion-label>
 					</CustomItem>
 				{/each}
@@ -203,9 +201,7 @@
 						icon={icons[widget.icon as keyof typeof icons] ?? icons.ellipsisHorizontalOutline}
 						slidingOptions={getAddSpecialWidgetSlidingOption(widget)}
 					>
-						<ion-label class="ms-2">
-							{$t(`routes.page.page.quick-access.special-widgets.${widget.specialWidgetId}`)}
-						</ion-label>
+						<ion-label class="ms-2">{widget.label}</ion-label>
 					</CustomItem>
 				{/each}
 			</ion-list>

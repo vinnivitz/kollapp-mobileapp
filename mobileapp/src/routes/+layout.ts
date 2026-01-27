@@ -52,7 +52,7 @@ async function handleAppEvents(): Promise<void> {
 			await goto(path);
 		}
 	});
-	App.addListener('backButton', async () => await navigateBack());
+	App.addListener('backButton', async () => navigateBack());
 }
 
 // Workaround to suppress false positive error message from ion-tab

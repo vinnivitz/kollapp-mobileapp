@@ -17,7 +17,7 @@
 	import { customForm } from '$lib/utility';
 
 	const form = new Form({
-		completed: async () => await goto(resolve('/organization')),
+		completed: async () => goto(resolve('/organization')),
 		request: organizationService.create,
 		schema: createOrganizationSchema()
 	});

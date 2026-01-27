@@ -14,7 +14,7 @@ class ActivityService {
 	 * @param model activity model
 	 * @returns {Promise<ResponseBody<ActivityTO>>} The created activity.
 	 */
-	async create(model: ActivityCreationRequestTO): Promise<ResponseBody<ActivityTO>> {
+	create = async (model: ActivityCreationRequestTO): Promise<ResponseBody<ActivityTO>> => {
 		const response = await customFetch<ActivityTO>(`${this.base}/activity`, {
 			body: model,
 			method: RequestMethod.POST
@@ -23,7 +23,7 @@ class ActivityService {
 			await organizationStore.createActivity(response.data);
 		}
 		return response;
-	}
+	};
 
 	/**
 	 * Updates the activity of the given organization.
@@ -31,23 +31,23 @@ class ActivityService {
 	 * @param model activity model
 	 * @returns {Promise<ResponseBody<ActivityTO>>} The updated activity.
 	 */
-	async update(activityId: number, model: ActivityUpdateRequestTO): Promise<ResponseBody<ActivityTO>> {
+	update = async (activityId: number, model: ActivityUpdateRequestTO): Promise<ResponseBody<ActivityTO>> => {
 		const response = await customFetch<ActivityTO>(`${this.base}/activity/${activityId}`, {
 			body: model,
-			method: RequestMethod.POST
+			method: RequestMethod.PUT
 		});
 		if (StatusCheck.isOK(response.status)) {
 			await organizationStore.updateActivity(response.data);
 		}
 		return response;
-	}
+	};
 
 	/**
 	 * Deletes the activity of the given organization.
 	 * @param activityId id of the activity
 	 * @returns {Promise<ResponseBody>} response body
 	 */
-	async remove(activityId: number): Promise<ResponseBody> {
+	remove = async (activityId: number): Promise<ResponseBody> => {
 		const response = await customFetch(`${this.base}/activity/${activityId}`, {
 			method: RequestMethod.DELETE
 		});
@@ -55,7 +55,7 @@ class ActivityService {
 			await organizationStore.removeActivity(activityId);
 		}
 		return response;
-	}
+	};
 }
 
 export const activityService = new ActivityService();

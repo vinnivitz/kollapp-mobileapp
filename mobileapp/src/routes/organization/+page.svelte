@@ -58,7 +58,10 @@
 	async function onOrganizationSelect(): Promise<void> {
 		const actionSheet = await actionSheetController.create({
 			buttons: $organizations.map((organization) => ({
-				handler: async () => await organizationStore.update(),
+				handler: async () => {
+					if ($organizationStore?.id === organization.id) return;
+					await organizationStore.update(organization.id);
+				},
 				role: $organizationStore?.id === organization.id ? 'selected' : undefined,
 				text: organization.name
 			})),
@@ -236,7 +239,6 @@
 		onDeleteActivityPosting={budgetService.deleteActivityPosting}
 		onTransferOrganizationPosting={budgetService.transferOrganizationPosting}
 		onTransferActivityPosting={budgetService.transferActivityPosting}
-		onCompleted={organizationStore.update}
-		onOpenStatistics={async () => await goto(resolve('/organization/budget-statistics'))}
+		onOpenStatistics={async () => goto(resolve('/organization/budget-statistics'))}
 	/>
 {/snippet}

@@ -2,7 +2,7 @@ import type { ConfirmModalConfig } from '$lib/models/ui';
 import type { OrganizationRole } from '@kollapp/api-types';
 import type { AnyObject, ObjectSchema } from 'yup';
 
-import { alertController } from '@ionic/core';
+import { alertController, loadingController } from '@ionic/core';
 import { type Locale as DateFnsLocale, de, enUS } from 'date-fns/locale';
 import { get } from 'svelte/store';
 
@@ -191,7 +191,7 @@ export async function confirmationModal(config: ConfirmModalConfig): Promise<voi
 		buttons: [
 			{ role: 'cancel', text: $t('utility.ui.confirm-modal.cancel') },
 			{
-				handler: async () => await config.handler(),
+				handler: async () => config.handler(),
 				text: config.confirmText ?? $t('utility.ui.confirm-modal.confirm')
 			}
 		],
@@ -217,4 +217,16 @@ export async function informationModal(header: string, message: string): Promise
 	});
 	await alert.present();
 	await alert.onDidDismiss();
+}
+
+/** Displays a loading spinner while executing an async action
+ * @param action async action to execute
+ * @returns {Promise<void>} Promise that resolves when the action is complete
+ */
+export async function withLoader<T>(action: () => Promise<T>): Promise<T> {
+	const loader = await loadingController.create({});
+	await loader.present();
+	const result = await action();
+	await loader.dismiss();
+	return result;
 }

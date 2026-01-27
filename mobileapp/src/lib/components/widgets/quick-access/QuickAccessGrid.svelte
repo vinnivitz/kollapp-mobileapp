@@ -20,7 +20,7 @@
 	import { t } from '$lib/locales';
 	import { TourStepId } from '$lib/models/ui';
 	import { organizationStore, quickAccessStore } from '$lib/stores';
-	import { clickOutside, hasOrganizationRole, triggerClickByLabel } from '$lib/utility';
+	import { clickOutside, triggerClickByLabel } from '$lib/utility';
 
 	const LONG_PRESS_DURATION_MS = 500;
 
@@ -32,9 +32,7 @@
 
 	let dndItems = $state<Record<string, QuickAccessItem[]>>({ items: [] });
 	let modalOpen = $state<boolean>(false);
-	let isManager = $derived(hasOrganizationRole('ROLE_ORGANIZATION_MANAGER'));
 
-	// Data for special widgets
 	const organization = $derived($organizationStore);
 
 	const activity = $derived.by(() => {
@@ -61,7 +59,7 @@
 		dndItems = { items: [...items] };
 	});
 
-	onMount(() => quickAccessStore.initialize(isManager));
+	onMount(async () => quickAccessStore.initialize());
 
 	function handlePointerDown(): void {
 		if (editMode) return;

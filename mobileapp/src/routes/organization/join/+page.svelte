@@ -18,7 +18,7 @@
 	import { t } from '$lib/locales';
 	import { Form } from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';
-	import { customForm, informationModal, showAlert, StatusCheck } from '$lib/utility';
+	import { customForm, informationModal, showAlert, StatusCheck, withLoader } from '$lib/utility';
 
 	const form = new Form({
 		completed: async ({ response }) => await onCompleted(response),
@@ -31,7 +31,7 @@
 			const result = await CapacitorBarcodeScanner.scanBarcode({ hint: CapacitorBarcodeScannerTypeHint.QR_CODE });
 			const code = result.ScanResult;
 			if (code.length === 8) {
-				const response = await organizationService.joinByInvitationCode({ code });
+				const response = await withLoader(() => organizationService.joinByInvitationCode({ code }));
 				if (StatusCheck.isOK(response.status)) {
 					await Haptics.vibrate({ duration: 1000 });
 					await onCompleted(response.data);

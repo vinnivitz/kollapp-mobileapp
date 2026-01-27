@@ -15,9 +15,8 @@
 	import { t } from '$lib/locales';
 	import { Form, type FormActions, type ItemSlidingOption, TourStepId } from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';
-	import { confirmationModal, customForm, StatusCheck } from '$lib/utility';
+	import { confirmationModal, customForm, withLoader } from '$lib/utility';
 
-	const schema = budgetCategorySchema();
 	const categories = $derived(
 		($organizationStore?.budgetCategories ?? []).toSorted((a, b) => {
 			if (a.defaultCategory && !b.defaultCategory) {
@@ -39,24 +38,22 @@
 
 	const createForm = new Form<OrganizationBudgetCategoryRequestTO>({
 		completed: async ({ actions }) => {
-			await organizationStore.update();
 			createModalOpen = false;
-			actions.setModel(schema.getDefault());
+			actions.setModel(budgetCategorySchema().getDefault());
 		},
 		exposedActions: (actions) => (createFormActions = actions),
 		request: budgetCategoryService.create,
-		schema
+		schema: budgetCategorySchema()
 	});
 
 	const updateForm = new Form<OrganizationBudgetCategoryRequestTO>({
 		completed: async ({ actions }) => {
-			await organizationStore.update();
 			updateModalOpen = false;
-			actions.setModel(schema.getDefault());
+			actions.setModel(budgetCategorySchema().getDefault());
 		},
 		exposedActions: (actions) => (updateFormActions = actions),
 		request: async (model) => budgetCategoryService.update(selectedCategory?.id!, model),
-		schema
+		schema: budgetCategorySchema()
 	});
 
 	function getSlidingOptions(category: OrganizationBudgetCategoryResponseTO): ItemSlidingOption[] {
@@ -90,21 +87,14 @@
 
 	async function onDeleteCategoryPrompt(category: OrganizationBudgetCategoryResponseTO): Promise<void> {
 		return confirmationModal({
-			handler: async () => await deleteCategory(category.id),
+			handler: async () => void withLoader(() => budgetCategoryService.remove(category.id)),
 			header: $t('routes.organization.budget-categories.page.modal.delete.header'),
 			message: $t('routes.organization.budget-categories.page.modal.delete.message', { value: category.name })
 		});
 	}
 
-	async function deleteCategory(categoryId: number): Promise<void> {
-		const response = await budgetCategoryService.remove(categoryId);
-		if (StatusCheck.isOK(response.status)) {
-			await organizationStore.update();
-		}
-	}
-
 	function onOpenCreateModal(): void {
-		createFormActions?.setModel(schema.getDefault());
+		createFormActions?.setModel(budgetCategorySchema().getDefault());
 		createModalOpen = true;
 	}
 </script>

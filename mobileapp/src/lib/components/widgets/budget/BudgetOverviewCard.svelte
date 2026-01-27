@@ -103,8 +103,6 @@
 		tourId
 	}: Properties = $props();
 
-	const userId = getUserId();
-
 	const budgetCategoryItems = $derived<MultiSelectItem[]>(
 		budgetCategories.map((category) => ({
 			data: { id: category.id, label: category.name },
@@ -112,16 +110,19 @@
 		}))
 	);
 
-	const personOfOrganizationItems = $derived<MultiSelectItem[]>([
-		...personsOfOrganization.map((personOfOrganization) => ({
-			data: { id: personOfOrganization.id, label: personOfOrganization.username },
-			selected: personOfOrganization.userId === userId
-		})),
-		{
-			data: { id: 0, label: $t('components.budget-overview.modal.person-of-organization.none') },
-			selected: false
-		}
-	]);
+	const personOfOrganizationItems = $derived.by<MultiSelectItem[]>(() => {
+		const userId = getUserId();
+		return [
+			...personsOfOrganization.map((personOfOrganization) => ({
+				data: { id: personOfOrganization.id, label: personOfOrganization.username },
+				selected: personOfOrganization.userId === userId
+			})),
+			{
+				data: { id: 0, label: $t('components.budget-overview.modal.person-of-organization.none') },
+				selected: false
+			}
+		];
+	});
 
 	const activityItems = $derived<MultiSelectItem[]>([
 		...activities.map((activity) => ({

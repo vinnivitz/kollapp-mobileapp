@@ -19,7 +19,7 @@ class BudgetCategoryService {
 	 * @param model The budget category data.
 	 * @returns {Promise<ResponseBody<OrganizationTO>>} The updated organization with the new category.
 	 */
-	async create(model: OrganizationBudgetCategoryRequestTO): Promise<ResponseBody<OrganizationTO>> {
+	create = async (model: OrganizationBudgetCategoryRequestTO): Promise<ResponseBody<OrganizationTO>> => {
 		const response = await customFetch<OrganizationTO>(this.base, {
 			body: model,
 			method: RequestMethod.POST
@@ -28,7 +28,7 @@ class BudgetCategoryService {
 			await organizationStore.set(response.data);
 		}
 		return response;
-	}
+	};
 
 	/**
 	 * Updates an existing budget category.
@@ -38,7 +38,10 @@ class BudgetCategoryService {
 	 * @param model The updated budget category data.
 	 * @returns {Promise<ResponseBody<OrganizationTO>>} The updated organization with the modified category.
 	 */
-	async update(categoryId: number, model: OrganizationBudgetCategoryRequestTO): Promise<ResponseBody<OrganizationTO>> {
+	update = async (
+		categoryId: number,
+		model: OrganizationBudgetCategoryRequestTO
+	): Promise<ResponseBody<OrganizationTO>> => {
 		const response = await customFetch<OrganizationTO>(`${this.base}/${categoryId}`, {
 			body: model,
 			method: RequestMethod.PUT
@@ -47,7 +50,7 @@ class BudgetCategoryService {
 			await organizationStore.set(response.data);
 		}
 		return response;
-	}
+	};
 
 	/**
 	 * Deletes a budget category from the organization.
@@ -56,7 +59,7 @@ class BudgetCategoryService {
 	 * @param categoryId The category ID to delete.
 	 * @returns {Promise<ResponseBody<OrganizationTO>>} The updated organization without the deleted category.
 	 */
-	async remove(categoryId: number): Promise<ResponseBody<OrganizationTO>> {
+	remove = async (categoryId: number): Promise<ResponseBody<OrganizationTO>> => {
 		const response = await customFetch<OrganizationTO>(`${this.base}/${categoryId}`, {
 			method: RequestMethod.DELETE
 		});
@@ -64,7 +67,7 @@ class BudgetCategoryService {
 			await organizationStore.set(response.data);
 		}
 		return response;
-	}
+	};
 }
 
 export const budgetCategoryService = new BudgetCategoryService();

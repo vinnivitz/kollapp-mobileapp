@@ -167,7 +167,7 @@
 	titleIconStart={cashOutline}
 	border="secondary"
 	{tourId}
-	clicked={async () => await goto(resolve('/organization/budget-statistics'))}
+	clicked={async () => goto(resolve('/organization/budget-statistics'))}
 	readonly={editMode}
 >
 	{#if postings && postings.length > 0}

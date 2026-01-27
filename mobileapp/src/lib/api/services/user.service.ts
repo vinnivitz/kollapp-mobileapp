@@ -27,15 +27,15 @@ class UserService {
 	/** Gets the data of authenticated user
 	 * @returns {Promise<ResponseBody<KollappUserTO>>} response body
 	 */
-	async get(): Promise<ResponseBody<KollappUserTO>> {
-		return customFetch(this.base, { silentOnSuccess: true });
-	}
+	get = async (): Promise<ResponseBody<KollappUserTO>> => {
+		return customFetch<KollappUserTO>(this.base, { silentOnSuccess: true });
+	};
 
 	/** Changes the password of the authenticated user
 	 * @param model password change model
 	 * @returns {Promise<ResponseBody>} response body
 	 */
-	async changePassword(model: PasswordChangeRequestTO): Promise<ResponseBody> {
+	changePassword = async (model: PasswordChangeRequestTO): Promise<ResponseBody> => {
 		const response = await customFetch(`${this.base}/change-password`, {
 			body: model,
 			method: RequestMethod.PATCH
@@ -44,14 +44,14 @@ class UserService {
 			await updatePasswordBiometricCredentials(model.newPassword);
 		}
 		return response;
-	}
+	};
 
 	/** Updates the data of the authenticated user
 	 * @param model user update model
-	 * @returns {Promise<ResponseBody<KollappUserTO>>} response body
+	 * @returns {Promise<ResponseBody<KollapreturnpUserTO>>} response body
 	 */
-	async update(model: KollappUserUpdateRequestTO): Promise<ResponseBody<KollappUserTO>> {
-		const response = await customFetch(`${this.base}/update-information`, {
+	update = async (model: KollappUserUpdateRequestTO): Promise<ResponseBody<KollappUserTO>> => {
+		const response = await customFetch<KollappUserTO>(`${this.base}/update-information`, {
 			body: model,
 			method: RequestMethod.PATCH
 		});
@@ -64,17 +64,17 @@ class UserService {
 			}
 		}
 		return response;
-	}
+	};
 
 	/** Deletes the account of the authenticated user
 	 * @returns {Promise<ResponseBody>} response body
 	 */
-	async remove(model: DeleteAccountRequestTO): Promise<ResponseBody> {
+	remove = async (model: DeleteAccountRequestTO): Promise<ResponseBody> => {
 		return customFetch(`${this.base}`, {
 			body: model,
 			method: RequestMethod.DELETE
 		});
-	}
+	};
 }
 
 export const userService = new UserService();

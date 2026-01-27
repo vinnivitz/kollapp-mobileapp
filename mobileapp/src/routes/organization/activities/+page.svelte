@@ -112,7 +112,6 @@
 
 	const form = new Form({
 		completed: async ({ actions }) => {
-			await organizationStore.update();
 			createActivityModalOpen = false;
 			actions.setModel(createActivitySchema().getDefault());
 		},

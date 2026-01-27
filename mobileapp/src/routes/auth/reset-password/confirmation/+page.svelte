@@ -27,7 +27,7 @@
 	});
 
 	const form = new Form({
-		completed: async () => await goto(resolve('/auth/login')),
+		completed: async () => goto(resolve('/auth/login')),
 		customValidators: {
 			confirmPassword: passwordConfirmationValidator<ResetPasswordRequestTO & { confirmPassword: string }>(
 				'password',

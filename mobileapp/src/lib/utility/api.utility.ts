@@ -226,6 +226,10 @@ export function getUserId(): number | undefined {
 	return get(userStore)?.id;
 }
 
+export async function refreshDataStores(): Promise<void> {
+	await Promise.all([organizationStore.initialize(), userStore.initialize()]);
+}
+
 async function handleAuthorizationError(): Promise<ResponseBody> {
 	const $t = get(t);
 	await authenticationService.logout();
@@ -291,9 +295,7 @@ async function getNewAuthenticationToken(): Promise<string | undefined> {
 
 		const body = await authenticationService.refresh(refreshToken);
 		if (StatusCheck.isOK(body.status)) {
-			const accessToken = body.data.token;
-			await authenticationStore.set({ accessToken, refreshToken });
-			return accessToken;
+			return body.data.token;
 		}
 
 		await appStateStore.reset();

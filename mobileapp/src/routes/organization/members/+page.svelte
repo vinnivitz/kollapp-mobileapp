@@ -52,7 +52,7 @@
 		hasOrganizationRole,
 		informationModal,
 		showAlert,
-		StatusCheck
+		withLoader
 	} from '$lib/utility';
 
 	let invitationCodeModalOpen = $state<boolean>(false);
@@ -137,7 +137,7 @@
 	async function onApproveMemberPrompt(personOfOrganization: PersonOfOrganizationTO): Promise<void> {
 		return confirmationModal({
 			confirmText: $t('routes.organization.members.page.modal.approve-member.confirm'),
-			handler: async () => await approveUser(personOfOrganization.id),
+			handler: async () => void withLoader(() => organizationService.approveUser(personOfOrganization.id)),
 			header: $t('routes.organization.members.page.modal.approve-member.header'),
 			message: $t('routes.organization.members.page.modal.approve-member.message', {
 				value: personOfOrganization.username
@@ -155,7 +155,8 @@
 
 		return confirmationModal({
 			confirmText: $t('routes.organization.members.page.modal.remove-member.confirm'),
-			handler: async () => await removePersonOfOrganization(personOfOrganization.id),
+			handler: async () =>
+				void withLoader(() => organizationService.removePersonOfOrganization(personOfOrganization.id)),
 			message: $t('routes.organization.members.page.modal.remove-member.message', {
 				value: personOfOrganization.username
 			})
@@ -176,25 +177,12 @@
 
 	async function onDenyMembershipRequestPrompt(personOfOrganization: PersonOfOrganizationTO): Promise<void> {
 		return confirmationModal({
-			handler: async () => await removePersonOfOrganization(personOfOrganization.id),
+			handler: async () =>
+				void withLoader(() => organizationService.removePersonOfOrganization(personOfOrganization.id)),
 			message: $t('routes.organization.members.page.modal.deny-membership-request.message', {
 				value: personOfOrganization.username
 			})
 		});
-	}
-
-	async function approveUser(personOfOrganizationId: number): Promise<void> {
-		const response = await organizationService.approveUser(personOfOrganizationId);
-		if (StatusCheck.isOK(response.status)) {
-			await organizationStore.update();
-		}
-	}
-
-	async function removePersonOfOrganization(personOfOrganizationId: number): Promise<void> {
-		const response = await organizationService.removePersonOfOrganization(personOfOrganizationId);
-		if (StatusCheck.isOK(response.status)) {
-			await organizationStore.update();
-		}
 	}
 
 	async function onSelectRole(personOfOrganization: PersonOfOrganizationTO): Promise<void> {
@@ -224,17 +212,12 @@
 			return;
 		}
 		await confirmationModal({
-			handler: async () => await grantOrganizationRole(personOfOrganizationId, role),
+			handler: async () => void withLoader(() => organizationService.grantRole(personOfOrganizationId, role)),
 			header: $t('routes.organization.members.page.modal.change-role.header'),
 			message: $t('routes.organization.members.page.modal.change-role.message', {
 				value: getRoleTranslationFromRole(role)
 			})
 		});
-	}
-
-	async function grantOrganizationRole(personOfOrganizationId: number, role: OrganizationRole): Promise<void> {
-		await organizationService.grantRole(personOfOrganizationId, role);
-		await organizationStore.update();
 	}
 
 	function getGroupedMembers(personsOfOrganization: PersonOfOrganizationTO[]): [string, PersonOfOrganizationTO[]][] {
@@ -276,13 +259,6 @@
 			});
 		} else {
 			await showAlert($t('routes.organization.members.page.invitation-code.share.error'));
-		}
-	}
-
-	async function onRenewCode(): Promise<void> {
-		const response = await organizationService.renewInvitationCode();
-		if (StatusCheck.isOK(response.status)) {
-			await organizationStore.update();
 		}
 	}
 
@@ -451,7 +427,7 @@
 				fill="outline"
 				classList="mx-8 mt-5"
 				label={$t('routes.organization.members.page.modal.invitation-code.card.button.renew')}
-				clicked={onRenewCode}
+				clicked={async () => withLoader(() => organizationService.renewInvitationCode())}
 			/>
 		</div>
 	</Card>

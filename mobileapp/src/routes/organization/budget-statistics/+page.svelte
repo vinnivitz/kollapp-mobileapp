@@ -481,7 +481,6 @@
 						activity={activityByPostingId.get(posting.id)}
 						activities={$organizationStore?.activities!}
 						budgetCategories={$organizationStore?.budgetCategories!}
-						onCompleted={organizationStore.update}
 						onUpdateOrganizationPosting={budgetService.updateOrganizationPosting}
 						onUpdateActivityPosting={budgetService.updateActivityPosting}
 						onTransferOrganizationPosting={budgetService.transferOrganizationPosting}
@@ -507,7 +506,6 @@
 						activity={activityByPostingId.get(posting.id)}
 						activities={$organizationStore?.activities!}
 						budgetCategories={$organizationStore?.budgetCategories!}
-						onCompleted={organizationStore.update}
 						onUpdateOrganizationPosting={budgetService.updateOrganizationPosting}
 						onUpdateActivityPosting={budgetService.updateActivityPosting}
 						onTransferOrganizationPosting={budgetService.transferOrganizationPosting}

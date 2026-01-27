@@ -163,7 +163,6 @@
 	personsOfOrganization={$organizationStore?.personsOfOrganization!}
 	postings={userPostings}
 	showPersonOfOrganizationFilter={false}
-	onCompleted={organizationStore.update}
 	onUpdateOrganizationPosting={budgetService.updateOrganizationPosting}
 	onUpdateActivityPosting={budgetService.updateActivityPosting}
 	onTransferOrganizationPosting={budgetService.transferOrganizationPosting}

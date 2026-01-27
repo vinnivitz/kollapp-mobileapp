@@ -17,15 +17,13 @@ export type QuickAccessItem = {
 	/** Icon name from ionicons */
 	icon: string;
 	/** Unique identifier for the item */
-	id: string;
+	id: SpecialWidgetId | string;
+	/** Translation key for the label */
+	label: string;
 	/** Route to navigate to */
 	route: RouteId;
-	/** Translation key for the label (optional for special widgets) */
-	label?: string;
-	/** Special widget identifier for rendering the correct component */
-	specialWidgetId?: SpecialWidgetId;
+	/** Widget type */
+	widgetType: QuickAccessWidgetType;
 	/** Optional label to trigger a click action after navigation */
 	triggerLabel?: string;
-	/** Widget type - normal (small) or special (large card) */
-	widgetType?: QuickAccessWidgetType;
-};
+} & ({ specialWidgetId: SpecialWidgetId; widgetType: 'special' } | { widgetType: 'normal' });

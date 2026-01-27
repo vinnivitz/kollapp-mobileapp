@@ -45,7 +45,8 @@
 		formatter,
 		getOrganizationName,
 		getRoleTranslationFromRole,
-		hasOrganizationRole
+		hasOrganizationRole,
+		withLoader
 	} from '$lib/utility';
 
 	type PostingsFilterState = {
@@ -284,17 +285,12 @@
 	async function onGrantOrganizationRolePrompt(personOfOrganizationId: number, role: OrganizationRole): Promise<void> {
 		if (role === personOfOrganization?.organizationRole) return;
 		await confirmationModal({
-			handler: async () => await grantOrganizationRole(personOfOrganizationId, role),
+			handler: async () => void withLoader(() => organizationService.grantRole(personOfOrganizationId, role)),
 			header: $t('routes.organization.members.page.modal.change-role.header'),
 			message: $t('routes.organization.members.page.modal.change-role.message', {
 				value: getRoleTranslationFromRole(role)
 			})
 		});
-	}
-
-	async function grantOrganizationRole(personOfOrganizationId: number, role: OrganizationRole): Promise<void> {
-		await organizationService.grantRole(personOfOrganizationId, role);
-		await organizationStore.update();
 	}
 
 	function onLoadMore(event: CustomEvent): void {
@@ -407,7 +403,6 @@
 		personsOfOrganization={$organizationStore?.personsOfOrganization!}
 		onEditStart={() => (isEditingPosting = true)}
 		onEditEnd={() => (isEditingPosting = false)}
-		onCompleted={organizationStore.update}
 		onUpdateOrganizationPosting={budgetService.updateOrganizationPosting}
 		onUpdateActivityPosting={budgetService.updateActivityPosting}
 		onTransferOrganizationPosting={budgetService.transferOrganizationPosting}
