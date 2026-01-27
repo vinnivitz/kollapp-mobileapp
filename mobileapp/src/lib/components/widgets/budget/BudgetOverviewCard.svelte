@@ -59,6 +59,7 @@
 		personsOfOrganization: PersonOfOrganizationTO[];
 		postings: PostingTO[];
 		title: string;
+		activity?: ActivityTO;
 		index?: RouteId;
 		tourId?: string;
 		onCreateActivityPosting: (
@@ -85,6 +86,7 @@
 
 	let {
 		activities,
+		activity,
 		budgetCategories,
 		index,
 		onCompleted,
@@ -125,11 +127,11 @@
 	});
 
 	const activityItems = $derived<MultiSelectItem[]>([
-		...activities.map((activity) => ({
-			data: { id: activity.id, label: activity.name },
-			selected: false
+		...activities.map((activityItem) => ({
+			data: { id: activityItem.id, label: activityItem.name },
+			selected: activityItem.id === activity?.id
 		})),
-		{ data: { id: 0, label: $t('components.budget-overview.modal.activity.none') }, selected: true }
+		{ data: { id: 0, label: $t('components.budget-overview.modal.activity.none') }, selected: !activity }
 	]);
 
 	const createPostingSchema = createUpdatePostingSchema().shape({ activityId: number().default(0) });
@@ -175,6 +177,7 @@
 		selectedPostingType = createPostingForm.model.type;
 		formActions?.setModel(createPostingSchema.getDefault());
 		formActions?.updateModelByKey('personOfOrganizationId', getPersonOfOrganizationId());
+		formActions?.updateModelByKey('activityId', activity?.id ?? 0);
 		postingCreateModalOpen = true;
 	}
 
@@ -192,7 +195,9 @@
 
 <Card border="secondary" {tourId} titleIconStart={cardOutline} {title}>
 	<div class="flex flex-col items-center justify-center gap-2">
-		<ion-text class="text-xl font-bold">{balance.balance}</ion-text>
+		<ion-text class="text-xl font-bold" color={balance.balance.startsWith('-') ? 'danger' : 'success'}
+			>{balance.balance}</ion-text
+		>
 		<div class="flex items-center justify-center gap-2">
 			<ion-icon color="success" icon={trendingUpOutline}></ion-icon>
 			<ion-text class="text-sm" color="medium">
@@ -272,6 +277,7 @@
 			{#if activityItems && activityItems.length > 0}
 				<MultiSelectInputItem
 					name="activityId"
+					readonly={!!activity}
 					icon={flashOutline}
 					multiple={false}
 					label={$t('components.budget-overview.modal.activity.select')}

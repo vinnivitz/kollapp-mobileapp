@@ -17,7 +17,6 @@
 	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
 	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
 	import Popover from '$lib/components/widgets/ionic/Popover.svelte';
-	import ToggleItem from '$lib/components/widgets/ionic/ToggleItem.svelte';
 	import { t } from '$lib/locales';
 	import { StorageKey } from '$lib/models/storage';
 	import { Form, type FormActions } from '$lib/models/ui';
@@ -119,13 +118,16 @@
 				indexLabel={$t('routes.account.privacy-and-security.page.list.security.login-with-biometrics')}
 				indexed="/account/privacy-and-security"
 			>
-				<ToggleItem
-					element={toggle}
-					classList="ms-4"
+				<ion-toggle
+					bind:this={toggle}
+					color="secondary"
+					enable-on-off-labels
+					class="ms-4"
 					disabled={!isAvailable}
-					changed={() => onToggleBiometrics()}
-					label={$t('routes.account.privacy-and-security.page.list.security.login-with-biometrics')}
-				/>
+					onionChange={() => onToggleBiometrics()}
+				>
+					{$t('routes.account.privacy-and-security.page.list.security.login-with-biometrics')}
+				</ion-toggle>
 			</CustomItem>
 		{/await}
 		<LabeledItem

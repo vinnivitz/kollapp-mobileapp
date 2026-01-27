@@ -242,7 +242,7 @@
 </script>
 
 <CustomItem
-	{slidingOptions}
+	slidingOptions={slidingOptions.length > 0 ? slidingOptions : undefined}
 	iconColor={posting.type === 'CREDIT' ? 'success' : 'danger'}
 	icon={posting.type === 'CREDIT' ? trendingUpOutline : trendingDownOutline}
 >

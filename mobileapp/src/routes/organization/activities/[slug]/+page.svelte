@@ -134,7 +134,7 @@
 	}
 </script>
 
-<Layout title={$t('routes.organization.activities.slug.page.title')} showBackButton>
+<Layout title={$t('routes.organization.activities.slug.page.title')} showBackButton loading={!activity}>
 	{@render activitySummary()}
 	{@render postingsSummary()}
 	{#if isManager}
@@ -188,6 +188,7 @@
 
 {#snippet postingsSummary()}
 	<BudgetOverviewCard
+		{activity}
 		activities={$organizationStore?.activities!}
 		budgetCategories={$organizationStore?.budgetCategories!}
 		personsOfOrganization={$organizationStore?.personsOfOrganization!}

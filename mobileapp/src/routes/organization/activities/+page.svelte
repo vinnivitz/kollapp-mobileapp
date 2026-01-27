@@ -59,7 +59,10 @@
 		CALENDAR = 'calendar'
 	}
 
+	const PAGE_SIZE = 10;
+
 	let activityView = $state<ActivityView>(ActivityView.ACTIVITIES);
+	let displayCount = $state<number>(PAGE_SIZE);
 
 	const segmentConfig = $derived<SegmentConfig[]>([
 		{
@@ -78,7 +81,9 @@
 		}
 	]);
 
-	const activityItems = $derived($organizationStore?.activities ?? []);
+	const activityItems = $derived(
+		($organizationStore?.activities ?? []).toSorted((a, b) => b.date.localeCompare(a.date))
+	);
 	const activityDates = $derived(activityItems.map((activity) => activity.date));
 
 	let createActivityModalOpen = $state<boolean>(false);
@@ -114,10 +119,22 @@
 		completed: async ({ actions }) => {
 			createActivityModalOpen = false;
 			actions.setModel(createActivitySchema().getDefault());
+			resetFilters();
 		},
 		request: activityService.create,
 		schema: createActivitySchema()
 	});
+
+	function resetFilters(): void {
+		searchActivityValue = '';
+		displayCount = PAGE_SIZE;
+		filterState = {
+			balanceFilter: 'all',
+			dateRange: { from: getMinActivityDate(), to: getMaxActivityDate() },
+			hasPostings: 'all',
+			timeFilter: 'all'
+		};
+	}
 
 	const filteredActivities = $derived(
 		filterActivities(
@@ -131,8 +148,15 @@
 		)
 	);
 
+	const displayedActivities = $derived(filteredActivities.slice(0, displayCount));
+
+	const hasMoreActivities = $derived(displayCount < filteredActivities.length);
+
 	const filterConfig = $derived<FilterConfig<ActivitiesFilterState>>({
-		onApply: (state) => (filterState = state),
+		onApply: (state) => {
+			displayCount = PAGE_SIZE;
+			filterState = state;
+		},
 		searchbar: {
 			onSearch: (value) => (searchActivityValue = value),
 			placeholder: $t('routes.organization.activities.page.activities.search.placeholder'),
@@ -304,20 +328,23 @@
 	function onDateSelected(date: string): void {
 		selectedDate = date;
 	}
+
+	function onLoadMore(event: CustomEvent): void {
+		displayCount += PAGE_SIZE;
+		(event.target as HTMLIonInfiniteScrollElement).complete();
+	}
 </script>
 
-<Layout
-	title={$t('routes.organization.activities.page.title')}
-	showBackButton
-	scrollable={activityView === ActivityView.CALENDAR}
->
+<Layout title={$t('routes.organization.activities.page.title')} showBackButton>
 	<SegmentItem tourId={TourStepId.ACTIVITIES.SEGMENTS} config={segmentConfig}>
 		<div class={activityView === ActivityView.ACTIVITIES ? 'flex h-full flex-col pb-6' : ''}>
 			{#if activityView === ActivityView.ACTIVITIES}
 				{@render activitiesView()}
 			{:else if activityView === ActivityView.CALENDAR}
 				<div class="flex flex-col gap-4 pb-6">
-					<Datetime dates={activityDates} value={selectedDate} applied={onDateSelected} showButtons={false} />
+					<div class="sticky top-14 right-0 left-0 z-10">
+						<Datetime dates={activityDates} value={selectedDate} applied={onDateSelected} showButtons={false} />
+					</div>
 					{@render calendarActivityList()}
 				</div>
 			{/if}
@@ -339,8 +366,10 @@
 		/>
 	{/if}
 
-	<Filter config={filterConfig} />
-	<div class="scroll-viewport" data-tour={TourStepId.ACTIVITIES.LIST}>
+	<div class="sticky top-14 right-0 left-0 z-10">
+		<Filter config={filterConfig} />
+	</div>
+	<div data-tour={TourStepId.ACTIVITIES.LIST}>
 		{@render activityList()}
 	</div>
 {/snippet}
@@ -353,10 +382,17 @@
 	{:else if filteredActivities.length > 0}
 		<FadeInOut>
 			<ion-list>
-				{#each filteredActivities as activity (activity.id)}
+				{#each displayedActivities as activity (activity.id)}
 					{@render activityCard(activity)}
 				{/each}
 			</ion-list>
+			<ion-infinite-scroll color="medium" class="mt-3" disabled={!hasMoreActivities} onionInfinite={onLoadMore}>
+				<ion-infinite-scroll-content
+					loading-text={$t('routes.organization.activities.page.activities.loading')}
+					loading-spinner="circular"
+				>
+				</ion-infinite-scroll-content>
+			</ion-infinite-scroll>
 		</FadeInOut>
 	{:else}
 		<FadeInOut classList="mt-4 text-center">

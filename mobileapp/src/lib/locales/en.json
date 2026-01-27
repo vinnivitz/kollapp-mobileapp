@@ -580,10 +580,10 @@
             "submit": "Delete account",
             "note": "This cannot be undone.",
             "manager-hint": {
-              "heading": "You are the last manager of the following collectives:",
-              "message": "Deleting the account will delete these collectives."
+              "heading": "You are the last manager of the following collectives.\nDeleting the account will delete these collectives."
             },
-            "assigned-postings-warning": "You still have transactions assigned to you. Deleting your account is only possible once no transaction is assigned to you."
+            "assigned-postings-warning": "You still have transactions assigned to you. Deleting your account is only possible once no transaction is assigned to you.",
+            "assigned-postings": "{{value}} transactions"
           },
           "modal": {
             "confirm": "Delete account",
@@ -718,7 +718,7 @@
             "grayscale": "Black and white"
           },
           "restore-defaults": {
-            "confirm": "All settings for color theme, layout and language will be restored."
+            "confirm": "All settings for color theme, layout and language will be resetted."
           }
         },
         "title": "Account",
@@ -734,7 +734,7 @@
             "language": "Change Language",
             "color-theme": "Change color theme",
             "layout": "Change layout",
-            "restore-defaults": "Restore default",
+            "restore-defaults": "Reset application settings",
             "restart-tour": "Restart app tour "
           }
         }
@@ -934,7 +934,8 @@
             },
             "not-found": "No events found",
             "no-results": "No events for \"{{value}}\"",
-            "no-results-filtered": "No events found."
+            "no-results-filtered": "No events found.",
+            "loading": "Loading..."
           },
           "modal": {
             "create-activity": {
@@ -1299,7 +1300,7 @@
             "change-collective": "Change collectively",
             "header": "Collective",
             "leave": "Leave collectively",
-            "members": "members",
+            "members": "Members",
             "update-info": "Update collective information"
           }
         },

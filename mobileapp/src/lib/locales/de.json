@@ -77,13 +77,13 @@
         "page": {
           "card": {
             "manager-hint": {
-              "heading": "Du bist der letzte Manager folgender Kollektive:",
-              "message": "Durch das Löschen des Kontos werden diese Kollektive gelöscht."
+              "heading": "Du bist der letzte Manager der folgenden Kollektive.\n\nDurch das Löschen des Kontos werden diese Kollektive gelöscht."
             },
             "assigned-postings-warning": "Dir sind noch Buchungen zugewiesen. Ein Löschen des Kontos ist erst möglich, wenn dir keine Buchungen mehr zugewiesen sind.",
             "note": "Dies kann nicht rückgängig gemacht werden.",
             "submit": "Konto löschen",
-            "title": "Dein Konto löschen"
+            "title": "Dein Konto löschen",
+            "assigned-postings": "{{value}} Buchungen"
           },
           "modal": {
             "confirm": "Konto löschen",
@@ -116,7 +116,7 @@
             "header": "Anwendung",
             "language": "Sprache ändern",
             "layout": "Layout ändern",
-            "restore-defaults": "Standard wiederherstellen",
+            "restore-defaults": "Anwendungseinstellungen zurücksetzen",
             "restart-tour": "App-Tour neu starten"
           },
           "personal": {
@@ -145,7 +145,7 @@
             "title": "Layout ändern"
           },
           "restore-defaults": {
-            "confirm": "Alle Einstellungen für Farbthema, Layout und Sprache werden wiederhergestellt."
+            "confirm": "Alle Einstellungen für Farbthema, Layout und Sprache werden zurückgesetzt."
           }
         },
         "title": "Konto"
@@ -331,7 +331,8 @@
             "search": {
               "placeholder": "Veranstaltungen suchen..."
             },
-            "no-results-filtered": "Keine Veranstaltungen gefunden."
+            "no-results-filtered": "Keine Veranstaltungen gefunden.",
+            "loading": "Laden..."
           },
           "calendar": {
             "no-activities": "Für den {{value}} wurde keine Veranstaltung gefunden"

@@ -29,7 +29,7 @@
 	import { Locale, t } from '$lib/locales';
 	import { Layout, Theme, TourStepId } from '$lib/models/ui';
 	import { layoutStore, localeStore, organizationStore, themeStore } from '$lib/stores';
-	import { confirmationModal, resetTour, startTour } from '$lib/utility';
+	import { confirmationModal, startTour } from '$lib/utility';
 
 	async function openActionSheet(header: string, buttons: ActionSheetButton[]): Promise<void> {
 		const actionsheet = await actionSheetController.create({
@@ -104,19 +104,18 @@
 		]);
 	}
 
-	async function onRestoreApplicationDefaults(): Promise<void> {
+	async function onResetApplicationSettings(): Promise<void> {
 		await confirmationModal({
-			handler: restoreApplicationDefaults,
+			handler: resetApplicationSettings,
 			message: $t('routes.account.page.modal.restore-defaults.confirm')
 		});
 	}
 
-	async function restoreApplicationDefaults(): Promise<void> {
+	async function resetApplicationSettings(): Promise<void> {
 		await Promise.all([themeStore.reset(), layoutStore.reset(), localeStore.reset()]);
 	}
 
 	async function onRestartTour(): Promise<void> {
-		await resetTour();
 		await goto(resolve('/'));
 		await startTour(true);
 	}
@@ -174,7 +173,7 @@
 		/>
 		<LabeledItem
 			indexed="/account"
-			clicked={onRestoreApplicationDefaults}
+			clicked={onResetApplicationSettings}
 			icon={refreshOutline}
 			label={$t('routes.account.page.list.application.restore-defaults')}
 		/>

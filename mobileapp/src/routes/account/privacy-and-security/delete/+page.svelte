@@ -13,10 +13,10 @@
 	import { t } from '$lib/locales';
 	import { Form, type FormActions } from '$lib/models/ui';
 	import { organizationStore, userStore } from '$lib/stores';
-	import { confirmationModal, customForm, StatusCheck } from '$lib/utility';
+	import { confirmationModal, customForm, hasOrganizationRole, StatusCheck } from '$lib/utility';
 
 	type AssignedPosting = { id: number; purpose: string };
-	type OrganizationPostings = { organizationName: string; postings: AssignedPosting[] };
+	type OrganizationPostings = { id: number; organizationName: string; postings: AssignedPosting[] };
 	type OrganizationCheckResult = {
 		assignedPostings: AssignedPosting[];
 		isLastManager: boolean;
@@ -28,6 +28,7 @@
 	let showPasswordPrompt = $state<boolean>(false);
 	let actions: FormActions<DeleteAccountRequestTO>;
 	let organizationChecks = $state<OrganizationCheckResult[]>();
+	const isManager = $derived(hasOrganizationRole('ROLE_ORGANIZATION_MANAGER'));
 
 	const form = new Form({
 		completed: async () => afterAccountDeletion(),
@@ -74,6 +75,7 @@
 			.map(
 				(check) =>
 					({
+						id: check.organization.id,
 						organizationName: check.organization.name,
 						postings: check.assignedPostings
 					}) satisfies OrganizationPostings
@@ -130,8 +132,8 @@
 
 {#snippet deleteAccountCard()}
 	<Card title={$t('routes.account.delete.page.card.title')}>
-		{#if lastManagerOrganizations.length > 0}
-			{@render lasManagerCard()}
+		{#if isManager && lastManagerOrganizations.length > 0}
+			{@render lastManagerCard()}
 		{/if}
 		{#if hasAssignedPostings}
 			{@render assignedPostingsCard()}
@@ -151,7 +153,7 @@
 	</Card>
 {/snippet}
 
-{#snippet lasManagerCard()}
+{#snippet lastManagerCard()}
 	<Card color="warning">
 		<div class="flex items-center justify-center gap-2">
 			<ion-avatar class="flex items-center justify-center">
@@ -159,12 +161,11 @@
 			</ion-avatar>
 			<div class="flex flex-col">
 				<ion-text>{$t('routes.account.delete.page.card.manager-hint.heading')}</ion-text>
-				<ul class="text-start">
+				<ul class="pl-5">
 					{#each lastManagerOrganizations as organization (organization.id)}
 						<li class="font-bold">{organization.name}</li>
 					{/each}
 				</ul>
-				<ion-text>{$t('routes.account.delete.page.card.manager-hint.message')}</ion-text>
 			</div>
 		</div>
 	</Card>
@@ -176,18 +177,24 @@
 			<ion-avatar class="flex items-center justify-center">
 				<ion-icon icon={warningOutline} size="large"></ion-icon>
 			</ion-avatar>
-			<ion-text>{$t('routes.account.delete.page.card.assigned-postings-warning')}</ion-text>
-		</div>
-		<ul class="mt-3 list-disc pl-5">
-			{#each postingsByOrganization as orgPostings (orgPostings.organizationName)}
-				<li class="font-bold">{orgPostings.organizationName}</li>
-				<ul class="list-disc pl-5">
-					{#each orgPostings.postings as posting (posting.id)}
-						<li>{posting.purpose}</li>
+			<div class="flex flex-col">
+				<ion-text>{$t('routes.account.delete.page.card.assigned-postings-warning')}</ion-text>
+				<ul class="pl-5">
+					{#each postingsByOrganization as postingsItem (postingsItem.id)}
+						<li>
+							<span class="font-bold">
+								{postingsItem.organizationName}:
+							</span>
+							<span>
+								{$t('routes.account.delete.page.card.assigned-postings', {
+									value: postingsItem.postings.length
+								})}
+							</span>
+						</li>
 					{/each}
 				</ul>
-			{/each}
-		</ul>
+			</div>
+		</div>
 	</Card>
 {/snippet}
 
