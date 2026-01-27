@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { LoginRequestTO } from '@kollapp/api-types';
+	import type { PasswordDto } from '$lib/api/dto';
 
 	import { fingerPrintOutline, keyOutline, notificationsOutline, receiptOutline, trashOutline } from 'ionicons/icons';
 	import { onMount } from 'svelte';
@@ -8,7 +8,7 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
-	import { loginSchema } from '$lib/api/schema/authentication';
+	import { loginSchema, verifyPasswordSchema } from '$lib/api/schema/authentication';
 	import { authenticationService } from '$lib/api/services';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
@@ -26,25 +26,35 @@
 		deleteBiometricCredentials,
 		featureNotImplementedAlert,
 		getStoredValue,
-		isBiometricAvailable
+		isBiometricAvailable,
+		storeBiometricCredentials,
+		storeValue,
+		verifyBiometricIdentity
 	} from '$lib/utility';
 
 	let showPasswordPrompt = $state<boolean>(false);
 	let isPasswordConfirmed = $state<boolean>(false);
 	let toggle = $state<HTMLIonToggleElement>();
 
-	let actions: FormActions<LoginRequestTO>;
+	let actions: FormActions<PasswordDto>;
 
 	const form = new Form({
-		completed: async () => {
+		completed: async ({ model }) => {
+			isPasswordConfirmed = true;
+			const verified = await verifyBiometricIdentity();
+			if (verified) {
+				await Promise.all([
+					storeValue(StorageKey.BIOMETRICS_ENABLED, true),
+					storeBiometricCredentials($userStore?.username!, model.password)
+				]);
+			}
 			isPasswordConfirmed = true;
 			onPasswordPromptDismiss();
 			setToggleValue(true);
 		},
 		exposedActions: (exposedActions) => (actions = exposedActions),
-		hiddenFields: { username: $userStore?.username! },
-		request: authenticationService.login,
-		schema: loginSchema()
+		request: authenticationService.verifyPassword,
+		schema: verifyPasswordSchema()
 	});
 
 	onMount(async () => {

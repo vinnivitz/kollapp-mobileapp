@@ -47,6 +47,11 @@
             "pattern": "Password should contain at least a number and an uppercase letter",
             "required": "Password is required"
           }
+        },
+        "verify-password": {
+          "password": {
+            "required": "Password is required"
+          }
         }
       },
       "budget": {

@@ -886,6 +886,11 @@
             "pattern": "Das Passwort sollte mindestens eine Zahl und einen Großbuchstaben enthalten",
             "required": "Passwort ist erforderlich"
           }
+        },
+        "verify-password": {
+          "password": {
+            "required": "Passwort ist erforderlich"
+          }
         }
       },
       "budget": {

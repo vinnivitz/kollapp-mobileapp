@@ -1,4 +1,7 @@
+import type { PasswordDto } from '$lib/api/dto';
 import type { AccessTokenTO, AuthTokensTO, LoginRequestTO } from '@kollapp/api-types';
+
+import { get } from 'svelte/store';
 
 import { dev } from '$app/environment';
 import { goto } from '$app/navigation';
@@ -6,7 +9,7 @@ import { resolve } from '$app/paths';
 
 import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/models/api';
 import { StorageKey } from '$lib/models/storage';
-import { appStateStore, authenticationStore } from '$lib/stores';
+import { appStateStore, authenticationStore, userStore } from '$lib/stores';
 import {
 	customFetch,
 	isBiometricAvailable,
@@ -47,6 +50,19 @@ class AuthenticationService {
 			}
 		}
 		return response;
+	};
+
+	/**
+	 * Verifies the user's password
+	 * @param model password model
+	 * @returns {Promise<ResponseBody>} response body
+	 */
+	verifyPassword = async (model: PasswordDto): Promise<ResponseBody> => {
+		return customFetch(`${this.base}/signin`, {
+			authorizationType: AuthorizationType.NONE,
+			body: { password: model.password, username: get(userStore)?.username! } satisfies LoginRequestTO,
+			method: RequestMethod.POST
+		});
 	};
 
 	/**
