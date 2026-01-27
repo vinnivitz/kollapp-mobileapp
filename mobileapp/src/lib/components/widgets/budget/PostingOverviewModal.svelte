@@ -111,29 +111,29 @@
 	);
 
 	const personOfOrganizationFilterItems = $derived<MultiSelectItem[]>([
-		...personsOfOrganization.map((personOfOrganization) => ({
-			data: { id: personOfOrganization.id, label: personOfOrganization.username },
-			selected: true
-		})),
 		{
 			color: 'tertiary',
 			data: { id: 0, label: $t('components.posting-overview.filter.person-of-organization.unassigned') },
 			icon: personRemoveOutline,
 			selected: true
-		}
+		},
+		...personsOfOrganization.map((personOfOrganization) => ({
+			data: { id: personOfOrganization.id, label: personOfOrganization.username },
+			selected: true
+		}))
 	]);
 
 	const activityFilterItems = $derived<MultiSelectItem[]>([
-		...activities.map((activity) => ({
-			data: { id: activity.id, label: activity.name },
-			selected: true
-		})),
 		{
 			color: 'tertiary',
 			data: { id: 0, label: $t('components.posting-overview.filter.activities.unassigned') },
 			icon: flashOffOutline,
 			selected: true
-		}
+		},
+		...activities.map((activity) => ({
+			data: { id: activity.id, label: activity.name },
+			selected: true
+		}))
 	]);
 
 	const filterConfig = $derived<FilterConfig<PostingsFilterState>>({
@@ -245,7 +245,8 @@
 				const isOrganizationPosting = organizationPostingIds.has(posting.id);
 				const postingActivity = activityPostingIdMap.get(posting.id);
 				const matchesActivities =
-					isOrganizationPosting || (!!postingActivity && allowedActivityIds.has(postingActivity.id));
+					(allowedActivityIds.has(0) && isOrganizationPosting) ||
+					(!!postingActivity && allowedActivityIds.has(postingActivity.id));
 				if (!matchesActivities) return false;
 			}
 

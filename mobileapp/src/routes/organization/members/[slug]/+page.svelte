@@ -150,16 +150,16 @@
 	const hasMorePostings = $derived(displayCount < filteredPostings.length);
 
 	const activityFilterItems = $derived<MultiSelectItem[]>([
-		...($organizationStore?.activities.map((activity) => ({
-			data: { id: activity.id, label: activity.name },
-			selected: true
-		})) ?? []),
 		{
 			color: 'tertiary',
 			data: { id: 0, label: $t('routes.organization.members.slug.page.activity-filter-items.not-assigned') },
 			icon: flashOffOutline,
 			selected: true
-		}
+		},
+		...($organizationStore?.activities.map((activity) => ({
+			data: { id: activity.id, label: activity.name },
+			selected: true
+		})) ?? [])
 	]);
 
 	const budgetCategoryFilterItems = $derived<MultiSelectItem[]>(

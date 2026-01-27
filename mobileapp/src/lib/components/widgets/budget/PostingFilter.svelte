@@ -93,12 +93,12 @@
 		draft = { ...draft, [key]: { ...current, [field]: value } };
 	}
 
-	function handleApply(): void {
-		config.onApply(draft as NonNullable<typeof config.state>);
+	async function handleApply(): Promise<void> {
 		open = false;
+		config.onApply(draft as NonNullable<typeof config.state>);
 	}
 
-	function handleReset(): void {
+	async function handleReset(): Promise<void> {
 		const defaults = getDefaultsFromSections();
 		draft = defaults;
 		config.onApply(defaults as NonNullable<typeof config.state>);
@@ -111,8 +111,8 @@
 		open = false;
 	}
 
-	function handleInlineReset(): void {
-		handleReset();
+	async function handleInlineReset(): Promise<void> {
+		await handleReset();
 	}
 
 	function toggleMultiChipValue<T extends string>(currentValues: T[], value: T): T[] {

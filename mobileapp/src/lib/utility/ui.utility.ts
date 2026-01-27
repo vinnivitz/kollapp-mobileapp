@@ -221,12 +221,35 @@ export async function informationModal(header: string, message: string): Promise
 
 /** Displays a loading spinner while executing an async action
  * @param action async action to execute
+ * @param delay delay before showing the loader in milliseconds
  * @returns {Promise<void>} Promise that resolves when the action is complete
  */
-export async function withLoader<T>(action: () => Promise<T>): Promise<T> {
-	const loader = await loadingController.create({});
-	await loader.present();
-	const result = await action();
-	await loader.dismiss();
-	return result;
+export async function withLoader<T = void>(action: () => Promise<T> | T, delay = 100): Promise<T> {
+	let loader: HTMLIonLoadingElement | undefined;
+	let finished = false;
+
+	const loaderTimeout = setTimeout(() => {
+		if (finished) return;
+
+		void (async () => {
+			loader = await loadingController.create({});
+			if (finished) {
+				await loader.dismiss().catch(() => {});
+				loader = undefined;
+				return;
+			}
+			await loader.present();
+		})();
+	}, delay);
+
+	try {
+		return await action();
+	} finally {
+		finished = true;
+		clearTimeout(loaderTimeout);
+
+		if (loader) {
+			await loader.dismiss().catch(() => {});
+		}
+	}
 }
