@@ -17,6 +17,7 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
+	import LazyRender from '$lib/components/utility/LazyRender.svelte';
 	import BudgetChart from '$lib/components/widgets/budget/BudgetChart.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
@@ -30,9 +31,9 @@
 		editMode: boolean;
 		index: number;
 		item: QuickAccessItem;
-		organization: OrganizationTO | undefined;
 		postings: PostingTO[];
 		isOverlay?: boolean;
+		organization?: OrganizationTO;
 		onPointerDown: () => void;
 		onPointerUp: () => void;
 		onRemove: (id: string) => void;
@@ -149,8 +150,10 @@
 					</ion-note>
 				{/if}
 			</Card>
-		{:else if item.specialWidgetId === 'budget-chart-card' && organization}
-			<BudgetChart {editMode} {postings} tourId={TourStepId.HOME.BUDGET_CHART} />
+		{:else if item.specialWidgetId === 'budget-chart-card'}
+			<LazyRender>
+				<BudgetChart {editMode} {postings} tourId={TourStepId.HOME.BUDGET_CHART} />
+			</LazyRender>
 		{/if}
 	{/if}
 

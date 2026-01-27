@@ -26,6 +26,7 @@
 
 	import { budgetService } from '$lib/api/services';
 	import Layout from '$lib/components/layout/Layout.svelte';
+	import LazyRender from '$lib/components/utility/LazyRender.svelte';
 	import PostingItem from '$lib/components/widgets/budget/PostingItem.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import Chip from '$lib/components/widgets/ionic/Chip.svelte';
@@ -408,113 +409,123 @@
 
 {#snippet trendChart()}
 	{#if monthlyData.length > 1}
-		<Card
-			title={$t('routes.organization.budget-statistics.page.trend.title')}
-			titleIconStart={statsChartOutline}
-			classList="mt-4"
-		>
-			<div class="h-[250px]">
-				{#if mounted}
-					<Chart options={trendChartOptions}></Chart>
-				{/if}
-			</div>
-		</Card>
+		<LazyRender>
+			<Card
+				title={$t('routes.organization.budget-statistics.page.trend.title')}
+				titleIconStart={statsChartOutline}
+				classList="mt-4"
+			>
+				<div class="h-[250px]">
+					{#if mounted}
+						<Chart options={trendChartOptions}></Chart>
+					{/if}
+				</div>
+			</Card>
+		</LazyRender>
 	{/if}
 {/snippet}
 
 {#snippet categoryChart()}
 	{#if categoryStatistics.length > 0}
-		<Card
-			title={$t('routes.organization.budget-statistics.page.categories.title')}
-			titleIconStart={barChartOutline}
-			classList="mt-4"
-		>
-			<div class="h-[300px]">
-				{#if mounted}
-					<Chart options={categoryChartOptions}></Chart>
-				{/if}
-			</div>
-		</Card>
+		<LazyRender>
+			<Card
+				title={$t('routes.organization.budget-statistics.page.categories.title')}
+				titleIconStart={barChartOutline}
+				classList="mt-4"
+			>
+				<div class="h-[300px]">
+					{#if mounted}
+						<Chart options={categoryChartOptions}></Chart>
+					{/if}
+				</div>
+			</Card>
+		</LazyRender>
 	{/if}
 {/snippet}
 
 {#snippet memberStatsCard()}
 	{#if memberStatistics.length > 0}
-		<Card
-			titleIconStart={peopleOutline}
-			title={$t('routes.organization.budget-statistics.page.members.title')}
-			classList="mt-4"
-		>
-			{#each memberStatistics.slice(0, 5) as statistic (statistic.personOfOrganization.id)}
-				<CustomItem icon={personOutline}>
-					<div class="flex w-full flex-row items-center justify-between gap-2">
-						<div class="flex flex-1 flex-col">
-							<ion-text>{statistic.personOfOrganization.username}</ion-text>
-							<div class="flex gap-4 text-sm">
-								<ion-text color="success">+{formatter.currency(statistic.credit)}</ion-text>
-								<ion-text color="danger">-{formatter.currency(statistic.debit)}</ion-text>
+		<LazyRender>
+			<Card
+				titleIconStart={peopleOutline}
+				title={$t('routes.organization.budget-statistics.page.members.title')}
+				classList="mt-4"
+			>
+				{#each memberStatistics.slice(0, 5) as statistic (statistic.personOfOrganization.id)}
+					<CustomItem icon={personOutline}>
+						<div class="flex w-full flex-row items-center justify-between gap-2">
+							<div class="flex flex-1 flex-col">
+								<ion-text>{statistic.personOfOrganization.username}</ion-text>
+								<div class="flex gap-4 text-sm">
+									<ion-text color="success">+{formatter.currency(statistic.credit)}</ion-text>
+									<ion-text color="danger">-{formatter.currency(statistic.debit)}</ion-text>
+								</div>
 							</div>
+							<ion-text class="font-bold" color={statistic.credit - statistic.debit >= 0 ? 'success' : 'danger'}>
+								{formatter.currency(statistic.credit - statistic.debit)}
+							</ion-text>
 						</div>
-						<ion-text class="font-bold" color={statistic.credit - statistic.debit >= 0 ? 'success' : 'danger'}>
-							{formatter.currency(statistic.credit - statistic.debit)}
-						</ion-text>
-					</div>
-				</CustomItem>
-			{/each}
-		</Card>
+					</CustomItem>
+				{/each}
+			</Card>
+		</LazyRender>
 	{/if}
 {/snippet}
 
 {#snippet topTransactionsCards()}
 	<div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
 		{#if topCredits.length > 0}
-			<Card
-				title={$t('routes.organization.budget-statistics.page.top-credits.title')}
-				titleIconStart={trendingUpOutline}
-			>
-				{#each topCredits as posting (posting.id)}
-					<PostingItem
-						onEditStart={() => (isEditingPosting = true)}
-						onEditEnd={() => (isEditingPosting = false)}
-						personsOfOrganization={$organizationStore?.personsOfOrganization!}
-						{posting}
-						activity={activityByPostingId.get(posting.id)}
-						activities={$organizationStore?.activities!}
-						budgetCategories={$organizationStore?.budgetCategories!}
-						onUpdateOrganizationPosting={budgetService.updateOrganizationPosting}
-						onUpdateActivityPosting={budgetService.updateActivityPosting}
-						onTransferOrganizationPosting={budgetService.transferOrganizationPosting}
-						onTransferActivityPosting={budgetService.transferActivityPosting}
-						onDeleteOrganizationPosting={budgetService.deleteOrganizationPosting}
-						onDeleteActivityPosting={budgetService.deleteActivityPosting}
-					/>
-				{/each}
-			</Card>
+			<LazyRender>
+				<Card
+					title={$t('routes.organization.budget-statistics.page.top-credits.title')}
+					titleIconStart={trendingUpOutline}
+				>
+					{#each topCredits as posting (posting.id)}
+						<PostingItem
+							onEditStart={() => (isEditingPosting = true)}
+							onEditEnd={() => (isEditingPosting = false)}
+							personsOfOrganization={$organizationStore?.personsOfOrganization!}
+							{posting}
+							activity={activityByPostingId.get(posting.id)}
+							activities={$organizationStore?.activities!}
+							budgetCategories={$organizationStore?.budgetCategories!}
+							onUpdateOrganizationPosting={budgetService.updateOrganizationPosting}
+							onUpdateActivityPosting={budgetService.updateActivityPosting}
+							onTransferOrganizationPosting={budgetService.transferOrganizationPosting}
+							onTransferActivityPosting={budgetService.transferActivityPosting}
+							onDeleteOrganizationPosting={budgetService.deleteOrganizationPosting}
+							onDeleteActivityPosting={budgetService.deleteActivityPosting}
+						/>
+					{/each}
+				</Card>
+			</LazyRender>
 		{/if}
 
 		{#if topDebits.length > 0}
-			<Card
-				title={$t('routes.organization.budget-statistics.page.top-debits.title')}
-				titleIconStart={trendingDownOutline}
-			>
-				{#each topDebits as posting (posting.id)}
-					<PostingItem
-						onEditStart={() => {}}
-						onEditEnd={() => {}}
-						personsOfOrganization={$organizationStore?.personsOfOrganization!}
-						{posting}
-						activity={activityByPostingId.get(posting.id)}
-						activities={$organizationStore?.activities!}
-						budgetCategories={$organizationStore?.budgetCategories!}
-						onUpdateOrganizationPosting={budgetService.updateOrganizationPosting}
-						onUpdateActivityPosting={budgetService.updateActivityPosting}
-						onTransferOrganizationPosting={budgetService.transferOrganizationPosting}
-						onTransferActivityPosting={budgetService.transferActivityPosting}
-						onDeleteOrganizationPosting={budgetService.deleteOrganizationPosting}
-						onDeleteActivityPosting={budgetService.deleteActivityPosting}
-					/>
-				{/each}
-			</Card>
+			<LazyRender>
+				<Card
+					title={$t('routes.organization.budget-statistics.page.top-debits.title')}
+					titleIconStart={trendingDownOutline}
+				>
+					{#each topDebits as posting (posting.id)}
+						<PostingItem
+							onEditStart={() => {}}
+							onEditEnd={() => {}}
+							personsOfOrganization={$organizationStore?.personsOfOrganization!}
+							{posting}
+							activity={activityByPostingId.get(posting.id)}
+							activities={$organizationStore?.activities!}
+							budgetCategories={$organizationStore?.budgetCategories!}
+							onUpdateOrganizationPosting={budgetService.updateOrganizationPosting}
+							onUpdateActivityPosting={budgetService.updateActivityPosting}
+							onTransferOrganizationPosting={budgetService.transferOrganizationPosting}
+							onTransferActivityPosting={budgetService.transferActivityPosting}
+							onDeleteOrganizationPosting={budgetService.deleteOrganizationPosting}
+							onDeleteActivityPosting={budgetService.deleteActivityPosting}
+						/>
+					{/each}
+				</Card>
+			</LazyRender>
 		{/if}
 	</div>
 {/snippet}

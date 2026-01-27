@@ -204,12 +204,15 @@
 			</div>
 		{/if}
 
-		<div class="relative h-[340px]">
-			<ion-text class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-8 text-center text-xl font-bold">
-				{selectedChart === 'debit' ? '-' : ''}{formatter.currency(getTotalByType(selectedChart))}
-			</ion-text>
+		<div class="h-[340px]">
 			{#if mounted}
-				<div class="absolute -left-2">
+				<ion-text
+					class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-3 text-center text-xl font-bold"
+					class:-translate-y-5={selectedChart !== 'all'}
+				>
+					{selectedChart === 'debit' ? '-' : ''}{formatter.currency(getTotalByType(selectedChart))}
+				</ion-text>
+				<div class="absolute top-12 right-0 left-0">
 					<Chart options={chartOptions}></Chart>
 				</div>
 			{/if}

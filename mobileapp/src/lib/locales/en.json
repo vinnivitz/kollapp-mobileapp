@@ -228,7 +228,7 @@
       },
       "budget-card": {
         "heading": "Budget overview",
-        "no-postings": "No transactionss found.",
+        "no-postings": "No transactions found.",
         "all": "All",
         "credit": "Income",
         "debit": "Expenses",

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { accessibilityOutline, diamondOutline, flashOutline, personOutline } from 'ionicons/icons';
-	import { type Snippet } from 'svelte';
+	import { onDestroy, type Snippet } from 'svelte';
 
 	import { dev } from '$app/environment';
 	import { navigating, page } from '$app/state';
@@ -42,6 +42,22 @@
 
 	let refresher = $state<HTMLIonRefresherElement>();
 	let menuComponent = $state<ReturnType<typeof Menu>>();
+
+	let timer: ReturnType<typeof setTimeout>;
+	let showSpinner = $state<boolean>(false);
+
+	$effect(() => {
+		clearTimeout(timer);
+
+		if (loading || !$loaded || isNavigating) {
+			showSpinner = false;
+			timer = setTimeout(() => (showSpinner = true), 100);
+		} else {
+			showSpinner = false;
+		}
+	});
+
+	onDestroy(() => clearTimeout(timer));
 
 	async function doRefresh(): Promise<void> {
 		await (onRefresh ? onRefresh() : refreshDataStores());
@@ -88,16 +104,20 @@
 	{#if title}
 		<Header {title} {showBackButton} {loading}></Header>
 	{/if}
-	{#if $loaded && !loading && !isNavigating}
-		<ion-content class="ion-padding" class:no-overflow={!scrollable}>
+	<ion-content class="ion-padding" class:no-overflow={!scrollable}>
+		{#if $loaded && !loading && !isNavigating}
 			<ion-refresher bind:this={refresher} slot="fixed" onionRefresh={doRefresh}>
 				<ion-refresher-content></ion-refresher-content>
 			</ion-refresher>
 			<FadeInOut>
 				{@render children?.()}
 			</FadeInOut>
-		</ion-content>
-	{/if}
+		{:else if showSpinner}
+			<div class="flex h-full items-center justify-center">
+				<ion-spinner name="crescent"></ion-spinner>
+			</div>
+		{/if}
+	</ion-content>
 </div>
 
 <style>

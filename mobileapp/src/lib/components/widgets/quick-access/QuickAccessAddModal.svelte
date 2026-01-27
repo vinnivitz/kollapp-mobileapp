@@ -171,7 +171,7 @@
 						icon={icons[item.icon as keyof typeof icons] ?? icons.ellipsisHorizontalOutline}
 						slidingOptions={getRemoveSlidingOptionById(item.id)}
 					>
-						<ion-label class="ms-2">{item.label ? $t(item.label) : item.id}</ion-label>
+						<ion-label class="ms-2">{item.label}</ion-label>
 					</CustomItem>
 				{/each}
 				{#each currentSpecialItems as widget (widget.id)}

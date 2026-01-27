@@ -7,7 +7,6 @@
 
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import { t } from '$lib/locales';
 
 	type Properties = {
 		editMode: boolean;
@@ -56,7 +55,7 @@
 		border="tertiary"
 		readonly={editMode}
 	>
-		<ion-text class="line-clamp-2 text-sm">{item.label ? $t(item.label) : ''}</ion-text>
+		<ion-text class="line-clamp-2 text-sm">{item.label}</ion-text>
 	</Card>
 
 	{#if editMode && !isDragging.current}
