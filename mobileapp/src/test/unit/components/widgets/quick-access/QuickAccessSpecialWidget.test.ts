@@ -28,6 +28,19 @@ vi.mock('$app/paths', () => ({
 	})
 }));
 
+// Mock IntersectionObserver to make LazyRender immediately visible
+class MockIntersectionObserver {
+	constructor(callback: IntersectionObserverCallback) {
+		// Immediately trigger visibility
+		callback([{ isIntersecting: true } as IntersectionObserverEntry], this as unknown as IntersectionObserver);
+	}
+	disconnect = vi.fn();
+	observe = vi.fn();
+	takeRecords = vi.fn();
+	unobserve = vi.fn();
+}
+vi.stubGlobal('IntersectionObserver', MockIntersectionObserver);
+
 const organizationCardItem: QuickAccessItem = {
 	icon: 'peopleOutline',
 	id: 'organization-card',
