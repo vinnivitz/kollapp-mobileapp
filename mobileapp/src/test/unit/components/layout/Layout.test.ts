@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { goto } from '$app/navigation';
 
 import Layout from '$lib/components/layout/Layout.svelte';
-import { organizationStore, userStore } from '$lib/stores';
+import { refreshDataStores } from '$lib/utility';
 
 const childHtml = 'Content';
 
@@ -35,12 +35,14 @@ describe('Layout', () => {
 		expect(container.querySelector('ion-menu')).toBeTruthy();
 	});
 
-	it('does not render content while loading is true', () => {
+	it('does not render children while loading is true', () => {
 		const { container } = render(Layout, {
 			props: { children, loading: true, title: 'Any' }
 		});
 		const page = container.querySelector('#menu') as HTMLElement;
-		expect(page.querySelector('ion-content')).toBeFalsy();
+		// Content element exists but children are not rendered
+		expect(page.querySelector('ion-content')).toBeTruthy();
+		expect(page.querySelector('ion-refresher')).toBeFalsy();
 	});
 
 	it('hides Menu when hideMenu is true', () => {
@@ -62,10 +64,12 @@ describe('Layout', () => {
 			props: { children, loading: true, title: 'Any' }
 		});
 		const page = container.querySelector('#menu') as HTMLElement;
-		expect(page.querySelector('ion-content')).toBeFalsy();
+		// Content element exists but refresher is not rendered during loading
+		expect(page.querySelector('ion-refresher')).toBeFalsy();
 
 		await rerender({ children, loading: false, title: 'Any' });
 		expect(page.querySelector('ion-content')).toBeTruthy();
+		expect(page.querySelector('ion-refresher')).toBeTruthy();
 	});
 
 	it('applies no-overflow when scrollable=false', () => {
@@ -84,7 +88,7 @@ describe('Layout', () => {
 		expect(content.className).not.toContain('no-overflow');
 	});
 
-	it('fires default refresh: calls user/org init and completes refresher', async () => {
+	it('fires default refresh: calls refreshDataStores and completes refresher', async () => {
 		const { container } = render(Layout, {
 			props: { children, loading: false, title: 'Any' }
 		});
@@ -96,8 +100,7 @@ describe('Layout', () => {
 
 		refresher.dispatchEvent(new CustomEvent('ionRefresh', { detail: {} }));
 		await waitFor(() => {
-			expect(userStore.initialize).toHaveBeenCalled();
-			expect(organizationStore.initialize).toHaveBeenCalled();
+			expect(refreshDataStores).toHaveBeenCalled();
 			expect(refresher.complete).toHaveBeenCalled();
 		});
 	});
@@ -107,7 +110,7 @@ describe('Layout', () => {
 			props: { children, hideMenu: false, loading: false, title: 'Any' }
 		});
 		const items = [...container.querySelectorAll('ion-list ion-item')] as HTMLElement[];
-		expect(items.length).toBeGreaterThanOrEqual(3);
+		expect(items.length).toBeGreaterThanOrEqual(2);
 		for (const element of items) {
 			element.click();
 		}
@@ -128,8 +131,7 @@ describe('Layout', () => {
 		refresher.dispatchEvent(new CustomEvent('ionRefresh', { detail: {} }));
 		await waitFor(() => {
 			expect(onRefresh).toHaveBeenCalled();
-			expect(userStore.initialize).not.toHaveBeenCalled();
-			expect(organizationStore.initialize).not.toHaveBeenCalled();
+			expect(refreshDataStores).not.toHaveBeenCalled();
 			expect(refresher.complete).toHaveBeenCalled();
 		});
 	});

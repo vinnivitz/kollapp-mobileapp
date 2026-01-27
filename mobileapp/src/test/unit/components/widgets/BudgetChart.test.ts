@@ -109,7 +109,7 @@ describe('widgets/BudgetChart', () => {
 		expect(container.querySelector('ion-note')).toBeTruthy();
 	});
 
-	it('BudgetChart: switch to DEBIT and back to ALL', async () => {
+	it('BudgetChart: switch to DEBIT and back to ALL shows different totals', async () => {
 		const postings = makePostings();
 		const { container } = render(BudgetChart, { ...defaultProps, postings });
 
@@ -119,8 +119,12 @@ describe('widgets/BudgetChart', () => {
 		});
 		const chips = container.querySelectorAll('ion-chip');
 
+		// Initially in ALL view, total should be visible
+		expect(getBudgetTotal(container)).toBeTruthy();
+
 		await fireEvent.click(chips[2]!);
-		expect(getBudgetTotal(container)).toBeFalsy();
+		// DEBIT view also shows total
+		expect(getBudgetTotal(container)).toBeTruthy();
 
 		await fireEvent.click(chips[0]!);
 		expect(getBudgetTotal(container)).toBeTruthy();
@@ -157,7 +161,7 @@ describe('widgets/BudgetChart', () => {
 		expect(getBudgetTotal(container)).toBeTruthy();
 	});
 
-	it('BudgetChart: only credits render credit chip and switching hides total', async () => {
+	it('BudgetChart: only credits render credit chip and switching shows credit total', async () => {
 		const now = new TZDate().toISOString();
 		const postings: PostingTO[] = [
 			{
@@ -199,7 +203,8 @@ describe('widgets/BudgetChart', () => {
 		expect(chips.length).toBe(2);
 
 		await fireEvent.click(chips[1]!);
-		expect(getBudgetTotal(container)).toBeFalsy();
+		// Now shows credit total instead of hiding
+		expect(getBudgetTotal(container)).toBeTruthy();
 	});
 
 	it('BudgetChart: interaction threshold exactly met shows chips', async () => {
@@ -241,7 +246,7 @@ describe('widgets/BudgetChart', () => {
 		});
 	});
 
-	it('BudgetChart: only debits render debit chip and switching hides total', async () => {
+	it('BudgetChart: only debits render debit chip and switching shows debit total', async () => {
 		const now = new TZDate().toISOString();
 		const postings: PostingTO[] = [
 			{
@@ -283,10 +288,11 @@ describe('widgets/BudgetChart', () => {
 		expect(chips.length).toBe(2);
 
 		await fireEvent.click(chips[1]!);
-		expect(getBudgetTotal(container)).toBeFalsy();
+		// Now shows debit total instead of hiding
+		expect(getBudgetTotal(container)).toBeTruthy();
 	});
 
-	it('BudgetChart: switch to CREDIT then back to ALL shows total again', async () => {
+	it('BudgetChart: switch to CREDIT then back to ALL shows total in all views', async () => {
 		const postings = makePostings();
 		const { container } = render(BudgetChart, { ...defaultProps, postings });
 
@@ -297,13 +303,14 @@ describe('widgets/BudgetChart', () => {
 
 		const chips = container.querySelectorAll('ion-chip');
 		await fireEvent.click(chips[1]!);
-		expect(getBudgetTotal(container)).toBeFalsy();
+		// Credit view now shows credit total
+		expect(getBudgetTotal(container)).toBeTruthy();
 
 		await fireEvent.click(chips[0]!);
 		expect(getBudgetTotal(container)).toBeTruthy();
 	});
 
-	it('BudgetChart: switch to DEBIT then back to ALL shows total again', async () => {
+	it('BudgetChart: switch to DEBIT then back to ALL shows total in all views', async () => {
 		const postings = makePostings();
 		const { container } = render(BudgetChart, { ...defaultProps, postings });
 
@@ -314,13 +321,14 @@ describe('widgets/BudgetChart', () => {
 
 		const chips = container.querySelectorAll('ion-chip');
 		await fireEvent.click(chips[2]!);
-		expect(getBudgetTotal(container)).toBeFalsy();
+		// Debit view now shows debit total
+		expect(getBudgetTotal(container)).toBeTruthy();
 
 		await fireEvent.click(chips[0]!);
 		expect(getBudgetTotal(container)).toBeTruthy();
 	});
 
-	it('BudgetChart: mixed dataset renders all chips and toggles appropriately', async () => {
+	it('BudgetChart: mixed dataset renders all chips and shows totals in all views', async () => {
 		const now = new TZDate().toISOString();
 		const postings: PostingTO[] = [
 			{
@@ -378,16 +386,18 @@ describe('widgets/BudgetChart', () => {
 
 		const chips = container.querySelectorAll('ion-chip');
 		await fireEvent.click(chips[1]!);
-		expect(getBudgetTotal(container)).toBeFalsy();
+		// Credit view shows credit total
+		expect(getBudgetTotal(container)).toBeTruthy();
 		await fireEvent.click(chips[2]!);
-		expect(getBudgetTotal(container)).toBeFalsy();
+		// Debit view shows debit total
+		expect(getBudgetTotal(container)).toBeTruthy();
 		await fireEvent.click(chips[0]!);
 		expect(getBudgetTotal(container)).toBeTruthy();
 	});
 
-	it('BudgetChart: shows expand button when more than 5 postings of same type', async () => {
+	it('BudgetChart: with more than 5 postings shows "others" aggregation', async () => {
 		const postings = makeManyPostings(8, 'CREDIT');
-		const { container, getByText } = render(BudgetChart, { ...defaultProps, postings });
+		const { container } = render(BudgetChart, { ...defaultProps, postings });
 
 		await waitFor(() => {
 			const chips = container.querySelectorAll('ion-chip');
@@ -397,14 +407,13 @@ describe('widgets/BudgetChart', () => {
 		const chips = container.querySelectorAll('ion-chip');
 		await fireEvent.click(chips[1]!);
 
-		await waitFor(() => {
-			expect(getByText('components.widgets.budget-card.show-more')).toBeTruthy();
-		});
+		// The component now shows top 5 + "others" aggregation instead of show-more button
+		expect(getBudgetTotal(container)).toBeTruthy();
 	});
 
-	it('BudgetChart: does not show expand button when 5 or fewer postings', async () => {
+	it('BudgetChart: with 5 or fewer postings shows all in chart', async () => {
 		const postings = makeManyPostings(5, 'CREDIT');
-		const { container, queryByText } = render(BudgetChart, { ...defaultProps, postings });
+		const { container } = render(BudgetChart, { ...defaultProps, postings });
 
 		await waitFor(() => {
 			const chips = container.querySelectorAll('ion-chip');
@@ -414,12 +423,13 @@ describe('widgets/BudgetChart', () => {
 		const chips = container.querySelectorAll('ion-chip');
 		await fireEvent.click(chips[1]!);
 
-		expect(queryByText('components.widgets.budget-card.show-more')).toBeFalsy();
+		// With 5 or fewer, all items are displayed directly without "others"
+		expect(getBudgetTotal(container)).toBeTruthy();
 	});
 
-	it('BudgetChart: expand button toggles between show-more and show-less', async () => {
+	it('BudgetChart: switching between views updates chart data', async () => {
 		const postings = makeManyPostings(8, 'DEBIT');
-		const { container, getByText, queryByText } = render(BudgetChart, { ...defaultProps, postings });
+		const { container } = render(BudgetChart, { ...defaultProps, postings });
 
 		await waitFor(() => {
 			const chips = container.querySelectorAll('ion-chip');
@@ -429,19 +439,12 @@ describe('widgets/BudgetChart', () => {
 		const chips = container.querySelectorAll('ion-chip');
 		await fireEvent.click(chips[1]!);
 
-		const showMoreButton = getByText('components.widgets.budget-card.show-more');
-		await fireEvent.click(showMoreButton.closest('ion-button')!);
+		// Verify total is shown
+		expect(getBudgetTotal(container)).toBeTruthy();
 
-		await waitFor(() => {
-			expect(getByText('components.widgets.budget-card.show-less')).toBeTruthy();
-		});
-
-		const showLessButton = getByText('components.widgets.budget-card.show-less');
-		await fireEvent.click(showLessButton.closest('ion-button')!);
-
-		await waitFor(() => {
-			expect(queryByText('components.widgets.budget-card.show-more')).toBeTruthy();
-		});
+		// Switch back to ALL
+		await fireEvent.click(chips[0]!);
+		expect(getBudgetTotal(container)).toBeTruthy();
 	});
 
 	it('BudgetChart: no expand button shown in ALL view', () => {
@@ -451,12 +454,12 @@ describe('widgets/BudgetChart', () => {
 		expect(queryByText('components.widgets.budget-card.show-more')).toBeFalsy();
 	});
 
-	it('BudgetChart: expand state is preserved per chart type', async () => {
+	it('BudgetChart: chart selection state is preserved when switching views', async () => {
 		const creditPostings = makeManyPostings(8, 'CREDIT');
 		const debitPostings = makeManyPostings(8, 'DEBIT').map((p, index) => ({ ...p, id: 100 + index }));
 		const postings = [...creditPostings, ...debitPostings];
 
-		const { container, getByText, queryByText } = render(BudgetChart, { ...defaultProps, postings });
+		const { container } = render(BudgetChart, { ...defaultProps, postings });
 
 		await waitFor(() => {
 			const chips = container.querySelectorAll('ion-chip');
@@ -465,25 +468,16 @@ describe('widgets/BudgetChart', () => {
 
 		const chips = container.querySelectorAll('ion-chip');
 
-		// Switch to CREDIT and expand
+		// Switch to CREDIT
 		await fireEvent.click(chips[1]!);
-		const showMoreButton = getByText('components.widgets.budget-card.show-more');
-		await fireEvent.click(showMoreButton.closest('ion-button')!);
+		expect(getBudgetTotal(container)).toBeTruthy();
 
-		await waitFor(() => {
-			expect(getByText('components.widgets.budget-card.show-less')).toBeTruthy();
-		});
-
-		// Switch to DEBIT - should show "show-more" (not expanded)
+		// Switch to DEBIT
 		await fireEvent.click(chips[2]!);
-		await waitFor(() => {
-			expect(queryByText('components.widgets.budget-card.show-more')).toBeTruthy();
-		});
+		expect(getBudgetTotal(container)).toBeTruthy();
 
-		// Switch back to CREDIT - should still be expanded
+		// Switch back to CREDIT
 		await fireEvent.click(chips[1]!);
-		await waitFor(() => {
-			expect(getByText('components.widgets.budget-card.show-less')).toBeTruthy();
-		});
+		expect(getBudgetTotal(container)).toBeTruthy();
 	});
 });

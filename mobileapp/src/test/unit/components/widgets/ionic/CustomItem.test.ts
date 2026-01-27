@@ -110,7 +110,7 @@ describe('widgets/ionic/CustomItem', () => {
 				slidingOptions: [{ handler, icon: 'trash', label: 'Delete' }]
 			}
 		});
-		const label = container.querySelector('ion-item-option ion-label');
+		const label = container.querySelector('ion-item-option ion-text');
 		expect(label?.textContent).toBe('Delete');
 	});
 

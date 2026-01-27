@@ -124,10 +124,59 @@ vi.mock('$lib/stores', () => {
 			}
 		},
 		organizationStore: {
-			initialize: vi.fn().mockResolvedValue(vi.fn())
+			initialize: vi.fn().mockResolvedValue(vi.fn()),
+			subscribe: (run: (value: unknown) => void) => {
+				run({
+					activities: [],
+					organizationPostings: []
+				});
+				return vi.fn();
+			}
 		},
+		quickAccessStore: {
+			addItem: vi.fn().mockResolvedValue({}),
+			getItems: vi.fn().mockReturnValue([]),
+			initialize: vi.fn().mockResolvedValue({}),
+			removeItem: vi.fn().mockResolvedValue({}),
+			reorderItems: vi.fn().mockResolvedValue({}),
+			setEditMode: vi.fn(),
+			subscribe: (run: (value: { editMode: boolean; items: unknown[] }) => void) => {
+				run({ editMode: false, items: [] });
+				return vi.fn();
+			}
+		},
+		SPECIAL_WIDGETS: () => [
+			{
+				icon: 'peopleOutline',
+				id: 'organization-card',
+				label: 'Organization',
+				route: '/organization',
+				specialWidgetId: 'organization-card',
+				widgetType: 'special'
+			},
+			{
+				icon: 'calendarOutline',
+				id: 'upcoming-activity-card',
+				label: 'Upcoming Activity',
+				route: '/organization/activities/[slug]',
+				specialWidgetId: 'upcoming-activity-card',
+				widgetType: 'special'
+			},
+			{
+				icon: 'cashOutline',
+				id: 'budget-chart-card',
+				label: 'Budget',
+				route: '/organization',
+				specialWidgetId: 'budget-chart-card',
+				widgetType: 'special'
+			}
+		],
 		userStore: {
-			initialize: vi.fn().mockResolvedValue(vi.fn())
+			initialize: vi.fn().mockResolvedValue(vi.fn()),
+			subscribe: (run: (value: unknown) => void) => {
+				run({});
+				return vi.fn();
+			}
 		}
 	};
 });
@@ -159,7 +208,9 @@ vi.mock('$lib/utility', () => ({
 	formatter: {
 		currency: (value: number) => `${value}`
 	},
+	getDateFnsLocale: () => {},
 	navigateBack: vi.fn().mockResolvedValue(vi.fn()),
+	refreshDataStores: vi.fn().mockResolvedValue(vi.fn()),
 	triggerClickByLabel: vi.fn()
 }));
 
@@ -175,6 +226,24 @@ if (!globalThis.matchMedia) {
 		removeEventListener: vi.fn(),
 		removeListener: vi.fn()
 	});
+}
+
+if (!globalThis.IntersectionObserver) {
+	globalThis.IntersectionObserver = class MockIntersectionObserver {
+		constructor(callback: IntersectionObserverCallback, _options?: IntersectionObserverInit) {
+			// Immediately call callback with isIntersecting: true to render content
+			setTimeout(() => {
+				callback([{ isIntersecting: true } as IntersectionObserverEntry], this as unknown as IntersectionObserver);
+			}, 0);
+		}
+		disconnect = vi.fn();
+		observe = vi.fn();
+		unobserve = vi.fn();
+		takeRecords = (): IntersectionObserverEntry[] => [] as IntersectionObserverEntry[];
+		root = undefined;
+		rootMargin = '';
+		thresholds = [] as readonly number[];
+	} as unknown as typeof IntersectionObserver;
 }
 
 vi.mock('@ionic/core', () => ({

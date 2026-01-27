@@ -57,12 +57,11 @@
 	>
 		<ion-text class="line-clamp-2 text-sm">{item.label}</ion-text>
 	</Card>
-
 	{#if editMode && !isDragging.current}
 		<Button
 			size="small"
 			color="danger"
-			classList="absolute top-2 right-1"
+			classList="absolute top-0 right-0"
 			clicked={() => onRemove(item.id)}
 			icon={closeOutline}
 		/>
