@@ -2,6 +2,7 @@
 	import type { OrganizationRole } from '@kollapp/api-types';
 	import type { Snippet } from 'svelte';
 
+	import LazyRender from '$lib/components/utility/LazyRender.svelte';
 	import { type Colors } from '$lib/models/ui';
 
 	type Properties = {
@@ -13,6 +14,7 @@
 		icon?: string;
 		indexed?: string;
 		indexLabel?: string;
+		lazy?: 'auto' | boolean;
 		readonly?: boolean;
 		subtitle?: string;
 		title?: string;
@@ -32,6 +34,7 @@
 		icon,
 		indexed,
 		indexLabel,
+		lazy = 'auto',
 		readonly,
 		subtitle,
 		title,
@@ -45,29 +48,58 @@
 	void accessible;
 	void icon;
 
+	let cardReference = $state<HTMLIonCardElement>();
+	let detectedLazy = $state<boolean>(true);
+
+	$effect(() => {
+		if (lazy === 'auto' && cardReference) {
+			const hasFormElement = !!cardReference.querySelector('form');
+			detectedLazy = !hasFormElement;
+		}
+	});
+
+	const effectiveLazy = $derived(lazy === 'auto' ? detectedLazy : lazy);
 	const borderStyle = $derived(border ? `1px solid var(--ion-color-${border})` : '0px solid transparent');
 </script>
 
-{#if !!clicked}
-	<ion-card
-		onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && clicked?.()}
-		role="button"
-		tabindex="0"
-		style={`pointer-events: ${readonly ? 'none' : 'auto'}; border: ${borderStyle}`}
-		id={indexLabel}
-		data-tour={tourId}
-		{color}
-		button
-		class={classList}
-		onclick={readonly ? undefined : clicked}
-	>
-		{@render content()}
-	</ion-card>
+{#if effectiveLazy}
+	<LazyRender>
+		{@render card()}
+	</LazyRender>
 {:else}
-	<ion-card id={indexLabel} data-tour={tourId} {color} class={classList} style={`border: ${borderStyle}`}>
-		{@render content()}
-	</ion-card>
+	{@render card()}
 {/if}
+
+{#snippet card()}
+	{#if !!clicked}
+		<ion-card
+			bind:this={cardReference}
+			onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && clicked?.()}
+			role="button"
+			tabindex="0"
+			style={`pointer-events: ${readonly ? 'none' : 'auto'}; border: ${borderStyle}`}
+			id={indexLabel}
+			data-tour={tourId}
+			{color}
+			button
+			class={classList}
+			onclick={readonly ? undefined : clicked}
+		>
+			{@render content()}
+		</ion-card>
+	{:else}
+		<ion-card
+			bind:this={cardReference}
+			id={indexLabel}
+			data-tour={tourId}
+			{color}
+			class={classList}
+			style={`border: ${borderStyle}`}
+		>
+			{@render content()}
+		</ion-card>
+	{/if}
+{/snippet}
 
 {#snippet content()}
 	{#if title || subtitle || titleIconStart || titleIconEnd}

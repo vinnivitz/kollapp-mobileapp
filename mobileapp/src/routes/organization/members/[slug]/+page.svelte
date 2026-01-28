@@ -25,7 +25,6 @@
 
 	import { budgetService, organizationService } from '$lib/api/services';
 	import Layout from '$lib/components/layout/Layout.svelte';
-	import LazyRender from '$lib/components/utility/LazyRender.svelte';
 	import PostingFilter from '$lib/components/widgets/budget/PostingFilter.svelte';
 	import PostingItem from '$lib/components/widgets/budget/PostingItem.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
@@ -396,23 +395,21 @@
 {/snippet}
 
 {#snippet postingItem(posting: PostingTO)}
-	<LazyRender>
-		<PostingItem
-			{posting}
-			activity={activityByPostingId.get(posting.id)}
-			activities={$organizationStore?.activities!}
-			budgetCategories={$organizationStore?.budgetCategories!}
-			personsOfOrganization={$organizationStore?.personsOfOrganization!}
-			onEditStart={() => (isEditingPosting = true)}
-			onEditEnd={() => (isEditingPosting = false)}
-			onUpdateOrganizationPosting={budgetService.updateOrganizationPosting}
-			onUpdateActivityPosting={budgetService.updateActivityPosting}
-			onTransferOrganizationPosting={budgetService.transferOrganizationPosting}
-			onTransferActivityPosting={budgetService.transferActivityPosting}
-			onDeleteOrganizationPosting={budgetService.deleteOrganizationPosting}
-			onDeleteActivityPosting={budgetService.deleteActivityPosting}
-		/>
-	</LazyRender>
+	<PostingItem
+		{posting}
+		activity={activityByPostingId.get(posting.id)}
+		activities={$organizationStore?.activities!}
+		budgetCategories={$organizationStore?.budgetCategories!}
+		personsOfOrganization={$organizationStore?.personsOfOrganization!}
+		onEditStart={() => (isEditingPosting = true)}
+		onEditEnd={() => (isEditingPosting = false)}
+		onUpdateOrganizationPosting={budgetService.updateOrganizationPosting}
+		onUpdateActivityPosting={budgetService.updateActivityPosting}
+		onTransferOrganizationPosting={budgetService.transferOrganizationPosting}
+		onTransferActivityPosting={budgetService.transferActivityPosting}
+		onDeleteOrganizationPosting={budgetService.deleteOrganizationPosting}
+		onDeleteActivityPosting={budgetService.deleteActivityPosting}
+	/>
 {/snippet}
 
 {#snippet noSearchResults()}

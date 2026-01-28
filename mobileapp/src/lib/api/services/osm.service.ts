@@ -2,6 +2,7 @@ import type { NominatimItemDto } from '$lib/api/dto';
 import type { AddressModel } from '$lib/models/osm';
 import type { LatLng } from 'leaflet';
 
+import { businessOutline, homeOutline, locationOutline } from 'ionicons/icons';
 import { get } from 'svelte/store';
 
 import { t } from '$lib/locales';
@@ -55,10 +56,11 @@ class OsmService {
 		}
 	};
 
-	private getAddress = (item: NominatimItemDto): AddressModel => {
+	getAddress = (item: NominatimItemDto): AddressModel => {
 		const address = item.address;
 		return {
 			countryCode: address.country_code,
+			icon: this.getIcon(item),
 			latlng: { lat: Number.parseFloat(item.lat), lng: Number.parseFloat(item.lon) } as LatLng,
 			locality: address.city ?? address.town ?? address.village ?? address.municipality,
 			number: address.house_number,
@@ -67,8 +69,18 @@ class OsmService {
 		};
 	};
 
-	private isEmptyAddress = (item: AddressModel): boolean => {
+	isEmptyAddress = (item: AddressModel): boolean => {
 		return !item.locality && !item.street && !item.number && !item.zip;
+	};
+
+	getIcon = (item: NominatimItemDto): string => {
+		if (item.address.road && item.address.house_number) {
+			return homeOutline;
+		} else if (item.address.city || item.address.town || item.address.village || item.address.municipality) {
+			return businessOutline;
+		} else {
+			return locationOutline;
+		}
 	};
 }
 

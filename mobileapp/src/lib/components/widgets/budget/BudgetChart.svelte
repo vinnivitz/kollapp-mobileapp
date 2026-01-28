@@ -17,16 +17,16 @@
 
 	type ChartType = 'all' | 'credit' | 'debit';
 
-	interface Properties {
+	type Properties = {
 		postings: PostingTO[];
-		tourId?: string;
 		editMode?: boolean;
-	}
+		tourId?: string;
+	};
+
+	let { editMode = false, postings, tourId }: Properties = $props();
 
 	const MINIMAL_POSTINGS_FOR_INTERACTION = 1;
 	const DISPLAY_COUNT = 5;
-
-	let { editMode = false, postings, tourId }: Properties = $props();
 
 	let selectedChart = $state<ChartType>('all');
 	let mounted = $state<boolean>(false);

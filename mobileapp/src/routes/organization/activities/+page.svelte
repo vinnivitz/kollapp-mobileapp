@@ -20,8 +20,8 @@
 
 	import { createActivitySchema } from '$lib/api/schema/organization';
 	import { activityService } from '$lib/api/services';
-	import FadeInOut from '$lib/components/layout/FadeInOut.svelte';
 	import Layout from '$lib/components/layout/Layout.svelte';
+	import FadeInOut from '$lib/components/utility/FadeInOut.svelte';
 	import Filter from '$lib/components/widgets/budget/PostingFilter.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import Datetime from '$lib/components/widgets/ionic/Datetime.svelte';

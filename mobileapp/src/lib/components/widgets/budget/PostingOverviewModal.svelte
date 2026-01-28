@@ -23,7 +23,7 @@
 	} from 'ionicons/icons';
 	import { SvelteMap } from 'svelte/reactivity';
 
-	import LazyRender from '$lib/components/utility/LazyRender.svelte';
+	import FadeInOut from '$lib/components/utility/FadeInOut.svelte';
 	import PostingFilter from '$lib/components/widgets/budget/PostingFilter.svelte';
 	import PostingItem from '$lib/components/widgets/budget/PostingItem.svelte';
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
@@ -220,7 +220,26 @@
 	);
 
 	const filteredPostings = $derived.by(() => {
-		if (!filterState) return stablePostings;
+		const search = searchValue.trim().toLowerCase();
+
+		// Apply search filter even without filterState
+		const searchFiltered =
+			search === ''
+				? stablePostings
+				: stablePostings.filter((posting) => {
+						const matchesPurpose = posting.purpose.toLowerCase().includes(search);
+						const matchesCategoryName = getBudgetCategoryNameById(posting.organizationBudgetCategoryId)
+							.toLowerCase()
+							.includes(search);
+						const matchesUsername = !!getUsernameByPersonOfOrganizationId(posting.personOfOrganizationId)
+							?.toLowerCase()
+							.includes(search);
+						const postingActivity = activityPostingIdMap.get(posting.id);
+						const matchesActivity = postingActivity?.name.toLowerCase().includes(search);
+						return matchesPurpose || matchesCategoryName || matchesUsername || matchesActivity;
+					});
+
+		if (!filterState) return searchFiltered;
 
 		const fromTime = new TZDate(filterState.dateRange.from).getTime();
 		const toTime = new TZDate(filterState.dateRange.to).getTime();
@@ -228,9 +247,8 @@
 		const allowedActivityIds = new Set(filterState.activityIds);
 		const allowedBudgetCategoryIds = new Set(filterState.budgetCategoryIds);
 		const allowedPersonOfOrganizationIds = new Set(filterState.personOfOrganizationIds);
-		const search = searchValue.trim().toLowerCase();
 
-		return stablePostings.filter((posting) => {
+		return searchFiltered.filter((posting) => {
 			if (!allowedPostingTypes.has(posting.type)) return false;
 
 			const postingTime = new TZDate(posting.date).getTime();
@@ -251,18 +269,7 @@
 				if (!matchesActivities) return false;
 			}
 
-			if (search === '') return true;
-
-			const matchesPurpose = posting.purpose.toLowerCase().includes(search);
-			const matchesCategoryName = getBudgetCategoryNameById(posting.organizationBudgetCategoryId)
-				.toLowerCase()
-				.includes(search);
-			const matchesUsername = !!getUsernameByPersonOfOrganizationId(posting.personOfOrganizationId)
-				?.toLowerCase()
-				.includes(search);
-			const postingActivity = activityPostingIdMap.get(posting.id);
-			const matchesActivity = postingActivity?.name.toLowerCase().includes(search);
-			return matchesPurpose || matchesCategoryName || matchesUsername || matchesActivity;
+			return true;
 		});
 	});
 
@@ -342,18 +349,22 @@
 			<div class="mt-3 flex flex-col items-center justify-center gap-2 text-center">
 				<ion-note>
 					{#if searchValue.trim() === ''}
-						{$t('components.posting-overview.no-postings')}
+						<FadeInOut>
+							{$t('components.posting-overview.no-postings')}
+						</FadeInOut>
 					{:else}
-						{$t('components.posting-overview.no-results', {
-							value: searchValue.trim()
-						})}
+						<FadeInOut>
+							{$t('components.posting-overview.no-results', {
+								value: searchValue.trim()
+							})}
+						</FadeInOut>
 					{/if}
 				</ion-note>
 			</div>
 		{:else}
 			<ion-list role="feed">
 				{#each displayedPostings as posting (posting.id)}
-					<LazyRender>
+					<FadeInOut>
 						<PostingItem
 							{posting}
 							activity={activityPostingIdMap.get(posting.id)}
@@ -370,7 +381,7 @@
 							{onTransferActivityPosting}
 							{onTransferOrganizationPosting}
 						/>
-					</LazyRender>
+					</FadeInOut>
 				{/each}
 			</ion-list>
 			<ion-infinite-scroll color="medium" class="mt-3" disabled={!hasMorePostings} onionInfinite={onLoadMore}>

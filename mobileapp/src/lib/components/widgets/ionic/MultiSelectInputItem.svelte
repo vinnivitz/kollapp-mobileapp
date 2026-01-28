@@ -8,6 +8,7 @@
 	import Modal from './Modal.svelte';
 	import ToggleItem from './ToggleItem.svelte';
 
+	import FadeInOut from '$lib/components/utility/FadeInOut.svelte';
 	import { t } from '$lib/locales';
 
 	type Properties = {
@@ -277,42 +278,46 @@
 	{#if multiple}
 		<ion-list>
 			{#each displayedMultiItems as item (item.data.id)}
-				<CustomItem>
-					<ion-checkbox
-						value={item.data.id}
-						checked={item.selected}
-						color={item.color}
-						onionChange={() => toggleItemSelection(item.data.id)}
-					>
-						<div class="flex items-center justify-center gap-2">
-							{#if item.icon}
-								<ion-icon color={item.color} icon={item.icon}></ion-icon>
-							{/if}
-							<ion-text color={item.color ?? 'dark'}>
-								{item.data.label}
-							</ion-text>
-						</div>
-					</ion-checkbox>
-				</CustomItem>
+				<FadeInOut>
+					<CustomItem>
+						<ion-checkbox
+							value={item.data.id}
+							checked={item.selected}
+							color={item.color}
+							onionChange={() => toggleItemSelection(item.data.id)}
+						>
+							<div class="flex items-center justify-center gap-2">
+								{#if item.icon}
+									<ion-icon color={item.color} icon={item.icon}></ion-icon>
+								{/if}
+								<ion-text color={item.color ?? 'dark'}>
+									{item.data.label}
+								</ion-text>
+							</div>
+						</ion-checkbox>
+					</CustomItem>
+				</FadeInOut>
 			{/each}
 		</ion-list>
 	{:else}
 		<ion-radio-group value={selectedId}>
 			{#each visibleItems as item (item.data.id)}
-				<CustomItem>
-					<!-- svelte-ignore a11y_click_events_have_key_events -->
-					<!-- svelte-ignore a11y_no_static_element_interactions -->
-					<ion-radio value={item.data.id} onclick={() => (selectedId = item.data.id)} color={item.color}>
-						<div class="flex items-center justify-center gap-2">
-							{#if item.icon}
-								<ion-icon color={item.color} icon={item.icon}></ion-icon>
-							{/if}
-							<ion-text color={item.color ?? 'dark'}>
-								{item.data.label}
-							</ion-text>
-						</div>
-					</ion-radio>
-				</CustomItem>
+				<FadeInOut>
+					<CustomItem>
+						<!-- svelte-ignore a11y_click_events_have_key_events -->
+						<!-- svelte-ignore a11y_no_static_element_interactions -->
+						<ion-radio value={item.data.id} onclick={() => (selectedId = item.data.id)} color={item.color}>
+							<div class="flex items-center justify-center gap-2">
+								{#if item.icon}
+									<ion-icon color={item.color} icon={item.icon}></ion-icon>
+								{/if}
+								<ion-text color={item.color ?? 'dark'}>
+									{item.data.label}
+								</ion-text>
+							</div>
+						</ion-radio>
+					</CustomItem>
+				</FadeInOut>
 			{/each}
 		</ion-radio-group>
 	{/if}

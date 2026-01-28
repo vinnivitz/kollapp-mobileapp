@@ -4,6 +4,7 @@
 	import { notificationsCircleOutline, notificationsOffOutline, notificationsOutline } from 'ionicons/icons';
 
 	import Layout from '$lib/components/layout/Layout.svelte';
+	import FadeInOut from '$lib/components/utility/FadeInOut.svelte';
 	import SegmentItem from '$lib/components/widgets/ionic/SegmentItem.svelte';
 	import { t } from '$lib/locales';
 
@@ -43,11 +44,17 @@
 <Layout showBackButton title={$t('routes.account.notifications.page.title')}>
 	<SegmentItem config={segmentConfig} classList="text-center mt-5">
 		{#if notificationFilter === NotificationFilter.UNREAD}
-			<ion-note>{$t('routes.account.notifications.page.no-unread')}</ion-note>
+			<FadeInOut>
+				<ion-note>{$t('routes.account.notifications.page.no-unread')}</ion-note>
+			</FadeInOut>
 		{:else if notificationFilter === NotificationFilter.ALL}
-			<ion-note>{$t('routes.account.notifications.page.no-notifications')}</ion-note>
+			<FadeInOut>
+				<ion-note>{$t('routes.account.notifications.page.no-notifications')}</ion-note>
+			</FadeInOut>
 		{:else}
-			<ion-note>{$t('routes.account.notifications.page.no-notifications')}</ion-note>
+			<FadeInOut>
+				<ion-note>{$t('routes.account.notifications.page.no-notifications')}</ion-note>
+			</FadeInOut>
 		{/if}
 	</SegmentItem>
 </Layout>

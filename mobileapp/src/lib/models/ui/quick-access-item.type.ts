@@ -1,3 +1,5 @@
+import type { OrganizationRole } from '@kollapp/api-types';
+
 import type { RouteId } from '$app/types';
 
 /**
@@ -24,6 +26,8 @@ export type QuickAccessItem = {
 	route: RouteId;
 	/** Widget type */
 	widgetType: QuickAccessWidgetType;
+	/** Optional role required to access this item */
+	accessible?: OrganizationRole;
 	/** Optional label to trigger a click action after navigation */
 	triggerLabel?: string;
 } & ({ specialWidgetId: SpecialWidgetId; widgetType: 'special' } | { widgetType: 'normal' });

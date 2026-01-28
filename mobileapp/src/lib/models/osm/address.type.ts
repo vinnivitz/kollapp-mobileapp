@@ -5,6 +5,7 @@ import type { LatLng } from 'leaflet';
  */
 export type AddressModel = {
 	countryCode: string;
+	icon: string;
 	latlng: LatLng;
 	locality: string;
 	number: string;

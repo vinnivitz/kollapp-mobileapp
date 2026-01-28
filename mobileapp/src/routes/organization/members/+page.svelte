@@ -33,8 +33,8 @@
 	import { resolve } from '$app/paths';
 
 	import { organizationService } from '$lib/api/services';
-	import FadeInOut from '$lib/components/layout/FadeInOut.svelte';
 	import Layout from '$lib/components/layout/Layout.svelte';
+	import FadeInOut from '$lib/components/utility/FadeInOut.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';

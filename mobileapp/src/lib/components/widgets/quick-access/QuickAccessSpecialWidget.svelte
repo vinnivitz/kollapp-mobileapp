@@ -17,7 +17,6 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
-	import LazyRender from '$lib/components/utility/LazyRender.svelte';
 	import BudgetChart from '$lib/components/widgets/budget/BudgetChart.svelte';
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
@@ -78,17 +77,11 @@
 >
 	{#if item.widgetType === 'special'}
 		{#if item.specialWidgetId === 'organization-card'}
-			<LazyRender>
-				{@render organizationCard()}
-			</LazyRender>
+			{@render organizationCard()}
 		{:else if item.specialWidgetId === 'upcoming-activity-card'}
-			<LazyRender>
-				{@render upcomingActivityCard()}
-			</LazyRender>
+			{@render upcomingActivityCard()}
 		{:else if item.specialWidgetId === 'budget-chart-card'}
-			<LazyRender>
-				{@render budgetChartCard()}
-			</LazyRender>
+			{@render budgetChartCard()}
 		{/if}
 	{/if}
 

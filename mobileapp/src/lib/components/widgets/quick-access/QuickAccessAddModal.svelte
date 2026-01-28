@@ -9,6 +9,7 @@
 	import type { RouteId } from '$app/types';
 
 	import { searchableService } from '$lib/api/services';
+	import FadeInOut from '$lib/components/utility/FadeInOut.svelte';
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
 	import { t } from '$lib/locales';
@@ -125,7 +126,7 @@
 	}
 </script>
 
-<Modal {open} dismissed={handleDismiss} informational title={$t('routes.page.page.quick-access.modal.title')}>
+<Modal lazy {open} dismissed={handleDismiss} informational title={$t('routes.page.page.quick-access.modal.title')}>
 	<div class="sticky top-0 left-0 z-10">
 		<ion-searchbar
 			color="light"
@@ -138,23 +139,25 @@
 
 	{#if isSearching}
 		{#if searchedItems.length > 0}
-			<ion-list>
-				<ion-list-header>
-					{$t('routes.page.page.quick-access.modal.results-for', {
-						value: searchedItems.length,
-						value2: searchValue
-					})}
-				</ion-list-header>
-				{#each searchedItems as item (item.id)}
-					{@const added = isItemAdded(item)}
-					<CustomItem
-						icon={icons[item.icon as keyof typeof icons] ?? icons.ellipsisHorizontalOutline}
-						slidingOptions={added ? getRemoveSlidingOption(item) : getAddSlidingOption(item)}
-					>
-						<ion-label class="ms-2">{item.label}</ion-label>
-					</CustomItem>
-				{/each}
-			</ion-list>
+			<FadeInOut>
+				<ion-list>
+					<ion-list-header>
+						{$t('routes.page.page.quick-access.modal.results-for', {
+							value: searchedItems.length,
+							value2: searchValue
+						})}
+					</ion-list-header>
+					{#each searchedItems as item (item.id)}
+						{@const added = isItemAdded(item)}
+						<CustomItem
+							icon={icons[item.icon as keyof typeof icons] ?? icons.ellipsisHorizontalOutline}
+							slidingOptions={added ? getRemoveSlidingOption(item) : getAddSlidingOption(item)}
+						>
+							<ion-label class="ms-2">{item.label}</ion-label>
+						</CustomItem>
+					{/each}
+				</ion-list>
+			</FadeInOut>
 		{:else}
 			<div class="py-8 text-center">
 				<ion-note>{$t('routes.page.page.quick-access.modal.no-results', { value: searchValue })}</ion-note>

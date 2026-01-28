@@ -26,7 +26,7 @@
 
 	import { budgetService } from '$lib/api/services';
 	import Layout from '$lib/components/layout/Layout.svelte';
-	import LazyRender from '$lib/components/utility/LazyRender.svelte';
+	import FadeInOut from '$lib/components/utility/FadeInOut.svelte';
 	import PostingItem from '$lib/components/widgets/budget/PostingItem.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import Chip from '$lib/components/widgets/ionic/Chip.svelte';
@@ -409,7 +409,7 @@
 
 {#snippet trendChart()}
 	{#if monthlyData.length > 1}
-		<LazyRender>
+		<FadeInOut>
 			<Card
 				title={$t('routes.organization.budget-statistics.page.trend.title')}
 				titleIconStart={statsChartOutline}
@@ -421,13 +421,13 @@
 					{/if}
 				</div>
 			</Card>
-		</LazyRender>
+		</FadeInOut>
 	{/if}
 {/snippet}
 
 {#snippet categoryChart()}
 	{#if categoryStatistics.length > 0}
-		<LazyRender>
+		<FadeInOut>
 			<Card
 				title={$t('routes.organization.budget-statistics.page.categories.title')}
 				titleIconStart={barChartOutline}
@@ -439,13 +439,13 @@
 					{/if}
 				</div>
 			</Card>
-		</LazyRender>
+		</FadeInOut>
 	{/if}
 {/snippet}
 
 {#snippet memberStatsCard()}
 	{#if memberStatistics.length > 0}
-		<LazyRender>
+		<FadeInOut>
 			<Card
 				titleIconStart={peopleOutline}
 				title={$t('routes.organization.budget-statistics.page.members.title')}
@@ -468,14 +468,14 @@
 					</CustomItem>
 				{/each}
 			</Card>
-		</LazyRender>
+		</FadeInOut>
 	{/if}
 {/snippet}
 
 {#snippet topTransactionsCards()}
 	<div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
 		{#if topCredits.length > 0}
-			<LazyRender>
+			<FadeInOut>
 				<Card
 					title={$t('routes.organization.budget-statistics.page.top-credits.title')}
 					titleIconStart={trendingUpOutline}
@@ -498,34 +498,32 @@
 						/>
 					{/each}
 				</Card>
-			</LazyRender>
+			</FadeInOut>
 		{/if}
 
 		{#if topDebits.length > 0}
-			<LazyRender>
-				<Card
-					title={$t('routes.organization.budget-statistics.page.top-debits.title')}
-					titleIconStart={trendingDownOutline}
-				>
-					{#each topDebits as posting (posting.id)}
-						<PostingItem
-							onEditStart={() => {}}
-							onEditEnd={() => {}}
-							personsOfOrganization={$organizationStore?.personsOfOrganization!}
-							{posting}
-							activity={activityByPostingId.get(posting.id)}
-							activities={$organizationStore?.activities!}
-							budgetCategories={$organizationStore?.budgetCategories!}
-							onUpdateOrganizationPosting={budgetService.updateOrganizationPosting}
-							onUpdateActivityPosting={budgetService.updateActivityPosting}
-							onTransferOrganizationPosting={budgetService.transferOrganizationPosting}
-							onTransferActivityPosting={budgetService.transferActivityPosting}
-							onDeleteOrganizationPosting={budgetService.deleteOrganizationPosting}
-							onDeleteActivityPosting={budgetService.deleteActivityPosting}
-						/>
-					{/each}
-				</Card>
-			</LazyRender>
+			<Card
+				title={$t('routes.organization.budget-statistics.page.top-debits.title')}
+				titleIconStart={trendingDownOutline}
+			>
+				{#each topDebits as posting (posting.id)}
+					<PostingItem
+						onEditStart={() => {}}
+						onEditEnd={() => {}}
+						personsOfOrganization={$organizationStore?.personsOfOrganization!}
+						{posting}
+						activity={activityByPostingId.get(posting.id)}
+						activities={$organizationStore?.activities!}
+						budgetCategories={$organizationStore?.budgetCategories!}
+						onUpdateOrganizationPosting={budgetService.updateOrganizationPosting}
+						onUpdateActivityPosting={budgetService.updateActivityPosting}
+						onTransferOrganizationPosting={budgetService.transferOrganizationPosting}
+						onTransferActivityPosting={budgetService.transferActivityPosting}
+						onDeleteOrganizationPosting={budgetService.deleteOrganizationPosting}
+						onDeleteActivityPosting={budgetService.deleteActivityPosting}
+					/>
+				{/each}
+			</Card>
 		{/if}
 	</div>
 {/snippet}

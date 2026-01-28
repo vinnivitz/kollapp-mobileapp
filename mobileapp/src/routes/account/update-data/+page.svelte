@@ -42,31 +42,29 @@
 </script>
 
 <Layout title={$t('routes.account.update-data.page.title')} showBackButton>
-	{#if form}
-		<Card title={$t('routes.account.update-data.page.card.title')}>
-			<form use:customForm={form}>
-				<InputItem
-					name="username"
-					label={$t('routes.account.update-data.page.card.form.username')}
-					icon={personOutline}
-					helperText={$t('routes.account.update-data.page.card.form.username-helper-text')}
-				/>
-				<InputItem
-					name="email"
-					inputmode="email"
-					label={$t('routes.account.update-data.page.card.form.email')}
-					icon={mailOutline}
-					type="email"
-				/>
-				<Button
-					classList="mt-3"
-					expand="block"
-					type="submit"
-					disabled={!touched}
-					label={$t('routes.account.update-data.page.card.form.submit')}
-					icon={saveOutline}
-				/>
-			</form>
-		</Card>
-	{/if}
+	<Card title={$t('routes.account.update-data.page.card.title')}>
+		<form use:customForm={form}>
+			<InputItem
+				name="username"
+				label={$t('routes.account.update-data.page.card.form.username')}
+				icon={personOutline}
+				helperText={$t('routes.account.update-data.page.card.form.username-helper-text')}
+			/>
+			<InputItem
+				name="email"
+				inputmode="email"
+				label={$t('routes.account.update-data.page.card.form.email')}
+				icon={mailOutline}
+				type="email"
+			/>
+			<Button
+				classList="mt-3"
+				expand="block"
+				type="submit"
+				disabled={!touched}
+				label={$t('routes.account.update-data.page.card.form.submit')}
+				icon={saveOutline}
+			/>
+		</form>
+	</Card>
 </Layout>

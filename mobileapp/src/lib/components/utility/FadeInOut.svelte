@@ -6,11 +6,12 @@
 	type Properties = {
 		children: Snippet;
 		classList?: string;
+		duration?: number;
 	};
 
-	let { children, classList = '' }: Properties = $props();
+	let { children, classList = '', duration = 100 }: Properties = $props();
 </script>
 
-<div class={classList} in:fade={{ delay: 150, duration: 100 }} out:fade={{ delay: 0, duration: 100 }}>
+<div class={classList} in:fade={{ delay: 150, duration }} out:fade={{ delay: 0, duration }}>
 	{@render children?.()}
 </div>

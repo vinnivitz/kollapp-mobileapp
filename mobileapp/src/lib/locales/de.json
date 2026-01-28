@@ -626,7 +626,6 @@
       "budget-categories": {
         "page": {
           "title": "Buchungskategorien",
-          "empty": "Noch keine Budget-Kategorien vorhanden.",
           "default-badge": "Standard",
           "modal": {
             "create": {

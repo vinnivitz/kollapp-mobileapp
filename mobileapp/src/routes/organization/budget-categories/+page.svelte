@@ -6,6 +6,7 @@
 	import { budgetCategorySchema } from '$lib/api/schema/budget-category';
 	import { budgetCategoryService } from '$lib/api/services';
 	import Layout from '$lib/components/layout/Layout.svelte';
+	import FadeInOut from '$lib/components/utility/FadeInOut.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
 	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
 	import FabButton from '$lib/components/widgets/ionic/FabButton.svelte';
@@ -116,13 +117,13 @@
 <!-- Snippets -->
 
 {#snippet categoryList()}
-	{#if categories.length > 0}
-		<Card
-			tourId={TourStepId.BUDGET_CATEGORIES.LIST}
-			title={$t('routes.organization.budget-categories.page.category-list.card.title')}
-		>
-			<ion-list>
-				{#each categories as category (category.id)}
+	<Card
+		tourId={TourStepId.BUDGET_CATEGORIES.LIST}
+		title={$t('routes.organization.budget-categories.page.category-list.card.title')}
+	>
+		<ion-list>
+			{#each categories as category (category.id)}
+				<FadeInOut>
 					<CustomItem
 						iconColor={category.defaultCategory ? 'success' : 'medium'}
 						slidingOptions={getSlidingOptions(category)}
@@ -134,16 +135,10 @@
 							</ion-badge>
 						{/if}
 					</CustomItem>
-				{/each}
-			</ion-list>
-		</Card>
-	{:else}
-		<Card>
-			<ion-text color="medium" class="block text-center">
-				{$t('routes.organization.budget-categories.page.empty')}
-			</ion-text>
-		</Card>
-	{/if}
+				</FadeInOut>
+			{/each}
+		</ion-list>
+	</Card>
 {/snippet}
 
 {#snippet createModal()}

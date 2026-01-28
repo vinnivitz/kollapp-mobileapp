@@ -253,3 +253,18 @@ export async function withLoader<T = void>(action: () => Promise<T> | T, delay =
 		}
 	}
 }
+
+/** Returns a new array with unique items based on a key function
+ * @param arr array to filter
+ * @param keyFn function to get the key for each item
+ * @returns {T[]} array with unique items
+ */
+export function uniqueBy<T, K>(array: T[], keyFunction: (item: T) => K): T[] {
+	const seen = new Set<K>();
+	return array.filter((item) => {
+		const key = keyFunction(item);
+		if (seen.has(key)) return false;
+		seen.add(key);
+		return true;
+	});
+}

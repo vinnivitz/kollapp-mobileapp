@@ -4,7 +4,7 @@ import { get, writable } from 'svelte/store';
 
 import { t } from '$lib/locales';
 import { StorageKey } from '$lib/models/storage';
-import { getStoredValue, storeValue } from '$lib/utility';
+import { getStoredValue, hasOrganizationRole, storeValue } from '$lib/utility';
 
 /**
  * Available special widgets that can be added to quick access
@@ -62,11 +62,16 @@ function createStore(): QuickAccessStoreType {
 
 	async function initialize(): Promise<void> {
 		const stored = await getStoredValue<QuickAccessItem[]>(StorageKey.QUICK_ACCESS);
+		const isManager = hasOrganizationRole('ROLE_ORGANIZATION_MANAGER');
+		const filterByAccess = (items: QuickAccessItem[]): QuickAccessItem[] =>
+			items.filter((item) => !item.accessible || isManager || hasOrganizationRole(item.accessible));
+
 		if (stored) {
-			update((state) => ({ ...state, items: stored }));
+			update((state) => ({ ...state, items: filterByAccess(stored) }));
 		} else {
-			update((state) => ({ ...state, items: SPECIAL_WIDGETS() }));
-			await storeValue(StorageKey.QUICK_ACCESS, SPECIAL_WIDGETS());
+			const defaultItems = filterByAccess(SPECIAL_WIDGETS());
+			update((state) => ({ ...state, items: defaultItems }));
+			await storeValue(StorageKey.QUICK_ACCESS, defaultItems);
 		}
 	}
 

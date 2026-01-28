@@ -4,7 +4,7 @@
 
 	import Chip from './Chip.svelte';
 
-	import FadeInOut from '$lib/components/layout/FadeInOut.svelte';
+	import FadeInOut from '$lib/components/utility/FadeInOut.svelte';
 
 	type Properties = {
 		config: SegmentConfig[];

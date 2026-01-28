@@ -1183,7 +1183,6 @@
       "budget-categories": {
         "page": {
           "title": "Transaction categories",
-          "empty": "No budget categories yet.",
           "default-badge": "Default",
           "modal": {
             "create": {

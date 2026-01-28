@@ -2,6 +2,7 @@
 	import type { Colors, ItemSlidingOption } from '$lib/models/ui';
 	import type { Snippet } from 'svelte';
 
+	import LazyRender from '$lib/components/utility/LazyRender.svelte';
 	import { clickOutside } from '$lib/utility';
 
 	type Properties = {
@@ -19,6 +20,7 @@
 		iconEnd?: string;
 		indexed?: string;
 		indexLabel?: string;
+		lazy?: boolean;
 		name?: string;
 		note?: string;
 		readonly?: boolean;
@@ -45,6 +47,7 @@
 		iconEnd,
 		indexed,
 		indexLabel,
+		lazy = false,
 		name,
 		note,
 		readonly,
@@ -60,41 +63,51 @@
 	readonly = readonly ?? disabled;
 </script>
 
-{#if slidingOptions}
-	<ion-item-sliding
-		bind:this={ionItemSlidingElement}
-		use:clickOutside={() => ionItemSlidingElement?.close()}
-		class:hidden
-	>
-		{@render item()}
-		<ion-item-options slot="end">
-			{#each slidingOptions as option (option.icon)}
-				<!-- svelte-ignore a11y_click_events_have_key_events -->
-				<!-- svelte-ignore a11y_no_static_element_interactions -->
-				<ion-item-option
-					color={option.color}
-					onclick={() => {
-						option.handler();
-						ionItemSlidingElement?.close();
-					}}
-				>
-					{#if option.label}
-						<div class="flex min-w-12 flex-col items-center justify-center">
-							<ion-icon class="text-2xl" icon={option.icon}></ion-icon>
-							<ion-text class="text-xs">{option.label}</ion-text>
-						</div>
-					{:else}
-						<ion-icon slot="icon-only" icon={option.icon}></ion-icon>
-					{/if}
-				</ion-item-option>
-			{/each}
-		</ion-item-options>
-	</ion-item-sliding>
+{#if lazy}
+	<LazyRender>
+		{@render customItem()}
+	</LazyRender>
 {:else}
-	<div class="contents" class:hidden>
-		{@render item()}
-	</div>
+	{@render customItem()}
 {/if}
+
+{#snippet customItem()}
+	{#if slidingOptions}
+		<ion-item-sliding
+			bind:this={ionItemSlidingElement}
+			use:clickOutside={() => ionItemSlidingElement?.close()}
+			class:hidden
+		>
+			{@render item()}
+			<ion-item-options slot="end">
+				{#each slidingOptions as option (option.icon)}
+					<!-- svelte-ignore a11y_click_events_have_key_events -->
+					<!-- svelte-ignore a11y_no_static_element_interactions -->
+					<ion-item-option
+						color={option.color}
+						onclick={() => {
+							option.handler();
+							ionItemSlidingElement?.close();
+						}}
+					>
+						{#if option.label}
+							<div class="flex min-w-12 flex-col items-center justify-center">
+								<ion-icon class="text-2xl" icon={option.icon}></ion-icon>
+								<ion-text class="text-xs">{option.label}</ion-text>
+							</div>
+						{:else}
+							<ion-icon slot="icon-only" icon={option.icon}></ion-icon>
+						{/if}
+					</ion-item-option>
+				{/each}
+			</ion-item-options>
+		</ion-item-sliding>
+	{:else}
+		<div class="contents" class:hidden>
+			{@render item()}
+		</div>
+	{/if}
+{/snippet}
 
 {#snippet item()}
 	<div class="relative">

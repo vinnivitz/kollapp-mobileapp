@@ -5,11 +5,13 @@
 	import { searchOutline } from 'ionicons/icons';
 	import { LatLng, type LeafletMouseEvent, Map, Marker, TileLayer } from 'leaflet';
 
+	import CustomItem from './ionic/CustomItem.svelte';
+
 	import { osmService } from '$lib/api/services';
 	import environment from '$lib/environment';
 	import { t } from '$lib/locales';
 	import { StorageKey } from '$lib/models/storage';
-	import { clickOutside, getStoredValue } from '$lib/utility';
+	import { clickOutside, getStoredValue, uniqueBy } from '$lib/utility';
 
 	type Properties = {
 		classList?: string;
@@ -112,6 +114,7 @@
 	}
 
 	async function onSearch(query: string | undefined): Promise<void> {
+		query = query?.trim();
 		if (!query) {
 			searchItems = [];
 			return;
@@ -123,10 +126,14 @@
 			return;
 		}
 		const response = await osmService.getLocationsByQuery(query);
-		searchItems = response.map((item) => ({
-			latlng: item.latlng as LatLng,
-			name: formatAddress(item)
-		}));
+		searchItems = uniqueBy(
+			response.map((item) => ({
+				icon: item.icon,
+				latlng: item.latlng as LatLng,
+				name: formatAddress(item)
+			})),
+			(item) => item.name
+		);
 	}
 
 	function isCoordinate(value: string): boolean {
@@ -180,15 +187,11 @@
 			></ion-searchbar>
 			<ion-list class="absolute top-13 right-3 left-3 mx-auto rounded-xl">
 				{#each searchItems as item (item.latlng)}
-					<ion-item
-						role="button"
-						tabindex="0"
-						onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && onSearchItemSelection(item.latlng)}
-						color="light"
-						onclick={() => onSearchItemSelection(item.latlng)}
-					>
-						<ion-label>{item.name}</ion-label>
-					</ion-item>
+					{#if item.name}
+						<CustomItem icon={item.icon} color="light" clicked={() => onSearchItemSelection(item.latlng)}>
+							<ion-label class="ms-2">{item.name}</ion-label>
+						</CustomItem>
+					{/if}
 				{/each}
 			</ion-list>
 		</div>

@@ -5,7 +5,7 @@
 	import { dev } from '$app/environment';
 	import { navigating, page } from '$app/state';
 
-	import FadeInOut from './FadeInOut.svelte';
+	import FadeInOut from '../utility/FadeInOut.svelte';
 
 	import Header from '$lib/components/layout/Header.svelte';
 	import Menu from '$lib/components/layout/Menu.svelte';
