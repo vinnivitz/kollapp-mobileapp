@@ -1,10 +1,13 @@
+import type { QuickAccessItemsMap, QuickAccessStoreItem } from '$lib/models/stores';
 import type { QuickAccessItem } from '$lib/models/ui';
 
 import { get, writable } from 'svelte/store';
 
+import { organizationStore } from './organization.store';
+
 import { t } from '$lib/locales';
 import { StorageKey } from '$lib/models/storage';
-import { getStoredValue, hasOrganizationRole, storeValue } from '$lib/utility';
+import { getOrganizationId, getStoredValue, hasOrganizationRole, storeValue } from '$lib/utility';
 
 /**
  * Available special widgets that can be added to quick access
@@ -39,11 +42,6 @@ export const SPECIAL_WIDGETS = (): QuickAccessItem[] => {
 	] satisfies QuickAccessItem[];
 };
 
-export type QuickAccessStore = {
-	editMode: boolean;
-	items: QuickAccessItem[];
-};
-
 type QuickAccessStoreType = {
 	addItem: (item: QuickAccessItem) => Promise<void>;
 	getItems: () => QuickAccessItem[];
@@ -51,52 +49,90 @@ type QuickAccessStoreType = {
 	removeItem: (id: string) => Promise<void>;
 	reorderItems: (items: QuickAccessItem[]) => Promise<void>;
 	setEditMode: (enabled: boolean) => void;
-	subscribe: (run: (value: QuickAccessStore) => void) => () => void;
+	subscribe: (run: (value: QuickAccessStoreItem) => void) => () => void;
 };
 
+function filterByAccess(items: QuickAccessItem[]): QuickAccessItem[] {
+	const isManager = hasOrganizationRole('ROLE_ORGANIZATION_MANAGER');
+	return items.filter((item) => !item.accessible || isManager || hasOrganizationRole(item.accessible));
+}
+
 function createStore(): QuickAccessStoreType {
-	const { subscribe, update } = writable<QuickAccessStore>({
+	const { subscribe, update } = writable<QuickAccessStoreItem>({
 		editMode: false,
-		items: []
+		items: [],
+		itemsMap: {}
 	});
 
+	function updateCurrentItems(state: QuickAccessStoreItem): QuickAccessStoreItem {
+		const organizationId = getOrganizationId();
+		if (!organizationId) {
+			return { ...state, items: [] };
+		}
+		const organizationItems = state.itemsMap[organizationId] ?? [];
+		return { ...state, items: filterByAccess(organizationItems) };
+	}
+
 	async function initialize(): Promise<void> {
-		const stored = await getStoredValue<QuickAccessItem[]>(StorageKey.QUICK_ACCESS);
-		const isManager = hasOrganizationRole('ROLE_ORGANIZATION_MANAGER');
-		const filterByAccess = (items: QuickAccessItem[]): QuickAccessItem[] =>
-			items.filter((item) => !item.accessible || isManager || hasOrganizationRole(item.accessible));
+		const stored = await getStoredValue<QuickAccessItemsMap>(StorageKey.QUICK_ACCESS);
+		const organizationId = getOrganizationId();
 
 		if (stored) {
-			update((state) => ({ ...state, items: filterByAccess(stored) }));
+			update((state) => {
+				const newState = { ...state, itemsMap: stored };
+				return updateCurrentItems(newState);
+			});
 		} else {
-			const defaultItems = filterByAccess(SPECIAL_WIDGETS());
-			update((state) => ({ ...state, items: defaultItems }));
-			await storeValue(StorageKey.QUICK_ACCESS, defaultItems);
+			const defaultItems = SPECIAL_WIDGETS();
+			const itemsMap: QuickAccessItemsMap = {};
+			if (organizationId !== undefined) {
+				itemsMap[organizationId] = defaultItems;
+			}
+			update((state) => {
+				const newState = { ...state, itemsMap };
+				return updateCurrentItems(newState);
+			});
+			await storeValue(StorageKey.QUICK_ACCESS, itemsMap);
 		}
 	}
 
 	async function addItem(item: QuickAccessItem): Promise<void> {
+		const orgId = getOrganizationId();
+		if (orgId === undefined) return;
+
 		update((state) => {
-			const exists = state.items.some((index) => index.id === item.id);
+			const currentOrganizationItems = state.itemsMap[orgId] ?? [];
+			const exists = currentOrganizationItems.some((index) => index.id === item.id);
 			if (exists) return state;
-			const newItems = [...state.items, item];
-			storeValue(StorageKey.QUICK_ACCESS, newItems);
-			return { ...state, items: newItems };
+
+			const newOrganizationItems = [...currentOrganizationItems, item];
+			const newItemsMap = { ...state.itemsMap, [orgId]: newOrganizationItems };
+			storeValue(StorageKey.QUICK_ACCESS, newItemsMap);
+			return updateCurrentItems({ ...state, itemsMap: newItemsMap });
 		});
 	}
 
 	async function removeItem(id: string): Promise<void> {
+		const organizationId = getOrganizationId();
+		if (!organizationId) return;
+
 		update((state) => {
-			const newItems = state.items.filter((item) => item.id !== id);
-			storeValue(StorageKey.QUICK_ACCESS, newItems);
-			return { ...state, items: newItems };
+			const currentOrganizationItems = state.itemsMap[organizationId] ?? [];
+			const newOrganizationItems = currentOrganizationItems.filter((item) => item.id !== id);
+			const newItemsMap = { ...state.itemsMap, [organizationId]: newOrganizationItems };
+			storeValue(StorageKey.QUICK_ACCESS, newItemsMap);
+			return updateCurrentItems({ ...state, itemsMap: newItemsMap });
 		});
 	}
 
 	async function reorderItems(items: QuickAccessItem[]): Promise<void> {
+		const organizationId = getOrganizationId();
+		if (!organizationId) return;
+
 		update((state) => {
-			storeValue(StorageKey.QUICK_ACCESS, items);
-			return { ...state, items };
+			const newItemsMap = { ...state.itemsMap, [organizationId]: items };
+			storeValue(StorageKey.QUICK_ACCESS, newItemsMap);
+			return updateCurrentItems({ ...state, itemsMap: newItemsMap });
 		});
 	}
 
@@ -107,6 +143,20 @@ function createStore(): QuickAccessStoreType {
 	function getItems(): QuickAccessItem[] {
 		return get({ subscribe }).items;
 	}
+
+	organizationStore.subscribe((organization) => {
+		if (organization) {
+			update((state) => {
+				if (!state.itemsMap[organization.id]) {
+					const defaultItems = SPECIAL_WIDGETS();
+					const newItemsMap = { ...state.itemsMap, [organization.id]: defaultItems };
+					storeValue(StorageKey.QUICK_ACCESS, newItemsMap);
+					return updateCurrentItems({ ...state, itemsMap: newItemsMap });
+				}
+				return updateCurrentItems(state);
+			});
+		}
+	});
 
 	return {
 		addItem,
