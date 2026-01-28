@@ -64,7 +64,7 @@
 <!-- Snippets -->
 
 {#snippet leaveOrganizationCard()}
-	<Card title={$t('routes.organization.leave.page.card.title')}>
+	<Card title={$t('routes.organization.leave.page.card.title')} lazy>
 		<div class="text-center">
 			<Button
 				classList="mt-3"
@@ -87,7 +87,7 @@
 {/snippet}
 
 {#snippet lastManagerCard()}
-	<Card color="warning" classList="font-bold">
+	<Card color="warning" classList="font-bold" lazy>
 		<div class="flex items-center justify-center gap-2">
 			<ion-avatar class="flex items-center justify-center">
 				<ion-icon icon={warningOutline} size="large"></ion-icon>
@@ -105,7 +105,7 @@
 {/snippet}
 
 {#snippet assignedPostingsCard()}
-	<Card color="warning">
+	<Card color="warning" lazy>
 		<div class="flex items-center justify-center gap-2">
 			<ion-avatar class="flex items-center justify-center">
 				<ion-icon icon={warningOutline} size="large"></ion-icon>

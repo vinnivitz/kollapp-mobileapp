@@ -42,7 +42,7 @@
 <!-- Snippets -->
 
 {#snippet infoCard(organization: OrganizationMinifiedTO)}
-	<Card title={organization.name} classList="text-center">
+	<Card title={organization.name} classList="text-center" lazy>
 		<div class="flex flex-col items-center justify-center gap-2">
 			{#if organization.description}
 				<ion-text>{organization.description}</ion-text>
@@ -56,7 +56,7 @@
 {/snippet}
 
 {#snippet invalidCodeCard()}
-	<Card title={$t('routes.organization.info.page.card.invalid-code.title')}>
+	<Card title={$t('routes.organization.info.page.card.invalid-code.title')} lazy>
 		<div class="flex flex-col items-center justify-center gap-2">
 			<ion-text class="text-center" color="medium">
 				{$t('routes.organization.info.page.card.invalid-code.content')}

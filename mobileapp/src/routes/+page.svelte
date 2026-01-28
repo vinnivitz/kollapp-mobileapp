@@ -102,7 +102,7 @@
 {/snippet}
 
 {#snippet noCollectivesCard()}
-	<Card border="warning" classList="text-center">
+	<Card border="warning" classList="text-center" lazy>
 		<ion-note>{$t('routes.page.page.no-collectives-card.card.note')}</ion-note>
 		<div class="mt-3 flex flex-col gap-3">
 			<Button
@@ -124,7 +124,7 @@
 {/snippet}
 
 {#snippet pendingOrganizationJoinRequestCard()}
-	<Card border="warning">
+	<Card border="warning" lazy>
 		<div class="flex items-center justify-center gap-2">
 			<ion-avatar class="flex items-center justify-center">
 				<ion-icon color="warning" icon={warningOutline} size="large"></ion-icon>
@@ -151,6 +151,7 @@
 		title={$t('routes.page.page.pending-requests.card.title')}
 		titleIconEnd={arrowForwardOutline}
 		border="warning"
+		lazy
 	>
 		<ion-text>{$t('routes.page.page.pending-requests.card.content')}</ion-text>
 		<ul class="list-disc">

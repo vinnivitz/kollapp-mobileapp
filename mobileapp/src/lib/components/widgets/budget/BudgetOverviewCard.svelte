@@ -160,8 +160,7 @@
 		completed: async ({ actions }) => {
 			await onCompleted?.();
 			postingCreateModalOpen = false;
-			actions.setModel(createPostingSchema.getDefault());
-			formActions?.updateModelByKey('personOfOrganizationId', getPersonOfOrganizationId());
+			actions.setModel({ ...createPostingSchema.getDefault(), personOfOrganizationId: getPersonOfOrganizationId() });
 		},
 		exposedActions: (actions) => (formActions = actions),
 		formatters: { amountInCents: formatter.currency },
@@ -175,9 +174,11 @@
 
 	function onOpenCreatePosting(): void {
 		selectedPostingType = createPostingForm.model.type;
-		formActions?.setModel(createPostingSchema.getDefault());
-		formActions?.updateModelByKey('personOfOrganizationId', getPersonOfOrganizationId());
-		formActions?.updateModelByKey('activityId', activity?.id ?? 0);
+		formActions?.setModel({
+			...createPostingSchema.getDefault(),
+			activityId: activity?.id ?? 0,
+			personOfOrganizationId: getPersonOfOrganizationId()
+		});
 		postingCreateModalOpen = true;
 	}
 
@@ -193,7 +194,7 @@
 	}
 </script>
 
-<Card border="secondary" {tourId} titleIconStart={cardOutline} {title}>
+<Card border="secondary" {tourId} titleIconStart={cardOutline} {title} lazy>
 	<div class="flex flex-col items-center justify-center gap-2">
 		<ion-text class="text-xl font-bold" color={balance.balance.startsWith('-') ? 'danger' : 'success'}
 			>{balance.balance}</ion-text

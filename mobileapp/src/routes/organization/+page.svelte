@@ -87,7 +87,7 @@
 <!-- Snippets -->
 
 {#snippet noCollectiveCard()}
-	<Card border="warning">
+	<Card border="warning" lazy>
 		<div class="flex items-center justify-center gap-2">
 			<ion-avatar class="flex items-center justify-center">
 				<ion-icon color="warning" icon={warningOutline} size="large"></ion-icon>
@@ -134,6 +134,7 @@
 		tourId={TourStepId.ORGANIZATION.INFO}
 		classList="text-center cursor-pointer"
 		clicked={organizationDescriptionNoteTruncated ? () => (descriptionExpanded = !descriptionExpanded) : undefined}
+		lazy
 	>
 		<div class="flex flex-col items-center justify-center gap-3">
 			<ion-text

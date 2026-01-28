@@ -54,6 +54,7 @@
 		clicked={() => onClick(item)}
 		border="tertiary"
 		readonly={editMode}
+		lazy
 	>
 		<ion-text class="line-clamp-2 text-sm">{item.label}</ion-text>
 	</Card>

@@ -366,7 +366,7 @@
 
 {#snippet overviewCards()}
 	<div class="grid grid-cols-2">
-		<Card classList="text-center">
+		<Card classList="text-center" lazy>
 			<div class="flex flex-col items-center gap-1 py-2">
 				<ion-icon icon={trendingUpOutline} color="success" class="text-2xl"></ion-icon>
 				<ion-text class="text-xs" color="medium">
@@ -375,7 +375,7 @@
 				<ion-text class="text-lg font-bold" color="success">{formatter.currency(totalCredit)}</ion-text>
 			</div>
 		</Card>
-		<Card classList="text-center">
+		<Card classList="text-center" lazy>
 			<div class="flex flex-col items-center gap-1 py-2">
 				<ion-icon icon={trendingDownOutline} color="danger" class="text-2xl"></ion-icon>
 				<ion-text class="text-xs" color="medium">
@@ -384,7 +384,7 @@
 				<ion-text class="text-lg font-bold" color="danger">{formatter.currency(totalDebit)}</ion-text>
 			</div>
 		</Card>
-		<Card classList="text-center">
+		<Card classList="text-center" lazy>
 			<div class="flex flex-col items-center gap-1 py-2">
 				<ion-icon icon={cardOutline} class="text-2xl"></ion-icon>
 				<ion-text class="text-xs" color="medium">
@@ -395,7 +395,7 @@
 				</ion-text>
 			</div>
 		</Card>
-		<Card classList="text-center">
+		<Card classList="text-center" lazy>
 			<div class="flex flex-col items-center gap-1 py-2">
 				<ion-icon icon={statsChartOutline} class="text-2xl"></ion-icon>
 				<ion-text class="text-xs" color="medium">
@@ -414,6 +414,7 @@
 				title={$t('routes.organization.budget-statistics.page.trend.title')}
 				titleIconStart={statsChartOutline}
 				classList="mt-4"
+				lazy
 			>
 				<div class="h-[250px]">
 					{#if mounted}
@@ -429,6 +430,7 @@
 	{#if categoryStatistics.length > 0}
 		<FadeInOut>
 			<Card
+				lazy
 				title={$t('routes.organization.budget-statistics.page.categories.title')}
 				titleIconStart={barChartOutline}
 				classList="mt-4"
@@ -447,6 +449,7 @@
 	{#if memberStatistics.length > 0}
 		<FadeInOut>
 			<Card
+				lazy
 				titleIconStart={peopleOutline}
 				title={$t('routes.organization.budget-statistics.page.members.title')}
 				classList="mt-4"
@@ -503,6 +506,7 @@
 
 		{#if topDebits.length > 0}
 			<Card
+				lazy
 				title={$t('routes.organization.budget-statistics.page.top-debits.title')}
 				titleIconStart={trendingDownOutline}
 			>

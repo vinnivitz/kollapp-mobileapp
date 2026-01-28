@@ -14,7 +14,7 @@
 		icon?: string;
 		indexed?: string;
 		indexLabel?: string;
-		lazy?: 'auto' | boolean;
+		lazy?: boolean;
 		readonly?: boolean;
 		subtitle?: string;
 		title?: string;
@@ -34,7 +34,7 @@
 		icon,
 		indexed,
 		indexLabel,
-		lazy = 'auto',
+		lazy = false,
 		readonly,
 		subtitle,
 		title,
@@ -48,21 +48,10 @@
 	void accessible;
 	void icon;
 
-	let cardReference = $state<HTMLIonCardElement>();
-	let detectedLazy = $state<boolean>(true);
-
-	$effect(() => {
-		if (lazy === 'auto' && cardReference) {
-			const hasFormElement = !!cardReference.querySelector('form');
-			detectedLazy = !hasFormElement;
-		}
-	});
-
-	const effectiveLazy = $derived(lazy === 'auto' ? detectedLazy : lazy);
 	const borderStyle = $derived(border ? `1px solid var(--ion-color-${border})` : '0px solid transparent');
 </script>
 
-{#if effectiveLazy}
+{#if lazy}
 	<LazyRender>
 		{@render card()}
 	</LazyRender>
@@ -73,7 +62,6 @@
 {#snippet card()}
 	{#if !!clicked}
 		<ion-card
-			bind:this={cardReference}
 			onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && clicked?.()}
 			role="button"
 			tabindex="0"
@@ -88,14 +76,7 @@
 			{@render content()}
 		</ion-card>
 	{:else}
-		<ion-card
-			bind:this={cardReference}
-			id={indexLabel}
-			data-tour={tourId}
-			{color}
-			class={classList}
-			style={`border: ${borderStyle}`}
-		>
+		<ion-card id={indexLabel} data-tour={tourId} {color} class={classList} style={`border: ${borderStyle}`}>
 			{@render content()}
 		</ion-card>
 	{/if}

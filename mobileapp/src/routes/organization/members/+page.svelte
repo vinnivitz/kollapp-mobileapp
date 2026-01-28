@@ -323,7 +323,12 @@
 <!-- Snippets-->
 
 {#snippet pendingMembersCard()}
-	<Card title={$t('routes.organization.members.page.card.pending-members.title')} border="warning" classList="mt-5">
+	<Card
+		title={$t('routes.organization.members.page.card.pending-members.title')}
+		border="warning"
+		classList="mt-5"
+		lazy
+	>
 		{#each pendingPersonsOfOrganization as person (person.id)}
 			{@render pendingMemberItem(person)}
 		{/each}

@@ -183,7 +183,7 @@
 {/if}
 
 <Popover extended {open} dismissed={handleDismiss} lazy>
-	<Card title={config.title} classList="m-0" lazy={false}>
+	<Card title={config.title} classList="m-0">
 		{#each config.sections as section (section.key)}
 			{#if isChipsSection(section)}
 				{@const currentValue = getDraftValue(section.key, section.defaultValue)}

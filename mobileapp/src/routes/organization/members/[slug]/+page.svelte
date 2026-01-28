@@ -330,7 +330,7 @@
 {/snippet}
 
 {#snippet infoCard()}
-	<Card title={$t('routes.organization.members.slug.page.card.info.title')}>
+	<Card title={$t('routes.organization.members.slug.page.card.info.title')} lazy>
 		<CustomItem clicked={isManager ? onSelectRole : undefined} icon={ribbonOutline}>
 			<div class="flex w-full items-center justify-between">
 				<ion-label>{$t('routes.organization.members.slug.page.card.info.role')}</ion-label>
@@ -341,7 +341,7 @@
 {/snippet}
 
 {#snippet postingStatisticsCard()}
-	<Card title={$t('routes.organization.members.slug.page.card.postings.title')}>
+	<Card title={$t('routes.organization.members.slug.page.card.postings.title')} lazy>
 		<CustomItem icon={cashOutline}>
 			<div class="flex w-full items-center justify-between">
 				<ion-label>{$t('routes.organization.members.slug.page.card.postings.total')}</ion-label>
@@ -370,7 +370,7 @@
 {/snippet}
 
 {#snippet assignedPostingsCard()}
-	<Card title={$t('routes.organization.members.slug.page.card.open-postings.title')}>
+	<Card title={$t('routes.organization.members.slug.page.card.open-postings.title')} lazy>
 		<div class="sticky top-0 left-0 z-10 mb-3 flex flex-row items-center justify-between gap-2">
 			<PostingFilter classList="flex-1" config={filterConfig} />
 			<Button color="tertiary" icon={downloadOutline} clicked={onExportPostings}></Button>
