@@ -3,6 +3,17 @@ import type { QuickAccessItem } from '$lib/models/ui';
 import { fireEvent, render } from '@testing-library/svelte';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+class MockIntersectionObserver {
+	constructor(callback: IntersectionObserverCallback) {
+		// Immediately trigger visibility
+		callback([{ isIntersecting: true } as IntersectionObserverEntry], this as unknown as IntersectionObserver);
+	}
+	disconnect = vi.fn();
+	observe = vi.fn();
+	takeRecords = vi.fn();
+	unobserve = vi.fn();
+}
+vi.stubGlobal('IntersectionObserver', MockIntersectionObserver);
 import QuickAccessItemComponent from '$lib/components/widgets/quick-access/QuickAccessItem.svelte';
 
 // Mock useSortable - ref needs to be a function for {@attach ref}

@@ -6,6 +6,18 @@ import Card from '$lib/components/widgets/ionic/Card.svelte';
 
 const children = createRawSnippet(() => ({ render: () => `<div>Child Content</div>` }));
 
+class MockIntersectionObserver {
+	constructor(callback: IntersectionObserverCallback) {
+		// Immediately trigger visibility
+		callback([{ isIntersecting: true } as IntersectionObserverEntry], this as unknown as IntersectionObserver);
+	}
+	disconnect = vi.fn();
+	observe = vi.fn();
+	takeRecords = vi.fn();
+	unobserve = vi.fn();
+}
+vi.stubGlobal('IntersectionObserver', MockIntersectionObserver);
+
 describe('widgets/ionic/Card', () => {
 	it('renders clickable card with header and children', async () => {
 		const clicked = vi.fn();

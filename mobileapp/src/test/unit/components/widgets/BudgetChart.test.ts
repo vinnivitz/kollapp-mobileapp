@@ -4,6 +4,19 @@ import { TZDate } from '@date-fns/tz';
 import { fireEvent, render, waitFor } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 
+// Mock IntersectionObserver for lazy loading in tests
+class MockIntersectionObserver {
+	constructor(callback: IntersectionObserverCallback) {
+		// Immediately trigger visibility
+		callback([{ isIntersecting: true } as IntersectionObserverEntry], this as unknown as IntersectionObserver);
+	}
+	disconnect = vi.fn();
+	observe = vi.fn();
+	takeRecords = vi.fn();
+	unobserve = vi.fn();
+}
+vi.stubGlobal('IntersectionObserver', MockIntersectionObserver);
+
 import BudgetChart from '$lib/components/widgets/budget/BudgetChart.svelte';
 
 vi.mock('@edde746/svelte-apexcharts', () => {
