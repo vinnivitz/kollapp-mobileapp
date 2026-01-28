@@ -104,7 +104,6 @@
 		titleIconEnd={editMode ? undefined : arrowForwardOutline}
 		tourId={TourStepId.HOME.ORGANIZATION}
 		readonly={editMode}
-		lazy
 	>
 		<ion-note class="flex flex-wrap items-center justify-center gap-3 text-sm">
 			<div class="flex items-center gap-1">
@@ -145,7 +144,6 @@
 		clicked={editMode ? undefined : onNavigateActivity}
 		titleIconEnd={editMode || !activity ? undefined : arrowForwardOutline}
 		readonly={editMode}
-		lazy
 	>
 		{#if activity}
 			<ion-note class="flex flex-wrap items-center justify-center gap-3 text-sm">

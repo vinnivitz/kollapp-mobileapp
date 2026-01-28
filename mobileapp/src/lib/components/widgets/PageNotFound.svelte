@@ -12,7 +12,7 @@
 <div class="text-center">
 	<ion-icon icon={bugOutline} class="text-7xl"></ion-icon>
 </div>
-<Card title={$t('components.widgets.page-not-found.title')} lazy>
+<Card title={$t('components.widgets.page-not-found.title')}>
 	<div class="text-center">
 		<Button
 			fill="solid"

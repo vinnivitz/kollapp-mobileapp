@@ -366,7 +366,7 @@
 
 {#snippet overviewCards()}
 	<div class="grid grid-cols-2">
-		<Card classList="text-center" lazy>
+		<Card classList="text-center">
 			<div class="flex flex-col items-center gap-1 py-2">
 				<ion-icon icon={trendingUpOutline} color="success" class="text-2xl"></ion-icon>
 				<ion-text class="text-xs" color="medium">
@@ -375,7 +375,7 @@
 				<ion-text class="text-lg font-bold" color="success">{formatter.currency(totalCredit)}</ion-text>
 			</div>
 		</Card>
-		<Card classList="text-center" lazy>
+		<Card classList="text-center">
 			<div class="flex flex-col items-center gap-1 py-2">
 				<ion-icon icon={trendingDownOutline} color="danger" class="text-2xl"></ion-icon>
 				<ion-text class="text-xs" color="medium">
@@ -384,7 +384,7 @@
 				<ion-text class="text-lg font-bold" color="danger">{formatter.currency(totalDebit)}</ion-text>
 			</div>
 		</Card>
-		<Card classList="text-center" lazy>
+		<Card classList="text-center">
 			<div class="flex flex-col items-center gap-1 py-2">
 				<ion-icon icon={cardOutline} class="text-2xl"></ion-icon>
 				<ion-text class="text-xs" color="medium">
@@ -395,7 +395,7 @@
 				</ion-text>
 			</div>
 		</Card>
-		<Card classList="text-center" lazy>
+		<Card classList="text-center">
 			<div class="flex flex-col items-center gap-1 py-2">
 				<ion-icon icon={statsChartOutline} class="text-2xl"></ion-icon>
 				<ion-text class="text-xs" color="medium">
@@ -480,6 +480,7 @@
 		{#if topCredits.length > 0}
 			<FadeInOut>
 				<Card
+					lazy
 					title={$t('routes.organization.budget-statistics.page.top-credits.title')}
 					titleIconStart={trendingUpOutline}
 				>

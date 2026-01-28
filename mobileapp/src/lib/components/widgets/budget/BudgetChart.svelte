@@ -166,7 +166,6 @@
 </script>
 
 <Card
-	lazy
 	title={$t('components.widgets.budget-card.heading')}
 	titleIconStart={cashOutline}
 	border="secondary"

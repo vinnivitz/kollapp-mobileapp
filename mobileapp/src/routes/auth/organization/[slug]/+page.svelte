@@ -67,7 +67,7 @@
 <!-- Snippets -->
 
 {#snippet collectiveDetails(organization: OrganizationMinifiedTO)}
-	<Card title={$t('routes.auth.organization.slug.page.card.join.title')} lazy>
+	<Card title={$t('routes.auth.organization.slug.page.card.join.title')}>
 		<InputItem
 			readonly
 			label={$t('routes.auth.organization.slug.page.card.join.form.name')}
@@ -105,7 +105,7 @@
 					</div>
 				{/if}
 			{:else}
-				<Card border="success" lazy>
+				<Card border="success">
 					<div class="flex flex-row items-center justify-center gap-3">
 						<ion-icon size="large" icon={checkboxOutline} color="success"></ion-icon>
 						<ion-note color="success">
@@ -123,7 +123,6 @@
 		title={$t('routes.auth.organization.slug.page.card.invalid-code.title')}
 		titleIconStart={bugOutline}
 		border="danger"
-		lazy
 	>
 		<div class="flex flex-col items-center justify-center gap-4">
 			<ion-text class="text-center">{$t('routes.auth.organization.slug.page.card.invalid-code.info')}</ion-text>

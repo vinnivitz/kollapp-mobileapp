@@ -120,7 +120,6 @@
 	<Card
 		tourId={TourStepId.BUDGET_CATEGORIES.LIST}
 		title={$t('routes.organization.budget-categories.page.category-list.card.title')}
-		lazy
 	>
 		<ion-list>
 			{#each categories as category (category.id)}

@@ -194,7 +194,7 @@
 	}
 </script>
 
-<Card border="secondary" {tourId} titleIconStart={cardOutline} {title} lazy>
+<Card border="secondary" {tourId} titleIconStart={cardOutline} {title}>
 	<div class="flex flex-col items-center justify-center gap-2">
 		<ion-text class="text-xl font-bold" color={balance.balance.startsWith('-') ? 'danger' : 'success'}
 			>{balance.balance}</ion-text

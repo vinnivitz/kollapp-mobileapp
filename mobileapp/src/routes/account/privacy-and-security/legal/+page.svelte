@@ -8,7 +8,7 @@
 </script>
 
 <Layout title={$t('routes.account.privacy-and-security.legal.page.title')} showBackButton>
-	<Card title={$t('routes.account.privacy-and-security.legal.page.card.disclaimer.title')} lazy>
+	<Card title={$t('routes.account.privacy-and-security.legal.page.card.disclaimer.title')}>
 		<h2 class="pb-1">
 			{$t('routes.account.privacy-and-security.legal.page.card.disclaimer.liability-for-content.heading')}
 		</h2>
@@ -29,12 +29,12 @@
 			{$t('routes.account.privacy-and-security.legal.page.card.disclaimer.copyright.content')}
 		</p>
 	</Card>
-	<Card title={$t('routes.account.privacy-and-security.legal.page.card.privacy.title')} lazy>
+	<Card title={$t('routes.account.privacy-and-security.legal.page.card.privacy.title')}>
 		<p>
 			{$t('routes.account.privacy-and-security.legal.page.card.privacy.content')}
 		</p>
 	</Card>
-	<Card title={$t('routes.account.privacy-and-security.legal.page.card.credits.title')} lazy>
+	<Card title={$t('routes.account.privacy-and-security.legal.page.card.credits.title')}>
 		<LabeledItem icon={personOutline} label="Vinzenz Fuhrmann" />
 		<LabeledItem icon={mailOutline} label="mail@kollapp.org" />
 	</Card>

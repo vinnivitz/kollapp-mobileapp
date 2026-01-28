@@ -411,7 +411,6 @@
 	<Card
 		color="light"
 		clicked={() => goto(resolve(`/organization/activities/[slug]`, { slug: activity.id.toString() }))}
-		lazy
 	>
 		<div class="flex flex-col justify-center">
 			<ion-text class="truncate">{activity.name}</ion-text>

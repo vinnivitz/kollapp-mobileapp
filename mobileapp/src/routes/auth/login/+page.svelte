@@ -77,7 +77,7 @@
 	<div class="mb-6">
 		<Welcome />
 	</div>
-	<Card lazy>
+	<Card>
 		{@render loginForm()}
 	</Card>
 </Layout>
@@ -105,7 +105,7 @@
 			/>
 		{/if}
 	{/await}
-	<Card color="light" clicked={() => goto(resolve('/auth/register'))} classList="text-center flex flex-wrap gap-1" lazy>
+	<Card color="light" clicked={() => goto(resolve('/auth/register'))} classList="text-center flex flex-wrap gap-1">
 		<ion-text>{$t('routes.auth.login.page.register.question')}</ion-text>
 		<ion-text color="secondary">{$t('routes.auth.login.page.register.link')}</ion-text>
 	</Card>
@@ -113,7 +113,6 @@
 		color="light"
 		clicked={() => goto(resolve('/auth/reset-password'))}
 		classList="text-center flex flex-wrap gap-1"
-		lazy
 	>
 		<ion-text>{$t('routes.auth.login.page.forgot-password.question')}</ion-text>
 		<ion-text color="secondary">{$t('routes.auth.login.page.forgot-password.link')}</ion-text>

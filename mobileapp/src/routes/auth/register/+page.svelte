@@ -42,7 +42,7 @@
 <!-- Snippets -->
 
 {#snippet joinCard()}
-	<Card title={$t('routes.auth.register.page.card.join.title')} lazy>
+	<Card title={$t('routes.auth.register.page.card.join.title')}>
 		<div class="flex items-center gap-4">
 			<ion-icon icon={mailOpenOutline} size="large" class="flex-none"></ion-icon>
 			<ion-text class="flex-auto">
@@ -87,7 +87,7 @@
 				icon={saveOutline}
 			/>
 		</form>
-		<Card clicked={() => goto(resolve('/auth/login'))} classList="text-center flex flex-wrap gap-1" lazy>
+		<Card clicked={() => goto(resolve('/auth/login'))} classList="text-center flex flex-wrap gap-1">
 			<ion-text>{$t('routes.auth.register.page.card.register.card.login.content')}</ion-text>
 			<ion-text color="secondary">{$t('routes.auth.register.page.card.register.card.login.link')}</ion-text>
 		</Card>

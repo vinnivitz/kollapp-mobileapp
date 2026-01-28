@@ -131,7 +131,7 @@
 <!-- Snippet -->
 
 {#snippet deleteAccountCard()}
-	<Card title={$t('routes.account.delete.page.card.title')} lazy>
+	<Card title={$t('routes.account.delete.page.card.title')}>
 		{#if isManager && lastManagerOrganizations.length > 0}
 			{@render lastManagerCard()}
 		{/if}
@@ -154,7 +154,7 @@
 {/snippet}
 
 {#snippet lastManagerCard()}
-	<Card color="warning" lazy>
+	<Card color="warning">
 		<div class="flex items-center justify-center gap-2">
 			<ion-avatar class="flex items-center justify-center">
 				<ion-icon icon={warningOutline} size="large"></ion-icon>
@@ -172,7 +172,7 @@
 {/snippet}
 
 {#snippet assignedPostingsCard()}
-	<Card color="warning" lazy>
+	<Card color="warning">
 		<div class="flex items-center justify-center gap-2">
 			<ion-avatar class="flex items-center justify-center">
 				<ion-icon icon={warningOutline} size="large"></ion-icon>
