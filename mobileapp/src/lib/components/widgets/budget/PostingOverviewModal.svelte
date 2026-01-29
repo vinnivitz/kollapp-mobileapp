@@ -222,7 +222,6 @@
 	const filteredPostings = $derived.by(() => {
 		const search = searchValue.trim().toLowerCase();
 
-		// Apply search filter even without filterState
 		const searchFiltered =
 			search === ''
 				? stablePostings

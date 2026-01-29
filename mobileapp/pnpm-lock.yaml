@@ -26,6 +26,9 @@ importers:
       '@capacitor/device':
         specifier: ^7.0.2
         version: 7.0.2(@capacitor/core@7.4.4)
+      '@capacitor/file-viewer':
+        specifier: ^2.0.0
+        version: 2.0.0(@capacitor/core@7.4.4)
       '@capacitor/filesystem':
         specifier: ^8.1.0
         version: 8.1.0(@capacitor/core@7.4.4)
@@ -378,6 +381,11 @@ packages:
     resolution: {integrity: sha512-OMGMBjLbh7ApaqW1oOJIV73iyrFK/T5v2MzuQYq3GLT+jnGvCuj/y82Ofq2Fz9/hlJ2fukztPwG1K80jyk0i6w==}
     peerDependencies:
       '@capacitor/core': '>=7.0.0'
+
+  '@capacitor/file-viewer@2.0.0':
+    resolution: {integrity: sha512-QgaujsYfN+27hAZ8iXyT4TOv6oVkrtV/8MYtZIn4Tk7ZqiMEtJrgQGXFB0JfdsUxu54JcrrIeRNFkHgMOsy5uQ==}
+    peerDependencies:
+      '@capacitor/core': '>=8.0.0'
 
   '@capacitor/filesystem@8.1.0':
     resolution: {integrity: sha512-AfawIxQ8xBmKsEn/vEpgurGQB9+hFXRtwEiCXR+SSS0MkTw4bJrvLGnloZ/PblegYefvnay1q079Yz3PQ6y1dA==}
@@ -5995,6 +6003,11 @@ snapshots:
   '@capacitor/device@7.0.2(@capacitor/core@7.4.4)':
     dependencies:
       '@capacitor/core': 7.4.4
+
+  '@capacitor/file-viewer@2.0.0(@capacitor/core@7.4.4)':
+    dependencies:
+      '@capacitor/core': 7.4.4
+      '@capacitor/synapse': 1.0.4
 
   '@capacitor/filesystem@8.1.0(@capacitor/core@7.4.4)':
     dependencies:

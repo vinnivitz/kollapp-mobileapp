@@ -6,12 +6,13 @@ import type {
 	PostingTO
 } from '@kollapp/api-types';
 
+import { FileViewer } from '@capacitor/file-viewer';
 import { Directory, Filesystem } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
 import { TZDate } from '@date-fns/tz';
 import { actionSheetController } from '@ionic/core';
 import { EmailComposer } from 'capacitor-email-composer';
-import { documentOutline, downloadOutline, listOutline, mailOutline, shareOutline } from 'ionicons/icons';
+import { documentOutline, downloadOutline, eyeOutline, listOutline, mailOutline, shareOutline } from 'ionicons/icons';
 import { jsPDF } from 'jspdf';
 import { get } from 'svelte/store';
 
@@ -61,6 +62,11 @@ async function showExportActionSheet(
 	const actionSheet = await actionSheetController.create({
 		buttons: [
 			{
+				handler: () => viewFile(postings, config, format),
+				icon: eyeOutline,
+				text: $t('utility.export-postings.modal.view')
+			},
+			{
 				handler: () => downloadFile(postings, config, format),
 				icon: downloadOutline,
 				text: $t('utility.export-postings.modal.download')
@@ -79,6 +85,34 @@ async function showExportActionSheet(
 		header: $t('utility.export-postings.modal.action-header')
 	});
 	await actionSheet.present();
+}
+
+/**
+ * Opens the file in the device's native file viewer
+ * @param postings The postings to export
+ * @param config The export configuration
+ * @param format The file format (pdf or csv)
+ */
+async function viewFile(postings: PostingTO[], config: ExportPostingsConfig, format: 'csv' | 'pdf'): Promise<void> {
+	const $t = get(t);
+
+	try {
+		const filename = generateFilename(config.organizationName, format);
+		const base64 = format === 'pdf' ? generatePDFBase64(postings, config) : generateCSVBase64(postings, config);
+
+		const writeResult = await Filesystem.writeFile({
+			data: base64,
+			directory: Directory.Cache,
+			path: filename
+		});
+
+		await FileViewer.openDocumentFromLocalPath({
+			path: writeResult.uri
+		});
+	} catch (error) {
+		if (dev) console.info('File viewing not supported on this platform', error);
+		await showAlert($t('utility.export-postings.view.error'));
+	}
 }
 
 async function shareFile(postings: PostingTO[], config: ExportPostingsConfig, format: 'csv' | 'pdf'): Promise<void> {

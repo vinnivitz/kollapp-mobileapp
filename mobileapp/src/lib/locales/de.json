@@ -1383,9 +1383,13 @@
         "csv": "Als CSV exportieren",
         "header": "Buchungen exportieren",
         "action-header": "Was möchtest du tun?",
+        "view": "Anzeigen",
         "download": "Herunterladen",
         "share": "Teilen",
         "email": "Per E-Mail senden"
+      },
+      "view": {
+        "error": "Datei konnte nicht geöffnet werden."
       },
       "share": {
         "error": "Teilen wird auf diesem Gerät nicht unterstützt."
