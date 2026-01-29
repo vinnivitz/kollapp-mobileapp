@@ -17,7 +17,7 @@
 
 	const form = new Form({
 		completed: async () => goto(resolve('/auth/login')),
-		request: async () => featureNotImplementedAlert() as unknown as Promise<ResponseBody<void>>,
+		request: async () => featureNotImplementedAlert() as unknown as Promise<ResponseBody>,
 		schema: resendConfirmationSchema()
 	});
 </script>

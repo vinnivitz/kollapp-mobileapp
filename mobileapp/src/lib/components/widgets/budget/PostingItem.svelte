@@ -24,7 +24,7 @@
 		trendingDownOutline,
 		trendingUpOutline
 	} from 'ionicons/icons';
-	import { number } from 'yup';
+	import { number, ObjectSchema } from 'yup';
 
 	import AmountInputItem from '../ionic/AmountInputItem.svelte';
 	import Card from '../ionic/Card.svelte';
@@ -103,9 +103,10 @@
 	let selectedPostingType = $state<PostingType>(posting.type);
 	let formActions = $state<FormActions<PostingFormModel>>();
 
-	const postingFormSchema = createUpdatePostingSchema().shape({
-		activityId: number().default(0)
-	});
+	const postingFormSchema: ObjectSchema<PostingCreateUpdateRequestTO & { activityId: number }> =
+		createUpdatePostingSchema().shape({
+			activityId: number().default(0)
+		});
 
 	const budgetCategoryItems = $derived<MultiSelectItem[]>(
 		budgetCategories.map((category) => ({
@@ -128,13 +129,14 @@
 		}))
 	);
 
-	const updatePostingForm = new Form<PostingFormModel>({
+	const updatePostingForm = new Form({
 		completed: async ({ actions }) => {
 			await onCompleted?.();
 			editModalOpen = false;
 			actions.setModel(postingFormSchema.getDefault());
 		},
 		exposedActions: (exposedActions) => (formActions = exposedActions),
+		failed: () => (editModalOpen = false),
 		formatters: { amountInCents: formatter.currency },
 		parsers: { amountInCents: parser.currency },
 		request: (model) =>

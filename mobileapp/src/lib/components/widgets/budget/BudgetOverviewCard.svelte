@@ -156,13 +156,14 @@
 	});
 	const isManager = $derived(hasOrganizationRole('ROLE_ORGANIZATION_MANAGER'));
 
-	const createPostingForm = new Form<CreatePostingModel>({
+	const createPostingForm = new Form({
 		completed: async ({ actions }) => {
 			await onCompleted?.();
 			postingCreateModalOpen = false;
 			actions.setModel({ ...createPostingSchema.getDefault(), personOfOrganizationId: getPersonOfOrganizationId() });
 		},
 		exposedActions: (actions) => (formActions = actions),
+		failed: async () => (postingCreateModalOpen = false),
 		formatters: { amountInCents: formatter.currency },
 		parsers: { amountInCents: parser.currency },
 		request: async (model) =>

@@ -16,7 +16,8 @@ class PublicUserService {
 		return customFetch(`${this.base}/signup`, {
 			authorizationType: AuthorizationType.NONE,
 			body: model,
-			method: RequestMethod.POST
+			method: RequestMethod.POST,
+			offlineQueueable: false
 		});
 	};
 
@@ -28,7 +29,8 @@ class PublicUserService {
 		return customFetch(`${this.base}/forgot-password`, {
 			authorizationType: AuthorizationType.NONE,
 			body: model,
-			method: RequestMethod.POST
+			method: RequestMethod.POST,
+			offlineQueueable: false
 		});
 	};
 
@@ -42,6 +44,7 @@ class PublicUserService {
 			authorizationType: AuthorizationType.NONE,
 			body: model,
 			method: RequestMethod.POST,
+			offlineQueueable: false,
 			query: { token }
 		});
 	};

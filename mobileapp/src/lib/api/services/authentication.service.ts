@@ -34,7 +34,8 @@ class AuthenticationService {
 		const response = await customFetch<AuthTokensTO>(`${this.base}/signin`, {
 			authorizationType: AuthorizationType.NONE,
 			body: model,
-			method: RequestMethod.POST
+			method: RequestMethod.POST,
+			offlineQueueable: false
 		});
 		if (StatusCheck.isOK(response.status)) {
 			await authenticationStore.set(response.data);
@@ -61,7 +62,8 @@ class AuthenticationService {
 		return customFetch(`${this.base}/signin`, {
 			authorizationType: AuthorizationType.NONE,
 			body: { password: model.password, username: get(userStore)?.username! } satisfies LoginRequestTO,
-			method: RequestMethod.POST
+			method: RequestMethod.POST,
+			offlineQueueable: false
 		});
 	};
 
@@ -73,6 +75,7 @@ class AuthenticationService {
 	refresh = async (token: string): Promise<ResponseBody<AccessTokenTO>> => {
 		const response = await customFetch<AccessTokenTO>(`${this.base}/refresh`, {
 			authorizationType: AuthorizationType.NONE,
+			offlineQueueable: false,
 			query: { token }
 		});
 		if (StatusCheck.isOK(response.status)) {

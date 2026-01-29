@@ -32,6 +32,7 @@
 				username: $userStore?.username!
 			});
 		},
+		failed: () => (touched = false),
 		onTouched: () => (touched = true),
 		request: async (model: KollappUserUpdateRequestTO) => {
 			currentEmail = $userStore?.email;

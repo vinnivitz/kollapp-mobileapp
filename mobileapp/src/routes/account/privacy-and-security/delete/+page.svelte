@@ -33,6 +33,7 @@
 	const form = new Form({
 		completed: async () => afterAccountDeletion(),
 		exposedActions: (exposedActions) => (actions = exposedActions),
+		failed: () => (showPasswordPrompt = false),
 		request: userService.remove,
 		schema: deleteAccountSchema()
 	});

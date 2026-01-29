@@ -82,6 +82,10 @@
 			updateActivityModelTouched = false;
 		},
 		exposedActions: (actions) => (updateActivityFormActions = actions),
+		failed: () => {
+			updateActivityModelTouched = false;
+			updateActivityModalOpen = false;
+		},
 		onTouched: () => (updateActivityModelTouched = true),
 		request: async (model) => await activityService.update(activity?.id!, model),
 		schema: updateActivitySchema()

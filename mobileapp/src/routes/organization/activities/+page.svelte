@@ -121,6 +121,7 @@
 			actions.setModel(createActivitySchema().getDefault());
 			resetFilters();
 		},
+		failed: () => (createActivityModalOpen = false),
 		request: activityService.create,
 		schema: createActivitySchema()
 	});

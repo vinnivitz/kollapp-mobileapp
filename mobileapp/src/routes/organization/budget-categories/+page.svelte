@@ -37,22 +37,24 @@
 	let createFormActions = $state<FormActions<OrganizationBudgetCategoryRequestTO>>();
 	let updateFormActions = $state<FormActions<OrganizationBudgetCategoryRequestTO>>();
 
-	const createForm = new Form<OrganizationBudgetCategoryRequestTO>({
+	const createForm = new Form({
 		completed: async ({ actions }) => {
 			createModalOpen = false;
 			actions.setModel(budgetCategorySchema().getDefault());
 		},
 		exposedActions: (actions) => (createFormActions = actions),
+		failed: () => (createModalOpen = false),
 		request: budgetCategoryService.create,
 		schema: budgetCategorySchema()
 	});
 
-	const updateForm = new Form<OrganizationBudgetCategoryRequestTO>({
+	const updateForm = new Form({
 		completed: async ({ actions }) => {
 			updateModalOpen = false;
 			actions.setModel(budgetCategorySchema().getDefault());
 		},
 		exposedActions: (actions) => (updateFormActions = actions),
+		failed: () => (updateModalOpen = false),
 		request: async (model) => budgetCategoryService.update(selectedCategory?.id!, model),
 		schema: budgetCategorySchema()
 	});

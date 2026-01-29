@@ -40,7 +40,6 @@
 
 	const form = new Form({
 		completed: async ({ model }) => {
-			isPasswordConfirmed = true;
 			const verified = await verifyBiometricIdentity();
 			if (verified) {
 				await Promise.all([
@@ -53,6 +52,7 @@
 			setToggleValue(true);
 		},
 		exposedActions: (exposedActions) => (actions = exposedActions),
+		failed: () => (isPasswordConfirmed = true),
 		request: authenticationService.verifyPassword,
 		schema: verifyPasswordSchema()
 	});
