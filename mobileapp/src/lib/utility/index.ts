@@ -1,5 +1,6 @@
 export * from './alert.utility';
 export * from './api.utility';
+export * from './app-shortcuts.utility';
 export * from './biometrics.utility';
 export * from './device-calendar.utility';
 export * from './export-postings.utility';
@@ -10,6 +11,5 @@ export * from './offline-queue.utility';
 export * from './parser.utility';
 export * from './routes.utility';
 export * from './storage.utility';
-export * from './tour.utility';
 export * from './tour.utility';
 export * from './ui.utility';

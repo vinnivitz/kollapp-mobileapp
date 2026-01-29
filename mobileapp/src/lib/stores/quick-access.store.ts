@@ -60,6 +60,7 @@ function filterByAccess(items: QuickAccessItem[]): QuickAccessItem[] {
 function createStore(): QuickAccessStoreType {
 	const { subscribe, update } = writable<QuickAccessStoreItem>({
 		editMode: false,
+		initialized: false,
 		items: [],
 		itemsMap: {}
 	});
@@ -79,7 +80,7 @@ function createStore(): QuickAccessStoreType {
 
 		if (stored) {
 			update((state) => {
-				const newState = { ...state, itemsMap: stored };
+				const newState = { ...state, initialized: true, itemsMap: stored };
 				return updateCurrentItems(newState);
 			});
 		} else {
@@ -89,7 +90,7 @@ function createStore(): QuickAccessStoreType {
 				itemsMap[organizationId] = defaultItems;
 			}
 			update((state) => {
-				const newState = { ...state, itemsMap };
+				const newState = { ...state, initialized: true, itemsMap };
 				return updateCurrentItems(newState);
 			});
 			await storeValue(StorageKey.QUICK_ACCESS, itemsMap);
@@ -147,6 +148,7 @@ function createStore(): QuickAccessStoreType {
 	organizationStore.subscribe((organization) => {
 		if (organization) {
 			update((state) => {
+				if (!state.initialized) return state;
 				if (!state.itemsMap[organization.id]) {
 					const defaultItems = SPECIAL_WIDGETS();
 					const newItemsMap = { ...state.itemsMap, [organization.id]: defaultItems };

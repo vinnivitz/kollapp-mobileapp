@@ -23,6 +23,7 @@ dependencies {
     implementation project(':capacitor-push-notifications')
     implementation project(':capacitor-share')
     implementation project(':capacitor-splash-screen')
+    implementation project(':capawesome-capacitor-app-shortcuts')
     implementation project(':capgo-capacitor-native-biometric')
     implementation project(':ebarooni-capacitor-calendar')
     implementation project(':capacitor-email-composer')

@@ -5,6 +5,7 @@ import type { QuickAccessItem } from '$lib/models/ui';
  */
 export type QuickAccessStoreItem = {
 	editMode: boolean;
+	initialized: boolean;
 	items: QuickAccessItem[];
 	itemsMap: QuickAccessItemsMap;
 };

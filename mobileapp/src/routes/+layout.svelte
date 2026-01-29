@@ -26,7 +26,8 @@
 	import { initializeIonic } from '$lib/ionic';
 	import { initialized, t } from '$lib/locales';
 	import { AppStateType } from '$lib/models/ui';
-	import { appStateStore, authenticationStore, layoutStore } from '$lib/stores';
+	import { appStateStore, authenticationStore, layoutStore, quickAccessStore } from '$lib/stores';
+	import { initAppShortcuts } from '$lib/utility';
 
 	let { children } = $props();
 
@@ -52,6 +53,12 @@
 		const state = $appStateStore;
 		if (state === AppStateType.READY || state === AppStateType.ERROR) {
 			SplashScreen.hide();
+		}
+	});
+
+	$effect(() => {
+		if ($appStateStore === AppStateType.READY && $authenticationStore) {
+			void initAppShortcuts(() => quickAccessStore.getItems());
 		}
 	});
 

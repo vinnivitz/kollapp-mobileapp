@@ -1362,7 +1362,7 @@
           },
           "open-postings": {
             "button": {
-              "label": "There are {{value}} transactions assigned to you."
+              "label": "{{value}} transactions are assigned to you."
             }
           }
         },

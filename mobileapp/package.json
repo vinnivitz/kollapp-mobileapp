@@ -91,6 +91,7 @@
 		"@capacitor/push-notifications": "^7.0.3",
 		"@capacitor/share": "^7.0.2",
 		"@capacitor/splash-screen": "^7.0.3",
+		"@capawesome/capacitor-app-shortcuts": "^8.0.0",
 		"@capgo/capacitor-native-biometric": "^7.5.1",
 		"@date-fns/tz": "^1.4.1",
 		"@dnd-kit-svelte/svelte": "^0.1.5",
