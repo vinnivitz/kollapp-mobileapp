@@ -117,6 +117,9 @@
 		breakpoints={breakpoints ? [0, 0.5, 0.75, 1] : undefined}
 		initial-breakpoint={initialBreakPoint}
 		handle-behavior="cycle"
+		role="dialog"
+		aria-modal="true"
+		aria-label={title}
 	>
 		<ion-header>
 			<ion-toolbar>
@@ -128,10 +131,11 @@
 						<ion-button
 							role="button"
 							tabindex="0"
+							aria-label={$t('accessibility.modal.close')}
 							onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && onDismiss()}
 							onclick={onDismiss}
 						>
-							<ion-back-button default-href="/"></ion-back-button>
+							<ion-back-button default-href="/" aria-label={$t('accessibility.modal.close')}></ion-back-button>
 						</ion-button>
 					</ion-buttons>
 				{:else}
@@ -142,6 +146,7 @@
 							color="white"
 							clicked={onDismiss}
 							icon={cancelIcon}
+							ariaLabel={cancelLabel}
 						/>
 					</ion-buttons>
 					<ion-buttons slot="end">
@@ -152,6 +157,7 @@
 							color="white"
 							clicked={onConfirm}
 							icon={confirmIcon}
+							ariaLabel={confirmLabel}
 						/>
 					</ion-buttons>
 				{/if}

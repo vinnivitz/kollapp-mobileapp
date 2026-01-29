@@ -501,8 +501,7 @@
                 "title": "Offene Buchungen",
                 "search-placeholder": "Suchen....",
                 "no-results": "Keine Buchung für „{{value}}“ gefunden",
-                "no-results-filtered": "Keine Buchungen gefunden.",
-                "loading": "Laden..."
+                "no-results-filtered": "Keine Buchungen gefunden."
               }
             },
             "modal": {
@@ -777,9 +776,7 @@
             "no-notes": "Keine neuen Benachrichtigungen"
           },
           "open-postings": {
-            "button": {
-              "label": "Dir sind {{value}} Buchungen zugewiesen."
-            }
+            "button": {}
           }
         },
         "no-collectives-card": {
@@ -1410,5 +1407,24 @@
         "message": "Die Datei {{value}} wurde im internen Speicher des Telefons gespeichert."
       }
     }
+  },
+  "accessibility": {
+    "navigation": {
+      "back": "Zurück",
+      "home": "Zur Startseite",
+      "menu": "Menü öffnen"
+    },
+    "modal": {
+      "close": "Dialog schließen"
+    },
+    "loading": "Inhalt wird geladen",
+    "logo": "Kollapp Logo",
+    "form": {},
+    "actions": {
+      "add": "Hinzufügen",
+      "remove": "Entfernen",
+      "search": "Suchen"
+    },
+    "posting": {}
   }
 }

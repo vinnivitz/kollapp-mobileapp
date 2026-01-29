@@ -7,6 +7,7 @@
 
 	import Button from '$lib/components/widgets/ionic/Button.svelte';
 	import Card from '$lib/components/widgets/ionic/Card.svelte';
+	import { t } from '$lib/locales';
 
 	type Properties = {
 		editMode: boolean;
@@ -54,6 +55,7 @@
 		clicked={() => onClick(item)}
 		border="tertiary"
 		readonly={editMode}
+		ariaLabel={item.label}
 	>
 		<ion-text class="line-clamp-2 text-sm">{item.label}</ion-text>
 	</Card>
@@ -64,6 +66,7 @@
 			classList="absolute top-0 right-0"
 			clicked={() => onRemove(item.id)}
 			icon={closeOutline}
+			ariaLabel={$t('accessibility.actions.remove')}
 		/>
 	{/if}
 </div>

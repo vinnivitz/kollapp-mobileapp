@@ -182,13 +182,23 @@
 				debounce={250}
 				class="absolute transition-transform"
 				color="light"
+				aria-label={$t('accessibility.actions.search')}
 				placeholder={$t('components.widgets.leaflet-map.searchbar.placeholder')}
 				onionInput={(event_: CustomEvent<SearchbarInputEventDetail>) => onSearch(event_.detail?.value ?? '')}
 			></ion-searchbar>
-			<ion-list class="absolute top-13 right-3 left-3 mx-auto rounded-xl">
+			<ion-list
+				class="absolute top-13 right-3 left-3 mx-auto rounded-xl"
+				role="listbox"
+				aria-label={$t('accessibility.actions.search')}
+			>
 				{#each searchItems as item (item.latlng)}
 					{#if item.name}
-						<CustomItem icon={item.icon} color="light" clicked={() => onSearchItemSelection(item.latlng)}>
+						<CustomItem
+							icon={item.icon}
+							color="light"
+							clicked={() => onSearchItemSelection(item.latlng)}
+							ariaLabel={item.name}
+						>
 							<ion-label class="ms-2">{item.name}</ion-label>
 						</CustomItem>
 					{/if}
@@ -199,13 +209,14 @@
 		<ion-fab-button
 			role="button"
 			tabindex="0"
+			aria-label={$t('accessibility.actions.search')}
 			onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && onOpenSearchbar()}
 			size="small"
 			color="light"
 			class="absolute top-1 right-1 z-10"
 			onclick={onOpenSearchbar}
 		>
-			<ion-icon icon={searchOutline}></ion-icon>
+			<ion-icon icon={searchOutline} aria-hidden="true"></ion-icon>
 		</ion-fab-button>
 	{/if}
 {/snippet}

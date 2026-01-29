@@ -7,6 +7,7 @@
 
 	type Properties = {
 		accessible?: OrganizationRole;
+		ariaLabel?: string;
 		border?: Colors;
 		children?: Snippet;
 		classList?: string;
@@ -27,6 +28,7 @@
 
 	let {
 		accessible,
+		ariaLabel,
 		border,
 		children,
 		classList = '',
@@ -51,6 +53,7 @@
 	void icon;
 
 	const borderStyle = $derived(border ? `1px solid var(--ion-color-${border})` : '0px solid transparent');
+	const computedAriaLabel = $derived(ariaLabel ?? title ?? undefined);
 </script>
 
 {#if lazy}
@@ -67,6 +70,7 @@
 			onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && clicked?.()}
 			role="button"
 			tabindex="0"
+			aria-label={computedAriaLabel}
 			style={`pointer-events: ${readonly ? 'none' : 'auto'}; border: ${borderStyle}`}
 			id={indexLabel}
 			data-tour={tourId}

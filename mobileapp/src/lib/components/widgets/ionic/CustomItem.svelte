@@ -7,6 +7,7 @@
 
 	type Properties = {
 		children: Snippet;
+		ariaLabel?: string;
 		badge?: string;
 		badgeColor?: Colors;
 		badgeEnd?: string;
@@ -31,6 +32,7 @@
 	};
 
 	let {
+		ariaLabel,
 		badge,
 		badgeColor = 'danger',
 		badgeEnd,
@@ -85,6 +87,7 @@
 					<!-- svelte-ignore a11y_no_static_element_interactions -->
 					<ion-item-option
 						color={option.color}
+						aria-label={option.label}
 						onclick={() => {
 							option.handler();
 							ionItemSlidingElement?.close();
@@ -120,6 +123,7 @@
 			data-card={card}
 			button={!!clicked && !readonly}
 			role={clicked && !readonly ? 'button' : undefined}
+			aria-label={ariaLabel}
 			tabindex={clicked && !readonly ? 0 : undefined}
 			{color}
 			detail={!!((clicked && !readonly) || slidingOptions) && !iconEnd}
@@ -129,7 +133,7 @@
 			style="--ion-color-shade: var(--border-color) !important;"
 		>
 			{#if icon}
-				<ion-icon {icon} slot="start" color={iconColor}></ion-icon>
+				<ion-icon {icon} slot="start" color={iconColor} aria-hidden="true"></ion-icon>
 			{/if}
 			{#if note}
 				<ion-note slot="end">{note}</ion-note>
@@ -142,9 +146,10 @@
 					class="ms-0"
 					fill="clear"
 					slot="end"
+					aria-label={ariaLabel}
 					onclick={iconClick}
 				>
-					<ion-icon icon={iconEnd} color="secondary" slot="icon-only" size="large"></ion-icon>
+					<ion-icon icon={iconEnd} color="secondary" slot="icon-only" size="large" aria-hidden="true"></ion-icon>
 				</ion-button>
 			{/if}
 			{#if badgeEnd}

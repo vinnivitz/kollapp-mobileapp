@@ -5,6 +5,7 @@
 
 	type Properties = {
 		label: string;
+		ariaLabel?: string;
 		classList?: string;
 		color?: Colors;
 		icon?: string;
@@ -17,6 +18,7 @@
 	};
 
 	let {
+		ariaLabel,
 		classList = '',
 		clicked,
 		color = 'secondary',
@@ -32,6 +34,8 @@
 	// workaround to avoid reference linting error
 	void indexed;
 
+	const computedAriaLabel = $derived(ariaLabel ?? label);
+
 	function onClick(event: KeyboardEvent | MouseEvent): void {
 		event.stopPropagation();
 		clicked?.();
@@ -44,6 +48,8 @@
 	class={classList}
 	{color}
 	data-tour={tourId}
+	aria-label={computedAriaLabel}
+	aria-pressed={selected}
 	style:background-color={selected ? `color-mix(in srgb, var(--ion-color-${color}) 30%, black 0%)` : 'transparent'}
 	outline={!selected}
 	onclick={onClick}
@@ -51,13 +57,13 @@
 >
 	<div class="flex items-center justify-between gap-2">
 		{#if icon}
-			<ion-icon color={iconColor} class="ps-0 text-xs" {icon}></ion-icon>
+			<ion-icon color={iconColor} class="ps-0 text-xs" {icon} aria-hidden="true"></ion-icon>
 		{/if}
 		<ion-text class="text-center">
 			{label}
 		</ion-text>
 		{#if iconEnd}
-			<ion-icon color={iconColor} class="p-0 text-xs" icon={iconEnd}></ion-icon>
+			<ion-icon color={iconColor} class="p-0 text-xs" icon={iconEnd} aria-hidden="true"></ion-icon>
 		{/if}
 	</div>
 </ion-chip>

@@ -9,6 +9,7 @@
 	type Properties = {
 		icon: string;
 		accessible?: OrganizationRole;
+		ariaLabel?: string;
 		buttons?: FabButtonButtons[];
 		classList?: string;
 		color?: Colors;
@@ -22,6 +23,7 @@
 
 	let {
 		accessible,
+		ariaLabel,
 		buttons = [],
 		classList = '',
 		clicked,
@@ -39,6 +41,8 @@
 	// workaround to avoid reference linting error
 	void indexed;
 	void accessible;
+
+	const computedAriaLabel = $derived(ariaLabel ?? indexLabel);
 </script>
 
 <ion-fab
@@ -55,11 +59,12 @@
 		role="button"
 		tabindex="0"
 		onkeydown={(_event: KeyboardEvent) => _event.key === 'Enter' && clicked?.()}
+		aria-label={computedAriaLabel}
 		{color}
 		onclick={clicked}
 		translucent
 	>
-		<ion-icon {icon}></ion-icon>
+		<ion-icon {icon} aria-hidden="true"></ion-icon>
 	</ion-fab-button>
 	{#if buttons.length > 0}
 		<ion-fab-list side="top">

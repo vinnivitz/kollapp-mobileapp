@@ -15,6 +15,7 @@
 		icon: string;
 		label: string;
 		allSelectedText?: string;
+		ariaLabel?: string;
 		classList?: string;
 		disabled?: boolean;
 		hidden?: boolean;
@@ -33,6 +34,7 @@
 
 	let {
 		allSelectedText = $t('components.widgets.ionic.multi-select-item.all-selected'),
+		ariaLabel,
 		changed,
 		classList = '',
 		disabled,
@@ -50,6 +52,8 @@
 		selectAllLabel = $t('components.widgets.ionic.multi-select-item.select-all'),
 		value = []
 	}: Properties = $props();
+
+	const computedAriaLabel = $derived(ariaLabel ?? label);
 
 	let rootElement = $state<HTMLElement>();
 	let internalValue = $state<number[]>(value);
@@ -238,7 +242,16 @@
 </script>
 
 <div bind:this={rootElement} data-name={name} class="contents" class:hidden>
-	<CustomItem {disabled} {readonly} {classList} {icon} clicked={openModal} {name} {hidden}>
+	<CustomItem
+		{disabled}
+		{readonly}
+		{classList}
+		{icon}
+		clicked={openModal}
+		{name}
+		{hidden}
+		ariaLabel={computedAriaLabel}
+	>
 		<div class="flex flex-col">
 			<ion-text class="ms-3 pt-2 text-xs">{label}</ion-text>
 			<ion-text class="my-2 ms-4 truncate">
@@ -284,11 +297,12 @@
 							value={item.data.id}
 							checked={item.selected}
 							color={item.color}
+							aria-label={item.data.label}
 							onionChange={() => toggleItemSelection(item.data.id)}
 						>
 							<div class="flex items-center justify-center gap-2">
 								{#if item.icon}
-									<ion-icon color={item.color} icon={item.icon}></ion-icon>
+									<ion-icon color={item.color} icon={item.icon} aria-hidden="true"></ion-icon>
 								{/if}
 								<ion-text color={item.color ?? 'dark'}>
 									{item.data.label}
@@ -306,10 +320,15 @@
 					<CustomItem>
 						<!-- svelte-ignore a11y_click_events_have_key_events -->
 						<!-- svelte-ignore a11y_no_static_element_interactions -->
-						<ion-radio value={item.data.id} onclick={() => (selectedId = item.data.id)} color={item.color}>
+						<ion-radio
+							value={item.data.id}
+							onclick={() => (selectedId = item.data.id)}
+							color={item.color}
+							aria-label={item.data.label}
+						>
 							<div class="flex items-center justify-center gap-2">
 								{#if item.icon}
-									<ion-icon color={item.color} icon={item.icon}></ion-icon>
+									<ion-icon color={item.color} icon={item.icon} aria-hidden="true"></ion-icon>
 								{/if}
 								<ion-text color={item.color ?? 'dark'}>
 									{item.data.label}

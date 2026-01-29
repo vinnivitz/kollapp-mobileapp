@@ -42,12 +42,14 @@
 				tab={tab.tab}
 				role="tab"
 				tabindex={index}
+				aria-label={tab.label}
+				aria-selected={tab.tab === currentTabName}
 				class:tab-selected={tab.tab === currentTabName}
 				onclick={() => onTabSelect(tab.tab)}
 				onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && onTabSelect(tab.tab)}
 			>
 				<ion-label>{tab.label}</ion-label>
-				<ion-icon icon={tab.icon}></ion-icon>
+				<ion-icon icon={tab.icon} aria-hidden="true"></ion-icon>
 			</ion-tab-button>
 		{/each}
 	</ion-tab-bar>

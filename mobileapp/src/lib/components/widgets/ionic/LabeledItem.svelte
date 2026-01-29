@@ -9,6 +9,7 @@
 	type Properties = {
 		label: string;
 		accessible?: OrganizationRole;
+		ariaLabel?: string;
 		badge?: string;
 		card?: boolean;
 		classList?: string;
@@ -20,6 +21,7 @@
 
 	let {
 		accessible,
+		ariaLabel,
 		badge,
 		card,
 		classList = '',
@@ -36,9 +38,10 @@
 	void accessible;
 
 	const labelColor = $derived(color === 'light' || color === 'white' ? 'dark' : 'white');
+	const computedAriaLabel = $derived(ariaLabel ?? label);
 </script>
 
-<CustomItem {clicked} {card} {color} {transparent} {icon} {classList} {badge}>
+<CustomItem {clicked} {card} {color} {transparent} {icon} {classList} {badge} ariaLabel={computedAriaLabel}>
 	{#if label}
 		<ion-label class="ms-4" color={labelColor}>{label}</ion-label>
 	{/if}

@@ -1061,8 +1061,7 @@
                 "title": "Open Transactions",
                 "search-placeholder": "Search....",
                 "no-results": "No transactions found for \"{{value}}\"",
-                "no-results-filtered": "No transactions found.",
-                "loading": "Loading..."
+                "no-results-filtered": "No transactions found."
               }
             },
             "modal": {
@@ -1357,9 +1356,7 @@
             "no-notes": "No new notifications"
           },
           "open-postings": {
-            "button": {
-              "label": "You have {{value}} assigned transactions."
-            }
+            "button": {}
           }
         },
         "upcoming-activity-card": {
@@ -1412,5 +1409,24 @@
         }
       }
     }
+  },
+  "accessibility": {
+    "navigation": {
+      "back": "Go back",
+      "home": "Go to home page",
+      "menu": "Open menu"
+    },
+    "modal": {
+      "close": "Close dialog"
+    },
+    "loading": "Loading content",
+    "logo": "Kollapp Logo",
+    "form": {},
+    "actions": {
+      "add": "Add",
+      "remove": "Remove",
+      "search": "Search"
+    },
+    "posting": {}
   }
 }

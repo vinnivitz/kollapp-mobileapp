@@ -2,6 +2,7 @@
 	import { type Colors } from '$lib/models/ui';
 
 	type Properties = {
+		ariaLabel?: string;
 		badge?: string;
 		badgeColor?: Colors;
 		classList?: string;
@@ -29,6 +30,7 @@
 		({ icon: string; label?: string } | { label: string; icon?: string });
 
 	let {
+		ariaLabel,
 		badge,
 		badgeColor = 'danger',
 		classList = '',
@@ -50,6 +52,8 @@
 		type
 	}: Properties = $props();
 
+	const computedAriaLabel = $derived(ariaLabel ?? label ?? undefined);
+
 	// workaround to avoid reference linting error
 	void indexed;
 
@@ -66,6 +70,7 @@
 	style={`pointer-events: ${readonly ? 'none' : 'auto'};`}
 	shape={shape === 'round' ? 'round' : undefined}
 	data-tour={tourId}
+	aria-label={computedAriaLabel}
 	{color}
 	{expand}
 	{fill}

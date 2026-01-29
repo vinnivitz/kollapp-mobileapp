@@ -34,11 +34,12 @@
 	void element;
 </script>
 
-<CustomItem {icon} {card} {classList} {hidden}>
+<CustomItem {icon} {card} {classList} {hidden} ariaLabel={label}>
 	<ion-toggle
 		{disabled}
 		bind:this={element}
 		enable-on-off-labels
+		aria-label={label}
 		onionChange={(value: CustomEvent<ToggleChangeEventDetail>) => changed(value.detail.checked)}
 		{checked}
 		class="ms-4"

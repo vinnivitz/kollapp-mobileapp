@@ -113,7 +113,7 @@
 <div data-tour={TourStepId.HOME.QUICK_ACCESS} class="relative mt-5" use:clickOutside={onExitEditMode}>
 	{#if !editMode && dndItems.items && dndItems.items.length > 0}
 		<ion-text color="medium" class="flex flex-row items-center justify-center gap-1">
-			<ion-icon icon={informationCircleOutline}></ion-icon>
+			<ion-icon icon={informationCircleOutline} aria-hidden="true"></ion-icon>
 			<ion-label class="block text-center text-sm">
 				{$t('routes.page.page.quick-access.hint')}
 			</ion-label>
@@ -168,7 +168,7 @@
 			{/each}
 		</div>
 		{#if editMode}
-			<FabButton icon={createOutline} clicked={() => (modalOpen = true)} />
+			<FabButton icon={createOutline} clicked={() => (modalOpen = true)} ariaLabel={$t('accessibility.actions.add')} />
 		{/if}
 
 		<DragOverlay>

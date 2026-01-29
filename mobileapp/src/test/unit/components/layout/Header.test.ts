@@ -56,11 +56,13 @@ describe('Header', () => {
 		});
 
 		it('shows logo and navigates home when clicked', async () => {
-			const { getByAltText, getByRole } = render(Header, {
+			const { container, getByRole } = render(Header, {
 				props: { loading: false, showBackButton: false, title: 'Any' }
 			});
 
-			expect(getByAltText('Logo')).toBeTruthy();
+			const logo = container.querySelector('img');
+			expect(logo).toBeTruthy();
+			expect(logo?.alt).toBe('accessibility.logo');
 
 			const button = getByRole('button');
 			await fireEvent.click(button);

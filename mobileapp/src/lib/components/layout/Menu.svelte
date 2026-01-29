@@ -48,7 +48,7 @@
 	});
 </script>
 
-<ion-menu side="end" content-id="menu" bind:this={menuController}>
+<ion-menu side="end" content-id="menu" bind:this={menuController} aria-label={$t('accessibility.navigation.menu')}>
 	<ion-header>
 		<ion-toolbar>
 			<div class="flex">
@@ -56,6 +56,7 @@
 					class="pt-5"
 					color="light"
 					debounce={100}
+					aria-label={$t('accessibility.actions.search')}
 					placeholder={$t('components.menu.header.toolbar.searchbar.placeholder')}
 					onionInput={onSearch}
 					value={searchValue}
@@ -68,6 +69,7 @@
 					color="light"
 					icon={notificationsOutline}
 					clicked={() => navigate('/account/notifications')}
+					ariaLabel={$t('routes.account.notifications.page.title')}
 				/>
 			</div>
 		</ion-toolbar>
