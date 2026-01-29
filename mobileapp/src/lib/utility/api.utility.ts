@@ -125,7 +125,7 @@ async function handleOfflineQueue<T>(
 	query?: Record<string, string> | undefined
 ): Promise<ResponseBody<T>> {
 	await queueOfflineRequest(originalUrl, method, body, query);
-	return createErrorResponse(StatusCode.SERVICE_UNAVAILABLE, $t('utility.offline-queue.request-queued'), false);
+	return createErrorResponse(StatusCode.SERVICE_UNAVAILABLE, $t('utility.offline-queue.request-queued'), true);
 }
 
 async function handleFetchError<T>(
