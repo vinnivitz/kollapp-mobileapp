@@ -109,10 +109,7 @@ async function handleShortcutClick(shortcutId: string, items: QuickAccessItem[])
 	try {
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
 		await goto(item.route);
-
-		if (item.triggerLabel) {
-			await triggerClickByLabel(item.triggerLabel);
-		}
+		await triggerClickByLabel(item.label);
 	} catch (error) {
 		if (dev) console.error('[AppShortcuts] Navigation failed:', error);
 	}
@@ -130,7 +127,6 @@ export async function initAppShortcutsListener(getItems: () => QuickAccessItem[]
 		await AppShortcuts.removeAllListeners();
 
 		await AppShortcuts.addListener('click', (event) => {
-			if (dev) console.info('[AppShortcuts] Shortcut clicked:', event.shortcutId);
 			handleShortcutClick(event.shortcutId, getItems());
 		});
 	} catch (error) {

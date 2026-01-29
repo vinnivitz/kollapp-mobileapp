@@ -55,6 +55,7 @@ export function getRoleTranslationFromRole(role: OrganizationRole): string {
 /**
  * Triggers a click event on an element with a specific label
  * @param label label of the element to click
+ * @returns {Promise<void>} Promise that resolves when the click event is triggered
  */
 export async function triggerClickByLabel(label: string): Promise<void> {
 	label = label.replaceAll(/['"]/g, '').trim();
