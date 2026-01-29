@@ -8,7 +8,7 @@ import { type AnyObject, object, ObjectSchema, string } from 'yup';
 import { t } from '$lib/locales';
 
 /**
- * Creates a schema for validating the `CreateActivityDto`.
+ * Creates a schema for validating the `ActivityCreationRequestTO`.
  * @returns {ObjectSchema<AnyObject, ActivityCreationRequestTO>} The schema for validating the `ActivityCreationRequestTO`.
  */
 export const createActivitySchema = (): ObjectSchema<ActivityCreationRequestTO> => {

@@ -1,6 +1,6 @@
 /**
  * Data Transfer Object for password verification
  */
-export type PasswordDto = {
+export type PasswordTO = {
 	password: string;
 };

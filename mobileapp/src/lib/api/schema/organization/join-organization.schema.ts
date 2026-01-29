@@ -1,4 +1,4 @@
-import type { JoinOrganizationTO } from '$lib/api/dto';
+import type { CodeTO } from '$lib/api/dto';
 
 import { get } from 'svelte/store';
 import { type AnyObject, object, type ObjectSchema, string } from 'yup';
@@ -6,10 +6,10 @@ import { type AnyObject, object, type ObjectSchema, string } from 'yup';
 import { t } from '$lib/locales';
 
 /**
- * Creates a schema for validating the `JoinOrganizationTO`.
- * @returns {ObjectSchema<JoinOrganizationTO>} The schema for validating the `JoinOrganizationTO`.
+ * Creates a schema for validating the `CodeTO`.
+ * @returns {ObjectSchema<CodeTO>} The schema for validating the `CodeTO`.
  */
-export const joinOrganizationSchema = (): ObjectSchema<JoinOrganizationTO> => {
+export const joinOrganizationSchema = (): ObjectSchema<CodeTO> => {
 	const $t = get(t);
 	return object({
 		code: string()

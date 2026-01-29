@@ -7,6 +7,7 @@ export enum StorageKey {
 	LAYOUT = 'layout',
 	LOCALE = 'locale',
 	MAINTENANCE_SCHEDULE = 'maintenance-schedule',
+	OFFLINE_QUEUE = 'offline-queue',
 	ONLINE = 'online',
 	ORGANIZATION = 'organization',
 	POSITION = 'position',

@@ -1,4 +1,4 @@
-import type { PasswordDto } from '$lib/api/dto';
+import type { PasswordTO } from '$lib/api/dto';
 import type { AccessTokenTO, AuthTokensTO, LoginRequestTO } from '@kollapp/api-types';
 
 import { get } from 'svelte/store';
@@ -57,7 +57,7 @@ class AuthenticationService {
 	 * @param model password model
 	 * @returns {Promise<ResponseBody>} response body
 	 */
-	verifyPassword = async (model: PasswordDto): Promise<ResponseBody> => {
+	verifyPassword = async (model: PasswordTO): Promise<ResponseBody> => {
 		return customFetch(`${this.base}/signin`, {
 			authorizationType: AuthorizationType.NONE,
 			body: { password: model.password, username: get(userStore)?.username! } satisfies LoginRequestTO,

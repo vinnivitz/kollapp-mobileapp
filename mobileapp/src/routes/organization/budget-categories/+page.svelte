@@ -3,7 +3,7 @@
 
 	import { cardOutline, createOutline, starOutline, trashOutline } from 'ionicons/icons';
 
-	import { budgetCategorySchema } from '$lib/api/schema/budget-category';
+	import { budgetCategorySchema } from '$lib/api/schema/budget';
 	import { budgetCategoryService } from '$lib/api/services';
 	import Layout from '$lib/components/layout/Layout.svelte';
 	import FadeInOut from '$lib/components/utility/FadeInOut.svelte';

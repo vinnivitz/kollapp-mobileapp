@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { PasswordDto } from '$lib/api/dto';
+	import type { PasswordTO } from '$lib/api/dto';
 
 	import { fingerPrintOutline, keyOutline, notificationsOutline, receiptOutline, trashOutline } from 'ionicons/icons';
 	import { onMount } from 'svelte';
@@ -36,7 +36,7 @@
 	let isPasswordConfirmed = $state<boolean>(false);
 	let toggle = $state<HTMLIonToggleElement>();
 
-	let actions: FormActions<PasswordDto>;
+	let actions: FormActions<PasswordTO>;
 
 	const form = new Form({
 		completed: async ({ model }) => {

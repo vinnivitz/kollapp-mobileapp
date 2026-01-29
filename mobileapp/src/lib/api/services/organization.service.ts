@@ -1,4 +1,4 @@
-import type { JoinOrganizationTO } from '../dto';
+import type { CodeTO } from '$lib/api/dto';
 import type {
 	OrganizationCreationRequestTO,
 	OrganizationMinifiedTO,
@@ -150,7 +150,7 @@ class OrganizationService {
 	 * @param model The invitation code model.
 	 * @returns {Promise<ResponseBody<OrganizationMinifiedTO>>} The minified organization.
 	 */
-	joinByInvitationCode = async (model: JoinOrganizationTO): Promise<ResponseBody<OrganizationMinifiedTO>> => {
+	joinByInvitationCode = async (model: CodeTO): Promise<ResponseBody<OrganizationMinifiedTO>> => {
 		const response = await customFetch<OrganizationMinifiedTO>(`${this.base}/invitation/${model.code}`, {
 			method: RequestMethod.POST
 		});

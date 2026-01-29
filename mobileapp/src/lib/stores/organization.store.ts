@@ -1,22 +1,11 @@
 import type { OrganizationStore } from '$lib/models/stores';
 import type { ActivityTO, OrganizationMinifiedTO, OrganizationTO, PostingTO } from '@kollapp/api-types';
 
-import { writable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 
 import { organizationService } from '$lib/api/services';
 import { StorageKey } from '$lib/models/storage';
-import {
-	deduplicateRequest,
-	getOrganizationId,
-	getStoredValue,
-	removeStoredValue,
-	startTour,
-	StatusCheck,
-	storeValue
-} from '$lib/utility';
-
-const ORGANIZATION_STORE_INIT_REQUEST_KEY = 'organization-store-init';
-const ORGANIZATION_STORE_UPDATE_REQUEST_KEY = (id: number): string => `organization-store-update-${id}`;
+import { getOrganizationId, getStoredValue, removeStoredValue, startTour, StatusCheck, storeValue } from '$lib/utility';
 
 function createStore(): OrganizationStore {
 	const { set, subscribe } = writable<OrganizationTO | undefined>();
@@ -25,28 +14,29 @@ function createStore(): OrganizationStore {
 	const organizations = writable<OrganizationMinifiedTO[]>([]);
 
 	async function initialize(organizationId?: number): Promise<void> {
-		return deduplicateRequest(ORGANIZATION_STORE_INIT_REQUEST_KEY, async () => {
-			const storedOrganization = await getStoredValue<OrganizationTO>(StorageKey.ORGANIZATION);
-			if (storedOrganization) {
-				organizations.set([storedOrganization]);
-				set(storedOrganization);
-				loadedCache.set(true);
+		const storedOrganization = await getStoredValue<OrganizationTO>(StorageKey.ORGANIZATION);
+		if (storedOrganization) {
+			organizations.set([storedOrganization]);
+			set(storedOrganization);
+			loadedCache.set(true);
+		}
+
+		const response = await organizationService.getAll();
+
+		if (StatusCheck.isOK(response.status)) {
+			const allOrganizations = response.data;
+			organizations.set(allOrganizations);
+
+			organizationId = organizationId ?? storedOrganization?.id ?? allOrganizations[0]?.id;
+
+			await (organizationId ? update(organizationId) : _set());
+			if (get(organizationStore)) {
+				void startTour();
 			}
-
-			const response = await organizationService.getAll();
-
-			if (StatusCheck.isOK(response.status)) {
-				const allOrganizations = response.data;
-				organizations.set(allOrganizations);
-
-				organizationId = organizationId ?? storedOrganization?.id ?? allOrganizations[0]?.id;
-
-				await (organizationId ? update(organizationId) : _set());
-			} else if (StatusCheck.isUnauthorized(response.status)) {
-				await _set();
-			}
-			loadedServer.set(true);
-		});
+		} else if (StatusCheck.isUnauthorized(response.status)) {
+			await _set();
+		}
+		loadedServer.set(true);
 	}
 
 	async function _set(model?: OrganizationTO): Promise<void> {
@@ -62,17 +52,15 @@ function createStore(): OrganizationStore {
 
 	async function update(id?: number): Promise<void> {
 		id = id ?? getOrganizationId()!;
-		return deduplicateRequest(ORGANIZATION_STORE_UPDATE_REQUEST_KEY(id), async () => {
-			const response = await organizationService.getById(id);
-			if (StatusCheck.isOK(response.status)) {
-				await _set(response.data);
-				void startTour();
-			}
-		});
+
+		const response = await organizationService.getById(id);
+		if (StatusCheck.isOK(response.status)) {
+			await _set(response.data);
+		}
 	}
 
 	async function createActivity(activity: ActivityTO): Promise<void> {
-		const organization = await getStoredValue<OrganizationTO>(StorageKey.ORGANIZATION);
+		const organization = get(organizationStore);
 		if (!organization) return;
 
 		organization.activities.push(activity);
@@ -80,7 +68,7 @@ function createStore(): OrganizationStore {
 	}
 
 	async function updateActivity(activity: ActivityTO): Promise<void> {
-		const organization = await getStoredValue<OrganizationTO>(StorageKey.ORGANIZATION);
+		const organization = get(organizationStore);
 		if (!organization) return;
 
 		const activityIndex = organization.activities.findIndex((a) => a.id === activity.id);

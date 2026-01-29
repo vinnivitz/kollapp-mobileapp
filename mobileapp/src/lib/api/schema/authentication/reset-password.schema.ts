@@ -7,7 +7,7 @@ import { t } from '$lib/locales';
 
 /**
  * Creates a schema for validating the `ResetPasswordRequestTO`.
- * @returns {ObjectSchema<ResetPasswordRequestTO>} The schema for validating the `ResetPasswordRequestTO`.
+ * @returns {ObjectSchema<ResetPasswordRequestTO & { confirmPassword: string }>} The schema for validating the `ResetPasswordRequestTO`.
  */
 export const resetPasswordSchema = (): ObjectSchema<ResetPasswordRequestTO & { confirmPassword: string }> => {
 	const $t = get(t);

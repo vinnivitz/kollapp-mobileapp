@@ -249,16 +249,24 @@
 </Card>
 
 <Modal open={postingCreateModalOpen} dismissed={() => (postingCreateModalOpen = false)}>
-	<Card title={getPostingTypeTitle(selectedPostingType)}>
+	<Card
+		iconColor={selectedPostingType === 'CREDIT' ? 'success' : 'danger'}
+		titleIconStart={selectedPostingType === 'CREDIT' ? trendingUpOutline : trendingDownOutline}
+		title={getPostingTypeTitle(selectedPostingType)}
+	>
 		<form use:customForm={createPostingForm}>
 			<div class="mb-3 flex items-center justify-center gap-2">
 				<Chip
 					selected={selectedPostingType === 'CREDIT'}
+					color="success"
+					icon={trendingUpOutline}
 					label={$t('components.budget-overview.modal.credit')}
 					clicked={() => setSelectedPostingType('CREDIT')}
 				/>
 				<Chip
 					selected={selectedPostingType === 'DEBIT'}
+					color="danger"
+					icon={trendingDownOutline}
 					label={$t('components.budget-overview.modal.debit')}
 					clicked={() => setSelectedPostingType('DEBIT')}
 				/>

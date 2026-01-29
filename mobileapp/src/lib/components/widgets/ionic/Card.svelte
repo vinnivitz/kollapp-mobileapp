@@ -12,6 +12,7 @@
 		classList?: string;
 		color?: Colors;
 		icon?: string;
+		iconColor?: Colors;
 		indexed?: string;
 		indexLabel?: string;
 		lazy?: boolean;
@@ -32,6 +33,7 @@
 		clicked,
 		color = border ? 'transparent' : 'light',
 		icon,
+		iconColor,
 		indexed,
 		indexLabel,
 		lazy = false,
@@ -87,13 +89,13 @@
 		<ion-card-header>
 			<ion-card-title class="flex items-center justify-center gap-2 text-center text-xl">
 				{#if titleIconStart}
-					<ion-icon icon={titleIconStart}></ion-icon>
+					<ion-icon icon={titleIconStart} color={iconColor}></ion-icon>
 				{/if}
 				{#if title}
 					<ion-text>{title}</ion-text>
 				{/if}
 				{#if titleIconEnd}
-					<ion-icon icon={titleIconEnd}></ion-icon>
+					<ion-icon icon={titleIconEnd} color={iconColor}></ion-icon>
 				{/if}
 			</ion-card-title>
 			{#if subtitle}

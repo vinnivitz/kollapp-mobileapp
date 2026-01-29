@@ -6,7 +6,7 @@ import { type AnyObject, object, ObjectSchema, string } from 'yup';
 import { t } from '$lib/locales';
 
 /**
- * Creates a schema for validating the `ResetPasswordDto`.
+ * Creates a schema for validating the `ForgotPasswordRequestTO`.
  * @returns {ObjectSchema<ForgotPasswordRequestTO>} The schema for validating the `ForgotPasswordRequestTO`.
  */
 export const forgotPasswordSchema = (): ObjectSchema<ForgotPasswordRequestTO> => {
