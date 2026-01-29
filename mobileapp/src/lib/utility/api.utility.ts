@@ -26,7 +26,7 @@ import {
 	organizationStore,
 	userStore
 } from '$lib/stores';
-import { getStoredValue, showAlert } from '$lib/utility';
+import { getStoredValue, queueOfflineRequest, showAlert } from '$lib/utility';
 
 let refreshPromise: Promise<string | undefined> | undefined;
 
@@ -38,50 +38,26 @@ let refreshPromise: Promise<string | undefined> | undefined;
  */
 export async function customFetch<T = never>(url: string, config?: CustomFetchConfig): Promise<ResponseBody<T>> {
 	const $t = get(t);
+	const originalUrl = url;
 	url = getUrl(url);
 
 	const {
 		authorizationType = AuthorizationType.BEARER,
 		body,
 		method = RequestMethod.GET,
+		offlineQueueable = method !== RequestMethod.GET,
 		query,
 		silentOnError = false,
 		silentOnSuccess = true
 	} = config ?? {};
 
-	function buildHeaders(): Headers {
-		const headers = new Headers();
-		headers.set(HeaderKey.ACCEPT_LANGUAGE, get(localeStore) ?? Locale.DE);
-		if (body) {
-			headers.set(HeaderKey.CONTENT_TYPE, ContentType.JSON);
-		}
-		return headers;
-	}
-
-	function buildOptions(headers: Headers): RequestInit {
-		const options: RequestInit = { headers, method };
-		if (body) {
-			options.body = typeof body === 'string' ? body : JSON.stringify(body);
-		}
-		return options;
-	}
-
-	async function handleUnauthorizedResponse(
-		response: Response,
-		enhancedUrl: string,
-		headers: Headers
-	): Promise<Response | undefined> {
-		if (!StatusCheck.isUnauthorized(response.status)) return response;
-		const newToken = await getNewAuthenticationToken();
-		if (!newToken) return undefined;
-		headers.set(HeaderKey.AUTHORIZATION, getBearerToken(newToken));
-		response = await fetch(enhancedUrl, buildOptions(headers));
-		if (StatusCheck.isUnauthorized(response.status)) return undefined;
-		return response;
+	const isOnline = get(connectionStore);
+	if (isOnline === false && offlineQueueable && method !== RequestMethod.GET) {
+		return handleOfflineQueue($t, originalUrl, method, body, query);
 	}
 
 	try {
-		const headers = buildHeaders();
+		const headers = buildRequestHeaders(body);
 
 		if (authorizationType === AuthorizationType.BEARER) {
 			const token = get(authenticationStore)?.accessToken;
@@ -92,9 +68,9 @@ export async function customFetch<T = never>(url: string, config?: CustomFetchCo
 		}
 
 		const enhancedUrl = await getEnhancedUrl(url, query);
-		let response = await fetch(enhancedUrl, buildOptions(headers));
+		let response = await fetch(enhancedUrl, buildRequestOptions(headers, method, body));
 
-		const handled = await handleUnauthorizedResponse(response, enhancedUrl, headers);
+		const handled = await retryOnUnauthorized(response, enhancedUrl, headers, method, body);
 		if (!handled) {
 			return handleAuthorizationError();
 		}
@@ -104,15 +80,73 @@ export async function customFetch<T = never>(url: string, config?: CustomFetchCo
 
 		return getResponseBody<T>(response, silentOnSuccess, silentOnError, config?.silentOnStatus);
 	} catch (error) {
-		let message = $t('utility.api.error.generic');
-		let status = StatusCode.SERVICE_UNAVAILABLE;
-		if (error instanceof Error) {
-			message = error.message === 'Failed to fetch' ? $t('utility.api.server-not-reachable') : error.message;
-		} else if (error instanceof Response) {
-			status = error.status;
-		}
-		return createErrorResponse(status, message, false);
+		return handleFetchError($t, error, offlineQueueable, method, originalUrl, body, query);
 	}
+}
+
+function buildRequestHeaders(body?: object): Headers {
+	const headers = new Headers();
+	headers.set(HeaderKey.ACCEPT_LANGUAGE, get(localeStore) ?? Locale.DE);
+	if (body) {
+		headers.set(HeaderKey.CONTENT_TYPE, ContentType.JSON);
+	}
+	return headers;
+}
+
+function buildRequestOptions(headers: Headers, method: RequestMethod, body?: object): RequestInit {
+	const options: RequestInit = { headers, method };
+	if (body) {
+		options.body = typeof body === 'string' ? body : JSON.stringify(body);
+	}
+	return options;
+}
+
+async function retryOnUnauthorized(
+	response: Response,
+	enhancedUrl: string,
+	headers: Headers,
+	method: RequestMethod,
+	body?: object
+): Promise<Response | undefined> {
+	if (!StatusCheck.isUnauthorized(response.status)) return response;
+	const newToken = await getNewAuthenticationToken();
+	if (!newToken) return undefined;
+	headers.set(HeaderKey.AUTHORIZATION, getBearerToken(newToken));
+	const retryResponse = await fetch(enhancedUrl, buildRequestOptions(headers, method, body));
+	if (StatusCheck.isUnauthorized(retryResponse.status)) return undefined;
+	return retryResponse;
+}
+
+async function handleOfflineQueue<T>(
+	$t: (key: string) => string,
+	originalUrl: string,
+	method: RequestMethod,
+	body?: object,
+	query?: Record<string, string> | undefined
+): Promise<ResponseBody<T>> {
+	await queueOfflineRequest(originalUrl, method, body, query);
+	return createErrorResponse(StatusCode.SERVICE_UNAVAILABLE, $t('utility.offline-queue.request-queued'), false);
+}
+
+async function handleFetchError<T>(
+	$t: (key: string) => string,
+	error: unknown,
+	offlineQueueable: boolean,
+	method: RequestMethod,
+	originalUrl: string,
+	body?: object,
+	query?: Record<string, string> | undefined
+): Promise<ResponseBody<T>> {
+	if (error instanceof Error && error.message === 'Failed to fetch') {
+		if (offlineQueueable && method !== RequestMethod.GET) {
+			return handleOfflineQueue($t, originalUrl, method, body, query);
+		}
+		return createErrorResponse(StatusCode.SERVICE_UNAVAILABLE, $t('utility.api.server-not-reachable'), false);
+	}
+
+	const status = error instanceof Response ? error.status : StatusCode.SERVICE_UNAVAILABLE;
+	const message = error instanceof Error ? error.message : $t('utility.api.error.generic');
+	return createErrorResponse(status, message, false);
 }
 
 /**

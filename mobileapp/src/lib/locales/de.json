@@ -1254,6 +1254,9 @@
         "no-match": "Muss mit dem Passwort übereinstimmen"
       }
     },
+    "offline-queue": {
+      "request-queued": "Anfrage wird gesendet, sobald du wieder online bist"
+    },
     "storage": {
       "failure": {
         "remove": "Wert konnte nicht entfernt werden",

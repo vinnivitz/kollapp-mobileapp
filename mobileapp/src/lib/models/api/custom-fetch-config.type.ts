@@ -15,6 +15,7 @@ export type CustomFetchConfig =
 
 type BaseCustomFetchConfig = {
 	authorizationType?: AuthorizationType;
+	offlineQueueable?: boolean;
 	query?: Record<string, string>;
 	silentOnError?: boolean;
 	silentOnStatus?: StatusCode[];

@@ -134,7 +134,7 @@
 		tourId={TourStepId.ORGANIZATION.INFO}
 		classList="text-center cursor-pointer"
 		clicked={organizationDescriptionNoteTruncated ? () => (descriptionExpanded = !descriptionExpanded) : undefined}
-		>u
+	>
 		<div class="flex flex-col items-center justify-center gap-3">
 			<ion-text
 				bind:this={organizationDescriptionNote}

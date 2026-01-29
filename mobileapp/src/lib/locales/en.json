@@ -500,6 +500,9 @@
         "no-match": "Must match the password"
       }
     },
+    "offline-queue": {
+      "request-queued": "Request will be sent once you are back online"
+    },
     "storage": {
       "failure": {
         "store": "Failed to store value",
