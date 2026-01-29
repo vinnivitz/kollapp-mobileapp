@@ -501,7 +501,8 @@
                 "title": "Offene Buchungen",
                 "search-placeholder": "Suchen....",
                 "no-results": "Keine Buchung für „{{value}}“ gefunden",
-                "no-results-filtered": "Keine Buchungen gefunden."
+                "no-results-filtered": "Keine Buchungen gefunden.",
+                "loading": "Laden..."
               }
             },
             "modal": {
@@ -776,7 +777,9 @@
             "no-notes": "Keine neuen Benachrichtigungen"
           },
           "open-postings": {
-            "button": {}
+            "button": {
+              "label": "Dir sind {{value}} Buchungen zugeordnet."
+            }
           }
         },
         "no-collectives-card": {

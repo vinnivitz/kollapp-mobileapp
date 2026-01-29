@@ -1065,7 +1065,8 @@
                 "title": "Open Transactions",
                 "search-placeholder": "Search....",
                 "no-results": "No transactions found for \"{{value}}\"",
-                "no-results-filtered": "No transactions found."
+                "no-results-filtered": "No transactions found.",
+                "loading": "Loading..."
               }
             },
             "modal": {
@@ -1360,7 +1361,9 @@
             "no-notes": "No new notifications"
           },
           "open-postings": {
-            "button": {}
+            "button": {
+              "label": "There are {{value}} transactions assigned to you."
+            }
           }
         },
         "upcoming-activity-card": {
