@@ -24,6 +24,7 @@
 	import { SvelteMap } from 'svelte/reactivity';
 
 	import FadeInOut from '$lib/components/utility/FadeInOut.svelte';
+	import StaggeredList from '$lib/components/utility/StaggeredList.svelte';
 	import PostingFilter from '$lib/components/widgets/budget/PostingFilter.svelte';
 	import PostingItem from '$lib/components/widgets/budget/PostingItem.svelte';
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
@@ -362,8 +363,8 @@
 			</div>
 		{:else}
 			<ion-list role="feed">
-				{#each displayedPostings as posting (posting.id)}
-					<FadeInOut>
+				<StaggeredList items={displayedPostings} getKey={(posting) => posting.id}>
+					{#snippet children(posting)}
 						<PostingItem
 							{posting}
 							activity={activityPostingIdMap.get(posting.id)}
@@ -380,8 +381,8 @@
 							{onTransferActivityPosting}
 							{onTransferOrganizationPosting}
 						/>
-					</FadeInOut>
-				{/each}
+					{/snippet}
+				</StaggeredList>
 			</ion-list>
 			<ion-infinite-scroll color="medium" class="mt-3" disabled={!hasMorePostings} onionInfinite={onLoadMore}>
 				<ion-infinite-scroll-content
