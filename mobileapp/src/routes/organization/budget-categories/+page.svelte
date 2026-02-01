@@ -38,22 +38,22 @@
 	let updateFormActions = $state<FormActions<OrganizationBudgetCategoryRequestTO>>();
 
 	const createForm = new Form({
+		actions: (actions) => (createFormActions = actions),
 		completed: async ({ actions }) => {
 			createModalOpen = false;
-			actions.setModel(budgetCategorySchema().getDefault());
+			actions.set(budgetCategorySchema().getDefault());
 		},
-		exposedActions: (actions) => (createFormActions = actions),
 		failed: () => (createModalOpen = false),
 		request: budgetCategoryService.create,
 		schema: budgetCategorySchema()
 	});
 
 	const updateForm = new Form({
+		actions: (actions) => (updateFormActions = actions),
 		completed: async ({ actions }) => {
 			updateModalOpen = false;
-			actions.setModel(budgetCategorySchema().getDefault());
+			actions.set(budgetCategorySchema().getDefault());
 		},
-		exposedActions: (actions) => (updateFormActions = actions),
 		failed: () => (updateModalOpen = false),
 		request: async (model) => budgetCategoryService.update(selectedCategory?.id!, model),
 		schema: budgetCategorySchema()
@@ -81,7 +81,7 @@
 
 	function onEditCategory(category: OrganizationBudgetCategoryResponseTO): void {
 		selectedCategory = category;
-		updateFormActions?.setModel({
+		updateFormActions?.set({
 			defaultCategory: category.defaultCategory,
 			name: category.name
 		});
@@ -97,7 +97,7 @@
 	}
 
 	function onOpenCreateModal(): void {
-		createFormActions?.setModel(budgetCategorySchema().getDefault());
+		createFormActions?.set(budgetCategorySchema().getDefault());
 		createModalOpen = true;
 	}
 </script>
@@ -152,7 +152,7 @@
 					icon={starOutline}
 					label={$t('routes.organization.budget-categories.page.form.default-category')}
 					checked={false}
-					changed={(value) => createFormActions?.updateModelByKey('defaultCategory', value ?? false)}
+					changed={(value) => createFormActions?.patchByKey('defaultCategory', value ?? false)}
 				/>
 			</form>
 		</Card>
@@ -170,7 +170,7 @@
 						label={$t('routes.organization.budget-categories.page.form.default-category')}
 						checked={selectedCategory?.defaultCategory}
 						disabled={selectedCategory?.defaultCategory}
-						changed={(value) => updateFormActions?.updateModelByKey('defaultCategory', value ?? false)}
+						changed={(value) => updateFormActions?.patchByKey('defaultCategory', value ?? false)}
 					/>
 				{/key}
 			</form>

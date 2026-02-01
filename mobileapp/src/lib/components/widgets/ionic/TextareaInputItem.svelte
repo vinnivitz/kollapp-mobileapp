@@ -40,12 +40,12 @@
 		value
 	}: Properties = $props();
 
-	function onChange(event: CustomEvent<TextareaInputEventDetail>): void {
+	function onInput(event: CustomEvent<TextareaInputEventDetail>): void {
 		changed?.(event.detail.value || '');
 	}
 </script>
 
-<CustomItem {color} {icon} {iconEnd} iconClick={inputIconClicked} {card} {classList} {name} {hidden}>
+<CustomItem {color} {icon} {iconEnd} iconClicked={inputIconClicked} {card} {classList} {name} {hidden}>
 	<ion-textarea
 		{readonly}
 		{name}
@@ -58,7 +58,7 @@
 		auto-grow
 		color="secondary"
 		{value}
-		onionInput={onChange}
+		onionInput={onInput}
 	></ion-textarea>
 </CustomItem>
 

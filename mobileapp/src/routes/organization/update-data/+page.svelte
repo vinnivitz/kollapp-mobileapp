@@ -18,22 +18,14 @@
 
 	const form = new Form({
 		completed: async () => (touched = false),
-		exposedActions: (actions) => {
-			actions?.setModel({
-				description: $organizationStore?.description,
-				name: $organizationStore?.name!,
-				place: $organizationStore?.place!
-			});
-		},
 		failed: () => (touched = false),
-		initialModel: {
-			description: $organizationStore!.description,
-			name: $organizationStore!.name,
-			place: $organizationStore!.place
-		},
 		onTouched: () => (touched = true),
 		request: async (model) => organizationService.update($organizationStore?.id!, model),
-		schema: updateOrganizationSchema()
+		schema: updateOrganizationSchema({
+			description: $organizationStore?.description,
+			name: $organizationStore?.name!,
+			place: $organizationStore?.place!
+		})
 	});
 </script>
 

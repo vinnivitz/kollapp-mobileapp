@@ -27,7 +27,8 @@ vi.mock('$lib/utility', async (importOriginal) => {
 		confirmationModal: vi.fn(),
 		customForm: vi.fn(),
 		formatter: {
-			currency: (value: number) => `€${(value / 100).toFixed(2)}`
+			currency: (value: number) => `€${(value / 100).toFixed(2)}`,
+			date: (_date: Date, format?: string) => format ?? '2024-01-01'
 		},
 		getBudgetCategoryNameById: () => 'Category',
 		getPersonOfOrganizationId: () => 1,
@@ -224,7 +225,7 @@ describe('widgets/budget/PostingItem', () => {
 	});
 
 	describe('structure', () => {
-		it('uses Card component', async () => {
+		it('uses CustomItem component', async () => {
 			const { container } = render(PostingItem, {
 				props: {
 					activities: mockActivities as never,
@@ -242,11 +243,12 @@ describe('widgets/budget/PostingItem', () => {
 				}
 			});
 			await tick();
+			await new Promise((resolve) => setTimeout(resolve, 0));
 
-			expect(container.querySelector('ion-card')).toBeTruthy();
+			expect(container.querySelector('ion-item')).toBeTruthy();
 		});
 
-		it('has chip elements', async () => {
+		it('has ion-text elements', async () => {
 			const { container } = render(PostingItem, {
 				props: {
 					activities: mockActivities as never,
@@ -264,8 +266,9 @@ describe('widgets/budget/PostingItem', () => {
 				}
 			});
 			await tick();
+			await new Promise((resolve) => setTimeout(resolve, 0));
 
-			expect(container.querySelector('ion-chip')).toBeTruthy();
+			expect(container.querySelector('ion-text')).toBeTruthy();
 		});
 	});
 
@@ -277,7 +280,7 @@ describe('widgets/budget/PostingItem', () => {
 				props: {
 					activities: mockActivities as never,
 					budgetCategories: mockBudgetCategories as never,
-					onCompleted,
+					completed: onCompleted,
 					onDeleteActivityPosting,
 					onDeleteOrganizationPosting,
 					onEditEnd,

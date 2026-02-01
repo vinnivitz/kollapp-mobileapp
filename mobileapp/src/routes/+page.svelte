@@ -168,7 +168,7 @@
 	budgetCategories={$organizationStore?.budgetCategories!}
 	personsOfOrganization={$organizationStore?.personsOfOrganization!}
 	postings={userPostings}
-	onCompleted={onPostingActionCompleted}
+	completed={onPostingActionCompleted}
 	showPersonOfOrganizationFilter={false}
 	onUpdateOrganizationPosting={budgetService.updateOrganizationPosting}
 	onUpdateActivityPosting={budgetService.updateActivityPosting}

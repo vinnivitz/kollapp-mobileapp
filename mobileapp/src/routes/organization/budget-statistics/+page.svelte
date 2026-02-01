@@ -9,7 +9,7 @@
 
 	import { TZDate } from '@date-fns/tz';
 	import Chart from '@edde746/svelte-apexcharts';
-	import { format, startOfMonth } from 'date-fns';
+	import { startOfMonth } from 'date-fns';
 	import {
 		analyticsOutline,
 		barChartOutline,
@@ -139,8 +139,8 @@
 
 		for (const posting of filteredPostings) {
 			const date = new TZDate(posting.date);
-			const monthKey = format(startOfMonth(date), 'yyyy-MM');
-			const monthLabel = format(date, 'MMM yyyy');
+			const monthKey = formatter.date(startOfMonth(date), 'yyyy-MM');
+			const monthLabel = formatter.date(date, 'MMM yyyy');
 
 			if (!monthMap.has(monthKey)) {
 				monthMap.set(monthKey, { credit: 0, debit: 0, month: monthLabel });

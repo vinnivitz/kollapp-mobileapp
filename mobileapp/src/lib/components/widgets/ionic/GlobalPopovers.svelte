@@ -11,13 +11,15 @@
 <Popover
 	open={$datetimeInputItem.open}
 	extended
-	dismissed={() => datetimeInputItem.update((item) => ({ ...item, open: false }))}
+	dismissed={() => {
+		datetimeInputItem.update((item) => ({ ...item, open: false }));
+		$datetimeInputItem.dismissed?.();
+	}}
 >
 	<div class="text-center">
 		<Datetime
 			value={$datetimeInputItem.value}
 			applied={$datetimeInputItem.applied}
-			dismissed={$datetimeInputItem.dismissed}
 			type={$datetimeInputItem.type}
 			min={$datetimeInputItem.min}
 			max={$datetimeInputItem.max}

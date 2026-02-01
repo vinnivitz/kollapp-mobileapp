@@ -21,12 +21,12 @@ describe('widgets/ionic/DatetimeInputItem', () => {
 		expect(set).toHaveBeenCalled();
 	});
 
-	it('dispatches customChange when name is set via applied callback', async () => {
+	it('dispatches ionInput when name is set via applied callback', async () => {
 		const { container } = render(DatetimeInputItem, { props: { label: 'When', name: 'when' } });
 		const hostDiv = container.querySelector('div') as HTMLDivElement;
 		type ChangeDetail = { key: string; value: string };
 		const events: CustomEvent<ChangeDetail>[] = [];
-		hostDiv.addEventListener('customChange', ((_event: Event) =>
+		hostDiv.addEventListener('ionInput', ((_event: Event) =>
 			events.push(_event as CustomEvent<ChangeDetail>)) as EventListener);
 
 		const item = container.querySelector('ion-item')!;
@@ -90,15 +90,13 @@ describe('widgets/ionic/DatetimeInputItem', () => {
 		expect(div).toBeTruthy();
 	});
 
-	it('renders hidden input when name is provided', () => {
+	it('renders with data-name attribute when name is provided', () => {
 		const { container } = render(DatetimeInputItem, {
 			props: { label: 'Date', name: 'dateField' }
 		});
 
-		const hiddenInput = container.querySelector('ion-input[name="dateField"]');
-		expect(hiddenInput).toBeTruthy();
-		expect(hiddenInput?.getAttribute('style')).toContain('display');
-		expect(hiddenInput?.getAttribute('style')).toContain('none');
+		const divWithName = container.querySelector('div[data-name="dateField"]');
+		expect(divWithName).toBeTruthy();
 	});
 
 	it('passes min and max to the datetime popover', async () => {

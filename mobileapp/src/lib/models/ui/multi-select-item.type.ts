@@ -5,9 +5,9 @@ import type { Colors } from '$lib/models/ui';
  */
 export type MultiSelectItem = {
 	data: MultiSelectItemData;
-	selected: boolean;
 	color?: Colors;
 	icon?: string;
+	selected?: boolean;
 };
 
 /**

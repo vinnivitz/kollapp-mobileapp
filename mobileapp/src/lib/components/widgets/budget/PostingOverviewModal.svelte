@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { ResponseBody } from '$lib/models/api';
 	import type { ExportPostingsConfig } from '$lib/models/export-postings';
-	import type { FilterConfig, MultiSelectItem } from '$lib/models/ui';
+	import type { FilterChipOption, FilterConfig, MultiSelectItem } from '$lib/models/ui';
 	import type {
 		ActivityTO,
 		OrganizationBudgetCategoryResponseTO,
@@ -28,7 +28,7 @@
 	import PostingItem from '$lib/components/widgets/budget/PostingItem.svelte';
 	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
 	import { t } from '$lib/locales';
-	import { chipMultiSection, dateRangeSection, multiSelectSection } from '$lib/models/ui';
+	import { chipMultiSection, chipSection, dateRangeSection, multiSelectSection } from '$lib/models/ui';
 	import {
 		exportPostings,
 		getBudgetCategoryNameById,
@@ -36,12 +36,15 @@
 		getUsernameByPersonOfOrganizationId
 	} from '$lib/utility';
 
+	type SortKey = 'activity' | 'category' | 'date' | 'personOfOrganization' | 'purpose';
+
 	type PostingsFilterState = {
 		activityIds: number[];
 		budgetCategoryIds: number[];
 		dateRange: { from: string; to: string };
 		personOfOrganizationIds: number[];
 		postingTypes: PostingType[];
+		sortBy: SortKey;
 	};
 
 	type Properties = {
@@ -67,15 +70,15 @@
 			postingId: number,
 			model: PostingCreateUpdateRequestTO
 		) => Promise<ResponseBody<PostingTO>>;
-		onCompleted?: () => Promise<void> | void;
+		completed?: () => Promise<void> | void;
 	};
 
 	let {
 		activities,
 		activity,
 		budgetCategories,
+		completed,
 		dismissed,
-		onCompleted,
 		onDeleteActivityPosting,
 		onDeleteOrganizationPosting,
 		onTransferActivityPosting,
@@ -97,6 +100,7 @@
 	let filterState = $state<PostingsFilterState>();
 	let isEditing = $state<boolean>(false);
 	let stablePostings = $state<PostingTO[]>([]);
+	let sortBy = $state<SortKey>('date');
 
 	$effect(() => {
 		if (!isEditing) {
@@ -138,7 +142,10 @@
 	]);
 
 	const filterConfig = $derived<FilterConfig<PostingsFilterState>>({
-		onApply: (state) => (filterState = state),
+		onApply: (state) => {
+			filterState = state;
+			sortBy = state.sortBy;
+		},
 		searchbar: {
 			onSearch: (value) => (searchValue = value),
 			placeholder: $t('components.posting-overview.search.placeholder'),
@@ -161,6 +168,27 @@
 						label: $t('components.posting-overview.filter.debit'),
 						value: 'DEBIT'
 					}
+				]
+			}),
+			chipSection<SortKey>('sortBy', {
+				defaultValue: 'date',
+				label: $t('components.posting-overview.filter.sort.label'),
+				options: [
+					{ label: $t('components.posting-overview.filter.sort.date'), value: 'date' },
+					{ label: $t('components.posting-overview.filter.sort.purpose'), value: 'purpose' },
+					{
+						label: $t('components.posting-overview.filter.sort.person-of-organization'),
+						value: 'personOfOrganization'
+					},
+					{ label: $t('components.posting-overview.filter.sort.category'), value: 'category' },
+					...(showActivityFilter && activities.length > 0
+						? [
+								{
+									label: $t('components.posting-overview.filter.sort.activity'),
+									value: 'activity'
+								} satisfies FilterChipOption<SortKey>
+							]
+						: [])
 				]
 			}),
 			dateRangeSection('dateRange', {
@@ -272,9 +300,42 @@
 		});
 	});
 
-	const displayedPostings = $derived(filteredPostings.slice(0, displayCount));
+	const sortedPostings = $derived.by(() => {
+		return [...filteredPostings].toSorted((filteredPostingA, filteredPostingB) => {
+			switch (sortBy) {
+				case 'date': {
+					return new TZDate(filteredPostingB.date).getTime() - new TZDate(filteredPostingA.date).getTime();
+				}
+				case 'purpose': {
+					return filteredPostingA.purpose.localeCompare(filteredPostingB.purpose);
+				}
+				case 'personOfOrganization': {
+					const personOfOrganizationA =
+						getUsernameByPersonOfOrganizationId(filteredPostingA.personOfOrganizationId) ?? '';
+					const personOfOrganizationB =
+						getUsernameByPersonOfOrganizationId(filteredPostingB.personOfOrganizationId) ?? '';
+					return personOfOrganizationA.localeCompare(personOfOrganizationB);
+				}
+				case 'category': {
+					const categoryA = getBudgetCategoryNameById(filteredPostingA.organizationBudgetCategoryId);
+					const categoryB = getBudgetCategoryNameById(filteredPostingB.organizationBudgetCategoryId);
+					return categoryA.localeCompare(categoryB);
+				}
+				case 'activity': {
+					const activityA = activityPostingIdMap.get(filteredPostingA.id)?.name ?? '';
+					const activityB = activityPostingIdMap.get(filteredPostingB.id)?.name ?? '';
+					return activityA.localeCompare(activityB);
+				}
+				default: {
+					return 0;
+				}
+			}
+		});
+	});
 
-	const hasMorePostings = $derived(displayCount < filteredPostings.length);
+	const displayedPostings = $derived(sortedPostings.slice(0, displayCount));
+
+	const hasMorePostings = $derived(displayCount < sortedPostings.length);
 
 	$effect(() => {
 		if (!open) {
@@ -287,6 +348,7 @@
 		if (open && isLoading) {
 			filterState = undefined;
 			searchValue = '';
+			sortBy = 'date';
 		}
 	});
 
@@ -324,6 +386,13 @@
 		};
 
 		exportPostings(filteredPostings, config);
+	}
+
+	function onEditEnd(dismissParent?: boolean): void {
+		isEditing = false;
+		if (dismissParent) {
+			open = false;
+		}
 	}
 </script>
 
@@ -370,9 +439,9 @@
 							{activities}
 							{budgetCategories}
 							{personsOfOrganization}
-							onCompleted={async () => onCompleted?.()}
+							completed={async () => completed?.()}
 							onEditStart={() => (isEditing = true)}
-							onEditEnd={() => (isEditing = false)}
+							{onEditEnd}
 							{onDeleteActivityPosting}
 							{onDeleteOrganizationPosting}
 							{onUpdateActivityPosting}

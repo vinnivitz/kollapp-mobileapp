@@ -16,11 +16,11 @@
 
 	const form = new Form({
 		completed: async () => goto(resolve('/account')),
-		customValidators: {
-			confirmNewPassword: passwordConfirmationValidator('newPassword', 'confirmNewPassword')
-		},
 		request: async (model) => userService.changePassword(model),
-		schema: changePasswordSchema()
+		schema: changePasswordSchema(),
+		validators: {
+			confirmNewPassword: passwordConfirmationValidator('newPassword', 'confirmNewPassword')
+		}
 	});
 </script>
 

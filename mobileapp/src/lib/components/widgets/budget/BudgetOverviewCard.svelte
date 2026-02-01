@@ -36,14 +36,7 @@
 	import MultiSelectInputItem from '$lib/components/widgets/ionic/MultiSelectInputItem.svelte';
 	import { t } from '$lib/locales';
 	import { Form, type FormActions, type MultiSelectItem } from '$lib/models/ui';
-	import {
-		customForm,
-		formatter,
-		getPersonOfOrganizationId,
-		getUserId,
-		hasOrganizationRole,
-		parser
-	} from '$lib/utility';
+	import { customForm, formatter, getPersonOfOrganizationId, getUserId, hasOrganizationRole } from '$lib/utility';
 
 	type Balance = {
 		balance: string;
@@ -128,13 +121,17 @@
 
 	const activityItems = $derived<MultiSelectItem[]>([
 		...activities.map((activityItem) => ({
-			data: { id: activityItem.id, label: activityItem.name },
-			selected: activityItem.id === activity?.id
+			data: { id: activityItem.id, label: activityItem.name }
 		})),
-		{ data: { id: 0, label: $t('components.budget-overview.modal.activity.none') }, selected: !activity }
+		{ data: { id: 0, label: $t('components.budget-overview.modal.activity.none') } }
 	]);
 
-	const createPostingSchema = createUpdatePostingSchema().shape({ activityId: number().default(0) });
+	const createPostingSchema = createUpdatePostingSchema({
+		organizationBudgetCategoryId: budgetCategories.find((category) => category.defaultCategory)?.id,
+		personOfOrganizationId: getPersonOfOrganizationId()
+	}).shape({
+		activityId: number().default(activity?.id ?? 0)
+	});
 
 	let postingCreateModalOpen = $state<boolean>(false);
 	let postingOverviewModalOpen = $state<boolean>(false);
@@ -157,15 +154,13 @@
 	const isManager = $derived(hasOrganizationRole('ROLE_ORGANIZATION_MANAGER'));
 
 	const createPostingForm = new Form({
+		actions: (actions) => (formActions = actions),
 		completed: async ({ actions }) => {
 			await onCompleted?.();
 			postingCreateModalOpen = false;
-			actions.setModel({ ...createPostingSchema.getDefault(), personOfOrganizationId: getPersonOfOrganizationId() });
+			actions.set(createPostingSchema.getDefault());
 		},
-		exposedActions: (actions) => (formActions = actions),
 		failed: async () => (postingCreateModalOpen = false),
-		formatters: { amountInCents: formatter.currency },
-		parsers: { amountInCents: parser.currency },
 		request: async (model) =>
 			model.activityId > 0 ? onCreateActivityPosting(model.activityId, model) : onCreateOrganizationPosting(model),
 		schema: createPostingSchema
@@ -175,17 +170,13 @@
 
 	function onOpenCreatePosting(): void {
 		selectedPostingType = createPostingForm.model.type;
-		formActions?.setModel({
-			...createPostingSchema.getDefault(),
-			activityId: activity?.id ?? 0,
-			personOfOrganizationId: getPersonOfOrganizationId()
-		});
+		formActions?.set(createPostingSchema.getDefault());
 		postingCreateModalOpen = true;
 	}
 
 	function setSelectedPostingType(type: PostingType): void {
 		selectedPostingType = type;
-		formActions?.updateModelByKey('type', type);
+		formActions?.patchByKey('type', type);
 	}
 
 	function getPostingTypeTitle(type: PostingType): string {
@@ -314,7 +305,7 @@
 	{activities}
 	{budgetCategories}
 	{personsOfOrganization}
-	{onCompleted}
+	completed={onCompleted}
 	{onUpdateOrganizationPosting}
 	{onUpdateActivityPosting}
 	{onTransferOrganizationPosting}

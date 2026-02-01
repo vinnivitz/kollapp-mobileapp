@@ -4,7 +4,6 @@
 
 	import { TZDate } from '@date-fns/tz';
 	import { actionSheetController } from '@ionic/core';
-	import { format } from 'date-fns';
 	import {
 		albumsOutline,
 		cardOutline,
@@ -243,7 +242,7 @@
 	});
 
 	function getMinPostingDate(): string {
-		if (stablePostings.length === 0) return format(new TZDate(), 'yyyy-MM-dd');
+		if (stablePostings.length === 0) return formatter.date(new TZDate(), 'yyyy-MM-dd');
 		let min = stablePostings[0]!.date;
 		for (const posting of stablePostings) {
 			if (posting.date < min) min = posting.date;
@@ -252,7 +251,7 @@
 	}
 
 	function getMaxPostingDate(): string {
-		if (stablePostings.length === 0) return format(new TZDate(), 'yyyy-MM-dd');
+		if (stablePostings.length === 0) return formatter.date(new TZDate(), 'yyyy-MM-dd');
 		let max = stablePostings[0]!.date;
 		for (const posting of stablePostings) {
 			if (posting.date > max) max = posting.date;

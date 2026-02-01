@@ -36,9 +36,10 @@
 	let isPasswordConfirmed = $state<boolean>(false);
 	let toggle = $state<HTMLIonToggleElement>();
 
-	let actions: FormActions<PasswordTO>;
+	let formActions: FormActions<PasswordTO>;
 
 	const form = new Form({
+		actions: (actions) => (formActions = actions),
 		completed: async ({ model }) => {
 			const verified = await verifyBiometricIdentity();
 			if (verified) {
@@ -51,7 +52,6 @@
 			onPasswordPromptDismiss();
 			setToggleValue(true);
 		},
-		exposedActions: (exposedActions) => (actions = exposedActions),
 		failed: () => (isPasswordConfirmed = true),
 		request: authenticationService.verifyPassword,
 		schema: verifyPasswordSchema()
@@ -73,7 +73,7 @@
 	}
 
 	async function onPasswordPromptDismiss(): Promise<void> {
-		actions.setModel(loginSchema().getDefault());
+		formActions.set(loginSchema().getDefault());
 		showPasswordPrompt = false;
 		if (!isPasswordConfirmed) {
 			setToggleValue(false);

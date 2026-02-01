@@ -68,7 +68,7 @@
 	});
 </script>
 
-<CustomItem {card} {color} {icon} iconEnd={inputIcon} iconClick={inputIconClicked} {name} {hidden}>
+<CustomItem {card} {color} {icon} iconEnd={inputIcon} iconClicked={inputIconClicked} {name} {hidden}>
 	<ion-input
 		{inputmode}
 		bind:this={element}

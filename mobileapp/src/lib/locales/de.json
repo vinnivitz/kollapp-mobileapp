@@ -1122,7 +1122,7 @@
           "title": "Buchung bearbeiten",
           "credit": "Einnahme",
           "debit": "Ausgabe",
-          "purpose": "Verwendungszweck",
+          "purpose": "Zweck",
           "amount": "Betrag",
           "date": "Datum",
           "member": {
@@ -1148,6 +1148,14 @@
         "credit": "Einnahme",
         "debit": "Ausgabe",
         "date-range": "Zeitraum",
+        "sort": {
+          "label": "Sortieren nach",
+          "date": "Datum",
+          "purpose": "Zweck",
+          "person-of-organization": "Mitglied",
+          "category": "Kategorie",
+          "activity": "Veranstaltung"
+        },
         "person": {
           "all-selected": "Alle Mitglieder ausgewählt",
           "select": "Ausgewählte Mitglieder",

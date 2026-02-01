@@ -19,6 +19,7 @@
 		classList?: string;
 		disabled?: boolean;
 		hidden?: boolean;
+		iconEnd?: string;
 		items?: MultiSelectItem[];
 		multiple?: boolean;
 		noneSelectedText?: string;
@@ -27,6 +28,7 @@
 		searchPlaceholder?: string;
 		selectAllIcon?: string;
 		selectAllLabel?: string;
+		iconClicked?: () => void;
 	} & (
 		| { name: string; changed?: never; value?: never }
 		| { name?: never; value?: number[]; changed?: (ids: number[]) => void }
@@ -40,6 +42,8 @@
 		disabled,
 		hidden = false,
 		icon,
+		iconClicked,
+		iconEnd,
 		items = [],
 		label,
 		multiple = true,
@@ -55,18 +59,32 @@
 
 	const computedAriaLabel = $derived(ariaLabel ?? label);
 
-	let rootElement = $state<HTMLElement>();
-	let internalValue = $state<number[]>(value);
+	let rootElement = $state<HTMLDivElement>();
 
 	let modalOpen = $state<boolean>(false);
-	let selectedId = $state<number>();
-	let appliedSelectedId = $state<number>();
 	let searchValue = $state<string>('');
 	let draftSelectedIds = $state<Set<number>>(new Set());
 
-	const currentValue = $derived(name ? internalValue : value);
+	let formValue = $state<number[]>();
 
-	const effectiveValue = $derived(getEffectiveValue());
+	const selectedFromItems = $derived.by(() => {
+		if (multiple) {
+			return items.filter((item) => item.selected).map((item) => item.data.id);
+		}
+		const selected = items.find((item) => item.selected);
+		return selected ? [selected.data.id] : [];
+	});
+
+	const currentValue = $derived.by(() => {
+		if (name) {
+			return formValue ?? [];
+		}
+		return value.length > 0 ? value : selectedFromItems;
+	});
+
+	const appliedSelectedId = $derived(currentValue[0]);
+	let selectedId = $state<number>();
+
 	const visibleItems = $derived(
 		search && searchValue.trim().length > 0
 			? items.filter((item) => item.data.label.toLowerCase().includes(searchValue.trim().toLowerCase()))
@@ -86,48 +104,55 @@
 	$effect(() => {
 		if (!name || !rootElement) return;
 
-		rootElement.addEventListener('modelUpdate', modelUpdateHandler);
-		return () => rootElement?.removeEventListener('modelUpdate', modelUpdateHandler);
+		rootElement.addEventListener('formUpdate', formUpdateHandler);
+		return () => rootElement?.removeEventListener('formUpdate', formUpdateHandler);
 	});
 
 	$effect(() => {
-		if (!name) {
-			internalValue = value;
-		}
-
 		if (multiple && !modalOpen) {
 			draftSelectedIds = new Set(currentValue);
 		}
+	});
 
+	$effect(() => {
 		if (!multiple) {
-			const explicit = currentValue[0];
-			appliedSelectedId = explicit === undefined ? effectiveValue[0] : explicit;
-
 			selectedId = appliedSelectedId;
 		}
 	});
 
-	function modelUpdateHandler(event: Event): void {
-		return onModelUpdate(event as CustomEvent);
+	function formUpdateHandler(event: Event): void {
+		onFormUpdate(event as CustomEvent);
 	}
 
-	function getEffectiveValue(): number[] {
+	function onFormUpdate(event: CustomEvent): void {
+		if (!name) return;
+		const next = event.detail?.value as unknown;
+
 		if (multiple) {
-			return currentValue;
+			if (Array.isArray(next)) {
+				formValue = next.map(Number).filter((v) => Number.isFinite(v) && v > 0);
+			} else if (typeof next === 'string') {
+				formValue = next
+					.split(',')
+					.map((v) => Number(v.trim()))
+					.filter((v) => Number.isFinite(v) && v > 0);
+			} else if (typeof next === 'number') {
+				formValue = next > 0 ? [next] : [];
+			} else {
+				formValue = [];
+			}
+			return;
 		}
-		const explicit = currentValue[0];
-		if (explicit !== undefined) return [explicit];
 
-		const firstSelected = items.find((item) => item.selected)?.data.id;
-		return firstSelected === undefined ? [] : [firstSelected];
-	}
-
-	function onSearch(event: CustomEvent): void {
-		searchValue = event.detail.value ?? '';
-	}
-
-	function toggleFilterItemsSelection(selected?: boolean): void {
-		draftSelectedIds = selected ? new Set(items.map((item) => item.data.id)) : new Set<number>();
+		let single: number;
+		if (typeof next === 'number') {
+			single = next;
+		} else if (typeof next === 'string') {
+			single = Number(next);
+		} else {
+			single = 0;
+		}
+		formValue = Number.isFinite(single) && single > 0 ? [single] : [];
 	}
 
 	function getDisplayedFilteredValues(): string {
@@ -136,7 +161,7 @@
 			return selected ? selected.data.label : noneSelectedText;
 		}
 
-		const selectedItems = items.filter((item) => effectiveValue.includes(item.data.id));
+		const selectedItems = items.filter((item) => currentValue.includes(item.data.id));
 
 		if (selectedItems.length === 0) {
 			return noneSelectedText;
@@ -147,13 +172,21 @@
 		return selectedItems.map((item) => item.data.label).join(', ');
 	}
 
+	function onSearch(event: CustomEvent): void {
+		searchValue = event.detail.value ?? '';
+	}
+
+	function toggleFilterItemsSelection(selected?: boolean): void {
+		draftSelectedIds = selected ? new Set(items.map((item) => item.data.id)) : new Set<number>();
+	}
+
 	function onConfirm(): void {
 		if (multiple) {
 			const ids = [...draftSelectedIds];
 			if (name) {
-				internalValue = ids;
+				formValue = ids;
 				rootElement?.dispatchEvent(
-					new CustomEvent('customChange', {
+					new CustomEvent('ionInput', {
 						bubbles: true,
 						detail: { key: name, value: ids }
 					})
@@ -162,12 +195,11 @@
 				changed?.(ids);
 			}
 		} else {
-			appliedSelectedId = selectedId;
 			const nextId = selectedId ?? 0;
 			if (name) {
-				internalValue = nextId > 0 ? [nextId] : [];
+				formValue = nextId > 0 ? [nextId] : [];
 				rootElement?.dispatchEvent(
-					new CustomEvent('customChange', {
+					new CustomEvent('ionInput', {
 						bubbles: true,
 						detail: { key: name, value: nextId }
 					})
@@ -190,6 +222,16 @@
 			selectedId = appliedSelectedId;
 		}
 		modalOpen = false;
+		onBlur();
+	}
+
+	function onBlur(): void {
+		rootElement?.dispatchEvent(
+			new CustomEvent('ionBlur', {
+				bubbles: true,
+				detail: { key: name }
+			})
+		);
 	}
 
 	function toggleItemSelection(itemId: number): void {
@@ -209,57 +251,28 @@
 		}
 		modalOpen = true;
 	}
-
-	function onModelUpdate(event: CustomEvent): void {
-		if (!name) return;
-		const next = event.detail?.value as unknown;
-		if (multiple) {
-			if (Array.isArray(next)) {
-				internalValue = next.map(Number).filter((value) => Number.isFinite(value) && value > 0);
-			} else if (typeof next === 'string') {
-				internalValue = next
-					.split(',')
-					.map((value) => Number(value.trim()))
-					.filter((value) => Number.isFinite(value) && value > 0);
-			} else if (typeof next === 'number') {
-				internalValue = next > 0 ? [next] : [];
-			} else {
-				internalValue = [];
-			}
-			return;
-		}
-
-		let single: number;
-		if (typeof next === 'number') {
-			single = next;
-		} else if (typeof next === 'string') {
-			single = Number(next);
-		} else {
-			single = 0;
-		}
-		internalValue = Number.isFinite(single) && single > 0 ? [single] : [];
-	}
 </script>
 
-<div bind:this={rootElement} data-name={name} class="contents" class:hidden>
-	<CustomItem
-		{disabled}
-		{readonly}
-		{classList}
-		{icon}
-		clicked={openModal}
-		{name}
-		{hidden}
-		ariaLabel={computedAriaLabel}
-	>
-		<div class="flex flex-col">
-			<ion-text class="ms-3 pt-2 text-xs">{label}</ion-text>
-			<ion-text class="my-2 ms-4 truncate">
-				{displayedFilteredValues}
-			</ion-text>
-		</div>
-	</CustomItem>
-</div>
+<CustomItem
+	bind:element={rootElement}
+	{iconEnd}
+	{iconClicked}
+	{disabled}
+	{readonly}
+	classList={`${classList} ${hidden ? 'hidden' : ''}`}
+	{icon}
+	clicked={openModal}
+	{name}
+	{hidden}
+	ariaLabel={computedAriaLabel}
+>
+	<div class="flex flex-col">
+		<ion-text class="ms-3 pt-2 text-xs">{label}</ion-text>
+		<ion-text class="my-2 ms-4 truncate">
+			{displayedFilteredValues}
+		</ion-text>
+	</div>
+</CustomItem>
 
 <Modal
 	open={modalOpen}

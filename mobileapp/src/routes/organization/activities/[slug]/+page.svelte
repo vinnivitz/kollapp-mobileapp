@@ -77,11 +77,11 @@
 	let updateActivityModelTouched = $state<boolean>(false);
 
 	const updateActivityForm = new Form({
+		actions: (actions) => (updateActivityFormActions = actions),
 		completed: async () => {
 			updateActivityModalOpen = false;
 			updateActivityModelTouched = false;
 		},
-		exposedActions: (actions) => (updateActivityFormActions = actions),
 		failed: () => {
 			updateActivityModelTouched = false;
 			updateActivityModalOpen = false;
@@ -111,7 +111,7 @@
 	}
 
 	function onOpenActivityModal(): void {
-		updateActivityFormActions.setModel(clone(activity));
+		updateActivityFormActions.set(clone(activity));
 		updateActivityModalOpen = true;
 	}
 
@@ -153,7 +153,7 @@
 <!-- Snippets -->
 
 {#snippet activitySummary()}
-	<Card border="secondary" title={activity?.name} classList="mb-5">
+	<Card border="primary" title={activity?.name} classList="mb-5">
 		<div class="flex flex-wrap items-center justify-center gap-3">
 			<div class="flex items-center gap-1">
 				<ion-icon icon={locationOutline}></ion-icon>

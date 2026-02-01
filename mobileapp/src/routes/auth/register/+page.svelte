@@ -23,11 +23,11 @@
 			);
 			await goto(resolve('/auth/login'));
 		},
-		customValidators: {
-			confirmPassword: passwordConfirmationValidator('password', 'confirmPassword')
-		},
 		request: async (model) => await publicUserService.register(model),
-		schema: registerSchema()
+		schema: registerSchema(),
+		validators: {
+			confirmPassword: passwordConfirmationValidator('password', 'confirmPassword')
+		}
 	});
 </script>
 

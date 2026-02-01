@@ -18,6 +18,12 @@
 	let currentEmail = $state<string>();
 
 	const form = new Form({
+		actions: (actions) => {
+			actions.set({
+				email: $userStore?.email!,
+				username: $userStore?.username!
+			});
+		},
 		completed: async ({ model }) => {
 			if (currentEmail !== model.email) {
 				await informationModal(
@@ -25,12 +31,6 @@
 					$t('routes.account.update-data.page.modal.title', { value: model.email })
 				);
 			}
-		},
-		exposedActions: (actions) => {
-			actions.setModel({
-				email: $userStore?.email!,
-				username: $userStore?.username!
-			});
 		},
 		failed: () => (touched = false),
 		onTouched: () => (touched = true),

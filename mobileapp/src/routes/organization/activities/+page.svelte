@@ -2,7 +2,6 @@
 	import type { ActivityTO } from '@kollapp/api-types';
 
 	import { TZDate } from '@date-fns/tz';
-	import { format } from 'date-fns';
 	import {
 		barbellOutline,
 		calendarClearOutline,
@@ -41,7 +40,7 @@
 		TourStepId
 	} from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';
-	import { customForm, hasOrganizationRole } from '$lib/utility';
+	import { customForm, formatter, hasOrganizationRole, parser } from '$lib/utility';
 
 	type TimeFilter = 'all' | 'future' | 'past';
 	type BalanceFilter = 'all' | 'negative' | 'neutral' | 'positive';
@@ -89,7 +88,7 @@
 	let createActivityModalOpen = $state<boolean>(false);
 
 	let searchActivityValue = $state<string>('');
-	let selectedDate = $state<string>(format(new TZDate(), 'yyyy-MM-dd'));
+	let selectedDate = $state<string>(parser.date(new TZDate()));
 
 	// Filter state
 	let filterState = $state<ActivitiesFilterState>({
@@ -118,7 +117,7 @@
 	const form = new Form({
 		completed: async ({ actions }) => {
 			createActivityModalOpen = false;
-			actions.setModel(createActivitySchema().getDefault());
+			actions.set(createActivitySchema().getDefault());
 			resetFilters();
 		},
 		failed: () => (createActivityModalOpen = false),
@@ -250,7 +249,7 @@
 		balance: BalanceFilter
 	): ActivityTO[] {
 		const searchTerm = search.trim().toLowerCase();
-		const today = format(new TZDate(), 'yyyy-MM-dd');
+		const today = parser.date(new TZDate());
 
 		return activities.filter((activity) => {
 			return (
@@ -304,7 +303,7 @@
 	}
 
 	function getMinActivityDate(): string {
-		if (activityItems.length === 0) return format(new TZDate(), 'yyyy-MM-dd');
+		if (activityItems.length === 0) return parser.date(new TZDate());
 		let min = activityItems[0]!.date;
 		for (const activity of activityItems) {
 			if (activity.date < min) min = activity.date;
@@ -313,7 +312,7 @@
 	}
 
 	function getMaxActivityDate(): string {
-		if (activityItems.length === 0) return format(new TZDate(), 'yyyy-MM-dd');
+		if (activityItems.length === 0) return parser.date(new TZDate());
 		let max = activityItems[0]!.date;
 		for (const activity of activityItems) {
 			if (activity.date > max) max = activity.date;
@@ -361,7 +360,7 @@
 			accessible="ROLE_ORGANIZATION_MANAGER"
 			tourId={TourStepId.ACTIVITIES.CREATE}
 			indexLabel={$t('routes.organization.activities.page.activities.fab.create')}
-			clicked={() => onCreateActivity(format(new TZDate(), 'yyyy-MM-dd'))}
+			clicked={() => onCreateActivity(parser.date(new TZDate()))}
 			icon={createOutline}
 			indexed="/organization/activities"
 		/>
@@ -418,7 +417,7 @@
 			<div class="flex flex-row items-center gap-3">
 				<div class="flex items-center justify-center gap-1">
 					<ion-icon icon={calendarClearOutline} color="medium"></ion-icon>
-					<ion-text color="medium" class="text-xs">{format(activity.date, 'PPP')}</ion-text>
+					<ion-text color="medium" class="text-xs">{formatter.date(activity.date)}</ion-text>
 				</div>
 				<div class="flex items-center justify-center gap-1">
 					<ion-icon icon={locationOutline} color="medium"></ion-icon>
@@ -448,7 +447,7 @@
 		<FadeInOut classList="mt-4 text-center">
 			<ion-note>
 				{$t('routes.organization.activities.page.calendar.no-activities', {
-					value: format(selectedDate, 'PPP')
+					value: formatter.date(selectedDate)
 				})}
 			</ion-note>
 		</FadeInOut>

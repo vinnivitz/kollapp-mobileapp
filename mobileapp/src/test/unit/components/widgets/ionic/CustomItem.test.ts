@@ -18,15 +18,15 @@ describe('widgets/ionic/CustomItem', () => {
 	});
 
 	it('shows icon, note and end-icon and triggers end click', async () => {
-		const iconClick = vi.fn();
+		const iconClicked = vi.fn();
 		const { container } = render(CustomItem, {
-			props: { children, icon: 'start', iconClick, iconEnd: 'end', note: 'N' }
+			props: { children, icon: 'start', iconClicked, iconEnd: 'end', note: 'N' }
 		});
 		expect(container.querySelector('ion-icon[slot="start"]')).toBeTruthy();
 		expect(container.querySelector('ion-note')).toBeTruthy();
 		const endButton = container.querySelector('ion-button[slot="end"]')!;
 		await fireEvent.click(endButton);
-		expect(iconClick).toHaveBeenCalled();
+		expect(iconClicked).toHaveBeenCalled();
 	});
 
 	it('opens sliding options when slidingOptions provided', async () => {

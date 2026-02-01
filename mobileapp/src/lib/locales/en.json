@@ -315,6 +315,14 @@
         "credit": "Income",
         "debit": "Expense",
         "date-range": "Time period",
+        "sort": {
+          "label": "Sort by",
+          "date": "Date",
+          "purpose": "Purpose",
+          "person-of-organization": "Member",
+          "category": "Category",
+          "activity": "Event"
+        },
         "person": {
           "all-selected": "All members selected",
           "select": "Selected members",

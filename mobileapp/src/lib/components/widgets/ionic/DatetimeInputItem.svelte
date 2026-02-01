@@ -1,13 +1,11 @@
 <script lang="ts">
-	import { TZDate } from '@date-fns/tz';
-	import { format } from 'date-fns';
 	import { calendarClearOutline } from 'ionicons/icons';
-	import { onDestroy, onMount } from 'svelte';
 
 	import CustomItem from './CustomItem.svelte';
 
 	import { DateTimePickerType } from '$lib/models/ui';
 	import { globalPopoverStore } from '$lib/stores';
+	import { formatter } from '$lib/utility';
 
 	type Properties = {
 		label: string;
@@ -40,72 +38,66 @@
 	const { datetimeInputItem } = globalPopoverStore;
 
 	let containerElement = $state<HTMLDivElement>();
-	let hiddenInputElement = $state<HTMLIonInputElement>();
-	let intervalId: ReturnType<typeof setInterval> | undefined;
-	let rawValue = $state<string | undefined>(value);
-	let displayValue = $derived<string>(rawValue ? format(new TZDate(rawValue), 'PPP') : '');
 
-	function setValue(next: string): void {
-		rawValue = next;
-	}
+	let formValue = $state<string>();
+
+	const currentValue = $derived(name ? formValue : value);
+	const displayValue = $derived(currentValue ? formatter.date(currentValue, 'PPP') : '');
 
 	$effect(() => {
-		if (value !== undefined) {
-			setValue(value);
-		}
+		if (!name || !containerElement) return;
+
+		containerElement.addEventListener('formUpdate', formUpdateHandler);
+		return () => containerElement?.removeEventListener('formUpdate', formUpdateHandler);
 	});
 
-	onMount(() => {
+	function formUpdateHandler(event: Event): void {
+		onFormUpdate(event as CustomEvent);
+	}
+
+	function onFormUpdate(event: CustomEvent): void {
 		if (!name) return;
-		intervalId = setInterval(async () => {
-			const native = await hiddenInputElement?.getInputElement();
-			if (!native) return;
-			const next = (native.value ?? '').toString();
-			const current = (rawValue ?? '').toString();
-			if (next !== current) {
-				rawValue = next.length > 0 ? next : undefined;
-			}
-		}, 200);
-	});
+		const next = event.detail?.value;
+		formValue = typeof next === 'string' && next.length > 0 ? next : undefined;
+	}
 
-	onDestroy(() => {
-		if (intervalId) clearInterval(intervalId);
-	});
-
-	function notifyChange(rawValue: string): void {
-		if (name && containerElement) {
-			containerElement.dispatchEvent(
-				new CustomEvent('customChange', {
+	function onApply(nextValue: string): void {
+		if (name) {
+			formValue = nextValue;
+			containerElement?.dispatchEvent(
+				new CustomEvent('ionInput', {
 					bubbles: true,
-					detail: { key: name, value: rawValue }
+					detail: { key: name, value: nextValue }
 				})
 			);
 		} else {
-			changed?.(rawValue);
+			changed?.(nextValue);
 		}
 	}
 
-	function onApply(rawValue: string): void {
-		setValue(rawValue);
-		notifyChange(rawValue);
+	function onBlur(): void {
+		containerElement?.dispatchEvent(
+			new CustomEvent('ionBlur', {
+				bubbles: true,
+				detail: { key: name }
+			})
+		);
 	}
 
 	function onOpenDatetimeModal(): void {
 		datetimeInputItem.set({
 			applied: onApply,
+			dismissed: onBlur,
 			max,
 			min,
 			open: true,
 			type,
-			value: rawValue
+			value: currentValue
 		});
 	}
 </script>
 
 <div bind:this={containerElement} data-name={name} class="contents" class:hidden>
-	{#if name}
-		<ion-input bind:this={hiddenInputElement} {name} value={rawValue ?? ''} readonly style="display:none"></ion-input>
-	{/if}
 	<CustomItem {classList} {card} {icon} clicked={onOpenDatetimeModal} {name} {hidden}>
 		<div class="flex flex-col">
 			<ion-text class="ms-3 pt-2 text-xs">{label}</ion-text>

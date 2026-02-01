@@ -15,6 +15,7 @@
 		classList?: string;
 		color?: Colors;
 		disabled?: boolean;
+		element?: HTMLDivElement;
 		hidden?: boolean;
 		icon?: string;
 		iconColor?: Colors;
@@ -28,7 +29,7 @@
 		slidingOptions?: ItemSlidingOption[];
 		transparent?: boolean;
 		clicked?: () => void;
-		iconClick?: () => void;
+		iconClicked?: () => void;
 	};
 
 	let {
@@ -42,9 +43,10 @@
 		clicked,
 		color = 'light',
 		disabled,
+		element = $bindable(),
 		hidden = false,
 		icon,
-		iconClick,
+		iconClicked,
 		iconColor = color === 'light' || color === 'white' ? 'medium' : 'white',
 		iconEnd,
 		indexed,
@@ -113,7 +115,7 @@
 {/snippet}
 
 {#snippet item()}
-	<div class="relative">
+	<div class="relative contents" data-name={name} bind:this={element}>
 		<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 		<ion-item
 			data-name={name}
@@ -147,7 +149,7 @@
 					fill="clear"
 					slot="end"
 					aria-label={ariaLabel}
-					onclick={iconClick}
+					onclick={iconClicked}
 				>
 					<ion-icon icon={iconEnd} color="secondary" slot="icon-only" size="large" aria-hidden="true"></ion-icon>
 				</ion-button>

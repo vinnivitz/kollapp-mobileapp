@@ -17,6 +17,7 @@
 		createOutline,
 		documentOutline,
 		flashOutline,
+		openOutline,
 		peopleOutline,
 		personOutline,
 		sendOutline,
@@ -24,7 +25,11 @@
 		trendingDownOutline,
 		trendingUpOutline
 	} from 'ionicons/icons';
+	import { tick } from 'svelte';
 	import { number, ObjectSchema } from 'yup';
+
+	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 
 	import AmountInputItem from '../ionic/AmountInputItem.svelte';
 	import Card from '../ionic/Card.svelte';
@@ -47,7 +52,6 @@
 		getUsernameByPersonOfOrganizationId,
 		getValidationResult,
 		hasOrganizationRole,
-		parser,
 		withLoader
 	} from '$lib/utility';
 
@@ -59,7 +63,7 @@
 		activity?: ActivityTO;
 		onDeleteActivityPosting: (activityId: number, postingId: number) => Promise<ResponseBody>;
 		onDeleteOrganizationPosting: (postingId: number) => Promise<ResponseBody>;
-		onEditEnd: () => void;
+		onEditEnd: (dismissParent?: boolean) => void;
 		onEditStart: () => void;
 		onTransferActivityPosting: (activityId: number, postingId: number) => Promise<ResponseBody<PostingTO>>;
 		onTransferOrganizationPosting: (postingId: number) => Promise<ResponseBody<PostingTO>>;
@@ -72,7 +76,7 @@
 			postingId: number,
 			model: PostingCreateUpdateRequestTO
 		) => Promise<ResponseBody<PostingTO>>;
-		onCompleted?: () => Promise<void>;
+		completed?: () => Promise<void>;
 	};
 
 	type PostingFormModel = PostingCreateUpdateRequestTO & { activityId: number };
@@ -81,7 +85,7 @@
 		activities,
 		activity,
 		budgetCategories,
-		onCompleted,
+		completed,
 		onDeleteActivityPosting,
 		onDeleteOrganizationPosting,
 		onEditEnd,
@@ -99,9 +103,10 @@
 	const canTransfer = $derived(isManager && posting.personOfOrganizationId > 0);
 	const activityId = activity?.id ?? 0;
 
-	let editModalOpen = $state<boolean>(false);
+	let modalOpen = $state<boolean>(false);
 	let selectedPostingType = $state<PostingType>(posting.type);
 	let formActions = $state<FormActions<PostingFormModel>>();
+	let loading = $state<boolean>(true);
 
 	const postingFormSchema: ObjectSchema<PostingCreateUpdateRequestTO & { activityId: number }> =
 		createUpdatePostingSchema().shape({
@@ -129,16 +134,20 @@
 		}))
 	);
 
-	const updatePostingForm = new Form({
+	const form = new Form({
+		actions: (actions) => (formActions = actions),
 		completed: async ({ actions }) => {
-			await onCompleted?.();
-			editModalOpen = false;
-			actions.setModel(postingFormSchema.getDefault());
+			await completed?.();
+			modalOpen = false;
+			loading = true;
+			onEditEnd();
+			actions.set(postingFormSchema.getDefault());
 		},
-		exposedActions: (exposedActions) => (formActions = exposedActions),
-		failed: () => (editModalOpen = false),
-		formatters: { amountInCents: formatter.currency },
-		parsers: { amountInCents: parser.currency },
+		failed: () => {
+			modalOpen = false;
+			loading = true;
+			onEditEnd();
+		},
 		request: (model) =>
 			model.activityId > 0
 				? onUpdateActivityPosting(model.activityId, posting.id, model)
@@ -159,7 +168,7 @@
 				},
 				{
 					color: 'primary',
-					handler: onOpenEditModal,
+					handler: () => (modalOpen = true),
 					icon: createOutline,
 					label: $t('components.posting-item.sliding-options.edit')
 				}
@@ -178,21 +187,22 @@
 		return options;
 	});
 
-	function onOpenEditModal(): void {
+	async function onModalPresented(): Promise<void> {
 		onEditStart();
 		selectedPostingType = posting.type;
-		formActions?.setModel(
+		loading = false;
+		await tick();
+		formActions?.set(
 			postingFormSchema.cast({
 				...posting,
 				activityId
 			} satisfies PostingFormModel)
 		);
-		editModalOpen = true;
 	}
 
 	function setSelectedPostingType(type: PostingType): void {
 		selectedPostingType = type;
-		formActions?.updateModelByKey('type', type);
+		formActions?.patchByKey('type', type);
 	}
 
 	async function onDeletePosting(): Promise<void> {
@@ -210,7 +220,7 @@
 					: await onDeleteOrganizationPosting(posting.id);
 			const validationResult = getValidationResult(result);
 			if (validationResult.valid) {
-				await onCompleted?.();
+				await completed?.();
 			}
 		});
 	}
@@ -232,14 +242,22 @@
 					: await onTransferOrganizationPosting(posting.id);
 			const validationResult = getValidationResult(result);
 			if (validationResult.valid) {
-				await onCompleted?.();
+				await completed?.();
 			}
 		});
 	}
 
-	function onDismissed(): void {
-		editModalOpen = false;
-		onEditEnd();
+	async function onOpenActivity(): Promise<void> {
+		if (activity) {
+			onDismissed(true);
+			await goto(resolve('/organization/activities/[slug]', { slug: activity.id.toString() }));
+		}
+	}
+
+	function onDismissed(dismissParent?: boolean): void {
+		modalOpen = false;
+		loading = true;
+		onEditEnd(dismissParent);
 	}
 </script>
 
@@ -284,9 +302,9 @@
 </CustomItem>
 
 {#if canEdit}
-	<Modal open={editModalOpen} dismissed={onDismissed}>
+	<Modal open={modalOpen} dismissed={() => onDismissed()} lazy presented={onModalPresented} {loading}>
 		<Card title={$t('components.posting-item.modal.edit.title')}>
-			<form use:customForm={updatePostingForm}>
+			<form use:customForm={form}>
 				<div class="mb-3 flex items-center justify-center gap-2">
 					<Chip
 						selected={selectedPostingType === 'CREDIT'}
@@ -316,6 +334,8 @@
 					hidden={!activity}
 					name="activityId"
 					icon={flashOutline}
+					iconEnd={openOutline}
+					iconClicked={onOpenActivity}
 					multiple={false}
 					readonly
 					label={$t('components.posting-item.modal.edit.activity.label')}

@@ -26,13 +26,13 @@
 	const organizations = $derived(organizationStore.organizations);
 	const userId = $derived($userStore?.id);
 	let showPasswordPrompt = $state<boolean>(false);
-	let actions: FormActions<DeleteAccountRequestTO>;
+	let formActions: FormActions<DeleteAccountRequestTO>;
 	let organizationChecks = $state<OrganizationCheckResult[]>();
 	const isManager = $derived(hasOrganizationRole('ROLE_ORGANIZATION_MANAGER'));
 
 	const form = new Form({
+		actions: (actions) => (formActions = actions),
 		completed: async () => afterAccountDeletion(),
-		exposedActions: (exposedActions) => (actions = exposedActions),
 		failed: () => (showPasswordPrompt = false),
 		request: userService.remove,
 		schema: deleteAccountSchema()
@@ -115,7 +115,7 @@
 	}
 
 	async function onPasswordPromptDismiss(): Promise<void> {
-		actions.setModel();
+		formActions.set();
 		showPasswordPrompt = false;
 	}
 

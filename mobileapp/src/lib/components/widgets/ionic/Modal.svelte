@@ -22,6 +22,7 @@
 		initialBreakPoint?: number;
 		labels?: boolean;
 		lazy?: boolean;
+		loading?: boolean;
 		title?: string;
 		touched?: boolean;
 		confirmed?: () => void;
@@ -43,6 +44,7 @@
 		initialBreakPoint = 0.75,
 		labels = true,
 		lazy = false,
+		loading = false,
 		open,
 		presented,
 		title,
@@ -75,7 +77,6 @@
 	async function onDismiss(): Promise<void> {
 		await _modalController?.dismiss();
 		open = false;
-		dismissed?.();
 	}
 
 	async function onConfirm(): Promise<void> {
@@ -94,11 +95,10 @@
 
 	onDestroy(async () => {
 		if (!(await isPlatformWeb())) return;
-		const self = _modalController;
 		const controller = await modalController.getTop();
-		if (controller && controller === self) {
+		if (controller && controller === _modalController) {
 			try {
-				await self?.dismiss();
+				await _modalController?.dismiss();
 			} catch {
 				return;
 			}
@@ -164,7 +164,13 @@
 			</ion-toolbar>
 		</ion-header>
 		<ion-content class="ion-padding">
-			{@render children?.()}
+			{#if !loading}
+				{@render children?.()}
+			{:else}
+				<div class="flex h-full items-start justify-center">
+					<ion-spinner name="crescent"></ion-spinner>
+				</div>
+			{/if}
 		</ion-content>
 	</ion-modal>
 {/if}

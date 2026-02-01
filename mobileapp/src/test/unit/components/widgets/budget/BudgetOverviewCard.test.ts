@@ -27,7 +27,8 @@ vi.mock('$lib/utility', async (importOriginal) => {
 		confirmationModal: vi.fn(),
 		customForm: vi.fn(),
 		formatter: {
-			currency: (value: number) => `€${(value / 100).toFixed(2)}`
+			currency: (value: number) => `€${(value / 100).toFixed(2)}`,
+			date: (_date: Date, format?: string) => format ?? '2024-01-01'
 		},
 		getBudgetCategoryNameById: vi.fn(),
 		getPersonOfOrganizationId: () => 1,

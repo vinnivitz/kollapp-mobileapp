@@ -257,14 +257,14 @@ describe('widgets/ionic/MultiSelectInputItem', () => {
 		expect(item).toBeTruthy();
 	});
 
-	it('dispatches customChange event when name is set (multiple)', async () => {
+	it('dispatches ionInput event when name is set (multiple)', async () => {
 		const { container } = render(MultiSelectInputItem, {
 			props: { icon: 'list', items, label: 'Select', multiple: true, name: 'mySelect' }
 		});
 
 		const rootDiv = container.querySelector('div[data-name="mySelect"]') as HTMLDivElement;
 		const events: CustomEvent[] = [];
-		rootDiv.addEventListener('customChange', ((_event: Event) => events.push(_event as CustomEvent)) as EventListener);
+		rootDiv.addEventListener('ionInput', ((_event: Event) => events.push(_event as CustomEvent)) as EventListener);
 
 		await fireEvent.click(container.querySelector('ion-item') as HTMLIonItemElement);
 
@@ -278,14 +278,14 @@ describe('widgets/ionic/MultiSelectInputItem', () => {
 		expect(events[0]!.detail.key).toBe('mySelect');
 	});
 
-	it('dispatches customChange event when name is set (single)', async () => {
+	it('dispatches ionInput event when name is set (single)', async () => {
 		const { container } = render(MultiSelectInputItem, {
 			props: { icon: 'list', items, label: 'Select', multiple: false, name: 'mySelect' }
 		});
 
 		const rootDiv = container.querySelector('div[data-name="mySelect"]') as HTMLDivElement;
 		const events: CustomEvent[] = [];
-		rootDiv.addEventListener('customChange', ((_event: Event) => events.push(_event as CustomEvent)) as EventListener);
+		rootDiv.addEventListener('ionInput', ((_event: Event) => events.push(_event as CustomEvent)) as EventListener);
 
 		await fireEvent.click(container.querySelector('ion-item') as HTMLIonItemElement);
 

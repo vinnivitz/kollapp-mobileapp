@@ -9,21 +9,23 @@ import { t } from '$lib/locales';
  * Creates a schema for validating the `OrganizationUpdateRequestTO`.
  * @returns {ObjectSchema<OrganizationUpdateRequestTO>} The schema for validating the `OrganizationUpdateRequestTO`.
  */
-export const updateOrganizationSchema = (): ObjectSchema<OrganizationUpdateRequestTO> => {
+export const updateOrganizationSchema = (
+	model?: OrganizationUpdateRequestTO
+): ObjectSchema<OrganizationUpdateRequestTO> => {
 	const $t = get(t);
 	return object({
 		description: string()
-			.default('')
+			.default(model?.description ?? '')
 			.trim()
 			.max(500, $t('api.validation.organization.update-organization.description.max'))
 			.optional(),
 		name: string()
-			.default('')
+			.default(model?.name ?? '')
 			.trim()
 			.max(50, $t('api.validation.organization.update-organization.name.max'))
 			.required($t('api.validation.organization.update-organization.name.required')),
 		place: string()
-			.default('')
+			.default(model?.place ?? '')
 			.trim()
 			.max(50, $t('api.validation.organization.update-organization.place.max'))
 			.required($t('api.validation.organization.update-organization.place.required'))

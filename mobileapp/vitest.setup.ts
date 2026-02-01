@@ -206,7 +206,16 @@ vi.mock('$lib/api/services', () => ({
 vi.mock('$lib/utility', () => ({
 	clickOutside: () => ({ destroy: () => {} }),
 	formatter: {
-		currency: (value: number) => `${value}`
+		currency: (value: number) => `${value}`,
+		date: (date: Date | string | undefined, _format?: string) => {
+			if (!date) return '';
+			const dateString = typeof date === 'string' ? date : date.toISOString();
+			// Extract year from date string (e.g., "2025-06-15" -> "June 15, 2025")
+			const year = dateString.slice(0, 4);
+			const month = dateString.slice(5, 7);
+			const day = dateString.slice(8, 10);
+			return `${month}/${day}, ${year}`;
+		}
 	},
 	getDateFnsLocale: () => {},
 	navigateBack: vi.fn().mockResolvedValue(vi.fn()),

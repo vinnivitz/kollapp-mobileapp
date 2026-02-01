@@ -243,8 +243,8 @@ describe('widgets/budget/PostingOverviewModal', () => {
 				props: {
 					activities: mockActivities as never,
 					budgetCategories: mockBudgetCategories as never,
+					completed: onCompleted,
 					dismissed,
-					onCompleted,
 					onDeleteActivityPosting,
 					onDeleteOrganizationPosting,
 					onTransferActivityPosting,
