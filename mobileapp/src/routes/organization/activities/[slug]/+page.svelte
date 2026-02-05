@@ -20,17 +20,19 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
-	import { updateActivitySchema } from '$lib/api/schema/organization';
+	import { updateActivitySchema } from '$lib/api/schemas/organization';
 	import { activityService, budgetService } from '$lib/api/services';
-	import Layout from '$lib/components/layout/Layout.svelte';
-	import BudgetOverviewCard from '$lib/components/widgets/budget/BudgetOverviewCard.svelte';
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
-	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import DatetimeInputItem from '$lib/components/widgets/ionic/DatetimeInputItem.svelte';
-	import FabButton from '$lib/components/widgets/ionic/FabButton.svelte';
-	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
-	import LocationInputItem from '$lib/components/widgets/ionic/LocationInputItem.svelte';
-	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
+	import { Layout } from '$lib/components/layout';
+	import { BudgetOverview } from '$lib/components/widgets/budget';
+	import {
+		Button,
+		Card,
+		DatetimeInputItem,
+		FabButton,
+		InputItem,
+		LocationInputItem,
+		Modal
+	} from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 	import { type FabButtonButtons, Form, type FormActions } from '$lib/models/ui';
 	import { localeStore, organizationStore } from '$lib/stores';
@@ -191,7 +193,7 @@
 {/snippet}
 
 {#snippet postingsSummary()}
-	<BudgetOverviewCard
+	<BudgetOverview
 		{activity}
 		activities={$organizationStore?.activities!}
 		budgetCategories={$organizationStore?.budgetCategories!}

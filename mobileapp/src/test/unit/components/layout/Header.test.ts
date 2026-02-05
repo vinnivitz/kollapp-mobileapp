@@ -26,7 +26,7 @@ describe('Header', () => {
 	describe('navigation', () => {
 		it('shows back button and navigates back when clicked', async () => {
 			const { getByRole } = render(Header, {
-				props: { loading: false, showBackButton: true, title: 'Any' }
+				props: { loadedServer: true, loading: false, showBackButton: true, title: 'Any' }
 			});
 
 			const button = getByRole('button');
@@ -36,7 +36,7 @@ describe('Header', () => {
 
 		it('shows back button and navigates back when Enter key is pressed', async () => {
 			const { getByRole } = render(Header, {
-				props: { loading: false, showBackButton: true, title: 'Any' }
+				props: { loadedServer: true, loading: false, showBackButton: true, title: 'Any' }
 			});
 
 			const button = getByRole('button');
@@ -46,7 +46,7 @@ describe('Header', () => {
 
 		it('does not navigate when non-Enter key is pressed', async () => {
 			const { getByRole } = render(Header, {
-				props: { loading: false, showBackButton: true, title: 'Any' }
+				props: { loadedServer: true, loading: false, showBackButton: true, title: 'Any' }
 			});
 
 			const button = getByRole('button');
@@ -57,7 +57,7 @@ describe('Header', () => {
 
 		it('shows logo and navigates home when clicked', async () => {
 			const { container, getByRole } = render(Header, {
-				props: { loading: false, showBackButton: false, title: 'Any' }
+				props: { loadedServer: true, loading: false, showBackButton: false, title: 'Any' }
 			});
 
 			const logo = container.querySelector('img');
@@ -71,7 +71,7 @@ describe('Header', () => {
 
 		it('shows logo and navigates home when Enter key is pressed', async () => {
 			const { getByRole } = render(Header, {
-				props: { loading: false, showBackButton: false, title: 'Any' }
+				props: { loadedServer: true, loading: false, showBackButton: false, title: 'Any' }
 			});
 
 			const button = getByRole('button');
@@ -83,7 +83,7 @@ describe('Header', () => {
 	describe('rendering', () => {
 		it('displays the title correctly', () => {
 			const { container } = render(Header, {
-				props: { loading: false, showBackButton: false, title: 'Test Title' }
+				props: { loadedServer: true, loading: false, showBackButton: false, title: 'Test Title' }
 			});
 
 			const ionTitle = container.querySelector('ion-title');
@@ -92,7 +92,7 @@ describe('Header', () => {
 
 		it('shows menu button', () => {
 			const { container } = render(Header, {
-				props: { loading: false, showBackButton: false, title: 'Any' }
+				props: { loadedServer: true, loading: false, showBackButton: false, title: 'Any' }
 			});
 
 			const menuButton = container.querySelector('ion-menu-button');
@@ -104,14 +104,14 @@ describe('Header', () => {
 		it('shows progress bar when loading persists >100ms', async () => {
 			vi.useFakeTimers();
 			const { container, rerender } = render(Header, {
-				props: { loading: true, showBackButton: false, title: 'Any' }
+				props: { loadedServer: false, loading: true, showBackButton: false, title: 'Any' }
 			});
 
 			vi.advanceTimersByTime(150);
 			await Promise.resolve();
 			expect(container.querySelector('ion-progress-bar')).toBeTruthy();
 
-			rerender({ loading: false, showBackButton: false, title: 'Any' });
+			rerender({ loadedServer: true, loading: false, showBackButton: false, title: 'Any' });
 			vi.advanceTimersByTime(150);
 			expect(container.querySelector('ion-progress-bar')).toBeFalsy();
 		});

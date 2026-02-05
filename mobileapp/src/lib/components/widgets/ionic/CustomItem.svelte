@@ -2,7 +2,7 @@
 	import type { Colors, ItemSlidingOption } from '$lib/models/ui';
 	import type { Snippet } from 'svelte';
 
-	import LazyRender from '$lib/components/utility/LazyRender.svelte';
+	import { LazyRender } from '$lib/components/utility';
 	import { clickOutside } from '$lib/utility';
 
 	type Properties = {
@@ -11,7 +11,6 @@
 		badge?: string;
 		badgeColor?: Colors;
 		badgeEnd?: string;
-		card?: boolean;
 		classList?: string;
 		color?: Colors;
 		disabled?: boolean;
@@ -37,7 +36,6 @@
 		badge,
 		badgeColor = 'danger',
 		badgeEnd,
-		card,
 		children,
 		classList = '',
 		clicked,
@@ -122,7 +120,6 @@
 			onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && !readonly && clicked?.()}
 			{disabled}
 			id={indexLabel}
-			data-card={card}
 			button={!!clicked && !readonly}
 			role={clicked && !readonly ? 'button' : undefined}
 			aria-label={ariaLabel}
@@ -179,10 +176,6 @@
 {/snippet}
 
 <style>
-	ion-item[data-card='true']::part(native) {
-		background-color: var(--ion-background-color-step-100);
-	}
-
 	ion-item[data-transparent='true']::part(native) {
 		background-color: transparent;
 	}

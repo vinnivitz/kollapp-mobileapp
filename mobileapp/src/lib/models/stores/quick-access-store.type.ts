@@ -1,4 +1,4 @@
-import type { QuickAccessItem } from '$lib/models/ui';
+import type { QuickAccessItemModel } from '$lib/models/ui';
 
 /**
  * Map of organization ID to quick access items
@@ -6,11 +6,11 @@ import type { QuickAccessItem } from '$lib/models/ui';
 export type QuickAccessStoreItem = {
 	editMode: boolean;
 	initialized: boolean;
-	items: QuickAccessItem[];
+	items: QuickAccessItemModel[];
 	itemsMap: QuickAccessItemsMap;
 };
 
 /**
  * Map of organization ID to quick access items
  */
-export type QuickAccessItemsMap = Record<number, QuickAccessItem[]>;
+export type QuickAccessItemsMap = Record<number, QuickAccessItemModel[]>;

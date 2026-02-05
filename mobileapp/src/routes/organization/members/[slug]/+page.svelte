@@ -23,12 +23,10 @@
 	import { resolve } from '$app/paths';
 
 	import { budgetService, organizationService } from '$lib/api/services';
-	import Layout from '$lib/components/layout/Layout.svelte';
-	import PostingFilter from '$lib/components/widgets/budget/PostingFilter.svelte';
-	import PostingItem from '$lib/components/widgets/budget/PostingItem.svelte';
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
-	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
+	import { Layout } from '$lib/components/layout';
+	import { FilterWidget } from '$lib/components/widgets';
+	import { PostingItem } from '$lib/components/widgets/budget';
+	import { Button, Card, CustomItem } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 	import {
 		chipMultiSection,
@@ -371,7 +369,7 @@
 {#snippet assignedPostingsCard()}
 	<Card title={$t('routes.organization.members.slug.page.card.open-postings.title')}>
 		<div class="sticky top-0 left-0 z-10 mb-3 flex flex-row items-center justify-between gap-2">
-			<PostingFilter classList="flex-1" config={filterConfig} />
+			<FilterWidget classList="flex-1" config={filterConfig} />
 			<Button color="tertiary" icon={downloadOutline} clicked={onExportPostings}></Button>
 		</div>
 		<div class="overflow-auto">

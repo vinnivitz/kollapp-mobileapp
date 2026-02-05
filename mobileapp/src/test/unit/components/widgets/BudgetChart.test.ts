@@ -17,7 +17,7 @@ class MockIntersectionObserver {
 }
 vi.stubGlobal('IntersectionObserver', MockIntersectionObserver);
 
-import BudgetChart from '$lib/components/widgets/budget/BudgetChart.svelte';
+import BudgetChart from '$lib/components/widgets/quick-access/widgets/BudgetChartWidget.svelte';
 
 vi.mock('@edde746/svelte-apexcharts', () => {
 	let lastOptions: unknown;

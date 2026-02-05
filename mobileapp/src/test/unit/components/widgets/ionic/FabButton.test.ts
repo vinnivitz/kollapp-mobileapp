@@ -100,4 +100,56 @@ describe('widgets/ionic/FabButton', () => {
 		const child = container.querySelector('ion-fab-list ion-fab-button');
 		expect(child?.getAttribute('color')).toBe('tertiary');
 	});
+
+	it('renders with tourId data attribute', () => {
+		const { container } = render(FabButton, {
+			props: { icon: 'add', tourId: 'fab-tour' }
+		});
+
+		const fab = container.querySelector('ion-fab');
+		expect(fab?.dataset.tour).toBe('fab-tour');
+	});
+
+	it('uses indexLabel as ariaLabel when ariaLabel not provided', () => {
+		const { container } = render(FabButton, {
+			props: { icon: 'add', indexLabel: 'Add Item' }
+		});
+
+		const fabButton = container.querySelector('ion-fab-button');
+		expect(fabButton?.getAttribute('aria-label')).toBe('Add Item');
+	});
+
+	it('uses custom ariaLabel when provided', () => {
+		const { container } = render(FabButton, {
+			props: { ariaLabel: 'Custom Label', icon: 'add' }
+		});
+
+		const fabButton = container.querySelector('ion-fab-button');
+		expect(fabButton?.getAttribute('aria-label')).toBe('Custom Label');
+	});
+
+	it('renders multiple buttons in fab list', () => {
+		const { container } = render(FabButton, {
+			props: {
+				buttons: [
+					{ handler: vi.fn(), icon: 'a', label: 'A' },
+					{ handler: vi.fn(), icon: 'b', label: 'B' },
+					{ handler: vi.fn(), icon: 'c', label: 'C' }
+				],
+				icon: 'add'
+			}
+		});
+
+		const children = container.querySelectorAll('ion-fab-list ion-fab-button');
+		expect(children.length).toBe(3);
+	});
+
+	it('renders without fab-list when no buttons', () => {
+		const { container } = render(FabButton, {
+			props: { icon: 'add' }
+		});
+
+		const fabList = container.querySelector('ion-fab-list');
+		expect(fabList).toBeFalsy();
+	});
 });

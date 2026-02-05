@@ -6,11 +6,9 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
-	import { resendConfirmationSchema } from '$lib/api/schema/authentication';
-	import Layout from '$lib/components/layout/Layout.svelte';
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
-	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
+	import { resendConfirmationSchema } from '$lib/api/schemas/authentication';
+	import { Layout } from '$lib/components/layout';
+	import { Button, Card, InputItem } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 	import { Form } from '$lib/models/ui';
 	import { customForm, featureNotImplementedAlert } from '$lib/utility';

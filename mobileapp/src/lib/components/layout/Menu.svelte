@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { SearchableItemTO } from '$lib/api/dto';
+	import type { SearchableItemTO } from '$lib/api/dtos';
 
 	import * as icons from 'ionicons/icons';
 	import { notificationsOutline } from 'ionicons/icons';
@@ -9,8 +9,7 @@
 	import type { RouteId } from '$app/types';
 
 	import { authenticationService, searchableService } from '$lib/api/services';
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
-	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
+	import { Button, LabeledItem } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 	import { triggerClickByLabel } from '$lib/utility';
 

@@ -156,15 +156,6 @@ describe('widgets/ionic/DatetimeInputItem', () => {
 		expect(icon).toBeTruthy();
 	});
 
-	it('renders with card style', () => {
-		const { container } = render(DatetimeInputItem, {
-			props: { card: true, label: 'Date' }
-		});
-
-		const item = container.querySelector('ion-item');
-		expect(item?.dataset.card).toBe('true');
-	});
-
 	it('renders with classList', () => {
 		const { container } = render(DatetimeInputItem, {
 			props: { classList: 'custom-datetime', label: 'Date' }

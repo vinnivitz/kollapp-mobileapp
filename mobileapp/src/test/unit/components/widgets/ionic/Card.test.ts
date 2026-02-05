@@ -94,4 +94,76 @@ describe('widgets/ionic/Card', () => {
 		const icons = container.querySelectorAll('ion-card-title ion-icon');
 		expect(icons.length).toBe(1);
 	});
+
+	it('renders with lazy prop', () => {
+		const { container } = render(Card, { props: { lazy: true, title: 'Lazy Card' } });
+		expect(container.querySelector('ion-card')).toBeTruthy();
+	});
+
+	it('renders with contentClass prop', () => {
+		const { container } = render(Card, { props: { children, contentClass: 'custom-content', title: 'Content' } });
+		const content = container.querySelector('ion-card-content');
+		expect(content?.className).toContain('custom-content');
+	});
+
+	it('renders with iconColor prop', () => {
+		const { container } = render(Card, { props: { iconColor: 'primary', titleIconStart: 'home' } });
+		const icon = container.querySelector('ion-icon');
+		expect(icon?.getAttribute('color')).toBe('primary');
+	});
+
+	it('renders with tourId data attribute', () => {
+		const clicked = vi.fn();
+		const { container } = render(Card, { props: { clicked, title: 'Tour', tourId: 'tour-step-1' } });
+		const card = container.querySelector('ion-card');
+		expect(card?.dataset.tour).toBe('tour-step-1');
+	});
+
+	it('renders with indexLabel id', () => {
+		const { container } = render(Card, { props: { indexLabel: 'my-card-id', title: 'ID Card' } });
+		const card = container.querySelector('ion-card#my-card-id');
+		expect(card).toBeTruthy();
+	});
+
+	it('renders subtitle', () => {
+		const { container } = render(Card, { props: { subtitle: 'Subtitle Text', title: 'Title' } });
+		const subtitle = container.querySelector('ion-card-subtitle');
+		expect(subtitle?.textContent).toBe('Subtitle Text');
+	});
+
+	it('uses title as ariaLabel when ariaLabel not provided', () => {
+		const clicked = vi.fn();
+		const { container } = render(Card, { props: { clicked, title: 'Accessible Card' } });
+		const card = container.querySelector('ion-card');
+		expect(card?.getAttribute('aria-label')).toBe('Accessible Card');
+	});
+
+	it('uses custom ariaLabel when provided', () => {
+		const clicked = vi.fn();
+		const { container } = render(Card, { props: { ariaLabel: 'Custom Label', clicked, title: 'Card' } });
+		const card = container.querySelector('ion-card');
+		expect(card?.getAttribute('aria-label')).toBe('Custom Label');
+	});
+
+	it('fires titleIconEndClicked handler when title icon button is clicked', async () => {
+		const titleIconEndClicked = vi.fn();
+		const { container } = render(Card, {
+			props: {
+				title: 'Clickable Icon',
+				titleIconEnd: 'settings',
+				titleIconEndClicked
+			}
+		});
+		const button = container.querySelector('ion-card-title ion-button');
+		expect(button).toBeTruthy();
+		await fireEvent.click(button!);
+		expect(titleIconEndClicked).toHaveBeenCalled();
+	});
+
+	it('renders card with border prop (color is transparent)', () => {
+		const { container } = render(Card, { props: { border: 'primary', title: 'Bordered' } });
+		const card = container.querySelector('ion-card');
+		// When border is set, color defaults to 'transparent'
+		expect(card?.getAttribute('color')).toBe('transparent');
+	});
 });

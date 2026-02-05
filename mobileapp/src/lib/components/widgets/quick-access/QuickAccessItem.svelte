@@ -1,20 +1,19 @@
 <script lang="ts">
-	import type { QuickAccessItem } from '$lib/models/ui';
+	import type { QuickAccessItemModel } from '$lib/models/ui';
 
 	import { useSortable } from '@dnd-kit-svelte/svelte/sortable';
 	import * as icons from 'ionicons/icons';
 	import { closeOutline } from 'ionicons/icons';
 
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
-	import Card from '$lib/components/widgets/ionic/Card.svelte';
+	import { Button, Card } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 
 	type Properties = {
 		editMode: boolean;
 		index: number;
-		item: QuickAccessItem;
+		item: QuickAccessItemModel;
 		isOverlay?: boolean;
-		onClick: (item: QuickAccessItem) => void;
+		onClick: (item: QuickAccessItemModel) => void;
 		onPointerDown: () => void;
 		onPointerUp: () => void;
 		onRemove: (id: string) => void;

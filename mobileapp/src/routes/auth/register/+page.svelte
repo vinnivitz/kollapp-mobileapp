@@ -4,13 +4,11 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
-	import { registerSchema } from '$lib/api/schema/authentication';
+	import { registerSchema } from '$lib/api/schemas/authentication';
 	import { publicUserService } from '$lib/api/services';
-	import Layout from '$lib/components/layout/Layout.svelte';
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
-	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
-	import Welcome from '$lib/components/widgets/Welcome.svelte';
+	import { Layout } from '$lib/components/layout';
+	import { WelcomeWidget } from '$lib/components/widgets';
+	import { Button, Card, InputItem } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 	import { Form } from '$lib/models/ui';
 	import { customForm, informationModal, passwordConfirmationValidator } from '$lib/utility';
@@ -33,7 +31,7 @@
 
 <Layout>
 	<div class="mb-6">
-		<Welcome />
+		<WelcomeWidget />
 	</div>
 	{@render joinCard()}
 	{@render registerCard()}

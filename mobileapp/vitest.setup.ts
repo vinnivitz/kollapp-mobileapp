@@ -88,6 +88,13 @@ vi.mock('$lib/stores', () => {
 	};
 
 	return {
+		exportModeStore: {
+			set: vi.fn(),
+			subscribe: (run: (value: boolean) => void) => {
+				run(false);
+				return vi.fn();
+			}
+		},
 		globalPopoverStore: { datetimeInputItem },
 		initializationStore: {
 			loaded: {
@@ -219,6 +226,14 @@ vi.mock('$lib/utility', () => ({
 	},
 	getDateFnsLocale: () => {},
 	navigateBack: vi.fn().mockResolvedValue(vi.fn()),
+	parser: {
+		currency: (value: string) => Number.parseFloat(value.replaceAll(/[^\d.-]/g, '')) * 100,
+		date: (date: Date | string | undefined) => {
+			if (!date) return '';
+			if (typeof date === 'string') return date;
+			return date.toISOString().slice(0, 10);
+		}
+	},
 	refreshDataStores: vi.fn().mockResolvedValue(vi.fn()),
 	triggerClickByLabel: vi.fn()
 }));
@@ -253,6 +268,15 @@ if (!globalThis.IntersectionObserver) {
 		rootMargin = '';
 		thresholds = [] as readonly number[];
 	} as unknown as typeof IntersectionObserver;
+}
+
+if (!globalThis.ResizeObserver) {
+	globalThis.ResizeObserver = class MockResizeObserver {
+		constructor(_callback: ResizeObserverCallback) {}
+		disconnect = vi.fn();
+		observe = vi.fn();
+		unobserve = vi.fn();
+	} as unknown as typeof ResizeObserver;
 }
 
 vi.mock('@ionic/core', () => ({

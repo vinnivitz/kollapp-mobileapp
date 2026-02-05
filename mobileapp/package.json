@@ -110,6 +110,7 @@
 		"date-fns": "^4.1.0",
 		"driver.js": "^1.4.0",
 		"file-saver": "^2.0.5",
+		"html-to-image": "^1.11.13",
 		"ionicons": "^8.0.13",
 		"jspdf": "^4.0.0",
 		"leaflet": "2.0.0-alpha.1",

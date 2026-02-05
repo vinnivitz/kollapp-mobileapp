@@ -1,4 +1,4 @@
-import type { SearchableItemTO } from '$lib/api/dto';
+import type { SearchableItemTO } from '$lib/api/dtos';
 import type { OrganizationRole } from '@kollapp/api-types';
 import type { Expression, Identifier, MemberExpression } from 'estree';
 

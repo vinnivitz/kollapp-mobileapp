@@ -1,5 +1,5 @@
 import type { QuickAccessItemsMap, QuickAccessStoreItem } from '$lib/models/stores';
-import type { QuickAccessItem } from '$lib/models/ui';
+import type { QuickAccessItemModel } from '$lib/models/ui';
 
 import { get, writable } from 'svelte/store';
 
@@ -12,7 +12,7 @@ import { getOrganizationId, getStoredValue, hasOrganizationRole, storeValue } fr
 /**
  * Available special widgets that can be added to quick access
  */
-export const SPECIAL_WIDGETS = (): QuickAccessItem[] => {
+export const SPECIAL_WIDGETS = (): QuickAccessItemModel[] => {
 	const $t = get(t);
 	return [
 		{
@@ -39,20 +39,20 @@ export const SPECIAL_WIDGETS = (): QuickAccessItem[] => {
 			specialWidgetId: 'budget-chart-card',
 			widgetType: 'special'
 		}
-	] satisfies QuickAccessItem[];
+	] satisfies QuickAccessItemModel[];
 };
 
 type QuickAccessStoreType = {
-	addItem: (item: QuickAccessItem) => Promise<void>;
-	getItems: () => QuickAccessItem[];
+	addItem: (item: QuickAccessItemModel) => Promise<void>;
+	getItems: () => QuickAccessItemModel[];
 	initialize: () => Promise<void>;
 	removeItem: (id: string) => Promise<void>;
-	reorderItems: (items: QuickAccessItem[]) => Promise<void>;
+	reorderItems: (items: QuickAccessItemModel[]) => Promise<void>;
 	setEditMode: (enabled: boolean) => void;
 	subscribe: (run: (value: QuickAccessStoreItem) => void) => () => void;
 };
 
-function filterByAccess(items: QuickAccessItem[]): QuickAccessItem[] {
+function filterByAccess(items: QuickAccessItemModel[]): QuickAccessItemModel[] {
 	const isManager = hasOrganizationRole('ROLE_ORGANIZATION_MANAGER');
 	return items.filter((item) => !item.accessible || isManager || hasOrganizationRole(item.accessible));
 }
@@ -97,7 +97,7 @@ function createStore(): QuickAccessStoreType {
 		}
 	}
 
-	async function addItem(item: QuickAccessItem): Promise<void> {
+	async function addItem(item: QuickAccessItemModel): Promise<void> {
 		const orgId = getOrganizationId();
 		if (orgId === undefined) return;
 
@@ -126,7 +126,7 @@ function createStore(): QuickAccessStoreType {
 		});
 	}
 
-	async function reorderItems(items: QuickAccessItem[]): Promise<void> {
+	async function reorderItems(items: QuickAccessItemModel[]): Promise<void> {
 		const organizationId = getOrganizationId();
 		if (!organizationId) return;
 
@@ -141,7 +141,7 @@ function createStore(): QuickAccessStoreType {
 		update((state) => ({ ...state, editMode: enabled }));
 	}
 
-	function getItems(): QuickAccessItem[] {
+	function getItems(): QuickAccessItemModel[] {
 		return get({ subscribe }).items;
 	}
 

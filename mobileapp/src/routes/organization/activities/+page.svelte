@@ -5,7 +5,7 @@
 	import {
 		barbellOutline,
 		calendarClearOutline,
-		cardOutline,
+		cashOutline,
 		createOutline,
 		documentOutline,
 		flashOutline,
@@ -17,19 +17,22 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
-	import { createActivitySchema } from '$lib/api/schema/organization';
+	import { createActivitySchema } from '$lib/api/schemas/organization';
 	import { activityService } from '$lib/api/services';
-	import Layout from '$lib/components/layout/Layout.svelte';
-	import FadeInOut from '$lib/components/utility/FadeInOut.svelte';
-	import Filter from '$lib/components/widgets/budget/PostingFilter.svelte';
-	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import Datetime from '$lib/components/widgets/ionic/Datetime.svelte';
-	import DatetimeInputItem from '$lib/components/widgets/ionic/DatetimeInputItem.svelte';
-	import FabButton from '$lib/components/widgets/ionic/FabButton.svelte';
-	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
-	import LocationInputItem from '$lib/components/widgets/ionic/LocationInputItem.svelte';
-	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
-	import SegmentItem from '$lib/components/widgets/ionic/SegmentItem.svelte';
+	import { Layout } from '$lib/components/layout';
+	import { FadeInOut } from '$lib/components/utility';
+	import { FilterWidget } from '$lib/components/widgets';
+	import {
+		Card,
+		Datetime,
+		DatetimeInputItem,
+		FabButton,
+		InputItem,
+		LocationInputItem,
+		Modal,
+		SegmentItem
+	} from '$lib/components/widgets/ionic';
+	import IconLabel from '$lib/components/widgets/ionic/IconLabel.svelte';
 	import { t } from '$lib/locales';
 	import {
 		chipSection,
@@ -367,7 +370,7 @@
 	{/if}
 
 	<div class="sticky top-14 right-0 left-0 z-10">
-		<Filter config={filterConfig} />
+		<FilterWidget config={filterConfig} />
 	</div>
 	<div data-tour={TourStepId.ACTIVITIES.LIST}>
 		{@render activityList()}
@@ -415,20 +418,17 @@
 		<div class="flex flex-col justify-center">
 			<ion-text class="truncate">{activity.name}</ion-text>
 			<div class="flex flex-row items-center gap-3">
-				<div class="flex items-center justify-center gap-1">
-					<ion-icon icon={calendarClearOutline} color="medium"></ion-icon>
-					<ion-text color="medium" class="text-xs">{formatter.date(activity.date)}</ion-text>
-				</div>
-				<div class="flex items-center justify-center gap-1">
-					<ion-icon icon={locationOutline} color="medium"></ion-icon>
-					<ion-text color="medium" class="max-w-[60vw] truncate text-xs">{activity.location}</ion-text>
-				</div>
+				<IconLabel icon={calendarClearOutline} label={formatter.date(activity.date)} size="xs" />
+				<IconLabel icon={locationOutline} label={activity.location} size="xs" />
 			</div>
 			<div class="mt-1 flex flex-row items-center gap-3">
-				<div class="flex items-center justify-center gap-1">
-					<ion-icon icon={cardOutline} color="medium"></ion-icon>
-					<ion-text color="medium" class="max-w-[60vw] truncate text-xs">{activity.activityPostings.length}</ion-text>
-				</div>
+				<IconLabel
+					icon={cashOutline}
+					label={$t('routes.organization.activities.page.activities.postings', {
+						value: activity.activityPostings.length
+					})}
+					size="xs"
+				/>
 			</div>
 		</div>
 	</Card>

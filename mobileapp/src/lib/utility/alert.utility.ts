@@ -44,7 +44,8 @@ export async function showAlert(message: string, config?: AlertConfig): Promise<
 				duration: config?.duration ?? environment.toastDuration,
 				icon: type === AlertType.ERROR ? alertCircleOutline : checkmarkCircleSharp,
 				message,
-				swipeGesture: 'vertical'
+				swipeGesture: 'vertical',
+				translucent: true
 			});
 
 			toast.onDidDismiss().then(() => (toast = undefined));

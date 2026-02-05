@@ -5,11 +5,9 @@
 	import { dev } from '$app/environment';
 	import { navigating, page } from '$app/state';
 
-	import FadeInOut from '../utility/FadeInOut.svelte';
-
-	import Header from '$lib/components/layout/Header.svelte';
-	import Menu from '$lib/components/layout/Menu.svelte';
-	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
+	import { Header, Menu } from '$lib/components/layout';
+	import { FadeInOut } from '$lib/components/utility';
+	import { LabeledItem } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 	import { initializationStore, organizationStore } from '$lib/stores';
 	import { refreshDataStores } from '$lib/utility';
@@ -37,6 +35,8 @@
 	let currentRoute = $state<string>(page.route.id ?? '');
 
 	const loaded = $derived(initializationStore.loaded);
+
+	const loadedServer = $derived(initializationStore.loadedServer);
 
 	const isNavigating = $derived(navigating.to && navigating.to?.route.id !== currentRoute);
 
@@ -102,7 +102,7 @@
 
 <div class="ion-page" id="menu">
 	{#if title}
-		<Header {title} {showBackButton} {loading}></Header>
+		<Header loadedServer={$loadedServer} {title} {showBackButton} {loading}></Header>
 	{/if}
 	<ion-content class="ion-padding" class:no-overflow={!scrollable}>
 		{#if $loaded && !loading && !isNavigating}

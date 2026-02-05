@@ -14,11 +14,10 @@
 	import { resolve } from '$app/paths';
 
 	import { budgetService } from '$lib/api/services';
-	import Layout from '$lib/components/layout/Layout.svelte';
-	import PostingOverviewModal from '$lib/components/widgets/budget/PostingOverviewModal.svelte';
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
-	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import QuickAccessGrid from '$lib/components/widgets/quick-access/QuickAccessGrid.svelte';
+	import { Layout } from '$lib/components/layout';
+	import { QuickAccessWidget } from '$lib/components/widgets';
+	import { PostingOverviewModal } from '$lib/components/widgets/budget';
+	import { Button, Card } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 	import { organizationStore, userStore } from '$lib/stores';
 	import { hasOrganizationRole } from '$lib/utility';
@@ -81,23 +80,25 @@
 				{$t('routes.page.page.account-card.greetings', { value: user.username })}
 			</ion-text>
 		</div>
-		<Button
-			size="small"
-			fill="clear"
-			color="medium"
-			icon={notificationsOffOutline}
-			label={$t('routes.page.page.account-card.notifications.no-notes')}
-			clicked={() => goto(resolve('/account/notifications'))}
-		/>
-		{#if userPostings.length > 0}
+		<div class="flex flex-col">
 			<Button
 				size="small"
-				icon={cardOutline}
-				fill="outline"
-				label={$t('routes.page.page.account-card.open-postings.button.label', { value: userPostings.length })}
-				clicked={() => (transactionOverviewOpen = true)}
+				fill="clear"
+				color="medium"
+				icon={notificationsOffOutline}
+				label={$t('routes.page.page.account-card.notifications.no-notes')}
+				clicked={() => goto(resolve('/account/notifications'))}
 			/>
-		{/if}
+			{#if userPostings.length > 0}
+				<Button
+					size="small"
+					icon={cardOutline}
+					fill="outline"
+					label={$t('routes.page.page.account-card.open-postings.button.label', { value: userPostings.length })}
+					clicked={() => (transactionOverviewOpen = true)}
+				/>
+			{/if}
+		</div>
 	</div>
 {/snippet}
 
@@ -142,7 +143,7 @@
 {/snippet}
 
 {#snippet quickAccess()}
-	<QuickAccessGrid />
+	<QuickAccessWidget />
 {/snippet}
 
 {#snippet pendingMembers()}

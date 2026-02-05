@@ -107,4 +107,79 @@ describe('widgets/ionic/Modal', () => {
 		expect(modal).toBeTruthy();
 		expect(modal?.getAttribute('breakpoints')).toBeNull();
 	});
+
+	it('shows spinner when loading is true', () => {
+		const { container } = render(Modal, {
+			props: { children, loading: true, open: true, title: 'Loading' }
+		});
+
+		const spinner = container.querySelector('ion-spinner');
+		expect(spinner).toBeTruthy();
+	});
+
+	it('hides content when loading is true', () => {
+		const { container } = render(Modal, {
+			props: { children, loading: true, open: true, title: 'Loading' }
+		});
+
+		expect(container.textContent).not.toContain('Child Content');
+	});
+
+	it('shows content when loading is false', () => {
+		const { container } = render(Modal, {
+			props: { children, loading: false, open: true, title: 'Loaded' }
+		});
+
+		expect(container.textContent).toContain('Child Content');
+		expect(container.querySelector('ion-spinner')).toBeFalsy();
+	});
+
+	it('renders with custom cancel and confirm icons', () => {
+		const { container } = render(Modal, {
+			props: {
+				cancelIcon: 'close-outline',
+				children,
+				confirmIcon: 'checkmark-outline',
+				open: true,
+				title: 'Custom Icons'
+			}
+		});
+
+		const buttons = container.querySelectorAll('ion-buttons ion-button');
+		expect(buttons.length).toBeGreaterThanOrEqual(2);
+	});
+
+	it('renders with custom cancel and confirm labels', () => {
+		const { container } = render(Modal, {
+			props: {
+				cancelLabel: 'Abbrechen',
+				children,
+				confirmLabel: 'Speichern',
+				labels: true,
+				open: true,
+				title: 'Custom Labels'
+			}
+		});
+
+		expect(container.textContent).toContain('Abbrechen');
+		expect(container.textContent).toContain('Speichern');
+	});
+
+	it('does not show title when not provided', () => {
+		const { container } = render(Modal, {
+			props: { children, open: true }
+		});
+
+		const title = container.querySelector('ion-title');
+		expect(title?.textContent?.trim()).toBeFalsy();
+	});
+
+	it('renders with initial breakpoint', () => {
+		const { container } = render(Modal, {
+			props: { children, initialBreakPoint: 0.5, open: true, title: 'Half' }
+		});
+
+		const modal = container.querySelector('ion-modal');
+		expect(modal?.getAttribute('initial-breakpoint')).toBe('0.5');
+	});
 });

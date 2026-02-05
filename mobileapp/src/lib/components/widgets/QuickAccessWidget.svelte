@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { QuickAccessItem } from '$lib/models/ui';
+	import type { QuickAccessItemModel } from '$lib/models/ui';
 
 	import { Haptics } from '@capacitor/haptics';
 	import { TZDate } from '@date-fns/tz';
@@ -11,12 +11,10 @@
 	import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
 
-	import QuickAccessAddModal from './QuickAccessAddModal.svelte';
-	import QuickAccessItemComponent from './QuickAccessItem.svelte';
-	import QuickAccessSpecialWidget from './QuickAccessSpecialWidget.svelte';
+	import IconLabel from './ionic/IconLabel.svelte';
 
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
-	import FabButton from '$lib/components/widgets/ionic/FabButton.svelte';
+	import { Button, FabButton } from '$lib/components/widgets/ionic';
+	import { QuickAccessAddModal, QuickAccessItem, QuickAccessSpecialWidget } from '$lib/components/widgets/quick-access';
 	import { t } from '$lib/locales';
 	import { TourStepId } from '$lib/models/ui';
 	import { organizationStore, quickAccessStore } from '$lib/stores';
@@ -30,7 +28,7 @@
 	let items = $derived(storeState.items);
 	const editMode = $derived(storeState.editMode);
 
-	let dndItems = $state<Record<string, QuickAccessItem[]>>({ items: [] });
+	let dndItems = $state<Record<string, QuickAccessItemModel[]>>({ items: [] });
 	let modalOpen = $state<boolean>(false);
 
 	const organization = $derived($organizationStore);
@@ -81,7 +79,7 @@
 		}
 	}
 
-	async function handleItemClick(item: QuickAccessItem): Promise<void> {
+	async function handleItemClick(item: QuickAccessItemModel): Promise<void> {
 		if (editMode) return;
 
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
@@ -112,12 +110,12 @@
 
 <div data-tour={TourStepId.HOME.QUICK_ACCESS} class="relative mt-5" use:clickOutside={onExitEditMode}>
 	{#if !editMode && dndItems.items && dndItems.items.length > 0}
-		<ion-text color="medium" class="flex flex-row items-center justify-center gap-1">
-			<ion-icon icon={informationCircleOutline} aria-hidden="true"></ion-icon>
-			<ion-label class="block text-center text-sm">
-				{$t('routes.page.page.quick-access.hint')}
-			</ion-label>
-		</ion-text>
+		<IconLabel
+			color="medium"
+			icon={informationCircleOutline}
+			label={$t('routes.page.page.quick-access.hint')}
+			size="sm"
+		/>
 	{/if}
 	{#if editMode}
 		<Button
@@ -155,7 +153,7 @@
 						onPointerUp={clearLongPressTimer}
 					/>
 				{:else}
-					<QuickAccessItemComponent
+					<QuickAccessItem
 						{item}
 						{index}
 						{editMode}
@@ -189,7 +187,7 @@
 							onPointerUp={clearLongPressTimer}
 						/>
 					{:else}
-						<QuickAccessItemComponent
+						<QuickAccessItem
 							{item}
 							index={0}
 							{editMode}

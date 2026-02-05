@@ -1,4 +1,4 @@
-import type { CodeTO } from '$lib/api/dto';
+import type { CodeTO } from '$lib/api/dtos';
 
 import { get } from 'svelte/store';
 import { type AnyObject, object, type ObjectSchema, string } from 'yup';

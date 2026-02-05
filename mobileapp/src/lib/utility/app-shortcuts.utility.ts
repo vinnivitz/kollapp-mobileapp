@@ -1,4 +1,4 @@
-import type { QuickAccessItem } from '$lib/models/ui';
+import type { QuickAccessItemModel } from '$lib/models/ui';
 
 import { AppShortcuts, type Shortcut } from '@capawesome/capacitor-app-shortcuts';
 
@@ -41,7 +41,7 @@ const ICON_MAP: Record<string, { android: string; ios: string }> = {
  * @param item The quick access item to convert.
  * @returns A shortcut object for the App Shortcuts plugin.
  */
-function toShortcut(item: QuickAccessItem): Shortcut {
+function toShortcut(item: QuickAccessItemModel): Shortcut {
 	const iconMapping = ICON_MAP[item.icon] ?? { android: 'ic_menu_agenda', ios: 'bolt' };
 
 	return {
@@ -58,7 +58,7 @@ function toShortcut(item: QuickAccessItem): Shortcut {
  * Should be called after quick access store is initialized and when items change.
  * @param items The current quick access items from the store.
  */
-export async function syncAppShortcuts(items: QuickAccessItem[]): Promise<void> {
+export async function syncAppShortcuts(items: QuickAccessItemModel[]): Promise<void> {
 	if (dev) return;
 
 	try {
@@ -98,7 +98,7 @@ export async function clearAppShortcuts(): Promise<void> {
  * @param shortcutId The ID of the clicked shortcut.
  * @param items The current quick access items to find the route.
  */
-async function handleShortcutClick(shortcutId: string, items: QuickAccessItem[]): Promise<void> {
+async function handleShortcutClick(shortcutId: string, items: QuickAccessItemModel[]): Promise<void> {
 	const item = items.find((index) => index.id === shortcutId);
 
 	if (!item) {
@@ -120,7 +120,7 @@ async function handleShortcutClick(shortcutId: string, items: QuickAccessItem[])
  * Should be called once when the app starts.
  * @param getItems A function that returns the current quick access items.
  */
-export async function initAppShortcutsListener(getItems: () => QuickAccessItem[]): Promise<void> {
+export async function initAppShortcutsListener(getItems: () => QuickAccessItemModel[]): Promise<void> {
 	if (dev) return;
 
 	try {
@@ -138,7 +138,7 @@ export async function initAppShortcutsListener(getItems: () => QuickAccessItem[]
  * Full initialization: sets up listener and syncs shortcuts from quick access items.
  * @param getItems A function that returns the current quick access items.
  */
-export async function initAppShortcuts(getItems: () => QuickAccessItem[]): Promise<void> {
+export async function initAppShortcuts(getItems: () => QuickAccessItemModel[]): Promise<void> {
 	await initAppShortcutsListener(getItems);
 	await syncAppShortcuts(getItems());
 }

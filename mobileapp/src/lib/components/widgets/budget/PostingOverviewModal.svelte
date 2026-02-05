@@ -23,17 +23,18 @@
 	} from 'ionicons/icons';
 	import { SvelteMap } from 'svelte/reactivity';
 
-	import FadeInOut from '$lib/components/utility/FadeInOut.svelte';
-	import PostingFilter from '$lib/components/widgets/budget/PostingFilter.svelte';
-	import PostingItem from '$lib/components/widgets/budget/PostingItem.svelte';
-	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
+	import { FadeInOut } from '$lib/components/utility';
+	import { FilterWidget } from '$lib/components/widgets';
+	import { PostingItem } from '$lib/components/widgets/budget';
+	import { Modal } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 	import { chipMultiSection, chipSection, dateRangeSection, multiSelectSection } from '$lib/models/ui';
 	import {
 		exportPostings,
 		getBudgetCategoryNameById,
 		getOrganizationName,
-		getUsernameByPersonOfOrganizationId
+		getUsernameByPersonOfOrganizationId,
+		parser
 	} from '$lib/utility';
 
 	type SortKey = 'activity' | 'category' | 'date' | 'personOfOrganization' | 'purpose';
@@ -194,7 +195,9 @@
 			dateRangeSection('dateRange', {
 				defaultFromValue: getMinPostingDate(),
 				defaultToValue: getMaxPostingDate(),
-				label: $t('components.posting-overview.filter.date-range')
+				label: $t('components.posting-overview.filter.date-range'),
+				max: getMaxPostingDate(),
+				min: getMinPostingDate()
 			}),
 			...(showPersonOfOrganizationFilter
 				? [
@@ -354,14 +357,14 @@
 
 	function getMinPostingDate(): string {
 		return stablePostings.length > 0
-			? new TZDate(Math.min(...stablePostings.map((posting) => new TZDate(posting.date).getTime()))).toISOString()
-			: new TZDate().toISOString();
+			? parser.date(new TZDate(Math.min(...stablePostings.map((posting) => new TZDate(posting.date).getTime()))))
+			: parser.date(new TZDate());
 	}
 
 	function getMaxPostingDate(): string {
 		return stablePostings.length > 0
-			? new TZDate(Math.max(...stablePostings.map((posting) => new TZDate(posting.date).getTime()))).toISOString()
-			: new TZDate().toISOString();
+			? parser.date(new TZDate(Math.max(...stablePostings.map((posting) => new TZDate(posting.date).getTime()))))
+			: parser.date(new TZDate());
 	}
 
 	function onModalPresented(): void {
@@ -374,7 +377,7 @@
 		(event.target as HTMLIonInfiniteScrollElement).complete();
 	}
 
-	function onExportPostings(): void {
+	async function onExportPostings(): Promise<void> {
 		const config: ExportPostingsConfig = {
 			activities,
 			activityDate: activity?.date!,
@@ -385,7 +388,7 @@
 			title: $t('routes.organization.activities.slug.page.postings-summary.export.title')
 		};
 
-		exportPostings(filteredPostings, config);
+		await exportPostings(filteredPostings, config);
 	}
 
 	function onEditEnd(dismissParent?: boolean): void {
@@ -406,8 +409,8 @@
 	lazy
 >
 	<div class="relative">
-		<div class="sticky top-0 left-0 z-10 mb-3 flex flex-row items-center justify-between gap-2">
-			<PostingFilter {onExportPostings} classList="flex-1" config={filterConfig} />
+		<div class="sticky top-0 left-0 z-10 flex flex-row items-center justify-between gap-2 pb-3">
+			<FilterWidget onAction={onExportPostings} classList="flex-1" config={filterConfig} />
 		</div>
 		{#if isLoading}
 			<div class="mt-3 flex flex-col items-center justify-center gap-2 text-center">

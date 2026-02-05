@@ -9,7 +9,6 @@
 
 	type Properties = {
 		label: string;
-		card?: boolean;
 		classList?: string;
 		hidden?: boolean;
 		icon?: string;
@@ -22,7 +21,6 @@
 	);
 
 	let {
-		card,
 		changed,
 		classList = '',
 		hidden = false,
@@ -98,7 +96,7 @@
 </script>
 
 <div bind:this={containerElement} data-name={name} class="contents" class:hidden>
-	<CustomItem {classList} {card} {icon} clicked={onOpenDatetimeModal} {name} {hidden}>
+	<CustomItem {classList} {icon} clicked={onOpenDatetimeModal} {name} {hidden}>
 		<div class="flex flex-col">
 			<ion-text class="ms-3 pt-2 text-xs">{label}</ion-text>
 			<ion-text class="my-2 ms-4 truncate">

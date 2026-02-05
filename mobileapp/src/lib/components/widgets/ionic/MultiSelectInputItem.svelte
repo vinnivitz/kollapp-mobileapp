@@ -4,11 +4,8 @@
 	import { checkmarkOutline } from 'ionicons/icons';
 	import { SvelteSet } from 'svelte/reactivity';
 
-	import CustomItem from './CustomItem.svelte';
-	import Modal from './Modal.svelte';
-	import ToggleItem from './ToggleItem.svelte';
-
-	import FadeInOut from '$lib/components/utility/FadeInOut.svelte';
+	import { FadeInOut } from '$lib/components/utility';
+	import { CustomItem, Modal, ToggleItem } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 
 	type Properties = {

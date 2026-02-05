@@ -2,7 +2,7 @@ import { render } from '@testing-library/svelte';
 import { tick } from 'svelte';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import QuickAccessGrid from '$lib/components/widgets/quick-access/QuickAccessGrid.svelte';
+import QuickAccessGrid from '$lib/components/widgets/QuickAccessWidget.svelte';
 import { quickAccessStore } from '$lib/stores';
 
 // Mock DragDropProvider and related
@@ -78,20 +78,6 @@ describe('widgets/quick-access/QuickAccessGrid', () => {
 
 			const tourElement = container.querySelector('[data-tour]');
 			expect(tourElement).toBeTruthy();
-		});
-
-		it('has relative positioning container', () => {
-			const { container } = render(QuickAccessGrid);
-
-			const relativeContainer = container.querySelector('.relative');
-			expect(relativeContainer).toBeTruthy();
-		});
-
-		it('has top margin on main container', () => {
-			const { container } = render(QuickAccessGrid);
-
-			const containerWithMargin = container.querySelector('.mt-5');
-			expect(containerWithMargin).toBeTruthy();
 		});
 	});
 

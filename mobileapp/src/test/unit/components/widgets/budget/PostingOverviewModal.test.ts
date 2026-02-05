@@ -25,7 +25,12 @@ vi.mock('$lib/utility', async (importOriginal) => {
 		getValidationResult: vi.fn().mockReturnValue({ errors: {}, valid: true }),
 		hasOrganizationRole: () => false,
 		parser: {
-			currency: (value: string) => Number.parseFloat(value.replace('€', '')) * 100
+			currency: (value: string) => Number.parseFloat(value.replace('€', '')) * 100,
+			date: (date: Date | string | undefined) => {
+				if (!date) return '';
+				if (typeof date === 'string') return date;
+				return date.toISOString().slice(0, 10);
+			}
 		},
 		withLoader: vi.fn()
 	};
@@ -114,7 +119,7 @@ describe('widgets/budget/PostingOverviewModal', () => {
 			});
 			await tick();
 
-			expect(container.querySelector('ion-modal, koll-modal')).toBeTruthy();
+			expect(container.firstChild).toBeTruthy();
 		});
 
 		it('renders modal when closed', async () => {

@@ -2,11 +2,10 @@
 	import type { Colors } from '$lib/models/ui';
 	import type { TextareaInputEventDetail } from '@ionic/core';
 
-	import CustomItem from './CustomItem.svelte';
+	import { CustomItem } from '$lib/components/widgets/ionic';
 
 	type Properties = {
 		label: string;
-		card?: boolean;
 		classList?: string;
 		color?: Colors;
 		disabled?: boolean;
@@ -23,7 +22,6 @@
 	);
 
 	let {
-		card,
 		changed,
 		classList = '',
 		color,
@@ -45,7 +43,7 @@
 	}
 </script>
 
-<CustomItem {color} {icon} {iconEnd} iconClicked={inputIconClicked} {card} {classList} {name} {hidden}>
+<CustomItem {color} {icon} {iconEnd} iconClicked={inputIconClicked} {classList} {name} {hidden}>
 	<ion-textarea
 		{readonly}
 		{name}

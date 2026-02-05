@@ -3,9 +3,9 @@
 
 	import { notificationsCircleOutline, notificationsOffOutline, notificationsOutline } from 'ionicons/icons';
 
-	import Layout from '$lib/components/layout/Layout.svelte';
-	import FadeInOut from '$lib/components/utility/FadeInOut.svelte';
-	import SegmentItem from '$lib/components/widgets/ionic/SegmentItem.svelte';
+	import { Layout } from '$lib/components/layout';
+	import { FadeInOut } from '$lib/components/utility';
+	import { SegmentItem } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 
 	enum NotificationFilter {

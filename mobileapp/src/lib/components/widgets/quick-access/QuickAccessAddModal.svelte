@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { SearchableItemTO } from '$lib/api/dto';
-	import type { ItemSlidingOption, QuickAccessItem } from '$lib/models/ui';
+	import type { SearchableItemTO } from '$lib/api/dtos';
+	import type { ItemSlidingOption, QuickAccessItemModel } from '$lib/models/ui';
 
 	import * as icons from 'ionicons/icons';
 	import { addCircleOutline, trashOutline } from 'ionicons/icons';
@@ -9,9 +9,8 @@
 	import type { RouteId } from '$app/types';
 
 	import { searchableService } from '$lib/api/services';
-	import FadeInOut from '$lib/components/utility/FadeInOut.svelte';
-	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
-	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
+	import { FadeInOut } from '$lib/components/utility';
+	import { CustomItem, Modal } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 	import { quickAccessStore, SPECIAL_WIDGETS } from '$lib/stores';
 
@@ -53,7 +52,7 @@
 	}
 
 	function handleAddItem(item: SearchableItemTO): void {
-		const newItem: QuickAccessItem = {
+		const newItem: QuickAccessItemModel = {
 			icon: item.icon ?? 'ellipsisHorizontalOutline',
 			id: `${item.route}-${Date.now()}`,
 			label: item.label,
@@ -64,7 +63,7 @@
 		searchValue = '';
 	}
 
-	function handleAddSpecialWidget(widget: QuickAccessItem): void {
+	function handleAddSpecialWidget(widget: QuickAccessItemModel): void {
 		quickAccessStore.addItem(widget);
 	}
 
@@ -86,7 +85,7 @@
 		];
 	}
 
-	function getAddSpecialWidgetSlidingOption(widget: QuickAccessItem): ItemSlidingOption[] {
+	function getAddSpecialWidgetSlidingOption(widget: QuickAccessItemModel): ItemSlidingOption[] {
 		return [
 			{
 				color: 'success',

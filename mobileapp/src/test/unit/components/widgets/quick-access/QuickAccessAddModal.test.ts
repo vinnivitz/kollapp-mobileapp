@@ -3,7 +3,7 @@ import { tick } from 'svelte';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { searchableService } from '$lib/api/services';
-import QuickAccessAddModal from '$lib/components/widgets/quick-access/QuickAccessAddModal.svelte';
+import { QuickAccessAddModal } from '$lib/components/widgets/quick-access';
 import { quickAccessStore, SPECIAL_WIDGETS } from '$lib/stores';
 
 // Mock navigation

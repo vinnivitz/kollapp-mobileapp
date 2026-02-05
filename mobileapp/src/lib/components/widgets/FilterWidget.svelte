@@ -3,23 +3,40 @@
 
 	import { downloadOutline, filterOutline, refreshOutline, saveOutline } from 'ionicons/icons';
 
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
-	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import Chip from '$lib/components/widgets/ionic/Chip.svelte';
-	import DatetimeInputItem from '$lib/components/widgets/ionic/DatetimeInputItem.svelte';
-	import MultiSelectInputItem from '$lib/components/widgets/ionic/MultiSelectInputItem.svelte';
-	import Popover from '$lib/components/widgets/ionic/Popover.svelte';
+	import {
+		Button,
+		Card,
+		Chip,
+		DatetimeInputItem,
+		MultiSelectInputItem,
+		Popover,
+		ToggleItem
+	} from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 
 	type Properties = {
 		config: FilterConfig<TState>;
-		classList?: string;
-		onExportPostings?: () => void;
-	};
+	} & (
+		| {
+				classList?: string;
+				dismissed?: never;
+				open?: never;
+				onAction?: () => void;
+		  }
+		| {
+				open: boolean;
+				classList?: never;
+				onAction?: never;
+				dismissed: () => void;
+		  }
+	);
 
-	let { classList = '', config, onExportPostings }: Properties = $props();
+	let { classList = '', config, dismissed, onAction, open: openExternal }: Properties = $props();
 
-	let open = $state(false);
+	const isHeadless = $derived(openExternal !== undefined);
+
+	let openInternal = $state(false);
+	const open = $derived(isHeadless ? (openExternal as boolean) : openInternal);
 	let draft = $state<Record<string, unknown>>({});
 
 	const showSearchbar = $derived(!!config.searchbar);
@@ -31,6 +48,10 @@
 			switch (section.type) {
 				case 'multi-select': {
 					defaults[section.key] = section.items.filter((item) => item.selected).map((item) => item.data.id);
+					break;
+				}
+				case 'toggle': {
+					defaults[section.key] = section.defaultValue;
 					break;
 				}
 				case 'date-range': {
@@ -51,12 +72,9 @@
 
 	const effectiveState = $derived(config.state ?? getDefaultsFromSections());
 
-	const multiSelectDefaultValue = $derived(
-		config.sections
-			.find((section) => section.type === 'multi-select')
-			?.items.filter((item) => item.selected)
-			.map((item) => item.data.id) ?? []
-	);
+	function getMultiSelectDefaultValue(section: FilterSection & { type: 'multi-select' }): number[] {
+		return section.items.filter((item) => item.selected).map((item) => item.data.id);
+	}
 
 	const hasFiltersApplied = $derived.by(() => {
 		const defaults = getDefaultsFromSections();
@@ -94,8 +112,8 @@
 	}
 
 	async function handleApply(): Promise<void> {
-		open = false;
 		config.onApply(draft as NonNullable<typeof config.state>);
+		closePopover();
 	}
 
 	async function handleReset(): Promise<void> {
@@ -103,12 +121,12 @@
 		draft = defaults;
 		config.onApply(defaults as NonNullable<typeof config.state>);
 		config.onReset?.();
-		open = false;
+		closePopover();
 	}
 
 	function handleDismiss(): void {
 		draft = { ...effectiveState };
-		open = false;
+		closePopover();
 	}
 
 	async function handleInlineReset(): Promise<void> {
@@ -139,21 +157,35 @@
 		return section.type === 'multi-select';
 	}
 
+	function isToggleSection(section: FilterSection): section is FilterSection & { type: 'toggle' } {
+		return section.type === 'toggle';
+	}
+
 	function handleSearchInput(event: CustomEvent): void {
 		const value = event.detail.value ?? '';
 		config.searchbar?.onSearch(value);
 	}
 
 	function openPopover(): void {
-		open = true;
+		if (isHeadless) return;
+		openInternal = true;
+	}
+
+	function closePopover(): void {
+		if (isHeadless) {
+			dismissed?.();
+			return;
+		}
+		openInternal = false;
 	}
 </script>
 
-{#if showSearchbar || showFilterButton}
+{#if !isHeadless && (showSearchbar || showFilterButton)}
 	<div class={classList}>
-		<div class="flex items-center justify-between gap-2">
+		<div class="flex items-center justify-between gap-1">
 			{#if showSearchbar}
 				<ion-searchbar
+					class="px-0!"
 					debounce={100}
 					placeholder={config.searchbar?.placeholder ?? $t('components.widgets.filter.search-placeholder')}
 					onionInput={handleSearchInput}
@@ -163,8 +195,8 @@
 			{#if showFilterButton}
 				<Button fill="solid" color="secondary" clicked={openPopover} icon={filterOutline} />
 			{/if}
-			{#if onExportPostings}
-				<Button color="tertiary" icon={downloadOutline} clicked={() => onExportPostings?.()}></Button>
+			{#if onAction}
+				<Button color="tertiary" icon={downloadOutline} clicked={() => onAction?.()}></Button>
 			{/if}
 		</div>
 		{#if hasFiltersApplied}
@@ -245,7 +277,7 @@
 					/>
 				</div>
 			{:else if isMultiSelectSection(section)}
-				{@const currentValue = getDraftValue(section.key, multiSelectDefaultValue)}
+				{@const currentValue = getDraftValue(section.key, getMultiSelectDefaultValue(section))}
 				<div class="mb-3">
 					{#if section.label}
 						<ion-text color="medium" class="text-sm">
@@ -255,12 +287,23 @@
 					<MultiSelectInputItem
 						value={currentValue}
 						changed={(value) => setDraftValue(section.key, value)}
+						multiple={section.multiple ?? true}
 						allSelectedText={section.allSelectedText}
 						noneSelectedText={section.noneSelectedText}
 						icon={section.icon}
 						label={section.inputLabel}
 						searchPlaceholder={section.searchPlaceholder}
 						items={section.items}
+					/>
+				</div>
+			{:else if isToggleSection(section)}
+				{@const currentValue = getDraftValue(section.key, section.defaultValue)}
+				<div class="mb-3">
+					<ToggleItem
+						icon={section.icon}
+						label={section.label}
+						checked={currentValue}
+						changed={(value?: boolean) => setDraftValue(section.key, value ?? false)}
 					/>
 				</div>
 			{/if}

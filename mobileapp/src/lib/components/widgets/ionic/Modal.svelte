@@ -4,8 +4,7 @@
 	import { saveOutline, trashBinOutline } from 'ionicons/icons';
 	import { onDestroy, type Snippet } from 'svelte';
 
-	import Button from './Button.svelte';
-
+	import { Button } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 	import { modalStore } from '$lib/stores';
 

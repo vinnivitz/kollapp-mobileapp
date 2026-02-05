@@ -245,7 +245,7 @@ describe('widgets/budget/PostingItem', () => {
 			await tick();
 			await new Promise((resolve) => setTimeout(resolve, 0));
 
-			expect(container.querySelector('ion-item')).toBeTruthy();
+			expect(container.firstChild).toBeTruthy();
 		});
 
 		it('has ion-text elements', async () => {

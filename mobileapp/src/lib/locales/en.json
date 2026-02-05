@@ -345,7 +345,7 @@
         "title": "Filter transactions"
       },
       "search": {
-        "placeholder": "Search transactions"
+        "placeholder": "Search transactions..."
       },
       "no-postings": "No transactions found.",
       "no-results": "No transactions found for \"{{value}}\"",
@@ -955,7 +955,8 @@
             "not-found": "No events found",
             "no-results": "No events for \"{{value}}\"",
             "no-results-filtered": "No events found.",
-            "loading": "Loading..."
+            "loading": "Loading...",
+            "postings": "{{value}} transactions"
           },
           "modal": {
             "create-activity": {
@@ -1263,11 +1264,17 @@
         "page": {
           "title": "Finance statistics",
           "no-postings": "No transactions available for statistics.",
+          "search": {
+            "placeholder": "Search statistics..."
+          },
           "filter": {
+            "title": "Filter time range",
+            "time-range": "Select time range",
             "all": "All",
             "3months": "3 Months",
             "6months": "6 Months",
-            "12months": "12 Months"
+            "12months": "12 Months",
+            "custom": "Custom"
           },
           "overview": {
             "credit": "Total Income",
@@ -1276,7 +1283,8 @@
             "avg": "Ø Transaction"
           },
           "trend": {
-            "title": "Monthly Trend"
+            "title": "Monthly Trend",
+            "no-data": "No data available."
           },
           "categories": {
             "title": "By Category"
@@ -1294,7 +1302,91 @@
             "credit": "Income",
             "debit": "Expenses"
           },
-          "transaction-count": "{{value}} transactions in selected period"
+          "transaction-count": "{{value}} transactions in selected period",
+          "heatmap": {
+            "title": "Expense Calendar",
+            "active-days": "{{value}} active days",
+            "busiest-day": "Busiest day: {{value}} ({{value2}})",
+            "expenses": "Expenses",
+            "income": "Income"
+          },
+          "comparison": {
+            "title": "Month Comparison",
+            "subtitle": "Current month vs. previous month",
+            "credit": "Income",
+            "debit": "Expenses",
+            "previous": "Previous",
+            "balance-trend": "Balance trend",
+            "improving": "Improving compared to last month",
+            "declining": "Declining compared to last month",
+            "stable": "Stable compared to last month"
+          },
+          "goals": {},
+          "fairness": {},
+          "activities": {
+            "title": "Activity Ranking",
+            "total-activities": "Activities",
+            "avg-cost": "Avg. Cost",
+            "bookings": "transactions",
+            "cost-distribution": "Cost Distribution",
+            "no-activities": "No activities with transactions"
+          },
+          "recurring": {},
+          "insights": {
+            "title": "Smart Insights",
+            "no-insights": "No special insights",
+            "hint": "With more transactions, insights will appear here automatically",
+            "anomaly": {
+              "title": "Unusual Expense",
+              "description": "\"{{value}}\" at {{value2}} is significantly higher than average ({{value3}})"
+            },
+            "spending-up": {
+              "title": "Spending Increased",
+              "description": "Expenses have increased by {{value}}% this month"
+            },
+            "spending-down": {
+              "title": "Spending Decreased",
+              "description": "Great! Expenses have decreased by {{value}}% this month"
+            },
+            "top-category": {
+              "title": "Top Category",
+              "description": "Category accounts for {{value}}% of all expenses"
+            },
+            "savings": {
+              "title": "Positive Balance",
+              "description": "You have earned {{value}} more than you spent"
+            },
+            "inactive": {
+              "title": "Long Inactivity",
+              "description": "No transactions have been recorded for {{value}} days"
+            },
+            "small-expenses": {
+              "title": "Many Small Expenses",
+              "description": "{{value}} transactions under €5 add up to {{value2}}"
+            }
+          },
+          "forecast": {},
+          "export": {
+            "header": "Export statistics",
+            "view": "View",
+            "download": "Download",
+            "share": "Share",
+            "email": "Send via email",
+            "error": "Export failed",
+            "view-error": "Could not view file",
+            "share-error": "Sharing failed",
+            "email-error": "Could not open email",
+            "download-error": "Download failed",
+            "download-success": "Statistics saved to Documents",
+            "share-title": "Budget Statistics",
+            "share-dialog": "Share statistics",
+            "email-subject": "Budget Statistics",
+            "capturing": "Capturing image in progress...",
+            "share-unsupported": "Sharing is not supported on this device",
+            "view-unsupported": "Viewer is not available",
+            "email-no-account": "No email account configured",
+            "email-unsupported": "Sending via email is not supported on this device"
+          }
         }
       },
       "page": {
@@ -1377,7 +1469,8 @@
         "upcoming-activity-card": {
           "card": {
             "title": "Upcoming event",
-            "no-upcoming-activity": "No upcoming event"
+            "no-upcoming-activity": "No upcoming event.\nGo to event overview page.",
+            "activity-postings": "{{value}} transactions"
           }
         },
         "organization-card": {

@@ -22,16 +22,6 @@ describe('widgets/ionic/LocationInputItem', () => {
 		if (dismissButton) await fireEvent.click(dismissButton);
 	});
 
-	it('renders with card prop', () => {
-		const { container } = render(LocationInputItem, {
-			props: { card: true, label: 'Location' }
-		});
-
-		// The InputItem uses card wrapper when card=true
-		const input = container.querySelector('ion-input');
-		expect(input).toBeTruthy();
-	});
-
 	it('renders with hidden prop', () => {
 		const { container } = render(LocationInputItem, {
 			props: { hidden: true, label: 'Location' }

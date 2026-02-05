@@ -3,13 +3,10 @@
 
 	import { keyOutline, trashOutline, warningOutline } from 'ionicons/icons';
 
-	import { deleteAccountSchema } from '$lib/api/schema/user';
+	import { deleteAccountSchema } from '$lib/api/schemas/user';
 	import { authenticationService, organizationService, userService } from '$lib/api/services';
-	import Layout from '$lib/components/layout/Layout.svelte';
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
-	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
-	import Popover from '$lib/components/widgets/ionic/Popover.svelte';
+	import { Layout } from '$lib/components/layout';
+	import { Button, Card, InputItem, Popover } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 	import { Form, type FormActions } from '$lib/models/ui';
 	import { organizationStore, userStore } from '$lib/stores';

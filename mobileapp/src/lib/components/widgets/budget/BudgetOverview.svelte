@@ -24,16 +24,20 @@
 
 	import type { RouteId } from '$app/types';
 
-	import { createUpdatePostingSchema } from '$lib/api/schema/budget';
-	import PostingOverviewModal from '$lib/components/widgets/budget/PostingOverviewModal.svelte';
-	import AmountInputItem from '$lib/components/widgets/ionic/AmountInputItem.svelte';
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
-	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import Chip from '$lib/components/widgets/ionic/Chip.svelte';
-	import DatetimeInputItem from '$lib/components/widgets/ionic/DatetimeInputItem.svelte';
-	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
-	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
-	import MultiSelectInputItem from '$lib/components/widgets/ionic/MultiSelectInputItem.svelte';
+	import IconLabel from '../ionic/IconLabel.svelte';
+
+	import { createUpdatePostingSchema } from '$lib/api/schemas/budget';
+	import { PostingOverviewModal } from '$lib/components/widgets/budget';
+	import {
+		AmountInputItem,
+		Button,
+		Card,
+		Chip,
+		DatetimeInputItem,
+		InputItem,
+		Modal,
+		MultiSelectInputItem
+	} from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 	import { Form, type FormActions, type MultiSelectItem } from '$lib/models/ui';
 	import { customForm, formatter, getPersonOfOrganizationId, getUserId, hasOrganizationRole } from '$lib/utility';
@@ -191,24 +195,27 @@
 		<ion-text class="text-xl font-bold" color={balance.balance.startsWith('-') ? 'danger' : 'success'}
 			>{balance.balance}</ion-text
 		>
-		<div class="flex items-center justify-center gap-2">
-			<ion-icon color="success" icon={trendingUpOutline}></ion-icon>
-			<ion-text class="text-sm" color="medium">
-				{$t('components.budget-overview.total-credit', { value: balance.credit })}
-			</ion-text>
-		</div>
-		<div class="flex items-center justify-center gap-2">
-			<ion-icon color="danger" icon={trendingDownOutline}></ion-icon>
-			<ion-text class="text-sm" color="medium">
-				{$t('components.budget-overview.total-debit', { value: balance.debit })}
-			</ion-text>
-		</div>
-		<div class="flex items-center justify-center gap-2">
-			<ion-icon icon={cardOutline}></ion-icon>
-			<ion-text class="text-sm" color="medium">
-				{$t('components.budget-overview.total-postings', { value: postings.length })}
-			</ion-text>
-		</div>
+		<IconLabel
+			iconColor="success"
+			color="medium"
+			icon={trendingUpOutline}
+			label={$t('components.budget-overview.total-credit', { value: balance.credit })}
+			size="sm"
+		/>
+		<IconLabel
+			iconColor="danger"
+			color="medium"
+			icon={trendingDownOutline}
+			label={$t('components.budget-overview.total-debit', { value: balance.debit })}
+			size="sm"
+		/>
+		<IconLabel
+			icon={cashOutline}
+			iconColor="dark"
+			color="medium"
+			label={$t('components.budget-overview.total-postings', { value: postings.length })}
+			size="sm"
+		/>
 	</div>
 	<div class="mt-3 flex flex-col gap-1">
 		<Button

@@ -3,15 +3,13 @@
 	import type { ApexOptions } from 'apexcharts';
 
 	import Chart from '@edde746/svelte-apexcharts';
-	import { cashOutline, trendingDown, trendingUp } from 'ionicons/icons';
+	import { arrowForwardOutline, cashOutline, trendingDown, trendingUp } from 'ionicons/icons';
 	import { onMount } from 'svelte';
 
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
-	import Card from '../ionic/Card.svelte';
-
-	import Chip from '$lib/components/widgets/ionic/Chip.svelte';
+	import { Card, Chip } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 	import { formatter } from '$lib/utility';
 
@@ -166,6 +164,7 @@
 </script>
 
 <Card
+	titleIconEnd={editMode ? undefined : arrowForwardOutline}
 	title={$t('components.widgets.budget-card.heading')}
 	titleIconStart={cashOutline}
 	border="secondary"
@@ -221,7 +220,7 @@
 			{/if}
 		</div>
 	{:else}
-		<div class="text-medium mt-5 text-center">
+		<div class="text-medium mt-5 text-center italic">
 			<ion-note>{$t('components.widgets.budget-card.no-postings')}</ion-note>
 		</div>
 	{/if}

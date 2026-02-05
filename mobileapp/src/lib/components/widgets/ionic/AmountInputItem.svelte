@@ -1,4 +1,6 @@
 <script lang="ts">
+	import type { InputInputEventDetail } from '@ionic/core';
+
 	import { cashOutline } from 'ionicons/icons';
 	import { onDestroy, onMount } from 'svelte';
 	import { get } from 'svelte/store';
@@ -47,7 +49,6 @@
 
 	type Properties = {
 		label: string;
-		card?: boolean;
 		classList?: string;
 		color?: Colors;
 		currency?: Currency;
@@ -65,7 +66,6 @@
 	);
 
 	let {
-		card,
 		changed,
 		classList = '',
 		color,
@@ -86,17 +86,8 @@
 	const MAX_TOTAL_DIGITS = 9;
 	const MAX_INT_DIGITS = 7;
 
-	// eslint-disable-next-line svelte/prefer-svelte-reactivity
-	const localeBehaviorCache = new Map<string, LocaleBehavior>();
-	// eslint-disable-next-line svelte/prefer-svelte-reactivity
-	const localeSeparatorsCache = new Map<string, LocaleSeparators>();
-	// eslint-disable-next-line svelte/prefer-svelte-reactivity
-	const currencySymbolCache = new Map<string, string>();
-
 	let element = $state<HTMLIonInputElement>();
-	let nativeInput = $state<HTMLInputElement>();
 	let containerElement = $state<HTMLDivElement>();
-	let autofillObserver: MutationObserver | undefined;
 
 	function notifyChange(cents: number, native?: HTMLInputElement): void {
 		if (name && containerElement) {
@@ -115,13 +106,12 @@
 	}
 
 	let edit = $state<AmountEditState>(createStateFromCents(value ?? 0));
-	let hasError = $state(false);
-	let isPasting = $state(false);
+	let hasError = $state<boolean>(false);
 	const tokens = $derived(
 		formatAmountTokens({
 			cents: edit.cents,
 			currency,
-			locale: $localeStore,
+			locale: get(localeStore),
 			phase: edit.phase,
 			typedFractalDigits: edit.typedFractalDigits
 		})
@@ -133,41 +123,7 @@
 	});
 
 	$effect(() => {
-		if (!name || !containerElement) return;
-
-		containerElement.addEventListener('formUpdate', formUpdateHandler);
-		return () => containerElement?.removeEventListener('formUpdate', formUpdateHandler);
-	});
-
-	function formUpdateHandler(event: Event): void {
-		onFormUpdate(event as CustomEvent);
-	}
-
-	function onFormUpdate(event: CustomEvent): void {
-		if (!name) return;
-		const next = event.detail?.value;
-		let cents = 0;
-		if (typeof next === 'number') {
-			cents = Math.trunc(next);
-		} else if (typeof next === 'string') {
-			cents = Math.trunc(Number(next)) || 0;
-		}
-		edit = createStateFromCents(cents);
-
-		if (nativeInput) {
-			const newTokens = formatAmountTokens({
-				cents: edit.cents,
-				currency,
-				locale: get(localeStore),
-				phase: edit.phase,
-				typedFractalDigits: edit.typedFractalDigits
-			});
-			nativeInput.value = tokensToPlainString(newTokens);
-		}
-	}
-
-	$effect(() => {
-		if (value !== undefined && element) {
+		if (value && element) {
 			element.getInputElement().then((native) => {
 				if (native) {
 					edit = createStateFromCents(value);
@@ -186,7 +142,11 @@
 	function createStateFromCents(cents: number): AmountEditState {
 		const c = clampCents(Math.trunc(cents || 0));
 		if (c === 0) return { cents: 0, phase: 'zero', typedFractalDigits: 0 };
-		return { cents: c, phase: 'int', typedFractalDigits: 0 };
+		const fracPart = c % 100;
+		if (fracPart === 0) {
+			return { cents: c, phase: 'int', typedFractalDigits: 0 };
+		}
+		return { cents: c, phase: 'fractal', typedFractalDigits: 2 };
 	}
 
 	function onDigit(state: AmountEditState, digitCharacter: string): AmountEditState {
@@ -293,29 +253,18 @@
 	}
 
 	function getLocaleSeparators(locale: string): LocaleSeparators {
-		const cached = localeSeparatorsCache.get(locale);
-		if (cached) return cached;
-
 		const parts = new Intl.NumberFormat(locale, { maximumFractionDigits: 2, style: 'decimal' }).formatToParts(1.1);
 		const decimal = parts.find((p) => p.type === 'decimal')?.value ?? (locale.startsWith('de') ? ',' : '.');
-		const result = { decimal };
-		localeSeparatorsCache.set(locale, result);
-		return result;
+		return { decimal };
 	}
 
 	function detectLocaleBehavior(locale: string, current: Currency): LocaleBehavior {
-		const cacheKey = `${locale}:${current}`;
-		const cached = localeBehaviorCache.get(cacheKey);
-		if (cached) return cached;
-
 		const deStyle = /^de(-|$)/i.test(locale);
 		const parts = new Intl.NumberFormat(locale, { currency: current, style: 'currency' }).formatToParts(1_234_567.5);
 		const decimal = parts.find((p) => p.type === 'decimal')?.value ?? (deStyle ? ',' : '.');
 		const group = parts.find((p) => p.type === 'group')?.value ?? (deStyle ? '.' : ',');
 		const currencyFirst = parts[0]?.type === 'currency';
-		const result = { currencyFirst, decimal, group, thinNbspBetweenNumberAndCurrency: deStyle };
-		localeBehaviorCache.set(cacheKey, result);
-		return result;
+		return { currencyFirst, decimal, group, thinNbspBetweenNumberAndCurrency: deStyle };
 	}
 
 	function formatIntegerWithGrouping(intValue: number, groupSeparator: string): string {
@@ -381,16 +330,13 @@
 		}
 
 		const tokens: AmountToken[] = [];
-		const symbolCacheKey = `${localeString}:${currency}`;
-		let currencySymbol = currencySymbolCache.get(symbolCacheKey);
-		if (!currencySymbol) {
-			currencySymbol =
+		const currencyToken: AmountToken = {
+			role: 'currency',
+			text:
 				new Intl.NumberFormat(localeString, { currency: currency, style: 'currency' })
 					.formatToParts(0)
-					.find((p) => p.type === 'currency')?.value ?? '€';
-			currencySymbolCache.set(symbolCacheKey, currencySymbol);
-		}
-		const currencyToken: AmountToken = { role: 'currency', text: currencySymbol };
+					.find((p) => p.type === 'currency')?.value ?? '€'
+		};
 
 		if (currencyFirst) {
 			tokens.push(currencyToken, ...numberTokens);
@@ -407,6 +353,8 @@
 		return tokens.map((token) => token.text).join('');
 	}
 
+	let intervalId: ReturnType<typeof setInterval> | undefined;
+
 	function getDecimalSeparator(): string {
 		return getLocaleSeparators(get(localeStore) ?? Locale.DE).decimal;
 	}
@@ -420,11 +368,76 @@
 		return false;
 	}
 
+	async function onIonInput(_event: CustomEvent<InputInputEventDetail>): Promise<void> {
+		const native = (await element?.getInputElement()) as HTMLInputElement;
+		if (!native) return;
+		applyNativeMaskStyles(native);
+
+		if (handleInsertText(_event, native)) return;
+		if (handleValueMatch(native)) return;
+		handleValueMismatch(native);
+	}
+
+	function handleInsertText(event: CustomEvent<InputInputEventDetail>, native: HTMLInputElement): boolean {
+		const inputEvent = event.detail.event as InputEvent | undefined;
+		if (!inputEvent || (inputEvent.inputType !== 'insertText' && inputEvent.inputType !== 'deleteContentBackward')) {
+			return false;
+		}
+
+		if (inputEvent.inputType === 'insertText' && inputEvent.data) {
+			const dec = getDecimalSeparator();
+			if (inputEvent.data === '.' || inputEvent.data === ',' || inputEvent.data === dec) {
+				edit = onSeparator(edit);
+				native.value = plain;
+				native.dispatchEvent(new Event('input', { bubbles: true }));
+				setCaretScripted(native);
+				return true;
+			}
+		}
+
+		setCaretScripted(native);
+		return true;
+	}
+
+	function handleValueMatch(native: HTMLInputElement): boolean {
+		if (native.value !== plain) return false;
+		setCaretScripted(native);
+		return true;
+	}
+
+	function handleValueMismatch(native: HTMLInputElement): void {
+		if (native.value == undefined) return;
+		const digitsOnly = native.value.replaceAll(/\D/g, '');
+
+		if (digitsOnly.length === 0) {
+			if (edit.cents !== 0) {
+				edit = createStateFromCents(0);
+			}
+		} else {
+			const parsedState = onPasteToState(native.value);
+			if (parsedState.cents === edit.cents) {
+				forceNativeValue(native);
+				return;
+			}
+			edit = parsedState;
+		}
+
+		setCaretScripted(native);
+	}
+
+	function forceNativeValue(native: HTMLInputElement): void {
+		const targetValue = plain;
+		native.value = targetValue;
+		setTimeout(() => {
+			native.value = targetValue;
+			setCaretScripted(native);
+		}, 10);
+	}
+
 	async function onKeyDown(event: KeyboardEvent): Promise<void> {
 		const dec = getDecimalSeparator();
-		const native = nativeInput ?? ((await element?.getInputElement()) as HTMLInputElement);
+		const native = (await element?.getInputElement()) as HTMLInputElement;
 		if (!native) return;
-		if (!nativeInput) nativeInput = native;
 		applyNativeMaskStyles(native);
 		const isDigit = event.key.length === 1 && event.key >= '0' && event.key <= '9';
 		if (isDigit) {
@@ -465,29 +478,14 @@
 		const text = event.clipboardData?.getData('text') ?? '';
 		if (!text) return;
 		event.preventDefault();
-		isPasting = true;
 		edit = onPasteToState(text);
-		const native = nativeInput ?? ((await element?.getInputElement()) as HTMLInputElement);
-		if (!native) {
-			setTimeout(() => (isPasting = false), 300);
-			return;
-		}
-		if (!nativeInput) nativeInput = native;
+		const native = (await element?.getInputElement()) as HTMLInputElement;
 		if (native) {
 			applyNativeMaskStyles(native);
-			const newTokens = formatAmountTokens({
-				cents: edit.cents,
-				currency,
-				locale: $localeStore,
-				phase: edit.phase,
-				typedFractalDigits: edit.typedFractalDigits
-			});
-			const newPlain = tokensToPlainString(newTokens);
-			native.value = newPlain;
+			native.value = plain;
 			setCaretScripted(native);
 			notifyChange(edit.cents, native);
 		}
-		setTimeout(() => (isPasting = false), 300);
 	}
 
 	function applyNativeMaskStyles(native: HTMLInputElement): void {
@@ -512,86 +510,60 @@
 		requestAnimationFrame(() => native.setSelectionRange(index, index));
 	}
 
-	function onBlur(_: CustomEvent): void {
-		containerElement?.dispatchEvent(
-			new CustomEvent('ionBlur', {
-				bubbles: false,
-				detail: { key: name }
-			})
-		);
-	}
-
 	onMount(async () => {
 		const native = await element?.getInputElement();
-		if (native instanceof Node) {
-			nativeInput = native;
+		if (native) {
 			applyNativeMaskStyles(native);
 
 			if (native.value && native.value !== plain) {
-				edit =
-					native.value === '' || native.value.replaceAll(/\D/g, '').length === 0
-						? createStateFromCents(0)
-						: onPasteToState(native.value);
-			}
-
-			// Use MutationObserver for autofill detection instead of interval
-			autofillObserver = new MutationObserver(() => {
-				if (isPasting) return;
-				const nativeDigits = native.value.replaceAll(/\D/g, '');
-				const plainDigits = plain.replaceAll(/\D/g, '');
-				if (nativeDigits !== plainDigits && nativeDigits.length > 0) {
-					const parsedState = onPasteToState(native.value);
-					if (parsedState.cents !== edit.cents) {
-						edit = parsedState;
-						native.value = plain;
-						notifyChange(edit.cents);
-					}
+				const digitsOnly = native.value.replaceAll(/\D/g, '');
+				if (native.value === '' || digitsOnly.length === 0) {
+					edit = createStateFromCents(0);
+				} else if (native.value === digitsOnly) {
+					// Pure numeric string from form = cents value
+					edit = createStateFromCents(Number.parseInt(native.value, 10));
+				} else {
+					// Formatted string (contains separators/currency) = parse as user input
+					edit = onPasteToState(native.value);
 				}
-			});
-			autofillObserver.observe(native, { attributeFilter: ['value'], attributes: true });
-
-			// Also listen for 'input' event to catch autofill
-			native.addEventListener('input', handleAutofillInput);
-		}
-
-		// Error state check - use $effect instead of interval
-	});
-
-	function handleAutofillInput(): void {
-		// Only handle if not from our own changes
-		if (isPasting || !nativeInput) return;
-		const nativeDigits = nativeInput.value.replaceAll(/\D/g, '');
-		const plainDigits = plain.replaceAll(/\D/g, '');
-		if (nativeDigits !== plainDigits && nativeDigits.length > 0) {
-			const parsedState = onPasteToState(nativeInput.value);
-			if (parsedState.cents !== edit.cents) {
-				edit = parsedState;
-				nativeInput.value = plain;
-				notifyChange(edit.cents);
 			}
 		}
-	}
 
-	// Use $effect for error state tracking instead of interval
-	$effect(() => {
-		if (element) {
-			const currentError = element.classList.contains('ion-invalid') || !!element.errorText;
-			if (currentError !== hasError) {
-				hasError = currentError;
+		intervalId = setInterval(async () => {
+			const native = await element?.getInputElement();
+			if (native && native.value !== plain) {
+				const digitsOnly = native.value.replaceAll(/\D/g, '');
+				let parsedState: AmountEditState;
+				if (native.value === '' || digitsOnly.length === 0) {
+					parsedState = createStateFromCents(0);
+				} else if (native.value === digitsOnly) {
+					// Pure numeric string from form = cents value
+					parsedState = createStateFromCents(Number.parseInt(native.value, 10));
+				} else {
+					// Formatted string = parse as user input
+					parsedState = onPasteToState(native.value);
+				}
+				if (parsedState.cents !== edit.cents) {
+					edit = parsedState;
+					notifyChange(edit.cents);
+				}
 			}
-		}
+			if (element) {
+				const currentError = element.classList.contains('ion-invalid') || !!element.errorText;
+				if (currentError !== hasError) {
+					hasError = currentError;
+				}
+			}
+		}, 100);
 	});
 
 	onDestroy(() => {
-		autofillObserver?.disconnect();
-		if (nativeInput && typeof nativeInput.removeEventListener === 'function') {
-			nativeInput.removeEventListener('input', handleAutofillInput);
-		}
+		if (intervalId) clearInterval(intervalId);
 	});
 </script>
 
-<div bind:this={containerElement} data-name={name} class="contents" class:hidden>
-	<CustomItem {card} {color} {icon} iconEnd={inputIcon} iconClicked={inputIconClicked} {classList} {name} {hidden}>
+<div bind:this={containerElement}>
+	<CustomItem {hidden} {color} {icon} iconEnd={inputIcon} iconClicked={inputIconClicked} {classList}>
 		<div class="relative">
 			<div
 				class="ghost pointer-events-none absolute inset-0 -mt-1 flex items-center"
@@ -614,15 +586,21 @@
 				{disabled}
 				helper-text={helperText}
 				value={plain}
-				onionBlur={onBlur}
-				onionFocus={() => {
-					if (nativeInput) setCaretScripted(nativeInput);
+				onfocus={async () => {
+					const inputElement = await element?.getInputElement();
+					if (inputElement) setCaretScripted(inputElement);
 				}}
-				onclick={() => {
-					if (nativeInput) setCaretScripted(nativeInput);
+				onionFocus={async () => {
+					const inputElement = await element?.getInputElement();
+					if (inputElement) setCaretScripted(inputElement);
+				}}
+				onclick={async () => {
+					const inputElement = await element?.getInputElement();
+					if (inputElement) setCaretScripted(inputElement);
 				}}
 				onkeydown={onKeyDown}
 				onpaste={onPaste}
+				onionInput={onIonInput}
 				role="menuitem"
 				tabindex="0"
 			>

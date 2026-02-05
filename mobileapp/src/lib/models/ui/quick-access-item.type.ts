@@ -15,7 +15,7 @@ export type SpecialWidgetId = 'budget-chart-card' | 'organization-card' | 'upcom
 /**
  * Represents a quick access item on the home screen.
  */
-export type QuickAccessItem = {
+export type QuickAccessItemModel = {
 	/** Icon name from ionicons */
 	icon: string;
 	/** Unique identifier for the item */

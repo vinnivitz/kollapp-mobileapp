@@ -1,7 +1,5 @@
 <script lang="ts" generics="T">
-	import type { Snippet } from 'svelte';
-
-	import { untrack } from 'svelte';
+	import { type Snippet, untrack } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
 	import { fade } from 'svelte/transition';
 

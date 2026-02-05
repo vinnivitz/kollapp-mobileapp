@@ -56,6 +56,17 @@ export type FilterDateRangeSection = FilterSectionBase & {
 };
 
 /**
+ * A section with a boolean toggle.
+ */
+export type FilterToggleSection = FilterSectionBase & {
+	/** Default/initial value */
+	defaultValue: boolean;
+	type: 'toggle';
+	/** Optional icon for the toggle item */
+	icon?: string;
+};
+
+/**
  * A section with a multi-select dropdown.
  */
 export type FilterMultiSelectSection = FilterSectionBase & {
@@ -68,6 +79,8 @@ export type FilterMultiSelectSection = FilterSectionBase & {
 	type: 'multi-select';
 	/** Text shown when all items are selected */
 	allSelectedText?: string;
+	/** Whether multiple selection is allowed (defaults to true) */
+	multiple?: boolean;
 	/** Text shown when no items are selected */
 	noneSelectedText?: string;
 	/** Placeholder for search input */
@@ -81,7 +94,8 @@ export type FilterSection =
 	| FilterChipMultiSection
 	| FilterChipSection
 	| FilterDateRangeSection
-	| FilterMultiSelectSection;
+	| FilterMultiSelectSection
+	| FilterToggleSection;
 
 /**
  * Filter state object - maps section keys to their values.
@@ -162,6 +176,13 @@ export function multiSelectSection(
 	config: Omit<FilterMultiSelectSection, 'key' | 'type'>
 ): FilterMultiSelectSection {
 	return { ...config, key, type: 'multi-select' };
+}
+
+/**
+ * Helper function to create a toggle section.
+ */
+export function toggleSection(key: string, config: Omit<FilterToggleSection, 'key' | 'type'>): FilterToggleSection {
+	return { ...config, key, type: 'toggle' };
 }
 
 /**

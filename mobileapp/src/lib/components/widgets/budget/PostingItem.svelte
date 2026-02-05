@@ -31,16 +31,19 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
-	import AmountInputItem from '../ionic/AmountInputItem.svelte';
-	import Card from '../ionic/Card.svelte';
-	import Chip from '../ionic/Chip.svelte';
-	import CustomItem from '../ionic/CustomItem.svelte';
-	import DatetimeInputItem from '../ionic/DatetimeInputItem.svelte';
-	import InputItem from '../ionic/InputItem.svelte';
-	import Modal from '../ionic/Modal.svelte';
-	import MultiSelectInputItem from '../ionic/MultiSelectInputItem.svelte';
+	import IconLabel from '../ionic/IconLabel.svelte';
 
-	import { createUpdatePostingSchema } from '$lib/api/schema/budget';
+	import { createUpdatePostingSchema } from '$lib/api/schemas/budget';
+	import {
+		AmountInputItem,
+		Card,
+		Chip,
+		CustomItem,
+		DatetimeInputItem,
+		InputItem,
+		Modal,
+		MultiSelectInputItem
+	} from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 	import { Form, type FormActions, type ItemSlidingOption, type MultiSelectItem } from '$lib/models/ui';
 	import {
@@ -275,27 +278,15 @@
 			</ion-text>
 		</div>
 		<div class="flex w-full flex-row items-center justify-start gap-2">
-			<ion-note class="flex items-center justify-center gap-1 text-sm">
-				<ion-icon icon={calendarClearOutline}></ion-icon>
-				<ion-label class="truncate">{format(new TZDate(posting.date), 'PP')}</ion-label>
-			</ion-note>
-			<ion-note class="flex items-center justify-center gap-1 text-sm">
-				<ion-icon icon={cardOutline}></ion-icon>
-				<ion-label class="truncate">{getBudgetCategoryNameById(posting.organizationBudgetCategoryId)}</ion-label>
-			</ion-note>
+			<IconLabel icon={calendarClearOutline} label={format(new TZDate(posting.date), 'PP')} />
+			<IconLabel icon={cardOutline} label={getBudgetCategoryNameById(posting.organizationBudgetCategoryId)} />
 		</div>
 		<div class="flex w-full flex-row items-center justify-start gap-2">
 			{#if activity}
-				<ion-note class="flex items-center justify-center gap-1 text-sm">
-					<ion-icon icon={flashOutline}></ion-icon>
-					<div class="truncate">{activity.name}</div>
-				</ion-note>
+				<IconLabel icon={flashOutline} label={activity.name} />
 			{/if}
 			{#if posting.personOfOrganizationId > 0}
-				<ion-note class="flex items-center justify-center gap-1 text-sm">
-					<ion-icon icon={personOutline}></ion-icon>
-					<div class="truncate">{getUsernameByPersonOfOrganizationId(posting.personOfOrganizationId)}</div>
-				</ion-note>
+				<IconLabel icon={personOutline} label={getUsernameByPersonOfOrganizationId(posting.personOfOrganizationId)!} />
 			{/if}
 		</div>
 	</div>

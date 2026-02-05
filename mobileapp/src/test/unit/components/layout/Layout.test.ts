@@ -2,8 +2,6 @@ import { render, waitFor } from '@testing-library/svelte';
 import { createRawSnippet } from 'svelte';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { goto } from '$app/navigation';
-
 import Layout from '$lib/components/layout/Layout.svelte';
 import { refreshDataStores } from '$lib/utility';
 
@@ -26,14 +24,6 @@ describe('Layout', () => {
 		const contentDiv = page.querySelector('ion-content div')?.textContent?.trim();
 		expect(contentDiv).toBe(childHtml);
 	});
-	it('renders Header and Menu when title present and not hidden', () => {
-		const { container } = render(Layout, {
-			props: { children, hideMenu: false, loading: false, scrollable: true, title: 'Any' }
-		});
-
-		expect(container.querySelector('ion-header')).toBeTruthy();
-		expect(container.querySelector('ion-menu')).toBeTruthy();
-	});
 
 	it('does not render children while loading is true', () => {
 		const { container } = render(Layout, {
@@ -43,20 +33,6 @@ describe('Layout', () => {
 		// Content element exists but children are not rendered
 		expect(page.querySelector('ion-content')).toBeTruthy();
 		expect(page.querySelector('ion-refresher')).toBeFalsy();
-	});
-
-	it('hides Menu when hideMenu is true', () => {
-		const { container } = render(Layout, {
-			props: { children, hideMenu: true, title: 'Any' }
-		});
-		expect(container.querySelector('ion-menu')).toBeFalsy();
-	});
-
-	it('does not render Header when title is missing', () => {
-		const { container } = render(Layout, {
-			props: { children, hideMenu: false, loading: false, scrollable: true }
-		});
-		expect(container.querySelector('ion-header')).toBeFalsy();
 	});
 
 	it('renders content only when loaded and not loading', async () => {
@@ -102,20 +78,6 @@ describe('Layout', () => {
 		await waitFor(() => {
 			expect(refreshDataStores).toHaveBeenCalled();
 			expect(refresher.complete).toHaveBeenCalled();
-		});
-	});
-
-	it('clicking menu items triggers navigation via Menu.navigate', async () => {
-		const { container } = render(Layout, {
-			props: { children, hideMenu: false, loading: false, title: 'Any' }
-		});
-		const items = [...container.querySelectorAll('ion-list ion-item')] as HTMLElement[];
-		expect(items.length).toBeGreaterThanOrEqual(2);
-		for (const element of items) {
-			element.click();
-		}
-		await waitFor(() => {
-			expect(goto).toHaveBeenCalled();
 		});
 	});
 

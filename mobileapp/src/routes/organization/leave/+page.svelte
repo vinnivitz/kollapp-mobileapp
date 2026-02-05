@@ -5,9 +5,8 @@
 	import { resolve } from '$app/paths';
 
 	import { organizationService } from '$lib/api/services';
-	import Layout from '$lib/components/layout/Layout.svelte';
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
-	import Card from '$lib/components/widgets/ionic/Card.svelte';
+	import { Layout } from '$lib/components/layout';
+	import { Button, Card } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 	import { organizationStore, userStore } from '$lib/stores';
 	import { confirmationModal, hasOrganizationRole, withLoader } from '$lib/utility';

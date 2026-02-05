@@ -18,11 +18,8 @@
 	import { resolve } from '$app/paths';
 
 	import { organizationService } from '$lib/api/services';
-	import Layout from '$lib/components/layout/Layout.svelte';
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
-	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
-	import TextareaInputItem from '$lib/components/widgets/ionic/TextareaInputItem.svelte';
+	import { Layout } from '$lib/components/layout';
+	import { Button, Card, InputItem, TextareaInputItem } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 	import { organizationStore } from '$lib/stores';
 	import { isAuthenticated, StatusCheck, withLoader } from '$lib/utility';

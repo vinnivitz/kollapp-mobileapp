@@ -1,4 +1,4 @@
-import type { PasswordTO } from '$lib/api/dto';
+import type { PasswordTO } from '$lib/api/dtos';
 
 import { get } from 'svelte/store';
 import { type AnyObject, object, ObjectSchema, string } from 'yup';

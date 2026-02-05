@@ -1,4 +1,4 @@
-import type { PasswordTO } from '$lib/api/dto';
+import type { PasswordTO } from '$lib/api/dtos';
 import type { AccessTokenTO, AuthTokensTO, LoginRequestTO } from '@kollapp/api-types';
 
 import { get } from 'svelte/store';

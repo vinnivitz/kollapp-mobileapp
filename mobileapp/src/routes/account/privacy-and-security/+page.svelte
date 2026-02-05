@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { PasswordTO } from '$lib/api/dto';
+	import type { PasswordTO } from '$lib/api/dtos';
 
 	import { fingerPrintOutline, keyOutline, notificationsOutline, receiptOutline, trashOutline } from 'ionicons/icons';
 	import { onMount } from 'svelte';
@@ -8,15 +8,10 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
-	import { loginSchema, verifyPasswordSchema } from '$lib/api/schema/authentication';
+	import { loginSchema, verifyPasswordSchema } from '$lib/api/schemas/authentication';
 	import { authenticationService } from '$lib/api/services';
-	import Layout from '$lib/components/layout/Layout.svelte';
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
-	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
-	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
-	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
-	import Popover from '$lib/components/widgets/ionic/Popover.svelte';
+	import { Layout } from '$lib/components/layout';
+	import { Button, Card, CustomItem, InputItem, LabeledItem, Popover } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 	import { StorageKey } from '$lib/models/storage';
 	import { Form, type FormActions } from '$lib/models/ui';

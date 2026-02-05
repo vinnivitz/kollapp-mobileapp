@@ -1,11 +1,10 @@
 <script lang="ts">
 	import type { ToggleChangeEventDetail } from '@ionic/core';
 
-	import CustomItem from './CustomItem.svelte';
+	import { CustomItem } from '$lib/components/widgets/ionic';
 
 	type Properties = {
 		label: string;
-		card?: boolean;
 		checked?: boolean;
 		classList?: string;
 		disabled?: boolean;
@@ -16,25 +15,14 @@
 		changed: (value?: boolean) => void;
 	};
 
-	let {
-		card,
-		changed,
-		checked,
-		classList,
-		disabled,
-		element,
-		hidden = false,
-		icon,
-		indexed,
-		label
-	}: Properties = $props();
+	let { changed, checked, classList, disabled, element, hidden = false, icon, indexed, label }: Properties = $props();
 
 	// workaround to avoid reference linting error
 	void indexed;
 	void element;
 </script>
 
-<CustomItem {icon} {card} {classList} {hidden} ariaLabel={label}>
+<CustomItem {icon} {classList} {hidden} ariaLabel={label}>
 	<ion-toggle
 		{disabled}
 		bind:this={element}

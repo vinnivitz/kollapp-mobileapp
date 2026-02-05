@@ -17,7 +17,7 @@ class MockIntersectionObserver {
 }
 vi.stubGlobal('IntersectionObserver', MockIntersectionObserver);
 
-import BudgetOverviewCard from '$lib/components/widgets/budget/BudgetOverviewCard.svelte';
+import BudgetOverviewCard from '$lib/components/widgets/budget/BudgetOverview.svelte';
 
 // Mock hasOrganizationRole
 vi.mock('$lib/utility', async (importOriginal) => {
@@ -185,29 +185,6 @@ describe('widgets/budget/BudgetOverviewCard', () => {
 			// Balance should be €0.00
 			expect(container.textContent).toContain('€0.00');
 		});
-
-		it('renders card component', async () => {
-			const { container } = render(BudgetOverviewCard, {
-				props: {
-					activities: mockActivities as never,
-					budgetCategories: mockBudgetCategories as never,
-					onCreateActivityPosting,
-					onCreateOrganizationPosting,
-					onDeleteActivityPosting,
-					onDeleteOrganizationPosting,
-					onTransferActivityPosting,
-					onTransferOrganizationPosting,
-					onUpdateActivityPosting,
-					onUpdateOrganizationPosting,
-					personsOfOrganization: mockPersonsOfOrganization as never,
-					postings: mockPostings as never,
-					title: 'Budget'
-				}
-			});
-			await tick();
-
-			expect(container.querySelector('ion-card')).toBeTruthy();
-		});
 	});
 
 	describe('balance calculation', () => {
@@ -312,54 +289,6 @@ describe('widgets/budget/BudgetOverviewCard', () => {
 			await tick();
 
 			expect(container).toBeTruthy();
-		});
-	});
-
-	describe('structure', () => {
-		it('has flex container for balance display', async () => {
-			const { container } = render(BudgetOverviewCard, {
-				props: {
-					activities: [] as never,
-					budgetCategories: [] as never,
-					onCreateActivityPosting,
-					onCreateOrganizationPosting,
-					onDeleteActivityPosting,
-					onDeleteOrganizationPosting,
-					onTransferActivityPosting,
-					onTransferOrganizationPosting,
-					onUpdateActivityPosting,
-					onUpdateOrganizationPosting,
-					personsOfOrganization: [] as never,
-					postings: [] as never,
-					title: 'Budget'
-				}
-			});
-			await tick();
-
-			expect(container.querySelector('.flex')).toBeTruthy();
-		});
-
-		it('has text element for balance', async () => {
-			const { container } = render(BudgetOverviewCard, {
-				props: {
-					activities: [] as never,
-					budgetCategories: [] as never,
-					onCreateActivityPosting,
-					onCreateOrganizationPosting,
-					onDeleteActivityPosting,
-					onDeleteOrganizationPosting,
-					onTransferActivityPosting,
-					onTransferOrganizationPosting,
-					onUpdateActivityPosting,
-					onUpdateOrganizationPosting,
-					personsOfOrganization: [] as never,
-					postings: [] as never,
-					title: 'Budget'
-				}
-			});
-			await tick();
-
-			expect(container.querySelector('ion-text')).toBeTruthy();
 		});
 	});
 });

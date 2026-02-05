@@ -33,14 +33,9 @@
 	import { resolve } from '$app/paths';
 
 	import { organizationService } from '$lib/api/services';
-	import Layout from '$lib/components/layout/Layout.svelte';
-	import FadeInOut from '$lib/components/utility/FadeInOut.svelte';
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
-	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
-	import FabButton from '$lib/components/widgets/ionic/FabButton.svelte';
-	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
-	import Popover from '$lib/components/widgets/ionic/Popover.svelte';
+	import { Layout } from '$lib/components/layout';
+	import { FadeInOut } from '$lib/components/utility';
+	import { Button, Card, CustomItem, FabButton, Modal, Popover } from '$lib/components/widgets/ionic';
 	import environment from '$lib/environment';
 	import { t } from '$lib/locales';
 	import { AlertType, type ItemSlidingOption, TourStepId } from '$lib/models/ui';

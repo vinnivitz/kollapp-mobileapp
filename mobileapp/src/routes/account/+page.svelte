@@ -24,8 +24,8 @@
 
 	import germanFlag from '$lib/assets/locale/de.svg';
 	import englishFlag from '$lib/assets/locale/gb.svg';
-	import LayoutComponent from '$lib/components/layout/Layout.svelte';
-	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
+	import { Layout as LayoutComponent } from '$lib/components/layout';
+	import { LabeledItem } from '$lib/components/widgets/ionic';
 	import { Locale, t } from '$lib/locales';
 	import { Layout, Theme, TourStepId } from '$lib/models/ui';
 	import { layoutStore, localeStore, organizationStore, themeStore } from '$lib/stores';

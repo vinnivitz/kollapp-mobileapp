@@ -5,9 +5,8 @@
 	import { searchOutline } from 'ionicons/icons';
 	import { LatLng, type LeafletMouseEvent, Map, Marker, TileLayer } from 'leaflet';
 
-	import CustomItem from './ionic/CustomItem.svelte';
-
 	import { osmService } from '$lib/api/services';
+	import { CustomItem } from '$lib/components/widgets/ionic';
 	import environment from '$lib/environment';
 	import { t } from '$lib/locales';
 	import { StorageKey } from '$lib/models/storage';

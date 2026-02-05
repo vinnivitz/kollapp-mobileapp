@@ -2,7 +2,7 @@ import { render } from '@testing-library/svelte';
 import { tick } from 'svelte';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import PostingFilter from '$lib/components/widgets/budget/PostingFilter.svelte';
+import PostingFilter from '$lib/components/widgets/FilterWidget.svelte';
 
 describe('widgets/budget/PostingFilter', () => {
 	let onStateChange: ReturnType<typeof vi.fn>;
@@ -116,7 +116,7 @@ describe('widgets/budget/PostingFilter', () => {
 			};
 
 			const { container } = render(PostingFilter, {
-				props: { config, onExportPostings }
+				props: { config, onAction: onExportPostings }
 			});
 			await tick();
 
@@ -401,7 +401,7 @@ describe('widgets/budget/PostingFilter', () => {
 			};
 
 			const { container } = render(PostingFilter, {
-				props: { config, onExportPostings }
+				props: { config, onAction: onExportPostings }
 			});
 			await tick();
 
@@ -423,7 +423,7 @@ describe('widgets/budget/PostingFilter', () => {
 			};
 
 			const { container } = render(PostingFilter, {
-				props: { config, onExportPostings }
+				props: { config, onAction: onExportPostings }
 			});
 			await tick();
 

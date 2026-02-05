@@ -6,18 +6,16 @@
 
 	import logo from '$lib/assets/logo.png';
 	import { t } from '$lib/locales';
-	import { initializationStore } from '$lib/stores';
 	import { navigateBack } from '$lib/utility';
 
 	type Properties = {
+		loadedServer: boolean;
 		title: string;
 		loading?: boolean;
 		showBackButton?: boolean;
 	};
 
-	let { loading, showBackButton, title }: Properties = $props();
-
-	const loaded = $derived(initializationStore.loadedServer);
+	let { loadedServer, loading, showBackButton, title }: Properties = $props();
 
 	let timer: ReturnType<typeof setTimeout>;
 	let showProgressBar = $state<boolean>(false);
@@ -25,7 +23,7 @@
 	$effect(() => {
 		clearTimeout(timer);
 
-		if (loading || !$loaded) {
+		if (loading || !loadedServer) {
 			showProgressBar = false;
 			timer = setTimeout(() => (showProgressBar = true), 100);
 		} else {

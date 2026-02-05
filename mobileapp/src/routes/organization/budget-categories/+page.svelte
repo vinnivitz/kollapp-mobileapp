@@ -3,16 +3,11 @@
 
 	import { cardOutline, createOutline, starOutline, trashOutline } from 'ionicons/icons';
 
-	import { budgetCategorySchema } from '$lib/api/schema/budget';
+	import { budgetCategorySchema } from '$lib/api/schemas/budget';
 	import { budgetCategoryService } from '$lib/api/services';
-	import Layout from '$lib/components/layout/Layout.svelte';
-	import FadeInOut from '$lib/components/utility/FadeInOut.svelte';
-	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
-	import FabButton from '$lib/components/widgets/ionic/FabButton.svelte';
-	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
-	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
-	import ToggleItem from '$lib/components/widgets/ionic/ToggleItem.svelte';
+	import { Layout } from '$lib/components/layout';
+	import { FadeInOut } from '$lib/components/utility';
+	import { Card, CustomItem, FabButton, InputItem, Modal, ToggleItem } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 	import { Form, type FormActions, type ItemSlidingOption, TourStepId } from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';

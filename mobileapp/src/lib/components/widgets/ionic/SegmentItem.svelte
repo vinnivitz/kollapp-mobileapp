@@ -2,9 +2,8 @@
 	import type { SegmentConfig } from '$lib/models/ui';
 	import type { Snippet } from 'svelte';
 
-	import Chip from './Chip.svelte';
-
-	import FadeInOut from '$lib/components/utility/FadeInOut.svelte';
+	import { FadeInOut } from '$lib/components/utility';
+	import { Chip } from '$lib/components/widgets/ionic';
 
 	type Properties = {
 		config: SegmentConfig[];

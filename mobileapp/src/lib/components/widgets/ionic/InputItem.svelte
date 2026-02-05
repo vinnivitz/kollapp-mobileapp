@@ -4,13 +4,12 @@
 
 	import { onMount } from 'svelte';
 
-	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
+	import { CustomItem } from '$lib/components/widgets/ionic';
 
 	type InputType = 'date' | 'email' | 'number' | 'password' | 'text';
 
 	type Properties = {
 		label: string;
-		card?: boolean;
 		classList?: string;
 		color?: Colors;
 		disabled?: boolean;
@@ -32,7 +31,6 @@
 	);
 
 	let {
-		card,
 		changed,
 		classList = '',
 		color,
@@ -68,7 +66,7 @@
 	});
 </script>
 
-<CustomItem {card} {color} {icon} iconEnd={inputIcon} iconClicked={inputIconClicked} {name} {hidden}>
+<CustomItem {color} {icon} iconEnd={inputIcon} iconClicked={inputIconClicked} {name} {hidden}>
 	<ion-input
 		{inputmode}
 		bind:this={element}

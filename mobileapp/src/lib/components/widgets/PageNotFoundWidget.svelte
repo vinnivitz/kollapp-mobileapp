@@ -4,8 +4,7 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
-	import Card from '$lib/components/widgets/ionic/Card.svelte';
+	import { Button, Card } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 </script>
 

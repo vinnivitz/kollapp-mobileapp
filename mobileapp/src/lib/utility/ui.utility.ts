@@ -269,3 +269,36 @@ export function uniqueBy<T, K>(array: T[], keyFunction: (item: T) => K): T[] {
 		return true;
 	});
 }
+
+/** Gets the hex value of a CSS variable
+ * @param name name of the CSS variable
+ * @returns {string} hex value of the CSS variable
+ */
+export function getHexFromVariable(name: string): string {
+	const styles = getComputedStyle(document.documentElement);
+	const value = styles.getPropertyValue(name).trim();
+	return value;
+}
+
+/** Mixes a color with white to create a lighter shade (simulating transparency on white background)
+ * @param rgbVarName name of the CSS variable containing rgb values (e.g., '--ion-color-danger-rgb')
+ * @param alpha alpha value between 0 and 1 (0 = white, 1 = full color)
+ * @returns {string} hex color string
+ */
+export function getBlendedColorFromVariable(rgbVariableName: string, alpha: number): string {
+	const styles = getComputedStyle(document.documentElement);
+	const rgbValue = styles.getPropertyValue(rgbVariableName).trim();
+	const parts = rgbValue.split(',').map((p) => Number.parseInt(p.trim(), 10));
+
+	const [r, g, b] = parts as [number, number, number];
+
+	const blendedR = Math.round(r * alpha + 255 * (1 - alpha));
+	const blendedG = Math.round(g * alpha + 255 * (1 - alpha));
+	const blendedB = Math.round(b * alpha + 255 * (1 - alpha));
+
+	return `#${toHex(blendedR)}${toHex(blendedG)}${toHex(blendedB)}`;
+}
+
+function toHex(n: number): string {
+	return n.toString(16).padStart(2, '0');
+}

@@ -2,7 +2,7 @@ import { fireEvent, render, waitFor } from '@testing-library/svelte';
 import { Map, Marker } from 'leaflet';
 import { describe, expect, it, vi } from 'vitest';
 
-import LeafletMap from '$lib/components/widgets/LeafletMap.svelte';
+import LeafletMap from '$lib/components/widgets/MapWidget.svelte';
 
 vi.mock('leaflet', () => {
 	class LatLng {
@@ -146,8 +146,8 @@ describe('widgets/LeafletMap (integrated)', () => {
 		vi.runAllTimers();
 
 		await waitFor(() => {
-			const items = container.querySelectorAll('ion-item');
-			expect(items.length).toBeGreaterThan(0);
+			const list = container.querySelector('ion-list');
+			expect(list?.children.length).toBeGreaterThan(0);
 		});
 		vi.useRealTimers();
 	});
@@ -166,12 +166,13 @@ describe('widgets/LeafletMap (integrated)', () => {
 		vi.runAllTimers();
 
 		await waitFor(() => {
-			const item = container.querySelector('ion-item');
-			expect(item).toBeTruthy();
+			const list = container.querySelector('ion-list');
+			expect(list?.children.length).toBeGreaterThan(0);
 		});
 
-		const item = container.querySelector('ion-item');
-		await fireEvent.click(item!);
+		const list = container.querySelector('ion-list');
+		const firstItem = list?.firstElementChild as HTMLElement;
+		await fireEvent.click(firstItem!);
 		vi.runAllTimers();
 
 		await waitFor(() => expect(spySetView).toHaveBeenCalled());
@@ -192,12 +193,13 @@ describe('widgets/LeafletMap (integrated)', () => {
 		vi.runAllTimers();
 
 		await waitFor(() => {
-			const item = container.querySelector('ion-item');
-			expect(item).toBeTruthy();
+			const list = container.querySelector('ion-list');
+			expect(list?.children.length).toBeGreaterThan(0);
 		});
 
-		const item = container.querySelector('ion-item');
-		await fireEvent.keyDown(item!, { key: 'Enter' });
+		const list = container.querySelector('ion-list');
+		const firstItem = list?.firstElementChild as HTMLElement;
+		await fireEvent.keyDown(firstItem!, { key: 'Enter' });
 		vi.runAllTimers();
 
 		await waitFor(() => expect(spySetView).toHaveBeenCalled());
@@ -217,14 +219,16 @@ describe('widgets/LeafletMap (integrated)', () => {
 		vi.runAllTimers();
 
 		await waitFor(() => {
-			expect(container.querySelectorAll('ion-item').length).toBeGreaterThan(0);
+			const list = container.querySelector('ion-list');
+			expect(list?.children.length).toBeGreaterThan(0);
 		});
 
 		searchbar.dispatchEvent(new CustomEvent('ionInput', { detail: { value: '' } }));
 		vi.runAllTimers();
 
 		await waitFor(() => {
-			expect(container.querySelectorAll('ion-item').length).toBe(0);
+			const list = container.querySelector('ion-list');
+			expect(list?.children.length).toBe(0);
 		});
 		vi.useRealTimers();
 	});

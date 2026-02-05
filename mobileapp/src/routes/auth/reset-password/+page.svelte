@@ -1,12 +1,10 @@
 <script lang="ts">
 	import { mailOutline, refreshOutline } from 'ionicons/icons';
 
-	import { forgotPasswordSchema } from '$lib/api/schema/authentication';
+	import { forgotPasswordSchema } from '$lib/api/schemas/authentication';
 	import { publicUserService } from '$lib/api/services';
-	import Layout from '$lib/components/layout/Layout.svelte';
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
-	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
+	import { Layout } from '$lib/components/layout';
+	import { Button, Card, InputItem } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 	import { Form } from '$lib/models/ui';
 	import { customForm, informationModal } from '$lib/utility';

@@ -84,7 +84,14 @@ export default defineConfig(
 								'$lib/models/ui/*',
 								'$lib/utility/*',
 								'$lib/stores/*',
-								'$lib/locales/*'
+								'$lib/locales/*',
+								'$lib/components/**/*.ts',
+								'$lib/api/services/*',
+								'$lib/api/dtos/*',
+								'$lib/api/schemas/organization/*',
+								'$lib/api/schemas/user/*',
+								'$lib/api/schemas/authentication/*',
+								'$lib/api/schemas/budget/*'
 							],
 							message: 'Please import from the index file.'
 						}

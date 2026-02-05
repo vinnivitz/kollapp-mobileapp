@@ -63,12 +63,4 @@ describe('widgets/ionic/LabeledItem', () => {
 		const item = container.querySelector('ion-item');
 		expect(item?.className).toContain('custom-class');
 	});
-
-	it('renders as card', () => {
-		const { container } = render(LabeledItem, {
-			props: { card: true, label: 'Card Item' }
-		});
-		const item = container.querySelector('ion-item');
-		expect(item).toBeTruthy();
-	});
 });

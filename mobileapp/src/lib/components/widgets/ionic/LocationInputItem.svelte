@@ -1,15 +1,12 @@
 <script lang="ts">
 	import { locationOutline, mapOutline } from 'ionicons/icons';
 
-	import InputItem from './InputItem.svelte';
-	import Modal from './Modal.svelte';
-	import LeafletMap from '../LeafletMap.svelte';
-
+	import { MapWidget } from '$lib/components/widgets';
+	import { InputItem, Modal } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 
 	type Properties = {
 		label: string;
-		card?: boolean;
 		classList?: string;
 		helperText?: string;
 		hidden?: boolean;
@@ -20,7 +17,6 @@
 	);
 
 	let {
-		card,
 		changed,
 		classList = '',
 		helperText,
@@ -52,7 +48,6 @@
 <InputItem
 	{classList}
 	{helperText}
-	{card}
 	{hidden}
 	inputElement={(element) => (inputElement = element)}
 	{...name ? { name } : { value: value ?? '' }}
@@ -72,7 +67,7 @@
 	breakpoints={false}
 >
 	{#if open}
-		<LeafletMap
+		<MapWidget
 			value={inputElement?.value as string}
 			selected={(location) => (cachedLocation = location)}
 			classList="-m-4"

@@ -332,7 +332,8 @@
               "placeholder": "Veranstaltungen suchen..."
             },
             "no-results-filtered": "Keine Veranstaltungen gefunden.",
-            "loading": "Laden..."
+            "loading": "Laden...",
+            "postings": "{{value}} Buchungen"
           },
           "calendar": {
             "no-activities": "Für den {{value}} wurde keine Veranstaltung gefunden"
@@ -734,11 +735,17 @@
         "page": {
           "title": "Finanzstatistik",
           "no-postings": "Keine Buchungen für Statistiken vorhanden.",
+          "search": {
+            "placeholder": "Statistik suchen..."
+          },
           "filter": {
+            "title": "Zeitraum filtern",
+            "time-range": "Zeitraum auswählen",
             "all": "Alle",
             "3months": "3 Monate",
             "6months": "6 Monate",
-            "12months": "12 Monate"
+            "12months": "12 Monate",
+            "custom": "Benutzerdefiniert"
           },
           "overview": {
             "credit": "Gesamteinnahmen",
@@ -747,7 +754,8 @@
             "avg": "Ø Buchung"
           },
           "trend": {
-            "title": "Monatlicher Verlauf"
+            "title": "Monatlicher Verlauf",
+            "no-data": "Keine Daten verfügbar."
           },
           "categories": {
             "title": "Nach Kategorie"
@@ -765,7 +773,91 @@
             "credit": "Einnahmen",
             "debit": "Ausgaben"
           },
-          "transaction-count": "{{value}} Buchungen im gewählten Zeitraum"
+          "transaction-count": "{{value}} Buchungen im gewählten Zeitraum",
+          "heatmap": {
+            "title": "Ausgaben-Kalender",
+            "active-days": "{{value}} aktive Tage",
+            "busiest-day": "Aktivster Tag: {{date}} ({{amount}})",
+            "expenses": "Ausgaben",
+            "income": "Einnahmen"
+          },
+          "comparison": {
+            "title": "Monatsvergleich",
+            "subtitle": "Aktueller Monat vs. Vormonat",
+            "credit": "Einnahmen",
+            "debit": "Ausgaben",
+            "previous": "Vormonat",
+            "balance-trend": "Saldo-Trend",
+            "improving": "Verbesserung gegenüber Vormonat",
+            "declining": "Verschlechterung gegenüber Vormonat",
+            "stable": "Stabil gegenüber Vormonat"
+          },
+          "goals": {},
+          "fairness": {},
+          "activities": {
+            "title": "Aktivitäten-Ranking",
+            "total-activities": "Aktivitäten",
+            "avg-cost": "Ø Kosten",
+            "bookings": "Buchungen",
+            "cost-distribution": "Kostenverteilung",
+            "no-activities": "Keine Aktivitäten mit Buchungen"
+          },
+          "recurring": {},
+          "insights": {
+            "title": "Intelligente Einblicke",
+            "no-insights": "Keine besonderen Einblicke",
+            "hint": "Mit mehr Buchungen werden hier automatisch Erkenntnisse angezeigt",
+            "anomaly": {
+              "title": "Ungewöhnliche Ausgabe",
+              "description": "\"{{purpose}}\" mit {{amount}} ist deutlich höher als der Durchschnitt ({{avgAmount}})"
+            },
+            "spending-up": {
+              "title": "Ausgaben gestiegen",
+              "description": "Die Ausgaben sind diesen Monat um {{percent}}% gestiegen"
+            },
+            "spending-down": {
+              "title": "Ausgaben gesunken",
+              "description": "Super! Die Ausgaben sind diesen Monat um {{percent}}% gesunken"
+            },
+            "top-category": {
+              "title": "Hauptkategorie",
+              "description": "{{category}} macht {{percent}}% aller Ausgaben aus"
+            },
+            "savings": {
+              "title": "Positiver Saldo",
+              "description": "Ihr habt insgesamt {{amount}} mehr eingenommen als ausgegeben"
+            },
+            "inactive": {
+              "title": "Lange keine Aktivität",
+              "description": "Seit {{days}} Tagen wurden keine Buchungen erfasst"
+            },
+            "small-expenses": {
+              "title": "Viele Kleinausgaben",
+              "description": "{{count}} Buchungen unter 5€ summieren sich auf {{total}}"
+            }
+          },
+          "forecast": {},
+          "export": {
+            "header": "Statistik exportieren",
+            "view": "Anzeigen",
+            "download": "Herunterladen",
+            "share": "Teilen",
+            "email": "Per E-Mail senden",
+            "error": "Export fehlgeschlagen",
+            "view-error": "Datei konnte nicht angezeigt werden",
+            "share-error": "Teilen fehlgeschlagen",
+            "email-error": "E-Mail konnte nicht geöffnet werden",
+            "download-error": "Download fehlgeschlagen",
+            "download-success": "Statistik wurde in Dokumente gespeichert",
+            "share-title": "Budget-Statistik",
+            "share-dialog": "Statistik teilen",
+            "email-subject": "Budget-Statistik",
+            "capturing": "Bild wird gerade aufgenommen...",
+            "share-unsupported": "Die Freigabe wird auf diesem Gerät nicht unterstützt",
+            "view-unsupported": "Viewer ist nicht verfügbar",
+            "email-no-account": "Kein E-Mail-Konto konfiguriert",
+            "email-unsupported": "Das Senden per E-Mail wird auf diesem Gerät nicht unterstützt"
+          }
         }
       }
     },
@@ -805,7 +897,8 @@
         "upcoming-activity-card": {
           "card": {
             "title": "Nächste Veranstaltung",
-            "no-upcoming-activity": "Keine kommende Veranstaltung"
+            "no-upcoming-activity": "Keine kommende Veranstaltung",
+            "activity-postings": "{{value}} Buchungen"
           }
         },
         "pending-requests": {

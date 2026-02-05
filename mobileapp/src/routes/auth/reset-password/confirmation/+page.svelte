@@ -7,12 +7,10 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
-	import { resetPasswordSchema } from '$lib/api/schema/authentication';
+	import { resetPasswordSchema } from '$lib/api/schemas/authentication';
 	import { publicUserService } from '$lib/api/services';
-	import Layout from '$lib/components/layout/Layout.svelte';
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
-	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
+	import { Layout } from '$lib/components/layout';
+	import { Button, Card, InputItem } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 	import { Form } from '$lib/models/ui';
 	import { customForm, passwordConfirmationValidator, showAlert } from '$lib/utility';

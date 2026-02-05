@@ -94,14 +94,6 @@ describe('widgets/ionic/CustomItem', () => {
 		expect(item?.dataset.transparent).toBe('true');
 	});
 
-	it('renders with card style', () => {
-		const { container } = render(CustomItem, {
-			props: { card: true, children }
-		});
-		const item = container.querySelector('ion-item');
-		expect(item?.dataset.card).toBe('true');
-	});
-
 	it('renders sliding option with label', () => {
 		const handler = vi.fn();
 		const { container } = render(CustomItem, {
@@ -120,5 +112,91 @@ describe('widgets/ionic/CustomItem', () => {
 		});
 		const hiddenElement = container.querySelector('.hidden');
 		expect(hiddenElement).toBeTruthy();
+	});
+
+	it('renders with custom color', () => {
+		const { container } = render(CustomItem, {
+			props: { children, color: 'primary' }
+		});
+		const item = container.querySelector('ion-item');
+		expect(item?.getAttribute('color')).toBe('primary');
+	});
+
+	it('renders with iconColor prop', () => {
+		const { container } = render(CustomItem, {
+			props: { children, icon: 'star', iconColor: 'danger' }
+		});
+		const icon = container.querySelector('ion-icon[slot="start"]');
+		expect(icon?.getAttribute('color')).toBe('danger');
+	});
+
+	it('renders disabled item', () => {
+		const clicked = vi.fn();
+		const { container } = render(CustomItem, {
+			props: { children, clicked, disabled: true }
+		});
+		const item = container.querySelector('ion-item');
+		expect(item?.hasAttribute('disabled')).toBe(true);
+	});
+
+	it('renders with indexLabel as id', () => {
+		const { container } = render(CustomItem, {
+			props: { children, indexLabel: 'step-1' }
+		});
+		const item = container.querySelector('ion-item');
+		expect(item?.getAttribute('id')).toBe('step-1');
+	});
+
+	it('renders with custom classList', () => {
+		const { container } = render(CustomItem, {
+			props: { children, classList: 'my-custom-class' }
+		});
+		const item = container.querySelector('ion-item');
+		expect(item?.classList.contains('my-custom-class')).toBe(true);
+	});
+
+	it('renders with badgeEnd', () => {
+		const { container } = render(CustomItem, {
+			props: { badgeEnd: '99+', children }
+		});
+		const badge = container.querySelector('ion-badge[slot="end"]');
+		expect(badge).toBeTruthy();
+		expect(badge?.textContent?.trim()).toBe('99+');
+	});
+
+	it('renders with ariaLabel', () => {
+		const { container } = render(CustomItem, {
+			props: { ariaLabel: 'Custom action', children }
+		});
+		const item = container.querySelector('ion-item');
+		expect(item?.getAttribute('aria-label')).toBe('Custom action');
+	});
+
+	it('does not trigger clicked on non-Enter key', async () => {
+		const clicked = vi.fn();
+		const { container } = render(CustomItem, {
+			props: { children, clicked }
+		});
+		const item = container.querySelector('ion-item')!;
+		await fireEvent.keyDown(item, { key: 'Space' });
+		expect(clicked).not.toHaveBeenCalled();
+	});
+
+	it('shows detail arrow when clicked is provided and not readonly', () => {
+		const clicked = vi.fn();
+		const { container } = render(CustomItem, {
+			props: { children, clicked }
+		});
+		const item = container.querySelector('ion-item');
+		expect(item?.hasAttribute('detail')).toBe(true);
+	});
+
+	it('does not show detail arrow when iconEnd is provided', () => {
+		const clicked = vi.fn();
+		const { container } = render(CustomItem, {
+			props: { children, clicked, iconEnd: 'arrow' }
+		});
+		const item = container.querySelector('ion-item');
+		expect(item?.getAttribute('detail')).toBe('false');
 	});
 });

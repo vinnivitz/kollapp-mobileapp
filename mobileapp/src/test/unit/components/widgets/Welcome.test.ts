@@ -1,7 +1,7 @@
 import { render } from '@testing-library/svelte';
 import { describe, expect, it } from 'vitest';
 
-import Welcome from '$lib/components/widgets/Welcome.svelte';
+import Welcome from '$lib/components/widgets/WelcomeWidget.svelte';
 
 describe('widgets/Welcome', () => {
 	it('Welcome renders logo and headings', () => {

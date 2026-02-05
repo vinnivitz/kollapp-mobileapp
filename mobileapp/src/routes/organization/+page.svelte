@@ -20,11 +20,10 @@
 	import { resolve } from '$app/paths';
 
 	import { budgetService } from '$lib/api/services';
-	import Layout from '$lib/components/layout/Layout.svelte';
-	import BudgetOverviewCard from '$lib/components/widgets/budget/BudgetOverviewCard.svelte';
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
-	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
+	import { Layout } from '$lib/components/layout';
+	import { BudgetOverview } from '$lib/components/widgets/budget';
+	import { Button, Card, LabeledItem } from '$lib/components/widgets/ionic';
+	import IconLabel from '$lib/components/widgets/ionic/IconLabel.svelte';
 	import { t } from '$lib/locales';
 	import { TourStepId } from '$lib/models/ui';
 	import { organizationStore, userStore } from '$lib/stores';
@@ -144,18 +143,13 @@
 			>
 				{$organizationStore?.description}
 			</ion-text>
-			<div class="flex flex-row items-center justify-center gap-1">
-				<ion-icon icon={locationOutline}></ion-icon>
-				<ion-text>{$organizationStore?.place}</ion-text>
-			</div>
-		</div>
-		<div class="mt-3 flex flex-row items-center justify-center gap-1">
-			<ion-icon icon={ribbonOutline}></ion-icon>
-			<ion-text class="font-semibold">
-				{$t('routes.organization.page.collective-info.role', {
+			<IconLabel icon={locationOutline} label={$organizationStore?.place!} />
+			<IconLabel
+				icon={ribbonOutline}
+				label={$t('routes.organization.page.collective-info.role', {
 					value: getRoleTranslationFromRole(organizationRole!)
 				})}
-			</ion-text>
+			/>
 		</div>
 	</Card>
 {/snippet}
@@ -223,7 +217,7 @@
 {/snippet}
 
 {#snippet budgetCard()}
-	<BudgetOverviewCard
+	<BudgetOverview
 		activities={$organizationStore?.activities!}
 		budgetCategories={$organizationStore?.budgetCategories!}
 		index="/organization"

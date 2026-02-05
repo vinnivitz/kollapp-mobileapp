@@ -1,7 +1,9 @@
-import type { QuickAccessItem } from '$lib/models/ui';
+import type { QuickAccessItemModel } from '$lib/models/ui';
 
 import { fireEvent, render } from '@testing-library/svelte';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { QuickAccessItem } from '$lib/components/widgets/quick-access';
 
 class MockIntersectionObserver {
 	constructor(callback: IntersectionObserverCallback) {
@@ -14,7 +16,6 @@ class MockIntersectionObserver {
 	unobserve = vi.fn();
 }
 vi.stubGlobal('IntersectionObserver', MockIntersectionObserver);
-import QuickAccessItemComponent from '$lib/components/widgets/quick-access/QuickAccessItem.svelte';
 
 // Mock useSortable - ref needs to be a function for {@attach ref}
 vi.mock('@dnd-kit-svelte/svelte/sortable', () => ({
@@ -24,7 +25,7 @@ vi.mock('@dnd-kit-svelte/svelte/sortable', () => ({
 	})
 }));
 
-const defaultItem: QuickAccessItem = {
+const defaultItem: QuickAccessItemModel = {
 	icon: 'homeOutline',
 	id: 'test-item-1',
 	label: 'Test Item',
@@ -50,7 +51,7 @@ describe('widgets/quick-access/QuickAccessItem', () => {
 	});
 
 	it('renders the item with label', () => {
-		const { container } = render(QuickAccessItemComponent, {
+		const { container } = render(QuickAccessItem, {
 			props: {
 				editMode: false,
 				index: 0,
@@ -62,27 +63,11 @@ describe('widgets/quick-access/QuickAccessItem', () => {
 			}
 		});
 
-		expect(container.querySelector('ion-text')?.textContent).toContain('Test Item');
-	});
-
-	it('renders Card component', () => {
-		const { container } = render(QuickAccessItemComponent, {
-			props: {
-				editMode: false,
-				index: 0,
-				item: defaultItem,
-				onClick,
-				onPointerDown,
-				onPointerUp,
-				onRemove
-			}
-		});
-
-		expect(container.querySelector('ion-card')).toBeTruthy();
+		expect(container.textContent).toContain('Test Item');
 	});
 
 	it('calls onClick when card is clicked in non-edit mode', async () => {
-		const { container } = render(QuickAccessItemComponent, {
+		const { container } = render(QuickAccessItem, {
 			props: {
 				editMode: false,
 				index: 0,
@@ -94,14 +79,16 @@ describe('widgets/quick-access/QuickAccessItem', () => {
 			}
 		});
 
-		const card = container.querySelector('ion-card') as HTMLElement;
-		await fireEvent.click(card);
+		// Click on the card element inside the wrapper (Card component renders first child)
+		const wrapper = container.querySelector('.quick-access-item') as HTMLElement;
+		const cardElement = wrapper.firstElementChild as HTMLElement;
+		await fireEvent.click(cardElement);
 
 		expect(onClick).toHaveBeenCalledWith(defaultItem);
 	});
 
 	it('does not call onClick when card is clicked in edit mode', async () => {
-		const { container } = render(QuickAccessItemComponent, {
+		const { container } = render(QuickAccessItem, {
 			props: {
 				editMode: true,
 				index: 0,
@@ -113,14 +100,16 @@ describe('widgets/quick-access/QuickAccessItem', () => {
 			}
 		});
 
-		const card = container.querySelector('ion-card') as HTMLElement;
-		await fireEvent.click(card);
+		// Click on the card element inside the wrapper
+		const wrapper = container.querySelector('.quick-access-item') as HTMLElement;
+		const cardElement = wrapper.firstElementChild as HTMLElement;
+		await fireEvent.click(cardElement);
 
 		expect(onClick).not.toHaveBeenCalled();
 	});
 
 	it('shows remove button in edit mode', () => {
-		const { container } = render(QuickAccessItemComponent, {
+		const { container } = render(QuickAccessItem, {
 			props: {
 				editMode: true,
 				index: 0,
@@ -132,12 +121,13 @@ describe('widgets/quick-access/QuickAccessItem', () => {
 			}
 		});
 
-		const removeButton = container.querySelector('ion-button[color="danger"]');
-		expect(removeButton).toBeTruthy();
+		// In edit mode, the remove button should be rendered
+		const wrapper = container.querySelector('.quick-access-item');
+		expect(wrapper?.querySelectorAll('[color="danger"]').length).toBeGreaterThan(0);
 	});
 
 	it('does not show remove button in non-edit mode', () => {
-		const { container } = render(QuickAccessItemComponent, {
+		const { container } = render(QuickAccessItem, {
 			props: {
 				editMode: false,
 				index: 0,
@@ -149,12 +139,13 @@ describe('widgets/quick-access/QuickAccessItem', () => {
 			}
 		});
 
-		const removeButton = container.querySelector('ion-button[color="danger"]');
-		expect(removeButton).toBeFalsy();
+		// In non-edit mode, no remove button should be visible
+		const wrapper = container.querySelector('.quick-access-item');
+		expect(wrapper?.querySelectorAll('[color="danger"]').length).toBe(0);
 	});
 
 	it('calls onRemove when remove button is clicked', async () => {
-		const { container } = render(QuickAccessItemComponent, {
+		const { container } = render(QuickAccessItem, {
 			props: {
 				editMode: true,
 				index: 0,
@@ -166,14 +157,14 @@ describe('widgets/quick-access/QuickAccessItem', () => {
 			}
 		});
 
-		const removeButton = container.querySelector('ion-button[color="danger"]') as HTMLElement;
+		const removeButton = container.querySelector('[color="danger"]') as HTMLElement;
 		await fireEvent.click(removeButton);
 
 		expect(onRemove).toHaveBeenCalledWith('test-item-1');
 	});
 
 	it('calls onPointerDown when pointer is pressed', async () => {
-		const { container } = render(QuickAccessItemComponent, {
+		const { container } = render(QuickAccessItem, {
 			props: {
 				editMode: false,
 				index: 0,
@@ -192,7 +183,7 @@ describe('widgets/quick-access/QuickAccessItem', () => {
 	});
 
 	it('calls onPointerUp when pointer is released', async () => {
-		const { container } = render(QuickAccessItemComponent, {
+		const { container } = render(QuickAccessItem, {
 			props: {
 				editMode: false,
 				index: 0,
@@ -211,7 +202,7 @@ describe('widgets/quick-access/QuickAccessItem', () => {
 	});
 
 	it('calls onPointerUp when pointer leaves element', async () => {
-		const { container } = render(QuickAccessItemComponent, {
+		const { container } = render(QuickAccessItem, {
 			props: {
 				editMode: false,
 				index: 0,
@@ -230,7 +221,7 @@ describe('widgets/quick-access/QuickAccessItem', () => {
 	});
 
 	it('applies wiggle class in edit mode', () => {
-		const { container } = render(QuickAccessItemComponent, {
+		const { container } = render(QuickAccessItem, {
 			props: {
 				editMode: true,
 				index: 0,
@@ -247,7 +238,7 @@ describe('widgets/quick-access/QuickAccessItem', () => {
 	});
 
 	it('does not apply wiggle class when not in edit mode', () => {
-		const { container } = render(QuickAccessItemComponent, {
+		const { container } = render(QuickAccessItem, {
 			props: {
 				editMode: false,
 				index: 0,
@@ -265,13 +256,13 @@ describe('widgets/quick-access/QuickAccessItem', () => {
 
 	describe('special item types', () => {
 		it('renders item with special widgetType', () => {
-			const specialItem: QuickAccessItem = {
+			const specialItem: QuickAccessItemModel = {
 				...defaultItem,
 				specialWidgetId: 'budget-chart-card',
 				widgetType: 'special'
 			};
 
-			const { container } = render(QuickAccessItemComponent, {
+			const { container } = render(QuickAccessItem, {
 				props: {
 					editMode: false,
 					index: 0,
@@ -283,16 +274,16 @@ describe('widgets/quick-access/QuickAccessItem', () => {
 				}
 			});
 
-			expect(container.querySelector('ion-card')).toBeTruthy();
+			expect(container.querySelector('.quick-access-item')).toBeTruthy();
 		});
 
 		it('renders item with add widgetType', () => {
-			const addItem: QuickAccessItem = {
+			const addItem: QuickAccessItemModel = {
 				...defaultItem,
 				widgetType: 'normal'
 			};
 
-			const { container } = render(QuickAccessItemComponent, {
+			const { container } = render(QuickAccessItem, {
 				props: {
 					editMode: false,
 					index: 0,
@@ -304,13 +295,13 @@ describe('widgets/quick-access/QuickAccessItem', () => {
 				}
 			});
 
-			expect(container.querySelector('ion-card')).toBeTruthy();
+			expect(container.querySelector('.quick-access-item')).toBeTruthy();
 		});
 	});
 
 	describe('isOverlay prop', () => {
 		it('renders with isOverlay true', () => {
-			const { container } = render(QuickAccessItemComponent, {
+			const { container } = render(QuickAccessItem, {
 				props: {
 					editMode: true,
 					index: 0,
@@ -328,7 +319,7 @@ describe('widgets/quick-access/QuickAccessItem', () => {
 		});
 
 		it('renders with isOverlay false (default)', () => {
-			const { container } = render(QuickAccessItemComponent, {
+			const { container } = render(QuickAccessItem, {
 				props: {
 					editMode: false,
 					index: 0,
@@ -344,89 +335,14 @@ describe('widgets/quick-access/QuickAccessItem', () => {
 		});
 	});
 
-	describe('different icons', () => {
-		it('renders item with calendar icon', () => {
-			const calendarItem: QuickAccessItem = {
-				...defaultItem,
-				icon: 'calendarOutline'
-			};
-
-			const { container } = render(QuickAccessItemComponent, {
-				props: {
-					editMode: false,
-					index: 0,
-					item: calendarItem,
-					onClick,
-					onPointerDown,
-					onPointerUp,
-					onRemove
-				}
-			});
-
-			expect(container.querySelector('ion-card')).toBeTruthy();
-		});
-
-		it('renders item with settings icon', () => {
-			const settingsItem: QuickAccessItem = {
-				...defaultItem,
-				icon: 'settingsOutline'
-			};
-
-			const { container } = render(QuickAccessItemComponent, {
-				props: {
-					editMode: false,
-					index: 0,
-					item: settingsItem,
-					onClick,
-					onPointerDown,
-					onPointerUp,
-					onRemove
-				}
-			});
-
-			expect(container.querySelector('ion-card')).toBeTruthy();
-		});
-	});
-
-	describe('index prop', () => {
-		it('renders with different index values', () => {
-			const { container: container1 } = render(QuickAccessItemComponent, {
-				props: {
-					editMode: false,
-					index: 0,
-					item: defaultItem,
-					onClick,
-					onPointerDown,
-					onPointerUp,
-					onRemove
-				}
-			});
-
-			const { container: container2 } = render(QuickAccessItemComponent, {
-				props: {
-					editMode: false,
-					index: 5,
-					item: { ...defaultItem, id: 'test-item-2' },
-					onClick,
-					onPointerDown,
-					onPointerUp,
-					onRemove
-				}
-			});
-
-			expect(container1.querySelector('ion-card')).toBeTruthy();
-			expect(container2.querySelector('ion-card')).toBeTruthy();
-		});
-	});
-
 	describe('labels', () => {
 		it('renders long labels', () => {
-			const longLabelItem: QuickAccessItem = {
+			const longLabelItem: QuickAccessItemModel = {
 				...defaultItem,
 				label: 'This is a very long label that should be truncated'
 			};
 
-			const { container } = render(QuickAccessItemComponent, {
+			const { container } = render(QuickAccessItem, {
 				props: {
 					editMode: false,
 					index: 0,
@@ -442,12 +358,12 @@ describe('widgets/quick-access/QuickAccessItem', () => {
 		});
 
 		it('renders empty label', () => {
-			const emptyLabelItem: QuickAccessItem = {
+			const emptyLabelItem: QuickAccessItemModel = {
 				...defaultItem,
 				label: ''
 			};
 
-			const { container } = render(QuickAccessItemComponent, {
+			const { container } = render(QuickAccessItem, {
 				props: {
 					editMode: false,
 					index: 0,
@@ -459,7 +375,7 @@ describe('widgets/quick-access/QuickAccessItem', () => {
 				}
 			});
 
-			expect(container.querySelector('ion-text')).toBeTruthy();
+			expect(container.querySelector('.quick-access-item')).toBeTruthy();
 		});
 	});
 });

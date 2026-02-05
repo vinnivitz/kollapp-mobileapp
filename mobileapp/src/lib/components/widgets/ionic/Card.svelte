@@ -2,7 +2,8 @@
 	import type { OrganizationRole } from '@kollapp/api-types';
 	import type { Snippet } from 'svelte';
 
-	import LazyRender from '$lib/components/utility/LazyRender.svelte';
+	import { LazyRender } from '$lib/components/utility';
+	import { Button } from '$lib/components/widgets/ionic';
 	import { type Colors } from '$lib/models/ui';
 
 	type Properties = {
@@ -12,7 +13,7 @@
 		children?: Snippet;
 		classList?: string;
 		color?: Colors;
-		icon?: string;
+		contentClass?: string;
 		iconColor?: Colors;
 		indexed?: string;
 		indexLabel?: string;
@@ -24,6 +25,8 @@
 		titleIconStart?: string;
 		tourId?: string;
 		clicked?: () => void;
+		titleIconEndClicked?: () => void;
+		titleIconStartClicked?: () => void;
 	};
 
 	let {
@@ -34,7 +37,7 @@
 		classList = '',
 		clicked,
 		color = border ? 'transparent' : 'light',
-		icon,
+		contentClass = '',
 		iconColor,
 		indexed,
 		indexLabel,
@@ -43,14 +46,15 @@
 		subtitle,
 		title,
 		titleIconEnd,
+		titleIconEndClicked,
 		titleIconStart,
+		titleIconStartClicked,
 		tourId
 	}: Properties = $props();
 
 	// workaround to avoid reference linting error
 	void indexed;
 	void accessible;
-	void icon;
 
 	const borderStyle = $derived(border ? `1px solid var(--ion-color-${border})` : '0px solid transparent');
 	const computedAriaLabel = $derived(ariaLabel ?? title ?? undefined);
@@ -93,13 +97,21 @@
 		<ion-card-header>
 			<ion-card-title class="flex items-center justify-center gap-2 text-center text-xl">
 				{#if titleIconStart}
-					<ion-icon icon={titleIconStart} color={iconColor}></ion-icon>
+					{#if titleIconStartClicked}
+						<Button size="small" fill="outline" icon={titleIconStart} clicked={titleIconStartClicked} />
+					{:else}
+						<ion-icon icon={titleIconStart} color={iconColor}></ion-icon>
+					{/if}
 				{/if}
 				{#if title}
 					<ion-text>{title}</ion-text>
 				{/if}
 				{#if titleIconEnd}
-					<ion-icon icon={titleIconEnd} color={iconColor}></ion-icon>
+					{#if titleIconEndClicked}
+						<Button size="small" fill="outline" icon={titleIconEnd} clicked={titleIconEndClicked} />
+					{:else}
+						<ion-icon icon={titleIconEnd} color={iconColor}></ion-icon>
+					{/if}
 				{/if}
 			</ion-card-title>
 			{#if subtitle}
@@ -108,7 +120,7 @@
 		</ion-card-header>
 	{/if}
 	{#if children}
-		<ion-card-content>
+		<ion-card-content class={contentClass}>
 			{@render children()}
 		</ion-card-content>
 	{/if}

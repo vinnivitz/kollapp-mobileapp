@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { onMount, type Snippet } from 'svelte';
 
+	import { exportModeStore } from '$lib/stores';
+
 	type Properties = {
 		children: Snippet;
 		/** Once visible, keep rendered even when scrolled away */
@@ -18,11 +20,16 @@
 	let container = $state<HTMLDivElement>();
 	let isVisible = $state<boolean | undefined>(false);
 	let wasVisible = $state<boolean>(false);
+	let showSpinner = $state<boolean>(false);
 
-	const shouldRender = $derived(keepRendered ? wasVisible : isVisible);
+	const shouldRender = $derived($exportModeStore || (keepRendered ? wasVisible : isVisible));
 
 	onMount(() => {
 		if (!container) return;
+
+		const spinnerTimeout = setTimeout(() => {
+			showSpinner = true;
+		}, 100);
 
 		const observer = new IntersectionObserver(
 			(entries) => {
@@ -40,12 +47,19 @@
 
 		observer.observe(container);
 
-		return () => observer.disconnect();
+		return () => {
+			clearTimeout(spinnerTimeout);
+			observer.disconnect();
+		};
 	});
 </script>
 
 <div bind:this={container} style:min-height={shouldRender ? 'auto' : minHeight}>
 	{#if shouldRender}
 		{@render children()}
+	{:else if showSpinner}
+		<div class="flex items-center justify-center">
+			<ion-spinner name="crescent"></ion-spinner>
+		</div>
 	{/if}
 </div>

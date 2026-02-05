@@ -1,9 +1,8 @@
 <script>
 	import { mailOutline, personOutline } from 'ionicons/icons';
 
-	import Layout from '$lib/components/layout/Layout.svelte';
-	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
+	import { Layout } from '$lib/components/layout';
+	import { Card, LabeledItem } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 </script>
 

@@ -4,14 +4,13 @@
 
 	import type { RouteId } from '$app/types';
 
-	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
+	import { CustomItem } from '$lib/components/widgets/ionic';
 
 	type Properties = {
 		label: string;
 		accessible?: OrganizationRole;
 		ariaLabel?: string;
 		badge?: string;
-		card?: boolean;
 		classList?: string;
 		color?: Colors;
 		icon?: string;
@@ -23,7 +22,6 @@
 		accessible,
 		ariaLabel,
 		badge,
-		card,
 		classList = '',
 		clicked,
 		color = 'light',
@@ -41,7 +39,7 @@
 	const computedAriaLabel = $derived(ariaLabel ?? label);
 </script>
 
-<CustomItem {clicked} {card} {color} {transparent} {icon} {classList} {badge} ariaLabel={computedAriaLabel}>
+<CustomItem {clicked} {color} {transparent} {icon} {classList} {badge} ariaLabel={computedAriaLabel}>
 	{#if label}
 		<ion-label class="ms-4" color={labelColor}>{label}</ion-label>
 	{/if}
