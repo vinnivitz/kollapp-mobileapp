@@ -34,26 +34,19 @@
 			years.add(getYear(new TZDate(posting.date)));
 		}
 
-		const sortedYears = [...years].toSorted((a, b) => a - b);
-		const minYear = sortedYears[0] ?? getYear(new TZDate());
-		const maxYear = sortedYears.at(-1) ?? getYear(new TZDate());
-
-		const allYears: number[] = [];
-		for (let y = minYear; y <= maxYear; y++) {
-			allYears.push(y);
-		}
-		return allYears;
+		return [...years].toSorted((a, b) => a - b);
 	});
 
 	let selectedYear = $state(getYear(new TZDate()));
 
 	$effect(() => {
-		if (!availableYears.includes(selectedYear)) {
+		if (availableYears.length > 0 && !availableYears.includes(selectedYear)) {
 			selectedYear = availableYears.at(-1) ?? getYear(new TZDate());
 		}
 	});
 
-	const canGoBack = $derived(availableYears.includes(selectedYear));
+	// eslint-disable-next-line sonarjs/index-of-compare-to-positive-number
+	const canGoBack = $derived(availableYears.indexOf(selectedYear) > 0);
 	const canGoForward = $derived(availableYears.indexOf(selectedYear) < availableYears.length - 1);
 
 	function goToPreviousYear(): void {

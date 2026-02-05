@@ -4,11 +4,11 @@
 
 	import { TZDate } from '@date-fns/tz';
 	import Chart from '@edde746/svelte-apexcharts';
-	import { startOfMonth } from 'date-fns';
-	import { statsChartOutline } from 'ionicons/icons';
-	import { SvelteMap } from 'svelte/reactivity';
+	import { getYear, startOfMonth } from 'date-fns';
+	import { chevronBackOutline, chevronForwardOutline, statsChartOutline } from 'ionicons/icons';
+	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 
-	import { Card } from '$lib/components/widgets/ionic';
+	import { Button, Card } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 	import { formatter } from '$lib/utility';
 
@@ -17,11 +17,11 @@
 		postings: PostingTO[];
 	};
 
-	type MonthlyData = { credit: number; debit: number; month: string };
+	type MonthlyData = { credit: number; debit: number; month: string; monthKey: string };
 
 	let { isDarkMode, postings }: Properties = $props();
 
-	const monthlyData = $derived.by<MonthlyData[]>(() => {
+	const allMonthlyData = $derived.by<MonthlyData[]>(() => {
 		const monthMap = new SvelteMap<string, MonthlyData>();
 
 		for (const posting of postings) {
@@ -30,7 +30,7 @@
 			const monthLabel = formatter.date(date, 'MMM yyyy');
 
 			if (!monthMap.has(monthKey)) {
-				monthMap.set(monthKey, { credit: 0, debit: 0, month: monthLabel });
+				monthMap.set(monthKey, { credit: 0, debit: 0, month: monthLabel, monthKey });
 			}
 
 			const data = monthMap.get(monthKey)!;
@@ -44,13 +44,57 @@
 		return [...monthMap.entries()].toSorted(([a], [b]) => a.localeCompare(b)).map(([, data]) => data);
 	});
 
+	const availableYears = $derived.by(() => {
+		if (postings.length === 0) return [];
+
+		const years = new SvelteSet<number>();
+		for (const posting of postings) {
+			years.add(getYear(new TZDate(posting.date)));
+		}
+
+		return [...years].filter((year) => getMonthlyDataForYear(year).length >= 2).toSorted((a, b) => a - b);
+	});
+
+	let selectedYear = $state(getYear(new TZDate()));
+
+	$effect(() => {
+		if (availableYears.length > 0 && !availableYears.includes(selectedYear)) {
+			selectedYear = availableYears.at(-1) ?? getYear(new TZDate());
+		}
+	});
+
+	// eslint-disable-next-line sonarjs/index-of-compare-to-positive-number
+	const canGoBack = $derived(availableYears.indexOf(selectedYear) > 0);
+	const canGoForward = $derived(availableYears.indexOf(selectedYear) < availableYears.length - 1);
+
+	function getMonthlyDataForYear(year: number): MonthlyData[] {
+		return allMonthlyData.filter((data) => data.monthKey.startsWith(year.toString()));
+	}
+
+	function goToPreviousYear(): void {
+		const currentIndex = availableYears.indexOf(selectedYear);
+		if (currentIndex > 0) {
+			selectedYear = availableYears[currentIndex - 1] ?? selectedYear;
+		}
+	}
+
+	function goToNextYear(): void {
+		const currentIndex = availableYears.indexOf(selectedYear);
+		if (currentIndex < availableYears.length - 1) {
+			selectedYear = availableYears[currentIndex + 1] ?? selectedYear;
+		}
+	}
+
+	const monthlyData = $derived(getMonthlyDataForYear(selectedYear));
+
 	const trendChartOptions = $derived<ApexOptions>({
 		chart: {
 			animations: { enabled: true },
 			height: 250,
 			stacked: false,
 			toolbar: { show: false },
-			type: 'area'
+			type: 'area',
+			zoom: { enabled: false }
 		},
 		colors: ['var(--ion-color-success)', 'var(--ion-color-danger)'],
 		dataLabels: { enabled: false },
@@ -109,6 +153,14 @@
 </script>
 
 <Card title={$t('routes.organization.budget-statistics.page.trend.title')} titleIconStart={statsChartOutline} lazy>
+	<div class="mb-3 flex items-center justify-center gap-4">
+		<Button fill="clear" size="small" disabled={!canGoBack} clicked={goToPreviousYear} icon={chevronBackOutline} />
+		<span class="min-w-[60px] text-center text-lg font-semibold" style="color: var(--ion-text-color);">
+			{selectedYear}
+		</span>
+		<Button fill="clear" size="small" disabled={!canGoForward} clicked={goToNextYear} icon={chevronForwardOutline} />
+	</div>
+
 	{#if monthlyData.length === 0}
 		<ion-note class="text-center italic">{$t('routes.organization.budget-statistics.page.trend.no-data')}</ion-note>
 	{:else}

@@ -50,7 +50,7 @@
 	import { t } from '$lib/locales';
 	import { chipSection, type Colors, dateRangeSection, type FilterConfig, Theme } from '$lib/models/ui';
 	import { exportModeStore, organizationStore, themeStore } from '$lib/stores';
-	import { formatter, parser, showAlert } from '$lib/utility';
+	import { formatter, informationModal, parser, showAlert } from '$lib/utility';
 
 	type TimeRange = '12months' | '3months' | '6months' | 'all';
 	type CategoryStats = { category: OrganizationBudgetCategoryResponseTO; credit: number; debit: number };
@@ -257,9 +257,15 @@
 		if (!result) return;
 
 		try {
+			const writeResult = await Filesystem.writeFile({
+				data: result.base64,
+				directory: Directory.Cache,
+				path: getFilename()
+			});
+
 			await Share.share({
 				dialogTitle: $t('routes.organization.budget-statistics.page.export.share-dialog'),
-				files: [result.base64],
+				files: [writeResult.uri],
 				title: $t('routes.organization.budget-statistics.page.export.share-title')
 			});
 		} catch (error) {
@@ -277,12 +283,6 @@
 		if (!result) return;
 
 		try {
-			const writeResult = await Filesystem.writeFile({
-				data: result.base64,
-				directory: Directory.Cache,
-				path: getFilename()
-			});
-
 			const hasAccountResult = await EmailComposer.hasAccount();
 
 			if (!hasAccountResult.hasAccount) {
@@ -290,7 +290,13 @@
 			}
 
 			await EmailComposer.open({
-				attachments: [{ path: writeResult.uri, type: 'absolute' }],
+				attachments: [
+					{
+						name: getFilename(),
+						path: result.base64,
+						type: 'base64'
+					}
+				],
 				subject: $t('routes.organization.budget-statistics.page.export.email-subject')
 			});
 		} catch (error) {
@@ -307,12 +313,16 @@
 
 		try {
 			if (Capacitor.isNativePlatform()) {
+				const filename = getFilename();
 				await Filesystem.writeFile({
 					data: result.base64,
 					directory: Directory.Documents,
-					path: getFilename()
+					path: filename
 				});
-				await showAlert($t('routes.organization.budget-statistics.page.export.download-success'));
+				await informationModal(
+					$t('routes.organization.budget-statistics.page.export.download-success-title'),
+					$t('routes.organization.budget-statistics.page.export.download-success-message', { value: filename })
+				);
 			} else {
 				const url = URL.createObjectURL(result.blob);
 				const link = document.createElement('a');
