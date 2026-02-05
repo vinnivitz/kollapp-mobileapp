@@ -809,31 +809,31 @@
             "hint": "Mit mehr Buchungen werden hier automatisch Erkenntnisse angezeigt",
             "anomaly": {
               "title": "Ungewöhnliche Ausgabe",
-              "description": "\"{{purpose}}\" mit {{amount}} ist deutlich höher als der Durchschnitt ({{avgAmount}})"
+              "description": "\"{{value}}\" mit {{value2}} ist deutlich höher als der Durchschnitt ({{value3}})"
             },
             "spending-up": {
               "title": "Ausgaben gestiegen",
-              "description": "Die Ausgaben sind diesen Monat um {{percent}}% gestiegen"
+              "description": "Die Ausgaben sind diesen Monat um {{value}}% gestiegen"
             },
             "spending-down": {
               "title": "Ausgaben gesunken",
-              "description": "Super! Die Ausgaben sind diesen Monat um {{percent}}% gesunken"
+              "description": "Super! Die Ausgaben sind diesen Monat um {{value}}% gesunken"
             },
             "top-category": {
               "title": "Hauptkategorie",
-              "description": "{{category}} macht {{percent}}% aller Ausgaben aus"
+              "description": "Kategorie macht {{value}}% aller Ausgaben aus"
             },
             "savings": {
               "title": "Positiver Saldo",
-              "description": "Ihr habt insgesamt {{amount}} mehr eingenommen als ausgegeben"
+              "description": "Ihr habt insgesamt {{value}} mehr eingenommen als ausgegeben"
             },
             "inactive": {
               "title": "Lange keine Aktivität",
-              "description": "Seit {{days}} Tagen wurden keine Buchungen erfasst"
+              "description": "Seit {{value}} Tagen wurden keine Buchungen erfasst"
             },
             "small-expenses": {
               "title": "Viele Kleinausgaben",
-              "description": "{{count}} Buchungen unter 5€ summieren sich auf {{total}}"
+              "description": "{{value}} Buchungen unter 5€ summieren sich auf {{value2}}"
             }
           },
           "forecast": {},
