@@ -21,10 +21,15 @@ export const TourStepId = {
 		LIST: generateTourId()
 	},
 
+	BUDGET_STATISTICS: {
+		CHARTS: generateTourId()
+	},
+
 	HOME: {
 		BUDGET_CHART: generateTourId(),
 		ORGANIZATION: generateTourId(),
 		QUICK_ACCESS: generateTourId(),
+		QUICK_ACCESS_PANEL: generateTourId(),
 		UPCOMING_ACTIVITY: generateTourId()
 	},
 
@@ -33,9 +38,22 @@ export const TourStepId = {
 		LIST: generateTourId()
 	},
 
+	MENU: {
+		ACTIVITIES: generateTourId()
+	},
+
+	NAVIGATION: {
+		ACCOUNT_TAB: generateTourId(),
+		MENU_BUTTON: generateTourId(),
+		ORGANIZATION_TAB: generateTourId()
+	},
+
 	ORGANIZATION: {
 		BUDGET: generateTourId(),
-		INFO: generateTourId()
+		BUDGET_CATEGORIES_LINK: generateTourId(),
+		INFO: generateTourId(),
+		MEMBERS_LINK: generateTourId(),
+		STATISTICS_LINK: generateTourId()
 	}
 } as const;
 

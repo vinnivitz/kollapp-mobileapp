@@ -17,7 +17,7 @@
 
 	import { SplashScreen } from '@capacitor/splash-screen';
 	import { defineCustomElements } from '@ionic/pwa-elements/loader';
-	import { accessibility, home, person } from 'ionicons/icons';
+	import { home, peopleOutline, person } from 'ionicons/icons';
 	import { onMount } from 'svelte';
 
 	import favicon from '$lib/assets/favicon.png';
@@ -40,7 +40,7 @@
 			tabs = [
 				{ icon: home, label: $t('routes.layout.page.tabs.home'), tab: '/' },
 				{
-					icon: accessibility,
+					icon: peopleOutline,
 					label: $t('routes.layout.page.tabs.organization'),
 					tab: '/organization'
 				},

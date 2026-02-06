@@ -9,6 +9,7 @@
 	import { FadeInOut } from '$lib/components/core/animation';
 	import { Header, Menu } from '$lib/components/layout';
 	import { t } from '$lib/locales';
+	import { TourStepId } from '$lib/models/ui';
 	import { initializationStore, organizationStore } from '$lib/stores';
 	import { refreshDataStores } from '$lib/utility';
 
@@ -77,6 +78,7 @@
 			{#if $organizationStore}
 				<LabeledItem
 					transparent
+					tourId={TourStepId.MENU.ACTIVITIES}
 					clicked={() => menuComponent?.navigate('/organization/activities')}
 					icon={flashOutline}
 					label={$t('components.layout.menu.list.activities.label')}

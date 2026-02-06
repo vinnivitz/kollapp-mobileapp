@@ -49,20 +49,6 @@
 	const canGoBack = $derived(availableYears.indexOf(selectedYear) > 0);
 	const canGoForward = $derived(availableYears.indexOf(selectedYear) < availableYears.length - 1);
 
-	function goToPreviousYear(): void {
-		const currentIndex = availableYears.indexOf(selectedYear);
-		if (currentIndex > 0) {
-			selectedYear = availableYears[currentIndex - 1] ?? selectedYear;
-		}
-	}
-
-	function goToNextYear(): void {
-		const currentIndex = availableYears.indexOf(selectedYear);
-		if (currentIndex < availableYears.length - 1) {
-			selectedYear = availableYears[currentIndex + 1] ?? selectedYear;
-		}
-	}
-
 	const startDate = $derived(startOfMonth(new TZDate(selectedYear, 0, 1)));
 	const endDate = $derived(endOfMonth(new TZDate(selectedYear, 11, 31)));
 
@@ -185,16 +171,6 @@
 	const chartOptions = $derived<ApexOptions>({
 		chart: {
 			animations: { enabled: true },
-			events: {
-				dataPointSelection: (_event, _chartContext, config) => {
-					console.log('jo');
-					const seriesData = heatmapSeries[config.seriesIndex]?.data[config.dataPointIndex];
-					if (seriesData?.y === -999_999) {
-						// Klick auf out-of-range Zelle verhindern
-						return false;
-					}
-				}
-			},
 			height: 250,
 			toolbar: { show: false },
 			type: 'heatmap',
@@ -369,6 +345,20 @@
 				rect.setAttribute('filter', 'none');
 				rect.classList.remove('apexcharts-selected');
 			}
+		}
+	}
+
+	function goToPreviousYear(): void {
+		const currentIndex = availableYears.indexOf(selectedYear);
+		if (currentIndex > 0) {
+			selectedYear = availableYears[currentIndex - 1] ?? selectedYear;
+		}
+	}
+
+	function goToNextYear(): void {
+		const currentIndex = availableYears.indexOf(selectedYear);
+		if (currentIndex < availableYears.length - 1) {
+			selectedYear = availableYears[currentIndex + 1] ?? selectedYear;
 		}
 	}
 </script>

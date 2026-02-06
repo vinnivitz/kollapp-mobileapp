@@ -159,6 +159,7 @@
 		<LabeledItem
 			badge={pendingMembersCount > 0 ? `${pendingMembersCount}` : undefined}
 			indexed="/organization/members"
+			tourId={TourStepId.ORGANIZATION.MEMBERS_LINK}
 			clicked={() => goto(resolve('/organization/members'))}
 			icon={peopleOutline}
 			label={$t('routes.organization.page.collective-list.list.members')}
@@ -173,6 +174,7 @@
 			/>
 			<LabeledItem
 				indexed="/organization/budget-categories"
+				tourId={TourStepId.ORGANIZATION.BUDGET_CATEGORIES_LINK}
 				accessible="ROLE_ORGANIZATION_MANAGER"
 				clicked={() => goto(resolve('/organization/budget-categories'))}
 				icon={cardOutline}

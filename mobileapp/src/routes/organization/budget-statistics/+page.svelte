@@ -38,7 +38,7 @@
 	import { Layout } from '$lib/components/layout';
 	import { FilterPanel, PostingItem } from '$lib/components/shared';
 	import { t } from '$lib/locales';
-	import { chipSection, dateRangeSection, type FilterConfig, Theme } from '$lib/models/ui';
+	import { chipSection, dateRangeSection, type FilterConfig, Theme, TourStepId } from '$lib/models/ui';
 	import { exportModeStore, organizationStore, themeStore } from '$lib/stores';
 	import { informationModal, parser, showAlert } from '$lib/utility';
 
@@ -381,7 +381,7 @@
 		<div class="sticky top-0 left-0 z-10">
 			<FilterPanel config={filterConfig} onAction={handleExport} />
 		</div>
-		<div id="statistics-content">
+		<div id="statistics-content" data-tour={TourStepId.BUDGET_STATISTICS.CHARTS}>
 			{@render transactionCountNote()}
 			<div class="mt-4 grid grid-cols-1 md:grid-cols-2">
 				<OverviewCards {averageTransaction} {balance} {totalCredit} {totalDebit} />

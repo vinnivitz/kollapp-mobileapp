@@ -7,6 +7,8 @@
 	import { navigating, page } from '$app/state';
 	import type { RouteId } from '$app/types';
 
+	import { TourStepId } from '$lib/models/ui';
+
 	type Properties = {
 		tabs: TabConfig[];
 		children?: Snippet;
@@ -31,6 +33,12 @@
 		await goto(selectedTab);
 		await controller.select(selectedTab);
 	};
+
+	function getTourId(tab: RouteId): string | undefined {
+		if (tab === '/organization') return TourStepId.NAVIGATION.ORGANIZATION_TAB;
+		if (tab === '/account') return TourStepId.NAVIGATION.ACCOUNT_TAB;
+		return undefined;
+	}
 </script>
 
 <ion-tabs bind:this={controller}>
@@ -45,6 +53,7 @@
 				aria-label={tab.label}
 				aria-selected={tab.tab === currentTabName}
 				class:tab-selected={tab.tab === currentTabName}
+				data-tour={getTourId(tab.tab)}
 				onclick={() => onTabSelect(tab.tab)}
 				onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && onTabSelect(tab.tab)}
 			>

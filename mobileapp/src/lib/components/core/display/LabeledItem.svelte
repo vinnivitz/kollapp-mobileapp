@@ -15,6 +15,7 @@
 		color?: Colors;
 		icon?: string;
 		indexed?: RouteId;
+		tourId?: string;
 		transparent?: boolean;
 	} & ({ indexed: RouteId; clicked: () => void } | { indexed?: RouteId; clicked?: () => void });
 
@@ -28,6 +29,7 @@
 		icon,
 		indexed,
 		label,
+		tourId,
 		transparent = false
 	}: Properties = $props();
 
@@ -39,7 +41,7 @@
 	const computedAriaLabel = $derived(ariaLabel ?? label);
 </script>
 
-<CustomItem {clicked} {color} {transparent} {icon} {classList} {badge} ariaLabel={computedAriaLabel}>
+<CustomItem {clicked} {color} {transparent} {icon} {classList} {badge} {tourId} ariaLabel={computedAriaLabel}>
 	{#if label}
 		<ion-label class="ms-4" color={labelColor}>{label}</ion-label>
 	{/if}

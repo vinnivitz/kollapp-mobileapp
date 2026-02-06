@@ -146,3 +146,49 @@ body {
 .driver-popover-footer button {
 	text-shadow: none !important;
 }
+
+/* Tour click highlight animation */
+.tour-click-highlight {
+	animation: tour-pulse 1.2s ease-in-out;
+	position: relative;
+	z-index: 9999;
+}
+
+@keyframes tour-pulse {
+	0% {
+		transform: scale(1);
+		box-shadow: 0 0 0 0 var(--ion-color-primary);
+		outline: 3px solid transparent;
+		filter: brightness(1);
+	}
+	15% {
+		transform: scale(1.03);
+		box-shadow: 0 0 20px 5px var(--ion-color-primary);
+		outline: 3px solid var(--ion-color-primary);
+		filter: brightness(1.15);
+	}
+	30% {
+		transform: scale(1);
+		filter: brightness(1.1);
+	}
+	45% {
+		transform: scale(1.03);
+		box-shadow: 0 0 20px 5px var(--ion-color-primary);
+		filter: brightness(1.15);
+	}
+	60% {
+		transform: scale(1);
+		filter: brightness(1.1);
+	}
+	75% {
+		transform: scale(1.02);
+		box-shadow: 0 0 15px 3px var(--ion-color-primary);
+		filter: brightness(1.12);
+	}
+	100% {
+		transform: scale(1);
+		box-shadow: 0 0 0 0 transparent;
+		outline: 3px solid transparent;
+		filter: brightness(1);
+	}
+}

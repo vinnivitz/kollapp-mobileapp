@@ -1401,21 +1401,19 @@
           "title": "Navigationsmenü",
           "description": "Tippe hier, um das Menü zu öffnen und auf alle Funktionen der App zuzugreifen."
         },
-        "organization": {
-          "title": "Dein Kollektiv",
-          "description": "Hier wird das Kollektiv mit der Anzahl der Mitglieder und Veranstaltungen angezeigt. \nTippe darauf für weitere Infos."
-        },
+        "organization": {},
         "quick-access": {
-          "title": "Schnellzugriff",
-          "description": "Verwende diese Schaltflächen für schnellen Zugriff auf häufig verwendete Funktionen."
+          "title": "Schnellzugriff-Panel",
+          "description": "Das Schnellzugriff-Panel bietet dir schnellen Zugang zu häufig genutzten Funktionen.\n\nDu kannst die Kacheln frei anordnen und anpassen, indem du sie lange gedrückt hältst."
         },
-        "budget": {
-          "title": "Bilanz-Übersicht",
-          "description": "Hier hast du einen visuellen Überblick über die Finanzen des Kollektivs, sofern bereits Buchungen angelegt wurden."
-        },
+        "budget": {},
         "org-budget": {
           "title": "Kollektivbilanz",
-          "description": "Zeigt Infos über die Finanzen des Kollektivs an, einschließlich Saldo, Einnahmen und Ausgaben des Kollektivs. \nDu kannst Buchungen hinzufügen und anzeigen lassen."
+          "description": "Zeigt Infos über die Finanzen des Kollektivs an, einschließlich Saldo, Einnahmen und Ausgaben des Kollektivs.\n\nDu kannst Buchungen hinzufügen, anzeigen lassen und über das Statistik-Icon detaillierte Auswertungen aufrufen."
+        },
+        "budget-statistics": {
+          "title": "Finanz-Statistiken",
+          "description": "Hier findest du detaillierte Statistiken und Diagramme zu den Finanzen deines Kollektivs.\n\nDu kannst Trends, Kategorieverteilungen und vieles mehr analysieren."
         },
         "activities-list": {
           "title": "Veranstaltungs-Übersicht",
@@ -1449,10 +1447,7 @@
           "title": "App-Einstellungen",
           "description": "Passe die App mit deinen Sprach- und Theme-Einstellungen an und starte die Tour jederzeit neu."
         },
-        "upcoming-activity": {
-          "title": "Kommende Veranstaltung",
-          "description": "Hier wird die bevorstehende Veranstaltung mit Namen, der verbleibenden Zeit und der Anzahl der zugewiesenen Buchungen angezeigt. \nTippe darauf für weitere Infos."
-        },
+        "upcoming-activity": {},
         "org-info": {
           "title": "Kollektivlinfo",
           "description": "Hier werden einige Informationen über das Kollektiv angezeigt, z. B. die Beschreibung, der Standort oder deine Rolle im Kollektiv."

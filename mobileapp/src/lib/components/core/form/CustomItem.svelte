@@ -26,6 +26,7 @@
 		note?: string;
 		readonly?: boolean;
 		slidingOptions?: ItemSlidingOption[];
+		tourId?: string;
 		transparent?: boolean;
 		clicked?: () => void;
 		iconClicked?: () => void;
@@ -54,6 +55,7 @@
 		note,
 		readonly,
 		slidingOptions,
+		tourId,
 		transparent
 	}: Properties = $props();
 
@@ -117,6 +119,7 @@
 		<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 		<ion-item
 			data-name={name}
+			data-tour={tourId}
 			onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && !readonly && clicked?.()}
 			{disabled}
 			id={indexLabel}

@@ -38,7 +38,7 @@
 	import { IconLabel } from '$lib/components/core/display';
 	import { PostingOverviewModal } from '$lib/components/shared';
 	import { t } from '$lib/locales';
-	import { Form, type FormActions, type MultiSelectItem } from '$lib/models/ui';
+	import { Form, type FormActions, type MultiSelectItem, TourStepId } from '$lib/models/ui';
 	import { customForm, formatter, getPersonOfOrganizationId, getUserId, hasOrganizationRole } from '$lib/utility';
 
 	type Balance = {
@@ -236,6 +236,7 @@
 		{#if onOpenStatistics}
 			<Button
 				indexed={index ? `/organization/budget-statistics` : undefined}
+				tourId={TourStepId.ORGANIZATION.STATISTICS_LINK}
 				icon={statsChartOutline}
 				expand="block"
 				fill="outline"

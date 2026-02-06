@@ -422,21 +422,19 @@
           "title": "Navigation Menu",
           "description": "Tap here to open the menu and access all features of the app."
         },
-        "organization": {
-          "title": "Your Collective",
-          "description": "This shows your collective with the number of members and events. Tap it for more details."
-        },
+        "organization": {},
         "quick-access": {
-          "title": "Quick Actions",
-          "description": "Use these buttons for quick access to frequently used features."
+          "title": "Quick Access Panel",
+          "description": "The quick access panel provides fast access to frequently used functions.\n\nYou can freely arrange and customize the tiles by long pressing them."
         },
-        "budget": {
-          "title": "Balance overview",
-          "description": "Here you can see a visual overview of your collective's finances at a glance if you have already added transactions."
-        },
+        "budget": {},
         "org-budget": {
           "title": "Collective balance",
-          "description": "View detailed financial information including balance, income and expenses of the collective. You can add and view transaction."
+          "description": "View detailed financial information including balance, income and expenses of the collective.\n\nYou can add and view transactions and access detailed statistics via the statistics icon."
+        },
+        "budget-statistics": {
+          "title": "Financial Statistics",
+          "description": "Here you find detailed statistics and charts about your collective's finances.\n\nYou can analyze trends, category distributions and much more."
         },
         "activities-list": {
           "title": "Event list",
@@ -470,10 +468,7 @@
           "title": "App settings",
           "description": "Customize the app with your language, theme settings and restart the welcome tour anytime."
         },
-        "upcoming-activity": {
-          "title": "Upcoming event",
-          "description": "This shows you the upcoming event with name, the time left and the number of assigned transactions. Tap it for more details."
-        },
+        "upcoming-activity": {},
         "org-info": {
           "title": "Collective info",
           "description": "This shows some info about the collective like the description, where its based or your role in the collective."
