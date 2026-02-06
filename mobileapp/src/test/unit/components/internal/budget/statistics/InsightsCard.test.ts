@@ -1,7 +1,7 @@
 import { render } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 
-import InsightsCard from '$lib/components/internal/budget/statistics/InsightsCard.svelte';
+import InsightsCard from '$lib/components/internal/budget/statistics/SmartInsights.svelte';
 
 class MockIntersectionObserver {
 	constructor(callback: IntersectionObserverCallback) {

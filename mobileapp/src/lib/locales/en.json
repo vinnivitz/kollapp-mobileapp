@@ -383,6 +383,13 @@
           "search": "Search categories..."
         }
       }
+    },
+    "internal": {
+      "budget": {
+        "statistics": {
+          "no-data": "No data available"
+        }
+      }
     }
   },
   "stores": {

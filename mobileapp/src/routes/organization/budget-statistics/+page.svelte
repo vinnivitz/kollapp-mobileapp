@@ -1,32 +1,20 @@
 <script lang="ts">
-	import type {
-		ActivityTO,
-		OrganizationBudgetCategoryResponseTO,
-		PersonOfOrganizationTO,
-		PostingTO
-	} from '@kollapp/api-types';
-	import type { ApexOptions } from 'apexcharts';
+	import type { ActivityTO, PostingTO } from '@kollapp/api-types';
 
 	import { Capacitor } from '@capacitor/core';
 	import { FileViewer } from '@capacitor/file-viewer';
 	import { Directory, Filesystem } from '@capacitor/filesystem';
 	import { Share } from '@capacitor/share';
 	import { TZDate } from '@date-fns/tz';
-	import Chart from '@edde746/svelte-apexcharts';
 	import { actionSheetController, loadingController } from '@ionic/core';
 	import { EmailComposer } from 'capacitor-email-composer';
 	import { toPng } from 'html-to-image';
 	import {
 		analyticsOutline,
-		barChartOutline,
-		cardOutline,
 		downloadOutline,
 		eyeOutline,
 		mailOutline,
-		peopleOutline,
-		personOutline,
 		shareOutline,
-		statsChartOutline,
 		trendingDownOutline,
 		trendingUpOutline
 	} from 'ionicons/icons';
@@ -36,24 +24,25 @@
 	import { dev } from '$app/environment';
 
 	import { budgetService } from '$lib/api/services';
-	import { Card, CustomItem } from '$lib/components/core';
+	import { Card } from '$lib/components/core';
 	import {
 		ActivityRanking,
 		CalendarHeatmap,
-		InsightsCard,
 		MonthComparisonCard,
 		MonthlyTrendChart
 	} from '$lib/components/internal/budget/statistics';
+	import CategoryStatistics from '$lib/components/internal/budget/statistics/CategoryStatistics.svelte';
+	import MemberStatistics from '$lib/components/internal/budget/statistics/MemberStatistics.svelte';
+	import OverviewCards from '$lib/components/internal/budget/statistics/OverviewCards.svelte';
+	import SmartInsights from '$lib/components/internal/budget/statistics/SmartInsights.svelte';
 	import { Layout } from '$lib/components/layout';
 	import { FilterPanel, PostingItem } from '$lib/components/shared';
 	import { t } from '$lib/locales';
-	import { chipSection, type Colors, dateRangeSection, type FilterConfig, Theme } from '$lib/models/ui';
+	import { chipSection, dateRangeSection, type FilterConfig, Theme } from '$lib/models/ui';
 	import { exportModeStore, organizationStore, themeStore } from '$lib/stores';
-	import { formatter, informationModal, parser, showAlert } from '$lib/utility';
+	import { informationModal, parser, showAlert } from '$lib/utility';
 
 	type TimeRange = '12months' | '3months' | '6months' | 'all';
-	type CategoryStats = { category: OrganizationBudgetCategoryResponseTO; credit: number; debit: number };
-	type PersonOfOrganizationStats = { credit: number; debit: number; personOfOrganization: PersonOfOrganizationTO };
 	type StatisticsFilterState = {
 		dateRange: { from: string; to: string };
 		timeRange: TimeRange;
@@ -350,49 +339,7 @@
 	);
 	const balance = $derived(totalCredit - totalDebit);
 	const transactionCount = $derived(filteredPostings.length);
-	const avgTransaction = $derived(transactionCount > 0 ? (totalCredit + totalDebit) / transactionCount : 0);
-
-	const categoryStatistics = $derived.by<CategoryStats[]>(() => {
-		const categories = $organizationStore?.budgetCategories ?? [];
-		return categories
-			.map((category) => {
-				const categoryPostings = filteredPostings.filter(
-					(posting) => posting.organizationBudgetCategoryId === category.id
-				);
-				return {
-					category,
-					credit: categoryPostings
-						.filter((posting) => posting.type === 'CREDIT')
-						.reduce((sum, posting) => sum + posting.amountInCents, 0),
-					debit: categoryPostings
-						.filter((posting) => posting.type === 'DEBIT')
-						.reduce((sum, posting) => sum + posting.amountInCents, 0)
-				};
-			})
-			.filter((s) => s.credit > 0 || s.debit > 0)
-			.toSorted((a, b) => b.debit + b.credit - (a.debit + a.credit));
-	});
-
-	const memberStatistics = $derived.by<PersonOfOrganizationStats[]>(() => {
-		const personsOfOrganization = $organizationStore?.personsOfOrganization ?? [];
-		return personsOfOrganization
-			.map((personOfOrganization) => {
-				const personOfOrganizationPostings = filteredPostings.filter(
-					(posting) => posting.personOfOrganizationId === personOfOrganization.id
-				);
-				return {
-					credit: personOfOrganizationPostings
-						.filter((posting) => posting.type === 'CREDIT')
-						.reduce((sum, posting) => sum + posting.amountInCents, 0),
-					debit: personOfOrganizationPostings
-						.filter((posting) => posting.type === 'DEBIT')
-						.reduce((sum, posting) => sum + posting.amountInCents, 0),
-					personOfOrganization
-				};
-			})
-			.filter((stats) => stats.credit > 0 || stats.debit > 0)
-			.toSorted((a, b) => b.debit + b.credit - (a.debit + a.credit));
-	});
+	const averageTransaction = $derived(transactionCount > 0 ? (totalCredit + totalDebit) / transactionCount : 0);
 
 	const topCredits = $derived(
 		[...filteredPostings]
@@ -407,68 +354,6 @@
 			.toSorted((a, b) => b.amountInCents - a.amountInCents)
 			.slice(0, 5)
 	);
-
-	const categoryChartOptions = $derived<ApexOptions>({
-		chart: {
-			animations: { enabled: true },
-			height: 300,
-			stacked: true,
-			toolbar: { show: false },
-			type: 'bar'
-		},
-		colors: ['var(--ion-color-success)', 'var(--ion-color-danger)'],
-		dataLabels: { enabled: false },
-		grid: {
-			padding: {
-				bottom: 20
-			}
-		},
-		labels: categoryStatistics.slice(0, 6).map((s) => s.category.name),
-		legend: {
-			labels: {
-				colors: 'var(--ion-color-dark)'
-			},
-			position: 'top',
-			show: true
-		},
-		plotOptions: {
-			bar: {
-				borderRadius: 4,
-				horizontal: true
-			}
-		},
-		series: [
-			{
-				data: categoryStatistics.slice(0, 6).map((s) => s.credit / 100),
-				name: $t('routes.organization.budget-statistics.page.chart.credit')
-			},
-			{
-				data: categoryStatistics.slice(0, 6).map((s) => s.debit / 100),
-				name: $t('routes.organization.budget-statistics.page.chart.debit')
-			}
-		],
-		tooltip: {
-			theme: isDarkMode ? 'dark' : 'light'
-		},
-		xaxis: {
-			labels: {
-				formatter: (value: string) => formatter.currency(Number(value) * 100, true),
-				rotate: -45,
-				rotateAlways: true,
-				style: {
-					colors: 'var(--ion-color-dark)'
-				}
-			}
-		},
-		yaxis: {
-			labels: {
-				style: {
-					colors: 'var(--ion-color-dark)',
-					fontSize: '11px'
-				}
-			}
-		}
-	});
 
 	$effect(() => {
 		if (!isEditingPosting) {
@@ -499,17 +384,24 @@
 		<div id="statistics-content">
 			{@render transactionCountNote()}
 			<div class="mt-4 grid grid-cols-1 md:grid-cols-2">
-				{@render overview()}
+				<OverviewCards {averageTransaction} {balance} {totalCredit} {totalDebit} />
 
-				<InsightsCard postings={filteredPostings} categories={$organizationStore?.budgetCategories ?? []} />
+				<SmartInsights postings={filteredPostings} categories={$organizationStore?.budgetCategories ?? []} />
 
 				<MonthComparisonCard postings={stablePostings} />
 
-				{@render trendChart()}
+				<MonthlyTrendChart postings={filteredPostings} {isDarkMode} />
 
-				{@render categoryChart()}
+				<CategoryStatistics
+					budgetCategories={$organizationStore?.budgetCategories ?? []}
+					postings={filteredPostings}
+					{isDarkMode}
+				/>
 
-				{@render memberStatsCard()}
+				<MemberStatistics
+					postings={filteredPostings}
+					personsOfOrganization={$organizationStore?.personsOfOrganization ?? []}
+				/>
 
 				<ActivityRanking activities={$organizationStore?.activities ?? []} />
 
@@ -534,82 +426,6 @@
 			{$t('routes.organization.budget-statistics.page.transaction-count', { value: transactionCount })}
 		</ion-note>
 	</div>
-{/snippet}
-
-{#snippet overview()}
-	<div class="grid grid-cols-2">
-		{@render overviewCard(
-			$t('routes.organization.budget-statistics.page.overview.credit'),
-			trendingUpOutline,
-			totalCredit,
-			'success'
-		)}
-		{@render overviewCard(
-			$t('routes.organization.budget-statistics.page.overview.debit'),
-			trendingDownOutline,
-			totalDebit,
-			'danger'
-		)}
-		{@render overviewCard(
-			$t('routes.organization.budget-statistics.page.overview.balance'),
-			cardOutline,
-			balance,
-			balance >= 0 ? 'success' : 'danger'
-		)}
-		{@render overviewCard(
-			$t('routes.organization.budget-statistics.page.overview.avg'),
-			statsChartOutline,
-			avgTransaction,
-			'primary'
-		)}
-	</div>
-{/snippet}
-
-{#snippet trendChart()}
-	<MonthlyTrendChart postings={filteredPostings} {isDarkMode} />
-{/snippet}
-
-{#snippet categoryChart()}
-	{#if categoryStatistics.length > 0}
-		<Card
-			lazy
-			title={$t('routes.organization.budget-statistics.page.categories.title')}
-			titleIconStart={barChartOutline}
-			classList="mt-4"
-		>
-			<div class="h-[300px]">
-				<Chart options={categoryChartOptions}></Chart>
-			</div>
-		</Card>
-	{/if}
-{/snippet}
-
-{#snippet memberStatsCard()}
-	{#if memberStatistics.length > 0}
-		<Card
-			lazy
-			titleIconStart={peopleOutline}
-			title={$t('routes.organization.budget-statistics.page.members.title')}
-			classList="mt-4"
-		>
-			{#each memberStatistics.slice(0, 5) as statistic (statistic.personOfOrganization.id)}
-				<CustomItem icon={personOutline}>
-					<div class="flex w-full flex-row items-center justify-between gap-2">
-						<div class="flex flex-1 flex-col">
-							<ion-text>{statistic.personOfOrganization.username}</ion-text>
-							<div class="flex gap-4 text-sm">
-								<ion-text color="success">+{formatter.currency(statistic.credit)}</ion-text>
-								<ion-text color="danger">-{formatter.currency(statistic.debit)}</ion-text>
-							</div>
-						</div>
-						<ion-text class="font-bold" color={statistic.credit - statistic.debit >= 0 ? 'success' : 'danger'}>
-							{formatter.currency(statistic.credit - statistic.debit)}
-						</ion-text>
-					</div>
-				</CustomItem>
-			{/each}
-		</Card>
-	{/if}
 {/snippet}
 
 {#snippet topTransactionsCards()}
@@ -664,16 +480,4 @@
 			{/each}
 		</Card>
 	{/if}
-{/snippet}
-
-{#snippet overviewCard(label: string, icon: string, amount: number, color: Colors)}
-	<Card classList="flex flex-col justify-center items-center">
-		<div class="flex flex-col items-center gap-1 py-2">
-			<ion-icon {icon} {color} class="text-2xl"></ion-icon>
-			<ion-text class="text-xs" color="medium">
-				{label}
-			</ion-text>
-			<ion-text class="text-lg font-bold" {color}>{formatter.currency(amount)}</ion-text>
-		</div>
-	</Card>
 {/snippet}

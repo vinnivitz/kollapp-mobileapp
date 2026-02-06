@@ -1310,6 +1310,13 @@
           "search": "Kategorien durchsuchen..."
         }
       }
+    },
+    "internal": {
+      "budget": {
+        "statistics": {
+          "no-data": "Keine Daten verfügbar"
+        }
+      }
     }
   },
   "stores": {
