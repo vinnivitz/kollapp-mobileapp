@@ -10,9 +10,9 @@
 
 	import { loginSchema } from '$lib/api/schemas/authentication';
 	import { authenticationService } from '$lib/api/services';
+	import { Button, Card, InputItem } from '$lib/components/core';
 	import { Layout } from '$lib/components/layout';
-	import { WelcomeWidget } from '$lib/components/widgets';
-	import { Button, Card, InputItem } from '$lib/components/widgets/ionic';
+	import { WelcomeBanner } from '$lib/components/shared';
 	import { t } from '$lib/locales';
 	import { StorageKey } from '$lib/models/storage';
 	import { Form } from '$lib/models/ui';
@@ -73,7 +73,7 @@
 
 <Layout>
 	<div class="mb-6">
-		<WelcomeWidget />
+		<WelcomeBanner />
 	</div>
 	<Card>
 		{@render loginForm()}

@@ -21,8 +21,8 @@
 	import { onMount } from 'svelte';
 
 	import favicon from '$lib/assets/favicon.png';
+	import { GlobalPopovers } from '$lib/components/core';
 	import { Tabs } from '$lib/components/layout';
-	import { GlobalPopovers } from '$lib/components/widgets/ionic';
 	import { initializeIonic } from '$lib/ionic';
 	import { initialized, t } from '$lib/locales';
 	import { AppStateType } from '$lib/models/ui';

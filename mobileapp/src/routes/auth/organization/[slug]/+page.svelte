@@ -18,8 +18,8 @@
 	import { resolve } from '$app/paths';
 
 	import { organizationService } from '$lib/api/services';
+	import { Button, Card, InputItem, TextareaInputItem } from '$lib/components/core';
 	import { Layout } from '$lib/components/layout';
-	import { Button, Card, InputItem, TextareaInputItem } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 	import { organizationStore } from '$lib/stores';
 	import { isAuthenticated, StatusCheck, withLoader } from '$lib/utility';

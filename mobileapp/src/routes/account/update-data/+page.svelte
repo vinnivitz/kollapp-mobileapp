@@ -5,8 +5,8 @@
 
 	import { updateUserDataSchema } from '$lib/api/schemas/user';
 	import { userService } from '$lib/api/services';
+	import { Button, Card, InputItem } from '$lib/components/core';
 	import { Layout } from '$lib/components/layout';
-	import { Button, Card, InputItem } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 	import { Form } from '$lib/models/ui';
 	import { userStore } from '$lib/stores';

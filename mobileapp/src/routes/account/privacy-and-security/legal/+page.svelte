@@ -1,8 +1,8 @@
 <script>
 	import { mailOutline, personOutline } from 'ionicons/icons';
 
+	import { Card, LabeledItem } from '$lib/components/core';
 	import { Layout } from '$lib/components/layout';
-	import { Card, LabeledItem } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 </script>
 

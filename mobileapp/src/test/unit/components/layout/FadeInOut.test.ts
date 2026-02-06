@@ -2,7 +2,7 @@ import { render } from '@testing-library/svelte';
 import { createRawSnippet } from 'svelte';
 import { describe, expect, it } from 'vitest';
 
-import FadeInOut from '$lib/components/utility/FadeInOut.svelte';
+import FadeInOut from '$lib/components/core/animation/FadeInOut.svelte';
 
 const classList = 'fade-in-out';
 const htmlContent = 'Content';

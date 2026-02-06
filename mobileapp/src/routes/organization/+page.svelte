@@ -20,10 +20,9 @@
 	import { resolve } from '$app/paths';
 
 	import { budgetService } from '$lib/api/services';
+	import { Button, Card, IconLabel, LabeledItem } from '$lib/components/core';
 	import { Layout } from '$lib/components/layout';
-	import { BudgetOverview } from '$lib/components/widgets/budget';
-	import { Button, Card, LabeledItem } from '$lib/components/widgets/ionic';
-	import IconLabel from '$lib/components/widgets/ionic/IconLabel.svelte';
+	import { BudgetOverview } from '$lib/components/shared';
 	import { t } from '$lib/locales';
 	import { TourStepId } from '$lib/models/ui';
 	import { organizationStore, userStore } from '$lib/stores';

@@ -7,8 +7,8 @@
 	import { resolve } from '$app/paths';
 
 	import { resendConfirmationSchema } from '$lib/api/schemas/authentication';
+	import { Button, Card, InputItem } from '$lib/components/core';
 	import { Layout } from '$lib/components/layout';
-	import { Button, Card, InputItem } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 	import { Form } from '$lib/models/ui';
 	import { customForm, featureNotImplementedAlert } from '$lib/utility';

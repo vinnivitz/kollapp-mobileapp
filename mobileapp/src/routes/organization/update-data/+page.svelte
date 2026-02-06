@@ -3,8 +3,8 @@
 
 	import { updateOrganizationSchema } from '$lib/api/schemas/organization';
 	import { organizationService } from '$lib/api/services';
+	import { Button, Card, InputItem, LocationInputItem, TextareaInputItem } from '$lib/components/core';
 	import { Layout } from '$lib/components/layout';
-	import { Button, Card, InputItem, LocationInputItem, TextareaInputItem } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 	import { Form } from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';

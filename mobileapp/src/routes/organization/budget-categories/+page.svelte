@@ -5,9 +5,9 @@
 
 	import { budgetCategorySchema } from '$lib/api/schemas/budget';
 	import { budgetCategoryService } from '$lib/api/services';
+	import { Card, CustomItem, FabButton, InputItem, Modal, ToggleItem } from '$lib/components/core';
+	import { FadeInOut } from '$lib/components/core/animation';
 	import { Layout } from '$lib/components/layout';
-	import { FadeInOut } from '$lib/components/utility';
-	import { Card, CustomItem, FabButton, InputItem, Modal, ToggleItem } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 	import { Form, type FormActions, type ItemSlidingOption, TourStepId } from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';

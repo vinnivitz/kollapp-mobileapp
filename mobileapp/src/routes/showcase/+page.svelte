@@ -32,15 +32,12 @@
 		timeOutline
 	} from 'ionicons/icons';
 
-	import { Layout as LayoutComponent } from '$lib/components/layout';
-	import { FilterWidget, MapWidget } from '$lib/components/widgets';
 	import {
 		AmountInputItem,
 		Button,
 		Card,
 		Chip,
 		CustomItem,
-		Datetime,
 		DatetimeInputItem,
 		FabButton,
 		IconLabel,
@@ -53,7 +50,9 @@
 		SegmentItem,
 		TextareaInputItem,
 		ToggleItem
-	} from '$lib/components/widgets/ionic';
+	} from '$lib/components/core';
+	import { Layout as LayoutComponent } from '$lib/components/layout';
+	import { Datetime, FilterPanel, MapView } from '$lib/components/shared';
 	import { Locale } from '$lib/locales';
 	import {
 		AlertType,
@@ -1324,7 +1323,7 @@
 			titleIconEnd={optionsOutline}
 			titleIconEndClicked={() => openFilter('MapWidget')}
 		>
-			<MapWidget
+			<MapView
 				searchable={settings.MapWidget.searchable as boolean}
 				classList={(settings.MapWidget.tall as boolean) ? 'h-[70vh]' : 'h-[35vh]'}
 				selected={() => {}}
@@ -1333,6 +1332,6 @@
 	{/if}
 
 	{#if activeFilterConfig}
-		<FilterWidget config={activeFilterConfig} open={filterOpen} dismissed={dismissFilter} />
+		<FilterPanel config={activeFilterConfig} open={filterOpen} dismissed={dismissFilter} />
 	{/if}
 </LayoutComponent>

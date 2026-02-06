@@ -19,20 +19,19 @@
 
 	import { createActivitySchema } from '$lib/api/schemas/organization';
 	import { activityService } from '$lib/api/services';
-	import { Layout } from '$lib/components/layout';
-	import { FadeInOut } from '$lib/components/utility';
-	import { FilterWidget } from '$lib/components/widgets';
 	import {
 		Card,
-		Datetime,
 		DatetimeInputItem,
 		FabButton,
+		IconLabel,
 		InputItem,
 		LocationInputItem,
 		Modal,
 		SegmentItem
-	} from '$lib/components/widgets/ionic';
-	import IconLabel from '$lib/components/widgets/ionic/IconLabel.svelte';
+	} from '$lib/components/core';
+	import { FadeInOut } from '$lib/components/core/animation';
+	import { Layout } from '$lib/components/layout';
+	import { Datetime, FilterPanel } from '$lib/components/shared';
 	import { t } from '$lib/locales';
 	import {
 		chipSection,
@@ -370,7 +369,7 @@
 	{/if}
 
 	<div class="sticky top-14 right-0 left-0 z-10">
-		<FilterWidget config={filterConfig} />
+		<FilterPanel config={filterConfig} />
 	</div>
 	<div data-tour={TourStepId.ACTIVITIES.LIST}>
 		{@render activityList()}

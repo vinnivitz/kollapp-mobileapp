@@ -10,8 +10,8 @@
 
 	import { loginSchema, verifyPasswordSchema } from '$lib/api/schemas/authentication';
 	import { authenticationService } from '$lib/api/services';
+	import { Button, Card, CustomItem, InputItem, LabeledItem, Popover } from '$lib/components/core';
 	import { Layout } from '$lib/components/layout';
-	import { Button, Card, CustomItem, InputItem, LabeledItem, Popover } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 	import { StorageKey } from '$lib/models/storage';
 	import { Form, type FormActions } from '$lib/models/ui';

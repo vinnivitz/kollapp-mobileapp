@@ -3,8 +3,8 @@
 
 	import { forgotPasswordSchema } from '$lib/api/schemas/authentication';
 	import { publicUserService } from '$lib/api/services';
+	import { Button, Card, InputItem } from '$lib/components/core';
 	import { Layout } from '$lib/components/layout';
-	import { Button, Card, InputItem } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 	import { Form } from '$lib/models/ui';
 	import { customForm, informationModal } from '$lib/utility';

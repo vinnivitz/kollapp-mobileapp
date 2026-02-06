@@ -11,8 +11,8 @@
 
 	import { joinOrganizationSchema } from '$lib/api/schemas/organization';
 	import { organizationService } from '$lib/api/services';
+	import { Button, Card, InputItem } from '$lib/components/core';
 	import { Layout } from '$lib/components/layout';
-	import { Button, Card, InputItem } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 	import { Form } from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';

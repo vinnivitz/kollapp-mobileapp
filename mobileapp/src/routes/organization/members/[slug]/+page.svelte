@@ -23,10 +23,9 @@
 	import { resolve } from '$app/paths';
 
 	import { budgetService, organizationService } from '$lib/api/services';
+	import { Button, Card, CustomItem } from '$lib/components/core';
 	import { Layout } from '$lib/components/layout';
-	import { FilterWidget } from '$lib/components/widgets';
-	import { PostingItem } from '$lib/components/widgets/budget';
-	import { Button, Card, CustomItem } from '$lib/components/widgets/ionic';
+	import { FilterPanel, PostingItem } from '$lib/components/shared';
 	import { t } from '$lib/locales';
 	import {
 		chipMultiSection,
@@ -369,7 +368,7 @@
 {#snippet assignedPostingsCard()}
 	<Card title={$t('routes.organization.members.slug.page.card.open-postings.title')}>
 		<div class="sticky top-0 left-0 z-10 mb-3 flex flex-row items-center justify-between gap-2">
-			<FilterWidget classList="flex-1" config={filterConfig} />
+			<FilterPanel classList="flex-1" config={filterConfig} />
 			<Button color="tertiary" icon={downloadOutline} clicked={onExportPostings}></Button>
 		</div>
 		<div class="overflow-auto">

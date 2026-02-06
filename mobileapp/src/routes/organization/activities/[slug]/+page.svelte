@@ -22,8 +22,6 @@
 
 	import { updateActivitySchema } from '$lib/api/schemas/organization';
 	import { activityService, budgetService } from '$lib/api/services';
-	import { Layout } from '$lib/components/layout';
-	import { BudgetOverview } from '$lib/components/widgets/budget';
 	import {
 		Button,
 		Card,
@@ -32,7 +30,9 @@
 		InputItem,
 		LocationInputItem,
 		Modal
-	} from '$lib/components/widgets/ionic';
+	} from '$lib/components/core';
+	import { Layout } from '$lib/components/layout';
+	import { BudgetOverview } from '$lib/components/shared';
 	import { t } from '$lib/locales';
 	import { type FabButtonButtons, Form, type FormActions } from '$lib/models/ui';
 	import { localeStore, organizationStore } from '$lib/stores';

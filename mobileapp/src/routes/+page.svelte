@@ -14,10 +14,9 @@
 	import { resolve } from '$app/paths';
 
 	import { budgetService } from '$lib/api/services';
+	import { Button, Card } from '$lib/components/core';
 	import { Layout } from '$lib/components/layout';
-	import { QuickAccessWidget } from '$lib/components/widgets';
-	import { PostingOverviewModal } from '$lib/components/widgets/budget';
-	import { Button, Card } from '$lib/components/widgets/ionic';
+	import { PostingOverviewModal, QuickAccessPanel } from '$lib/components/shared';
 	import { t } from '$lib/locales';
 	import { organizationStore, userStore } from '$lib/stores';
 	import { hasOrganizationRole } from '$lib/utility';
@@ -143,7 +142,7 @@
 {/snippet}
 
 {#snippet quickAccess()}
-	<QuickAccessWidget />
+	<QuickAccessPanel />
 {/snippet}
 
 {#snippet pendingMembers()}

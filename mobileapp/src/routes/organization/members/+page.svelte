@@ -33,9 +33,9 @@
 	import { resolve } from '$app/paths';
 
 	import { organizationService } from '$lib/api/services';
+	import { Button, Card, CustomItem, FabButton, Modal, Popover } from '$lib/components/core';
+	import { FadeInOut } from '$lib/components/core/animation';
 	import { Layout } from '$lib/components/layout';
-	import { FadeInOut } from '$lib/components/utility';
-	import { Button, Card, CustomItem, FabButton, Modal, Popover } from '$lib/components/widgets/ionic';
 	import environment from '$lib/environment';
 	import { t } from '$lib/locales';
 	import { AlertType, type ItemSlidingOption, TourStepId } from '$lib/models/ui';

@@ -5,9 +5,9 @@
 	import { dev } from '$app/environment';
 	import { navigating, page } from '$app/state';
 
+	import { LabeledItem } from '$lib/components/core';
+	import { FadeInOut } from '$lib/components/core/animation';
 	import { Header, Menu } from '$lib/components/layout';
-	import { FadeInOut } from '$lib/components/utility';
-	import { LabeledItem } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 	import { initializationStore, organizationStore } from '$lib/stores';
 	import { refreshDataStores } from '$lib/utility';

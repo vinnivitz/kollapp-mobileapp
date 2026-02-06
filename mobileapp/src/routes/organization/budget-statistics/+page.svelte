@@ -36,17 +36,16 @@
 	import { dev } from '$app/environment';
 
 	import { budgetService } from '$lib/api/services';
-	import { Layout } from '$lib/components/layout';
-	import { FilterWidget } from '$lib/components/widgets';
-	import { PostingItem } from '$lib/components/widgets/budget';
+	import { Card, CustomItem } from '$lib/components/core';
 	import {
 		ActivityRanking,
 		CalendarHeatmap,
 		InsightsCard,
 		MonthComparisonCard,
 		MonthlyTrendChart
-	} from '$lib/components/widgets/budget/statistics';
-	import { Card, CustomItem } from '$lib/components/widgets/ionic';
+	} from '$lib/components/internal/budget/statistics';
+	import { Layout } from '$lib/components/layout';
+	import { FilterPanel, PostingItem } from '$lib/components/shared';
 	import { t } from '$lib/locales';
 	import { chipSection, type Colors, dateRangeSection, type FilterConfig, Theme } from '$lib/models/ui';
 	import { exportModeStore, organizationStore, themeStore } from '$lib/stores';
@@ -495,7 +494,7 @@
 		{@render emptyState()}
 	{:else}
 		<div class="sticky top-0 left-0 z-10">
-			<FilterWidget config={filterConfig} onAction={handleExport} />
+			<FilterPanel config={filterConfig} onAction={handleExport} />
 		</div>
 		<div id="statistics-content">
 			{@render transactionCountNote()}

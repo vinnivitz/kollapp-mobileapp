@@ -9,8 +9,8 @@
 	import { resolve } from '$app/paths';
 
 	import { organizationService } from '$lib/api/services';
+	import { Button, Card } from '$lib/components/core';
 	import { Layout } from '$lib/components/layout';
-	import { Button, Card } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 	import { StatusCheck } from '$lib/utility';
 

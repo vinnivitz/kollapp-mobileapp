@@ -6,9 +6,9 @@
 
 	import { registerSchema } from '$lib/api/schemas/authentication';
 	import { publicUserService } from '$lib/api/services';
+	import { Button, Card, InputItem } from '$lib/components/core';
 	import { Layout } from '$lib/components/layout';
-	import { WelcomeWidget } from '$lib/components/widgets';
-	import { Button, Card, InputItem } from '$lib/components/widgets/ionic';
+	import { WelcomeBanner } from '$lib/components/shared';
 	import { t } from '$lib/locales';
 	import { Form } from '$lib/models/ui';
 	import { customForm, informationModal, passwordConfirmationValidator } from '$lib/utility';
@@ -31,7 +31,7 @@
 
 <Layout>
 	<div class="mb-6">
-		<WelcomeWidget />
+		<WelcomeBanner />
 	</div>
 	{@render joinCard()}
 	{@render registerCard()}

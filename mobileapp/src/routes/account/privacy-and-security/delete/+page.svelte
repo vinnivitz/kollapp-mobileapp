@@ -5,8 +5,8 @@
 
 	import { deleteAccountSchema } from '$lib/api/schemas/user';
 	import { authenticationService, organizationService, userService } from '$lib/api/services';
+	import { Button, Card, InputItem, Popover } from '$lib/components/core';
 	import { Layout } from '$lib/components/layout';
-	import { Button, Card, InputItem, Popover } from '$lib/components/widgets/ionic';
 	import { t } from '$lib/locales';
 	import { Form, type FormActions } from '$lib/models/ui';
 	import { organizationStore, userStore } from '$lib/stores';

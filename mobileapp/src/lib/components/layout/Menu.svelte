@@ -9,7 +9,7 @@
 	import type { RouteId } from '$app/types';
 
 	import { authenticationService, searchableService } from '$lib/api/services';
-	import { Button, LabeledItem } from '$lib/components/widgets/ionic';
+	import { Button, LabeledItem } from '$lib/components/core';
 	import { t } from '$lib/locales';
 	import { triggerClickByLabel } from '$lib/utility';
 
