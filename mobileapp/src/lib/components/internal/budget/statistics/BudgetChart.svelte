@@ -122,6 +122,9 @@
 						: undefined
 			},
 			height: 340,
+			selection: {
+				enabled: selectedChart === 'all' && hasEnoughForInteraction
+			},
 			toolbar: { show: false },
 			type: 'donut'
 		},
@@ -141,8 +144,19 @@
 			position: 'bottom',
 			show: true
 		},
+		plotOptions: {
+			pie: {
+				donut: {
+					labels: { show: false }
+				},
+				expandOnClick: selectedChart === 'all' && hasEnoughForInteraction
+			}
+		},
 		series: chartData.series,
-		states: { active: { filter: { type: 'none' } }, hover: { filter: { type: 'none' } } },
+		states: {
+			active: { filter: { type: 'none' } },
+			hover: { filter: { type: selectedChart === 'all' && hasEnoughForInteraction ? 'lighten' : 'none' } }
+		},
 		tooltip: {
 			enabled: false
 		}
@@ -209,12 +223,20 @@
 		<div class="h-[340px]">
 			{#if mounted}
 				<ion-text
-					class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-3 text-center text-xl font-bold"
+					class="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-3 text-center text-xl font-bold"
 					class:-translate-y-5={selectedChart !== 'all'}
 				>
 					{selectedChart === 'debit' ? '-' : ''}{formatter.currency(getTotalByType(selectedChart))}
 				</ion-text>
-				<div class="absolute top-12 right-0 left-0">
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
+				<!-- svelte-ignore a11y_click_events_have_key_events -->
+				<div
+					class="absolute top-12 right-0 left-0"
+					onclick={(_event) => {
+						_event.stopPropagation();
+						_event.stopImmediatePropagation();
+					}}
+				>
 					<Chart options={chartOptions}></Chart>
 				</div>
 			{/if}
