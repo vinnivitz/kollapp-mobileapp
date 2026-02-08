@@ -321,7 +321,13 @@
           "purpose": "Purpose",
           "person-of-organization": "Member",
           "category": "Category",
-          "activity": "Event"
+          "activity": "Event",
+          "amount": "Amount"
+        },
+        "order": {
+          "label": "Sort order",
+          "ascending": "Ascending",
+          "descending": "Descending"
         },
         "person": {
           "all-selected": "All members selected",
@@ -381,13 +387,6 @@
         "budget-category": {
           "select": "Assigned category",
           "search": "Search categories..."
-        }
-      }
-    },
-    "internal": {
-      "budget": {
-        "statistics": {
-          "no-data": "No data available"
         }
       }
     }
@@ -1276,13 +1275,16 @@
             "3months": "3 Months",
             "6months": "6 Months",
             "12months": "12 Months",
-            "custom": "Custom"
+            "custom": "Custom",
+            "visible-cards": "Visible Cards",
+            "visible-cards-all": "All cards visible"
           },
           "overview": {
             "credit": "Total Income",
             "debit": "Total Expenses",
             "balance": "Balance",
-            "avg": "Ø Transaction"
+            "avg": "Ø Transaction",
+            "title": "Overview"
           },
           "trend": {
             "title": "Monthly Trend",
@@ -1299,6 +1301,34 @@
           },
           "top-debits": {
             "title": "Top Expenses"
+          },
+          "median": {
+            "title": "Median vs. Average",
+            "all": "Median",
+            "credit": "Median Income",
+            "debit": "Median Expenses",
+            "avg-comparison": "Ø Average",
+            "hint": "The median deviates by {{value}} from the average"
+          },
+          "cashflow": {
+            "title": "Monthly Cashflow (Net)",
+            "net": "Net",
+            "no-data": "No data available.",
+            "best": "Best month",
+            "worst": "Worst month"
+          },
+          "category-statistics": {
+            "title": "By category",
+            "no-data": "No category data available.",
+            "of-total": "of total",
+            "show-all": "Show all categories"
+          },
+          "member-statistics": {
+            "title": "By member",
+            "net": "Net",
+            "no-data": "No member data available.",
+            "volume": "volume",
+            "show-all": "Show all members"
           },
           "chart": {
             "credit": "Income",
@@ -1326,37 +1356,33 @@
           "goals": {},
           "fairness": {},
           "activities": {
-            "title": "Activity Ranking",
-            "total-activities": "Activities",
+            "title": "Event Ranking",
+            "total-activities": "Events",
             "avg-cost": "Avg. Cost",
             "bookings": "transactions",
             "cost-distribution": "Cost Distribution",
-            "no-activities": "No activities with transactions"
+            "no-activities": "No events with transactions"
           },
           "recurring": {},
           "insights": {
-            "title": "Smart Insights",
-            "no-insights": "No special insights",
-            "hint": "With more transactions, insights will appear here automatically",
+            "title": "Highlights",
+            "no-insights": "No special highlights",
+            "hint": "With more transactions, highlights will appear here automatically",
             "anomaly": {
               "title": "Unusual Expense",
               "description": "\"{{value}}\" at {{value2}} is significantly higher than average ({{value3}})"
             },
             "spending-up": {
-              "title": "Spending Increased",
+              "title": "Expenses increased",
               "description": "Expenses have increased by {{value}}% this month"
             },
             "spending-down": {
               "title": "Spending Decreased",
-              "description": "Great! Expenses have decreased by {{value}}% this month"
+              "description": "Expenses have decreased by {{value}}% this month"
             },
             "top-category": {
               "title": "Top Category",
               "description": "Category accounts for {{value}}% of all expenses"
-            },
-            "savings": {
-              "title": "Positive Balance",
-              "description": "You have earned {{value}} more than you spent"
             },
             "inactive": {
               "title": "Long Inactivity",

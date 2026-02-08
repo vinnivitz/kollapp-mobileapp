@@ -36,7 +36,8 @@
 		parser
 	} from '$lib/utility';
 
-	type SortKey = 'activity' | 'category' | 'date' | 'personOfOrganization' | 'purpose';
+	type SortKey = 'activity' | 'amount' | 'category' | 'date' | 'personOfOrganization' | 'purpose';
+	type SortOrder = 'asc' | 'desc';
 
 	type PostingsFilterState = {
 		activityIds: number[];
@@ -45,6 +46,7 @@
 		personOfOrganizationIds: number[];
 		postingTypes: PostingType[];
 		sortBy: SortKey;
+		sortOrder: SortOrder;
 	};
 
 	type Properties = {
@@ -101,6 +103,7 @@
 	let isEditing = $state<boolean>(false);
 	let stablePostings = $state<PostingTO[]>([]);
 	let sortBy = $state<SortKey>('date');
+	let sortOrder = $state<SortOrder>('desc');
 
 	$effect(() => {
 		if (!isEditing) {
@@ -145,6 +148,7 @@
 		onApply: (state) => {
 			filterState = state;
 			sortBy = state.sortBy;
+			sortOrder = state.sortOrder;
 		},
 		searchbar: {
 			onSearch: (value) => (searchValue = value),
@@ -176,6 +180,7 @@
 				options: [
 					{ label: $t('components.posting-overview.filter.sort.date'), value: 'date' },
 					{ label: $t('components.posting-overview.filter.sort.purpose'), value: 'purpose' },
+					{ label: $t('components.posting-overview.filter.sort.amount'), value: 'amount' },
 					{
 						label: $t('components.posting-overview.filter.sort.person-of-organization'),
 						value: 'personOfOrganization'
@@ -189,6 +194,14 @@
 								} satisfies FilterChipOption<SortKey>
 							]
 						: [])
+				]
+			}),
+			chipSection<SortOrder>('sortOrder', {
+				defaultValue: 'desc',
+				label: $t('components.posting-overview.filter.order.label'),
+				options: [
+					{ label: $t('components.posting-overview.filter.order.ascending'), value: 'asc' },
+					{ label: $t('components.posting-overview.filter.order.descending'), value: 'desc' }
 				]
 			}),
 			dateRangeSection('dateRange', {
@@ -304,34 +317,42 @@
 
 	const sortedPostings = $derived.by(() => {
 		return [...filteredPostings].toSorted((filteredPostingA, filteredPostingB) => {
+			let cmp = 0;
 			switch (sortBy) {
 				case 'date': {
-					return new TZDate(filteredPostingB.date).getTime() - new TZDate(filteredPostingA.date).getTime();
+					cmp = new TZDate(filteredPostingB.date).getTime() - new TZDate(filteredPostingA.date).getTime();
+					break;
 				}
 				case 'purpose': {
-					return filteredPostingA.purpose.localeCompare(filteredPostingB.purpose);
+					cmp = filteredPostingA.purpose.localeCompare(filteredPostingB.purpose);
+					break;
+				}
+				case 'amount': {
+					cmp = filteredPostingA.amountInCents - filteredPostingB.amountInCents;
+					break;
 				}
 				case 'personOfOrganization': {
 					const personOfOrganizationA =
 						getUsernameByPersonOfOrganizationId(filteredPostingA.personOfOrganizationId) ?? '';
 					const personOfOrganizationB =
 						getUsernameByPersonOfOrganizationId(filteredPostingB.personOfOrganizationId) ?? '';
-					return personOfOrganizationA.localeCompare(personOfOrganizationB);
+					cmp = personOfOrganizationA.localeCompare(personOfOrganizationB);
+					break;
 				}
 				case 'category': {
 					const categoryA = getBudgetCategoryNameById(filteredPostingA.organizationBudgetCategoryId);
 					const categoryB = getBudgetCategoryNameById(filteredPostingB.organizationBudgetCategoryId);
-					return categoryA.localeCompare(categoryB);
+					cmp = categoryA.localeCompare(categoryB);
+					break;
 				}
 				case 'activity': {
 					const activityA = activityPostingIdMap.get(filteredPostingA.id)?.name ?? '';
 					const activityB = activityPostingIdMap.get(filteredPostingB.id)?.name ?? '';
-					return activityA.localeCompare(activityB);
-				}
-				default: {
-					return 0;
+					cmp = activityA.localeCompare(activityB);
+					break;
 				}
 			}
+			return sortOrder === 'asc' ? cmp : -cmp;
 		});
 	});
 
@@ -351,6 +372,7 @@
 			filterState = undefined;
 			searchValue = '';
 			sortBy = 'date';
+			sortOrder = 'desc';
 		}
 	});
 

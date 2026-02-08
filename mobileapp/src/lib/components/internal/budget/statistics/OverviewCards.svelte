@@ -1,7 +1,13 @@
 <script lang="ts">
 	import type { Colors } from '$lib/models/ui';
 
-	import { cardOutline, statsChartOutline, trendingDownOutline, trendingUpOutline } from 'ionicons/icons';
+	import {
+		cardOutline,
+		downloadOutline,
+		statsChartOutline,
+		trendingDownOutline,
+		trendingUpOutline
+	} from 'ionicons/icons';
 
 	import { Card } from '$lib/components/core';
 	import { t } from '$lib/locales';
@@ -12,40 +18,48 @@
 		balance: number;
 		totalCredit: number;
 		totalDebit: number;
+		onDownload?: () => void;
 	};
 
-	let { averageTransaction, balance, totalCredit, totalDebit }: Properties = $props();
+	let { averageTransaction, balance, onDownload, totalCredit, totalDebit }: Properties = $props();
 </script>
 
-<div class="grid grid-cols-2">
-	{@render overviewCard(
-		$t('routes.organization.budget-statistics.page.overview.credit'),
-		trendingUpOutline,
-		totalCredit,
-		'success'
-	)}
-	{@render overviewCard(
-		$t('routes.organization.budget-statistics.page.overview.debit'),
-		trendingDownOutline,
-		totalDebit,
-		'danger'
-	)}
-	{@render overviewCard(
-		$t('routes.organization.budget-statistics.page.overview.balance'),
-		cardOutline,
-		balance,
-		balance >= 0 ? 'success' : 'danger'
-	)}
-	{@render overviewCard(
-		$t('routes.organization.budget-statistics.page.overview.avg'),
-		statsChartOutline,
-		averageTransaction,
-		'primary'
-	)}
-</div>
+<Card
+	title={$t('routes.organization.budget-statistics.page.overview.title')}
+	titleIconStart={statsChartOutline}
+	titleIconEnd={onDownload ? downloadOutline : undefined}
+	titleIconEndClicked={onDownload}
+>
+	<div class="grid grid-cols-2">
+		{@render overviewCard(
+			$t('routes.organization.budget-statistics.page.overview.credit'),
+			trendingUpOutline,
+			totalCredit,
+			'success'
+		)}
+		{@render overviewCard(
+			$t('routes.organization.budget-statistics.page.overview.debit'),
+			trendingDownOutline,
+			totalDebit,
+			'danger'
+		)}
+		{@render overviewCard(
+			$t('routes.organization.budget-statistics.page.overview.balance'),
+			cardOutline,
+			balance,
+			balance >= 0 ? 'success' : 'danger'
+		)}
+		{@render overviewCard(
+			$t('routes.organization.budget-statistics.page.overview.avg'),
+			statsChartOutline,
+			averageTransaction,
+			'primary'
+		)}
+	</div>
+</Card>
 
 {#snippet overviewCard(label: string, icon: string, amount: number, color: Colors)}
-	<Card classList="flex flex-col justify-center items-center">
+	<Card border={color} classList="flex flex-col justify-center items-center">
 		<div class="flex flex-col items-center gap-1 py-2">
 			<ion-icon {icon} {color} class="text-2xl"></ion-icon>
 			<ion-text class="text-xs" color="medium">

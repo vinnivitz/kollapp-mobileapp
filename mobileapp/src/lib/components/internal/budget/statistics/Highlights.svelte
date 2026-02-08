@@ -2,11 +2,11 @@
 	import type { OrganizationBudgetCategoryResponseTO, PostingTO } from '@kollapp/api-types';
 
 	import { TZDate } from '@date-fns/tz';
-	import { format, startOfMonth, subMonths } from 'date-fns';
+	import { startOfMonth, subMonths } from 'date-fns';
 	import {
 		alertCircleOutline,
 		bulbOutline,
-		checkmarkCircleOutline,
+		downloadOutline,
 		informationCircleOutline,
 		sparklesOutline,
 		trendingDownOutline,
@@ -17,35 +17,35 @@
 
 	import { Card } from '$lib/components/core';
 	import { t } from '$lib/locales';
-	import { formatter } from '$lib/utility';
+	import { formatter, parser } from '$lib/utility';
 
 	type Properties = {
 		categories: OrganizationBudgetCategoryResponseTO[];
 		postings: PostingTO[];
+		onDownload?: () => void;
 	};
 
-	type InsightType = 'danger' | 'info' | 'success' | 'warning';
+	type HighlightType = 'danger' | 'info' | 'success' | 'warning';
 
-	type Insight = {
+	type Highlight = {
 		description: string;
 		icon: string;
 		id: string;
 		title: string;
-		type: InsightType;
+		type: HighlightType;
 		value?: string;
 	};
 
-	let { categories, postings }: Properties = $props();
+	let { categories, onDownload, postings }: Properties = $props();
 
 	const UNUSUAL_EXPENSE_MIN_COUNT = 10;
 	const ANOMALY_STANDARD_DEVIATION_MULTIPLIER = 2;
-	const SPENDING_INCREASE_THRESHOLD_PERCENT = 30;
-	const SPENDING_DECREASE_THRESHOLD_PERCENT = -30;
+	const EXPENSES_INCREASE_THRESHOLD_PERCENT = 30;
+	const EXPENSES_DECREASE_THRESHOLD_PERCENT = -30;
 	const TOP_CATEGORY_THRESHOLD_PERCENT = 40;
-	const SAVINGS_RATIO_THRESHOLD = 1.2;
 	const INACTIVE_DAYS_THRESHOLD = 30;
-	const SMALL_TRANSACTION_THRESHOLD_CENTS = 500;
-	const SMALL_TRANSACTIONS_MIN_COUNT = 10;
+	const SMALL_POSTINGS_THRESHOLD_CENTS = 500;
+	const SMALL_POSTINGS_MIN_COUNT = 10;
 
 	const now = new TZDate();
 	const currentMonthStart = startOfMonth(now);
@@ -56,7 +56,7 @@
 
 		for (const posting of postings) {
 			const date = new TZDate(posting.date);
-			const monthKey = format(startOfMonth(date), 'yyyy-MM');
+			const monthKey = parser.date(startOfMonth(date));
 
 			if (!stats.has(monthKey)) {
 				stats.set(monthKey, { count: 0, credit: 0, debit: 0 });
@@ -76,16 +76,21 @@
 
 	const debitPostings = $derived(postings.filter((posting) => posting.type === 'DEBIT'));
 	const totalDebit = $derived(debitPostings.reduce((sum, posting) => sum + posting.amountInCents, 0));
-	const totalCredit = $derived(
-		postings.filter((posting) => posting.type === 'CREDIT').reduce((sum, posting) => sum + posting.amountInCents, 0)
-	);
 
-	function detectAnomalyInsight(): Insight | undefined {
+	const insights = $derived.by<Highlight[]>(() => {
+		const detectors = [detectAnomaly, detectSpendingTrend, detectTopCategory, detectInactivity, detectSmallExpenses];
+
+		return detectors.map((detect) => detect()).filter((insight) => !!insight);
+	});
+
+	function detectAnomaly(): Highlight | undefined {
 		if (debitPostings.length < UNUSUAL_EXPENSE_MIN_COUNT) return;
 
 		const amounts = debitPostings.map((posting) => posting.amountInCents);
-		const average = amounts.reduce((sum, a) => sum + a, 0) / amounts.length;
-		const standardDeviation = Math.sqrt(amounts.reduce((sum, a) => sum + Math.pow(a - average, 2), 0) / amounts.length);
+		const average = amounts.reduce((sum, amount) => sum + amount, 0) / amounts.length;
+		const standardDeviation = Math.sqrt(
+			amounts.reduce((sum, amount) => sum + Math.pow(amount - average, 2), 0) / amounts.length
+		);
 
 		const anomalies = debitPostings.filter(
 			(posting) => posting.amountInCents > average + ANOMALY_STANDARD_DEVIATION_MULTIPLIER * standardDeviation
@@ -107,9 +112,9 @@
 		};
 	}
 
-	function detectSpendingTrendInsight(): Insight | undefined {
-		const currentMonthKey = format(currentMonthStart, 'yyyy-MM');
-		const previousMonthKey = format(previousMonthStart, 'yyyy-MM');
+	function detectSpendingTrend(): Highlight | undefined {
+		const currentMonthKey = parser.date(currentMonthStart);
+		const previousMonthKey = parser.date(previousMonthStart);
 		const currentMonth = monthlyStats.get(currentMonthKey);
 		const previousMonth = monthlyStats.get(previousMonthKey);
 
@@ -117,7 +122,7 @@
 
 		const change = ((currentMonth.debit - previousMonth.debit) / previousMonth.debit) * 100;
 
-		if (change > SPENDING_INCREASE_THRESHOLD_PERCENT) {
+		if (change > EXPENSES_INCREASE_THRESHOLD_PERCENT) {
 			return {
 				description: $t('routes.organization.budget-statistics.page.insights.spending-up.description', {
 					value: Math.abs(change).toFixed(0)
@@ -130,7 +135,7 @@
 			};
 		}
 
-		if (change < SPENDING_DECREASE_THRESHOLD_PERCENT) {
+		if (change < EXPENSES_DECREASE_THRESHOLD_PERCENT) {
 			return {
 				description: $t('routes.organization.budget-statistics.page.insights.spending-down.description', {
 					value: Math.abs(change).toFixed(0)
@@ -144,16 +149,14 @@
 		}
 	}
 
-	function detectTopCategoryInsight(): Insight | undefined {
-		if (categories.length === 0) return;
-
-		const categorySpending = new SvelteMap<number, number>();
+	function detectTopCategory(): Highlight | undefined {
+		const categoryExpenses = new SvelteMap<number, number>();
 		for (const posting of debitPostings) {
-			const current = categorySpending.get(posting.organizationBudgetCategoryId) ?? 0;
-			categorySpending.set(posting.organizationBudgetCategoryId, current + posting.amountInCents);
+			const current = categoryExpenses.get(posting.organizationBudgetCategoryId) ?? 0;
+			categoryExpenses.set(posting.organizationBudgetCategoryId, current + posting.amountInCents);
 		}
 
-		const sorted = [...categorySpending.entries()].toSorted((a, b) => b[1] - a[1]);
+		const sorted = [...categoryExpenses.entries()].toSorted((a, b) => b[1] - a[1]);
 		if (sorted.length === 0) return;
 
 		const [topCategoryId, topAmount] = sorted[0]!;
@@ -174,28 +177,12 @@
 		};
 	}
 
-	function detectSavingsInsight(): Insight | undefined {
-		if (totalCredit <= totalDebit * SAVINGS_RATIO_THRESHOLD) return;
-
-		return {
-			description: $t('routes.organization.budget-statistics.page.insights.savings.description', {
-				value: formatter.currency(totalCredit - totalDebit)
-			}),
-			icon: checkmarkCircleOutline,
-			id: 'savings',
-			title: $t('routes.organization.budget-statistics.page.insights.savings.title'),
-			type: 'success',
-			value: formatter.currency(totalCredit - totalDebit)
-		};
-	}
-
-	function detectInactivityInsight(): Insight | undefined {
+	function detectInactivity(): Highlight | undefined {
 		if (postings.length === 0) return;
 
 		const lastPosting = [...postings].toSorted(
 			(a, b) => new TZDate(b.date).getTime() - new TZDate(a.date).getTime()
-		)[0];
-		if (!lastPosting) return;
+		)[0]!;
 
 		const daysWithoutActivity = Math.floor(
 			(now.getTime() - new TZDate(lastPosting.date).getTime()) / (1000 * 60 * 60 * 24)
@@ -215,14 +202,14 @@
 		};
 	}
 
-	function detectSmallExpensesInsight(): Insight | undefined {
-		const smallTransactions = debitPostings.filter((p) => p.amountInCents < SMALL_TRANSACTION_THRESHOLD_CENTS);
-		if (smallTransactions.length <= SMALL_TRANSACTIONS_MIN_COUNT) return;
+	function detectSmallExpenses(): Highlight | undefined {
+		const smallPostings = debitPostings.filter((p) => p.amountInCents < SMALL_POSTINGS_THRESHOLD_CENTS);
+		if (smallPostings.length <= SMALL_POSTINGS_MIN_COUNT) return;
 
-		const smallTotal = smallTransactions.reduce((sum, p) => sum + p.amountInCents, 0);
+		const smallTotal = smallPostings.reduce((sum, p) => sum + p.amountInCents, 0);
 		return {
 			description: $t('routes.organization.budget-statistics.page.insights.small-expenses.description', {
-				value: smallTransactions.length,
+				value: smallPostings.length,
 				value2: formatter.currency(smallTotal)
 			}),
 			icon: bulbOutline,
@@ -232,20 +219,7 @@
 		};
 	}
 
-	const insights = $derived.by<Insight[]>(() => {
-		const detectors = [
-			detectAnomalyInsight,
-			detectSpendingTrendInsight,
-			detectTopCategoryInsight,
-			detectSavingsInsight,
-			detectInactivityInsight,
-			detectSmallExpensesInsight
-		];
-
-		return detectors.map((detect) => detect()).filter((insight): insight is Insight => insight !== undefined);
-	});
-
-	function getInsightBorderColorClass(type: InsightType): string {
+	function getInsightBorderColorClass(type: HighlightType): string {
 		switch (type) {
 			case 'success': {
 				return 'border-[var(--ion-color-success-shade)]';
@@ -262,7 +236,7 @@
 		}
 	}
 
-	function getColorFromType(type: InsightType): string {
+	function getColorFromType(type: HighlightType): string {
 		switch (type) {
 			case 'success': {
 				return 'success';
@@ -280,7 +254,13 @@
 	}
 </script>
 
-<Card title={$t('routes.organization.budget-statistics.page.insights.title')} titleIconStart={sparklesOutline} lazy>
+<Card
+	title={$t('routes.organization.budget-statistics.page.insights.title')}
+	titleIconStart={sparklesOutline}
+	titleIconEnd={onDownload ? downloadOutline : undefined}
+	titleIconEndClicked={onDownload}
+	lazy
+>
 	<div class="p-4">
 		{#if insights.length > 0}
 			<div class="flex flex-col gap-4">

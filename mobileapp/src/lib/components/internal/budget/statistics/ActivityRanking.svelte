@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { ActivityTO } from '@kollapp/api-types';
 
-	import { podiumOutline } from 'ionicons/icons';
+	import { downloadOutline, podiumOutline } from 'ionicons/icons';
 
 	import { Card } from '$lib/components/core';
 	import { t } from '$lib/locales';
@@ -9,6 +9,7 @@
 
 	type Properties = {
 		activities: ActivityTO[];
+		onDownload?: () => void;
 	};
 
 	type ActivityStats = {
@@ -20,7 +21,9 @@
 		totalDebit: number;
 	};
 
-	let { activities }: Properties = $props();
+	let { activities, onDownload }: Properties = $props();
+
+	const ACTIVITY_COUNT_TRESHOLD = 4;
 
 	const activityStats = $derived.by<ActivityStats[]>(() => {
 		return activities
@@ -51,7 +54,13 @@
 	const avgActivityCost = $derived(activityStats.length > 0 ? totalActivityCost / activityStats.length : 0);
 </script>
 
-<Card title={$t('routes.organization.budget-statistics.page.activities.title')} titleIconStart={podiumOutline} lazy>
+<Card
+	title={$t('routes.organization.budget-statistics.page.activities.title')}
+	titleIconStart={podiumOutline}
+	titleIconEnd={onDownload ? downloadOutline : undefined}
+	titleIconEndClicked={onDownload}
+	lazy
+>
 	<div class="flex flex-col gap-4">
 		{#if activityStats.length > 0}
 			<div class="flex items-center justify-around gap-2">
@@ -70,7 +79,7 @@
 			</div>
 
 			<div class="flex flex-col gap-2">
-				{#each activityStats.slice(0, 10) as stats, index (stats.activity.id)}
+				{#each activityStats.slice(0, ACTIVITY_COUNT_TRESHOLD) as stats, index (stats.activity.id)}
 					<Card border="medium" classList="m-0" contentClass="p-3!">
 						<div class="borderp-3 flex items-center gap-3 rounded-lg transition-colors">
 							<div
@@ -84,7 +93,7 @@
 								<div class="flex items-center gap-2">
 									<span class="font-medium">{stats.activity.name}</span>
 								</div>
-								<ion-note class="text-x">
+								<ion-note class="text-sm">
 									{stats.postingCount}
 									{$t('routes.organization.budget-statistics.page.activities.bookings')}
 								</ion-note>

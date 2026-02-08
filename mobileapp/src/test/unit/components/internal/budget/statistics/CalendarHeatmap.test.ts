@@ -1,7 +1,7 @@
 import { fireEvent, render } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 
-import CalendarHeatmap from '$lib/components/internal/budget/statistics/CalendarHeatmap.svelte';
+import CalendarHeatmap from '$lib/components/internal/budget/statistics/PostingsHeatmap.svelte';
 
 class MockIntersectionObserver {
 	constructor(callback: IntersectionObserverCallback) {

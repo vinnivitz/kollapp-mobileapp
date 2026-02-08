@@ -4,6 +4,7 @@
 export enum StorageKey {
 	AUTHENTICATION = 'authentication',
 	BIOMETRICS_ENABLED = 'biometrics-enabled',
+	BUDGET_STATISTICS_VISIBLE_CARDS = 'budget-statistics-visible-cards',
 	LAYOUT = 'layout',
 	LOCALE = 'locale',
 	MAINTENANCE_SCHEDULE = 'maintenance-schedule',

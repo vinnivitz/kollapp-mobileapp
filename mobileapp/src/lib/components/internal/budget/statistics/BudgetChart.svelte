@@ -4,7 +4,6 @@
 
 	import Chart from '@edde746/svelte-apexcharts';
 	import { arrowForwardOutline, cashOutline, trendingDown, trendingUp } from 'ionicons/icons';
-	import { onMount } from 'svelte';
 
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
@@ -27,9 +26,27 @@
 	const DISPLAY_COUNT = 5;
 
 	let selectedChart = $state<ChartType>('all');
-	let mounted = $state<boolean>(false);
+	let chartContainer = $state<HTMLDivElement>();
 
-	onMount(() => (mounted = true));
+	// Stop pointer events from bubbling to parent card (bubble phase - after ApexCharts handles them)
+	$effect(() => {
+		if (chartContainer) {
+			const stopEvent = (event_: Event): void => {
+				event_.stopPropagation();
+			};
+			chartContainer.addEventListener('mousedown', stopEvent, false);
+			chartContainer.addEventListener('touchstart', stopEvent, false);
+			chartContainer.addEventListener('click', stopEvent, false);
+			chartContainer.addEventListener('pointerdown', stopEvent, false);
+
+			return () => {
+				chartContainer?.removeEventListener('mousedown', stopEvent, false);
+				chartContainer?.removeEventListener('touchstart', stopEvent, false);
+				chartContainer?.removeEventListener('click', stopEvent, false);
+				chartContainer?.removeEventListener('pointerdown', stopEvent, false);
+			};
+		}
+	});
 
 	const creditPostings = $derived(postings?.filter((p) => p.type === 'CREDIT') ?? []);
 	const debitPostings = $derived(postings?.filter((p) => p.type === 'DEBIT') ?? []);
@@ -219,27 +236,21 @@
 				{/if}
 			</div>
 		{/if}
-
 		<div class="h-[340px]">
-			{#if mounted}
-				<ion-text
-					class="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-3 text-center text-xl font-bold"
-					class:-translate-y-5={selectedChart !== 'all'}
-				>
-					{selectedChart === 'debit' ? '-' : ''}{formatter.currency(getTotalByType(selectedChart))}
-				</ion-text>
-				<!-- svelte-ignore a11y_no_static_element_interactions -->
-				<!-- svelte-ignore a11y_click_events_have_key_events -->
-				<div
-					class="absolute top-12 right-0 left-0"
-					onclick={(_event) => {
-						_event.stopPropagation();
-						_event.stopImmediatePropagation();
-					}}
-				>
-					<Chart options={chartOptions}></Chart>
-				</div>
-			{/if}
+			<ion-text
+				class="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-3 text-center text-xl font-bold"
+				class:-translate-y-5={selectedChart !== 'all'}
+			>
+				{selectedChart === 'debit' ? '-' : ''}{formatter.currency(getTotalByType(selectedChart))}
+			</ion-text>
+			<div
+				bind:this={chartContainer}
+				class="ion-activatable absolute top-12 right-0 left-0"
+				role="img"
+				aria-label={$t('components.widgets.budget-card.heading')}
+			>
+				<Chart options={chartOptions}></Chart>
+			</div>
 		</div>
 	{:else}
 		<div class="text-medium mt-5 text-center italic">

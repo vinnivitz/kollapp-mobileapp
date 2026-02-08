@@ -5,7 +5,7 @@
 	import { TZDate } from '@date-fns/tz';
 	import Chart from '@edde746/svelte-apexcharts';
 	import { addDays, eachDayOfInterval, endOfMonth, format, getDay, getYear, startOfMonth } from 'date-fns';
-	import { chevronBackOutline, chevronForwardOutline, flameOutline } from 'ionicons/icons';
+	import { chevronBackOutline, chevronForwardOutline, downloadOutline, flameOutline } from 'ionicons/icons';
 	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 
 	import { Button, Card } from '$lib/components/core';
@@ -14,6 +14,7 @@
 
 	type Properties = {
 		postings: PostingTO[];
+		onDownload?: () => void;
 	};
 
 	type DayData = {
@@ -24,7 +25,7 @@
 		total: number;
 	};
 
-	let { postings }: Properties = $props();
+	let { onDownload, postings }: Properties = $props();
 
 	const availableYears = $derived.by(() => {
 		if (postings.length === 0) return [getYear(new TZDate())];
@@ -184,7 +185,7 @@
 					inverse: false,
 					ranges: [
 						{
-							color: getHexFromVariable('--ion-color-medium'),
+							color: getHexFromVariable('--ion-color-light'),
 							from: -999_999,
 							name: 'out-of-range',
 							to: -999_998
@@ -368,6 +369,8 @@
 <Card
 	title={$t('routes.organization.budget-statistics.page.heatmap.title')}
 	titleIconStart={flameOutline}
+	titleIconEnd={onDownload ? downloadOutline : undefined}
+	titleIconEndClicked={onDownload}
 	lazy
 	classList="text-center"
 >

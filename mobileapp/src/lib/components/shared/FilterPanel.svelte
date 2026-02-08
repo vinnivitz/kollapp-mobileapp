@@ -200,7 +200,7 @@
 			{/if}
 		</div>
 		{#if hasFiltersApplied}
-			<div class="flex justify-center">
+			<div class="flex items-center justify-center">
 				<Button
 					size="small"
 					fill="outline"

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { accessibilityOutline, readerOutline, saveOutline } from 'ionicons/icons';
+	import { peopleOutline, readerOutline, saveOutline } from 'ionicons/icons';
 
 	import { updateOrganizationSchema } from '$lib/api/schemas/organization';
 	import { organizationService } from '$lib/api/services';
@@ -29,11 +29,7 @@
 	{#if form}
 		<Card title={$t('routes.organization.update-data.page.card.title')}>
 			<form use:customForm={form}>
-				<InputItem
-					name="name"
-					label={$t('routes.organization.update-data.page.card.form.name')}
-					icon={accessibilityOutline}
-				/>
+				<InputItem name="name" label={$t('routes.organization.update-data.page.card.form.name')} icon={peopleOutline} />
 				<TextareaInputItem
 					name="description"
 					label={$t('routes.organization.update-data.page.card.form.description')}

@@ -745,13 +745,16 @@
             "3months": "3 Monate",
             "6months": "6 Monate",
             "12months": "12 Monate",
-            "custom": "Benutzerdefiniert"
+            "custom": "Benutzerdefiniert",
+            "visible-cards": "Sichtbare Karten",
+            "visible-cards-all": "Alle Karten sichtbar"
           },
           "overview": {
             "credit": "Gesamteinnahmen",
             "debit": "Gesamtausgaben",
             "balance": "Saldo",
-            "avg": "Ø Buchung"
+            "avg": "Ø Buchung",
+            "title": "Überblick"
           },
           "trend": {
             "title": "Monatlicher Verlauf",
@@ -768,6 +771,34 @@
           },
           "top-debits": {
             "title": "Top Ausgaben"
+          },
+          "median": {
+            "title": "Median vs. Durchschnitt",
+            "all": "Median",
+            "credit": "Median Einnahmen",
+            "debit": "Median Ausgaben",
+            "avg-comparison": "Ø Durchschnitt",
+            "hint": "Der Median weicht um {{value}} vom Durchschnitt ab"
+          },
+          "cashflow": {
+            "title": "Monatlicher Cashflow (Netto)",
+            "net": "Netto",
+            "no-data": "Keine Daten verfügbar.",
+            "best": "Bester Monat",
+            "worst": "Schlechtester Monat"
+          },
+          "category-statistics": {
+            "title": "Nach Kategorie",
+            "no-data": "Keine Kategoriedaten verfügbar.",
+            "of-total": "Gesamtanteil",
+            "show-all": "Alle Kategorien anzeigen"
+          },
+          "member-statistics": {
+            "title": "Nach Mitglied",
+            "net": "Netto",
+            "no-data": "Keine Mitgliederdaten verfügbar.",
+            "volume": "Volumen",
+            "show-all": "Alle Mitglieder anzeigen"
           },
           "chart": {
             "credit": "Einnahmen",
@@ -795,18 +826,18 @@
           "goals": {},
           "fairness": {},
           "activities": {
-            "title": "Aktivitäten-Ranking",
-            "total-activities": "Aktivitäten",
+            "title": "Veranstaltungs-Ranking",
+            "total-activities": "Veranstaltungen",
             "avg-cost": "Ø Kosten",
             "bookings": "Buchungen",
             "cost-distribution": "Kostenverteilung",
-            "no-activities": "Keine Aktivitäten mit Buchungen"
+            "no-activities": "Keine Veranstaltungen mit Buchungen"
           },
           "recurring": {},
           "insights": {
-            "title": "Intelligente Einblicke",
-            "no-insights": "Keine besonderen Einblicke",
-            "hint": "Mit mehr Buchungen werden hier automatisch Erkenntnisse angezeigt",
+            "title": "Highlights",
+            "no-insights": "Keine besonderen Highlights",
+            "hint": "Mit mehr Buchungen werden hier automatisch Highlights angezeigt",
             "anomaly": {
               "title": "Ungewöhnliche Ausgabe",
               "description": "\"{{value}}\" mit {{value2}} ist deutlich höher als der Durchschnitt ({{value3}})"
@@ -817,15 +848,11 @@
             },
             "spending-down": {
               "title": "Ausgaben gesunken",
-              "description": "Super! Die Ausgaben sind diesen Monat um {{value}}% gesunken"
+              "description": "Die Ausgaben sind diesen Monat um {{value}}% gesunken"
             },
             "top-category": {
               "title": "Hauptkategorie",
               "description": "Kategorie macht {{value}}% aller Ausgaben aus"
-            },
-            "savings": {
-              "title": "Positiver Saldo",
-              "description": "Ihr habt insgesamt {{value}} mehr eingenommen als ausgegeben"
             },
             "inactive": {
               "title": "Lange keine Aktivität",
@@ -1248,7 +1275,13 @@
           "purpose": "Zweck",
           "person-of-organization": "Mitglied",
           "category": "Kategorie",
-          "activity": "Veranstaltung"
+          "activity": "Veranstaltung",
+          "amount": "Betrag"
+        },
+        "order": {
+          "label": "Sortierreihenfolge",
+          "ascending": "Aufsteigend",
+          "descending": "Absteigend"
         },
         "person": {
           "all-selected": "Alle Mitglieder ausgewählt",
@@ -1308,13 +1341,6 @@
         "budget-category": {
           "select": "Zugewiesene Kategorie",
           "search": "Kategorien durchsuchen..."
-        }
-      }
-    },
-    "internal": {
-      "budget": {
-        "statistics": {
-          "no-data": "Keine Daten verfügbar"
         }
       }
     }

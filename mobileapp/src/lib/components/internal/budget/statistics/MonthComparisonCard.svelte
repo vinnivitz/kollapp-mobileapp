@@ -4,7 +4,7 @@
 
 	import { TZDate } from '@date-fns/tz';
 	import { endOfMonth, startOfMonth, subMonths } from 'date-fns';
-	import { arrowDownOutline, arrowUpOutline, gitCompareOutline, removeOutline } from 'ionicons/icons';
+	import { arrowDownOutline, arrowUpOutline, downloadOutline, gitCompareOutline, removeOutline } from 'ionicons/icons';
 
 	import { Card, IconLabel } from '$lib/components/core';
 	import { t } from '$lib/locales';
@@ -12,6 +12,7 @@
 
 	type Properties = {
 		postings: PostingTO[];
+		onDownload?: () => void;
 	};
 
 	type ComparisonData = {
@@ -24,7 +25,7 @@
 		previousDebit: number;
 	};
 
-	let { postings }: Properties = $props();
+	let { onDownload, postings }: Properties = $props();
 
 	const now = new TZDate();
 	const currentMonthStart = startOfMonth(now);
@@ -97,6 +98,8 @@
 <Card
 	title={$t('routes.organization.budget-statistics.page.comparison.title')}
 	titleIconStart={gitCompareOutline}
+	titleIconEnd={onDownload ? downloadOutline : undefined}
+	titleIconEndClicked={onDownload}
 	lazy
 	classList="text-center"
 >

@@ -8,7 +8,6 @@
 		albumsOutline,
 		cardOutline,
 		cashOutline,
-		downloadOutline,
 		flashOffOutline,
 		medalOutline,
 		personCircleOutline,
@@ -23,7 +22,7 @@
 	import { resolve } from '$app/paths';
 
 	import { budgetService, organizationService } from '$lib/api/services';
-	import { Button, Card, CustomItem } from '$lib/components/core';
+	import { Card, CustomItem } from '$lib/components/core';
 	import { Layout } from '$lib/components/layout';
 	import { FilterPanel, PostingItem } from '$lib/components/shared';
 	import { t } from '$lib/locales';
@@ -368,8 +367,7 @@
 {#snippet assignedPostingsCard()}
 	<Card title={$t('routes.organization.members.slug.page.card.open-postings.title')}>
 		<div class="sticky top-0 left-0 z-10 mb-3 flex flex-row items-center justify-between gap-2">
-			<FilterPanel classList="flex-1" config={filterConfig} />
-			<Button color="tertiary" icon={downloadOutline} clicked={onExportPostings}></Button>
+			<FilterPanel classList="flex-1" config={filterConfig} onAction={onExportPostings} />
 		</div>
 		<div class="overflow-auto">
 			<ion-list role="feed">
