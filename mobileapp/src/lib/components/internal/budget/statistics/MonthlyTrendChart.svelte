@@ -6,15 +6,11 @@
 	import Chart from '@edde746/svelte-apexcharts';
 	import { getYear, startOfMonth } from 'date-fns';
 	import { chevronBackOutline, chevronForwardOutline, downloadOutline, statsChartOutline } from 'ionicons/icons';
-	import { onMount } from 'svelte';
 	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 
 	import { Button, Card } from '$lib/components/core';
 	import { t } from '$lib/locales';
 	import { formatter } from '$lib/utility';
-
-	let mounted = $state(false);
-	onMount(() => (mounted = true));
 
 	type Properties = {
 		isDarkMode: boolean;
@@ -174,7 +170,7 @@
 
 	{#if monthlyData.length === 0}
 		<ion-note class="text-center italic">{$t('routes.organization.budget-statistics.page.trend.no-data')}</ion-note>
-	{:else if mounted}
+	{:else}
 		<Chart options={trendChartOptions}></Chart>
 	{/if}
 </Card>

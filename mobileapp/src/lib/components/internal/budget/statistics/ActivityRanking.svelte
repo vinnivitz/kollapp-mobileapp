@@ -4,7 +4,6 @@
 
 	import Chart from '@edde746/svelte-apexcharts';
 	import { downloadOutline, openOutline, podiumOutline } from 'ionicons/icons';
-	import { onMount } from 'svelte';
 
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
@@ -29,9 +28,6 @@
 	};
 
 	let { activities, isDarkMode, onDownload }: Properties = $props();
-
-	let mounted = $state(false);
-	onMount(() => (mounted = true));
 
 	const ACTIVITY_COUNT_TRESHOLD = 4;
 
@@ -150,7 +146,7 @@
 					</ion-note>
 				</Card>
 			</div>
-			{#if activityStats.length > 1 && mounted}
+			{#if activityStats.length > 1}
 				<Chart options={chartOptions}></Chart>
 			{/if}
 

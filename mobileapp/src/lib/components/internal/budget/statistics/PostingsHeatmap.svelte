@@ -6,15 +6,11 @@
 	import Chart from '@edde746/svelte-apexcharts';
 	import { addDays, eachDayOfInterval, endOfMonth, format, getDay, getYear, startOfMonth } from 'date-fns';
 	import { chevronBackOutline, chevronForwardOutline, downloadOutline, flameOutline } from 'ionicons/icons';
-	import { onMount } from 'svelte';
 	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 
 	import { Button, Card } from '$lib/components/core';
 	import { t } from '$lib/locales';
 	import { formatter, getBlendedColorFromVariable, getHexFromVariable } from '$lib/utility';
-
-	let mounted = $state(false);
-	onMount(() => (mounted = true));
 
 	type Properties = {
 		postings: PostingTO[];
@@ -416,9 +412,7 @@
 	</div>
 	<div class="chart-scroll-container" style="min-width: 100%;" bind:this={chartContainer}>
 		<div style="width: {chartWidth}px; min-width: 100%;">
-			{#if mounted}
-				<Chart options={chartOptions} />
-			{/if}
+			<Chart options={chartOptions} />
 		</div>
 	</div>
 </Card>

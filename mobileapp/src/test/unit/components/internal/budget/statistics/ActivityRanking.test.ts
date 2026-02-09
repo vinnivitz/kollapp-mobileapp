@@ -14,6 +14,11 @@ class MockIntersectionObserver {
 }
 vi.stubGlobal('IntersectionObserver', MockIntersectionObserver);
 
+// Mock ApexCharts
+vi.mock('@edde746/svelte-apexcharts', () => ({
+	default: vi.fn()
+}));
+
 vi.mock('$lib/utility', async (importOriginal) => {
 	const original = await importOriginal<object>();
 	return {

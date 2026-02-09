@@ -13,7 +13,6 @@
 		thumbsDownOutline,
 		thumbsUpOutline
 	} from 'ionicons/icons';
-	import { onMount } from 'svelte';
 	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 
 	import { Button, Card, IconLabel } from '$lib/components/core';
@@ -115,9 +114,6 @@
 		return worst;
 	});
 
-	let mounted = $state(false);
-	onMount(() => (mounted = true));
-
 	const chartOptions = $derived<ApexOptions>({
 		chart: {
 			animations: { enabled: true },
@@ -195,9 +191,7 @@
 			{$t('routes.organization.budget-statistics.page.cashflow.no-data')}
 		</ion-note>
 	{:else}
-		{#if mounted}
-			<Chart options={chartOptions}></Chart>
-		{/if}
+		<Chart options={chartOptions}></Chart>
 
 		<div class="mt-3 flex justify-around text-center text-xs">
 			{#if bestMonth}
