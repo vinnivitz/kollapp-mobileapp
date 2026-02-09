@@ -1322,7 +1322,8 @@
       },
       "no-postings": "Keine Buchungen gefunden.",
       "no-results": "Keine Buchungen für „{{value}}“ gefunden",
-      "loading": "Laden..."
+      "loading": "Laden...",
+      "results": "{{value}} Buchungen gefunden."
     },
     "budget-overview": {
       "total-credit": "Gesamteinnahmen: {{value}}",

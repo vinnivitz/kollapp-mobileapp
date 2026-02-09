@@ -5,6 +5,7 @@
 
 	import Chart from '@edde746/svelte-apexcharts';
 	import { downloadOutline, listOutline, openOutline, peopleOutline, personOutline } from 'ionicons/icons';
+	import { onMount } from 'svelte';
 
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
@@ -29,6 +30,9 @@
 		personOfOrganization: PersonOfOrganizationTO;
 		volumeShare: number;
 	};
+
+	let mounted = $state(false);
+	onMount(() => (mounted = true));
 
 	type SortKey = 'credit' | 'debit' | 'name' | 'net' | 'volume';
 	type SortOrder = 'asc' | 'desc';
@@ -213,7 +217,9 @@
 			{$t('routes.organization.budget-statistics.page.member-statistics.no-data')}
 		</ion-text>
 	{:else}
-		<Chart options={chartOptions}></Chart>
+		{#if mounted}
+			<Chart options={chartOptions}></Chart>
+		{/if}
 
 		<div class="mt-2">
 			{#each statistics.slice(0, PERSON_OF_ORGANIZATION_COUNT_TRESHOLD) as stat (stat.personOfOrganization.id)}

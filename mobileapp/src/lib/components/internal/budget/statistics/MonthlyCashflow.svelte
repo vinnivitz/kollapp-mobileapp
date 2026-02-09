@@ -13,6 +13,7 @@
 		thumbsDownOutline,
 		thumbsUpOutline
 	} from 'ionicons/icons';
+	import { onMount } from 'svelte';
 	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 
 	import { Button, Card, IconLabel } from '$lib/components/core';
@@ -114,6 +115,9 @@
 		return worst;
 	});
 
+	let mounted = $state(false);
+	onMount(() => (mounted = true));
+
 	const chartOptions = $derived<ApexOptions>({
 		chart: {
 			animations: { enabled: true },
@@ -180,7 +184,7 @@
 >
 	<div class="mb-3 flex items-center justify-center gap-4">
 		<Button fill="clear" size="small" disabled={!canGoBack} clicked={goToPreviousYear} icon={chevronBackOutline} />
-		<span class="min-w-[60px] text-center text-lg font-semibold" style="color: var(--ion-text-color);">
+		<span class="min-w-15 text-center text-lg font-semibold" style="color: var(--ion-text-color);">
 			{selectedYear}
 		</span>
 		<Button fill="clear" size="small" disabled={!canGoForward} clicked={goToNextYear} icon={chevronForwardOutline} />
@@ -191,7 +195,9 @@
 			{$t('routes.organization.budget-statistics.page.cashflow.no-data')}
 		</ion-note>
 	{:else}
-		<Chart options={chartOptions}></Chart>
+		{#if mounted}
+			<Chart options={chartOptions}></Chart>
+		{/if}
 
 		<div class="mt-3 flex justify-around text-center text-xs">
 			{#if bestMonth}

@@ -454,6 +454,9 @@
 				</ion-note>
 			</div>
 		{:else}
+			<ion-note class="block text-center text-sm"
+				>{$t('components.posting-overview.results', { value: filteredPostings.length })}</ion-note
+			>
 			<ion-list role="feed">
 				{#each displayedPostings as posting (posting.id)}
 					<FadeInOut>

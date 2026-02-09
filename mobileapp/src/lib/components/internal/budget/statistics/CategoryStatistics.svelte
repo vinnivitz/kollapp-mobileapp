@@ -5,12 +5,16 @@
 
 	import Chart from '@edde746/svelte-apexcharts';
 	import { cardOutline, downloadOutline, listOutline } from 'ionicons/icons';
+	import { onMount } from 'svelte';
 
 	import { Button, Card, CustomItem, Modal } from '$lib/components/core';
 	import { FilterPanel } from '$lib/components/shared';
 	import { t } from '$lib/locales';
 	import { chipSection } from '$lib/models/ui';
 	import { formatter } from '$lib/utility';
+
+	let mounted = $state(false);
+	onMount(() => (mounted = true));
 
 	type Properties = {
 		budgetCategories: OrganizationBudgetCategoryResponseTO[];
@@ -206,7 +210,9 @@
 			{$t('routes.organization.budget-statistics.page.category-statistics.no-data')}
 		</ion-text>
 	{:else}
-		<Chart options={chartOptions}></Chart>
+		{#if mounted}
+			<Chart options={chartOptions}></Chart>
+		{/if}
 
 		<div class="mt-2">
 			{#each categoryActuals.slice(0, CATEGORY_COUNT_TRESHOLD) as actual (actual.category.id)}

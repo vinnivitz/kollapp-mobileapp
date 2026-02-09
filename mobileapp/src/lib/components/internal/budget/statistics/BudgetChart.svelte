@@ -4,6 +4,7 @@
 
 	import Chart from '@edde746/svelte-apexcharts';
 	import { arrowForwardOutline, cashOutline, trendingDown, trendingUp } from 'ionicons/icons';
+	import { onMount } from 'svelte';
 
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
@@ -11,6 +12,9 @@
 	import { Card, Chip } from '$lib/components/core';
 	import { t } from '$lib/locales';
 	import { formatter } from '$lib/utility';
+
+	let mounted = $state(false);
+	onMount(() => (mounted = true));
 
 	type ChartType = 'all' | 'credit' | 'debit';
 
@@ -249,7 +253,9 @@
 				role="img"
 				aria-label={$t('components.widgets.budget-card.heading')}
 			>
-				<Chart options={chartOptions}></Chart>
+				{#if mounted}
+					<Chart options={chartOptions}></Chart>
+				{/if}
 			</div>
 		</div>
 	{:else}

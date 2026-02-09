@@ -6,11 +6,15 @@
 	import Chart from '@edde746/svelte-apexcharts';
 	import { addDays, eachDayOfInterval, endOfMonth, format, getDay, getYear, startOfMonth } from 'date-fns';
 	import { chevronBackOutline, chevronForwardOutline, downloadOutline, flameOutline } from 'ionicons/icons';
+	import { onMount } from 'svelte';
 	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 
 	import { Button, Card } from '$lib/components/core';
 	import { t } from '$lib/locales';
 	import { formatter, getBlendedColorFromVariable, getHexFromVariable } from '$lib/utility';
+
+	let mounted = $state(false);
+	onMount(() => (mounted = true));
 
 	type Properties = {
 		postings: PostingTO[];
@@ -376,7 +380,7 @@
 >
 	<div class="mb-3 flex items-center justify-center gap-4">
 		<Button fill="clear" size="small" disabled={!canGoBack} clicked={goToPreviousYear} icon={chevronBackOutline} />
-		<span class="min-w-[60px] text-center text-lg font-semibold" style="color: var(--ion-text-color);">
+		<span class="min-w-15 text-center text-lg font-semibold" style="color: var(--ion-text-color);">
 			{selectedYear}
 		</span>
 		<Button fill="clear" size="small" disabled={!canGoForward} clicked={goToNextYear} icon={chevronForwardOutline} />
@@ -412,7 +416,9 @@
 	</div>
 	<div class="chart-scroll-container" style="min-width: 100%;" bind:this={chartContainer}>
 		<div style="width: {chartWidth}px; min-width: 100%;">
-			<Chart options={chartOptions} />
+			{#if mounted}
+				<Chart options={chartOptions} />
+			{/if}
 		</div>
 	</div>
 </Card>

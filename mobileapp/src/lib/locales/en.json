@@ -355,7 +355,8 @@
       },
       "no-postings": "No transactions found.",
       "no-results": "No transactions found for \"{{value}}\"",
-      "loading": "Loading..."
+      "loading": "Loading...",
+      "results": "{{value}} transactions found."
     },
     "budget-overview": {
       "total-credit": "Total income: {{value}}",
