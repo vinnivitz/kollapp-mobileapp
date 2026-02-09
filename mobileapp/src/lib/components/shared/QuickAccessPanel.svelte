@@ -101,10 +101,6 @@
 			onExitEditMode();
 		}
 	}
-
-	const configuredPointerSensor = PointerSensor.configure({
-		activationConstraints: { distance: { value: 3 } }
-	});
 </script>
 
 <div data-tour={TourStepId.HOME.QUICK_ACCESS} class="relative mt-5" use:clickOutside={onExitEditMode}>
@@ -128,7 +124,7 @@
 		/>
 	{/if}
 	<DragDropProvider
-		sensors={[configuredPointerSensor, KeyboardSensor]}
+		sensors={[KeyboardSensor, PointerSensor]}
 		onDragOver={(event) => {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			dndItems = move(dndItems, event as any);

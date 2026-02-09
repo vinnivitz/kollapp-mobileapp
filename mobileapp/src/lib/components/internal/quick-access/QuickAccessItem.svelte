@@ -30,12 +30,14 @@
 		onRemove
 	}: Properties = $props();
 
-	const { isDragging, ref } = useSortable({
-		disabled: () => !editMode,
-		group: 'items',
-		id: item.id,
-		index: () => index
-	});
+	const { isDragging, ref } = $derived(
+		useSortable({
+			disabled: () => !editMode,
+			group: 'items',
+			id: item.id,
+			index: () => index
+		})
+	);
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->

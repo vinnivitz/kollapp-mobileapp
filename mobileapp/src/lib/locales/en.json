@@ -957,7 +957,8 @@
             "no-results": "No events for \"{{value}}\"",
             "no-results-filtered": "No events found.",
             "loading": "Loading...",
-            "postings": "{{value}} transactions"
+            "postings": "{{value}} transactions",
+            "found": "{{value}} events found."
           },
           "modal": {
             "create-activity": {
@@ -995,6 +996,18 @@
                 },
                 "date-range": {
                   "label": "Time period"
+                },
+                "sort": {
+                  "label": "Sort by",
+                  "date": "Date",
+                  "name": "Name",
+                  "location": "Location",
+                  "postings": "Transactions"
+                },
+                "order": {
+                  "label": "Sort order",
+                  "ascending": "Ascending",
+                  "descending": "Descending"
                 }
               }
             }

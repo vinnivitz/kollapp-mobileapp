@@ -236,7 +236,7 @@
 				{/if}
 			</div>
 		{/if}
-		<div class="h-[340px]">
+		<div class="h-85">
 			<ion-text
 				class="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-3 text-center text-xl font-bold"
 				class:-translate-y-5={selectedChart !== 'all'}

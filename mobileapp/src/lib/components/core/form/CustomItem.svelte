@@ -60,11 +60,13 @@
 	}: Properties = $props();
 
 	// workaround to avoid reference linting error
-	void indexed;
+	$effect(() => {
+		void indexed;
+	});
 
 	let ionItemSlidingElement = $state<HTMLIonItemSlidingElement>();
 
-	readonly = readonly ?? disabled;
+	const computedReadonly = $derived(readonly ?? disabled);
 </script>
 
 {#if lazy}
@@ -120,17 +122,17 @@
 		<ion-item
 			data-name={name}
 			data-tour={tourId}
-			onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && !readonly && clicked?.()}
+			onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && !computedReadonly && clicked?.()}
 			{disabled}
 			id={indexLabel}
-			button={!!clicked && !readonly}
-			role={clicked && !readonly ? 'button' : undefined}
+			button={!!clicked && !computedReadonly}
+			role={clicked && !computedReadonly ? 'button' : undefined}
 			aria-label={ariaLabel}
-			tabindex={clicked && !readonly ? 0 : undefined}
+			tabindex={clicked && !computedReadonly ? 0 : undefined}
 			{color}
-			detail={!!((clicked && !readonly) || slidingOptions) && !iconEnd}
+			detail={!!((clicked && !computedReadonly) || slidingOptions) && !iconEnd}
 			data-transparent={transparent}
-			onclick={() => (slidingOptions ? ionItemSlidingElement?.open('end') : !readonly && clicked?.())}
+			onclick={() => (slidingOptions ? ionItemSlidingElement?.open('end') : !computedReadonly && clicked?.())}
 			class={classList}
 			style="--ion-color-shade: var(--border-color) !important;"
 		>
@@ -142,7 +144,7 @@
 			{/if}
 			{#if iconEnd}
 				<ion-button
-					onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && !readonly && clicked?.()}
+					onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && !computedReadonly && clicked?.()}
 					role="button"
 					tabindex="0"
 					class="ms-0"

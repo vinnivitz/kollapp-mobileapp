@@ -333,7 +333,8 @@
             },
             "no-results-filtered": "Keine Veranstaltungen gefunden.",
             "loading": "Laden...",
-            "postings": "{{value}} Buchungen"
+            "postings": "{{value}} Buchungen",
+            "found": "{{value}} Veranstaltungen gefunden."
           },
           "calendar": {
             "no-activities": "Für den {{value}} wurde keine Veranstaltung gefunden"
@@ -374,6 +375,18 @@
                 },
                 "date-range": {
                   "label": "Zeitraum"
+                },
+                "sort": {
+                  "label": "Sortieren nach",
+                  "date": "Datum",
+                  "name": "Name",
+                  "location": "Ort",
+                  "postings": "Buchungen"
+                },
+                "order": {
+                  "label": "Sortierreihenfolge",
+                  "ascending": "Aufsteigend",
+                  "descending": "Absteigend"
                 }
               }
             }
@@ -808,7 +821,7 @@
           "heatmap": {
             "title": "Ausgaben-Kalender",
             "active-days": "{{value}} aktive Tage",
-            "busiest-day": "Aktivster Tag: {{date}} ({{amount}})",
+            "busiest-day": "Aktivster Tag: {{value}} ({{value2}})",
             "expenses": "Ausgaben",
             "income": "Einnahmen"
           },

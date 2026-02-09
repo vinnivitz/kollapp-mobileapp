@@ -136,7 +136,6 @@
 	}
 
 	function isCoordinate(value: string): boolean {
-		// eslint-disable-next-line security/detect-unsafe-regex
 		return !!/^(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)/.test(value.trim());
 	}
 

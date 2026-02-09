@@ -103,10 +103,10 @@
 	const isManager = $derived(hasOrganizationRole('ROLE_ORGANIZATION_MANAGER'));
 	const canEdit = $derived(isManager || posting.personOfOrganizationId === getPersonOfOrganizationId());
 	const canTransfer = $derived(isManager && posting.personOfOrganizationId > 0);
-	const activityId = activity?.id ?? 0;
+	const activityId = $derived(activity?.id ?? 0);
 
 	let modalOpen = $state<boolean>(false);
-	let selectedPostingType = $state<PostingType>(posting.type);
+	let selectedPostingType = $derived<PostingType>(posting.type);
 	let formActions = $state<FormActions<PostingFormModel>>();
 	let loading = $state<boolean>(true);
 

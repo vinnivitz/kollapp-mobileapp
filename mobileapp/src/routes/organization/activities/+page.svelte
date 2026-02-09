@@ -47,11 +47,15 @@
 	type TimeFilter = 'all' | 'future' | 'past';
 	type BalanceFilter = 'all' | 'negative' | 'neutral' | 'positive';
 	type HasPostingsFilter = 'all' | 'with' | 'without';
+	type SortKey = 'date' | 'location' | 'name' | 'postings';
+	type SortOrder = 'asc' | 'desc';
 
 	type ActivitiesFilterState = {
 		balanceFilter: BalanceFilter;
 		dateRange: { from: string; to: string };
 		hasPostings: HasPostingsFilter;
+		sortBy: SortKey;
+		sortOrder: SortOrder;
 		timeFilter: TimeFilter;
 	};
 
@@ -92,63 +96,61 @@
 	let searchActivityValue = $state<string>('');
 	let selectedDate = $state<string>(parser.date(new TZDate()));
 
-	// Filter state
-	let filterState = $state<ActivitiesFilterState>({
-		balanceFilter: 'all',
-		dateRange: { from: '', to: '' },
-		hasPostings: 'all',
-		timeFilter: 'all'
-	});
+	let sortBy = $state<SortKey>('date');
+	let sortOrder = $state<SortOrder>('desc');
+	let filterState = $state<ActivitiesFilterState>();
 
 	const activitiesForSelectedDate = $derived(activityItems.filter((activity) => activity.date === selectedDate));
-
-	let initialized = $state<boolean>(false);
-
-	$effect(() => {
-		if (activityItems.length > 0 && !initialized) {
-			const minDate = getMinActivityDate();
-			const maxDate = getMaxActivityDate();
-			filterState = {
-				...filterState,
-				dateRange: { from: minDate, to: maxDate }
-			};
-			initialized = true;
-		}
-	});
 
 	const form = new Form({
 		completed: async ({ actions }) => {
 			createActivityModalOpen = false;
 			actions.set(createActivitySchema().getDefault());
-			resetFilters();
 		},
 		failed: () => (createActivityModalOpen = false),
 		request: activityService.create,
 		schema: createActivitySchema()
 	});
 
-	function resetFilters(): void {
-		searchActivityValue = '';
-		displayCount = PAGE_SIZE;
-		filterState = {
-			balanceFilter: 'all',
-			dateRange: { from: getMinActivityDate(), to: getMaxActivityDate() },
-			hasPostings: 'all',
-			timeFilter: 'all'
-		};
-	}
+	const filteredActivities = $derived.by(() => {
+		const searchFiltered = searchActivityValue
+			? activityItems.filter((a) => a.name.toLowerCase().includes(searchActivityValue.trim().toLowerCase()))
+			: activityItems;
 
-	const filteredActivities = $derived(
-		filterActivities(
-			activityItems,
-			searchActivityValue,
-			filterState.timeFilter,
-			filterState.dateRange.from,
-			filterState.dateRange.to,
-			filterState.hasPostings,
-			filterState.balanceFilter
-		)
-	);
+		const filtered = filterState
+			? filterActivities(
+					searchFiltered,
+					filterState.timeFilter,
+					filterState.dateRange.from,
+					filterState.dateRange.to,
+					filterState.hasPostings,
+					filterState.balanceFilter
+				)
+			: searchFiltered;
+
+		return [...filtered].toSorted((a, b) => {
+			let cmp = 0;
+			switch (sortBy) {
+				case 'date': {
+					cmp = a.date.localeCompare(b.date);
+					break;
+				}
+				case 'name': {
+					cmp = a.name.localeCompare(b.name);
+					break;
+				}
+				case 'location': {
+					cmp = a.location.localeCompare(b.location);
+					break;
+				}
+				case 'postings': {
+					cmp = (a.activityPostings?.length ?? 0) - (b.activityPostings?.length ?? 0);
+					break;
+				}
+			}
+			return sortOrder === 'asc' ? cmp : -cmp;
+		});
+	});
 
 	const displayedActivities = $derived(filteredActivities.slice(0, displayCount));
 
@@ -158,6 +160,14 @@
 		onApply: (state) => {
 			displayCount = PAGE_SIZE;
 			filterState = state;
+			sortBy = state.sortBy;
+			sortOrder = state.sortOrder;
+		},
+		onReset: () => {
+			displayCount = PAGE_SIZE;
+			filterState = undefined;
+			sortBy = 'date';
+			sortOrder = 'desc';
 		},
 		searchbar: {
 			onSearch: (value) => (searchActivityValue = value),
@@ -235,6 +245,24 @@
 						value: 'neutral'
 					}
 				]
+			}),
+			chipSection<SortKey>('sortBy', {
+				defaultValue: 'date',
+				label: $t('routes.organization.activities.page.modal.filter.card.sort.label'),
+				options: [
+					{ label: $t('routes.organization.activities.page.modal.filter.card.sort.date'), value: 'date' },
+					{ label: $t('routes.organization.activities.page.modal.filter.card.sort.name'), value: 'name' },
+					{ label: $t('routes.organization.activities.page.modal.filter.card.sort.location'), value: 'location' },
+					{ label: $t('routes.organization.activities.page.modal.filter.card.sort.postings'), value: 'postings' }
+				]
+			}),
+			chipSection<SortOrder>('sortOrder', {
+				defaultValue: 'desc',
+				label: $t('routes.organization.activities.page.modal.filter.card.order.label'),
+				options: [
+					{ label: $t('routes.organization.activities.page.modal.filter.card.order.ascending'), value: 'asc' },
+					{ label: $t('routes.organization.activities.page.modal.filter.card.order.descending'), value: 'desc' }
+				]
 			})
 		],
 		state: filterState,
@@ -243,29 +271,22 @@
 
 	function filterActivities(
 		activities: ActivityTO[],
-		search: string,
 		time: TimeFilter,
 		fromDate: string,
 		toDate: string,
 		hasPostings: HasPostingsFilter,
 		balance: BalanceFilter
 	): ActivityTO[] {
-		const searchTerm = search.trim().toLowerCase();
 		const today = parser.date(new TZDate());
 
 		return activities.filter((activity) => {
 			return (
-				matchesSearch(activity, searchTerm) &&
 				matchesTimeFilter(activity, time, today) &&
 				matchesDateRange(activity, fromDate, toDate) &&
 				matchesPostingsFilter(activity, hasPostings) &&
 				matchesBalanceFilter(activity, balance)
 			);
 		});
-	}
-
-	function matchesSearch(activity: ActivityTO, searchTerm: string): boolean {
-		return searchTerm === '' || activity.name.toLowerCase().includes(searchTerm);
 	}
 
 	function matchesTimeFilter(activity: ActivityTO, time: TimeFilter, today: string): boolean {
@@ -383,6 +404,10 @@
 		</FadeInOut>
 	{:else if filteredActivities.length > 0}
 		<FadeInOut>
+			<IconLabel
+				icon={calendarClearOutline}
+				label={$t('routes.organization.activities.page.activities.found', { value: filteredActivities.length })}
+			/>
 			<ion-list>
 				{#each displayedActivities as activity (activity.id)}
 					{@render activityCard(activity)}

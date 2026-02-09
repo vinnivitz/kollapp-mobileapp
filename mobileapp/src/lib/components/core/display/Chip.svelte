@@ -32,7 +32,9 @@
 	}: Properties = $props();
 
 	// workaround to avoid reference linting error
-	void indexed;
+	$effect(() => {
+		void indexed;
+	});
 
 	const computedAriaLabel = $derived(ariaLabel ?? label);
 

@@ -18,8 +18,10 @@
 	let { changed, checked, classList, disabled, element, hidden = false, icon, indexed, label }: Properties = $props();
 
 	// workaround to avoid reference linting error
-	void indexed;
-	void element;
+	$effect(() => {
+		void indexed;
+		void element;
+	});
 </script>
 
 <CustomItem {icon} {classList} {hidden} ariaLabel={label}>

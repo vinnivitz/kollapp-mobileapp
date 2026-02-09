@@ -55,7 +55,9 @@
 	const computedAriaLabel = $derived(ariaLabel ?? label ?? undefined);
 
 	// workaround to avoid reference linting error
-	void indexed;
+	$effect(() => {
+		void indexed;
+	});
 
 	const fontWeight = $derived(fill === 'outline' ? 'font-extrabold' : 'font-medium');
 

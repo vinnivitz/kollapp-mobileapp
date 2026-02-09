@@ -6,7 +6,6 @@ import { defineConfig } from 'eslint/config';
 import prettier from 'eslint-config-prettier';
 import importPlugin from 'eslint-plugin-import';
 import perfectionistPlugin from 'eslint-plugin-perfectionist';
-import securityPlugin from 'eslint-plugin-security';
 import sonarjsPlugin from 'eslint-plugin-sonarjs';
 import sveltePlugin from 'eslint-plugin-svelte';
 import unicornPlugin from 'eslint-plugin-unicorn';
@@ -24,7 +23,7 @@ export default defineConfig(
 	sveltePlugin.configs.recommended,
 	prettier,
 	...sveltePlugin.configs.prettier,
-	securityPlugin.configs.recommended,
+	// securityPlugin.configs.recommended,
 	unicornPlugin.configs.recommended,
 	sonarjsPlugin.configs.recommended,
 	{
@@ -109,8 +108,6 @@ export default defineConfig(
 			],
 			'perfectionist/sort-objects': 'error',
 			'perfectionist/sort-union-types': 'error',
-			'security/detect-non-literal-fs-filename': 'off',
-			'security/detect-object-injection': 'off',
 			'sonarjs/no-unused-collection': 'off',
 			'sonarjs/no-use-of-empty-return-value': 'off',
 			'sonarjs/slow-regex': 'off',

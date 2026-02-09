@@ -29,7 +29,7 @@
 
 	let cachedLocation = $state<string>('');
 	let open = $state<boolean>(false);
-	let internalValue = $state<string>(value ?? '');
+	let internalValue = $derived<string>(value ?? '');
 	let inputElement = $state<HTMLIonInputElement>();
 
 	async function onConfirmMap(): Promise<void> {

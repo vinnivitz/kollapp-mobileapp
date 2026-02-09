@@ -129,12 +129,14 @@
 		{ data: { id: 0, label: $t('components.budget-overview.modal.activity.none') } }
 	]);
 
-	const createPostingSchema = createUpdatePostingSchema({
-		organizationBudgetCategoryId: budgetCategories.find((category) => category.defaultCategory)?.id,
-		personOfOrganizationId: getPersonOfOrganizationId()
-	}).shape({
-		activityId: number().default(activity?.id ?? 0)
-	});
+	const createPostingSchema = $derived(
+		createUpdatePostingSchema({
+			organizationBudgetCategoryId: budgetCategories.find((category) => category.defaultCategory)?.id,
+			personOfOrganizationId: getPersonOfOrganizationId()
+		}).shape({
+			activityId: number().default(activity?.id ?? 0)
+		})
+	);
 
 	let postingCreateModalOpen = $state<boolean>(false);
 	let postingOverviewModalOpen = $state<boolean>(false);
@@ -156,18 +158,20 @@
 	});
 	const isManager = $derived(hasOrganizationRole('ROLE_ORGANIZATION_MANAGER'));
 
-	const createPostingForm = new Form({
-		actions: (actions) => (formActions = actions),
-		completed: async ({ actions }) => {
-			await onCompleted?.();
-			postingCreateModalOpen = false;
-			actions.set(createPostingSchema.getDefault());
-		},
-		failed: async () => (postingCreateModalOpen = false),
-		request: async (model) =>
-			model.activityId > 0 ? onCreateActivityPosting(model.activityId, model) : onCreateOrganizationPosting(model),
-		schema: createPostingSchema
-	});
+	const createPostingForm = $derived(
+		new Form({
+			actions: (actions) => (formActions = actions),
+			completed: async ({ actions }) => {
+				await onCompleted?.();
+				postingCreateModalOpen = false;
+				actions.set(createPostingSchema.getDefault());
+			},
+			failed: async () => (postingCreateModalOpen = false),
+			request: async (model) =>
+				model.activityId > 0 ? onCreateActivityPosting(model.activityId, model) : onCreateOrganizationPosting(model),
+			schema: createPostingSchema
+		})
+	);
 
 	let selectedPostingType = $derived(createPostingForm.model.type);
 

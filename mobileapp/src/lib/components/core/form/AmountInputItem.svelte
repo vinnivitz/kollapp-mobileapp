@@ -105,7 +105,7 @@
 		}
 	}
 
-	let edit = $state<AmountEditState>(createStateFromCents(value ?? 0));
+	let edit = $derived<AmountEditState>(createStateFromCents(value ?? 0));
 	let hasError = $state<boolean>(false);
 	const tokens = $derived(
 		formatAmountTokens({

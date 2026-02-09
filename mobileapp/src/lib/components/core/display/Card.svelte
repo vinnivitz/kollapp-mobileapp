@@ -53,8 +53,10 @@
 	}: Properties = $props();
 
 	// workaround to avoid reference linting error
-	void indexed;
-	void accessible;
+	$effect(() => {
+		void indexed;
+		void accessible;
+	});
 
 	const borderStyle = $derived(border ? `1px solid var(--ion-color-${border})` : '0px solid transparent');
 	const computedAriaLabel = $derived(ariaLabel ?? title ?? undefined);

@@ -39,8 +39,10 @@
 	let fabButtonElement = $state<HTMLIonFabElement>();
 
 	// workaround to avoid reference linting error
-	void indexed;
-	void accessible;
+	$effect(() => {
+		void indexed;
+		void accessible;
+	});
 
 	const computedAriaLabel = $derived(ariaLabel ?? indexLabel);
 </script>

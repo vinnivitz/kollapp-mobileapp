@@ -34,8 +34,10 @@
 	}: Properties = $props();
 
 	// workaround to avoid reference linting error
-	void indexed;
-	void accessible;
+	$effect(() => {
+		void indexed;
+		void accessible;
+	});
 
 	const labelColor = $derived(color === 'light' || color === 'white' ? 'dark' : 'white');
 	const computedAriaLabel = $derived(ariaLabel ?? label);
