@@ -32,7 +32,7 @@
 		for (const posting of postings) {
 			const date = new TZDate(posting.date);
 			const monthKey = formatter.date(startOfMonth(date), 'yyyy-MM');
-			const monthLabel = formatter.date(date, 'MMM yyyy');
+			const monthLabel = formatter.date(date, 'MMM');
 
 			if (!monthMap.has(monthKey)) {
 				monthMap.set(monthKey, { credit: 0, debit: 0, month: monthLabel, monthKey });

@@ -1358,10 +1358,10 @@
           },
           "comparison": {
             "title": "Month Comparison",
-            "subtitle": "Current month vs. previous month",
+            "subtitle": "{{value}} vs. {{value2}}",
             "credit": "Income",
             "debit": "Expenses",
-            "previous": "Previous",
+            "previous": "{{value}}",
             "balance-trend": "Balance trend",
             "improving": "Improving compared to last month",
             "declining": "Declining compared to last month",
@@ -1374,7 +1374,6 @@
             "total-activities": "Events",
             "avg-cost": "Avg. Cost",
             "bookings": "transactions",
-            "cost-distribution": "Cost Distribution",
             "no-activities": "No events with transactions"
           },
           "recurring": {},

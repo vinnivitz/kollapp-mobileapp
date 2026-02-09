@@ -684,6 +684,7 @@
 					<div data-card-id="activity-ranking">
 						<ActivityRanking
 							activities={$organizationStore?.activities ?? []}
+							{isDarkMode}
 							onDownload={cardDownload('activity-ranking')}
 						/>
 					</div>

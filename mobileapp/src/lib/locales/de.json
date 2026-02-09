@@ -827,10 +827,10 @@
           },
           "comparison": {
             "title": "Monatsvergleich",
-            "subtitle": "Aktueller Monat vs. Vormonat",
+            "subtitle": "{{value}} vs. {{value2}}",
             "credit": "Einnahmen",
             "debit": "Ausgaben",
-            "previous": "Vormonat",
+            "previous": "{{value}}",
             "balance-trend": "Saldo-Trend",
             "improving": "Verbesserung gegenüber Vormonat",
             "declining": "Verschlechterung gegenüber Vormonat",
@@ -843,7 +843,6 @@
             "total-activities": "Veranstaltungen",
             "avg-cost": "Ø Kosten",
             "bookings": "Buchungen",
-            "cost-distribution": "Kostenverteilung",
             "no-activities": "Keine Veranstaltungen mit Buchungen"
           },
           "recurring": {},

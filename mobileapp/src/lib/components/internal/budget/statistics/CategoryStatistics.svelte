@@ -163,7 +163,7 @@
 		plotOptions: {
 			bar: {
 				borderRadius: 4,
-				horizontal: true
+				horizontal: false
 			}
 		},
 		series: [
@@ -181,18 +181,18 @@
 		},
 		xaxis: {
 			labels: {
-				formatter: (value: string) => formatter.currency(Number(value) * 100, true),
 				rotate: -45,
 				rotateAlways: true,
-				style: { colors: 'var(--ion-color-dark)' }
-			}
-		},
-		yaxis: {
-			labels: {
 				style: {
 					colors: 'var(--ion-color-dark)',
 					fontSize: '11px'
 				}
+			}
+		},
+		yaxis: {
+			labels: {
+				formatter: (value: number) => formatter.currency(value * 100, true),
+				style: { colors: 'var(--ion-color-dark)' }
 			}
 		}
 	});

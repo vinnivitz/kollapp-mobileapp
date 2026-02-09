@@ -52,14 +52,14 @@ const mockActivities = [
 describe('widgets/budget/statistics/ActivityRanking', () => {
 	it('renders card with title', () => {
 		const { container } = render(ActivityRanking, {
-			props: { activities: mockActivities as never }
+			props: { activities: mockActivities as never, isDarkMode: false }
 		});
 		expect(container.querySelector('ion-card')).toBeTruthy();
 	});
 
 	it('calculates and displays activity stats', () => {
 		const { container } = render(ActivityRanking, {
-			props: { activities: mockActivities as never }
+			props: { activities: mockActivities as never, isDarkMode: false }
 		});
 		// Should show activity names
 		expect(container.textContent).toContain('Activity 1');
@@ -68,7 +68,7 @@ describe('widgets/budget/statistics/ActivityRanking', () => {
 
 	it('filters out activities with no postings', () => {
 		const { container } = render(ActivityRanking, {
-			props: { activities: mockActivities as never }
+			props: { activities: mockActivities as never, isDarkMode: false }
 		});
 		// Activity 3 has no postings so should not be in ranking
 		expect(container.textContent).not.toContain('Activity 3');
@@ -76,7 +76,7 @@ describe('widgets/budget/statistics/ActivityRanking', () => {
 
 	it('sorts activities by net cost descending', () => {
 		const { container } = render(ActivityRanking, {
-			props: { activities: mockActivities as never }
+			props: { activities: mockActivities as never, isDarkMode: false }
 		});
 		const cards = container.querySelectorAll('ion-card-content ion-card');
 		// Activity 2 has higher net cost (2000-300=1700) than Activity 1 (1000-500=500)
@@ -85,7 +85,7 @@ describe('widgets/budget/statistics/ActivityRanking', () => {
 
 	it('shows total activities count', () => {
 		const { container } = render(ActivityRanking, {
-			props: { activities: mockActivities as never }
+			props: { activities: mockActivities as never, isDarkMode: false }
 		});
 		// Should show 2 (activities with postings)
 		expect(container.textContent).toContain('2');
@@ -93,14 +93,14 @@ describe('widgets/budget/statistics/ActivityRanking', () => {
 
 	it('handles empty activities array', () => {
 		const { container } = render(ActivityRanking, {
-			props: { activities: [] }
+			props: { activities: [], isDarkMode: false }
 		});
 		expect(container.querySelector('ion-card')).toBeTruthy();
 	});
 
 	it('displays ranking numbers', () => {
 		const { container } = render(ActivityRanking, {
-			props: { activities: mockActivities as never }
+			props: { activities: mockActivities as never, isDarkMode: false }
 		});
 		expect(container.textContent).toContain('#1');
 		expect(container.textContent).toContain('#2');

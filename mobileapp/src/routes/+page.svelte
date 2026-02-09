@@ -4,7 +4,7 @@
 	import {
 		accessibilityOutline,
 		arrowForwardOutline,
-		cardOutline,
+		cashOutline,
 		notificationsOffOutline,
 		personAddOutline,
 		warningOutline
@@ -91,7 +91,7 @@
 			{#if userPostings.length > 0}
 				<Button
 					size="small"
-					icon={cardOutline}
+					icon={cashOutline}
 					fill="outline"
 					label={$t('routes.page.page.account-card.open-postings.button.label', { value: userPostings.length })}
 					clicked={() => (transactionOverviewOpen = true)}

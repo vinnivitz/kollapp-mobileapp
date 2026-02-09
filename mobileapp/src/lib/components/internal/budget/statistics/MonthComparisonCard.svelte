@@ -104,7 +104,10 @@
 	classList="text-center"
 >
 	<ion-text color="medium" class="text-sm">
-		{$t('routes.organization.budget-statistics.page.comparison.subtitle')}
+		{$t('routes.organization.budget-statistics.page.comparison.subtitle', {
+			value: formatter.date(currentMonthStart, 'MMMM yyyy'),
+			value2: formatter.date(previousMonthStart, 'MMMM yyyy')
+		})}
 	</ion-text>
 
 	<div class="mt-2 flex flex-col gap-6">
@@ -150,7 +153,9 @@
 				/>
 			{/if}
 			<ion-note class="text-xs">
-				{$t('routes.organization.budget-statistics.page.comparison.previous')}: {formatter.currency(previousAmount)}
+				{$t('routes.organization.budget-statistics.page.comparison.previous', {
+					value: formatter.date(previousMonthStart, 'MMM')
+				})}: {formatter.currency(previousAmount)}
 			</ion-note>
 		</div>
 	</Card>

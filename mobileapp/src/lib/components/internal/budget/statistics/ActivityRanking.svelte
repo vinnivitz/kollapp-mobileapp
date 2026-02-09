@@ -1,14 +1,21 @@
 <script lang="ts">
 	import type { ActivityTO } from '@kollapp/api-types';
+	import type { ApexOptions } from 'apexcharts';
 
-	import { downloadOutline, podiumOutline } from 'ionicons/icons';
+	import Chart from '@edde746/svelte-apexcharts';
+	import { downloadOutline, openOutline, podiumOutline } from 'ionicons/icons';
+	import { onMount } from 'svelte';
 
-	import { Card } from '$lib/components/core';
+	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
+
+	import { Card, CustomItem } from '$lib/components/core';
 	import { t } from '$lib/locales';
 	import { formatter } from '$lib/utility';
 
 	type Properties = {
 		activities: ActivityTO[];
+		isDarkMode: boolean;
 		onDownload?: () => void;
 	};
 
@@ -21,7 +28,10 @@
 		totalDebit: number;
 	};
 
-	let { activities, onDownload }: Properties = $props();
+	let { activities, isDarkMode, onDownload }: Properties = $props();
+
+	let mounted = $state(false);
+	onMount(() => (mounted = true));
 
 	const ACTIVITY_COUNT_TRESHOLD = 4;
 
@@ -52,6 +62,69 @@
 	const totalActivityCost = $derived(activityStats.reduce((sum, stat) => sum + stat.netCost, 0));
 
 	const avgActivityCost = $derived(activityStats.length > 0 ? totalActivityCost / activityStats.length : 0);
+
+	const chartOptions = $derived<ApexOptions>({
+		chart: {
+			animations: { enabled: true },
+			height: 300,
+			stacked: false,
+			toolbar: { show: false },
+			type: 'bar'
+		},
+		colors: ['var(--ion-color-success)', 'var(--ion-color-danger)'],
+		dataLabels: { enabled: false },
+		grid: {
+			padding: { bottom: 20 }
+		},
+		labels: activityStats.slice(0, ACTIVITY_COUNT_TRESHOLD).map((s) => s.activity.name),
+		legend: {
+			labels: { colors: 'var(--ion-color-dark)' },
+			position: 'top',
+			show: true
+		},
+		plotOptions: {
+			bar: {
+				borderRadius: 4,
+				horizontal: false
+			}
+		},
+		series: [
+			{
+				data: activityStats.slice(0, ACTIVITY_COUNT_TRESHOLD).map((s) => s.totalCredit / 100),
+				name: $t('routes.organization.budget-statistics.page.chart.credit')
+			},
+			{
+				data: activityStats.slice(0, ACTIVITY_COUNT_TRESHOLD).map((s) => s.totalDebit / 100),
+				name: $t('routes.organization.budget-statistics.page.chart.debit')
+			}
+		],
+		tooltip: {
+			theme: isDarkMode ? 'dark' : 'light'
+		},
+		xaxis: {
+			labels: {
+				rotate: -45,
+				rotateAlways: true,
+				style: {
+					colors: 'var(--ion-color-dark)',
+					fontSize: '11px'
+				}
+			}
+		},
+		yaxis: {
+			labels: {
+				formatter: (value: number) => formatter.currency(value * 100, true),
+				style: { colors: 'var(--ion-color-dark)' }
+			}
+		}
+	});
+
+	async function onOpenAcitivity(activityId: number): Promise<void> {
+		const activity = activities.find((activity) => activity.id === activityId);
+		if (!activity) return;
+
+		await goto(resolve('/organization/activities/[slug]', { slug: activityId.toString() }));
+	}
 </script>
 
 <Card
@@ -77,70 +150,37 @@
 					</ion-note>
 				</Card>
 			</div>
+			{#if activityStats.length > 1 && mounted}
+				<Chart options={chartOptions}></Chart>
+			{/if}
 
-			<div class="flex flex-col gap-2">
-				{#each activityStats.slice(0, ACTIVITY_COUNT_TRESHOLD) as stats, index (stats.activity.id)}
-					<Card border="medium" classList="m-0" contentClass="p-3!">
-						<div class="borderp-3 flex items-center gap-3 rounded-lg transition-colors">
-							<div
-								class="flex h-8 w-8 items-center justify-center text-lg"
-								style="color: hsl({(index * 37) % 360}, 60%, 50%)"
-							>
-								#{index + 1}
-							</div>
-
-							<div class="flex-1">
-								<div class="flex items-center gap-2">
-									<span class="font-medium">{stats.activity.name}</span>
+			{#each activityStats.slice(0, ACTIVITY_COUNT_TRESHOLD) as stats, index (stats.activity.id)}
+				<CustomItem iconEnd={openOutline} iconClicked={() => onOpenAcitivity(stats.activity.id)}>
+					<div class="flex w-full items-center gap-1">
+						<span class="text-lg font-semibold" style="color: hsl({(index * 37) % 360}, 60%, 50%)">
+							#{index + 1}
+						</span>
+						<div class="min-w-0 flex-1">
+							<ion-text class="block truncate font-medium">{stats.activity.name}</ion-text>
+							<div class="mt-1 flex flex-row items-start justify-between gap-2 text-xs">
+								<div class="flex flex-col">
+									<ion-text class="-ms-2" color="success">+{formatter.currency(stats.totalCredit)}</ion-text>
+									<ion-text color="danger">-{formatter.currency(stats.totalDebit)}</ion-text>
 								</div>
-								<ion-note class="text-sm">
-									{stats.postingCount}
-									{$t('routes.organization.budget-statistics.page.activities.bookings')}
-								</ion-note>
-							</div>
-
-							<div class="flex-1 text-right">
-								<ion-text class="font-bold" color={stats.netCost > 0 ? 'danger' : 'success'}>
-									{stats.netCost > 0 ? '-' : '+'}{formatter.currency(Math.abs(stats.netCost))}
-								</ion-text>
-								<div color="medium" class="text-xs">
-									<ion-text color="success">+{formatter.currency(stats.totalCredit, true)}</ion-text>
-									/
-									<ion-text color="danger">-{formatter.currency(stats.totalDebit, true)}</ion-text>
+								<div class="-mt-2 flex flex-col items-end">
+									<ion-text class="text-lg font-bold" color={stats.netCost > 0 ? 'danger' : 'success'}>
+										{stats.netCost > 0 ? '-' : '+'}{formatter.currency(Math.abs(stats.netCost))}
+									</ion-text>
+									<ion-note class="-mt-1a text-xs">
+										{stats.postingCount}
+										{$t('routes.organization.budget-statistics.page.activities.bookings')}
+									</ion-note>
 								</div>
 							</div>
 						</div>
-					</Card>
-				{/each}
-			</div>
-
-			{#if activityStats.length > 1}
-				<div>
-					<div class="mb-2 text-sm font-medium">
-						{$t('routes.organization.budget-statistics.page.activities.cost-distribution')}
 					</div>
-					<div class="flex h-4 overflow-hidden rounded-full">
-						{#each activityStats as stats, index (stats.activity.id)}
-							{@const percentage = totalActivityCost > 0 ? (stats.netCost / totalActivityCost) * 100 : 0}
-							{#if percentage > 0}
-								<div
-									class="h-full"
-									style="width: {percentage}%; background-color: hsl({(index * 37) % 360}, 60%, 50%)"
-									title="{stats.activity.name}: {formatter.currency(stats.netCost)}"
-								></div>
-							{/if}
-						{/each}
-					</div>
-					<div class="mt-2 flex flex-wrap gap-2">
-						{#each activityStats.slice(0, 5) as stats, index (stats.activity.id)}
-							<div class="flex items-center gap-1 text-xs">
-								<div class="h-2 w-2 rounded-full" style="background-color: hsl({(index * 37) % 360}, 60%, 50%)"></div>
-								<span>{stats.activity.name}</span>
-							</div>
-						{/each}
-					</div>
-				</div>
-			{/if}
+				</CustomItem>
+			{/each}
 		{:else}
 			<div class="py-8 text-center text-gray-500">
 				{$t('routes.organization.budget-statistics.page.activities.no-activities')}
