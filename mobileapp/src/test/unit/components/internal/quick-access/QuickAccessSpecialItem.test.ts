@@ -1,5 +1,6 @@
 import type { QuickAccessItemModel } from '$lib/models/ui';
 
+import { TZDate } from '@date-fns/tz/date';
 import { fireEvent, render } from '@testing-library/svelte';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -79,7 +80,7 @@ const mockOrganization = {
 
 const mockActivity = {
 	activityPostings: [{ id: 1 }],
-	date: new Date().toISOString(),
+	date: new TZDate().toISOString(),
 	id: 1,
 	name: 'Test Activity'
 };

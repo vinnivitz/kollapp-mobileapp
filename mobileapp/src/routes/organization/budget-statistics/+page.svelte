@@ -444,7 +444,7 @@
 
 	function getFilename(cardId?: StatisticsCard): string {
 		const suffix = cardId ? `-${cardId}` : '';
-		return `budget-statistics${suffix}-${new Date().toISOString().split('T')[0]}.png`;
+		return `budget-statistics${suffix}-${new TZDate().toISOString().split('T')[0]}.png`;
 	}
 
 	async function viewStatistics(): Promise<void> {

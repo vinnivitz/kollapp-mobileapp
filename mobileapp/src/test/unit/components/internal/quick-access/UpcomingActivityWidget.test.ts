@@ -1,3 +1,4 @@
+import { TZDate } from '@date-fns/tz/date';
 import { fireEvent, render } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -16,7 +17,7 @@ class MockIntersectionObserver {
 }
 vi.stubGlobal('IntersectionObserver', MockIntersectionObserver);
 
-const futureDate = new Date();
+const futureDate = new TZDate();
 futureDate.setDate(futureDate.getDate() + 7);
 
 const mockActivity = {

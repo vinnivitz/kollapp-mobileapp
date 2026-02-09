@@ -140,7 +140,7 @@
 	const heatmapSeries = $derived.by(() => {
 		const series: { data: { x: string; y: number; meta?: DayData }[]; name: string }[] = [];
 		const dayLabels = Array.from({ length: 7 }, (_, index) => {
-			const referenceDate = new Date(2024, 0, 1 + index);
+			const referenceDate = new TZDate(2024, 0, 1 + index);
 			return format(referenceDate, 'EEEEEE');
 		});
 

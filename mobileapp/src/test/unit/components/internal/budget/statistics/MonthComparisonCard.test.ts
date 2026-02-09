@@ -1,3 +1,4 @@
+import { TZDate } from '@date-fns/tz';
 import { render } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -19,14 +20,19 @@ vi.mock('$lib/utility', async (importOriginal) => {
 	return {
 		...original,
 		formatter: {
-			currency: (value: number) => `€${(value / 100).toFixed(2)}`
+			currency: (value: number) => `€${(value / 100).toFixed(2)}`,
+			date: (date: Date, format?: string) => {
+				if (format === 'MMMM yyyy') return 'February 2026';
+				if (format === 'MMM') return 'Jan';
+				return date.toISOString();
+			}
 		}
 	};
 });
 
-const now = new Date();
+const now = new TZDate();
 const currentMonth = now.toISOString().slice(0, 7);
-const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 15).toISOString().slice(0, 7);
+const lastMonth = new TZDate(now.getFullYear(), now.getMonth() - 1, 15).toISOString().slice(0, 7);
 
 const mockPostings = [
 	{ amountInCents: 1000, date: `${currentMonth}-10`, type: 'CREDIT' as const },

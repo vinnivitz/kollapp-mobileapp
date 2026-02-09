@@ -1,3 +1,4 @@
+import { TZDate } from '@date-fns/tz';
 import { render } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -32,9 +33,9 @@ const mockCategories = [
 	{ defaultCategory: false, id: 2, name: 'Transport' }
 ];
 
-const now = new Date();
+const now = new TZDate();
 const currentMonth = now.toISOString().slice(0, 7);
-const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 15).toISOString().slice(0, 7);
+const lastMonth = new TZDate(now.getFullYear(), now.getMonth() - 1, 15).toISOString().slice(0, 7);
 
 const mockPostings = [
 	{ amountInCents: 10_000, date: `${currentMonth}-10`, organizationBudgetCategoryId: 1, type: 'DEBIT' as const },

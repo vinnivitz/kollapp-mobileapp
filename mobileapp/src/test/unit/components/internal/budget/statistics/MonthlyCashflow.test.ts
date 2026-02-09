@@ -1,3 +1,4 @@
+import { TZDate } from '@date-fns/tz/date';
 import { fireEvent, render } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -35,7 +36,7 @@ vi.mock('@edde746/svelte-apexcharts', () => ({
 	default: vi.fn()
 }));
 
-const now = new Date();
+const now = new TZDate();
 const currentYear = now.getFullYear();
 
 const mockPostings = [
