@@ -113,6 +113,7 @@
 		/>
 	{/if}
 	{#if editMode}
+		<IconLabel label={$t('routes.page.page.quick-access.edit-mode-hint')} icon={informationCircleOutline} />
 		<Button
 			color="primary"
 			fill="outline"

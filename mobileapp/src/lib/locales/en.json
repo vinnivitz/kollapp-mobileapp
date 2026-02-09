@@ -1556,7 +1556,8 @@
             "all-functions": "All functions",
             "special-widgets-header": "Widgets"
           },
-          "special-widgets": {}
+          "special-widgets": {},
+          "edit-mode-hint": "Reorder widgets by long press."
         }
       }
     }
