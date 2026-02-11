@@ -81,20 +81,26 @@
 	{#if slidingOptions}
 		<ion-item-sliding
 			bind:this={ionItemSlidingElement}
-			use:clickOutside={() => ionItemSlidingElement?.close()}
+			use:clickOutside={() => void ionItemSlidingElement?.close()}
 			class:hidden
 		>
 			{@render item()}
 			<ion-item-options slot="end">
 				{#each slidingOptions as option (option.icon)}
-					<!-- svelte-ignore a11y_click_events_have_key_events -->
-					<!-- svelte-ignore a11y_no_static_element_interactions -->
 					<ion-item-option
 						color={option.color}
 						aria-label={option.label}
+						role="button"
+						tabindex={0}
 						onclick={() => {
 							option.handler();
-							ionItemSlidingElement?.close();
+							void ionItemSlidingElement?.close();
+						}}
+						onkeydown={(event_: KeyboardEvent) => {
+							if (event_.key === 'Enter') {
+								option.handler();
+								void ionItemSlidingElement?.close();
+							}
 						}}
 					>
 						{#if option.label}

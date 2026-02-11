@@ -26,11 +26,6 @@ vi.mock('$lib/utility', async (importOriginal) => {
 	};
 });
 
-// Mock ApexCharts
-vi.mock('@edde746/svelte-apexcharts', () => ({
-	default: vi.fn()
-}));
-
 const mockPostings = [
 	{ amountInCents: 10_000, id: 1, purpose: 'Income 1', type: 'CREDIT' as const },
 	{ amountInCents: 5000, id: 2, purpose: 'Income 2', type: 'CREDIT' as const },
@@ -46,12 +41,14 @@ describe('widgets/quick-access/widgets/BudgetChartWidget', () => {
 		expect(container.querySelector('ion-card')).toBeTruthy();
 	});
 
-	it('shows total budget calculation', () => {
+	it('shows total budget balance', () => {
 		const { container } = render(BudgetChartWidget, {
 			props: { postings: mockPostings as never }
 		});
 		// Total: (10000+5000) - (3000+2000) = 10000 cents = €100.00
-		expect(container.textContent).toContain('€100.00');
+		const balanceElement = container.querySelector('[data-testid="budget-balance"]');
+		expect(balanceElement).toBeTruthy();
+		expect(balanceElement?.textContent).toContain('€100.00');
 	});
 
 	it('handles empty postings', () => {
@@ -59,9 +56,11 @@ describe('widgets/quick-access/widgets/BudgetChartWidget', () => {
 			props: { postings: [] }
 		});
 		expect(container.querySelector('ion-card')).toBeTruthy();
+		expect(container.querySelector('[data-testid="budget-balance"]')).toBeFalsy();
+		expect(container.querySelector('ion-note')).toBeTruthy();
 	});
 
-	it('renders in edit mode', () => {
+	it('renders in edit mode without navigation arrow', () => {
 		const { container } = render(BudgetChartWidget, {
 			props: { editMode: true, postings: mockPostings as never }
 		});
@@ -76,23 +75,22 @@ describe('widgets/quick-access/widgets/BudgetChartWidget', () => {
 		expect(card?.dataset.tour).toBe('budget-tour');
 	});
 
-	it('shows chip filters for chart types', () => {
+	it('shows credit/debit ratio bar when postings exist', () => {
 		const { container } = render(BudgetChartWidget, {
 			props: { postings: mockPostings as never }
 		});
-		const chips = container.querySelectorAll('ion-chip');
-		expect(chips.length).toBeGreaterThan(0);
+		const ratioBar = container.querySelector('[data-testid="budget-ratio-bar"]');
+		expect(ratioBar).toBeTruthy();
+		expect(ratioBar?.children.length).toBe(2);
 	});
 
-	it('can switch chart type with chip click', async () => {
+	it('shows credit and debit totals', () => {
 		const { container } = render(BudgetChartWidget, {
 			props: { postings: mockPostings as never }
 		});
-		const chips = container.querySelectorAll('ion-chip');
-		if (chips.length > 1) {
-			await fireEvent.click(chips[1]!);
-		}
-		expect(container).toBeTruthy();
+		// Credit total: 15000 = €150.00, Debit total: 5000 = €50.00
+		expect(container.textContent).toContain('€150.00');
+		expect(container.textContent).toContain('€50.00');
 	});
 
 	it('navigates to budget page when clicked in normal mode', async () => {
@@ -114,24 +112,22 @@ describe('widgets/quick-access/widgets/BudgetChartWidget', () => {
 		expect(goto).not.toHaveBeenCalled();
 	});
 
-	it('shows credit total correctly', () => {
-		// Credit total: 10000 + 5000 = 15000 cents = €150.00
-		// Note: Credit/Debit totals are shown in chart, not directly in text
+	it('shows top expenses section', () => {
 		const { container } = render(BudgetChartWidget, {
 			props: { postings: mockPostings as never }
 		});
-		// Component renders with postings data
-		expect(container.querySelector('ion-card')).toBeTruthy();
+		// Top expense: 3000 = €30.00
+		expect(container.textContent).toContain('€30.00');
+		// Second expense: 2000 = €20.00
+		expect(container.textContent).toContain('€20.00');
 	});
 
-	it('shows debit total correctly', () => {
-		// Debit total: 3000 + 2000 = 5000 cents = €50.00
-		// Note: Credit/Debit totals are shown in chart, not directly in text
+	it('shows top income section', () => {
 		const { container } = render(BudgetChartWidget, {
 			props: { postings: mockPostings as never }
 		});
-		// Component renders with postings data
-		expect(container.querySelector('ion-card')).toBeTruthy();
+		expect(container.textContent).toContain('Income 1');
+		expect(container.textContent).toContain('Income 2');
 	});
 
 	it('handles postings with only credits', () => {
@@ -151,41 +147,38 @@ describe('widgets/quick-access/widgets/BudgetChartWidget', () => {
 		expect(container.querySelector('ion-card')).toBeTruthy();
 	});
 
-	it('sorts credit postings by amount descending', () => {
-		const unsortedCredits = [
-			{ amountInCents: 1000, id: 1, purpose: 'Small', type: 'CREDIT' as const },
-			{ amountInCents: 5000, id: 2, purpose: 'Large', type: 'CREDIT' as const },
-			{ amountInCents: 3000, id: 3, purpose: 'Medium', type: 'CREDIT' as const }
-		];
-		const { container } = render(BudgetChartWidget, {
-			props: { postings: unsortedCredits as never }
-		});
-		expect(container).toBeTruthy();
-	});
-
-	it('sorts debit postings by amount descending', () => {
-		const unsortedDebits = [
-			{ amountInCents: 500, id: 1, purpose: 'Small', type: 'DEBIT' as const },
-			{ amountInCents: 2000, id: 2, purpose: 'Large', type: 'DEBIT' as const },
-			{ amountInCents: 1000, id: 3, purpose: 'Medium', type: 'DEBIT' as const }
-		];
-		const { container } = render(BudgetChartWidget, {
-			props: { postings: unsortedDebits as never }
-		});
-		expect(container).toBeTruthy();
-	});
-
-	it('limits displayed postings to DISPLAY_COUNT', () => {
-		const manyPostings = Array.from({ length: 10 }, (_, index) => ({
+	it('limits top expenses to TOP_POSTINGS_COUNT (3)', () => {
+		const manyDebits = Array.from({ length: 6 }, (_, index) => ({
 			amountInCents: (index + 1) * 1000,
 			id: index + 1,
-			purpose: `Posting ${index + 1}`,
+			purpose: `Expense ${index + 1}`,
+			type: 'DEBIT' as const
+		}));
+		const { container } = render(BudgetChartWidget, {
+			props: { postings: manyDebits as never }
+		});
+		// Should only show the top 3 (highest amounts: 6000, 5000, 4000)
+		expect(container.textContent).toContain('Expense 6');
+		expect(container.textContent).toContain('Expense 5');
+		expect(container.textContent).toContain('Expense 4');
+		expect(container.textContent).not.toContain('Expense 1');
+	});
+
+	it('limits top income to TOP_POSTINGS_COUNT (3)', () => {
+		const manyCredits = Array.from({ length: 6 }, (_, index) => ({
+			amountInCents: (index + 1) * 1000,
+			id: index + 1,
+			purpose: `Income ${index + 1}`,
 			type: 'CREDIT' as const
 		}));
 		const { container } = render(BudgetChartWidget, {
-			props: { postings: manyPostings as never }
+			props: { postings: manyCredits as never }
 		});
-		expect(container).toBeTruthy();
+		// Should only show the top 3 (highest amounts: 6000, 5000, 4000)
+		expect(container.textContent).toContain('Income 6');
+		expect(container.textContent).toContain('Income 5');
+		expect(container.textContent).toContain('Income 4');
+		expect(container.textContent).not.toContain('Income 1');
 	});
 
 	it('calculates total budget as credit minus debit', () => {
@@ -204,7 +197,24 @@ describe('widgets/quick-access/widgets/BudgetChartWidget', () => {
 		const { container } = render(BudgetChartWidget, {
 			props: { postings: negativePostings as never }
 		});
-		// Total: 1000 - 5000 = -4000 = €-40.00 (formatter puts € before minus)
+		// Total: 1000 - 5000 = -4000 = €-40.00
 		expect(container.textContent).toContain('€-40.00');
+	});
+
+	it('shows expense purpose names', () => {
+		const { container } = render(BudgetChartWidget, {
+			props: { postings: mockPostings as never }
+		});
+		expect(container.textContent).toContain('Expense 1');
+		expect(container.textContent).toContain('Expense 2');
+	});
+
+	it('renders progress bars for expenses', () => {
+		const { container } = render(BudgetChartWidget, {
+			props: { postings: mockPostings as never }
+		});
+		// Each expense and income entry has a progress bar (rounded-full divs)
+		const progressBars = container.querySelectorAll('.rounded-full');
+		expect(progressBars.length).toBeGreaterThan(0);
 	});
 });

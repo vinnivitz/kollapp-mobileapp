@@ -8,14 +8,14 @@ import { t } from '$lib/locales';
 import { organizationStore } from '$lib/stores';
 import { hasOrganizationRole } from '$lib/utility';
 
-const $t = get(t);
-
 class SearchableService {
 	/** Filters searchable items based on a search term.
 	 * @param value The search term.
 	 * @returns {Promise<SearchableItemTO[]>} The filtered searchable items.
 	 */
 	async filter(value: string): Promise<SearchableItemTO[]> {
+		const $t = get(t);
+
 		try {
 			const response = await fetch('/data/searchables.json');
 			const items: SearchableItemTO[] = await response.json();

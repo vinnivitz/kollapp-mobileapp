@@ -46,11 +46,11 @@
 	);
 </script>
 
-<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
 	class="relative col-span-2 select-none"
 	class:wiggle={editMode && !isDragging.current}
 	class:invisible={isDragging.current && !isOverlay}
+	role="listitem"
 	onpointerdown={onPointerDown}
 	onpointerup={onPointerUp}
 	onpointerleave={onPointerUp}

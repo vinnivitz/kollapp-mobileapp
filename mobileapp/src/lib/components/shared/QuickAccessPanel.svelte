@@ -132,9 +132,13 @@
 		}}
 		onDragEnd={() => quickAccessStore.reorderItems(dndItems.items ?? [])}
 	>
-		<!-- svelte-ignore a11y_click_events_have_key_events -->
-		<!-- svelte-ignore a11y_no_static_element_interactions -->
-		<div class="grid grid-cols-2 gap-0" onclick={handleGridClick}>
+		<div
+			class="grid grid-cols-2 gap-0"
+			role="grid"
+			tabindex="0"
+			onclick={handleGridClick}
+			onkeydown={(event_: KeyboardEvent) => event_.key === 'Escape' && editMode && onExitEditMode()}
+		>
 			{#each dndItems.items as item, index (item.id)}
 				{#if item.widgetType === 'special'}
 					<QuickAccessSpecialItem

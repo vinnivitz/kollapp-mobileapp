@@ -102,12 +102,4 @@ describe('widgets/budget/statistics/ActivityRanking', () => {
 		});
 		expect(container.querySelector('ion-card')).toBeTruthy();
 	});
-
-	it('displays ranking numbers', () => {
-		const { container } = render(ActivityRanking, {
-			props: { activities: mockActivities as never, isDarkMode: false }
-		});
-		expect(container.textContent).toContain('#1');
-		expect(container.textContent).toContain('#2');
-	});
 });

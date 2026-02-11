@@ -180,14 +180,8 @@
     "layout": {
       "menu": {
         "list": {
-          "account": {
-            "label": "Account"
-          },
           "activities": {
             "label": "Events"
-          },
-          "collective": {
-            "label": "Collective"
           },
           "persons-of-organization": {
             "label": "Members"
@@ -430,12 +424,10 @@
           "title": "Navigation Menu",
           "description": "Tap here to open the menu and access important features of the app."
         },
-        "organization": {},
         "quick-access": {
           "title": "Quick Access Panel",
           "description": "The quick access panel provides fast access to frequently used functions.\n\nYou can freely arrange and customize the tiles by long pressing them."
         },
-        "budget": {},
         "org-budget": {
           "title": "Collective balance",
           "description": "View detailed financial information including balance, income and expenses of the collective.\n\nYou can add and view transactions and access detailed statistics."
@@ -476,7 +468,6 @@
           "title": "App settings",
           "description": "Customize the app with your language, theme settings and restart the welcome tour anytime."
         },
-        "upcoming-activity": {},
         "org-info": {
           "title": "Collective info",
           "description": "This shows some info about the collective like the description, where its based or your role in the collective."
@@ -1240,9 +1231,6 @@
             "name": "Category Name",
             "default-category": "Default Category"
           },
-          "category-list": {
-            "card": {}
-          },
           "sliding-options": {
             "edit": "Edit",
             "delete": "Delete"
@@ -1376,8 +1364,6 @@
             "declining": "Declining compared to last month",
             "stable": "Stable compared to last month"
           },
-          "goals": {},
-          "fairness": {},
           "activities": {
             "title": "By event",
             "total-activities": "Events",
@@ -1386,7 +1372,6 @@
             "no-activities": "No events with transactions",
             "show-all": "Show all events"
           },
-          "recurring": {},
           "insights": {
             "title": "Highlights",
             "no-insights": "No special highlights",
@@ -1416,7 +1401,6 @@
               "description": "{{value}} transactions under €5 add up to {{value2}}"
             }
           },
-          "forecast": {},
           "export": {
             "header": "Export statistics",
             "view": "View",
@@ -1551,7 +1535,6 @@
           }
         },
         "quick-access": {
-          "card": {},
           "done": "Done",
           "add": "Add",
           "remove": "Remove",
@@ -1565,7 +1548,6 @@
             "all-functions": "All functions",
             "special-widgets-header": "Widgets"
           },
-          "special-widgets": {},
           "edit-mode-hint": "Reorder widgets by long press."
         }
       }
@@ -1582,12 +1564,10 @@
     },
     "loading": "Loading content",
     "logo": "Kollapp Logo",
-    "form": {},
     "actions": {
       "add": "Add",
       "remove": "Remove",
       "search": "Search"
-    },
-    "posting": {}
+    }
   }
 }

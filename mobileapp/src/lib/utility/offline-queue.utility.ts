@@ -9,6 +9,7 @@ import { AlertType } from '$lib/models/ui';
 import { getStoredValue, refreshDataStores, showAlert, storeValue } from '$lib/utility';
 
 let isProcessing = false;
+const MAX_RETRIES = 3;
 
 /**
  * Generates a unique ID for offline requests
@@ -56,6 +57,7 @@ export async function queueOfflineRequest(
 		method,
 		query,
 		queuedAt: Date.now(),
+		retryCount: 0,
 		url
 	};
 
@@ -149,9 +151,22 @@ async function handleSuccess(request: OfflineRequest, message: string): Promise<
 }
 
 async function handleFailure(request: OfflineRequest, message: string): Promise<void> {
-	await showAlert(message);
+	const retryCount = (request.retryCount ?? 0) + 1;
 
-	if (dev) {
-		console.warn(`Failed to sync queued request: ${request.url}`, message);
+	if (retryCount >= MAX_RETRIES) {
+		await removeFromOfflineQueue(request.id);
+		await showAlert(message);
+
+		if (dev) {
+			console.warn(`Removed queued request after ${MAX_RETRIES} failed attempts: ${request.url}`, message);
+		}
+	} else {
+		const queue = await getOfflineQueue();
+		const updated = queue.map((r) => (r.id === request.id ? { ...r, retryCount } : r));
+		await storeValue(StorageKey.OFFLINE_QUEUE, updated);
+
+		if (dev) {
+			console.warn(`Failed to sync queued request (attempt ${retryCount}/${MAX_RETRIES}): ${request.url}`, message);
+		}
 	}
 }

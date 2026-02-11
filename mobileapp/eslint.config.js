@@ -23,7 +23,6 @@ export default defineConfig(
 	sveltePlugin.configs.recommended,
 	prettier,
 	...sveltePlugin.configs.prettier,
-	// securityPlugin.configs.recommended,
 	unicornPlugin.configs.recommended,
 	sonarjsPlugin.configs.recommended,
 	{

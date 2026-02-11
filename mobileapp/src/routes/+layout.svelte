@@ -84,7 +84,7 @@
 			{/if}
 			<GlobalPopovers />
 		{:else if $appStateStore === AppStateType.ERROR}
-			<div class="flex h-full items-center justify-center p-4">
+			<div class="flex h-full items-center justify-center p-4" role="alert" aria-live="assertive">
 				<div class="text-center">
 					<h2 class="mb-2 text-xl font-bold">{$t('routes.layout.page.error.heading')}</h2>
 					<p class="text-gray-600">{$t('routes.layout.page.error.content')}</p>

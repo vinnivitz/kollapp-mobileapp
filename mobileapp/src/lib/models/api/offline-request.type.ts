@@ -18,4 +18,6 @@ export type OfflineRequest = {
 	description?: string;
 	/** Query parameters */
 	query?: Record<string, string>;
+	/** Number of retry attempts */
+	retryCount?: number;
 };

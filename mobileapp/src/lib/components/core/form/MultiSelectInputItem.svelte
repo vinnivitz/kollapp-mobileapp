@@ -328,11 +328,11 @@
 			{#each visibleItems as item (item.data.id)}
 				<FadeInOut>
 					<CustomItem>
-						<!-- svelte-ignore a11y_click_events_have_key_events -->
-						<!-- svelte-ignore a11y_no_static_element_interactions -->
 						<ion-radio
 							value={item.data.id}
+							role="presentation"
 							onclick={() => (selectedId = item.data.id)}
+							onkeydown={(event_: KeyboardEvent) => event_.key === 'Enter' && (selectedId = item.data.id)}
 							color={item.color}
 							aria-label={item.data.label}
 						>

@@ -8,8 +8,6 @@ import { get } from 'svelte/store';
 import { t } from '$lib/locales';
 import { showAlert } from '$lib/utility';
 
-const $t = get(t);
-
 class OsmService {
 	private get base(): string {
 		return 'https://nominatim.openstreetmap.org';
@@ -20,6 +18,8 @@ class OsmService {
 	 * @return {Promise<AddressModel[]>} The list of address models.
 	 */
 	getLocationsByQuery = async (query: string): Promise<AddressModel[]> => {
+		const $t = get(t);
+
 		try {
 			const encodedQuery = encodeURIComponent(query);
 			const response = await fetch(
@@ -43,6 +43,8 @@ class OsmService {
 	 * @returns {Promise<AddressModel | undefined>} The address model or undefined if not found.
 	 */
 	getLocationByLatLng = async (latlng: LatLng): Promise<AddressModel | undefined> => {
+		const $t = get(t);
+
 		try {
 			const response = await fetch(`${this.base}/reverse?format=json&lat=${latlng.lat}&lon=${latlng.lng}`);
 			if (response.ok) {

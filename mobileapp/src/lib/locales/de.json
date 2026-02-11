@@ -658,9 +658,6 @@
             "name": "Kategoriename",
             "default-category": "Standard-Kategorie"
           },
-          "category-list": {
-            "card": {}
-          },
           "sliding-options": {
             "edit": "Bearbeiten",
             "delete": "Löschen"
@@ -837,8 +834,6 @@
             "declining": "Verschlechterung gegenüber Vormonat",
             "stable": "Stabil gegenüber Vormonat"
           },
-          "goals": {},
-          "fairness": {},
           "activities": {
             "title": "Nach Veranstaltung",
             "total-activities": "Veranstaltungen",
@@ -847,7 +842,6 @@
             "no-activities": "Keine Veranstaltungen mit Buchungen",
             "show-all": "Alle Veranstaltungen anzeigen"
           },
-          "recurring": {},
           "insights": {
             "title": "Highlights",
             "no-insights": "Keine besonderen Highlights",
@@ -877,7 +871,6 @@
               "description": "{{value}} Buchungen unter 5€ summieren sich auf {{value2}}"
             }
           },
-          "forecast": {},
           "export": {
             "header": "Statistik exportieren",
             "view": "Anzeigen",
@@ -1445,12 +1438,10 @@
           "title": "Navigationsmenü",
           "description": "Tippe hier, um das Menü zu öffnen und auf wichtige Funktionen der App zuzugreifen."
         },
-        "organization": {},
         "quick-access": {
           "title": "Schnellzugriff-Panel",
           "description": "Das Schnellzugriff-Panel bietet dir schnellen Zugang zu häufig genutzten Funktionen.\n\nDu kannst die Kacheln frei anordnen und anpassen, indem du sie lange gedrückt hältst."
         },
-        "budget": {},
         "org-budget": {
           "title": "Kollektivbilanz",
           "description": "Zeigt Infos über die Finanzen des Kollektivs an, einschließlich Saldo, Einnahmen und Ausgaben des Kollektivs.\n\nDu kannst Buchungen hinzufügen, anzeigen lassen und detaillierte Statistiken aufrufen."
@@ -1491,7 +1482,6 @@
           "title": "App-Einstellungen",
           "description": "Passe die App mit deinen Sprach- und Theme-Einstellungen an und starte die Tour jederzeit neu."
         },
-        "upcoming-activity": {},
         "org-info": {
           "title": "Kollektivlinfo",
           "description": "Hier werden einige Informationen über das Kollektiv angezeigt, z. B. die Beschreibung, der Standort oder deine Rolle im Kollektiv."
@@ -1574,12 +1564,10 @@
     },
     "loading": "Inhalt wird geladen",
     "logo": "Kollapp Logo",
-    "form": {},
     "actions": {
       "add": "Hinzufügen",
       "remove": "Entfernen",
       "search": "Suchen"
-    },
-    "posting": {}
+    }
   }
 }

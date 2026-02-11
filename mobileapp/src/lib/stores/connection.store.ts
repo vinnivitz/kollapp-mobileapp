@@ -25,6 +25,7 @@ async function handleConnectionChange(isOnline: boolean, wasOnline?: boolean): P
 function createStore(): ConnectionStore {
 	const { set, subscribe } = writable<boolean | undefined>();
 	let isInitialized = false;
+	let listenerHandle: Awaited<ReturnType<typeof Network.addListener>> | undefined;
 
 	async function initialize(): Promise<void> {
 		if (isInitialized) return;
@@ -33,7 +34,7 @@ function createStore(): ConnectionStore {
 		const status = await Network.getStatus();
 		await _set(status.connected);
 
-		Network.addListener('networkStatusChange', async (status: ConnectionStatus) => {
+		listenerHandle = await Network.addListener('networkStatusChange', async (status: ConnectionStatus) => {
 			const wasOnline = get(connectionStore);
 			const isOnline = status.connected;
 
@@ -63,8 +64,15 @@ function createStore(): ConnectionStore {
 		}
 	}
 
+	async function destroy(): Promise<void> {
+		await listenerHandle?.remove();
+		listenerHandle = undefined;
+		isInitialized = false;
+	}
+
 	return {
 		check,
+		destroy,
 		initialize,
 		reset,
 		set: _set,

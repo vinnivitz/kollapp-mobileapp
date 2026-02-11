@@ -45,11 +45,11 @@
 	{@render children?.()}
 
 	<ion-tab-bar slot="bottom">
-		{#each tabs as tab, index (tab.tab)}
+		{#each tabs as tab (tab.tab)}
 			<ion-tab-button
 				tab={tab.tab}
 				role="tab"
-				tabindex={index}
+				tabindex={0}
 				aria-label={tab.label}
 				aria-selected={tab.tab === currentTabName}
 				class:tab-selected={tab.tab === currentTabName}

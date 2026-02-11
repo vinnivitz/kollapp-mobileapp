@@ -3,7 +3,7 @@
 
 	import * as icons from 'ionicons/icons';
 	import { notificationsOutline } from 'ionicons/icons';
-	import { onMount, type Snippet } from 'svelte';
+	import { onDestroy, onMount, type Snippet } from 'svelte';
 
 	import { goto } from '$app/navigation';
 	import type { RouteId } from '$app/types';
@@ -42,8 +42,16 @@
 		searchedItems = await searchableService.filter(searchValue.toLowerCase().trim());
 	}
 
+	function onMenuClose(): void {
+		searchValue = '';
+	}
+
 	onMount(() => {
-		menuController.addEventListener('ionDidClose', () => (searchValue = ''));
+		menuController.addEventListener('ionDidClose', onMenuClose);
+	});
+
+	onDestroy(() => {
+		menuController?.removeEventListener('ionDidClose', onMenuClose);
 	});
 </script>
 
