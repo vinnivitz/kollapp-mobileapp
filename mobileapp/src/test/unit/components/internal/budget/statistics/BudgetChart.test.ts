@@ -1,7 +1,7 @@
 import type { PostingTO } from '@kollapp/api-types';
 
 import { TZDate } from '@date-fns/tz';
-import { fireEvent, render, waitFor } from '@testing-library/svelte';
+import { render } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 
 // Mock IntersectionObserver for lazy loading in tests
@@ -19,32 +19,14 @@ vi.stubGlobal('IntersectionObserver', MockIntersectionObserver);
 
 import BudgetChart from '$lib/components/internal/budget/statistics/BudgetChart.svelte';
 
-vi.mock('@edde746/svelte-apexcharts', () => {
-	let lastOptions: unknown;
-	function ChartStub(arguments_: { target: Element; props?: { options?: unknown } }): {
-		$$: { fragment: { d(): void; m(): void; p(): void } };
-		$destroy(): void;
-		$set(setArguments: { options?: unknown }): void;
-	} {
-		lastOptions = arguments_?.props?.options;
-		return {
-			$$: { fragment: { d() {}, m() {}, p() {} } },
-			$destroy() {},
-			$set(setArguments: { options?: unknown }) {
-				if ('options' in setArguments) lastOptions = setArguments.options;
-			}
-		};
-	}
-	return {
-		__chartOptions: () => lastOptions,
-		default: ChartStub
-	};
-});
-
 const defaultProps = { personsOfOrganization: [] };
 
-function getBudgetTotal(container: Element): Element | null {
-	return container.querySelector('ion-text.absolute');
+function getBalance(container: Element): Element | null {
+	return container.querySelector('[data-testid="budget-balance"]');
+}
+
+function getRatioBar(container: Element): Element | null {
+	return container.querySelector('[data-testid="budget-ratio-bar"]');
 }
 
 function makePostings(): PostingTO[] {
@@ -110,11 +92,11 @@ function makeManyPostings(count: number, type: 'CREDIT' | 'DEBIT'): PostingTO[] 
 }
 
 describe('widgets/BudgetChart', () => {
-	it('BudgetChart renders donut total when ALL selected', () => {
+	it('BudgetChart renders balance when postings exist', () => {
 		const postings = makePostings();
 		const { container } = render(BudgetChart, { ...defaultProps, postings });
-		const totalText = getBudgetTotal(container);
-		expect(totalText).toBeTruthy();
+		const balance = getBalance(container);
+		expect(balance).toBeTruthy();
 	});
 
 	it('BudgetChart shows no-postings note when empty', () => {
@@ -122,226 +104,69 @@ describe('widgets/BudgetChart', () => {
 		expect(container.querySelector('ion-note')).toBeTruthy();
 	});
 
-	it('BudgetChart: switch to DEBIT and back to ALL shows different totals', async () => {
+	it('BudgetChart renders ratio bar when postings exist', () => {
 		const postings = makePostings();
 		const { container } = render(BudgetChart, { ...defaultProps, postings });
-
-		await waitFor(() => {
-			const chips = container.querySelectorAll('ion-chip');
-			expect(chips.length).toBeGreaterThanOrEqual(3);
-		});
-		const chips = container.querySelectorAll('ion-chip');
-
-		// Initially in ALL view, total should be visible
-		expect(getBudgetTotal(container)).toBeTruthy();
-
-		await fireEvent.click(chips[2]!);
-		// DEBIT view also shows total
-		expect(getBudgetTotal(container)).toBeTruthy();
-
-		await fireEvent.click(chips[0]!);
-		expect(getBudgetTotal(container)).toBeTruthy();
+		const ratioBar = getRatioBar(container);
+		expect(ratioBar).toBeTruthy();
 	});
 
-	it('BudgetChart: with minimal postings shows chips (threshold is 1)', async () => {
-		const now = new TZDate().toISOString();
-		const postings: PostingTO[] = [
-			{
-				amountInCents: 1000,
-				date: now,
-				id: 1,
-				organizationBudgetCategoryId: 1,
-				personOfOrganizationId: 1,
-				purpose: 'A',
-				type: 'CREDIT'
-			},
-			{
-				amountInCents: 500,
-				date: now,
-				id: 2,
-				organizationBudgetCategoryId: 2,
-				personOfOrganizationId: 1,
-				purpose: 'B',
-				type: 'DEBIT'
-			}
-		];
-		const { container } = render(BudgetChart, { ...defaultProps, postings });
-
-		await waitFor(() => {
-			const chips = container.querySelectorAll('ion-chip');
-			expect(chips.length).toBe(3);
-		});
-		expect(getBudgetTotal(container)).toBeTruthy();
-	});
-
-	it('BudgetChart: only credits render credit chip and switching shows credit total', async () => {
-		const now = new TZDate().toISOString();
-		const postings: PostingTO[] = [
-			{
-				amountInCents: 2000,
-				date: now,
-				id: 1,
-				organizationBudgetCategoryId: 1,
-				personOfOrganizationId: 1,
-				purpose: 'A',
-				type: 'CREDIT'
-			},
-			{
-				amountInCents: 3000,
-				date: now,
-				id: 2,
-				organizationBudgetCategoryId: 2,
-				personOfOrganizationId: 1,
-				purpose: 'B',
-				type: 'CREDIT'
-			},
-			{
-				amountInCents: 4000,
-				date: now,
-				id: 3,
-				organizationBudgetCategoryId: 3,
-				personOfOrganizationId: 1,
-				purpose: 'C',
-				type: 'CREDIT'
-			}
-		];
-		const { container } = render(BudgetChart, { ...defaultProps, postings });
-
-		await waitFor(() => {
-			const chips = container.querySelectorAll('ion-chip');
-			expect(chips.length).toBeGreaterThan(0);
-		});
-
-		const chips = container.querySelectorAll('ion-chip');
-		expect(chips.length).toBe(2);
-
-		await fireEvent.click(chips[1]!);
-		// Now shows credit total instead of hiding
-		expect(getBudgetTotal(container)).toBeTruthy();
-	});
-
-	it('BudgetChart: interaction threshold exactly met shows chips', async () => {
-		const now = new TZDate().toISOString();
-		const postings: PostingTO[] = [
-			{
-				amountInCents: 1000,
-				date: now,
-				id: 1,
-				organizationBudgetCategoryId: 1,
-				personOfOrganizationId: 1,
-				purpose: 'X',
-				type: 'DEBIT'
-			},
-			{
-				amountInCents: 1000,
-				date: now,
-				id: 2,
-				organizationBudgetCategoryId: 2,
-				personOfOrganizationId: 1,
-				purpose: 'Y',
-				type: 'DEBIT'
-			},
-			{
-				amountInCents: 1000,
-				date: now,
-				id: 3,
-				organizationBudgetCategoryId: 3,
-				personOfOrganizationId: 1,
-				purpose: 'Z',
-				type: 'DEBIT'
-			}
-		];
-		const { container } = render(BudgetChart, { ...defaultProps, postings });
-
-		await waitFor(() => {
-			const chips = container.querySelectorAll('ion-chip');
-			expect(chips.length).toBeGreaterThan(0);
-		});
-	});
-
-	it('BudgetChart: only debits render debit chip and switching shows debit total', async () => {
-		const now = new TZDate().toISOString();
-		const postings: PostingTO[] = [
-			{
-				amountInCents: 1200,
-				date: now,
-				id: 1,
-				organizationBudgetCategoryId: 1,
-				personOfOrganizationId: 1,
-				purpose: 'D1',
-				type: 'DEBIT'
-			},
-			{
-				amountInCents: 800,
-				date: now,
-				id: 2,
-				organizationBudgetCategoryId: 2,
-				personOfOrganizationId: 1,
-				purpose: 'D2',
-				type: 'DEBIT'
-			},
-			{
-				amountInCents: 600,
-				date: now,
-				id: 3,
-				organizationBudgetCategoryId: 3,
-				personOfOrganizationId: 1,
-				purpose: 'D3',
-				type: 'DEBIT'
-			}
-		];
-		const { container } = render(BudgetChart, { ...defaultProps, postings });
-
-		await waitFor(() => {
-			const chips = container.querySelectorAll('ion-chip');
-			expect(chips.length).toBeGreaterThan(0);
-		});
-
-		const chips = container.querySelectorAll('ion-chip');
-		expect(chips.length).toBe(2);
-
-		await fireEvent.click(chips[1]!);
-		// Now shows debit total instead of hiding
-		expect(getBudgetTotal(container)).toBeTruthy();
-	});
-
-	it('BudgetChart: switch to CREDIT then back to ALL shows total in all views', async () => {
+	it('BudgetChart shows top expenses for debit postings', () => {
 		const postings = makePostings();
 		const { container } = render(BudgetChart, { ...defaultProps, postings });
-
-		await waitFor(() => {
-			const chips = container.querySelectorAll('ion-chip');
-			expect(chips.length).toBeGreaterThanOrEqual(3);
-		});
-
-		const chips = container.querySelectorAll('ion-chip');
-		await fireEvent.click(chips[1]!);
-		// Credit view now shows credit total
-		expect(getBudgetTotal(container)).toBeTruthy();
-
-		await fireEvent.click(chips[0]!);
-		expect(getBudgetTotal(container)).toBeTruthy();
+		expect(getBalance(container)).toBeTruthy();
 	});
 
-	it('BudgetChart: switch to DEBIT then back to ALL shows total in all views', async () => {
+	it('BudgetChart with only credits renders balance and ratio bar but no top expenses section', () => {
+		const postings = makeManyPostings(3, 'CREDIT');
+		const { container } = render(BudgetChart, { ...defaultProps, postings });
+		expect(getBalance(container)).toBeTruthy();
+		expect(getRatioBar(container)).toBeTruthy();
+	});
+
+	it('BudgetChart with only debits renders balance and ratio bar', () => {
+		const postings = makeManyPostings(3, 'DEBIT');
+		const { container } = render(BudgetChart, { ...defaultProps, postings });
+		expect(getBalance(container)).toBeTruthy();
+		expect(getRatioBar(container)).toBeTruthy();
+	});
+
+	it('BudgetChart shows at most 3 top expenses', () => {
+		const postings = makeManyPostings(8, 'DEBIT');
+		const { container } = render(BudgetChart, { ...defaultProps, postings });
+		// The top expenses section should list at most 3 items
+		const borderSection = container.querySelector('.border-t');
+		expect(borderSection).toBeTruthy();
+		const expenseItems = borderSection!.querySelectorAll('.truncate');
+		expect(expenseItems.length).toBeLessThanOrEqual(3);
+	});
+
+	it('BudgetChart renders no chips (simplified view)', () => {
 		const postings = makePostings();
 		const { container } = render(BudgetChart, { ...defaultProps, postings });
-
-		await waitFor(() => {
-			const chips = container.querySelectorAll('ion-chip');
-			expect(chips.length).toBeGreaterThanOrEqual(3);
-		});
-
 		const chips = container.querySelectorAll('ion-chip');
-		await fireEvent.click(chips[2]!);
-		// Debit view now shows debit total
-		expect(getBudgetTotal(container)).toBeTruthy();
-
-		await fireEvent.click(chips[0]!);
-		expect(getBudgetTotal(container)).toBeTruthy();
+		expect(chips.length).toBe(0);
 	});
 
-	it('BudgetChart: mixed dataset renders all chips and shows totals in all views', async () => {
+	it('BudgetChart with single posting renders correctly', () => {
+		const now = new TZDate().toISOString();
+		const postings: PostingTO[] = [
+			{
+				amountInCents: 5000,
+				date: now,
+				id: 1,
+				organizationBudgetCategoryId: 1,
+				personOfOrganizationId: 1,
+				purpose: 'Single expense',
+				type: 'DEBIT'
+			}
+		];
+		const { container } = render(BudgetChart, { ...defaultProps, postings });
+		expect(getBalance(container)).toBeTruthy();
+		expect(getRatioBar(container)).toBeTruthy();
+	});
+
+	it('BudgetChart: mixed dataset renders balance and all sections', () => {
 		const now = new TZDate().toISOString();
 		const postings: PostingTO[] = [
 			{
@@ -392,105 +217,17 @@ describe('widgets/BudgetChart', () => {
 		];
 		const { container } = render(BudgetChart, { ...defaultProps, postings });
 
-		await waitFor(() => {
-			const chips = container.querySelectorAll('ion-chip');
-			expect(chips.length).toBeGreaterThanOrEqual(3);
-		});
-
-		const chips = container.querySelectorAll('ion-chip');
-		await fireEvent.click(chips[1]!);
-		// Credit view shows credit total
-		expect(getBudgetTotal(container)).toBeTruthy();
-		await fireEvent.click(chips[2]!);
-		// Debit view shows debit total
-		expect(getBudgetTotal(container)).toBeTruthy();
-		await fireEvent.click(chips[0]!);
-		expect(getBudgetTotal(container)).toBeTruthy();
+		// Balance should be visible
+		expect(getBalance(container)).toBeTruthy();
+		// Ratio bar should be visible
+		expect(getRatioBar(container)).toBeTruthy();
+		// Top expenses section should be visible
+		expect(container.querySelector('.border-t')).toBeTruthy();
 	});
 
-	it('BudgetChart: with more than 5 postings shows "others" aggregation', async () => {
-		const postings = makeManyPostings(8, 'CREDIT');
-		const { container } = render(BudgetChart, { ...defaultProps, postings });
-
-		await waitFor(() => {
-			const chips = container.querySelectorAll('ion-chip');
-			expect(chips.length).toBeGreaterThan(0);
-		});
-
-		const chips = container.querySelectorAll('ion-chip');
-		await fireEvent.click(chips[1]!);
-
-		// The component now shows top 5 + "others" aggregation instead of show-more button
-		expect(getBudgetTotal(container)).toBeTruthy();
-	});
-
-	it('BudgetChart: with 5 or fewer postings shows all in chart', async () => {
-		const postings = makeManyPostings(5, 'CREDIT');
-		const { container } = render(BudgetChart, { ...defaultProps, postings });
-
-		await waitFor(() => {
-			const chips = container.querySelectorAll('ion-chip');
-			expect(chips.length).toBeGreaterThan(0);
-		});
-
-		const chips = container.querySelectorAll('ion-chip');
-		await fireEvent.click(chips[1]!);
-
-		// With 5 or fewer, all items are displayed directly without "others"
-		expect(getBudgetTotal(container)).toBeTruthy();
-	});
-
-	it('BudgetChart: switching between views updates chart data', async () => {
-		const postings = makeManyPostings(8, 'DEBIT');
-		const { container } = render(BudgetChart, { ...defaultProps, postings });
-
-		await waitFor(() => {
-			const chips = container.querySelectorAll('ion-chip');
-			expect(chips.length).toBeGreaterThan(0);
-		});
-
-		const chips = container.querySelectorAll('ion-chip');
-		await fireEvent.click(chips[1]!);
-
-		// Verify total is shown
-		expect(getBudgetTotal(container)).toBeTruthy();
-
-		// Switch back to ALL
-		await fireEvent.click(chips[0]!);
-		expect(getBudgetTotal(container)).toBeTruthy();
-	});
-
-	it('BudgetChart: no expand button shown in ALL view', () => {
-		const postings = makeManyPostings(10, 'CREDIT');
-		const { queryByText } = render(BudgetChart, { ...defaultProps, postings });
-
-		expect(queryByText('components.widgets.budget-card.show-more')).toBeFalsy();
-	});
-
-	it('BudgetChart: chart selection state is preserved when switching views', async () => {
-		const creditPostings = makeManyPostings(8, 'CREDIT');
-		const debitPostings = makeManyPostings(8, 'DEBIT').map((p, index) => ({ ...p, id: 100 + index }));
-		const postings = [...creditPostings, ...debitPostings];
-
-		const { container } = render(BudgetChart, { ...defaultProps, postings });
-
-		await waitFor(() => {
-			const chips = container.querySelectorAll('ion-chip');
-			expect(chips.length).toBeGreaterThanOrEqual(3);
-		});
-
-		const chips = container.querySelectorAll('ion-chip');
-
-		// Switch to CREDIT
-		await fireEvent.click(chips[1]!);
-		expect(getBudgetTotal(container)).toBeTruthy();
-
-		// Switch to DEBIT
-		await fireEvent.click(chips[2]!);
-		expect(getBudgetTotal(container)).toBeTruthy();
-
-		// Switch back to CREDIT
-		await fireEvent.click(chips[1]!);
-		expect(getBudgetTotal(container)).toBeTruthy();
+	it('BudgetChart: no ratio bar when no postings', () => {
+		const { container } = render(BudgetChart, { ...defaultProps, postings: [] });
+		expect(getRatioBar(container)).toBeFalsy();
+		expect(getBalance(container)).toBeFalsy();
 	});
 });

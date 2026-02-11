@@ -39,7 +39,10 @@ export const TourStepId = {
 	},
 
 	MENU: {
-		ACTIVITIES: generateTourId()
+		ACTIVITIES: generateTourId(),
+		BUDGET_CATEGORIES: generateTourId(),
+		MEMBERS: generateTourId(),
+		STATISTICS: generateTourId()
 	},
 
 	NAVIGATION: {

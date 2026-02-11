@@ -1,18 +1,16 @@
 <script lang="ts">
 	import type { PostingTO } from '@kollapp/api-types';
-	import type { ApexOptions } from 'apexcharts';
 
-	import Chart from '@edde746/svelte-apexcharts';
-	import { arrowForwardOutline, cashOutline, trendingDown, trendingUp } from 'ionicons/icons';
+	import { arrowForwardOutline, cashOutline, trendingDownOutline, trendingUpOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
-	import { Card, Chip } from '$lib/components/core';
+	import { Card } from '$lib/components/core';
 	import { t } from '$lib/locales';
 	import { formatter } from '$lib/utility';
 
-	type ChartType = 'all' | 'credit' | 'debit';
+	const TOP_POSTINGS_COUNT = 3;
 
 	type Properties = {
 		postings: PostingTO[];
@@ -22,176 +20,25 @@
 
 	let { editMode = false, postings, tourId }: Properties = $props();
 
-	const MINIMAL_POSTINGS_FOR_INTERACTION = 1;
-	const DISPLAY_COUNT = 5;
-
-	let selectedChart = $state<ChartType>('all');
-	let chartContainer = $state<HTMLDivElement>();
-
-	// Stop pointer events from bubbling to parent card (bubble phase - after ApexCharts handles them)
-	$effect(() => {
-		if (chartContainer) {
-			const stopEvent = (event_: Event): void => {
-				event_.stopPropagation();
-			};
-			chartContainer.addEventListener('mousedown', stopEvent, false);
-			chartContainer.addEventListener('touchstart', stopEvent, false);
-			chartContainer.addEventListener('click', stopEvent, false);
-			chartContainer.addEventListener('pointerdown', stopEvent, false);
-
-			return () => {
-				chartContainer?.removeEventListener('mousedown', stopEvent, false);
-				chartContainer?.removeEventListener('touchstart', stopEvent, false);
-				chartContainer?.removeEventListener('click', stopEvent, false);
-				chartContainer?.removeEventListener('pointerdown', stopEvent, false);
-			};
-		}
-	});
-
 	const creditPostings = $derived(postings?.filter((p) => p.type === 'CREDIT') ?? []);
 	const debitPostings = $derived(postings?.filter((p) => p.type === 'DEBIT') ?? []);
 
-	const sortedCreditPostings = $derived([...creditPostings].toSorted((a, b) => b.amountInCents - a.amountInCents));
-	const sortedDebitPostings = $derived([...debitPostings].toSorted((a, b) => b.amountInCents - a.amountInCents));
+	const creditTotal = $derived(creditPostings.reduce((sum, posting) => sum + posting.amountInCents, 0));
+	const debitTotal = $derived(debitPostings.reduce((sum, posting) => sum + posting.amountInCents, 0));
+	const balance = $derived(creditTotal - debitTotal);
 
-	const displayedCreditPostings = $derived(sortedCreditPostings.slice(0, DISPLAY_COUNT));
-	const displayedDebitPostings = $derived(sortedDebitPostings.slice(0, DISPLAY_COUNT));
+	const total = $derived(creditTotal + debitTotal);
+	const creditPercent = $derived(total > 0 ? (creditTotal / total) * 100 : 50);
 
-	const creditCount = $derived(creditPostings.length);
-	const debitCount = $derived(debitPostings.length);
-
-	const creditTotal = $derived(sumAmount(creditPostings));
-	const debitTotal = $derived(sumAmount(debitPostings));
-	const totalBudget = $derived(creditTotal - debitTotal);
-
-	const hasEnoughForInteraction = $derived(
-		creditCount >= MINIMAL_POSTINGS_FOR_INTERACTION || debitCount >= MINIMAL_POSTINGS_FOR_INTERACTION
+	const topExpenses = $derived(
+		[...debitPostings].toSorted((a, b) => b.amountInCents - a.amountInCents).slice(0, TOP_POSTINGS_COUNT)
 	);
+	const topExpensesMaxAmount = $derived(topExpenses[0]?.amountInCents ?? 0);
 
-	function sumAmount(items: PostingTO[]): number {
-		return items.reduce((sum, p) => sum + p.amountInCents, 0);
-	}
-
-	function buildChartData(type: ChartType): { colors: string[]; labels: string[]; series: number[] } {
-		switch (type) {
-			case 'credit': {
-				const othersAmount = sumAmount(sortedCreditPostings.slice(DISPLAY_COUNT));
-				const hasOthers = othersAmount > 0;
-
-				return {
-					colors: [
-						...displayedCreditPostings.map((_, index) => `hsl(${120 + index * 15}, 60%, ${50 + (index % 3) * 10}%)`),
-						...(hasOthers ? ['hsl(120, 20%, 70%)'] : [])
-					],
-					labels: [
-						...displayedCreditPostings.map((posting) => posting.purpose),
-						...(hasOthers ? [$t('components.widgets.budget-card.others')] : [])
-					],
-					series: [
-						...displayedCreditPostings.map((posting) => posting.amountInCents),
-						...(hasOthers ? [othersAmount] : [])
-					]
-				};
-			}
-			case 'debit': {
-				const othersAmount = sumAmount(sortedDebitPostings.slice(DISPLAY_COUNT));
-				const hasOthers = othersAmount > 0;
-
-				return {
-					colors: [
-						...displayedDebitPostings.map((_, index) => `hsl(${0 + index * 10}, 60%, ${50 + (index % 3) * 10}%)`),
-						...(hasOthers ? ['hsl(0, 20%, 70%)'] : [])
-					],
-					labels: [
-						...displayedDebitPostings.map((posting) => posting.purpose),
-						...(hasOthers ? [$t('components.widgets.budget-card.others')] : [])
-					],
-					series: [
-						...displayedDebitPostings.map((posting) => posting.amountInCents),
-						...(hasOthers ? [othersAmount] : [])
-					]
-				};
-			}
-			default: {
-				return {
-					colors: ['var(--ion-color-success-tint)', 'var(--ion-color-danger-tint)'],
-					labels: [$t('components.widgets.budget-card.credit'), $t('components.widgets.budget-card.debit')],
-					series: [creditTotal, debitTotal]
-				};
-			}
-		}
-	}
-
-	const chartData = $derived(buildChartData(selectedChart));
-
-	const chartOptions = $derived<ApexOptions>({
-		chart: {
-			animations: { enabled: true },
-			events: {
-				dataPointSelection:
-					selectedChart === 'all' && hasEnoughForInteraction
-						? (_event, _chartContext, options) => {
-								const index = options.dataPointIndex ?? 0;
-								const target: ChartType = index === 0 ? 'credit' : 'debit';
-								const hasData = target === 'credit' ? creditCount > 0 : debitCount > 0;
-								if (hasData) selectedChart = target;
-							}
-						: undefined
-			},
-			height: 340,
-			selection: {
-				enabled: selectedChart === 'all' && hasEnoughForInteraction
-			},
-			toolbar: { show: false },
-			type: 'donut'
-		},
-		colors: chartData.colors,
-		dataLabels: {
-			enabled: true,
-			formatter: (_value: number, options: { seriesIndex: number }) => {
-				const value = chartData.series[options.seriesIndex]!;
-				return formatter.currency(value);
-			}
-		},
-		labels: chartData.labels,
-		legend: {
-			labels: {
-				colors: 'var(--ion-color-dark)'
-			},
-			position: 'bottom',
-			show: true
-		},
-		plotOptions: {
-			pie: {
-				donut: {
-					labels: { show: false }
-				},
-				expandOnClick: selectedChart === 'all' && hasEnoughForInteraction
-			}
-		},
-		series: chartData.series,
-		states: {
-			active: { filter: { type: 'none' } },
-			hover: { filter: { type: selectedChart === 'all' && hasEnoughForInteraction ? 'lighten' : 'none' } }
-		},
-		tooltip: {
-			enabled: false
-		}
-	});
-
-	function getTotalByType(type: ChartType): number {
-		switch (type) {
-			case 'credit': {
-				return creditTotal;
-			}
-			case 'debit': {
-				return debitTotal;
-			}
-			default: {
-				return totalBudget;
-			}
-		}
-	}
+	const topIncome = $derived(
+		[...creditPostings].toSorted((a, b) => b.amountInCents - a.amountInCents).slice(0, TOP_POSTINGS_COUNT)
+	);
+	const topIncomeMaxAmount = $derived(topIncome[0]?.amountInCents ?? 0);
 </script>
 
 <Card
@@ -204,54 +51,103 @@
 	readonly={editMode}
 >
 	{#if postings && postings.length > 0}
-		{#if hasEnoughForInteraction}
-			<div class="flex items-center justify-center gap-2">
-				<Chip
-					classList="text-xs"
-					icon={cashOutline}
-					label={$t('components.widgets.budget-card.all')}
-					color="secondary"
-					selected={selectedChart === 'all'}
-					clicked={() => (selectedChart = 'all')}
-				/>
-				{#if creditCount > 0}
-					<Chip
-						classList="text-xs"
-						icon={trendingUp}
-						label={$t('components.widgets.budget-card.credit')}
-						color="success"
-						selected={selectedChart === 'credit'}
-						clicked={() => (selectedChart = 'credit')}
-					/>
-				{/if}
-				{#if debitCount > 0}
-					<Chip
-						classList="text-xs"
-						icon={trendingDown}
-						label={$t('components.widgets.budget-card.debit')}
-						color="danger"
-						selected={selectedChart === 'debit'}
-						clicked={() => (selectedChart = 'debit')}
-					/>
-				{/if}
+		<div class="flex flex-col items-center gap-1 pb-3">
+			<ion-text class="text-xs" color="medium">{$t('components.widgets.budget-card.balance')}</ion-text>
+			<ion-text
+				class="budget-balance text-3xl font-bold"
+				color={balance >= 0 ? 'success' : 'danger'}
+				data-testid="budget-balance"
+			>
+				{formatter.currency(balance)}
+			</ion-text>
+		</div>
+
+		{#if total > 0}
+			<div class="px-1 pb-3">
+				<div class="flex overflow-hidden rounded-full" data-testid="budget-ratio-bar" style="height: 10px;">
+					<div
+						class="transition-all duration-500"
+						style="width: {creditPercent}%; background: var(--ion-color-success);"
+					></div>
+					<div
+						class="transition-all duration-500"
+						style="width: {100 - creditPercent}%; background: var(--ion-color-danger);"
+					></div>
+				</div>
+				<div class="mt-2 flex justify-between text-xs">
+					<div class="flex items-center gap-1">
+						<ion-icon icon={trendingUpOutline} color="success" class="text-sm"></ion-icon>
+						<ion-text color="success">{formatter.currency(creditTotal)}</ion-text>
+					</div>
+					<div class="flex items-center gap-1">
+						<ion-icon icon={trendingDownOutline} color="danger" class="text-sm"></ion-icon>
+						<ion-text color="danger">{formatter.currency(debitTotal)}</ion-text>
+					</div>
+				</div>
 			</div>
 		{/if}
-		<div class="h-85">
-			<ion-text
-				class="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-3 text-center text-xl font-bold"
-				class:-translate-y-5={selectedChart !== 'all'}
-			>
-				{selectedChart === 'debit' ? '-' : ''}{formatter.currency(getTotalByType(selectedChart))}
-			</ion-text>
-			<div
-				bind:this={chartContainer}
-				class="ion-activatable absolute top-12 right-0 left-0"
-				role="img"
-				aria-label={$t('components.widgets.budget-card.heading')}
-			>
-				<Chart options={chartOptions}></Chart>
+
+		{#if topExpenses.length > 0}
+			<div class="border-t border-(--ion-color-light-shade) pt-2">
+				<ion-text class="px-1 text-xs font-medium" color="medium">
+					{$t('components.widgets.budget-card.top-expenses')}
+				</ion-text>
+				<div class="mt-1 flex flex-col gap-1.5 px-1 pb-1">
+					{#each topExpenses as expense (expense.id)}
+						<div class="flex items-center gap-2">
+							<div class="min-w-0 flex-1">
+								<div class="flex items-baseline justify-between gap-2">
+									<ion-text class="truncate text-xs">{expense.purpose}</ion-text>
+									<ion-text class="shrink-0 text-xs font-medium" color="danger">
+										{formatter.currency(expense.amountInCents)}
+									</ion-text>
+								</div>
+								{#if topExpensesMaxAmount > 0}
+									<div class="mt-0.5 h-1 overflow-hidden rounded-full bg-(--ion-color-light-shade)">
+										<div
+											class="h-full rounded-full transition-all duration-500"
+											style="width: {(expense.amountInCents / topExpensesMaxAmount) *
+												100}%; background: var(--ion-color-danger-tint);"
+										></div>
+									</div>
+								{/if}
+							</div>
+						</div>
+					{/each}
+				</div>
 			</div>
-		</div>
+		{/if}
+
+		{#if topIncome.length > 0}
+			<div class="mt-3 border-t border-(--ion-color-light-shade) pt-2">
+				<ion-text class="px-1 text-xs font-medium" color="medium">
+					{$t('components.widgets.budget-card.top-income')}
+				</ion-text>
+				<div class="mt-1 flex flex-col gap-1.5 px-1 pb-1">
+					{#each topIncome as income (income.id)}
+						<div class="flex items-center gap-2">
+							<div class="min-w-0 flex-1">
+								<div class="flex items-baseline justify-between gap-2">
+									<ion-text class="truncate text-xs">{income.purpose}</ion-text>
+									<ion-text class="shrink-0 text-xs font-medium" color="success">
+										{formatter.currency(income.amountInCents)}
+									</ion-text>
+								</div>
+								{#if topIncomeMaxAmount > 0}
+									<div class="mt-0.5 h-1 overflow-hidden rounded-full bg-(--ion-color-light-shade)">
+										<div
+											class="h-full rounded-full transition-all duration-500"
+											style="width: {(income.amountInCents / topIncomeMaxAmount) *
+												100}%; background: var(--ion-color-success-tint);"
+										></div>
+									</div>
+								{/if}
+							</div>
+						</div>
+					{/each}
+				</div>
+			</div>
+		{/if}
 	{:else}
 		<div class="text-medium mt-5 text-center italic">
 			<ion-note>{$t('components.widgets.budget-card.no-postings')}</ion-note>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { accessibilityOutline, diamondOutline, flashOutline, personOutline } from 'ionicons/icons';
+	import { cardOutline, diamondOutline, flashOutline, peopleOutline, statsChartOutline } from 'ionicons/icons';
 	import { onDestroy, type Snippet } from 'svelte';
 
 	import { dev } from '$app/environment';
@@ -69,12 +69,6 @@
 {#if title && !hideMenu && $loaded}
 	<Menu bind:this={menuComponent}>
 		<ion-list>
-			<LabeledItem
-				transparent
-				clicked={() => menuComponent?.navigate('/account')}
-				icon={personOutline}
-				label={$t('components.layout.menu.list.account.label')}
-			/>
 			{#if $organizationStore}
 				<LabeledItem
 					transparent
@@ -83,13 +77,28 @@
 					icon={flashOutline}
 					label={$t('components.layout.menu.list.activities.label')}
 				/>
+				<LabeledItem
+					transparent
+					tourId={TourStepId.MENU.BUDGET_CATEGORIES}
+					clicked={() => menuComponent?.navigate('/organization/budget-categories')}
+					icon={cardOutline}
+					label={$t('components.layout.menu.list.budget.label')}
+				/>
+				<LabeledItem
+					transparent
+					tourId={TourStepId.MENU.STATISTICS}
+					clicked={() => menuComponent?.navigate('/organization/budget-statistics')}
+					icon={statsChartOutline}
+					label={$t('components.layout.menu.list.statistics.label')}
+				/>
+				<LabeledItem
+					transparent
+					tourId={TourStepId.MENU.MEMBERS}
+					clicked={() => menuComponent?.navigate('/organization/members')}
+					icon={peopleOutline}
+					label={$t('components.layout.menu.list.persons-of-organization.label')}
+				/>
 			{/if}
-			<LabeledItem
-				transparent
-				clicked={() => menuComponent?.navigate('/organization')}
-				icon={accessibilityOutline}
-				label={$t('components.layout.menu.list.collective.label')}
-			/>
 			{#if dev}
 				<LabeledItem
 					transparent

@@ -62,6 +62,7 @@ class BudgetService {
 			method: RequestMethod.PUT
 		});
 		if (StatusCheck.isOK(response.status)) {
+			console.log('response', response.data);
 			await organizationStore.updateActivityPosting(activityId, response.data);
 		}
 		return response;

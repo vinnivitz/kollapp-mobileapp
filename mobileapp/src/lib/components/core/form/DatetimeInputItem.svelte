@@ -98,9 +98,9 @@
 <div bind:this={containerElement} data-name={name} class="contents" class:hidden>
 	<CustomItem {classList} {icon} clicked={onOpenDatetimeModal} {name} {hidden}>
 		<div class="flex flex-col">
-			<ion-text class="ms-3 pt-2 text-xs">{label}</ion-text>
-			<ion-text class="my-2 ms-4 truncate">
-				{displayValue || ''}
+			<ion-text class="pt-2 text-xs">{label}</ion-text>
+			<ion-text class="my-2 truncate">
+				{displayValue}
 			</ion-text>
 		</div>
 	</CustomItem>

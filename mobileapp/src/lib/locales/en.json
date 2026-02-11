@@ -188,6 +188,15 @@
           },
           "collective": {
             "label": "Collective"
+          },
+          "persons-of-organization": {
+            "label": "Members"
+          },
+          "statistics": {
+            "label": "Financial statistics"
+          },
+          "budget": {
+            "label": "Transaction categories"
           }
         }
       }
@@ -232,12 +241,11 @@
         }
       },
       "budget-card": {
+        "balance": "Balance",
         "heading": "Budget overview",
         "no-postings": "No transactions found.",
-        "all": "All",
-        "credit": "Income",
-        "debit": "Expenses",
-        "others": "Others"
+        "top-expenses": "Top expenses",
+        "top-income": "Top income"
       },
       "leaflet-map": {
         "searchbar": {
@@ -420,7 +428,7 @@
         },
         "menu": {
           "title": "Navigation Menu",
-          "description": "Tap here to open the menu and access all features of the app."
+          "description": "Tap here to open the menu and access important features of the app."
         },
         "organization": {},
         "quick-access": {
@@ -430,7 +438,7 @@
         "budget": {},
         "org-budget": {
           "title": "Collective balance",
-          "description": "View detailed financial information including balance, income and expenses of the collective.\n\nYou can add and view transactions and access detailed statistics via the statistics icon."
+          "description": "View detailed financial information including balance, income and expenses of the collective.\n\nYou can add and view transactions and access detailed statistics."
         },
         "budget-statistics": {
           "title": "Financial Statistics",
@@ -445,7 +453,7 @@
           "description": "Tap here to create a new event for your collective."
         },
         "budget-categories-list": {
-          "title": "Budget categories",
+          "title": "Transaction categories",
           "description": "Organize your finances with categories. Each category helps track specific types of income or expenses. Per default every transaction is assigned to the category \"General\"."
         },
         "budget-categories-fab": {
@@ -1045,7 +1053,7 @@
             "title": "Join a collective with an invitation code",
             "form": {
               "code": "Code",
-              "helper-text": "Get it from a collective admin.",
+              "helper-text": "Ask an collective admin for the code.",
               "submit": "Join Collective"
             }
           }
@@ -1061,10 +1069,11 @@
             "title": "Leave the collective",
             "note": "All personal data related to the collective will be deleted.",
             "warning": "are the last manager of this organization. Leaving will delete the organization.",
-            "assigned-postings-warning": "You still have the following transactions assigned to you. Leaving is only possible once no transaction is assigned to you.",
+            "assigned-postings-warning": "You still have {{value}} transactions assigned to you. Leaving is only possible once no transaction is assigned to you.",
             "button": {
               "members": "Grant manager role",
-              "leave": "Leave collective"
+              "leave": "Leave collective",
+              "assigned-postings": "Show transactions"
             }
           }
         }
@@ -1232,9 +1241,7 @@
             "default-category": "Default Category"
           },
           "category-list": {
-            "card": {
-              "title": "Categories"
-            }
+            "card": {}
           },
           "sliding-options": {
             "edit": "Edit",
@@ -1350,11 +1357,13 @@
           },
           "transaction-count": "{{value}} transactions in selected period",
           "heatmap": {
-            "title": "Expense Calendar",
+            "title": "Transaction heatmap",
             "active-days": "{{value}} active days",
             "busiest-day": "Busiest day: {{value}} ({{value2}})",
             "expenses": "Expenses",
-            "income": "Income"
+            "income": "Income",
+            "no-transactions": "No transactions",
+            "transactions": "{{value}} transactions"
           },
           "comparison": {
             "title": "Month Comparison",
@@ -1370,11 +1379,12 @@
           "goals": {},
           "fairness": {},
           "activities": {
-            "title": "Event Ranking",
+            "title": "By event",
             "total-activities": "Events",
             "avg-cost": "Avg. Cost",
             "bookings": "transactions",
-            "no-activities": "No events with transactions"
+            "no-activities": "No events with transactions",
+            "show-all": "Show all events"
           },
           "recurring": {},
           "insights": {
@@ -1434,7 +1444,7 @@
       "page": {
         "budget-card": {
           "card": {
-            "title": "Collective balance sheet"
+            "title": "Collective balance"
           }
         },
         "activity-list": {

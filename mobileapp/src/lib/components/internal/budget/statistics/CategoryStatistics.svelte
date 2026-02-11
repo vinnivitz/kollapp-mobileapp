@@ -6,7 +6,8 @@
 	import Chart from '@edde746/svelte-apexcharts';
 	import { cardOutline, downloadOutline, listOutline } from 'ionicons/icons';
 
-	import { Button, Card, CustomItem, Modal } from '$lib/components/core';
+	import { Button, Card, Modal } from '$lib/components/core';
+	import { StatisticItem } from '$lib/components/internal/budget/statistics';
 	import { FilterPanel } from '$lib/components/shared';
 	import { t } from '$lib/locales';
 	import { chipSection } from '$lib/models/ui';
@@ -38,8 +39,8 @@
 
 	const CATEGORY_COUNT_TRESHOLD = 4;
 
-	let modalOpen = $state(false);
-	let searchValue = $state('');
+	let modalOpen = $state<boolean>(false);
+	let searchValue = $state<string>('');
 	let sortBy = $state<SortKey>('debit');
 	let sortOrder = $state<SortOrder>('desc');
 	let filterState = $state<CategoryFilterState>();
@@ -182,7 +183,8 @@
 				style: {
 					colors: 'var(--ion-color-dark)',
 					fontSize: '11px'
-				}
+				},
+				trim: true
 			}
 		},
 		yaxis: {
@@ -208,31 +210,17 @@
 	{:else}
 		<Chart options={chartOptions}></Chart>
 
-		<div class="mt-2">
-			{#each categoryActuals.slice(0, CATEGORY_COUNT_TRESHOLD) as actual (actual.category.id)}
-				<CustomItem>
-					<div class="flex w-full flex-row items-center justify-between gap-2">
-						<div class="flex flex-1 flex-col">
-							<ion-text>{actual.category.name}</ion-text>
-							<div class="flex gap-3 text-xs">
-								<ion-text color="success">+{formatter.currency(actual.credit)}</ion-text>
-								<ion-text color="danger">-{formatter.currency(actual.debit)}</ion-text>
-							</div>
-						</div>
-						<div class="flex flex-col items-end">
-							<ion-text class="font-bold" color={actual.net >= 0 ? 'success' : 'danger'}>
-								{formatter.currency(actual.net)}
-							</ion-text>
-							<ion-note class="text-xs">
-								{actual.share.toFixed(1)}% {$t(
-									'routes.organization.budget-statistics.page.category-statistics.of-total'
-								)}
-							</ion-note>
-						</div>
-					</div>
-				</CustomItem>
-			{/each}
-		</div>
+		{#each categoryActuals.slice(0, CATEGORY_COUNT_TRESHOLD) as actual (actual.category.id)}
+			<StatisticItem
+				label={actual.category.name}
+				credit={actual.credit}
+				debit={actual.debit}
+				total={actual.net}
+				note="{actual.share.toFixed(1)}% {$t(
+					'routes.organization.budget-statistics.page.category-statistics.of-total'
+				)}"
+			/>
+		{/each}
 		{#if categoryActuals.length > CATEGORY_COUNT_TRESHOLD}
 			<div class="mt-2 flex justify-center">
 				<Button
@@ -248,7 +236,6 @@
 </Card>
 
 <Modal
-	title={$t('routes.organization.budget-statistics.page.category-statistics.title')}
 	open={modalOpen}
 	dismissed={() => {
 		modalOpen = false;
@@ -271,27 +258,15 @@
 		{:else}
 			<ion-list>
 				{#each filteredAndSortedActuals as actual (actual.category.id)}
-					<CustomItem>
-						<div class="flex w-full flex-row items-center justify-between gap-2">
-							<div class="flex flex-1 flex-col">
-								<ion-text>{actual.category.name}</ion-text>
-								<div class="flex gap-3 text-xs">
-									<ion-text color="success">+{formatter.currency(actual.credit)}</ion-text>
-									<ion-text color="danger">-{formatter.currency(actual.debit)}</ion-text>
-								</div>
-							</div>
-							<div class="flex flex-col items-end">
-								<ion-text class="font-bold" color={actual.net >= 0 ? 'success' : 'danger'}>
-									{formatter.currency(actual.net)}
-								</ion-text>
-								<ion-note class="text-xs">
-									{actual.share.toFixed(1)}% {$t(
-										'routes.organization.budget-statistics.page.category-statistics.of-total'
-									)}
-								</ion-note>
-							</div>
-						</div>
-					</CustomItem>
+					<StatisticItem
+						label={actual.category.name}
+						credit={actual.credit}
+						debit={actual.debit}
+						total={actual.net}
+						note="{actual.share.toFixed(1)}% {$t(
+							'routes.organization.budget-statistics.page.category-statistics.of-total'
+						)}"
+					/>
 				{/each}
 			</ion-list>
 		{/if}

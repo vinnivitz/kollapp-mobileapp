@@ -59,6 +59,7 @@ export function getRoleTranslationFromRole(role: OrganizationRole): string {
  */
 export async function triggerClickByLabel(label: string): Promise<void> {
 	label = label.replaceAll(/['"]/g, '').trim();
+	console.log('label', label);
 	const element =
 		[...document.querySelectorAll('ion-label')]
 			.find((element) => element.textContent.trim() === label)
@@ -235,7 +236,7 @@ export async function withLoader<T = void>(action: () => Promise<T> | T, delay =
 		void (async () => {
 			loader = await loadingController.create({});
 			if (finished) {
-				await loader.dismiss().catch(() => {});
+				await loader.dismiss();
 				loader = undefined;
 				return;
 			}
@@ -250,7 +251,7 @@ export async function withLoader<T = void>(action: () => Promise<T> | T, delay =
 		clearTimeout(loaderTimeout);
 
 		if (loader) {
-			await loader.dismiss().catch(() => {});
+			await loader.dismiss();
 		}
 	}
 }

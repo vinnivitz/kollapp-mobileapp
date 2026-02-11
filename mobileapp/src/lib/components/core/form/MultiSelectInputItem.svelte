@@ -264,8 +264,8 @@
 	ariaLabel={computedAriaLabel}
 >
 	<div class="flex flex-col">
-		<ion-text class="ms-3 pt-2 text-xs">{label}</ion-text>
-		<ion-text class="my-2 ms-4 truncate">
+		<ion-text class="pt-2 text-xs">{label}</ion-text>
+		<ion-text class="my-2 truncate">
 			{displayedFilteredValues}
 		</ion-text>
 	</div>

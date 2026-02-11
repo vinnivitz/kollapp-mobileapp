@@ -21,8 +21,13 @@
 	ion-item {
 		--padding-start: 0;
 
-		:first-child {
+		> :first-child {
 			padding-left: 8px;
+		}
+
+		> ion-icon + :not([slot='end']),
+		> ion-icon + [slot='end'] + * {
+			padding-left: 8px !important;
 		}
 
 		ion-icon {

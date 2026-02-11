@@ -6,11 +6,12 @@
 	import Chart from '@edde746/svelte-apexcharts';
 	import { addDays, eachDayOfInterval, endOfMonth, format, getDay, getYear, startOfMonth } from 'date-fns';
 	import { chevronBackOutline, chevronForwardOutline, downloadOutline, flameOutline } from 'ionicons/icons';
+	import { tick } from 'svelte';
 	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 
 	import { Button, Card } from '$lib/components/core';
 	import { t } from '$lib/locales';
-	import { formatter, getBlendedColorFromVariable, getHexFromVariable } from '$lib/utility';
+	import { formatter, getBlendedColorFromVariable, getHexFromVariable, withLoader } from '$lib/utility';
 
 	type Properties = {
 		postings: PostingTO[];
@@ -291,10 +292,10 @@
 							<div style="display: flex; flex-direction: column; gap: 2px; font-size: 12px;">
 								<span style="color: var(--ion-color-success);">+${formatter.currency(data.credit)}</span>
 								<span style="color: var(--ion-color-danger);">-${formatter.currency(data.debit)}</span>
-								<span style="color: var(--ion-color-medium);">${data.count} Transaktionen</span>
+								<span style="color: var(--ion-color-medium);">${$t('routes.organization.budget-statistics.page.heatmap.transactions', { value: data.count })}</span>
 							</div>
 						`
-								: `<div style="color: var(--ion-color-medium); font-size: 12px;">Keine Transaktionen</div>`
+								: `<div style="color: var(--ion-color-medium); font-size: 12px;">${$t('routes.organization.budget-statistics.page.heatmap.no-transactions')}</div>`
 						}
 					</div>
 				`;
@@ -349,18 +350,29 @@
 		}
 	}
 
-	function goToPreviousYear(): void {
+	let isNavigating = $state<boolean>(false);
+
+	async function navigateYear(direction: 'back' | 'forward'): Promise<void> {
 		const currentIndex = availableYears.indexOf(selectedYear);
-		if (currentIndex > 0) {
-			selectedYear = availableYears[currentIndex - 1] ?? selectedYear;
-		}
+		const nextIndex = direction === 'back' ? currentIndex - 1 : currentIndex + 1;
+		const nextYear = availableYears[nextIndex];
+		if (nextYear === undefined) return;
+
+		isNavigating = true;
+		await withLoader(async () => {
+			selectedYear = nextYear;
+			await tick();
+			await new Promise((r) => requestAnimationFrame(r));
+		});
+		isNavigating = false;
+	}
+
+	function goToPreviousYear(): void {
+		void navigateYear('back');
 	}
 
 	function goToNextYear(): void {
-		const currentIndex = availableYears.indexOf(selectedYear);
-		if (currentIndex < availableYears.length - 1) {
-			selectedYear = availableYears[currentIndex + 1] ?? selectedYear;
-		}
+		void navigateYear('forward');
 	}
 </script>
 
@@ -375,11 +387,23 @@
 	classList="text-center"
 >
 	<div class="mb-3 flex items-center justify-center gap-4">
-		<Button fill="clear" size="small" disabled={!canGoBack} clicked={goToPreviousYear} icon={chevronBackOutline} />
+		<Button
+			fill="clear"
+			size="small"
+			disabled={!canGoBack || isNavigating}
+			clicked={goToPreviousYear}
+			icon={chevronBackOutline}
+		/>
 		<span class="min-w-15 text-center text-lg font-semibold" style="color: var(--ion-text-color);">
 			{selectedYear}
 		</span>
-		<Button fill="clear" size="small" disabled={!canGoForward} clicked={goToNextYear} icon={chevronForwardOutline} />
+		<Button
+			fill="clear"
+			size="small"
+			disabled={!canGoForward || isNavigating}
+			clicked={goToNextYear}
+			icon={chevronForwardOutline}
+		/>
 	</div>
 
 	{#if busiestDay && busiestDay.count > 0}

@@ -268,7 +268,7 @@
 	iconColor={posting.type === 'CREDIT' ? 'success' : 'danger'}
 	icon={posting.type === 'CREDIT' ? trendingUpOutline : trendingDownOutline}
 >
-	<div class="mt-2 flex w-full flex-col items-center gap-1">
+	<div class="mt-2 flex w-full flex-col items-center gap-1 text-sm">
 		<div class="flex w-full items-center justify-between gap-1">
 			<ion-text class="truncate font-semibold">{posting.purpose}</ion-text>
 			<ion-text color={posting.type === 'CREDIT' ? 'success' : 'danger'} class="font-bold text-nowrap">
@@ -276,16 +276,33 @@
 				{formatter.currency(posting.amountInCents)}
 			</ion-text>
 		</div>
-		<div class="flex w-full flex-row items-center justify-start gap-2">
-			<IconLabel icon={calendarClearOutline} label={format(new TZDate(posting.date), 'PP')} />
-			<IconLabel icon={cardOutline} label={getBudgetCategoryNameById(posting.organizationBudgetCategoryId)} />
+		<div class="flex w-full flex-row items-center justify-start gap-2 overflow-hidden">
+			<IconLabel
+				icon={calendarClearOutline}
+				label={format(new TZDate(posting.date), 'PP')}
+				size="xs"
+				classList="shrink-0"
+				align="start"
+			/>
+			<IconLabel
+				icon={cardOutline}
+				label={getBudgetCategoryNameById(posting.organizationBudgetCategoryId)}
+				size="xs"
+				align="start"
+			/>
 		</div>
-		<div class="flex w-full flex-row items-center justify-start gap-2">
+		<div class="flex w-full flex-row items-center justify-start gap-2 overflow-hidden">
 			{#if activity}
-				<IconLabel icon={flashOutline} label={activity.name} />
+				<IconLabel icon={flashOutline} label={activity.name} size="xs" classList="min-w-0" align="start" />
 			{/if}
 			{#if posting.personOfOrganizationId > 0}
-				<IconLabel icon={personOutline} label={getUsernameByPersonOfOrganizationId(posting.personOfOrganizationId)!} />
+				<IconLabel
+					icon={personOutline}
+					label={getUsernameByPersonOfOrganizationId(posting.personOfOrganizationId)!}
+					size="xs"
+					classList={activity ? 'min-w-0 shrink-0 max-w-[50%]' : ''}
+					align="start"
+				/>
 			{/if}
 		</div>
 	</div>

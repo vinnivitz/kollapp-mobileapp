@@ -38,12 +38,23 @@
 		value
 	}: Properties = $props();
 
+	let isFocused = $state<boolean>(false);
+
 	function onInput(event: CustomEvent<TextareaInputEventDetail>): void {
-		changed?.(event.detail.value || '');
+		changed?.(event.detail.value ?? '');
 	}
 </script>
 
-<CustomItem {color} {icon} {iconEnd} iconClicked={inputIconClicked} {classList} {name} {hidden}>
+<CustomItem
+	{color}
+	{icon}
+	iconColor={isFocused ? 'secondary' : undefined}
+	{iconEnd}
+	iconClicked={inputIconClicked}
+	{classList}
+	{name}
+	{hidden}
+>
 	<ion-textarea
 		{readonly}
 		{name}
@@ -56,6 +67,8 @@
 		auto-grow
 		color="secondary"
 		{value}
+		onionFocus={() => (isFocused = true)}
+		onionBlur={() => (isFocused = false)}
 		onionInput={onInput}
 	></ion-textarea>
 </CustomItem>

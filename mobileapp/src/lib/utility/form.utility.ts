@@ -56,7 +56,7 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 
 	function getKey(event: CustomEvent): keyof T | undefined {
 		return (
-			isIonInputElement(event.target as Element)
+			isIonInputElement(event.target as Element) || isIonTextareaElement(event.target as Element)
 				? (event.target as HTMLIonInputElement | HTMLIonTextareaElement).name
 				: event.detail?.key
 		) as keyof T | undefined;
@@ -158,7 +158,10 @@ export function customForm<T, R>(node: HTMLFormElement, data: Form<T, R>): { des
 		resetInputValidations();
 
 		for (const input of ionInputs) {
-			if (isIonInputElement(input) && (input.type === 'password' || input.type === 'text')) {
+			if (
+				(isIonInputElement(input) && (input.type === 'password' || input.type === 'text')) ||
+				isIonTextareaElement(input)
+			) {
 				const icon = input.nextElementSibling as HTMLIonIconElement;
 				if (icon?.tagName === 'ION-ICON' && icon.getAttribute('slot') === 'end') {
 					icon.classList.toggle('invisible', !input.value);
@@ -471,4 +474,8 @@ async function validate<T>(schema: ObjectSchema<T & AnyObject>, data: T): Promis
 
 function isIonInputElement(element?: Element): element is HTMLIonInputElement {
 	return element?.tagName === 'ION-INPUT';
+}
+
+function isIonTextareaElement(element?: Element): element is HTMLIonTextareaElement {
+	return element?.tagName === 'ION-TEXTAREA';
 }

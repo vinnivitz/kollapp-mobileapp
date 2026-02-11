@@ -53,6 +53,7 @@
 	}: Properties = $props();
 
 	let element = $state<HTMLIonInputElement>();
+	let isFocused = $state<boolean>(false);
 
 	$effect(() => {
 		if (element) inputElement?.(element);
@@ -66,7 +67,15 @@
 	});
 </script>
 
-<CustomItem {color} {icon} iconEnd={inputIcon} iconClicked={inputIconClicked} {name} {hidden}>
+<CustomItem
+	{color}
+	{icon}
+	iconColor={isFocused ? 'secondary' : undefined}
+	iconEnd={inputIcon}
+	iconClicked={inputIconClicked}
+	{name}
+	{hidden}
+>
 	<ion-input
 		{inputmode}
 		bind:this={element}
@@ -82,6 +91,8 @@
 		{value}
 		{disabled}
 		helper-text={helperText}
+		onionFocus={() => (isFocused = true)}
+		onionBlur={() => (isFocused = false)}
 		onionInput={(event: CustomEvent<InputInputEventDetail>) => changed?.(event.detail.value || '')}
 	>
 	</ion-input>

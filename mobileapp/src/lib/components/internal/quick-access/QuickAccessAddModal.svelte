@@ -21,7 +21,7 @@
 
 	let { dismissed, open }: Properties = $props();
 
-	let searchValue = $state('');
+	let searchValue = $state<string>('');
 	let searchedItems = $state<SearchableItemTO[]>([]);
 	let allItems = $state<SearchableItemTO[]>([]);
 

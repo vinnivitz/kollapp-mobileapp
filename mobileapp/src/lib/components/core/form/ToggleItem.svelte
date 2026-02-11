@@ -32,7 +32,6 @@
 		aria-label={label}
 		onionChange={(value: CustomEvent<ToggleChangeEventDetail>) => changed(value.detail.checked)}
 		{checked}
-		class="ms-4"
 		justify="space-between">{label}</ion-toggle
 	>
 </CustomItem>

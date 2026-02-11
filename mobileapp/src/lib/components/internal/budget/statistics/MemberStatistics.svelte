@@ -4,12 +4,10 @@
 	import type { ApexOptions } from 'apexcharts';
 
 	import Chart from '@edde746/svelte-apexcharts';
-	import { downloadOutline, listOutline, openOutline, peopleOutline, personOutline } from 'ionicons/icons';
+	import { downloadOutline, listOutline, peopleOutline } from 'ionicons/icons';
 
-	import { goto } from '$app/navigation';
-	import { resolve } from '$app/paths';
-
-	import { Button, Card, CustomItem, Modal } from '$lib/components/core';
+	import { Button, Card, Modal } from '$lib/components/core';
+	import { StatisticItem } from '$lib/components/internal/budget/statistics';
 	import { FilterPanel } from '$lib/components/shared';
 	import { t } from '$lib/locales';
 	import { chipSection } from '$lib/models/ui';
@@ -41,8 +39,8 @@
 
 	const PERSON_OF_ORGANIZATION_COUNT_TRESHOLD = 4;
 
-	let modalOpen = $state(false);
-	let searchValue = $state('');
+	let modalOpen = $state<boolean>(false);
+	let searchValue = $state<string>('');
 	let sortBy = $state<SortKey>('net');
 	let sortOrder = $state<SortOrder>('desc');
 	let filterState = $state<MemberFilterState>();
@@ -180,7 +178,8 @@
 				style: {
 					colors: 'var(--ion-color-dark)',
 					fontSize: '11px'
-				}
+				},
+				trim: true
 			}
 		},
 		yaxis: {
@@ -190,15 +189,6 @@
 			}
 		}
 	});
-
-	async function onOpenPersonOfOrganization(personOfOrganizationId: number): Promise<void> {
-		const personOfOrganization = personsOfOrganization.find(
-			(personOfOrganization) => personOfOrganization.id === personOfOrganizationId
-		);
-		if (personOfOrganization) {
-			await goto(resolve('/organization/members/[slug]', { slug: personOfOrganization.id.toString() }));
-		}
-	}
 </script>
 
 <Card
@@ -215,35 +205,17 @@
 	{:else}
 		<Chart options={chartOptions}></Chart>
 
-		<div class="mt-2">
-			{#each statistics.slice(0, PERSON_OF_ORGANIZATION_COUNT_TRESHOLD) as stat (stat.personOfOrganization.id)}
-				<CustomItem
-					icon={personOutline}
-					iconEnd={openOutline}
-					iconClicked={() => onOpenPersonOfOrganization(stat.personOfOrganization.id)}
-				>
-					<div class="flex w-full flex-row items-center justify-between gap-2">
-						<div class="flex flex-1 flex-col">
-							<ion-text>{stat.personOfOrganization.username}</ion-text>
-							<div class="flex flex-col text-xs">
-								<ion-text color="success">+{formatter.currency(stat.credit)}</ion-text>
-								<ion-text class="ms-2" color="danger">-{formatter.currency(stat.debit)}</ion-text>
-							</div>
-						</div>
-						<div class="flex flex-col items-end">
-							<ion-text class="font-bold" color={stat.net >= 0 ? 'success' : 'danger'}>
-								{formatter.currency(stat.net)}
-							</ion-text>
-							<ion-note class="text-xs">
-								{stat.volumeShare.toFixed(1)}% {$t(
-									'routes.organization.budget-statistics.page.member-statistics.volume'
-								)}
-							</ion-note>
-						</div>
-					</div>
-				</CustomItem>
-			{/each}
-		</div>
+		{#each statistics.slice(0, PERSON_OF_ORGANIZATION_COUNT_TRESHOLD) as stat (stat.personOfOrganization.id)}
+			<StatisticItem
+				label={stat.personOfOrganization.username}
+				credit={stat.credit}
+				debit={stat.debit}
+				total={stat.net}
+				note="{stat.volumeShare.toFixed(1)}% {$t(
+					'routes.organization.budget-statistics.page.member-statistics.volume'
+				)}"
+			/>
+		{/each}
 		{#if statistics.length > PERSON_OF_ORGANIZATION_COUNT_TRESHOLD}
 			<div class="mt-2 flex justify-center">
 				<Button
@@ -259,7 +231,6 @@
 </Card>
 
 <Modal
-	title={$t('routes.organization.budget-statistics.page.member-statistics.title')}
 	open={modalOpen}
 	dismissed={() => {
 		modalOpen = false;
@@ -282,31 +253,15 @@
 		{:else}
 			<ion-list>
 				{#each filteredAndSortedStats as stat (stat.personOfOrganization.id)}
-					<CustomItem
-						icon={personOutline}
-						iconEnd={openOutline}
-						iconClicked={() => onOpenPersonOfOrganization(stat.personOfOrganization.id)}
-					>
-						<div class="flex w-full flex-row items-center justify-between gap-2">
-							<div class="flex flex-1 flex-col">
-								<ion-text>{stat.personOfOrganization.username}</ion-text>
-								<div class="flex flex-col text-xs">
-									<ion-text color="success">+{formatter.currency(stat.credit)}</ion-text>
-									<ion-text class="ms-2" color="danger">-{formatter.currency(stat.debit)}</ion-text>
-								</div>
-							</div>
-							<div class="flex flex-col items-end">
-								<ion-text class="font-bold" color={stat.net >= 0 ? 'success' : 'danger'}>
-									{formatter.currency(stat.net)}
-								</ion-text>
-								<ion-note class="text-xs">
-									{stat.volumeShare.toFixed(1)}% {$t(
-										'routes.organization.budget-statistics.page.member-statistics.volume'
-									)}
-								</ion-note>
-							</div>
-						</div>
-					</CustomItem>
+					<StatisticItem
+						label={stat.personOfOrganization.username}
+						credit={stat.credit}
+						debit={stat.debit}
+						total={stat.net}
+						note="{stat.volumeShare.toFixed(1)}% {$t(
+							'routes.organization.budget-statistics.page.member-statistics.volume'
+						)}"
+					/>
 				{/each}
 			</ion-list>
 		{/if}

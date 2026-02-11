@@ -482,12 +482,13 @@
           "card": {
             "button": {
               "leave": "Kollektiv verlassen",
-              "members": "Managerrolle vergeben"
+              "members": "Managerrolle vergeben",
+              "assigned-postings": "Buchungen anzeigen"
             },
             "note": "Alle personenbezogenen Daten des Kollektivs werden gelöscht.",
             "title": "Verlasse das Kollektiv",
             "warning": "Du bist der letzte Manager dieses Kollektivs. \nDurch das Verlassen wird das Kollektiv gelöscht.",
-            "assigned-postings-warning": "Dir sind noch die folgenden Buchungen zugewiesen. Ein Austritt ist erst möglich, wenn dir keine Buchungen mehr zugewiesen sind."
+            "assigned-postings-warning": "Dir sind noch {{value}} Buchungen zugewiesen. Ein Austritt ist erst möglich, wenn dir keine Buchungen mehr zugewiesen sind."
           },
           "modal": {
             "confirm": "Verlassen"
@@ -658,9 +659,7 @@
             "default-category": "Standard-Kategorie"
           },
           "category-list": {
-            "card": {
-              "title": "Kategorien"
-            }
+            "card": {}
           },
           "sliding-options": {
             "edit": "Bearbeiten",
@@ -819,11 +818,13 @@
           },
           "transaction-count": "{{value}} Buchungen im gewählten Zeitraum",
           "heatmap": {
-            "title": "Ausgaben-Kalender",
+            "title": "Buchungsheatmap",
             "active-days": "{{value}} aktive Tage",
             "busiest-day": "Aktivster Tag: {{value}} ({{value2}})",
             "expenses": "Ausgaben",
-            "income": "Einnahmen"
+            "income": "Einnahmen",
+            "no-transactions": "Keine Buchungen",
+            "transactions": "{{value}} Buchungen"
           },
           "comparison": {
             "title": "Monatsvergleich",
@@ -839,11 +840,12 @@
           "goals": {},
           "fairness": {},
           "activities": {
-            "title": "Veranstaltungs-Ranking",
+            "title": "Nach Veranstaltung",
             "total-activities": "Veranstaltungen",
             "avg-cost": "Ø Kosten",
             "bookings": "Buchungen",
-            "no-activities": "Keine Veranstaltungen mit Buchungen"
+            "no-activities": "Keine Veranstaltungen mit Buchungen",
+            "show-all": "Alle Veranstaltungen anzeigen"
           },
           "recurring": {},
           "insights": {
@@ -1147,14 +1149,17 @@
     "layout": {
       "menu": {
         "list": {
-          "account": {
-            "label": "Konto"
-          },
           "activities": {
             "label": "Veranstaltungen"
           },
-          "collective": {
-            "label": "Kollektiv"
+          "persons-of-organization": {
+            "label": "Mitglieder"
+          },
+          "statistics": {
+            "label": "Finanzstatistik"
+          },
+          "budget": {
+            "label": "Buchungskategorien"
           }
         }
       }
@@ -1177,12 +1182,11 @@
     },
     "widgets": {
       "budget-card": {
-        "all": "Alle",
-        "credit": "Einnahmen",
-        "debit": "Ausgaben",
+        "balance": "Saldo",
         "heading": "Budgetübersicht",
         "no-postings": "Keine Buchungen gefunden.",
-        "others": "Sonstige"
+        "top-expenses": "Größte Ausgaben",
+        "top-income": "Größte Einnahmen"
       },
       "ionic": {
         "datetime": {
@@ -1439,7 +1443,7 @@
         },
         "menu": {
           "title": "Navigationsmenü",
-          "description": "Tippe hier, um das Menü zu öffnen und auf alle Funktionen der App zuzugreifen."
+          "description": "Tippe hier, um das Menü zu öffnen und auf wichtige Funktionen der App zuzugreifen."
         },
         "organization": {},
         "quick-access": {
@@ -1449,7 +1453,7 @@
         "budget": {},
         "org-budget": {
           "title": "Kollektivbilanz",
-          "description": "Zeigt Infos über die Finanzen des Kollektivs an, einschließlich Saldo, Einnahmen und Ausgaben des Kollektivs.\n\nDu kannst Buchungen hinzufügen, anzeigen lassen und über das Statistik-Icon detaillierte Auswertungen aufrufen."
+          "description": "Zeigt Infos über die Finanzen des Kollektivs an, einschließlich Saldo, Einnahmen und Ausgaben des Kollektivs.\n\nDu kannst Buchungen hinzufügen, anzeigen lassen und detaillierte Statistiken aufrufen."
         },
         "budget-statistics": {
           "title": "Finanz-Statistiken",

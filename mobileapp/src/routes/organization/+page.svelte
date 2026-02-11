@@ -98,6 +98,12 @@
 {#snippet activityList()}
 	<ion-list inset>
 		<ion-list-header>{$t('routes.organization.page.activity-list.list.header')}</ion-list-header>
+		<LabeledItem
+			label={$t('routes.organization.page.activity-list.list.manage-activities')}
+			icon={calendarClearOutline}
+			indexed="/organization/activities"
+			clicked={() => goto(resolve('/organization/activities'))}
+		/>
 		{#if isManager}
 			<LabeledItem
 				label={$t('routes.organization.page.activity-list.list.create-activity')}
@@ -108,12 +114,6 @@
 				}}
 			/>
 		{/if}
-		<LabeledItem
-			label={$t('routes.organization.page.activity-list.list.manage-activities')}
-			icon={calendarClearOutline}
-			indexed="/organization/activities"
-			clicked={() => goto(resolve('/organization/activities'))}
-		/>
 	</ion-list>
 {/snippet}
 

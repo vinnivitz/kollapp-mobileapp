@@ -35,7 +35,7 @@
 
 	const isHeadless = $derived(openExternal !== undefined);
 
-	let openInternal = $state(false);
+	let openInternal = $state<boolean>(false);
 	const open = $derived(isHeadless ? (openExternal as boolean) : openInternal);
 	let draft = $state<Record<string, unknown>>({});
 

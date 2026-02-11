@@ -10,3 +10,4 @@ export { default as MonthlyCashflow } from './MonthlyCashflow.svelte';
 export { default as MonthlyTrendChart } from './MonthlyTrendChart.svelte';
 export { default as OverviewCards } from './OverviewCards.svelte';
 export { default as PostingsHeatmap } from './PostingsHeatmap.svelte';
+export { default as StatisticItem } from './StatisticItem.svelte';

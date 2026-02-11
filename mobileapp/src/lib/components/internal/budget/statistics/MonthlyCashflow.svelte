@@ -13,11 +13,12 @@
 		thumbsDownOutline,
 		thumbsUpOutline
 	} from 'ionicons/icons';
+	import { tick } from 'svelte';
 	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
 
 	import { Button, Card, IconLabel } from '$lib/components/core';
 	import { t } from '$lib/locales';
-	import { formatter } from '$lib/utility';
+	import { formatter, withLoader } from '$lib/utility';
 
 	type Properties = {
 		isDarkMode: boolean;
@@ -76,18 +77,29 @@
 	const canGoBack = $derived(availableYears.indexOf(selectedYear) > 0);
 	const canGoForward = $derived(availableYears.indexOf(selectedYear) < availableYears.length - 1);
 
-	function goToPreviousYear(): void {
+	let isNavigating = $state<boolean>(false);
+
+	async function navigateYear(direction: 'back' | 'forward'): Promise<void> {
 		const currentIndex = availableYears.indexOf(selectedYear);
-		if (currentIndex > 0) {
-			selectedYear = availableYears[currentIndex - 1] ?? selectedYear;
-		}
+		const nextIndex = direction === 'back' ? currentIndex - 1 : currentIndex + 1;
+		const nextYear = availableYears[nextIndex];
+		if (nextYear === undefined) return;
+
+		isNavigating = true;
+		await withLoader(async () => {
+			selectedYear = nextYear;
+			await tick();
+			await new Promise((r) => requestAnimationFrame(r));
+		});
+		isNavigating = false;
+	}
+
+	function goToPreviousYear(): void {
+		void navigateYear('back');
 	}
 
 	function goToNextYear(): void {
-		const currentIndex = availableYears.indexOf(selectedYear);
-		if (currentIndex < availableYears.length - 1) {
-			selectedYear = availableYears[currentIndex + 1] ?? selectedYear;
-		}
+		void navigateYear('forward');
 	}
 
 	const monthlyData = $derived(allMonthlyData.filter((data) => data.monthKey.startsWith(selectedYear.toString())));
@@ -179,11 +191,23 @@
 	lazy
 >
 	<div class="mb-3 flex items-center justify-center gap-4">
-		<Button fill="clear" size="small" disabled={!canGoBack} clicked={goToPreviousYear} icon={chevronBackOutline} />
+		<Button
+			fill="clear"
+			size="small"
+			disabled={!canGoBack || isNavigating}
+			clicked={goToPreviousYear}
+			icon={chevronBackOutline}
+		/>
 		<span class="min-w-15 text-center text-lg font-semibold" style="color: var(--ion-text-color);">
 			{selectedYear}
 		</span>
-		<Button fill="clear" size="small" disabled={!canGoForward} clicked={goToNextYear} icon={chevronForwardOutline} />
+		<Button
+			fill="clear"
+			size="small"
+			disabled={!canGoForward || isNavigating}
+			clicked={goToNextYear}
+			icon={chevronForwardOutline}
+		/>
 	</div>
 
 	{#if monthlyData.length === 0}

@@ -45,6 +45,6 @@
 
 <CustomItem {clicked} {color} {transparent} {icon} {classList} {badge} {tourId} ariaLabel={computedAriaLabel}>
 	{#if label}
-		<ion-label class="ms-4" color={labelColor}>{label}</ion-label>
+		<ion-label color={labelColor}>{label}</ion-label>
 	{/if}
 </CustomItem>

@@ -135,7 +135,7 @@
 		localeStore.set(event.detail.value);
 	}
 
-	let query = $state('');
+	let query = $state<string>('');
 	function onFilterInput(event: CustomEvent): void {
 		query = (event.detail.value as string) ?? '';
 	}
@@ -831,8 +831,8 @@
 		};
 	});
 
-	let modalShowcaseOpen = $state(false);
-	let popoverShowcaseOpen = $state(false);
+	let modalShowcaseOpen = $state<boolean>(false);
+	let popoverShowcaseOpen = $state<boolean>(false);
 	let multiSelectValue = $state<number[]>([0]);
 
 	const segmentConfig = $derived.by((): SegmentConfig[] => {

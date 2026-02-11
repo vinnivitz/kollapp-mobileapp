@@ -9,7 +9,7 @@
 	import { Layout } from '$lib/components/layout';
 	import { t } from '$lib/locales';
 	import { organizationStore, userStore } from '$lib/stores';
-	import { confirmationModal, hasOrganizationRole, withLoader } from '$lib/utility';
+	import { confirmationModal, hasOrganizationRole, triggerClickByLabel, withLoader } from '$lib/utility';
 
 	const currentPersonOfOrganizationId = $derived(
 		$organizationStore?.personsOfOrganization.find((person) => person.userId === $userStore?.id)?.id ?? 0
@@ -54,6 +54,15 @@
 		await withLoader(() => organizationService.leave());
 		await goto(resolve('/organization'));
 	}
+
+	async function onNavigateToAssignedPostings(): Promise<void> {
+		await goto(resolve('/'));
+		await triggerClickByLabel(
+			$t('routes.page.page.account-card.open-postings.button.label', {
+				value: assignedPostings.length
+			})
+		);
+	}
 </script>
 
 <Layout title={$t('routes.organization.leave.page.title')} showBackButton>
@@ -93,13 +102,16 @@
 			</ion-avatar>
 			<ion-text>{$t('routes.organization.leave.page.card.warning')}</ion-text>
 		</div>
-		<Button
-			icon={ribbonOutline}
-			classList="mt-3"
-			fill="default"
-			label={$t('routes.organization.leave.page.card.button.members')}
-			clicked={async () => goto(resolve('/organization/members'))}
-		/>
+		<div class="text-center">
+			<Button
+				icon={ribbonOutline}
+				classList="mt-3"
+				color="black"
+				fill="outline"
+				label={$t('routes.organization.leave.page.card.button.members')}
+				clicked={async () => goto(resolve('/organization/members'))}
+			/>
+		</div>
 	</Card>
 {/snippet}
 
@@ -109,12 +121,26 @@
 			<ion-avatar class="flex items-center justify-center">
 				<ion-icon icon={warningOutline} size="large"></ion-icon>
 			</ion-avatar>
-			<ion-text>{$t('routes.organization.leave.page.card.assigned-postings-warning')}</ion-text>
+			<ion-text
+				>{$t('routes.organization.leave.page.card.assigned-postings-warning', {
+					value: assignedPostings.length
+				})}</ion-text
+			>
 		</div>
-		<ul class="mt-3 list-disc pl-5">
+		<!-- <ul class="mt-3 list-disc pl-5">
 			{#each assignedPostings as posting (posting.id)}
 				<li class="font-bold">{posting.purpose}</li>
 			{/each}
-		</ul>
+		</ul> -->
+		<div class="text-center">
+			<Button
+				icon={ribbonOutline}
+				classList="mt-3"
+				color="black"
+				fill="outline"
+				label={$t('routes.organization.leave.page.card.button.assigned-postings')}
+				clicked={onNavigateToAssignedPostings}
+			/>
+		</div>
 	</Card>
 {/snippet}

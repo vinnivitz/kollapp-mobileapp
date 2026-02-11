@@ -200,7 +200,10 @@ function getAllTourSteps(): TourStep[] {
 			route: '/organization'
 		},
 		{
-			clickSequence: [{ selector: tourSelector(TourStepId.ORGANIZATION.STATISTICS_LINK), waitForNavigation: true }],
+			clickSequence: [
+				{ selector: 'ion-menu-button', waitAfter: 500 },
+				{ selector: tourSelector(TourStepId.MENU.STATISTICS), waitForNavigation: true }
+			],
 			condition: () => getTotalPostingsCount() > 0,
 			element: tourSelector(TourStepId.BUDGET_STATISTICS.CHARTS),
 			popover: {
@@ -253,8 +256,8 @@ function getAllTourSteps(): TourStep[] {
 			? [
 					{
 						clickSequence: [
-							{ selector: tourSelector(TourStepId.NAVIGATION.ORGANIZATION_TAB), waitForNavigation: true },
-							{ selector: tourSelector(TourStepId.ORGANIZATION.BUDGET_CATEGORIES_LINK), waitForNavigation: true }
+							{ selector: 'ion-menu-button', waitAfter: 500 },
+							{ selector: tourSelector(TourStepId.MENU.BUDGET_CATEGORIES), waitForNavigation: true }
 						],
 						element: tourSelector(TourStepId.BUDGET_CATEGORIES.LIST),
 						popover: {
@@ -279,8 +282,8 @@ function getAllTourSteps(): TourStep[] {
 			: []),
 		{
 			clickSequence: [
-				{ selector: tourSelector(TourStepId.NAVIGATION.ORGANIZATION_TAB), waitForNavigation: true },
-				{ selector: tourSelector(TourStepId.ORGANIZATION.MEMBERS_LINK), waitForNavigation: true }
+				{ selector: 'ion-menu-button', waitAfter: 500 },
+				{ selector: tourSelector(TourStepId.MENU.MEMBERS), waitForNavigation: true }
 			],
 			element: tourSelector(TourStepId.MEMBERS.LIST),
 			popover: {

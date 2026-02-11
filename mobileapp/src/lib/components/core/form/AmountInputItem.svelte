@@ -88,22 +88,7 @@
 
 	let element = $state<HTMLIonInputElement>();
 	let containerElement = $state<HTMLDivElement>();
-
-	function notifyChange(cents: number, native?: HTMLInputElement): void {
-		if (name && containerElement) {
-			containerElement.dispatchEvent(
-				new CustomEvent('ionInput', {
-					bubbles: true,
-					detail: { key: name, value: cents }
-				})
-			);
-		} else {
-			changed?.(cents);
-			if (native) {
-				native.dispatchEvent(new Event('input', { bubbles: true }));
-			}
-		}
-	}
+	let isFocused = $state<boolean>(false);
 
 	let edit = $derived<AmountEditState>(createStateFromCents(value ?? 0));
 	let hasError = $state<boolean>(false);
@@ -133,6 +118,22 @@
 			});
 		}
 	});
+
+	function notifyChange(cents: number, native?: HTMLInputElement): void {
+		if (name && containerElement) {
+			containerElement.dispatchEvent(
+				new CustomEvent('ionInput', {
+					bubbles: true,
+					detail: { key: name, value: cents }
+				})
+			);
+		} else {
+			changed?.(cents);
+			if (native) {
+				native.dispatchEvent(new Event('input', { bubbles: true }));
+			}
+		}
+	}
 
 	function clampCents(value: number): number {
 		if (value < 0) return 0;
@@ -563,10 +564,18 @@
 </script>
 
 <div bind:this={containerElement}>
-	<CustomItem {hidden} {color} {icon} iconEnd={inputIcon} iconClicked={inputIconClicked} {classList}>
+	<CustomItem
+		{hidden}
+		{color}
+		{icon}
+		iconColor={isFocused ? 'secondary' : undefined}
+		iconEnd={inputIcon}
+		iconClicked={inputIconClicked}
+		{classList}
+	>
 		<div class="relative">
 			<div
-				class="ghost pointer-events-none absolute inset-0 -mt-1 flex items-center"
+				class="ghost pointer-events-none absolute inset-0 ms-2 -mt-1 flex items-center"
 				class:top-7={!helperText && !hasError}
 				aria-hidden="true"
 			>
@@ -587,13 +596,16 @@
 				helper-text={helperText}
 				value={plain}
 				onfocus={async () => {
+					isFocused = true;
 					const inputElement = await element?.getInputElement();
 					if (inputElement) setCaretScripted(inputElement);
 				}}
 				onionFocus={async () => {
+					isFocused = true;
 					const inputElement = await element?.getInputElement();
 					if (inputElement) setCaretScripted(inputElement);
 				}}
+				onionBlur={() => (isFocused = false)}
 				onclick={async () => {
 					const inputElement = await element?.getInputElement();
 					if (inputElement) setCaretScripted(inputElement);
