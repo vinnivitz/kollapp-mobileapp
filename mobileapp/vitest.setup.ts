@@ -281,6 +281,12 @@ if (!globalThis.ResizeObserver) {
 
 vi.mock('@ionic/core', () => ({
 	getPlatforms: () => ['desktop'],
+	loadingController: {
+		create: vi.fn().mockResolvedValue({
+			dismiss: vi.fn().mockResolvedValue(true),
+			present: vi.fn().mockResolvedValue(true)
+		})
+	},
 	modalController: {
 		getTop: vi.fn().mockResolvedValue(vi.fn())
 	}
