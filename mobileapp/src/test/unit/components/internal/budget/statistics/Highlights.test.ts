@@ -133,4 +133,47 @@ describe('widgets/budget/statistics/Highlights', () => {
 		// Should detect the anomaly (100_000 vs avg ~9250)
 		expect(container).toBeTruthy();
 	});
+
+	it('detects spending decrease trend (success type)', () => {
+		// Previous month: 5000 debit, Current month: 1000 debit → -80%
+		const decreasePostings = [
+			{ amountInCents: 5000, date: `${lastMonth}-10`, organizationBudgetCategoryId: 1, type: 'DEBIT' as const },
+			{ amountInCents: 1000, date: `${currentMonth}-10`, organizationBudgetCategoryId: 1, type: 'DEBIT' as const }
+		];
+		const { container } = render(Highlights, {
+			props: { categories: mockCategories as never, postings: decreasePostings as never }
+		});
+		// Should show the spending-down insight with success type border
+		const insightCards = container.querySelectorAll('.rounded-lg');
+		expect(insightCards.length).toBeGreaterThan(0);
+	});
+
+	it('detects inactivity when no recent postings', () => {
+		// Posting from 60 days ago — beyond the 30-day threshold
+		const oldDate = new TZDate(now.getFullYear(), now.getMonth() - 2, 1).toISOString().slice(0, 10);
+		const inactivePostings = [
+			{ amountInCents: 5000, date: oldDate, organizationBudgetCategoryId: 1, type: 'DEBIT' as const }
+		];
+		const { container } = render(Highlights, {
+			props: { categories: mockCategories as never, postings: inactivePostings as never }
+		});
+		// Should detect inactivity warning
+		const insightCards = container.querySelectorAll('.rounded-lg');
+		expect(insightCards.length).toBeGreaterThan(0);
+	});
+
+	it('detects small expenses when many small postings exist', () => {
+		// Create 12 small debit postings (< 500 cents each)
+		const smallPostings = Array.from({ length: 12 }, (_, index) => ({
+			amountInCents: 100 + index * 10,
+			date: `${currentMonth}-${String(index + 1).padStart(2, '0')}`,
+			organizationBudgetCategoryId: 1,
+			type: 'DEBIT' as const
+		}));
+		const { container } = render(Highlights, {
+			props: { categories: mockCategories as never, postings: smallPostings as never }
+		});
+		const insightCards = container.querySelectorAll('.rounded-lg');
+		expect(insightCards.length).toBeGreaterThan(0);
+	});
 });

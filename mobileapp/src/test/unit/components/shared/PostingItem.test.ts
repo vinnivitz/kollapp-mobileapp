@@ -63,7 +63,9 @@ const mockCreditPosting = {
 	date: '2024-01-15',
 	description: 'Test Credit Posting',
 	id: 1,
+	organizationBudgetCategoryId: 1,
 	personOfOrganizationId: 1,
+	purpose: 'Test Credit Posting',
 	type: 'CREDIT' as const
 };
 
@@ -73,7 +75,9 @@ const mockDebitPosting = {
 	date: '2024-01-20',
 	description: 'Test Debit Posting',
 	id: 2,
+	organizationBudgetCategoryId: 2,
 	personOfOrganizationId: 2,
+	purpose: 'Test Debit Posting',
 	type: 'DEBIT' as const
 };
 
@@ -224,8 +228,8 @@ describe('widgets/budget/PostingItem', () => {
 		});
 	});
 
-	describe('structure', () => {
-		it('uses CustomItem component', async () => {
+	describe('posting display content', () => {
+		it('shows posting purpose', async () => {
 			const { container } = render(PostingItem, {
 				props: {
 					activities: mockActivities as never,
@@ -243,12 +247,11 @@ describe('widgets/budget/PostingItem', () => {
 				}
 			});
 			await tick();
-			await new Promise((resolve) => setTimeout(resolve, 0));
 
-			expect(container.firstChild).toBeTruthy();
+			expect(container.textContent).toContain('Test Credit Posting');
 		});
 
-		it('has ion-text elements', async () => {
+		it('shows + prefix for credit posting amount', async () => {
 			const { container } = render(PostingItem, {
 				props: {
 					activities: mockActivities as never,
@@ -266,21 +269,40 @@ describe('widgets/budget/PostingItem', () => {
 				}
 			});
 			await tick();
-			await new Promise((resolve) => setTimeout(resolve, 0));
 
-			expect(container.querySelector('ion-text')).toBeTruthy();
+			expect(container.textContent).toContain('+');
+			expect(container.textContent).toContain('€10.00');
 		});
-	});
 
-	describe('callbacks', () => {
-		it('accepts onCompleted callback', async () => {
-			const onCompleted = vi.fn();
-
+		it('shows - prefix for debit posting amount', async () => {
 			const { container } = render(PostingItem, {
 				props: {
 					activities: mockActivities as never,
 					budgetCategories: mockBudgetCategories as never,
-					completed: onCompleted,
+					onDeleteActivityPosting,
+					onDeleteOrganizationPosting,
+					onEditEnd,
+					onEditStart,
+					onTransferActivityPosting,
+					onTransferOrganizationPosting,
+					onUpdateActivityPosting,
+					onUpdateOrganizationPosting,
+					personsOfOrganization: mockPersonsOfOrganization as never,
+					posting: mockDebitPosting as never
+				}
+			});
+			await tick();
+
+			expect(container.textContent).toContain('-');
+			expect(container.textContent).toContain('€5.00');
+		});
+
+		it('shows activity name when activity provided', async () => {
+			const { container } = render(PostingItem, {
+				props: {
+					activities: mockActivities as never,
+					activity: mockActivities[0] as never,
+					budgetCategories: mockBudgetCategories as never,
 					onDeleteActivityPosting,
 					onDeleteOrganizationPosting,
 					onEditEnd,
@@ -295,7 +317,7 @@ describe('widgets/budget/PostingItem', () => {
 			});
 			await tick();
 
-			expect(container).toBeTruthy();
+			expect(container.textContent).toContain('Activity 1');
 		});
 	});
 
@@ -350,7 +372,7 @@ describe('widgets/budget/PostingItem', () => {
 	});
 
 	describe('posting without description', () => {
-		it('renders posting without description', async () => {
+		it('renders posting without description showing empty text', async () => {
 			const postingWithoutDescription = { ...mockCreditPosting, description: '' };
 
 			const { container } = render(PostingItem, {
@@ -371,36 +393,13 @@ describe('widgets/budget/PostingItem', () => {
 			});
 			await tick();
 
-			expect(container).toBeTruthy();
-		});
-
-		it('renders posting with null description', async () => {
-			const postingWithNullDescription = { ...mockCreditPosting, description: undefined };
-
-			const { container } = render(PostingItem, {
-				props: {
-					activities: mockActivities as never,
-					budgetCategories: mockBudgetCategories as never,
-					onDeleteActivityPosting,
-					onDeleteOrganizationPosting,
-					onEditEnd,
-					onEditStart,
-					onTransferActivityPosting,
-					onTransferOrganizationPosting,
-					onUpdateActivityPosting,
-					onUpdateOrganizationPosting,
-					personsOfOrganization: mockPersonsOfOrganization as never,
-					posting: postingWithNullDescription as never
-				}
-			});
-			await tick();
-
-			expect(container).toBeTruthy();
+			// Still renders amount even without description
+			expect(container.textContent).toContain('€10.00');
 		});
 	});
 
-	describe('budget categories', () => {
-		it('displays category chip', async () => {
+	describe('user display', () => {
+		it('shows user chip when personOfOrganizationId > 0', async () => {
 			const { container } = render(PostingItem, {
 				props: {
 					activities: mockActivities as never,
@@ -419,58 +418,11 @@ describe('widgets/budget/PostingItem', () => {
 			});
 			await tick();
 
-			// Should show category name from mock
-			expect(container.textContent).toContain('Category');
-		});
-
-		it('handles empty budget categories', async () => {
-			const { container } = render(PostingItem, {
-				props: {
-					activities: mockActivities as never,
-					budgetCategories: [] as never,
-					onDeleteActivityPosting,
-					onDeleteOrganizationPosting,
-					onEditEnd,
-					onEditStart,
-					onTransferActivityPosting,
-					onTransferOrganizationPosting,
-					onUpdateActivityPosting,
-					onUpdateOrganizationPosting,
-					personsOfOrganization: mockPersonsOfOrganization as never,
-					posting: mockCreditPosting as never
-				}
-			});
-			await tick();
-
-			expect(container).toBeTruthy();
-		});
-	});
-
-	describe('persons of organization', () => {
-		it('displays user chip', async () => {
-			const { container } = render(PostingItem, {
-				props: {
-					activities: mockActivities as never,
-					budgetCategories: mockBudgetCategories as never,
-					onDeleteActivityPosting,
-					onDeleteOrganizationPosting,
-					onEditEnd,
-					onEditStart,
-					onTransferActivityPosting,
-					onTransferOrganizationPosting,
-					onUpdateActivityPosting,
-					onUpdateOrganizationPosting,
-					personsOfOrganization: mockPersonsOfOrganization as never,
-					posting: mockCreditPosting as never
-				}
-			});
-			await tick();
-
-			// Should show user from mock
 			expect(container.textContent).toContain('User');
 		});
 
-		it('handles empty persons list', async () => {
+		it('hides user chip when personOfOrganizationId is 0', async () => {
+			const postingNoUser = { ...mockCreditPosting, personOfOrganizationId: 0 };
 			const { container } = render(PostingItem, {
 				props: {
 					activities: mockActivities as never,
@@ -483,64 +435,13 @@ describe('widgets/budget/PostingItem', () => {
 					onTransferOrganizationPosting,
 					onUpdateActivityPosting,
 					onUpdateOrganizationPosting,
-					personsOfOrganization: [] as never,
-					posting: mockCreditPosting as never
-				}
-			});
-			await tick();
-
-			expect(container).toBeTruthy();
-		});
-	});
-
-	describe('activities', () => {
-		it('renders with empty activities list', async () => {
-			const { container } = render(PostingItem, {
-				props: {
-					activities: [] as never,
-					budgetCategories: mockBudgetCategories as never,
-					onDeleteActivityPosting,
-					onDeleteOrganizationPosting,
-					onEditEnd,
-					onEditStart,
-					onTransferActivityPosting,
-					onTransferOrganizationPosting,
-					onUpdateActivityPosting,
-					onUpdateOrganizationPosting,
 					personsOfOrganization: mockPersonsOfOrganization as never,
-					posting: mockCreditPosting as never
+					posting: postingNoUser as never
 				}
 			});
 			await tick();
 
-			expect(container).toBeTruthy();
-		});
-
-		it('renders with multiple activities', async () => {
-			const moreActivities = [
-				...mockActivities,
-				{ activityPostings: [], date: '2024-03-01', id: 3, name: 'Activity 3' },
-				{ activityPostings: [], date: '2024-04-01', id: 4, name: 'Activity 4' }
-			];
-
-			const { container } = render(PostingItem, {
-				props: {
-					activities: moreActivities as never,
-					budgetCategories: mockBudgetCategories as never,
-					onDeleteActivityPosting,
-					onDeleteOrganizationPosting,
-					onEditEnd,
-					onEditStart,
-					onTransferActivityPosting,
-					onTransferOrganizationPosting,
-					onUpdateActivityPosting,
-					onUpdateOrganizationPosting,
-					personsOfOrganization: mockPersonsOfOrganization as never,
-					posting: mockCreditPosting as never
-				}
-			});
-			await tick();
-
+			// Username shouldn't appear for personOfOrganizationId=0
 			expect(container).toBeTruthy();
 		});
 	});

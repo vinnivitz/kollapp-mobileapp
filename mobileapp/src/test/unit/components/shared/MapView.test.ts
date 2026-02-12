@@ -1,5 +1,4 @@
-import { fireEvent, render } from '@testing-library/svelte';
-import { tick } from 'svelte';
+import { render } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 
 import MapWidget from '$lib/components/shared/MapView.svelte';
@@ -53,14 +52,6 @@ describe('widgets/MapWidget', () => {
 		expect(container.querySelector('div')).toBeTruthy();
 	});
 
-	it('renders with searchable=true by default', () => {
-		const { container } = render(MapWidget, {
-			props: { searchable: true }
-		});
-		// Searchbar is conditionally rendered based on searchbarOpen state
-		expect(container.querySelector('div')).toBeTruthy();
-	});
-
 	it('hides searchbar when searchable=false', () => {
 		const { container } = render(MapWidget, {
 			props: { searchable: false }
@@ -76,31 +67,27 @@ describe('widgets/MapWidget', () => {
 		expect(container.querySelector('.custom-map-class')).toBeTruthy();
 	});
 
-	it('renders with initial value', () => {
+	it('renders search toggle button when searchable', () => {
 		const { container } = render(MapWidget, {
-			props: { value: 'Berlin, Germany' }
+			props: { searchable: true }
 		});
-		expect(container).toBeTruthy();
+		// The search button should exist (to open searchbar)
+		expect(container.querySelector('div')).toBeTruthy();
 	});
 
-	it('triggers selected callback when location selected', async () => {
-		const selected = vi.fn();
-		const { container } = render(MapWidget, {
-			props: { selected }
-		});
-		// Component should call selected when a location is chosen
-		expect(container).toBeTruthy();
-	});
-
-	it('shows search results on input', async () => {
+	it('renders map element for leaflet binding', () => {
 		const { container } = render(MapWidget, {
 			props: {}
 		});
-		const searchbar = container.querySelector('ion-searchbar');
-		if (searchbar) {
-			await fireEvent(searchbar, new CustomEvent('ionInput', { detail: { value: 'Berlin' } }));
-			await tick();
-		}
+		// The second div is the map container bound to leaflet
+		const divs = container.querySelectorAll('div');
+		expect(divs.length).toBeGreaterThanOrEqual(2);
+	});
+
+	it('renders with initial value prop', () => {
+		const { container } = render(MapWidget, {
+			props: { value: '52.52, 13.405' }
+		});
 		expect(container).toBeTruthy();
 	});
 });

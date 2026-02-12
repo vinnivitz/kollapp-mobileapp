@@ -265,7 +265,7 @@ describe('widgets/budget/BudgetOverviewCard', () => {
 			expect(container.querySelector('[data-tour="budget-tour"]')).toBeTruthy();
 		});
 
-		it('accepts onOpenStatistics callback', async () => {
+		it('renders statistics button when onOpenStatistics provided', async () => {
 			const onOpenStatistics = vi.fn();
 
 			const { container } = render(BudgetOverviewCard, {
@@ -288,7 +288,61 @@ describe('widgets/budget/BudgetOverviewCard', () => {
 			});
 			await tick();
 
-			expect(container).toBeTruthy();
+			// Should have 3 buttons: add posting, posting overview, statistics
+			const buttons = container.querySelectorAll('ion-button');
+			expect(buttons.length).toBeGreaterThanOrEqual(3);
+		});
+
+		it('hides statistics button when onOpenStatistics not provided', async () => {
+			const { container } = render(BudgetOverviewCard, {
+				props: {
+					activities: [] as never,
+					budgetCategories: [] as never,
+					onCreateActivityPosting,
+					onCreateOrganizationPosting,
+					onDeleteActivityPosting,
+					onDeleteOrganizationPosting,
+					onTransferActivityPosting,
+					onTransferOrganizationPosting,
+					onUpdateActivityPosting,
+					onUpdateOrganizationPosting,
+					personsOfOrganization: [] as never,
+					postings: [] as never,
+					title: 'Budget'
+				}
+			});
+			await tick();
+
+			// Without onOpenStatistics, no statistics button text should appear
+			const text = container.textContent ?? '';
+			expect(text).not.toContain('components.budget-overview.statistics');
+		});
+
+		it('shows credit and debit summary amounts', async () => {
+			const { container } = render(BudgetOverviewCard, {
+				props: {
+					activities: mockActivities as never,
+					budgetCategories: mockBudgetCategories as never,
+					onCreateActivityPosting,
+					onCreateOrganizationPosting,
+					onDeleteActivityPosting,
+					onDeleteOrganizationPosting,
+					onTransferActivityPosting,
+					onTransferOrganizationPosting,
+					onUpdateActivityPosting,
+					onUpdateOrganizationPosting,
+					personsOfOrganization: mockPersonsOfOrganization as never,
+					postings: mockPostings as never,
+					title: 'Budget'
+				}
+			});
+			await tick();
+
+			// Balance: 1000-500 = 500 cents = €5.00
+			expect(container.textContent).toContain('€5.00');
+			// Credit/debit labels should be present
+			expect(container.textContent).toContain('components.budget-overview.total-credit');
+			expect(container.textContent).toContain('components.budget-overview.total-debit');
 		});
 	});
 });

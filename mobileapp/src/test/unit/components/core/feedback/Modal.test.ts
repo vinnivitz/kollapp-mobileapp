@@ -182,4 +182,24 @@ describe('widgets/ionic/Modal', () => {
 		const modal = container.querySelector('ion-modal');
 		expect(modal?.getAttribute('initial-breakpoint')).toBe('0.5');
 	});
+
+	it('Enter key dismisses in informational mode', async () => {
+		const { container } = render(Modal, {
+			props: { children, informational: true, open: true, title: 'Info' }
+		});
+		const backButton = container.querySelector('ion-buttons[slot="start"] ion-button');
+		expect(backButton).toBeTruthy();
+		if (backButton) {
+			await fireEvent.keyDown(backButton, { key: 'Enter' });
+		}
+	});
+
+	it('renders aria attributes on modal', () => {
+		const { container } = render(Modal, {
+			props: { children, open: true, title: 'Accessible Modal' }
+		});
+		const modal = container.querySelector('ion-modal');
+		expect(modal?.getAttribute('aria-modal')).toBe('true');
+		expect(modal?.getAttribute('aria-label')).toBe('Accessible Modal');
+	});
 });

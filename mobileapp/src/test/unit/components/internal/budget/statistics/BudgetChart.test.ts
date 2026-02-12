@@ -4,6 +4,8 @@ import { TZDate } from '@date-fns/tz';
 import { render } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 
+import BudgetChart from '$lib/components/internal/budget/statistics/BudgetChart.svelte';
+
 // Mock IntersectionObserver for lazy loading in tests
 class MockIntersectionObserver {
 	constructor(callback: IntersectionObserverCallback) {
@@ -17,7 +19,30 @@ class MockIntersectionObserver {
 }
 vi.stubGlobal('IntersectionObserver', MockIntersectionObserver);
 
-import BudgetChart from '$lib/components/internal/budget/statistics/BudgetChart.svelte';
+vi.mock('$lib/utility', async (importOriginal) => {
+	const original = await importOriginal<object>();
+	return {
+		...original,
+		confirmationModal: vi.fn(),
+		customForm: vi.fn(),
+		formatter: {
+			currency: (value: number, short?: boolean) =>
+				short ? `€${(value / 100).toFixed(0)}` : `€${(value / 100).toFixed(2)}`,
+			date: (_date: Date, format?: string) => format ?? '2024-01-01'
+		},
+		getBudgetCategoryNameById: () => 'Category',
+		getPersonOfOrganizationId: () => 1,
+		getUsernameByPersonOfOrganizationId: () => 'User',
+		getValidationResult: vi.fn().mockReturnValue({ errors: {}, valid: true }),
+		hasOrganizationRole: vi.fn().mockReturnValue(false),
+		withLoader: vi.fn()
+	};
+});
+
+vi.mock('$app/paths', () => ({
+	resolve: (path: string, parameters?: Record<string, string>) =>
+		parameters ? path.replace('[slug]', parameters.slug ?? '') : path
+}));
 
 const defaultProps = { personsOfOrganization: [] };
 
@@ -138,7 +163,10 @@ describe('widgets/BudgetChart', () => {
 		// The latest postings section should list at most 4 items
 		const borderSection = container.querySelector('.border-t');
 		expect(borderSection).toBeTruthy();
-		const postingItems = borderSection!.querySelectorAll('.truncate');
+		const list = borderSection!.querySelector('ion-list');
+		expect(list).toBeTruthy();
+		// Each PostingItem renders a CustomItem; count direct children excluding the header
+		const postingItems = list!.querySelectorAll(':scope > :not(ion-list-header)');
 		expect(postingItems.length).toBeLessThanOrEqual(4);
 	});
 

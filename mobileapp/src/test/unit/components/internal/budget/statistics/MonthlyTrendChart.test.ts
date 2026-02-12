@@ -81,4 +81,35 @@ describe('widgets/budget/statistics/MonthlyTrendChart', () => {
 		const icon = container.querySelector('ion-card-title ion-icon');
 		expect(icon).toBeTruthy();
 	});
+
+	it('shows year navigation buttons', () => {
+		const { container } = render(MonthlyTrendChart, {
+			props: { isDarkMode: false, postings: mockPostings as never }
+		});
+		const buttons = container.querySelectorAll('ion-button');
+		expect(buttons.length).toBeGreaterThanOrEqual(2);
+	});
+
+	it('shows no-data note when postings empty', () => {
+		const { container } = render(MonthlyTrendChart, {
+			props: { isDarkMode: false, postings: [] }
+		});
+		expect(container.querySelector('ion-note')).toBeTruthy();
+	});
+
+	it('handles multi-year postings with year navigation', async () => {
+		const { fireEvent } = await import('@testing-library/svelte');
+		const multiYearPostings = [
+			...mockPostings,
+			{ amountInCents: 4000, date: `${now.getFullYear() - 1}-06-15`, type: 'CREDIT' as const }
+		];
+		const { container } = render(MonthlyTrendChart, {
+			props: { isDarkMode: false, postings: multiYearPostings as never }
+		});
+		const buttons = container.querySelectorAll('ion-button');
+		if (buttons[0]) {
+			await fireEvent.click(buttons[0]);
+		}
+		expect(container.querySelector('ion-card')).toBeTruthy();
+	});
 });

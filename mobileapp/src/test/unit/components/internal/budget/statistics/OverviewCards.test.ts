@@ -91,4 +91,18 @@ describe('widgets/budget/statistics/OverviewCards', () => {
 		});
 		expect(container.textContent).toContain('€10000.00');
 	});
+
+	it('shows danger color for negative balance card', () => {
+		const { container } = render(OverviewCards, {
+			props: { averageTransaction: 5000, balance: -5000, totalCredit: 10_000, totalDebit: 15_000 }
+		});
+		// Find inner cards (5 total: wrapper + 4 stat cards)
+		const innerCards = container.querySelectorAll('ion-card-content ion-card');
+		// The 3rd inner card (balance) should have danger border
+		const balanceCard = innerCards[2];
+		expect(balanceCard).toBeTruthy();
+		// The ion-text for the balance value should show danger color
+		const balanceText = balanceCard?.querySelector('ion-text.text-lg');
+		expect(balanceText?.getAttribute('color')).toBe('danger');
+	});
 });

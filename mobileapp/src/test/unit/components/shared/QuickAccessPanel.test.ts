@@ -1,5 +1,4 @@
 import { render } from '@testing-library/svelte';
-import { tick } from 'svelte';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import QuickAccessGrid from '$lib/components/shared/QuickAccessPanel.svelte';
@@ -96,39 +95,15 @@ describe('widgets/quick-access/QuickAccessGrid', () => {
 		});
 	});
 
-	describe('store methods availability', () => {
-		it('has setEditMode method available', () => {
-			expect(quickAccessStore.setEditMode).toBeDefined();
-			expect(typeof quickAccessStore.setEditMode).toBe('function');
+	describe('component behavior', () => {
+		it('renders data-tour attribute for quick-access', () => {
+			const { container } = render(QuickAccessGrid);
+			const tourElement = container.querySelector('[data-tour]');
+			expect(tourElement).toBeTruthy();
 		});
 
-		it('has removeItem method available', () => {
-			expect(quickAccessStore.removeItem).toBeDefined();
-			expect(typeof quickAccessStore.removeItem).toBe('function');
-		});
-
-		it('has reorderItems method available', () => {
-			expect(quickAccessStore.reorderItems).toBeDefined();
-			expect(typeof quickAccessStore.reorderItems).toBe('function');
-		});
-
-		it('has addItem method available', () => {
-			expect(quickAccessStore.addItem).toBeDefined();
-			expect(typeof quickAccessStore.addItem).toBe('function');
-		});
-	});
-
-	describe('component structure', () => {
 		it('renders without errors', () => {
 			expect(() => render(QuickAccessGrid)).not.toThrow();
-		});
-
-		it('has proper DOM structure', async () => {
-			const { container } = render(QuickAccessGrid);
-			await tick();
-
-			// Main container should exist
-			expect(container.firstChild).toBeTruthy();
 		});
 	});
 });

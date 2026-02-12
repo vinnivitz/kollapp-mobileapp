@@ -113,4 +113,34 @@ describe('widgets/budget/statistics/MedianStatistics', () => {
 		// No hint shown when postings are empty
 		expect(container.querySelector('ion-note')).toBeFalsy();
 	});
+
+	it('calculates average correctly for comparison', () => {
+		// Average of 1000+3000+5000+2000+4000 = 15000/5 = 3000
+		const { container } = render(MedianStatistics, {
+			props: { postings: mockPostings as never }
+		});
+		// Avg comparison card should show €30.00
+		const innerCards = container.querySelectorAll('ion-card-content ion-card');
+		// 2nd card is avg comparison
+		const avgCard = innerCards[1];
+		expect(avgCard?.textContent).toContain('€30.00');
+	});
+
+	it('shows median/average difference in hint', () => {
+		// Skewed data where median and average differ
+		const skewedPostings = [
+			{ amountInCents: 100, date: '2025-01-10', type: 'CREDIT' as const },
+			{ amountInCents: 200, date: '2025-01-11', type: 'CREDIT' as const },
+			{ amountInCents: 300, date: '2025-01-12', type: 'CREDIT' as const },
+			{ amountInCents: 50_000, date: '2025-01-13', type: 'CREDIT' as const }
+		];
+		const { container } = render(MedianStatistics, {
+			props: { postings: skewedPostings as never }
+		});
+		// Hint note should be visible since postings exist
+		const note = container.querySelector('ion-note');
+		expect(note).toBeTruthy();
+		// Hint text should contain the translated key
+		expect(note?.textContent).toContain('median.hint');
+	});
 });

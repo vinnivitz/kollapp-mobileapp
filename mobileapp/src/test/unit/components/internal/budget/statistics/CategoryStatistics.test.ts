@@ -113,4 +113,30 @@ describe('widgets/budget/statistics/CategoryStatistics', () => {
 		});
 		expect(container.querySelector('ion-card')).toBeTruthy();
 	});
+
+	it('displays Entertainment category stats', () => {
+		const { container } = render(CategoryStatistics, {
+			props: { budgetCategories: mockCategories as never, isDarkMode: false, postings: mockPostings as never }
+		});
+		expect(container.textContent).toContain('Entertainment');
+		// Entertainment: debit=2000 cents = €20.00
+		expect(container.textContent).toContain('€20.00');
+	});
+
+	it('displays total debit share across categories', () => {
+		const { container } = render(CategoryStatistics, {
+			props: { budgetCategories: mockCategories as never, isDarkMode: false, postings: mockPostings as never }
+		});
+		// Total debit = 5000 + 3000 + 2000 = 10000
+		// Transport share = 3000/10000 = 30.0%
+		expect(container.textContent).toContain('30.0%');
+	});
+
+	it('renders chart icon in title', () => {
+		const { container } = render(CategoryStatistics, {
+			props: { budgetCategories: mockCategories as never, isDarkMode: false, postings: mockPostings as never }
+		});
+		const icon = container.querySelector('ion-card-title ion-icon');
+		expect(icon).toBeTruthy();
+	});
 });

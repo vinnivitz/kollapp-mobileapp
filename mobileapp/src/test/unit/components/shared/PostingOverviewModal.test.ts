@@ -100,7 +100,7 @@ describe('widgets/budget/PostingOverviewModal', () => {
 	});
 
 	describe('rendering', () => {
-		it('renders modal when open', async () => {
+		it('renders modal structure when open', async () => {
 			const { container } = render(PostingOverviewModal, {
 				props: {
 					activities: mockActivities as never,
@@ -120,31 +120,10 @@ describe('widgets/budget/PostingOverviewModal', () => {
 			await tick();
 
 			expect(container.firstChild).toBeTruthy();
+			expect(container.querySelector('ion-searchbar')).toBeTruthy();
 		});
 
-		it('renders modal when closed', async () => {
-			const { container } = render(PostingOverviewModal, {
-				props: {
-					activities: mockActivities as never,
-					budgetCategories: mockBudgetCategories as never,
-					dismissed,
-					onDeleteActivityPosting,
-					onDeleteOrganizationPosting,
-					onTransferActivityPosting,
-					onTransferOrganizationPosting,
-					onUpdateActivityPosting,
-					onUpdateOrganizationPosting,
-					open: false,
-					personsOfOrganization: mockPersonsOfOrganization as never,
-					postings: mockPostings as never
-				}
-			});
-			await tick();
-
-			expect(container).toBeTruthy();
-		});
-
-		it('renders with empty postings', async () => {
+		it('renders with empty postings showing note', async () => {
 			const { container } = render(PostingOverviewModal, {
 				props: {
 					activities: [] as never,
@@ -163,7 +142,8 @@ describe('widgets/budget/PostingOverviewModal', () => {
 			});
 			await tick();
 
-			expect(container).toBeTruthy();
+			// Modal is loading by default (isLoading=true), so spinner shows
+			expect(container.querySelector('ion-spinner')).toBeTruthy();
 		});
 	});
 
@@ -188,7 +168,32 @@ describe('widgets/budget/PostingOverviewModal', () => {
 			});
 			await tick();
 
-			expect(container).toBeTruthy();
+			// Should still render searchbar and filter
+			expect(container.querySelector('ion-searchbar')).toBeTruthy();
+		});
+	});
+
+	describe('filter and search', () => {
+		it('has searchbar for filtering postings', async () => {
+			const { container } = render(PostingOverviewModal, {
+				props: {
+					activities: mockActivities as never,
+					budgetCategories: mockBudgetCategories as never,
+					dismissed,
+					onDeleteActivityPosting,
+					onDeleteOrganizationPosting,
+					onTransferActivityPosting,
+					onTransferOrganizationPosting,
+					onUpdateActivityPosting,
+					onUpdateOrganizationPosting,
+					open: true,
+					personsOfOrganization: mockPersonsOfOrganization as never,
+					postings: mockPostings as never
+				}
+			});
+			await tick();
+
+			expect(container.querySelector('ion-searchbar')).toBeTruthy();
 		});
 	});
 
@@ -213,381 +218,11 @@ describe('widgets/budget/PostingOverviewModal', () => {
 			});
 			await tick();
 
-			expect(container).toBeTruthy();
-		});
-
-		it('renders without person filter when disabled', async () => {
-			const { container } = render(PostingOverviewModal, {
-				props: {
-					activities: mockActivities as never,
-					budgetCategories: mockBudgetCategories as never,
-					dismissed,
-					onDeleteActivityPosting,
-					onDeleteOrganizationPosting,
-					onTransferActivityPosting,
-					onTransferOrganizationPosting,
-					onUpdateActivityPosting,
-					onUpdateOrganizationPosting,
-					open: true,
-					personsOfOrganization: mockPersonsOfOrganization as never,
-					postings: mockPostings as never,
-					showPersonOfOrganizationFilter: false
-				}
-			});
-			await tick();
-
-			expect(container).toBeTruthy();
-		});
-	});
-
-	describe('callbacks', () => {
-		it('accepts onCompleted callback', async () => {
-			const onCompleted = vi.fn();
-
-			const { container } = render(PostingOverviewModal, {
-				props: {
-					activities: mockActivities as never,
-					budgetCategories: mockBudgetCategories as never,
-					completed: onCompleted,
-					dismissed,
-					onDeleteActivityPosting,
-					onDeleteOrganizationPosting,
-					onTransferActivityPosting,
-					onTransferOrganizationPosting,
-					onUpdateActivityPosting,
-					onUpdateOrganizationPosting,
-					open: true,
-					personsOfOrganization: mockPersonsOfOrganization as never,
-					postings: mockPostings as never
-				}
-			});
-			await tick();
-
-			expect(container).toBeTruthy();
-		});
-	});
-
-	describe('posting types', () => {
-		it('handles credit postings', async () => {
-			const creditPostings = [mockPostings[0]];
-
-			const { container } = render(PostingOverviewModal, {
-				props: {
-					activities: mockActivities as never,
-					budgetCategories: mockBudgetCategories as never,
-					dismissed,
-					onDeleteActivityPosting,
-					onDeleteOrganizationPosting,
-					onTransferActivityPosting,
-					onTransferOrganizationPosting,
-					onUpdateActivityPosting,
-					onUpdateOrganizationPosting,
-					open: true,
-					personsOfOrganization: mockPersonsOfOrganization as never,
-					postings: creditPostings as never
-				}
-			});
-			await tick();
-
-			expect(container).toBeTruthy();
-		});
-
-		it('handles debit postings', async () => {
-			const debitPostings = [mockPostings[1]];
-
-			const { container } = render(PostingOverviewModal, {
-				props: {
-					activities: mockActivities as never,
-					budgetCategories: mockBudgetCategories as never,
-					dismissed,
-					onDeleteActivityPosting,
-					onDeleteOrganizationPosting,
-					onTransferActivityPosting,
-					onTransferOrganizationPosting,
-					onUpdateActivityPosting,
-					onUpdateOrganizationPosting,
-					open: true,
-					personsOfOrganization: mockPersonsOfOrganization as never,
-					postings: debitPostings as never
-				}
-			});
-			await tick();
-
-			expect(container).toBeTruthy();
-		});
-
-		it('handles mixed posting types', async () => {
-			const { container } = render(PostingOverviewModal, {
-				props: {
-					activities: mockActivities as never,
-					budgetCategories: mockBudgetCategories as never,
-					dismissed,
-					onDeleteActivityPosting,
-					onDeleteOrganizationPosting,
-					onTransferActivityPosting,
-					onTransferOrganizationPosting,
-					onUpdateActivityPosting,
-					onUpdateOrganizationPosting,
-					open: true,
-					personsOfOrganization: mockPersonsOfOrganization as never,
-					postings: mockPostings as never
-				}
-			});
-			await tick();
-
-			expect(container).toBeTruthy();
-		});
-	});
-
-	describe('structure', () => {
-		it('contains filter component', async () => {
-			const { container } = render(PostingOverviewModal, {
-				props: {
-					activities: mockActivities as never,
-					budgetCategories: mockBudgetCategories as never,
-					dismissed,
-					onDeleteActivityPosting,
-					onDeleteOrganizationPosting,
-					onTransferActivityPosting,
-					onTransferOrganizationPosting,
-					onUpdateActivityPosting,
-					onUpdateOrganizationPosting,
-					open: true,
-					personsOfOrganization: mockPersonsOfOrganization as never,
-					postings: mockPostings as never
-				}
-			});
-			await tick();
-
-			// Should have searchbar from filter
-			expect(container.querySelector('ion-searchbar')).toBeTruthy();
-		});
-
-		it('has proper modal structure', async () => {
-			const { container } = render(PostingOverviewModal, {
-				props: {
-					activities: [] as never,
-					budgetCategories: [] as never,
-					dismissed,
-					onDeleteActivityPosting,
-					onDeleteOrganizationPosting,
-					onTransferActivityPosting,
-					onTransferOrganizationPosting,
-					onUpdateActivityPosting,
-					onUpdateOrganizationPosting,
-					open: true,
-					personsOfOrganization: [] as never,
-					postings: [] as never
-				}
-			});
-			await tick();
-
 			expect(container.firstChild).toBeTruthy();
 		});
 	});
 
-	describe('activity posting mapping', () => {
-		it('handles activity postings correctly', async () => {
-			const activitiesWithPostings = [
-				{
-					activityPostings: [{ id: 1 }],
-					date: '2024-01-01',
-					id: 1,
-					name: 'Activity 1'
-				}
-			];
-
-			const { container } = render(PostingOverviewModal, {
-				props: {
-					activities: activitiesWithPostings as never,
-					budgetCategories: mockBudgetCategories as never,
-					dismissed,
-					onDeleteActivityPosting,
-					onDeleteOrganizationPosting,
-					onTransferActivityPosting,
-					onTransferOrganizationPosting,
-					onUpdateActivityPosting,
-					onUpdateOrganizationPosting,
-					open: true,
-					personsOfOrganization: mockPersonsOfOrganization as never,
-					postings: mockPostings as never
-				}
-			});
-			await tick();
-
-			expect(container).toBeTruthy();
-		});
-
-		it('handles organization postings (no activity)', async () => {
-			const { container } = render(PostingOverviewModal, {
-				props: {
-					activities: [] as never,
-					budgetCategories: mockBudgetCategories as never,
-					dismissed,
-					onDeleteActivityPosting,
-					onDeleteOrganizationPosting,
-					onTransferActivityPosting,
-					onTransferOrganizationPosting,
-					onUpdateActivityPosting,
-					onUpdateOrganizationPosting,
-					open: true,
-					personsOfOrganization: mockPersonsOfOrganization as never,
-					postings: mockPostings as never
-				}
-			});
-			await tick();
-
-			expect(container).toBeTruthy();
-		});
-
-		it('handles mixed activity and organization postings', async () => {
-			const mixedActivities = [
-				{
-					activityPostings: [{ id: 1 }],
-					date: '2024-01-01',
-					id: 1,
-					name: 'Activity 1'
-				}
-			];
-
-			const { container } = render(PostingOverviewModal, {
-				props: {
-					activities: mixedActivities as never,
-					budgetCategories: mockBudgetCategories as never,
-					dismissed,
-					onDeleteActivityPosting,
-					onDeleteOrganizationPosting,
-					onTransferActivityPosting,
-					onTransferOrganizationPosting,
-					onUpdateActivityPosting,
-					onUpdateOrganizationPosting,
-					open: true,
-					personsOfOrganization: mockPersonsOfOrganization as never,
-					postings: mockPostings as never
-				}
-			});
-			await tick();
-
-			expect(container).toBeTruthy();
-		});
-	});
-
-	describe('posting dates', () => {
-		it('handles postings with various dates', async () => {
-			const datedPostings = [
-				{ ...mockPostings[0], date: '2024-01-01' },
-				{ ...mockPostings[1], date: '2024-12-31' }
-			];
-
-			const { container } = render(PostingOverviewModal, {
-				props: {
-					activities: mockActivities as never,
-					budgetCategories: mockBudgetCategories as never,
-					dismissed,
-					onDeleteActivityPosting,
-					onDeleteOrganizationPosting,
-					onTransferActivityPosting,
-					onTransferOrganizationPosting,
-					onUpdateActivityPosting,
-					onUpdateOrganizationPosting,
-					open: true,
-					personsOfOrganization: mockPersonsOfOrganization as never,
-					postings: datedPostings as never
-				}
-			});
-			await tick();
-
-			expect(container).toBeTruthy();
-		});
-	});
-
-	describe('budget category filtering', () => {
-		it('handles multiple budget categories', async () => {
-			const manyCategories = [
-				{ defaultCategory: true, id: 1, name: 'Food' },
-				{ defaultCategory: false, id: 2, name: 'Transport' },
-				{ defaultCategory: false, id: 3, name: 'Entertainment' },
-				{ defaultCategory: false, id: 4, name: 'Utilities' }
-			];
-
-			const { container } = render(PostingOverviewModal, {
-				props: {
-					activities: mockActivities as never,
-					budgetCategories: manyCategories as never,
-					dismissed,
-					onDeleteActivityPosting,
-					onDeleteOrganizationPosting,
-					onTransferActivityPosting,
-					onTransferOrganizationPosting,
-					onUpdateActivityPosting,
-					onUpdateOrganizationPosting,
-					open: true,
-					personsOfOrganization: mockPersonsOfOrganization as never,
-					postings: mockPostings as never
-				}
-			});
-			await tick();
-
-			expect(container).toBeTruthy();
-		});
-	});
-
-	describe('person filter', () => {
-		it('handles multiple persons of organization', async () => {
-			const manyPersons = [
-				{ id: 1, userId: 1, username: 'John Doe' },
-				{ id: 2, userId: 2, username: 'Jane Doe' },
-				{ id: 3, userId: 3, username: 'Bob Smith' },
-				{ id: 4, userId: 4, username: 'Alice Johnson' }
-			];
-
-			const { container } = render(PostingOverviewModal, {
-				props: {
-					activities: mockActivities as never,
-					budgetCategories: mockBudgetCategories as never,
-					dismissed,
-					onDeleteActivityPosting,
-					onDeleteOrganizationPosting,
-					onTransferActivityPosting,
-					onTransferOrganizationPosting,
-					onUpdateActivityPosting,
-					onUpdateOrganizationPosting,
-					open: true,
-					personsOfOrganization: manyPersons as never,
-					postings: mockPostings as never
-				}
-			});
-			await tick();
-
-			expect(container).toBeTruthy();
-		});
-
-		it('handles postings with unassigned person', async () => {
-			const unassignedPostings = [{ ...mockPostings[0], personOfOrganizationId: 0 }];
-
-			const { container } = render(PostingOverviewModal, {
-				props: {
-					activities: mockActivities as never,
-					budgetCategories: mockBudgetCategories as never,
-					dismissed,
-					onDeleteActivityPosting,
-					onDeleteOrganizationPosting,
-					onTransferActivityPosting,
-					onTransferOrganizationPosting,
-					onUpdateActivityPosting,
-					onUpdateOrganizationPosting,
-					open: true,
-					personsOfOrganization: mockPersonsOfOrganization as never,
-					postings: unassignedPostings as never
-				}
-			});
-			await tick();
-
-			expect(container).toBeTruthy();
-		});
-	});
-
-	describe('large datasets', () => {
+	describe('posting display', () => {
 		it('handles many postings', async () => {
 			const manyPostings = Array.from({ length: 50 }, (_, index) => ({
 				amountInCents: (index + 1) * 100,
@@ -617,36 +252,8 @@ describe('widgets/budget/PostingOverviewModal', () => {
 			});
 			await tick();
 
-			expect(container).toBeTruthy();
-		});
-
-		it('handles many activities', async () => {
-			const manyActivities = Array.from({ length: 20 }, (_, index) => ({
-				activityPostings: [],
-				date: `2024-0${(index % 12) + 1}-15`,
-				id: index + 1,
-				name: `Activity ${index + 1}`
-			}));
-
-			const { container } = render(PostingOverviewModal, {
-				props: {
-					activities: manyActivities as never,
-					budgetCategories: mockBudgetCategories as never,
-					dismissed,
-					onDeleteActivityPosting,
-					onDeleteOrganizationPosting,
-					onTransferActivityPosting,
-					onTransferOrganizationPosting,
-					onUpdateActivityPosting,
-					onUpdateOrganizationPosting,
-					open: true,
-					personsOfOrganization: mockPersonsOfOrganization as never,
-					postings: mockPostings as never
-				}
-			});
-			await tick();
-
-			expect(container).toBeTruthy();
+			// Should render the modal with content
+			expect(container.firstChild).toBeTruthy();
 		});
 	});
 });

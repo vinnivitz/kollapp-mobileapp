@@ -96,4 +96,46 @@ describe('utility/StaggeredList', () => {
 		});
 		vi.useRealTimers();
 	});
+
+	it('renders all items after stagger completes', async () => {
+		vi.useFakeTimers();
+		const { container } = render(StaggeredList, {
+			props: {
+				children,
+				items: ['a', 'b', 'c']
+			}
+		});
+
+		// Advance enough for all items to stagger in
+		vi.advanceTimersByTime(1000);
+		await waitFor(() => {
+			expect(container.querySelectorAll('[data-item]').length).toBe(3);
+		});
+		vi.useRealTimers();
+	});
+
+	it('handles item removal on rerender', async () => {
+		vi.useFakeTimers();
+		const { container, rerender } = render(StaggeredList, {
+			props: {
+				children,
+				items: ['a', 'b', 'c']
+			}
+		});
+
+		// Let all items render
+		vi.advanceTimersByTime(1000);
+		await waitFor(() => {
+			expect(container.querySelectorAll('[data-item]').length).toBe(3);
+		});
+
+		// Remove one item
+		rerender({ children, items: ['a', 'c'] });
+		vi.advanceTimersByTime(500);
+
+		await waitFor(() => {
+			expect(container.querySelectorAll('[data-item]').length).toBe(2);
+		});
+		vi.useRealTimers();
+	});
 });

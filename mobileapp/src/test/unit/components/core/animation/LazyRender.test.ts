@@ -141,4 +141,19 @@ describe('utility/LazyRender', () => {
 		expect(observerOptions.rootMargin).toBe('50px');
 		expect(observerOptions.threshold).toBe(0);
 	});
+
+	it('shows spinner after timeout when not yet visible', async () => {
+		vi.useFakeTimers();
+		const { container } = render(LazyRender, { props: { children } });
+
+		// Before timeout, no spinner
+		expect(container.querySelector('ion-spinner')).toBeFalsy();
+
+		// Advance past the 100ms spinner timeout
+		await vi.advanceTimersByTimeAsync(150);
+
+		// Spinner should now be visible since content has not loaded
+		expect(container.querySelector('ion-spinner')).toBeTruthy();
+		vi.useRealTimers();
+	});
 });

@@ -169,39 +169,17 @@ describe('widgets/quick-access/QuickAccessAddModal', () => {
 			expect(quickAccessStore.addItem).toBeDefined();
 			expect(typeof quickAccessStore.addItem).toBe('function');
 		});
-
-		it('quickAccessStore has removeItem method', () => {
-			expect(quickAccessStore.removeItem).toBeDefined();
-			expect(typeof quickAccessStore.removeItem).toBe('function');
-		});
-
-		it('quickAccessStore has subscribe method', () => {
-			expect(quickAccessStore.subscribe).toBeDefined();
-			expect(typeof quickAccessStore.subscribe).toBe('function');
-		});
 	});
 
-	describe('modal props', () => {
-		it('accepts open prop', async () => {
-			const { component } = render(QuickAccessAddModal, {
+	describe('handleDismiss', () => {
+		it('accepts dismissed callback prop', () => {
+			const { container } = render(QuickAccessAddModal, {
 				props: {
 					dismissed,
 					open: true
 				}
 			});
-
-			expect(component).toBeTruthy();
-		});
-
-		it('accepts dismissed callback', async () => {
-			const { component } = render(QuickAccessAddModal, {
-				props: {
-					dismissed,
-					open: true
-				}
-			});
-
-			expect(component).toBeTruthy();
+			expect(container).toBeTruthy();
 		});
 	});
 

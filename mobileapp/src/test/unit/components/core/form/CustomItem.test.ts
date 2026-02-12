@@ -199,4 +199,27 @@ describe('widgets/ionic/CustomItem', () => {
 		const item = container.querySelector('ion-item');
 		expect(item?.getAttribute('detail')).toBe('false');
 	});
+
+	it('renders sliding option with icon-only when no label', () => {
+		const handler = vi.fn();
+		const { container } = render(CustomItem, {
+			props: {
+				children,
+				slidingOptions: [{ handler, icon: 'trash' }]
+			}
+		});
+		const iconOnly = container.querySelector('ion-item-option ion-icon[slot="icon-only"]');
+		expect(iconOnly).toBeTruthy();
+		// No label text should be present
+		const label = container.querySelector('ion-item-option ion-text');
+		expect(label).toBeFalsy();
+	});
+
+	it('renders with tourId data attribute', () => {
+		const { container } = render(CustomItem, {
+			props: { children, tourId: 'my-tour-step' }
+		});
+		const item = container.querySelector('ion-item');
+		expect(item?.dataset.tour).toBe('my-tour-step');
+	});
 });

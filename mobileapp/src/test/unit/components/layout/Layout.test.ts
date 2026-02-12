@@ -97,4 +97,20 @@ describe('Layout', () => {
 			expect(refresher.complete).toHaveBeenCalled();
 		});
 	});
+
+	it('hides menu when hideMenu is true', () => {
+		const { container } = render(Layout, {
+			props: { children, hideMenu: true, loading: false, title: 'Any' }
+		});
+		// The menu element should not be rendered outside #menu
+		const ionMenu = container.querySelector('ion-menu');
+		expect(ionMenu).toBeFalsy();
+	});
+
+	it('renders title in header', () => {
+		const { container } = render(Layout, {
+			props: { children, loading: false, title: 'Test Page Title' }
+		});
+		expect(container.textContent).toContain('Test Page Title');
+	});
 });

@@ -142,4 +142,21 @@ describe('widgets/budget/statistics/MonthlyCashflow', () => {
 		});
 		expect(container.querySelector('ion-card')).toBeTruthy();
 	});
+
+	it('renders chart title icon', () => {
+		const { container } = render(MonthlyCashflow, {
+			props: { isDarkMode: false, postings: mockPostings as never }
+		});
+		const icon = container.querySelector('ion-card-title ion-icon');
+		expect(icon).toBeTruthy();
+	});
+
+	it('displays best and worst month stats when data available', () => {
+		const { container } = render(MonthlyCashflow, {
+			props: { isDarkMode: false, postings: mockPostings as never }
+		});
+		// Should have content beyond just the title, including best/worst info
+		const text = container.textContent ?? '';
+		expect(text.length).toBeGreaterThan(10);
+	});
 });

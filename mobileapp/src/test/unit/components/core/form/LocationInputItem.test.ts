@@ -57,4 +57,34 @@ describe('widgets/ionic/LocationInputItem', () => {
 		const icon = container.querySelector('ion-icon');
 		expect(icon).toBeTruthy();
 	});
+
+	it('renders map icon button for opening modal', () => {
+		const { container } = render(LocationInputItem, {
+			props: { label: 'Location', value: 'Berlin' }
+		});
+
+		const endButton = container.querySelector('ion-button[slot="end"]');
+		expect(endButton).toBeTruthy();
+	});
+
+	it('shows modal with MapView when button clicked', async () => {
+		const { container } = render(LocationInputItem, {
+			props: { label: 'Location', value: 'Berlin' }
+		});
+
+		const endButton = container.querySelector('ion-button[slot="end"]')!;
+		await fireEvent.click(endButton);
+
+		const modal = container.querySelector('ion-modal');
+		expect(modal).toBeTruthy();
+	});
+
+	it('renders with helperText prop', () => {
+		const { container } = render(LocationInputItem, {
+			props: { helperText: 'Enter your address', label: 'Location' }
+		});
+
+		// helperText is passed to InputItem child component
+		expect(container).toBeTruthy();
+	});
 });

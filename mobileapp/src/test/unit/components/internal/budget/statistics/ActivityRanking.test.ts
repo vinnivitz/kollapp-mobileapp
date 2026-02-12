@@ -102,4 +102,27 @@ describe('widgets/budget/statistics/ActivityRanking', () => {
 		});
 		expect(container.querySelector('ion-card')).toBeTruthy();
 	});
+
+	it('shows activity amounts formatted as currency', () => {
+		const { container } = render(ActivityRanking, {
+			props: { activities: mockActivities as never, isDarkMode: false }
+		});
+		// Activity 2 net cost: credit 300 - debit 2000 = -1700 cents = €-17.00
+		expect(container.textContent).toContain('€-17.00');
+	});
+
+	it('renders with dark mode', () => {
+		const { container } = render(ActivityRanking, {
+			props: { activities: mockActivities as never, isDarkMode: true }
+		});
+		expect(container.querySelector('ion-card')).toBeTruthy();
+	});
+
+	it('renders chart icon in title', () => {
+		const { container } = render(ActivityRanking, {
+			props: { activities: mockActivities as never, isDarkMode: false }
+		});
+		const icon = container.querySelector('ion-card-title ion-icon');
+		expect(icon).toBeTruthy();
+	});
 });

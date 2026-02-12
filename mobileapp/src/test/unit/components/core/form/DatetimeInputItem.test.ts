@@ -164,4 +164,30 @@ describe('widgets/ionic/DatetimeInputItem', () => {
 		const item = container.querySelector('ion-item.custom-datetime');
 		expect(item).toBeTruthy();
 	});
+
+	it('dispatches ionBlur via dismissed callback', async () => {
+		const { container } = render(DatetimeInputItem, {
+			props: { label: 'Date', name: 'dateField' }
+		});
+
+		const hostDiv = container.querySelector('div') as HTMLDivElement;
+		const blurEvents: CustomEvent[] = [];
+		hostDiv.addEventListener('ionBlur', ((event: Event) => blurEvents.push(event as CustomEvent)) as EventListener);
+
+		// Click to open the datetime popover
+		const item = container.querySelector('ion-item')!;
+		await fireEvent.click(item);
+
+		// Get the dismissed callback from the store set call
+		const globalWithMocks = globalThis as unknown as { __mocks?: { datetimeInputSet?: Mock } };
+		const set = globalWithMocks.__mocks?.datetimeInputSet as Mock | undefined;
+		const lastCall = set!.mock.calls.at(-1);
+		const argument = lastCall?.[0] as { dismissed?: () => void } | undefined;
+
+		// Trigger dismissed callback
+		argument?.dismissed?.();
+
+		expect(blurEvents.length).toBe(1);
+		expect(blurEvents[0]!.detail).toEqual({ key: 'dateField' });
+	});
 });

@@ -90,4 +90,19 @@ describe('widgets/budget/statistics/MonthComparisonCard', () => {
 		});
 		expect(container.querySelector('ion-card')).toBeTruthy();
 	});
+
+	it('shows change indicator when previous month has data', () => {
+		// Both months have credit and debit data so previousAmount > 0 triggers IconLabel
+		const bothMonthPostings = [
+			{ amountInCents: 2000, date: `${currentMonth}-10`, type: 'CREDIT' as const },
+			{ amountInCents: 1500, date: `${currentMonth}-15`, type: 'DEBIT' as const },
+			{ amountInCents: 1000, date: `${lastMonth}-10`, type: 'CREDIT' as const },
+			{ amountInCents: 800, date: `${lastMonth}-15`, type: 'DEBIT' as const }
+		];
+		const { container } = render(MonthComparisonCard, {
+			props: { postings: bothMonthPostings as never }
+		});
+		// Change indicator should show percentage
+		expect(container.textContent).toContain('%');
+	});
 });
