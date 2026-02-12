@@ -237,9 +237,8 @@
       "budget-card": {
         "balance": "Balance",
         "heading": "Budget overview",
-        "no-postings": "No transactions found.",
-        "top-expenses": "Top expenses",
-        "top-income": "Top income"
+        "latest-postings": "Latest transactions",
+        "no-postings": "No transactions found."
       },
       "leaflet-map": {
         "searchbar": {
@@ -1087,42 +1086,20 @@
               },
               "open-postings": {
                 "title": "Open Transactions",
-                "search-placeholder": "Search....",
-                "no-results": "No transactions found for \"{{value}}\"",
-                "no-results-filtered": "No transactions found.",
-                "loading": "Loading..."
+                "show-all": "Show all {{value}} transactions"
               }
             },
             "modal": {
               "filter": {
                 "card": {
-                  "title": "Filter transactions",
-                  "type-filter": {
-                    "label": "Transaction type",
-                    "credit": "Income",
-                    "debit": "Expenses"
-                  },
-                  "date-range": {
-                    "label": "Time period"
-                  },
-                  "budget-categories": {
-                    "label": "Categories",
-                    "input-label": "Selected categories",
-                    "all-selected": "All categories selected",
-                    "search-placeholder": "Search categories..."
-                  },
-                  "activities": {
-                    "all-selected": "All event selected",
-                    "select": "Selected events",
-                    "label": "Events",
-                    "search": "Search events..."
-                  }
+                  "type-filter": {},
+                  "date-range": {},
+                  "budget-categories": {},
+                  "activities": {}
                 }
               }
             },
-            "activity-filter-items": {
-              "not-assigned": "Not assigned"
-            }
+            "activity-filter-items": {}
           }
         },
         "page": {

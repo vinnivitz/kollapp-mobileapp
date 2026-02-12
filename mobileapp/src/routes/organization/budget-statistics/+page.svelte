@@ -578,14 +578,14 @@
 		[...filteredPostings]
 			.filter((posting) => posting.type === 'CREDIT')
 			.toSorted((a, b) => b.amountInCents - a.amountInCents)
-			.slice(0, 5)
+			.slice(0, 4)
 	);
 
 	const topDebits = $derived(
 		[...filteredPostings]
 			.filter((posting) => posting.type === 'DEBIT')
 			.toSorted((a, b) => b.amountInCents - a.amountInCents)
-			.slice(0, 5)
+			.slice(0, 4)
 	);
 
 	$effect(() => {

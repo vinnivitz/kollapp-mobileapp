@@ -111,13 +111,14 @@ describe('widgets/BudgetChart', () => {
 		expect(ratioBar).toBeTruthy();
 	});
 
-	it('BudgetChart shows top expenses for debit postings', () => {
+	it('BudgetChart shows latest postings section', () => {
 		const postings = makePostings();
 		const { container } = render(BudgetChart, { ...defaultProps, postings });
 		expect(getBalance(container)).toBeTruthy();
+		expect(container.querySelector('.border-t')).toBeTruthy();
 	});
 
-	it('BudgetChart with only credits renders balance and ratio bar but no top expenses section', () => {
+	it('BudgetChart with only credits renders balance, ratio bar, and latest postings', () => {
 		const postings = makeManyPostings(3, 'CREDIT');
 		const { container } = render(BudgetChart, { ...defaultProps, postings });
 		expect(getBalance(container)).toBeTruthy();
@@ -131,14 +132,14 @@ describe('widgets/BudgetChart', () => {
 		expect(getRatioBar(container)).toBeTruthy();
 	});
 
-	it('BudgetChart shows at most 3 top expenses', () => {
+	it('BudgetChart shows at most 4 latest postings', () => {
 		const postings = makeManyPostings(8, 'DEBIT');
 		const { container } = render(BudgetChart, { ...defaultProps, postings });
-		// The top expenses section should list at most 3 items
+		// The latest postings section should list at most 4 items
 		const borderSection = container.querySelector('.border-t');
 		expect(borderSection).toBeTruthy();
-		const expenseItems = borderSection!.querySelectorAll('.truncate');
-		expect(expenseItems.length).toBeLessThanOrEqual(3);
+		const postingItems = borderSection!.querySelectorAll('.truncate');
+		expect(postingItems.length).toBeLessThanOrEqual(4);
 	});
 
 	it('BudgetChart renders no chips (simplified view)', () => {
@@ -166,7 +167,7 @@ describe('widgets/BudgetChart', () => {
 		expect(getRatioBar(container)).toBeTruthy();
 	});
 
-	it('BudgetChart: mixed dataset renders balance and all sections', () => {
+	it('BudgetChart: mixed dataset renders balance, ratio bar, and latest postings', () => {
 		const now = new TZDate().toISOString();
 		const postings: PostingTO[] = [
 			{
@@ -221,7 +222,7 @@ describe('widgets/BudgetChart', () => {
 		expect(getBalance(container)).toBeTruthy();
 		// Ratio bar should be visible
 		expect(getRatioBar(container)).toBeTruthy();
-		// Top expenses section should be visible
+		// Latest postings section should be visible
 		expect(container.querySelector('.border-t')).toBeTruthy();
 	});
 

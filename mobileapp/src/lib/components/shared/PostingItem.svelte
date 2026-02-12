@@ -44,7 +44,7 @@
 	} from '$lib/components/core';
 	import { IconLabel } from '$lib/components/core/display';
 	import { t } from '$lib/locales';
-	import { Form, type FormActions, type ItemSlidingOption, type MultiSelectItem } from '$lib/models/ui';
+	import { type Colors, Form, type FormActions, type ItemSlidingOption, type MultiSelectItem } from '$lib/models/ui';
 	import {
 		confirmationModal,
 		customForm,
@@ -63,6 +63,7 @@
 		personsOfOrganization: PersonOfOrganizationTO[];
 		posting: PostingTO;
 		activity?: ActivityTO;
+		color?: Colors;
 		onDeleteActivityPosting: (activityId: number, postingId: number) => Promise<ResponseBody>;
 		onDeleteOrganizationPosting: (postingId: number) => Promise<ResponseBody>;
 		onEditEnd: (dismissParent?: boolean) => void;
@@ -87,6 +88,7 @@
 		activities,
 		activity,
 		budgetCategories,
+		color = 'light',
 		completed,
 		onDeleteActivityPosting,
 		onDeleteOrganizationPosting,
@@ -264,6 +266,7 @@
 </script>
 
 <CustomItem
+	{color}
 	slidingOptions={slidingOptions.length > 0 ? slidingOptions : undefined}
 	iconColor={posting.type === 'CREDIT' ? 'success' : 'danger'}
 	icon={posting.type === 'CREDIT' ? trendingUpOutline : trendingDownOutline}

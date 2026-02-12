@@ -1,16 +1,19 @@
 <script lang="ts">
-	import type { PostingTO } from '@kollapp/api-types';
+	import type { ActivityTO, PostingTO } from '@kollapp/api-types';
 
 	import { arrowForwardOutline, cashOutline, trendingDownOutline, trendingUpOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
+	import { budgetService } from '$lib/api/services';
 	import { Card } from '$lib/components/core';
+	import { PostingItem } from '$lib/components/shared';
 	import { t } from '$lib/locales';
+	import { organizationStore } from '$lib/stores';
 	import { formatter } from '$lib/utility';
 
-	const TOP_POSTINGS_COUNT = 3;
+	const LATEST_POSTINGS_COUNT = 4;
 
 	type Properties = {
 		postings: PostingTO[];
@@ -30,15 +33,19 @@
 	const total = $derived(creditTotal + debitTotal);
 	const creditPercent = $derived(total > 0 ? (creditTotal / total) * 100 : 50);
 
-	const topExpenses = $derived(
-		[...debitPostings].toSorted((a, b) => b.amountInCents - a.amountInCents).slice(0, TOP_POSTINGS_COUNT)
+	const latestPostings = $derived(
+		[...(postings ?? [])]
+			.toSorted((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+			.slice(0, LATEST_POSTINGS_COUNT)
 	);
-	const topExpensesMaxAmount = $derived(topExpenses[0]?.amountInCents ?? 0);
 
-	const topIncome = $derived(
-		[...creditPostings].toSorted((a, b) => b.amountInCents - a.amountInCents).slice(0, TOP_POSTINGS_COUNT)
+	const activityByPostingId = $derived<Map<number, ActivityTO>>(
+		new Map(
+			($organizationStore?.activities ?? []).flatMap((activity) =>
+				activity.activityPostings.map((posting) => [posting.id, activity] as [number, ActivityTO])
+			)
+		)
 	);
-	const topIncomeMaxAmount = $derived(topIncome[0]?.amountInCents ?? 0);
 </script>
 
 <Card
@@ -87,65 +94,37 @@
 			</div>
 		{/if}
 
-		{#if topExpenses.length > 0}
-			<div class="border-t border-(--ion-color-light-shade) pt-2">
-				<ion-text class="px-1 text-xs font-medium" color="medium">
-					{$t('components.widgets.budget-card.top-expenses')}
-				</ion-text>
-				<div class="mt-1 flex flex-col gap-1.5 px-1 pb-1">
-					{#each topExpenses as expense (expense.id)}
-						<div class="flex items-center gap-2">
-							<div class="min-w-0 flex-1">
-								<div class="flex items-baseline justify-between gap-2">
-									<ion-text class="truncate text-xs">{expense.purpose}</ion-text>
-									<ion-text class="shrink-0 text-xs font-medium" color="danger">
-										{formatter.currency(expense.amountInCents)}
-									</ion-text>
-								</div>
-								{#if topExpensesMaxAmount > 0}
-									<div class="mt-0.5 h-1 overflow-hidden rounded-full bg-(--ion-color-light-shade)">
-										<div
-											class="h-full rounded-full transition-all duration-500"
-											style="width: {(expense.amountInCents / topExpensesMaxAmount) *
-												100}%; background: var(--ion-color-danger-tint);"
-										></div>
-									</div>
-								{/if}
-							</div>
-						</div>
+		{#if latestPostings.length > 0}
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<div
+				class="ion-activatable border-t border-(--ion-color-light-shade)"
+				onclick={(event_) => event_.stopPropagation()}
+			>
+				<ion-list>
+					<ion-list-header>
+						<ion-text class="px-1 text-sm font-medium" color="medium">
+							{$t('components.widgets.budget-card.latest-postings')}
+						</ion-text>
+					</ion-list-header>
+					{#each latestPostings as posting (posting.id)}
+						<PostingItem
+							{posting}
+							activity={activityByPostingId.get(posting.id)}
+							activities={$organizationStore?.activities ?? []}
+							budgetCategories={$organizationStore?.budgetCategories ?? []}
+							personsOfOrganization={$organizationStore?.personsOfOrganization ?? []}
+							onEditStart={() => {}}
+							onEditEnd={() => {}}
+							onUpdateOrganizationPosting={budgetService.updateOrganizationPosting}
+							onUpdateActivityPosting={budgetService.updateActivityPosting}
+							onTransferOrganizationPosting={budgetService.transferOrganizationPosting}
+							onTransferActivityPosting={budgetService.transferActivityPosting}
+							onDeleteOrganizationPosting={budgetService.deleteOrganizationPosting}
+							onDeleteActivityPosting={budgetService.deleteActivityPosting}
+						/>
 					{/each}
-				</div>
-			</div>
-		{/if}
-
-		{#if topIncome.length > 0}
-			<div class="mt-3 border-t border-(--ion-color-light-shade) pt-2">
-				<ion-text class="px-1 text-xs font-medium" color="medium">
-					{$t('components.widgets.budget-card.top-income')}
-				</ion-text>
-				<div class="mt-1 flex flex-col gap-1.5 px-1 pb-1">
-					{#each topIncome as income (income.id)}
-						<div class="flex items-center gap-2">
-							<div class="min-w-0 flex-1">
-								<div class="flex items-baseline justify-between gap-2">
-									<ion-text class="truncate text-xs">{income.purpose}</ion-text>
-									<ion-text class="shrink-0 text-xs font-medium" color="success">
-										{formatter.currency(income.amountInCents)}
-									</ion-text>
-								</div>
-								{#if topIncomeMaxAmount > 0}
-									<div class="mt-0.5 h-1 overflow-hidden rounded-full bg-(--ion-color-light-shade)">
-										<div
-											class="h-full rounded-full transition-all duration-500"
-											style="width: {(income.amountInCents / topIncomeMaxAmount) *
-												100}%; background: var(--ion-color-success-tint);"
-										></div>
-									</div>
-								{/if}
-							</div>
-						</div>
-					{/each}
-				</div>
+				</ion-list>
 			</div>
 		{/if}
 	{:else}

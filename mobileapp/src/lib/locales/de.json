@@ -514,42 +514,20 @@
               },
               "open-postings": {
                 "title": "Offene Buchungen",
-                "search-placeholder": "Suchen....",
-                "no-results": "Keine Buchung für „{{value}}“ gefunden",
-                "no-results-filtered": "Keine Buchungen gefunden.",
-                "loading": "Laden..."
+                "show-all": "Alle {{value}} Buchungen anzeigen"
               }
             },
             "modal": {
               "filter": {
                 "card": {
-                  "title": "Buchungen filtern",
-                  "type-filter": {
-                    "label": "Buchungstyp",
-                    "credit": "Einnahmen",
-                    "debit": "Ausgaben"
-                  },
-                  "date-range": {
-                    "label": "Zeitraum"
-                  },
-                  "budget-categories": {
-                    "label": "Kategorien",
-                    "input-label": "Ausgewählte Kategorien",
-                    "all-selected": "Alle Kategorien ausgewählt",
-                    "search-placeholder": "Kategorien durchsuchen..."
-                  },
-                  "activities": {
-                    "all-selected": "Alle Veranstaltungen ausgewählt",
-                    "select": "Ausgewählte Veranstaltungen",
-                    "label": "Veranstaltungen",
-                    "search": "Veranstaltungen suchen..."
-                  }
+                  "type-filter": {},
+                  "date-range": {},
+                  "budget-categories": {},
+                  "activities": {}
                 }
               }
             },
-            "activity-filter-items": {
-              "not-assigned": "Nicht zugewiesen"
-            }
+            "activity-filter-items": {}
           }
         },
         "page": {
@@ -1177,9 +1155,8 @@
       "budget-card": {
         "balance": "Saldo",
         "heading": "Budgetübersicht",
-        "no-postings": "Keine Buchungen gefunden.",
-        "top-expenses": "Größte Ausgaben",
-        "top-income": "Größte Einnahmen"
+        "latest-postings": "Letzte Buchungen",
+        "no-postings": "Keine Buchungen gefunden."
       },
       "ionic": {
         "datetime": {

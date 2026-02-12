@@ -8,12 +8,13 @@
 		label: string;
 		total: number;
 		note?: string;
+		transparent?: boolean;
 	};
 
-	let { credit, debit, label, note, total }: Properties = $props();
+	let { credit, debit, label, note, total, transparent = false }: Properties = $props();
 </script>
 
-<CustomItem>
+<CustomItem {transparent}>
 	<div class="flex w-full flex-row items-center justify-between gap-2">
 		<div class="flex min-w-0 flex-1 flex-col">
 			<ion-text class="block truncate">{label}</ion-text>
