@@ -107,6 +107,7 @@ export default defineConfig(
 			],
 			'perfectionist/sort-objects': 'error',
 			'perfectionist/sort-union-types': 'error',
+			'sonarjs/no-os-command-from-path': 'off',
 			'sonarjs/no-unused-collection': 'off',
 			'sonarjs/no-use-of-empty-return-value': 'off',
 			'sonarjs/slow-regex': 'off',

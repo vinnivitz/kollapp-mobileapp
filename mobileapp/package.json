@@ -12,13 +12,13 @@
 		"test:ui": "vitest --ui",
 		"test": "vitest -- --run",
 		"doc": "typedoc & live-server ./docs --watch --silent --no-browser --port=1234 & chokidar 'src/lib' -c 'typedoc' --silent",
-		"build-android": "cross-env ADAPTER=static npm run build && dotenv cross-env-shell 'cap sync && ./android/gradlew -p android assembleDebug'",
-		"run-android": "cross-env ADAPTER=static npm run build && cross-env-shell 'cap run android'",
+		"build-android": "cross-env ADAPTER=static npm run build && dotenv cross-env-shell \"cap sync\" && node scripts/gradlew.js assembleDebug",
+		"run-android": "cross-env ADAPTER=static npm run build && cross-env-shell \"cap run android\"",
 		"build-web": "cross-env ADAPTER=node npm run build",
 		"visualize": "mkdir -p visualize && madge --extensions ts,svelte --image visualize/dependency-graph.png src",
 		"indexing": "tsx ./src/lib/utility/indexing.utility.ts",
 		"sync-ionic-types": "tsx ./src/lib/utility/sync-ionic-types.ts && prettier --write ./src/app.d.ts && eslint ./src/app.d.ts --fix",
-		"i18n": "OUTPUT=$(i18n-unused display-unused && i18n-unused display-missed) && echo \"$OUTPUT\" && echo \"$OUTPUT\" | grep -qE 'Total unused translations count: 0' && echo \"$OUTPUT\" | grep -qE 'Total missed.*count: 0'"
+		"i18n": "node scripts/check-i18n.js"
 	},
 	"type": "module",
 	"devDependencies": {
