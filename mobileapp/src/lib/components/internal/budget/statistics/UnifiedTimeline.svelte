@@ -130,7 +130,6 @@
 		return worst;
 	});
 
-	// --- Month Comparison ---
 	const now = new TZDate();
 	let comparisonMonthA = $state<string>(formatter.date(startOfMonth(now), 'yyyy-MM'));
 	let comparisonMonthB = $state<string>(formatter.date(startOfMonth(subMonths(now, 1)), 'yyyy-MM'));
@@ -335,13 +334,12 @@
 			{/if}
 		</div>
 
-		<!-- Swipeable Month Comparison -->
 		<div class="mt-3 border-t border-(--ion-color-light) pt-2">
 			<button
 				class="flex w-full cursor-pointer items-center justify-center gap-1 border-none bg-transparent py-1"
 				onclick={() => (showComparison = !showComparison)}
 			>
-				<ion-text color="medium" class="text-xs font-semibold">
+				<ion-text color="medium" class="text-sm font-semibold">
 					{$t('routes.organization.budget-statistics.page.comparison.title')}
 				</ion-text>
 				<ion-icon icon={showComparison ? chevronUpOutline : chevronDownOutline} color="medium" class="text-sm"

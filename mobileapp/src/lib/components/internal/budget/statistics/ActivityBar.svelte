@@ -295,6 +295,7 @@
 						debit={stats.totalDebit}
 						total={stats.totalCredit - stats.totalDebit}
 						note="{stats.postingCount} {$t('routes.organization.budget-statistics.page.activities.transactions')}"
+						onAction={() => goto(resolve('/organization/activities/[slug]', { slug: stats.activity.id.toString() }))}
 					/>
 				{/each}
 			</ion-list>
