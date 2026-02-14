@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { ActivityTO, OrganizationRole, PostingTO } from '@kollapp/api-types';
 
+	import { TZDate } from '@date-fns/tz';
 	import { actionSheetController } from '@ionic/core';
 	import {
 		cardOutline,
@@ -79,7 +80,7 @@
 
 	const previewPostings = $derived(
 		[...stablePostings]
-			.toSorted((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+			.toSorted((a, b) => new TZDate(b.date).getTime() - new TZDate(a.date).getTime())
 			.slice(0, PREVIEW_COUNT)
 	);
 

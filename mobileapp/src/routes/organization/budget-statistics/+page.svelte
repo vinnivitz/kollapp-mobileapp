@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ActivityTO, PostingTO } from '@kollapp/api-types';
+	import type { PostingTO } from '@kollapp/api-types';
 
 	import { Capacitor } from '@capacitor/core';
 	import { FileViewer } from '@capacitor/file-viewer';
@@ -13,32 +13,31 @@
 		analyticsOutline,
 		downloadOutline,
 		eyeOutline,
+		flashOutline,
 		mailOutline,
+		peopleOutline,
 		shareOutline,
-		trendingDownOutline,
 		trendingUpOutline
 	} from 'ionicons/icons';
 	import { onMount, tick } from 'svelte';
-	import { SvelteMap } from 'svelte/reactivity';
 
 	import { dev } from '$app/environment';
 
-	import { budgetService } from '$lib/api/services';
-	import { Card } from '$lib/components/core';
 	import {
-		ActivityRanking,
-		CategoryStatistics,
-		Highlights,
-		MedianStatistics,
-		MemberStatistics,
-		MonthComparisonCard,
-		MonthlyCashflow,
-		MonthlyTrendChart,
-		OverviewCards,
-		PostingsHeatmap
+		ActivityBar,
+		ActivityEfficiency,
+		CategoryDonut,
+		HeroBalance,
+		PersonOfOrganizationBar,
+		PostingsHeatmap,
+		SectionDivider,
+		SmartInsights,
+		TopTransactions,
+		UnifiedTimeline,
+		WeekdayAnalysis
 	} from '$lib/components/internal/budget/statistics';
 	import { Layout } from '$lib/components/layout';
-	import { FilterPanel, PostingItem } from '$lib/components/shared';
+	import { FilterPanel } from '$lib/components/shared';
 	import { t } from '$lib/locales';
 	import { StorageKey } from '$lib/models/storage';
 	import {
@@ -54,17 +53,16 @@
 
 	type TimeRange = '12months' | '3months' | '6months' | 'all';
 	type StatisticsCard =
-		| 'activity-ranking'
+		| 'activity-bar'
 		| 'calendar-heatmap'
-		| 'cashflow'
-		| 'categories'
-		| 'highlights'
-		| 'median'
-		| 'members'
-		| 'month-comparison'
-		| 'monthly-trend'
-		| 'overview'
-		| 'top-transactions';
+		| 'category-donut'
+		| 'event-efficiency'
+		| 'hero-balance'
+		| 'member-bar'
+		| 'smart-insights'
+		| 'timeline'
+		| 'top-transactions'
+		| 'weekday-analysis';
 	type StatisticsFilterState = {
 		dateRange: { from: string; to: string };
 		timeRange: TimeRange;
@@ -72,31 +70,29 @@
 	};
 
 	const ALL_CARDS: StatisticsCard[] = [
-		'overview',
-		'highlights',
-		'month-comparison',
-		'monthly-trend',
-		'categories',
-		'members',
-		'activity-ranking',
+		'hero-balance',
+		'smart-insights',
+		'timeline',
 		'calendar-heatmap',
-		'median',
-		'cashflow',
-		'top-transactions'
+		'category-donut',
+		'member-bar',
+		'activity-bar',
+		'top-transactions',
+		'event-efficiency',
+		'weekday-analysis'
 	];
 
 	const CARD_LABELS: Record<StatisticsCard, string> = {
-		'activity-ranking': $t('routes.organization.budget-statistics.page.activities.title'),
+		'activity-bar': $t('routes.organization.budget-statistics.page.activities.title'),
 		'calendar-heatmap': $t('routes.organization.budget-statistics.page.heatmap.title'),
-		cashflow: $t('routes.organization.budget-statistics.page.cashflow.title'),
-		categories: $t('routes.organization.budget-statistics.page.categories.title'),
-		highlights: $t('routes.organization.budget-statistics.page.insights.title'),
-		median: $t('routes.organization.budget-statistics.page.median.title'),
-		members: $t('routes.organization.budget-statistics.page.members.title'),
-		'month-comparison': $t('routes.organization.budget-statistics.page.comparison.title'),
-		'monthly-trend': $t('routes.organization.budget-statistics.page.trend.title'),
-		overview: $t('routes.organization.budget-statistics.page.overview.title'),
-		'top-transactions': $t('routes.organization.budget-statistics.page.top-credits.title')
+		'category-donut': $t('routes.organization.budget-statistics.page.category-statistics.title'),
+		'event-efficiency': $t('routes.organization.budget-statistics.page.event-efficiency.title'),
+		'hero-balance': $t('routes.organization.budget-statistics.page.overview.title'),
+		'member-bar': $t('routes.organization.budget-statistics.page.member-statistics.title'),
+		'smart-insights': $t('routes.organization.budget-statistics.page.insights.title'),
+		timeline: $t('routes.organization.budget-statistics.page.trend.title'),
+		'top-transactions': $t('routes.organization.budget-statistics.page.top-transactions.title'),
+		'weekday-analysis': $t('routes.organization.budget-statistics.page.weekday.title')
 	};
 
 	let isEditingPosting = $state<boolean>(false);
@@ -114,14 +110,6 @@
 	function cardDownload(cardId: StatisticsCard): (() => void) | undefined {
 		return isExporting ? undefined : () => handleCardExport(cardId);
 	}
-
-	const activityByPostingId = $derived<SvelteMap<number, ActivityTO>>(
-		new SvelteMap(
-			($organizationStore?.activities ?? []).flatMap((activity) =>
-				activity.activityPostings.map((posting) => [posting.id, activity] as [number, ActivityTO])
-			)
-		)
-	);
 
 	const postings = $derived<PostingTO[]>([
 		...($organizationStore?.organizationPostings ?? []),
@@ -574,20 +562,6 @@
 	const transactionCount = $derived(filteredPostings.length);
 	const averageTransaction = $derived(transactionCount > 0 ? (totalCredit + totalDebit) / transactionCount : 0);
 
-	const topCredits = $derived(
-		[...filteredPostings]
-			.filter((posting) => posting.type === 'CREDIT')
-			.toSorted((a, b) => b.amountInCents - a.amountInCents)
-			.slice(0, 4)
-	);
-
-	const topDebits = $derived(
-		[...filteredPostings]
-			.filter((posting) => posting.type === 'DEBIT')
-			.toSorted((a, b) => b.amountInCents - a.amountInCents)
-			.slice(0, 4)
-	);
-
 	$effect(() => {
 		if (!isEditingPosting) {
 			stablePostings = [...postings];
@@ -623,96 +597,133 @@
 		</div>
 		<div id="statistics-content" data-tour={TourStepId.BUDGET_STATISTICS.CHARTS}>
 			{@render transactionCountNote()}
-			<div class="mt-4 grid grid-cols-1 md:grid-cols-2">
-				{#if isCardVisible('overview')}
-					<div data-card-id="overview">
-						<OverviewCards
-							{averageTransaction}
-							{balance}
-							{totalCredit}
-							{totalDebit}
-							onDownload={cardDownload('overview')}
-						/>
-					</div>
-				{/if}
 
-				{#if isCardVisible('highlights')}
-					<div data-card-id="highlights">
-						<Highlights
-							postings={filteredPostings}
-							categories={$organizationStore?.budgetCategories ?? []}
-							onDownload={cardDownload('highlights')}
-						/>
-					</div>
-				{/if}
+			<!-- Section 1 -->
+			<div style="border-left: 3px solid var(--ion-color-primary); margin-left: 4px; padding-left: 0;">
+				<SectionDivider
+					color="primary"
+					icon={flashOutline}
+					title={$t('routes.organization.budget-statistics.page.sections.quick-glance')}
+					subtitle={$t('routes.organization.budget-statistics.page.sections.quick-glance-sub')}
+				/>
+				<div class="grid grid-cols-1 md:grid-cols-2">
+					{#if isCardVisible('hero-balance')}
+						<div data-card-id="hero-balance">
+							<HeroBalance
+								{averageTransaction}
+								{balance}
+								postings={filteredPostings}
+								{totalCredit}
+								{totalDebit}
+								{transactionCount}
+								onDownload={cardDownload('hero-balance')}
+							/>
+						</div>
+					{/if}
 
-				{#if isCardVisible('month-comparison')}
-					<div data-card-id="month-comparison">
-						<MonthComparisonCard postings={filteredPostings} onDownload={cardDownload('month-comparison')} />
-					</div>
-				{/if}
+					{#if isCardVisible('smart-insights')}
+						<div data-card-id="smart-insights">
+							<SmartInsights
+								activities={$organizationStore?.activities ?? []}
+								categories={$organizationStore?.budgetCategories ?? []}
+								postings={filteredPostings}
+								onDownload={cardDownload('smart-insights')}
+							/>
+						</div>
+					{/if}
+				</div>
+			</div>
 
-				{#if isCardVisible('monthly-trend')}
-					<div data-card-id="monthly-trend">
-						<MonthlyTrendChart postings={filteredPostings} {isDarkMode} onDownload={cardDownload('monthly-trend')} />
-					</div>
-				{/if}
+			<!-- Section 2 -->
+			<div style="border-left: 3px solid var(--ion-color-secondary); margin-left: 4px; padding-left: 0;">
+				<SectionDivider
+					color="secondary"
+					icon={trendingUpOutline}
+					title={$t('routes.organization.budget-statistics.page.sections.trends')}
+					subtitle={$t('routes.organization.budget-statistics.page.sections.trends-sub')}
+				/>
+				<div class="grid grid-cols-1 md:grid-cols-2">
+					{#if isCardVisible('timeline')}
+						<div data-card-id="timeline">
+							<UnifiedTimeline postings={filteredPostings} {isDarkMode} onDownload={cardDownload('timeline')} />
+						</div>
+					{/if}
 
-				{#if isCardVisible('categories')}
-					<div data-card-id="categories">
-						<CategoryStatistics
-							budgetCategories={$organizationStore?.budgetCategories ?? []}
-							postings={filteredPostings}
-							{isDarkMode}
-							onDownload={cardDownload('categories')}
-						/>
-					</div>
-				{/if}
+					{#if isCardVisible('calendar-heatmap')}
+						<div data-card-id="calendar-heatmap">
+							<PostingsHeatmap postings={filteredPostings} onDownload={cardDownload('calendar-heatmap')} />
+						</div>
+					{/if}
+				</div>
+			</div>
 
-				{#if isCardVisible('members')}
-					<div data-card-id="members">
-						<MemberStatistics
-							{isDarkMode}
-							postings={filteredPostings}
-							personsOfOrganization={$organizationStore?.personsOfOrganization ?? []}
-							onDownload={cardDownload('members')}
-						/>
-					</div>
-				{/if}
+			<!-- Section 3 -->
+			<div style="border-left: 3px solid var(--ion-color-tertiary); margin-left: 4px; padding-left: 0;">
+				<SectionDivider
+					color="tertiary"
+					icon={peopleOutline}
+					title={$t('routes.organization.budget-statistics.page.sections.breakdown')}
+					subtitle={$t('routes.organization.budget-statistics.page.sections.breakdown-sub')}
+				/>
+				<div class="grid grid-cols-1 md:grid-cols-2">
+					{#if isCardVisible('category-donut')}
+						<div data-card-id="category-donut">
+							<CategoryDonut
+								budgetCategories={$organizationStore?.budgetCategories ?? []}
+								postings={filteredPostings}
+								{isDarkMode}
+								onDownload={cardDownload('category-donut')}
+							/>
+						</div>
+					{/if}
 
-				{#if isCardVisible('activity-ranking')}
-					<div data-card-id="activity-ranking">
-						<ActivityRanking
-							activities={$organizationStore?.activities ?? []}
-							{isDarkMode}
-							onDownload={cardDownload('activity-ranking')}
-						/>
-					</div>
-				{/if}
+					{#if isCardVisible('member-bar')}
+						<div data-card-id="member-bar">
+							<PersonOfOrganizationBar
+								{isDarkMode}
+								postings={filteredPostings}
+								personsOfOrganization={$organizationStore?.personsOfOrganization ?? []}
+								onDownload={cardDownload('member-bar')}
+							/>
+						</div>
+					{/if}
 
-				{#if isCardVisible('calendar-heatmap')}
-					<div data-card-id="calendar-heatmap">
-						<PostingsHeatmap postings={filteredPostings} onDownload={cardDownload('calendar-heatmap')} />
-					</div>
-				{/if}
+					{#if isCardVisible('activity-bar')}
+						<div data-card-id="activity-bar">
+							<ActivityBar
+								activities={$organizationStore?.activities ?? []}
+								{isDarkMode}
+								onDownload={cardDownload('activity-bar')}
+							/>
+						</div>
+					{/if}
 
-				{#if isCardVisible('median')}
-					<div data-card-id="median">
-						<MedianStatistics postings={filteredPostings} onDownload={cardDownload('median')} />
-					</div>
-				{/if}
+					{#if isCardVisible('top-transactions')}
+						<div data-card-id="top-transactions">
+							<TopTransactions
+								postings={filteredPostings}
+								onDownload={cardDownload('top-transactions')}
+								onEditStart={() => (isEditingPosting = true)}
+								onEditEnd={() => (isEditingPosting = false)}
+							/>
+						</div>
+					{/if}
 
-				{#if isCardVisible('cashflow')}
-					<div data-card-id="cashflow">
-						<MonthlyCashflow postings={filteredPostings} {isDarkMode} onDownload={cardDownload('cashflow')} />
-					</div>
-				{/if}
+					{#if isCardVisible('event-efficiency')}
+						<div data-card-id="event-efficiency">
+							<ActivityEfficiency
+								activities={$organizationStore?.activities ?? []}
+								onDownload={cardDownload('event-efficiency')}
+							/>
+						</div>
+					{/if}
 
-				{#if isCardVisible('top-transactions')}
-					<div data-card-id="top-transactions">
-						{@render topTransactionsCards()}
-					</div>
-				{/if}
+					{#if isCardVisible('weekday-analysis')}
+						<div data-card-id="weekday-analysis">
+							<WeekdayAnalysis postings={filteredPostings} {isDarkMode} onDownload={cardDownload('weekday-analysis')} />
+						</div>
+					{/if}
+				</div>
 			</div>
 		</div>
 	{/if}
@@ -731,62 +742,4 @@
 			{$t('routes.organization.budget-statistics.page.transaction-count', { value: transactionCount })}
 		</ion-note>
 	</div>
-{/snippet}
-
-{#snippet topTransactionsCards()}
-	{#if topCredits.length > 0}
-		<Card
-			lazy
-			title={$t('routes.organization.budget-statistics.page.top-credits.title')}
-			titleIconStart={trendingUpOutline}
-			titleIconEnd={isExporting ? undefined : downloadOutline}
-			titleIconEndClicked={cardDownload('top-transactions')}
-		>
-			{#each topCredits as posting (posting.id)}
-				<PostingItem
-					onEditStart={() => (isEditingPosting = true)}
-					onEditEnd={() => (isEditingPosting = false)}
-					personsOfOrganization={$organizationStore?.personsOfOrganization!}
-					{posting}
-					activity={activityByPostingId.get(posting.id)}
-					activities={$organizationStore?.activities!}
-					budgetCategories={$organizationStore?.budgetCategories!}
-					onUpdateOrganizationPosting={budgetService.updateOrganizationPosting}
-					onUpdateActivityPosting={budgetService.updateActivityPosting}
-					onTransferOrganizationPosting={budgetService.transferOrganizationPosting}
-					onTransferActivityPosting={budgetService.transferActivityPosting}
-					onDeleteOrganizationPosting={budgetService.deleteOrganizationPosting}
-					onDeleteActivityPosting={budgetService.deleteActivityPosting}
-				/>
-			{/each}
-		</Card>
-	{/if}
-
-	{#if topDebits.length > 0}
-		<Card
-			lazy
-			title={$t('routes.organization.budget-statistics.page.top-debits.title')}
-			titleIconStart={trendingDownOutline}
-			titleIconEnd={isExporting ? undefined : downloadOutline}
-			titleIconEndClicked={cardDownload('top-transactions')}
-		>
-			{#each topDebits as posting (posting.id)}
-				<PostingItem
-					onEditStart={() => (isEditingPosting = true)}
-					onEditEnd={() => (isEditingPosting = false)}
-					personsOfOrganization={$organizationStore?.personsOfOrganization!}
-					{posting}
-					activity={activityByPostingId.get(posting.id)}
-					activities={$organizationStore?.activities!}
-					budgetCategories={$organizationStore?.budgetCategories!}
-					onUpdateOrganizationPosting={budgetService.updateOrganizationPosting}
-					onUpdateActivityPosting={budgetService.updateActivityPosting}
-					onTransferOrganizationPosting={budgetService.transferOrganizationPosting}
-					onTransferActivityPosting={budgetService.transferActivityPosting}
-					onDeleteOrganizationPosting={budgetService.deleteOrganizationPosting}
-					onDeleteActivityPosting={budgetService.deleteActivityPosting}
-				/>
-			{/each}
-		</Card>
-	{/if}
 {/snippet}

@@ -6,6 +6,9 @@
 	import Chart from '@edde746/svelte-apexcharts';
 	import { downloadOutline, listOutline, podiumOutline } from 'ionicons/icons';
 
+	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
+
 	import { Button, Card, Modal } from '$lib/components/core';
 	import { StatisticItem } from '$lib/components/internal/budget/statistics';
 	import { FilterPanel } from '$lib/components/shared';
@@ -37,7 +40,7 @@
 
 	let { activities, isDarkMode, onDownload }: Properties = $props();
 
-	const ACTIVITY_COUNT_TRESHOLD = 4;
+	const TOP_ACTIVITIES_COUNT = 4;
 
 	let modalOpen = $state<boolean>(false);
 	let searchValue = $state<string>('');
@@ -70,7 +73,6 @@
 	});
 
 	const totalActivityCost = $derived(activityStats.reduce((sum, stat) => sum + stat.netCost, 0));
-
 	const avgActivityCost = $derived(activityStats.length > 0 ? totalActivityCost / activityStats.length : 0);
 
 	const filteredAndSortedStats = $derived.by<ActivityStats[]>(() => {
@@ -130,7 +132,7 @@
 					{ label: $t('routes.organization.budget-statistics.page.chart.credit'), value: 'credit' },
 					{ label: $t('routes.organization.budget-statistics.page.chart.debit'), value: 'debit' },
 					{ label: $t('routes.organization.budget-statistics.page.member-statistics.net'), value: 'net' },
-					{ label: $t('routes.organization.budget-statistics.page.activities.bookings'), value: 'postings' },
+					{ label: $t('routes.organization.budget-statistics.page.activities.transactions'), value: 'postings' },
 					{ label: $t('routes.organization.budget-statistics.page.activities.avg-cost'), value: 'cost-per-posting' }
 				]
 			}),
@@ -150,7 +152,7 @@
 	const chartOptions = $derived<ApexOptions>({
 		chart: {
 			animations: { enabled: true },
-			height: 300,
+			height: 260,
 			stacked: false,
 			toolbar: { show: false },
 			type: 'bar'
@@ -158,9 +160,9 @@
 		colors: ['var(--ion-color-success)', 'var(--ion-color-danger)'],
 		dataLabels: { enabled: false },
 		grid: {
-			padding: { bottom: 20 }
+			padding: { bottom: 0, left: 10 }
 		},
-		labels: activityStats.slice(0, ACTIVITY_COUNT_TRESHOLD).map((s) => s.activity.name),
+		labels: activityStats.slice(0, TOP_ACTIVITIES_COUNT).map((s) => s.activity.name),
 		legend: {
 			labels: { colors: 'var(--ion-color-dark)' },
 			position: 'top',
@@ -168,38 +170,42 @@
 		},
 		plotOptions: {
 			bar: {
-				borderRadius: 4,
+				borderRadius: 3,
+				columnWidth: '55%',
 				horizontal: false
 			}
 		},
 		series: [
 			{
-				data: activityStats.slice(0, ACTIVITY_COUNT_TRESHOLD).map((s) => s.totalCredit / 100),
+				data: activityStats.slice(0, TOP_ACTIVITIES_COUNT).map((s) => s.totalCredit / 100),
 				name: $t('routes.organization.budget-statistics.page.chart.credit')
 			},
 			{
-				data: activityStats.slice(0, ACTIVITY_COUNT_TRESHOLD).map((s) => s.totalDebit / 100),
+				data: activityStats.slice(0, TOP_ACTIVITIES_COUNT).map((s) => s.totalDebit / 100),
 				name: $t('routes.organization.budget-statistics.page.chart.debit')
 			}
 		],
 		tooltip: {
-			theme: isDarkMode ? 'dark' : 'light'
+			theme: isDarkMode ? 'dark' : 'light',
+			y: {
+				formatter: (value: number) => formatter.currency(value * 100)
+			}
 		},
 		xaxis: {
 			labels: {
 				rotate: -45,
 				rotateAlways: true,
-				style: {
-					colors: 'var(--ion-color-dark)',
-					fontSize: '11px'
-				},
+				style: { colors: 'var(--ion-color-dark)', fontSize: '11px' },
 				trim: true
 			}
 		},
 		yaxis: {
 			labels: {
 				formatter: (value: number) => formatter.currency(value * 100, true),
-				style: { colors: 'var(--ion-color-dark)' }
+				style: {
+					colors: 'var(--ion-color-dark)',
+					fontSize: '11px'
+				}
 			}
 		}
 	});
@@ -213,20 +219,18 @@
 	lazy
 >
 	{#if activityStats.length > 0}
-		<div class="flex flex-col gap-4">
-			<div class="flex items-center justify-around gap-2">
-				<Card border="primary" classList="m-0 text-center flex-1" contentClass="p-3!">
-					<div class="text-2xl font-bold">{activityStats.length}</div>
-					<ion-note class="text-xs">
-						{$t('routes.organization.budget-statistics.page.activities.total-activities')}
-					</ion-note>
-				</Card>
-				<Card border="primary" classList="m-0 text-center flex-1" contentClass="p-3!">
-					<div class="text-2xl font-bold">{formatter.currency(avgActivityCost, true)}</div>
-					<ion-note class="text-xs">
-						{$t('routes.organization.budget-statistics.page.activities.avg-cost')}
-					</ion-note>
-				</Card>
+		<div class="mb-3 flex items-center justify-around gap-2">
+			<div class="flex flex-1 flex-col items-center gap-1 rounded-lg p-2" style="background: var(--ion-color-light);">
+				<ion-text class="text-2xl font-bold">{activityStats.length}</ion-text>
+				<ion-note class="text-xs">
+					{$t('routes.organization.budget-statistics.page.activities.total-activities')}
+				</ion-note>
+			</div>
+			<div class="flex flex-1 flex-col items-center gap-1 rounded-lg p-2" style="background: var(--ion-color-light);">
+				<ion-text class="text-2xl font-bold">{formatter.currency(avgActivityCost, true)}</ion-text>
+				<ion-note class="text-xs">
+					{$t('routes.organization.budget-statistics.page.activities.avg-cost')}
+				</ion-note>
 			</div>
 		</div>
 
@@ -234,16 +238,17 @@
 			<Chart options={chartOptions}></Chart>
 		{/if}
 
-		{#each activityStats.slice(0, ACTIVITY_COUNT_TRESHOLD) as stats (stats.activity.id)}
+		{#each activityStats.slice(0, TOP_ACTIVITIES_COUNT) as stats (stats.activity.id)}
 			<StatisticItem
 				label={stats.activity.name}
 				credit={stats.totalCredit}
 				debit={stats.totalDebit}
 				total={stats.totalCredit - stats.totalDebit}
-				note="{stats.postingCount} {$t('routes.organization.budget-statistics.page.activities.bookings')}"
+				note="{stats.postingCount} {$t('routes.organization.budget-statistics.page.activities.transactions')}"
+				onAction={() => goto(resolve('/organization/activities/[slug]', { slug: stats.activity.id.toString() }))}
 			/>
 		{/each}
-		{#if activityStats.length > ACTIVITY_COUNT_TRESHOLD}
+		{#if activityStats.length > TOP_ACTIVITIES_COUNT}
 			<div class="mt-2 flex justify-center">
 				<Button
 					fill="clear"
@@ -289,7 +294,7 @@
 						credit={stats.totalCredit}
 						debit={stats.totalDebit}
 						total={stats.totalCredit - stats.totalDebit}
-						note="{stats.postingCount} {$t('routes.organization.budget-statistics.page.activities.bookings')}"
+						note="{stats.postingCount} {$t('routes.organization.budget-statistics.page.activities.transactions')}"
 					/>
 				{/each}
 			</ion-list>

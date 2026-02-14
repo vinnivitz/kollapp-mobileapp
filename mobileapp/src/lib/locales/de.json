@@ -737,21 +737,12 @@
             "visible-cards-all": "Alle Karten sichtbar"
           },
           "overview": {
-            "credit": "Gesamteinnahmen",
-            "debit": "Gesamtausgaben",
             "balance": "Saldo",
-            "avg": "Ø Buchung",
             "title": "Überblick"
           },
           "trend": {
             "title": "Monatlicher Verlauf",
             "no-data": "Keine Daten verfügbar."
-          },
-          "categories": {
-            "title": "Nach Kategorie"
-          },
-          "members": {
-            "title": "Nach Mitglied"
           },
           "top-credits": {
             "title": "Top Einnahmen"
@@ -759,18 +750,8 @@
           "top-debits": {
             "title": "Top Ausgaben"
           },
-          "median": {
-            "title": "Median vs. Durchschnitt",
-            "all": "Median",
-            "credit": "Median Einnahmen",
-            "debit": "Median Ausgaben",
-            "avg-comparison": "Ø Durchschnitt",
-            "hint": "Der Median weicht um {{value}} vom Durchschnitt ab"
-          },
           "cashflow": {
-            "title": "Monatlicher Cashflow (Netto)",
             "net": "Netto",
-            "no-data": "Keine Daten verfügbar.",
             "best": "Bester Monat",
             "worst": "Schlechtester Monat"
           },
@@ -803,7 +784,6 @@
           },
           "comparison": {
             "title": "Monatsvergleich",
-            "subtitle": "{{value}} vs. {{value2}}",
             "credit": "Einnahmen",
             "debit": "Ausgaben",
             "previous": "{{value}}",
@@ -816,7 +796,7 @@
             "title": "Nach Veranstaltung",
             "total-activities": "Veranstaltungen",
             "avg-cost": "Ø Kosten",
-            "bookings": "Buchungen",
+            "transactions": "Buchungen",
             "no-activities": "Keine Veranstaltungen mit Buchungen",
             "show-all": "Alle Veranstaltungen anzeigen"
           },
@@ -848,6 +828,43 @@
               "title": "Viele Kleinausgaben",
               "description": "{{value}} Buchungen unter 5€ summieren sich auf {{value2}}"
             }
+          },
+          "hero": {
+            "transactions": "Buchungen",
+            "avg-per-transaction": "Ø pro Buchung",
+            "vs-last-month": "ggü. Vormonat"
+          },
+          "smart-insights": {
+            "upcoming-event": {
+              "title": "Nächste Veranstaltung",
+              "description": "\"{{value}}\" steht an — bisher {{value2}} an Ausgaben"
+            }
+          },
+          "top-transactions": {
+            "title": "Top Buchungen",
+            "no-credits": "Keine Einnahmen vorhanden",
+            "no-debits": "Keine Ausgaben vorhanden"
+          },
+          "event-efficiency": {
+            "title": "Event-Effizienz",
+            "series": "Veranstaltungen",
+            "net-cost": "Nettokosten",
+            "hint": "X = Anzahl Buchungen, Y = Nettokosten. Größere Punkte bedeuten höheres Volumen.",
+            "no-data": "Mindestens 2 Veranstaltungen mit Buchungen nötig"
+          },
+          "weekday": {
+            "title": "Nach Wochentag",
+            "no-data": "Keine Daten verfügbar.",
+            "transactions-label": "Buchungen",
+            "busiest": "Aktivster Tag: {{value}} ({{value2}} Buchungen)"
+          },
+          "sections": {
+            "quick-glance": "Überblick",
+            "quick-glance-sub": "Saldo & Kennzahlen auf einen Blick",
+            "trends": "Entwicklung",
+            "trends-sub": "Muster & Verlauf im Zeitraum",
+            "breakdown": "Aufschlüsselung",
+            "breakdown-sub": "Nach Kategorie, Mitglied & Veranstaltung"
           },
           "export": {
             "header": "Statistik exportieren",

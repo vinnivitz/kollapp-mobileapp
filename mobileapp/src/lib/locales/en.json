@@ -1266,21 +1266,12 @@
             "visible-cards-all": "All cards visible"
           },
           "overview": {
-            "credit": "Total Income",
-            "debit": "Total Expenses",
             "balance": "Balance",
-            "avg": "Ø Transaction",
             "title": "Overview"
           },
           "trend": {
             "title": "Monthly Trend",
             "no-data": "No data available."
-          },
-          "categories": {
-            "title": "By Category"
-          },
-          "members": {
-            "title": "By Member"
           },
           "top-credits": {
             "title": "Top Income"
@@ -1288,18 +1279,8 @@
           "top-debits": {
             "title": "Top Expenses"
           },
-          "median": {
-            "title": "Median vs. Average",
-            "all": "Median",
-            "credit": "Median Income",
-            "debit": "Median Expenses",
-            "avg-comparison": "Ø Average",
-            "hint": "The median deviates by {{value}} from the average"
-          },
           "cashflow": {
-            "title": "Monthly Cashflow (Net)",
             "net": "Net",
-            "no-data": "No data available.",
             "best": "Best month",
             "worst": "Worst month"
           },
@@ -1313,7 +1294,7 @@
             "title": "By member",
             "net": "Net",
             "no-data": "No member data available.",
-            "volume": "volume",
+            "volume": "Volume",
             "show-all": "Show all members"
           },
           "chart": {
@@ -1332,7 +1313,6 @@
           },
           "comparison": {
             "title": "Month Comparison",
-            "subtitle": "{{value}} vs. {{value2}}",
             "credit": "Income",
             "debit": "Expenses",
             "previous": "{{value}}",
@@ -1345,7 +1325,7 @@
             "title": "By event",
             "total-activities": "Events",
             "avg-cost": "Avg. Cost",
-            "bookings": "transactions",
+            "transactions": "transactions",
             "no-activities": "No events with transactions",
             "show-all": "Show all events"
           },
@@ -1378,8 +1358,43 @@
               "description": "{{value}} transactions under €5 add up to {{value2}}"
             }
           },
+          "hero": {
+            "transactions": "Transactions",
+            "vs-last-month": "vs. last month",
+            "avg-per-transaction": "Ø per transaction"
+          },
+          "smart-insights": {
+            "upcoming-event": {
+              "title": "Upcoming event",
+              "description": "\"{{value}}\" is coming up — {{value2}} in expenses so far"
+            }
+          },
+          "top-transactions": {
+            "title": "Top Transactions",
+            "no-credits": "No income recorded",
+            "no-debits": "No expenses recorded"
+          },
+          "event-efficiency": {
+            "title": "Event Efficiency",
+            "series": "Events",
+            "net-cost": "Net Cost",
+            "hint": "X = number of transactions, Y = net cost. Larger bubbles indicate higher volume.",
+            "no-data": "At least 2 events with transactions needed"
+          },
+          "weekday": {
+            "title": "By Weekday",
+            "no-data": "No data available.",
+            "busiest": "Busiest day: {{value}} ({{value2}} transactions)"
+          },
+          "sections": {
+            "quick-glance": "Overview",
+            "quick-glance-sub": "Balance & key metrics at a glance",
+            "trends": "Trends",
+            "trends-sub": "Patterns & development over time",
+            "breakdown": "Details",
+            "breakdown-sub": "By category, member & event"
+          },
           "export": {
-            "header": "Export statistics",
             "view": "View",
             "download": "Download",
             "share": "Share",
@@ -1423,7 +1438,7 @@
             "budget-categories": "Budget categories",
             "change-collective": "Change collectively",
             "header": "Collective",
-            "leave": "Leave collectively",
+            "leave": "Leave collective",
             "members": "Members",
             "update-info": "Update collective information"
           }

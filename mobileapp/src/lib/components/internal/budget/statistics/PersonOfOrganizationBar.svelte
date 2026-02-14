@@ -6,6 +6,9 @@
 	import Chart from '@edde746/svelte-apexcharts';
 	import { downloadOutline, listOutline, peopleOutline } from 'ionicons/icons';
 
+	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
+
 	import { Button, Card, Modal } from '$lib/components/core';
 	import { StatisticItem } from '$lib/components/internal/budget/statistics';
 	import { FilterPanel } from '$lib/components/shared';
@@ -37,7 +40,7 @@
 
 	let { isDarkMode, onDownload, personsOfOrganization, postings }: Properties = $props();
 
-	const PERSON_OF_ORGANIZATION_COUNT_TRESHOLD = 4;
+	const TOP_MEMBERS_COUNT = 4;
 
 	let modalOpen = $state<boolean>(false);
 	let searchValue = $state<string>('');
@@ -136,56 +139,68 @@
 	const chartOptions = $derived<ApexOptions>({
 		chart: {
 			animations: { enabled: true },
-			height: 300,
+			height: 260,
 			stacked: false,
 			toolbar: { show: false },
 			type: 'bar'
 		},
-		colors: ['var(--ion-color-success)', 'var(--ion-color-danger)'],
-		dataLabels: { enabled: false },
+		colors: statistics
+			.slice(0, TOP_MEMBERS_COUNT)
+			.map((s) => (s.net >= 0 ? 'var(--ion-color-success)' : 'var(--ion-color-danger)')),
+		dataLabels: {
+			enabled: true,
+			formatter: (value: number) => formatter.currency(value * 100, true),
+			style: {
+				colors: ['#ffffff'],
+				fontSize: '11px'
+			}
+		},
 		grid: {
-			padding: { bottom: 20 }
+			padding: { bottom: 0, left: 10 }
 		},
-		labels: statistics.slice(0, PERSON_OF_ORGANIZATION_COUNT_TRESHOLD).map((s) => s.personOfOrganization.username),
-		legend: {
-			labels: { colors: 'var(--ion-color-dark)' },
-			position: 'top',
-			show: true
-		},
+		labels: statistics.slice(0, TOP_MEMBERS_COUNT).map((s) => s.personOfOrganization.username),
+		legend: { show: false },
 		plotOptions: {
 			bar: {
 				borderRadius: 4,
+				colors: {
+					ranges: [
+						{ color: 'var(--ion-color-danger)', from: -999_999_999, to: -0.01 },
+						{ color: 'var(--ion-color-success)', from: 0, to: 999_999_999 }
+					]
+				},
+				columnWidth: '60%',
+				distributed: true,
 				horizontal: false
 			}
 		},
 		series: [
 			{
-				data: statistics.slice(0, PERSON_OF_ORGANIZATION_COUNT_TRESHOLD).map((s) => s.credit / 100),
-				name: $t('routes.organization.budget-statistics.page.chart.credit')
-			},
-			{
-				data: statistics.slice(0, PERSON_OF_ORGANIZATION_COUNT_TRESHOLD).map((s) => s.debit / 100),
-				name: $t('routes.organization.budget-statistics.page.chart.debit')
+				data: statistics.slice(0, TOP_MEMBERS_COUNT).map((s) => s.net / 100),
+				name: $t('routes.organization.budget-statistics.page.member-statistics.net')
 			}
 		],
 		tooltip: {
-			theme: isDarkMode ? 'dark' : 'light'
+			theme: isDarkMode ? 'dark' : 'light',
+			y: {
+				formatter: (value: number) => formatter.currency(value * 100)
+			}
 		},
 		xaxis: {
 			labels: {
 				rotate: -45,
 				rotateAlways: true,
-				style: {
-					colors: 'var(--ion-color-dark)',
-					fontSize: '11px'
-				},
+				style: { colors: 'var(--ion-color-dark)', fontSize: '11px' },
 				trim: true
 			}
 		},
 		yaxis: {
 			labels: {
 				formatter: (value: number) => formatter.currency(value * 100, true),
-				style: { colors: 'var(--ion-color-dark)' }
+				style: {
+					colors: 'var(--ion-color-dark)',
+					fontSize: '12px'
+				}
 			}
 		}
 	});
@@ -205,7 +220,7 @@
 	{:else}
 		<Chart options={chartOptions}></Chart>
 
-		{#each statistics.slice(0, PERSON_OF_ORGANIZATION_COUNT_TRESHOLD) as stat (stat.personOfOrganization.id)}
+		{#each statistics.slice(0, TOP_MEMBERS_COUNT) as stat (stat.personOfOrganization.id)}
 			<StatisticItem
 				label={stat.personOfOrganization.username}
 				credit={stat.credit}
@@ -214,9 +229,10 @@
 				note="{stat.volumeShare.toFixed(1)}% {$t(
 					'routes.organization.budget-statistics.page.member-statistics.volume'
 				)}"
+				onAction={() => goto(resolve(`/organization/members/${stat.personOfOrganization.id}`))}
 			/>
 		{/each}
-		{#if statistics.length > PERSON_OF_ORGANIZATION_COUNT_TRESHOLD}
+		{#if statistics.length > TOP_MEMBERS_COUNT}
 			<div class="mt-2 flex justify-center">
 				<Button
 					fill="clear"

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { openOutline } from 'ionicons/icons';
+
 	import { CustomItem } from '$lib/components/core';
 	import { formatter } from '$lib/utility';
 
@@ -9,12 +11,13 @@
 		total: number;
 		note?: string;
 		transparent?: boolean;
+		onAction?: () => void;
 	};
 
-	let { credit, debit, label, note, total, transparent = false }: Properties = $props();
+	let { credit, debit, label, note, onAction, total, transparent = false }: Properties = $props();
 </script>
 
-<CustomItem {transparent}>
+<CustomItem {transparent} iconEnd={onAction ? openOutline : undefined} iconClicked={onAction}>
 	<div class="flex w-full flex-row items-center justify-between gap-2">
 		<div class="flex min-w-0 flex-1 flex-col">
 			<ion-text class="block truncate">{label}</ion-text>

@@ -9,11 +9,12 @@ try {
 	throw new Error(`i18n check error: ${error.message}`, { cause: error });
 }
 
-console.log(output);
-
 const hasNoUnused = /Total unused translations count: 0/.test(output);
 const hasNoMissed = /Total missed.*count: 0/.test(output);
 
-if (!hasNoUnused || !hasNoMissed) {
+if (hasNoUnused && hasNoMissed) {
+	console.log('i18n check passed: no unused or missed translations.');
+} else {
+	console.log(output);
 	throw new Error('i18n check failed: there are unused or missed translations.');
 }

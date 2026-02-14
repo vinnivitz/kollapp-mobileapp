@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { ActivityTO, PostingTO } from '@kollapp/api-types';
 
+	import { TZDate } from '@date-fns/tz';
 	import { arrowForwardOutline, cashOutline, trendingDownOutline, trendingUpOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
@@ -35,7 +36,7 @@
 
 	const latestPostings = $derived(
 		[...(postings ?? [])]
-			.toSorted((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+			.toSorted((a, b) => new TZDate(b.date).getTime() - new TZDate(a.date).getTime())
 			.slice(0, LATEST_POSTINGS_COUNT)
 	);
 

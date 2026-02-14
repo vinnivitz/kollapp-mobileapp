@@ -4,7 +4,7 @@
 	import type { ApexOptions } from 'apexcharts';
 
 	import Chart from '@edde746/svelte-apexcharts';
-	import { cardOutline, downloadOutline, listOutline } from 'ionicons/icons';
+	import { downloadOutline, listOutline, pieChartOutline } from 'ionicons/icons';
 
 	import { Button, Card, Modal } from '$lib/components/core';
 	import { StatisticItem } from '$lib/components/internal/budget/statistics';
@@ -37,7 +37,15 @@
 
 	let { budgetCategories, isDarkMode, onDownload, postings }: Properties = $props();
 
-	const CATEGORY_COUNT_TRESHOLD = 4;
+	const TOP_CATEGORIES_COUNT = 5;
+	const DONUT_COLORS = [
+		'var(--ion-color-primary)',
+		'var(--ion-color-secondary)',
+		'var(--ion-color-tertiary)',
+		'var(--ion-color-success)',
+		'var(--ion-color-warning)',
+		'var(--ion-color-danger)'
+	];
 
 	let modalOpen = $state<boolean>(false);
 	let searchValue = $state<string>('');
@@ -138,59 +146,64 @@
 		title: $t('components.posting-overview.filter.title')
 	});
 
-	const chartOptions = $derived<ApexOptions>({
+	const chartCategories = $derived(categoryActuals.slice(0, TOP_CATEGORIES_COUNT));
+
+	const donutOptions = $derived<ApexOptions>({
 		chart: {
 			animations: { enabled: true },
-			height: 300,
-			stacked: false,
+			height: 260,
 			toolbar: { show: false },
-			type: 'bar'
+			type: 'donut'
 		},
-		colors: ['var(--ion-color-success)', 'var(--ion-color-danger)'],
-		dataLabels: { enabled: false },
-		grid: {
-			padding: { bottom: 20 }
+		colors: DONUT_COLORS.slice(0, chartCategories.length),
+		dataLabels: {
+			enabled: true,
+			formatter: (value: number) => `${value.toFixed(0)}%`,
+			style: {
+				fontSize: '11px',
+				fontWeight: 600
+			}
 		},
-		labels: categoryActuals.slice(0, 6).map((s) => s.category.name),
+		labels: chartCategories.map((s) => s.category.name),
 		legend: {
 			labels: { colors: 'var(--ion-color-dark)' },
-			position: 'top',
+			position: 'bottom',
 			show: true
 		},
 		plotOptions: {
-			bar: {
-				borderRadius: 4,
-				horizontal: false
-			}
-		},
-		series: [
-			{
-				data: categoryActuals.slice(0, 6).map((s) => s.credit / 100),
-				name: $t('routes.organization.budget-statistics.page.chart.credit')
-			},
-			{
-				data: categoryActuals.slice(0, 6).map((s) => s.debit / 100),
-				name: $t('routes.organization.budget-statistics.page.chart.debit')
-			}
-		],
-		tooltip: {
-			theme: isDarkMode ? 'dark' : 'light'
-		},
-		xaxis: {
-			labels: {
-				rotate: -45,
-				rotateAlways: true,
-				style: {
-					colors: 'var(--ion-color-dark)',
-					fontSize: '11px'
+			pie: {
+				donut: {
+					labels: {
+						name: {
+							color: 'var(--ion-color-medium)',
+							fontSize: '11px',
+							show: true
+						},
+						show: true,
+						total: {
+							color: 'var(--ion-color-dark)',
+							fontSize: '13px',
+							formatter: () => formatter.currency(totalDebit, true),
+							label: $t('routes.organization.budget-statistics.page.chart.debit'),
+							show: true
+						},
+						value: {
+							color: 'var(--ion-color-dark)',
+							fontSize: '14px',
+							formatter: (value: string) => formatter.currency(Number(value) * 100),
+							show: true
+						}
+					},
+					size: '65%'
 				},
-				trim: true
+				expandOnClick: true
 			}
 		},
-		yaxis: {
-			labels: {
-				formatter: (value: number) => formatter.currency(value * 100, true),
-				style: { colors: 'var(--ion-color-dark)' }
+		series: chartCategories.map((s) => s.debit / 100),
+		tooltip: {
+			theme: isDarkMode ? 'dark' : 'light',
+			y: {
+				formatter: (value: number) => formatter.currency(value * 100)
 			}
 		}
 	});
@@ -198,7 +211,7 @@
 
 <Card
 	title={$t('routes.organization.budget-statistics.page.category-statistics.title')}
-	titleIconStart={cardOutline}
+	titleIconStart={pieChartOutline}
 	titleIconEnd={onDownload ? downloadOutline : undefined}
 	titleIconEndClicked={onDownload}
 	lazy
@@ -208,9 +221,9 @@
 			{$t('routes.organization.budget-statistics.page.category-statistics.no-data')}
 		</ion-text>
 	{:else}
-		<Chart options={chartOptions}></Chart>
+		<Chart options={donutOptions}></Chart>
 
-		{#each categoryActuals.slice(0, CATEGORY_COUNT_TRESHOLD) as actual (actual.category.id)}
+		{#each categoryActuals.slice(0, TOP_CATEGORIES_COUNT) as actual (actual.category.id)}
 			<StatisticItem
 				label={actual.category.name}
 				credit={actual.credit}
@@ -221,7 +234,7 @@
 				)}"
 			/>
 		{/each}
-		{#if categoryActuals.length > CATEGORY_COUNT_TRESHOLD}
+		{#if categoryActuals.length > TOP_CATEGORIES_COUNT}
 			<div class="mt-2 flex justify-center">
 				<Button
 					fill="clear"

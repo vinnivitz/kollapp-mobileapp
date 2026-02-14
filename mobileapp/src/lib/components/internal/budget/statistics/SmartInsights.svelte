@@ -1,11 +1,12 @@
 <script lang="ts">
-	import type { OrganizationBudgetCategoryResponseTO, PostingTO } from '@kollapp/api-types';
+	import type { ActivityTO, OrganizationBudgetCategoryResponseTO, PostingTO } from '@kollapp/api-types';
 
 	import { TZDate } from '@date-fns/tz';
 	import { startOfMonth, subMonths } from 'date-fns';
 	import {
 		alertCircleOutline,
 		bulbOutline,
+		calendarOutline,
 		downloadOutline,
 		informationCircleOutline,
 		sparklesOutline,
@@ -20,24 +21,26 @@
 	import { formatter, parser } from '$lib/utility';
 
 	type Properties = {
+		activities: ActivityTO[];
 		categories: OrganizationBudgetCategoryResponseTO[];
 		postings: PostingTO[];
 		onDownload?: () => void;
 	};
 
-	type HighlightType = 'danger' | 'info' | 'success' | 'warning';
+	type InsightType = 'danger' | 'info' | 'success' | 'warning';
 
-	type Highlight = {
+	type Insight = {
 		description: string;
 		icon: string;
 		id: string;
 		title: string;
-		type: HighlightType;
+		type: InsightType;
 		value?: string;
 	};
 
-	let { categories, onDownload, postings }: Properties = $props();
+	let { activities, categories, onDownload, postings }: Properties = $props();
 
+	const MAX_VISIBLE_INSIGHTS = 6;
 	const UNUSUAL_EXPENSE_MIN_COUNT = 10;
 	const ANOMALY_STANDARD_DEVIATION_MULTIPLIER = 2;
 	const EXPENSES_INCREASE_THRESHOLD_PERCENT = 30;
@@ -77,13 +80,48 @@
 	const debitPostings = $derived(postings.filter((posting) => posting.type === 'DEBIT'));
 	const totalDebit = $derived(debitPostings.reduce((sum, posting) => sum + posting.amountInCents, 0));
 
-	const insights = $derived.by<Highlight[]>(() => {
-		const detectors = [detectAnomaly, detectSpendingTrend, detectTopCategory, detectInactivity, detectSmallExpenses];
+	const insights = $derived.by<Insight[]>(() => {
+		const detectors = [
+			detectUpcomingActivity,
+			detectAnomaly,
+			detectSpendingTrend,
+			detectTopCategory,
+			detectInactivity,
+			detectSmallExpenses
+		];
 
-		return detectors.map((detect) => detect()).filter((insight) => !!insight);
+		return detectors
+			.map((detect) => detect())
+			.filter((insight) => !!insight)
+			.slice(0, MAX_VISIBLE_INSIGHTS);
 	});
 
-	function detectAnomaly(): Highlight | undefined {
+	function detectUpcomingActivity(): Insight | undefined {
+		const upcoming = activities.find((a) => {
+			const activityDate = new TZDate(a.date);
+			const daysUntil = Math.floor((activityDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+			return daysUntil >= 0 && daysUntil <= 14;
+		});
+		if (!upcoming) return;
+
+		const totalCost = (upcoming.activityPostings ?? [])
+			.filter((p) => p.type === 'DEBIT')
+			.reduce((sum, p) => sum + p.amountInCents, 0);
+
+		return {
+			description: $t('routes.organization.budget-statistics.page.smart-insights.upcoming-event.description', {
+				value: upcoming.name,
+				value2: formatter.currency(totalCost)
+			}),
+			icon: calendarOutline,
+			id: 'upcoming-event',
+			title: $t('routes.organization.budget-statistics.page.smart-insights.upcoming-event.title'),
+			type: 'info',
+			value: upcoming.name
+		};
+	}
+
+	function detectAnomaly(): Insight | undefined {
 		if (debitPostings.length < UNUSUAL_EXPENSE_MIN_COUNT) return;
 
 		const amounts = debitPostings.map((posting) => posting.amountInCents);
@@ -112,7 +150,7 @@
 		};
 	}
 
-	function detectSpendingTrend(): Highlight | undefined {
+	function detectSpendingTrend(): Insight | undefined {
 		const currentMonthKey = parser.date(currentMonthStart);
 		const previousMonthKey = parser.date(previousMonthStart);
 		const currentMonth = monthlyStats.get(currentMonthKey);
@@ -149,7 +187,7 @@
 		}
 	}
 
-	function detectTopCategory(): Highlight | undefined {
+	function detectTopCategory(): Insight | undefined {
 		const categoryExpenses = new SvelteMap<number, number>();
 		for (const posting of debitPostings) {
 			const current = categoryExpenses.get(posting.organizationBudgetCategoryId) ?? 0;
@@ -177,7 +215,7 @@
 		};
 	}
 
-	function detectInactivity(): Highlight | undefined {
+	function detectInactivity(): Insight | undefined {
 		if (postings.length === 0) return;
 
 		const lastPosting = [...postings].toSorted(
@@ -202,7 +240,7 @@
 		};
 	}
 
-	function detectSmallExpenses(): Highlight | undefined {
+	function detectSmallExpenses(): Insight | undefined {
 		const smallPostings = debitPostings.filter((p) => p.amountInCents < SMALL_POSTINGS_THRESHOLD_CENTS);
 		if (smallPostings.length <= SMALL_POSTINGS_MIN_COUNT) return;
 
@@ -219,24 +257,7 @@
 		};
 	}
 
-	function getInsightBorderColorClass(type: HighlightType): string {
-		switch (type) {
-			case 'success': {
-				return 'border-[var(--ion-color-success-shade)]';
-			}
-			case 'warning': {
-				return 'border-[var(--ion-color-warning-shade)]';
-			}
-			case 'danger': {
-				return 'border-[var(--ion-color-danger-shade)]';
-			}
-			default: {
-				return 'border-[var(--ion-color-secondary-shade)]';
-			}
-		}
-	}
-
-	function getColorFromType(type: HighlightType): string {
+	function getColorFromType(type: InsightType): string {
 		switch (type) {
 			case 'success': {
 				return 'success';
@@ -261,40 +282,45 @@
 	titleIconEndClicked={onDownload}
 	lazy
 >
-	<div class="p-4">
-		{#if insights.length > 0}
-			<div class="flex flex-col gap-4">
-				{#each insights as insight (insight.id)}
-					<div class="rounded-lg border-2 p-3 {getInsightBorderColorClass(insight.type)}">
-						<div class="flex items-start gap-3">
-							<ion-icon icon={insight.icon} color={getColorFromType(insight.type)} class="mt-0.5 text-xl"></ion-icon>
-							<div class="min-w-0 flex-1">
-								<div class="flex w-full min-w-0 items-start gap-3 overflow-hidden">
-									<div class="min-w-0 grow basis-0 break-normal whitespace-normal">
-										{insight.title}
-									</div>
-									<ion-badge
-										class="max-w-3/5 min-w-0 shrink basis-auto truncate whitespace-nowrap"
-										color={getColorFromType(insight.type)}>{insight.value}</ion-badge
-									>
-								</div>
-
-								<p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-									{insight.description}
-								</p>
-							</div>
-						</div>
+	{#if insights.length > 0}
+		<div class="scrollbar-hide flex gap-3 overflow-x-auto px-2 pb-2">
+			{#each insights as insight (insight.id)}
+				<div
+					class="flex max-w-65 min-w-50 shrink-0 flex-col gap-2 rounded-xl p-3"
+					style="border: 1.5px solid var(--ion-color-{getColorFromType(
+						insight.type
+					)}); background: color-mix(in srgb, var(--ion-color-{getColorFromType(insight.type)}) 8%, transparent);"
+				>
+					<div class="flex items-center gap-2">
+						<ion-icon icon={insight.icon} color={getColorFromType(insight.type)} class="text-lg"></ion-icon>
+						<ion-text class="text-sm font-semibold">{insight.title}</ion-text>
+						{#if insight.value}
+							<ion-badge color={getColorFromType(insight.type)} class="ml-auto">
+								{insight.value}
+							</ion-badge>
+						{/if}
 					</div>
-				{/each}
-			</div>
-		{:else}
-			<div class="py-8 text-center text-gray-500">
-				<ion-icon icon={sparklesOutline} class="mb-2 text-4xl text-gray-400"></ion-icon>
-				<div>{$t('routes.organization.budget-statistics.page.insights.no-insights')}</div>
-				<div class="mt-1 text-xs">
-					{$t('routes.organization.budget-statistics.page.insights.hint')}
+					<ion-note class="text-xs leading-snug">{insight.description}</ion-note>
 				</div>
-			</div>
-		{/if}
-	</div>
+			{/each}
+		</div>
+	{:else}
+		<div class="py-6 text-center text-gray-500">
+			<ion-icon icon={sparklesOutline} class="mb-2 text-3xl text-gray-400"></ion-icon>
+			<div class="text-sm">{$t('routes.organization.budget-statistics.page.insights.no-insights')}</div>
+			<ion-note class="mt-1 text-xs">
+				{$t('routes.organization.budget-statistics.page.insights.hint')}
+			</ion-note>
+		</div>
+	{/if}
 </Card>
+
+<style>
+	.scrollbar-hide {
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
+	.scrollbar-hide::-webkit-scrollbar {
+		display: none;
+	}
+</style>
