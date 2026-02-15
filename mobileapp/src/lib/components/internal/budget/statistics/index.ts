@@ -3,6 +3,7 @@ export { default as ActivityBar } from './ActivityBar.svelte';
 export { default as ActivityEfficiency } from './ActivityEfficiency.svelte';
 export { default as BudgetChart } from './BudgetChart.svelte';
 export { default as CategoryDonut } from './CategoryDonut.svelte';
+export { default as DeferredChart } from './DeferredChart.svelte';
 export { default as HeroBalance } from './HeroBalance.svelte';
 export { default as PersonOfOrganizationBar } from './PersonOfOrganizationBar.svelte';
 export { default as PostingsHeatmap } from './PostingsHeatmap.svelte';

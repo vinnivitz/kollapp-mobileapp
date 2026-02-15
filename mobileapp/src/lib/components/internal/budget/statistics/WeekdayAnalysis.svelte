@@ -3,9 +3,10 @@
 	import type { ApexOptions } from 'apexcharts';
 
 	import { TZDate } from '@date-fns/tz';
-	import Chart from '@edde746/svelte-apexcharts';
 	import { format, getDay } from 'date-fns';
 	import { calendarOutline, downloadOutline } from 'ionicons/icons';
+
+	import DeferredChart from './DeferredChart.svelte';
 
 	import { Card } from '$lib/components/core';
 	import { t } from '$lib/locales';
@@ -124,7 +125,7 @@
 			<ion-note>{$t('routes.organization.budget-statistics.page.weekday.no-data')}</ion-note>
 		</div>
 	{:else}
-		<Chart options={chartOptions}></Chart>
+		<DeferredChart options={chartOptions} />
 
 		<div class="mt-2 text-center">
 			<ion-note class="text-xs">

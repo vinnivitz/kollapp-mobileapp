@@ -3,11 +3,12 @@
 	import type { PersonOfOrganizationTO, PostingTO } from '@kollapp/api-types';
 	import type { ApexOptions } from 'apexcharts';
 
-	import Chart from '@edde746/svelte-apexcharts';
 	import { downloadOutline, listOutline, peopleOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
+
+	import DeferredChart from './DeferredChart.svelte';
 
 	import { Button, Card, Modal } from '$lib/components/core';
 	import { StatisticItem } from '$lib/components/internal/budget/statistics';
@@ -218,7 +219,7 @@
 			{$t('routes.organization.budget-statistics.page.member-statistics.no-data')}
 		</ion-text>
 	{:else}
-		<Chart options={chartOptions}></Chart>
+		<DeferredChart options={chartOptions} />
 
 		{#each statistics.slice(0, TOP_MEMBERS_COUNT) as stat (stat.personOfOrganization.id)}
 			<StatisticItem

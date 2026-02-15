@@ -3,11 +3,12 @@
 	import type { ApexOptions } from 'apexcharts';
 
 	import { TZDate } from '@date-fns/tz';
-	import Chart from '@edde746/svelte-apexcharts';
 	import { addDays, eachDayOfInterval, endOfMonth, format, getDay, getYear, startOfMonth } from 'date-fns';
 	import { chevronBackOutline, chevronForwardOutline, downloadOutline, flameOutline } from 'ionicons/icons';
 	import { tick } from 'svelte';
 	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
+
+	import DeferredChart from './DeferredChart.svelte';
 
 	import { Button, Card } from '$lib/components/core';
 	import { t } from '$lib/locales';
@@ -436,7 +437,7 @@
 	</div>
 	<div class="chart-scroll-container" style="min-width: 100%;" bind:this={chartContainer}>
 		<div style="width: {chartWidth}px; min-width: 100%;">
-			<Chart options={chartOptions} />
+			<DeferredChart options={chartOptions} />
 		</div>
 	</div>
 </Card>

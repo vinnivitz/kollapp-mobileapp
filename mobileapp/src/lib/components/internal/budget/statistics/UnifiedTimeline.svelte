@@ -4,7 +4,6 @@
 	import type { ApexOptions } from 'apexcharts';
 
 	import { TZDate } from '@date-fns/tz';
-	import Chart from '@edde746/svelte-apexcharts';
 	import { endOfMonth, getYear, startOfMonth, subMonths } from 'date-fns';
 	import {
 		arrowDownOutline,
@@ -21,6 +20,8 @@
 	} from 'ionicons/icons';
 	import { tick } from 'svelte';
 	import { SvelteMap, SvelteSet } from 'svelte/reactivity';
+
+	import DeferredChart from './DeferredChart.svelte';
 
 	import { Button, Card, IconLabel, Popover } from '$lib/components/core';
 	import { Datetime } from '$lib/components/shared';
@@ -306,7 +307,7 @@
 			>{$t('routes.organization.budget-statistics.page.trend.no-data')}</ion-note
 		>
 	{:else}
-		<Chart options={chartOptions}></Chart>
+		<DeferredChart options={chartOptions} />
 
 		<div class="mt-2 flex justify-around text-center text-xs">
 			{#if bestMonth}

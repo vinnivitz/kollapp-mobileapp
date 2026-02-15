@@ -3,8 +3,9 @@
 	import type { OrganizationBudgetCategoryResponseTO, PostingTO } from '@kollapp/api-types';
 	import type { ApexOptions } from 'apexcharts';
 
-	import Chart from '@edde746/svelte-apexcharts';
 	import { downloadOutline, listOutline, pieChartOutline } from 'ionicons/icons';
+
+	import DeferredChart from './DeferredChart.svelte';
 
 	import { Button, Card, Modal } from '$lib/components/core';
 	import { StatisticItem } from '$lib/components/internal/budget/statistics';
@@ -221,7 +222,7 @@
 			{$t('routes.organization.budget-statistics.page.category-statistics.no-data')}
 		</ion-text>
 	{:else}
-		<Chart options={donutOptions}></Chart>
+		<DeferredChart options={donutOptions} />
 
 		{#each categoryActuals.slice(0, TOP_CATEGORIES_COUNT) as actual (actual.category.id)}
 			<StatisticItem

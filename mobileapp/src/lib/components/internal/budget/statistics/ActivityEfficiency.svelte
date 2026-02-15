@@ -2,8 +2,9 @@
 	import type { ActivityTO } from '@kollapp/api-types';
 	import type { ApexOptions } from 'apexcharts';
 
-	import Chart from '@edde746/svelte-apexcharts';
 	import { downloadOutline, gitNetworkOutline } from 'ionicons/icons';
+
+	import DeferredChart from './DeferredChart.svelte';
 
 	import { Card } from '$lib/components/core';
 	import { t } from '$lib/locales';
@@ -114,7 +115,7 @@
 		<ion-note class="block px-2 pb-2 text-center text-xs">
 			{$t('routes.organization.budget-statistics.page.event-efficiency.hint')}
 		</ion-note>
-		<Chart options={chartOptions}></Chart>
+		<DeferredChart options={chartOptions} />
 	{:else}
 		<div class="py-6 text-center">
 			<ion-note>{$t('routes.organization.budget-statistics.page.event-efficiency.no-data')}</ion-note>

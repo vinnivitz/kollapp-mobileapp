@@ -3,11 +3,12 @@
 	import type { ActivityTO } from '@kollapp/api-types';
 	import type { ApexOptions } from 'apexcharts';
 
-	import Chart from '@edde746/svelte-apexcharts';
 	import { downloadOutline, listOutline, podiumOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
+
+	import DeferredChart from './DeferredChart.svelte';
 
 	import { Button, Card, Modal } from '$lib/components/core';
 	import { StatisticItem } from '$lib/components/internal/budget/statistics';
@@ -235,7 +236,7 @@
 		</div>
 
 		{#if activityStats.length > 1}
-			<Chart options={chartOptions}></Chart>
+			<DeferredChart options={chartOptions} />
 		{/if}
 
 		{#each activityStats.slice(0, TOP_ACTIVITIES_COUNT) as stats (stats.activity.id)}
