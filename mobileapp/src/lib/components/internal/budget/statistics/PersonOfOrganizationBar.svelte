@@ -230,7 +230,7 @@
 				note="{stat.volumeShare.toFixed(1)}% {$t(
 					'routes.organization.budget-statistics.page.member-statistics.volume'
 				)}"
-				onAction={() => goto(resolve(`/organization/members/${stat.personOfOrganization.id}`))}
+				onAction={() => goto(resolve("/organization/members/[slug]", { slug: stat.personOfOrganization.id.toString() }))}
 			/>
 		{/each}
 		{#if statistics.length > TOP_MEMBERS_COUNT}
@@ -278,6 +278,7 @@
 						note="{stat.volumeShare.toFixed(1)}% {$t(
 							'routes.organization.budget-statistics.page.member-statistics.volume'
 						)}"
+						onAction={() => goto(resolve("/organization/members/[slug]", { slug: stat.personOfOrganization.id.toString() }))}
 					/>
 				{/each}
 			</ion-list>

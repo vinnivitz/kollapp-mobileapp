@@ -153,7 +153,7 @@
 					onkeydown={(event: KeyboardEvent) => event.key === 'Enter' && !computedReadonly && clicked?.()}
 					role="button"
 					tabindex="0"
-					class="ms-0 -me-3"
+					class="-ms-2 -me-4"
 					fill="clear"
 					slot="end"
 					aria-label={ariaLabel}
