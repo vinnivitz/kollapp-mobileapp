@@ -317,11 +317,15 @@
 			<form use:customForm={form}>
 				<div class="mb-3 flex items-center justify-center gap-2">
 					<Chip
+						color="success"
+						icon={trendingUpOutline}
 						selected={selectedPostingType === 'CREDIT'}
 						label={$t('components.posting-item.modal.edit.credit')}
 						clicked={() => setSelectedPostingType('CREDIT')}
 					/>
 					<Chip
+						color="danger"
+						icon={trendingDownOutline}
 						selected={selectedPostingType === 'DEBIT'}
 						label={$t('components.posting-item.modal.edit.debit')}
 						clicked={() => setSelectedPostingType('DEBIT')}

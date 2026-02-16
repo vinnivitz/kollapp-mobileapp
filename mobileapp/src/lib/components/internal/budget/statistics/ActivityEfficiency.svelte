@@ -110,6 +110,7 @@
 	titleIconEnd={onDownload ? downloadOutline : undefined}
 	titleIconEndClicked={onDownload}
 	lazy
+	lazyHeight="380px"
 >
 	{#if eventData.length >= 2}
 		<ion-note class="block px-2 pb-2 text-center text-xs">

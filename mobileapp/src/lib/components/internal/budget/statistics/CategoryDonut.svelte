@@ -216,6 +216,7 @@
 	titleIconEnd={onDownload ? downloadOutline : undefined}
 	titleIconEndClicked={onDownload}
 	lazy
+	lazyHeight="450px"
 >
 	{#if categoryActuals.length === 0}
 		<ion-text color="medium">

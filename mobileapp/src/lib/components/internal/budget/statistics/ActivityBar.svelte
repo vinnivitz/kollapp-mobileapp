@@ -218,6 +218,7 @@
 	titleIconEnd={onDownload ? downloadOutline : undefined}
 	titleIconEndClicked={onDownload}
 	lazy
+	lazyHeight="450px"
 >
 	{#if activityStats.length > 0}
 		<div class="mb-3 flex items-center justify-around gap-2">

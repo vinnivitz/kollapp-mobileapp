@@ -320,7 +320,7 @@
 			let cmp = 0;
 			switch (sortBy) {
 				case 'date': {
-					cmp = new TZDate(filteredPostingB.date).getTime() - new TZDate(filteredPostingA.date).getTime();
+					cmp = new TZDate(filteredPostingA.date).getTime() - new TZDate(filteredPostingB.date).getTime();
 					break;
 				}
 				case 'purpose': {

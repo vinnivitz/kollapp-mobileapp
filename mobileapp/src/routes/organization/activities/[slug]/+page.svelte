@@ -208,6 +208,7 @@
 		onDeleteActivityPosting={budgetService.deleteActivityPosting}
 		onTransferOrganizationPosting={budgetService.transferOrganizationPosting}
 		onTransferActivityPosting={budgetService.transferActivityPosting}
+		onOpenStatistics={async () => goto(resolve(`/organization/activities/${activity?.id}/statistics`))}
 	/>
 {/snippet}
 

@@ -281,6 +281,7 @@
 	titleIconEnd={onDownload ? downloadOutline : undefined}
 	titleIconEndClicked={onDownload}
 	lazy
+	lazyHeight="200px"
 >
 	{#if insights.length > 0}
 		<div class="scrollbar-hide flex gap-3 overflow-x-auto px-2 pb-2">

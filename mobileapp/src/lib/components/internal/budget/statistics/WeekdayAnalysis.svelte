@@ -119,6 +119,7 @@
 	titleIconEnd={onDownload ? downloadOutline : undefined}
 	titleIconEndClicked={onDownload}
 	lazy
+	lazyHeight="380px"
 >
 	{#if postings.length === 0}
 		<div class="py-6 text-center">

@@ -437,6 +437,9 @@
               },
               "title": "Buchungsübersicht"
             },
+            "statistics": {
+              "title": "Veranstaltungsstatistik"
+            },
             "title": "Veranstaltungsdetails"
           }
         }

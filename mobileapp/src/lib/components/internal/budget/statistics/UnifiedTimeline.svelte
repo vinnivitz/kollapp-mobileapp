@@ -280,6 +280,7 @@
 	titleIconEnd={onDownload ? downloadOutline : undefined}
 	titleIconEndClicked={onDownload}
 	lazy
+	lazyHeight="480px"
 >
 	<div class="mb-3 flex items-center justify-center gap-4">
 		<Button

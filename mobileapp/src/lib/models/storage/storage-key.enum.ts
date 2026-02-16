@@ -2,6 +2,7 @@
  * Enum for key names for storage stored in local storage.
  */
 export enum StorageKey {
+	ACTIVITY_STATISTICS_VISIBLE_CARDS = 'activity-statistics-visible-cards',
 	AUTHENTICATION = 'authentication',
 	BIOMETRICS_ENABLED = 'biometrics-enabled',
 	BUDGET_STATISTICS_VISIBLE_CARDS = 'budget-statistics-visible-cards',

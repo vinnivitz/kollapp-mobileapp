@@ -17,7 +17,6 @@
 		iconColor?: Colors;
 		indexed?: string;
 		indexLabel?: string;
-		lazy?: boolean;
 		readonly?: boolean;
 		subtitle?: string;
 		title?: string;
@@ -27,7 +26,7 @@
 		clicked?: () => void;
 		titleIconEndClicked?: () => void;
 		titleIconStartClicked?: () => void;
-	};
+	} & ({ lazy: true; lazyHeight?: string } | { lazy?: false; lazyHeight?: never });
 
 	let {
 		accessible,
@@ -42,6 +41,7 @@
 		indexed,
 		indexLabel,
 		lazy = false,
+		lazyHeight,
 		readonly,
 		subtitle,
 		title,
@@ -63,7 +63,7 @@
 </script>
 
 {#if lazy}
-	<LazyRender>
+	<LazyRender minHeight={lazyHeight}>
 		{@render card()}
 	</LazyRender>
 {:else}

@@ -933,6 +933,9 @@
                 "title": "Transaction overview"
               },
               "title": "Transaction overview"
+            },
+            "statistics": {
+              "title": "Event Statistics"
             }
           }
         },
@@ -1413,7 +1416,8 @@
             "share-unsupported": "Sharing is not supported on this device",
             "view-unsupported": "Viewer is not available",
             "email-no-account": "No email account configured",
-            "email-unsupported": "Sending via email is not supported on this device"
+            "email-unsupported": "Sending via email is not supported on this device",
+            "header": "Export statistics"
           }
         }
       },
