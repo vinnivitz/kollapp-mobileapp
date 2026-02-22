@@ -1,5 +1,6 @@
 package org.kollapp.organization.application.service;
 
+import org.kollapp.organization.application.model.ActivityBudget;
 import org.kollapp.organization.application.model.ActivityPosting;
 import org.kollapp.organization.application.model.Organization;
 import org.kollapp.organization.application.model.OrganizationBudgetCategory;
@@ -91,4 +92,32 @@ public interface BudgetAccountService {
      */
     void assignPostingsOfBudgetCategoryToDefaultBudgetCategory(
             Organization organization, OrganizationBudgetCategory sourceBudgetCategoryId);
+
+    /**
+     * Adds a budget mapping to an activity. A budget mapping assigns a budget to an activity regarding a budget category.
+     * @param organizationId The organization id of the activity.
+     * @param activityId The activity id.
+     * @param budgetMapping The budget mapping to be created.
+     * @return The new budget mapping.
+     */
+    ActivityBudget addActivityBudgetMapping(long organizationId, long activityId, ActivityBudget budgetMapping);
+
+    /**
+     * Updates an existing budget mapping.
+     * @param organizationId The organization id of the activity.
+     * @param activityId The activity id.
+     * @param budgetId The budget mapping id to be updated.
+     * @param budgetToBeUpdated The budget mapping to be updated.
+     * @return The updated budget mapping.
+     */
+    ActivityBudget editActivityBudgetMapping(
+            long organizationId, long activityId, long budgetId, ActivityBudget budgetToBeUpdated);
+
+    /**
+     * Deletes an existing budget mapping.
+     * @param organizationId The organization id of the activity.
+     * @param activityId The activity id.
+     * @param budgetId The id of the budget mapping.
+     */
+    void deleteActivityBudgetMapping(long organizationId, long activityId, long budgetId);
 }

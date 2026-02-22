@@ -18,9 +18,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.core.adapters.primary.rest.dto.DataResponseTO;
 import org.kollapp.core.adapters.primary.rest.dto.MessageResponseTO;
+import org.kollapp.organization.adapters.primary.rest.dto.ActivityBudgetCreateRequestTO;
+import org.kollapp.organization.adapters.primary.rest.dto.ActivityBudgetTO;
+import org.kollapp.organization.adapters.primary.rest.dto.ActivityBudgetUpdateRequestTO;
 import org.kollapp.organization.adapters.primary.rest.dto.PostingCreateUpdateRequestTO;
 import org.kollapp.organization.adapters.primary.rest.dto.PostingTO;
+import org.kollapp.organization.adapters.primary.rest.mapper.ActivityMapper;
 import org.kollapp.organization.adapters.primary.rest.mapper.PostingMapper;
+import org.kollapp.organization.application.model.ActivityBudget;
 import org.kollapp.organization.application.model.ActivityPosting;
 import org.kollapp.organization.application.model.OrganizationPosting;
 import org.kollapp.organization.application.model.Posting;
@@ -40,6 +45,7 @@ public class BudgetAccountController {
     private final BudgetAccountService budgetAccountService;
 
     private final MessageUtil messageUtil;
+    private final ActivityMapper activityMapper;
 
     @PostMapping("/{organization-id}/posting")
     @Operation(
@@ -152,5 +158,53 @@ public class BudgetAccountController {
         PostingTO postingTO = postingMapper.mapPostingToPostingTO(transferedPosting);
         String message = messageUtil.getMessage("success.posting.transfer");
         return ResponseEntity.ok(new DataResponseTO<>(postingTO, message));
+    }
+
+    @PostMapping("/{organization-id}/activity/{activity-id}/budget")
+    @Operation(
+            summary = "Add an organization category budget mapping for an activity.",
+            security = {@SecurityRequirement(name = "bearer-key")})
+    public ResponseEntity<DataResponseTO<ActivityBudgetTO>> addActivityBudget(
+            @PathVariable("organization-id") long organizationId,
+            @PathVariable("activity-id") long activityId,
+            @RequestBody @Valid ActivityBudgetCreateRequestTO activityBudgetTO) {
+        ActivityBudget activityBudgetMappingToBeCreated =
+                postingMapper.mapActivityBudgetCreationRequestTOToActivityBudget(activityBudgetTO);
+        ActivityBudget persistedActivityBudgetMapping = budgetAccountService.addActivityBudgetMapping(
+                organizationId, activityId, activityBudgetMappingToBeCreated);
+        ActivityBudgetTO response = postingMapper.mapActivityBudgetToActivityBudgetTO(persistedActivityBudgetMapping);
+        String message = messageUtil.getMessage("success.activityBudget.update");
+        return ResponseEntity.ok(new DataResponseTO<>(response, message));
+    }
+
+    @PutMapping("/{organization-id}/activity/{activity-id}/budget/{activity-budget-id}/")
+    @Operation(
+            summary = "Edit an organization category budget mapping for an activity.",
+            security = {@SecurityRequirement(name = "bearer-key")})
+    public ResponseEntity<DataResponseTO<ActivityBudgetTO>> editActivityBudget(
+            @PathVariable("organization-id") long organizationId,
+            @PathVariable("activity-id") long activityId,
+            @PathVariable("activity-budget-id") long activityBudgetId,
+            @RequestBody @Valid ActivityBudgetUpdateRequestTO activityBudgetTO) {
+        ActivityBudget activityBudgetMappingToBeEdited =
+                postingMapper.mapActivityBudgetUpdateRequestTOToActivityBudget(activityBudgetTO);
+        ActivityBudget updatedBudgetMapping = budgetAccountService.editActivityBudgetMapping(
+                organizationId, activityId, activityBudgetId, activityBudgetMappingToBeEdited);
+        ActivityBudgetTO response = postingMapper.mapActivityBudgetToActivityBudgetTO(updatedBudgetMapping);
+        String message = messageUtil.getMessage("success.activityBudget.create");
+        return ResponseEntity.ok(new DataResponseTO<>(response, message));
+    }
+
+    @DeleteMapping("/{organization-id}/activity/{activity-id}/budget/{activity-budget-id}/")
+    @Operation(
+            summary = "Delete an organization category budget mapping for an activity.",
+            security = {@SecurityRequirement(name = "bearer-key")})
+    public ResponseEntity<MessageResponseTO> deleteActivityBudget(
+            @PathVariable("organization-id") long organizationId,
+            @PathVariable("activity-id") long activityId,
+            @PathVariable("activity-budget-id") long activityBudgetId) {
+        budgetAccountService.deleteActivityBudgetMapping(organizationId, activityId, activityBudgetId);
+        String message = messageUtil.getMessage("success.activityBudget.delete");
+        return ResponseEntity.ok(new MessageResponseTO(message));
     }
 }

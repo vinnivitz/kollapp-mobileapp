@@ -48,10 +48,20 @@ public class Activity {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "activity", orphanRemoval = true)
     private List<ActivityPosting> activityPostings;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "activity", orphanRemoval = true)
+    private List<ActivityBudget> activityBudget;
+
     public ActivityPosting getActivityPostingById(long id) {
         return getActivityPostings().stream()
                 .filter(p -> p.getId() == id)
                 .findFirst()
                 .orElseThrow(PostingDoesNotExistException::new);
+    }
+
+    public ActivityBudget getActivityBudgetById(long id) {
+        return getActivityBudget().stream()
+                .filter(b -> b.getId() == id)
+                .findFirst()
+                .orElseThrow();
     }
 }

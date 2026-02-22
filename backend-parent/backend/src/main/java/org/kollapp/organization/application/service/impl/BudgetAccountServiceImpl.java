@@ -15,6 +15,7 @@ import org.kollapp.organization.application.exception.PersonNotRegisteredInOrgan
 import org.kollapp.organization.application.exception.PostingIsAlreadyTransferredException;
 import org.kollapp.organization.application.exception.PostingTransferNotPossibleException;
 import org.kollapp.organization.application.model.Activity;
+import org.kollapp.organization.application.model.ActivityBudget;
 import org.kollapp.organization.application.model.ActivityPosting;
 import org.kollapp.organization.application.model.Organization;
 import org.kollapp.organization.application.model.OrganizationBudgetCategory;
@@ -184,6 +185,52 @@ public class BudgetAccountServiceImpl implements BudgetAccountService {
         postingsOfCategory.forEach(posting -> {
             posting.setOrganizationBudgetCategoryId(defaultCategory.getId());
         });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @RequiresKollappOrganizationMemberRole
+    public ActivityBudget addActivityBudgetMapping(long organizationId, long activityId, ActivityBudget budgetMapping) {
+        organizationRoleHelper.verifyOrganizationManager(organizationId);
+        Organization organization =
+                organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
+        Activity activity = organization.findActivityById(activityId);
+        budgetMapping.setActivity(activity);
+        activity.getActivityBudget().add(budgetMapping);
+        return budgetMapping;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @RequiresKollappOrganizationMemberRole
+    public ActivityBudget editActivityBudgetMapping(
+            long organizationId, long activityId, long budgetId, ActivityBudget budgetToBeUpdated) {
+        organizationRoleHelper.verifyOrganizationManager(organizationId);
+        Organization organization =
+                organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
+        Activity activity = organization.findActivityById(activityId);
+        ActivityBudget budgetMapping = activity.getActivityBudgetById(budgetId);
+        budgetMapping.setOrganizationBudgetUsable(budgetToBeUpdated.isOrganizationBudgetUsable());
+        budgetMapping.setBudget(budgetToBeUpdated.getBudget());
+        return budgetMapping;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @RequiresKollappOrganizationMemberRole
+    public void deleteActivityBudgetMapping(long organizationId, long activityId, long budgetId) {
+        organizationRoleHelper.verifyOrganizationManager(organizationId);
+        Organization organization =
+                organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
+        Activity activity = organization.findActivityById(activityId);
+        ActivityBudget budgetMapping = activity.getActivityBudgetById(budgetId);
+        activity.getActivityBudget().remove(budgetMapping);
     }
 
     /**

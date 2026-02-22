@@ -1,7 +1,5 @@
 package org.kollapp.organization.adapters.primary.rest.dto;
 
-import java.util.List;
-
 import jakarta.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
@@ -15,21 +13,13 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ActivityTO {
-    @NotNull
-    private long id;
+public class ActivityBudgetCreateRequestTO {
 
     @NotNull
-    private String name;
+    private String budgetCategoryName;
+
+    private Long budget;
 
     @NotNull
-    private String location;
-
-    @NotNull
-    private String date;
-
-    @NotNull
-    private List<PostingTO> activityPostings;
-
-    private List<ActivityBudgetTO> activityBudget;
+    private boolean organizationBudgetUsable;
 }

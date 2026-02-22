@@ -171,6 +171,13 @@ public class Organization {
                 .orElseThrow(BudgetCategoryNotFoundException::new);
     }
 
+    public OrganizationBudgetCategory findBudgetCategoryByName(String name) {
+        return budgetCategories.stream()
+                .filter(b -> b.getName().equals(name))
+                .findFirst()
+                .orElseThrow(BudgetCategoryNotFoundException::new);
+    }
+
     public OrganizationBudgetCategory findDefaultBudgetCategory() {
         return budgetCategories.stream()
                 .filter(OrganizationBudgetCategory::isDefaultCategory)

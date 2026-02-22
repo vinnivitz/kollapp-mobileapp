@@ -2,6 +2,8 @@ package org.kollapp.organization.application.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import jakarta.transaction.Transactional;
 
@@ -11,8 +13,10 @@ import org.springframework.stereotype.Service;
 import org.kollapp.organization.application.exception.ActivityNotFoundException;
 import org.kollapp.organization.application.exception.OrganizationNotFoundException;
 import org.kollapp.organization.application.model.Activity;
+import org.kollapp.organization.application.model.ActivityBudget;
 import org.kollapp.organization.application.model.ActivityDeletedEvent;
 import org.kollapp.organization.application.model.Organization;
+import org.kollapp.organization.application.model.OrganizationBudgetCategory;
 import org.kollapp.organization.application.publisher.OrganizationPublisher;
 import org.kollapp.organization.application.repository.ActivityRepository;
 import org.kollapp.organization.application.repository.OrganizationRepository;
@@ -50,7 +54,9 @@ public class ActivityServiceImpl implements ActivityService {
                 organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
         activity.setOrganization(organization);
         activity.setActivityPostings(new ArrayList<>());
-        activityRepository.save(activity);
+        Activity persistedActivity = activityRepository.save(activity);
+        List<ActivityBudget> budgets = defaultBudgetMapping(organization, persistedActivity);
+        activity.setActivityBudget(budgets);
         organization.addActivityOfOrganization(activity);
         return activity;
     }
@@ -80,5 +86,28 @@ public class ActivityServiceImpl implements ActivityService {
         organization.getActivities().remove(activity);
         ActivityDeletedEvent activityDeletedEvent = new ActivityDeletedEvent(this, activity.getId());
         organizationPublisher.publishActivityDeletedEvent(activityDeletedEvent);
+    }
+
+    private List<ActivityBudget> createBudgetMapping(Organization organization, Map<String, Long> activityBudgets) {
+        return activityBudgets.entrySet().stream()
+                .map(e -> ActivityBudget.builder()
+                        .budgetCategoryName(e.getKey())
+                        .budget(e.getValue())
+                        .organizationBudgetUsable(false)
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    private List<ActivityBudget> defaultBudgetMapping(Organization organization, Activity persistedActivity) {
+        OrganizationBudgetCategory defaultBudgetCategory = organization.findDefaultBudgetCategory();
+        List<ActivityBudget> budgets = new ArrayList<>();
+        ActivityBudget defaultActivityBudget = ActivityBudget.builder()
+                .budgetCategoryName(defaultBudgetCategory.getName())
+                .activity(persistedActivity)
+                .budget(0L)
+                .organizationBudgetUsable(true)
+                .build();
+        budgets.add(defaultActivityBudget);
+        return budgets;
     }
 }
