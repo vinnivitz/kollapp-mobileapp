@@ -4,7 +4,6 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
@@ -13,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import org.kollapp.core.validation.ValidDate;
 import org.kollapp.organization.adapters.primary.rest.dto.enums.PostingType;
 
 @Getter
@@ -31,7 +31,7 @@ public class PostingCreateUpdateRequestTO {
     private long amountInCents;
 
     @NotNull(message = "{validation.posting.date.required}")
-    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "{validation.posting.date.format}")
+    @ValidDate(message = "{validation.posting.date.format}", min = "2000-01-01", max = "2100-12-31")
     private String date;
 
     @NotEmpty(message = "{validation.posting.purpose.required}")

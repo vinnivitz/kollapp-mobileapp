@@ -2,6 +2,7 @@ package org.kollapp.user.adapters.primary.rest;
 
 import lombok.AllArgsConstructor;
 
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -26,6 +27,7 @@ import org.kollapp.user.application.exception.UsernameExistsException;
 import org.kollapp.user.application.exception.UsernameNotFoundException;
 
 @ControllerAdvice(basePackages = {"org.kollapp.user"})
+@Order(0)
 @AllArgsConstructor
 public class UserExceptionHandler {
 

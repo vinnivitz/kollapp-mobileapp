@@ -2,6 +2,7 @@ package org.kollapp.organization.adapters.primary.rest;
 
 import lombok.AllArgsConstructor;
 
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -37,6 +38,7 @@ import org.kollapp.organization.application.exception.UntransferredPostingExcept
 
 @ControllerAdvice(basePackages = {"org.kollapp.organization"})
 @RestController
+@Order(0)
 @AllArgsConstructor
 public class OrganizationExceptionHandler {
 
