@@ -21,6 +21,7 @@ import org.kollapp.user.application.exception.InvalidConfirmationLinkException;
 import org.kollapp.user.application.exception.InvalidRefreshTokenException;
 import org.kollapp.user.application.exception.InvalidSystemRoleException;
 import org.kollapp.user.application.exception.KollappUserNotFoundException;
+import org.kollapp.user.application.exception.MailCouldNotBeSentException;
 import org.kollapp.user.application.exception.UsernameExistsException;
 import org.kollapp.user.application.exception.UsernameNotFoundException;
 
@@ -106,5 +107,11 @@ public class UserExceptionHandler {
     public ResponseEntity<ErrorResponseTO> handleInvalidSystemRole() {
         String message = messageUtil.getMessage("error.system-role.invalid");
         return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
+    }
+
+    @ExceptionHandler(MailCouldNotBeSentException.class)
+    public ResponseEntity<ErrorResponseTO> handleMailCouldNotBeSent() {
+        String message = messageUtil.getMessage("error.mail.could-not-be-sent");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponseTO(message));
     }
 }

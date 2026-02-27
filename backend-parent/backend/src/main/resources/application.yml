@@ -94,6 +94,8 @@ kollapp:
     refreshExpirationInSeconds: ${BACKEND_JWT_REFRESH_EXPIRATION_IN_SECONDS:2592000}
     confirmationSecret: ${BACKEND_JWT_CONFIRMATION_SECRET}
     confirmationExpirationInSeconds: ${BACKEND_JWT_CONFIRMATION_EXPIRATION_IN_SECONDS:3600}
+    newEmailConfirmationSecret: ${BACKEND_JWT_NEW_EMAIL_CONFIRMATION_SECRET}
+    newEmailConfirmationExpirationInSeconds: ${BACKEND_JWT_NEW_EMAIL_CONFIRMATION_EXPIRATION_IN_SECONDS:3600}
     resetPasswordSecret: ${BACKEND_JWT_RESET_PASSWORD_SECRET}
     resetPasswordExpirationInSeconds: ${BACKEND_JWT_RESET_PASSWORD_EXPIRATION_IN_SECONDS:3600}
 

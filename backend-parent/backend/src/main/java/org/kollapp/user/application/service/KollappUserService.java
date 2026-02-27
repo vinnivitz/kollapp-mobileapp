@@ -13,6 +13,8 @@ public interface KollappUserService {
 
     void activateKollappUser(String confirmationToken);
 
+    void confirmNewEmail(String confirmationToken);
+
     void changePassword(String oldPassword, String newPassword);
 
     void forgotPassword(String email);

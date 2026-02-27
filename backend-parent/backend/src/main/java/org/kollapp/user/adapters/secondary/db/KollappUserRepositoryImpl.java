@@ -37,6 +37,11 @@ public class KollappUserRepositoryImpl implements KollappUserRepository {
     }
 
     @Override
+    public boolean existsByPendingEmail(String email) {
+        return jpaRepository.existsByPendingEmail(email);
+    }
+
+    @Override
     public void save(KollappUser user) {
         jpaRepository.save(user);
     }

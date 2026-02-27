@@ -44,4 +44,18 @@ public class UnauthorizedKollappUserViewController {
 
         return TemplateView.ACCOUNT_CONFIRMED.getViewName();
     }
+
+    @GetMapping(value = "/confirm-new-email", produces = MediaType.TEXT_HTML_VALUE)
+    public String confirmNewEmail(@RequestParam("confirmationToken") String confirmationToken, Model model) {
+        kollappUserService.confirmNewEmail(confirmationToken);
+
+        model.addAttribute("title", messageUtil.getMessage("view.new-email-confirmed.title"));
+        model.addAttribute("header", messageUtil.getMessage("view.new-email-confirmed.header"));
+        model.addAttribute("logoUrl", urlBuilderUtil.buildServerUrl("/logo.png"));
+        model.addAttribute("text", messageUtil.getMessage("view.new-email-confirmed.text"));
+        model.addAttribute("downloadAppUrl", "https://kollapp.org");
+        model.addAttribute("button", messageUtil.getMessage("view.new-email-confirmed.button"));
+
+        return TemplateView.ACCOUNT_CONFIRMED.getViewName();
+    }
 }
