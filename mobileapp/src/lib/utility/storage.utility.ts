@@ -9,32 +9,31 @@ import { t } from '$lib/locales';
 import { type StorageKey, StorageStrategy } from '$lib/models/storage';
 import { showAlert } from '$lib/utility';
 
-const $t = get(t);
-
 /**
- * Stores a value in the preferences store
+ * Stores a value in the storage store
  * @param key key name
  * @param strategy storage strategy to use
  * @param value value to store
  * @returns {Promise<void>}
  */
 export async function storeValue<T>(key: StorageKey, value: T, strategy = StorageStrategy.DEFAULT): Promise<void> {
+	const $t = get(t);
 	try {
 		if (strategy === StorageStrategy.SECURE && !dev) {
 			const success = await SecureStoragePlugin.set({ key: getKey(key), value: JSON.stringify(value) });
 			if (!success.value) {
-				return showAlert($t('utility.preferences.failure.store'));
+				return showAlert($t('utility.storage.failure.store'));
 			}
 		} else {
 			await Preferences.set({ key: getKey(key), value: JSON.stringify(value) });
 		}
 	} catch {
-		return showAlert($t('utility.preferences.failure.store'));
+		return showAlert($t('utility.storage.failure.store'));
 	}
 }
 
 /**
- * Retrieves a value from the preferences store or returns `undefined` if not found
+ * Retrieves a value from the storage store or returns `undefined` if not found
  * @param key key name
  * @param strategy storage strategy to use
  * @returns {Promise<T | undefined>}
@@ -43,6 +42,7 @@ export async function getStoredValue<T = string>(
 	key: StorageKey,
 	strategy = StorageStrategy.DEFAULT
 ): Promise<T | undefined> {
+	const $t = get(t);
 	try {
 		let result: GetResult;
 		if (strategy === StorageStrategy.SECURE && !dev) {
@@ -62,23 +62,24 @@ export async function getStoredValue<T = string>(
 			return value as T;
 		}
 	} catch {
-		await showAlert($t('utility.preferences.failure.retreive'));
+		await showAlert($t('utility.storage.failure.retreive'));
 	}
 }
 
 /**
- * Removes a value from the preferences store
+ * Removes a value from the storage store
  * @param key key name
  * @param strategy storage strategy to use
  * @returns {Promise<void>}
  */
 export async function removeStoredValue(key: StorageKey, strategy = StorageStrategy.DEFAULT): Promise<void> {
+	const $t = get(t);
 	try {
 		if (strategy === StorageStrategy.SECURE && !dev) {
 			try {
 				const success = await SecureStoragePlugin.remove({ key: getKey(key) });
 				if (!success.value) {
-					return showAlert($t('utility.preferences.failure.remove'));
+					return showAlert($t('utility.storage.failure.remove'));
 				}
 			} catch {
 				return;
@@ -86,7 +87,7 @@ export async function removeStoredValue(key: StorageKey, strategy = StorageStrat
 		}
 		await Preferences.remove({ key: getKey(key) });
 	} catch {
-		await showAlert($t('utility.preferences.failure.remove'));
+		await showAlert($t('utility.storage.failure.remove'));
 	}
 }
 
@@ -101,5 +102,5 @@ export async function hasStoredValue(key: StorageKey, strategy = StorageStrategy
 }
 
 function getKey(key: StorageKey): string {
-	return `${environment.preferencesPrefix}.${key}`;
+	return `${environment.storagePrefix}.${key}`;
 }

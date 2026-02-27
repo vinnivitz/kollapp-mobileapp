@@ -6,6 +6,6 @@ import { resolve } from '$app/paths';
 
 export const load: PageLoad = async () => {
 	if (!dev) {
-		goto(resolve('/'));
+		await goto(resolve('/'));
 	}
 };

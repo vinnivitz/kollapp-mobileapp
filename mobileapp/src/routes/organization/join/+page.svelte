@@ -1,4 +1,6 @@
 <script lang="ts">
+	import type { OrganizationMinifiedTO } from '@kollapp/api-types';
+
 	import { CapacitorBarcodeScanner, CapacitorBarcodeScannerTypeHint } from '@capacitor/barcode-scanner';
 	import { Haptics } from '@capacitor/haptics';
 	import { keyOutline, qrCodeOutline, saveOutline } from 'ionicons/icons';
@@ -7,20 +9,18 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
+	import { joinOrganizationSchema } from '$lib/api/schemas/organization';
 	import { organizationService } from '$lib/api/services';
-	import { joinOrganizationSchema } from '$lib/api/validation/organization/join-organization.validation';
-	import Layout from '$lib/components/layout/Layout.svelte';
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
-	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
+	import { Button, Card, InputItem } from '$lib/components/core';
+	import { Layout } from '$lib/components/layout';
 	import { t } from '$lib/locales';
 	import { Form } from '$lib/models/ui';
 	import { organizationStore } from '$lib/stores';
-	import { customForm, informationModal, showAlert, StatusCheck } from '$lib/utility';
+	import { customForm, informationModal, showAlert, StatusCheck, withLoader } from '$lib/utility';
 
 	const form = new Form({
-		completed: async ({ model }) => await onCompleted(model.code),
-		request: async (model) => organizationService.joinByInvitationCode(model.code),
+		completed: async ({ response }) => await onCompleted(response),
+		request: organizationService.joinByInvitationCode,
 		schema: joinOrganizationSchema()
 	});
 
@@ -29,10 +29,10 @@
 			const result = await CapacitorBarcodeScanner.scanBarcode({ hint: CapacitorBarcodeScannerTypeHint.QR_CODE });
 			const code = result.ScanResult;
 			if (code.length === 8) {
-				const response = await organizationService.joinByInvitationCode(code);
+				const response = await withLoader(() => organizationService.joinByInvitationCode({ code }));
 				if (StatusCheck.isOK(response.status)) {
 					await Haptics.vibrate({ duration: 1000 });
-					await onCompleted(code);
+					await onCompleted(response.data);
 				}
 			} else {
 				await showAlert($t('routes.organization.join.page.qr-code.invalid'));
@@ -42,11 +42,8 @@
 		}
 	}
 
-	async function onCompleted(code: string): Promise<void> {
-		await organizationStore.init();
-		const organizationResponse = await organizationService.getByInvitationCode(code);
-		if (!StatusCheck.isOK(organizationResponse.status)) return;
-		const organization = organizationResponse.data;
+	async function onCompleted(organization: OrganizationMinifiedTO): Promise<void> {
+		await organizationStore.initialize();
 		await informationModal(
 			$t('routes.organization.join.page.modal.join.header'),
 			$t('routes.organization.join.page.modal.join.message', { value: organization.name })

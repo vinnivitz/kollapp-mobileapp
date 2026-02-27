@@ -47,6 +47,11 @@
             "pattern": "Password should contain at least a number and an uppercase letter",
             "required": "Password is required"
           }
+        },
+        "verify-password": {
+          "password": {
+            "required": "Password is required"
+          }
         }
       },
       "budget": {
@@ -63,20 +68,6 @@
             "max": "Purpose exceeds maximum of 200 characters",
             "required": "Purpose is required"
           }
-        },
-        "update-posting": {
-          "amount": {
-            "min": "Amount should be a positive value",
-            "max": "Amount exceeds maximum of 10,000,000",
-            "required": "Amount is required"
-          },
-          "date": {
-            "required": "Date is required"
-          },
-          "purpose": {
-            "required": "Purpose is required",
-            "max": "Purpose exceed maximum of 200 characters"
-          }
         }
       },
       "organization": {
@@ -88,6 +79,9 @@
           "name": {
             "max": "Name exceeds maximum of 50 characters",
             "required": "Name is required"
+          },
+          "date": {
+            "required": "Date of the event is required"
           }
         },
         "create-organization": {
@@ -117,6 +111,9 @@
           "name": {
             "max": "Name exceeds maximum of 50 characters",
             "required": "Name is required"
+          },
+          "date": {
+            "required": "Date of event is required"
           }
         },
         "update-organization": {
@@ -131,6 +128,15 @@
             "max": "Place exceeds maximum of 50 characters",
             "required": "Place is required"
           }
+        }
+      },
+      "budget-category": {
+        "name": {
+          "max": "Category name exceeds maximum of 50 characters",
+          "required": "Category name is required"
+        },
+        "default-category": {
+          "required": "Default category flag is required"
         }
       },
       "user": {
@@ -156,6 +162,11 @@
             "max": "Username exceeds maximum of 50 characters",
             "required": "Username is required"
           }
+        },
+        "delete-account": {
+          "password": {
+            "required": "Password is required"
+          }
         }
       }
     },
@@ -169,14 +180,17 @@
     "layout": {
       "menu": {
         "list": {
-          "account": {
-            "label": "Account"
-          },
           "activities": {
             "label": "Events"
           },
-          "collective": {
-            "label": "Collective"
+          "persons-of-organization": {
+            "label": "Members"
+          },
+          "statistics": {
+            "label": "Financial statistics"
+          },
+          "budget": {
+            "label": "Transaction categories"
           }
         }
       }
@@ -190,7 +204,7 @@
         }
       },
       "search-results": {
-        "found": "Search results for \"{{value}}\"",
+        "found": "{{value2}} search results for \"{{value}}\"",
         "not-found": "No results found for \"{{value}}\""
       },
       "button": {
@@ -215,17 +229,16 @@
         },
         "multi-select-item": {
           "all-selected": "All selected",
-          "none-selected": "None selected",
+          "none-selected": "Not assigned",
           "search-placeholder": "Search...",
-          "select-all": "Select all events"
+          "select-all": "Select all"
         }
       },
       "budget-card": {
+        "balance": "Balance",
         "heading": "Budget overview",
-        "no-postings": "No postings found.",
-        "all": "All",
-        "credit": "Income",
-        "debit": "Expense"
+        "latest-postings": "Latest transactions",
+        "no-postings": "No transactions found."
       },
       "leaflet-map": {
         "searchbar": {
@@ -241,6 +254,142 @@
       "welcome": {
         "heading": "Welcome to Kollapp!",
         "subheading": "The app for all the collectives out there."
+      },
+      "filter": {
+        "date-range": {
+          "from": "From",
+          "to": "To"
+        },
+        "search-placeholder": "Search...",
+        "reset-filters": "Reset filter",
+        "reset": "Reset filter",
+        "apply": "Apply filter"
+      },
+      "quick-access": {
+        "special-widget": {
+          "badge": "Widget"
+        }
+      }
+    },
+    "posting-item": {
+      "sliding-options": {
+        "delete": "Delete",
+        "edit": "Edit",
+        "transfer": "Settle"
+      },
+      "modal": {
+        "delete": {
+          "confirm": "Delete"
+        },
+        "transfer": {
+          "header": "Settle transaction",
+          "message": "Do you want to settle this transaction to the collective? It will no longer be assigned to the current member.",
+          "confirm": "Settle"
+        },
+        "edit": {
+          "title": "Edit transaction",
+          "credit": "Income",
+          "debit": "Expense",
+          "purpose": "Purpose",
+          "amount": "Amount",
+          "date": "Date",
+          "member": {
+            "label": "Assigned member",
+            "none-selected": "Not assigned"
+          },
+          "budget-category": {
+            "label": "Category"
+          },
+          "activity": {
+            "label": "Assigned event",
+            "none-selected": "Not assigned"
+          }
+        }
+      }
+    },
+    "posting-overview": {
+      "filter": {
+        "person-of-organization": {
+          "unassigned": "Not assigned"
+        },
+        "posting-types": "Transaction type",
+        "credit": "Income",
+        "debit": "Expense",
+        "date-range": "Time period",
+        "sort": {
+          "label": "Sort by",
+          "date": "Date",
+          "purpose": "Purpose",
+          "person-of-organization": "Member",
+          "category": "Category",
+          "activity": "Event",
+          "amount": "Amount"
+        },
+        "order": {
+          "label": "Sort order",
+          "ascending": "Ascending",
+          "descending": "Descending"
+        },
+        "person": {
+          "all-selected": "All members selected",
+          "select": "Selected members",
+          "label": "Members",
+          "search": "Search members..."
+        },
+        "budget-category": {
+          "all-selected": "All categories selected",
+          "select": "Selected categories",
+          "label": "Categories",
+          "search": "Search categories..."
+        },
+        "activities": {
+          "all-selected": "All events selected",
+          "select": "Selected events",
+          "label": "Events",
+          "search": "Search events...",
+          "unassigned": "Not assigned"
+        },
+        "title": "Filter transactions"
+      },
+      "search": {
+        "placeholder": "Search transactions..."
+      },
+      "no-postings": "No transactions found.",
+      "no-results": "No transactions found for \"{{value}}\"",
+      "loading": "Loading...",
+      "results": "{{value}} transactions found."
+    },
+    "budget-overview": {
+      "total-credit": "Total income: {{value}}",
+      "total-debit": "Total expense",
+      "total-postings": "Total transactions: {{value}}",
+      "add-posting": "Add transaction",
+      "posting-overview": "Transaction overview",
+      "statistics": "Statistics",
+      "modal": {
+        "title": {
+          "debit": "Add expense",
+          "credit": "Add income"
+        },
+        "credit": "Income",
+        "debit": "Expense",
+        "purpose": "Purpose",
+        "amount": "Amount",
+        "date": "Date",
+        "person-of-organization": {
+          "select": "Assigned member",
+          "search": "Search members...",
+          "none": "Not assigned"
+        },
+        "activity": {
+          "select": "Assigned event",
+          "search": "Search event...",
+          "none": "Not assigned"
+        },
+        "budget-category": {
+          "select": "Assigned category",
+          "search": "Search categories..."
+        }
       }
     }
   },
@@ -251,9 +400,87 @@
     "connection": {
       "offline": "You are offline",
       "online": "You are online"
+    },
+    "quick-access": {
+      "special-widgets": {
+        "organization-card": "Collective overview",
+        "upcoming-activity-card": "Upcoming event overview",
+        "budget-chart-card": "Budget overview"
+      }
     }
   },
   "utility": {
+    "tour": {
+      "next": "Next",
+      "previous": "Back",
+      "done": "Done",
+      "steps": {
+        "welcome": {
+          "title": "Welcome to Kollapp! 👋",
+          "description": "Let us show you around a bit and help you get started with Kollapp!"
+        },
+        "menu": {
+          "title": "Navigation Menu",
+          "description": "Tap here to open the menu and access important features of the app."
+        },
+        "quick-access": {
+          "title": "Quick Access Panel",
+          "description": "The quick access panel provides fast access to frequently used functions.\n\nYou can freely arrange and customize the tiles by long pressing them."
+        },
+        "org-budget": {
+          "title": "Collective balance",
+          "description": "View detailed financial information including balance, income and expenses of the collective.\n\nYou can add and view transactions and access detailed statistics."
+        },
+        "budget-statistics": {
+          "title": "Financial Statistics",
+          "description": "Here you find detailed statistics and charts about your collective's finances.\n\nYou can analyze trends, category distributions and much more."
+        },
+        "activities-list": {
+          "title": "Event list",
+          "description": "All events organized by date if you have some. Tap on any event to view its details."
+        },
+        "activities-fab": {
+          "title": "Create event",
+          "description": "Tap here to create a new event for your collective."
+        },
+        "budget-categories-list": {
+          "title": "Transaction categories",
+          "description": "Organize your finances with categories. Each category helps track specific types of income or expenses. Per default every transaction is assigned to the category \"General\"."
+        },
+        "budget-categories-fab": {
+          "title": "Add category",
+          "description": "Here you can add a new category."
+        },
+        "members-list": {
+          "title": "Member directory",
+          "description": "View all members of your collective. See their roles, assigned transactions and more."
+        },
+        "members-fab": {
+          "title": "Invite members",
+          "description": "Invite new people to join your collective by sharing an invitation code. You can send it per mail, share it via your phone or provide a QR code that others can scan."
+        },
+        "account-personal": {
+          "title": "Personal settings",
+          "description": "Manage your profile, notification preferences and security related stuff here."
+        },
+        "account-application": {
+          "title": "App settings",
+          "description": "Customize the app with your language, theme settings and restart the welcome tour anytime."
+        },
+        "org-info": {
+          "title": "Collective info",
+          "description": "This shows some info about the collective like the description, where its based or your role in the collective."
+        },
+        "activities-segments": {
+          "title": "Event views",
+          "description": "Here you can switch between a listing and calendar view for displaying events."
+        },
+        "conclusion": {
+          "title": "Thanks for your attention!",
+          "description": "Have fun with Kollapp!\nAnd if you notice anything in the app, have any questions, or suggestions for improvement, please feel free to contact us!"
+        }
+      }
+    },
     "alert": {
       "feature-not-implemented": "Feature is not implemented yet",
       "toast": {
@@ -262,12 +489,6 @@
     },
     "api": {
       "server-not-reachable": "Server not reachable",
-      "maintenance": {
-        "alert": {
-          "header": "Maintenance"
-        },
-        "message": "The app will probably be unavailable on {{value}} for some minutes."
-      },
       "error": {
         "authorization": "Authorization error",
         "generic": "An error occurred"
@@ -287,7 +508,10 @@
         "no-match": "Must match the password"
       }
     },
-    "preferences": {
+    "offline-queue": {
+      "request-queued": "Request will be sent once you are back online"
+    },
+    "storage": {
       "failure": {
         "store": "Failed to store value",
         "retreive": "Failed to retrieve value",
@@ -308,6 +532,62 @@
         "manager": "Manager",
         "member": "Member"
       }
+    },
+    "export": {
+      "date": "Date",
+      "type": "Type",
+      "amount": "Amount",
+      "purpose": "Purpose",
+      "category": "Category",
+      "person-of-organization": "Member",
+      "credit": "Income",
+      "debit": "Expense",
+      "no-member": "Not assigned",
+      "total-credit": "Total income",
+      "total-debit": "Total expense",
+      "balance": "Balance",
+      "generated-at": "Generated at {{value}}",
+      "postings": "transactions",
+      "organization": "Collective: {{value}}",
+      "activity": "Event",
+      "no-activity": "Not assigned",
+      "activity-title": "Event: {{value}}",
+      "activity-date": "Date of event: {{value}}",
+      "member-name": "Member: {{value}}"
+    },
+    "export-postings": {
+      "modal": {
+        "pdf": "Export as PDF",
+        "csv": "Export as CSV",
+        "header": "Export transactions",
+        "action-header": "What would you like to do?",
+        "view": "View",
+        "download": "Download",
+        "share": "Share",
+        "email": "Send via email"
+      },
+      "view": {
+        "error": "Could not open the file."
+      },
+      "share": {
+        "error": "Sharing is not supported on this device."
+      },
+      "email": {
+        "error": "No email account found.",
+        "unsupported": "Email is not supported on this device.",
+        "body": "Please find attached the transaction overview for {{value}}."
+      },
+      "download": {
+        "error": "Could not save the file.",
+        "title": "File saved!"
+      },
+      "download-external": {
+        "message": "File {{value}} was saved in the external storage of the phone. "
+      },
+      "download-internal": {
+        "title": "File saved!",
+        "message": "File {{value}} was saved in the internal storage of the phone."
+      }
     }
   },
   "routes": {
@@ -316,17 +596,25 @@
         "page": {
           "title": "Delete account",
           "card": {
-            "title": "Are you sure?",
+            "title": "Delete your account",
             "submit": "Delete account",
             "note": "This cannot be undone.",
             "manager-hint": {
-              "heading": "You are the last manager of the following collectives:",
-              "message": "Deleting the account will delete these collectives."
-            }
+              "heading": "You are the last manager of the following collectives.\nDeleting the account will delete these collectives."
+            },
+            "assigned-postings-warning": "You still have transactions assigned to you. Deleting your account is only possible once no transaction is assigned to you.",
+            "assigned-postings": "{{value}} transactions"
           },
           "modal": {
             "confirm": "Delete account",
-            "header": "All your data will be deleted."
+            "header": "All your data will be deleted.",
+            "password": {
+              "card": {
+                "form": {
+                  "submit": "Delete account"
+                }
+              }
+            }
           }
         }
       },
@@ -341,14 +629,6 @@
         }
       },
       "privacy-and-security": {
-        "app-version": {
-          "page": {
-            "title": "App version",
-            "card": {
-              "title": "Version {{value}}"
-            }
-          }
-        },
         "change-password": {
           "page": {
             "title": "Change password",
@@ -397,19 +677,20 @@
           "list": {
             "privacy": {
               "header": "Privacy",
-              "notifications": "Notifications",
+              "notifications": "Notification settings",
               "legal": "Legal"
             },
             "security": {
               "header": "Security",
               "change-password": "Change password",
-              "login-with-biometrics": "Log in with biometrics"
+              "login-with-biometrics": "Log in with biometrics",
+              "delete-account": "Delete account"
             }
           },
           "modal": {
             "password": {
               "card": {
-                "title": "Confirm your password",
+                "title": "Confirm with password",
                 "form": {
                   "password": "Password",
                   "submit": "Confirm"
@@ -427,8 +708,13 @@
             "form": {
               "username": "Username",
               "email": "Email",
-              "submit": "Update"
+              "submit": "Update",
+              "username-helper-text": "If username is changed you have to login again"
             }
+          },
+          "modal": {
+            "message": "Check your mailbox",
+            "title": "We sent you a mail to {{value}} with a link to confirm this mail address.\n Please also check the spam folder."
           }
         }
       },
@@ -450,6 +736,9 @@
             "light": "Light",
             "dark": "Dark",
             "grayscale": "Black and white"
+          },
+          "restore-defaults": {
+            "confirm": "All settings for color theme, layout and language will be resetted."
           }
         },
         "title": "Account",
@@ -458,20 +747,15 @@
             "header": "Personal",
             "notifications": "Notifications",
             "my-data": "My data",
-            "privacy-and-security": "Privacy and security",
-            "delete-account": "Delete account"
+            "privacy-and-security": "Privacy and security"
           },
           "application": {
             "header": "Application",
             "language": "Change Language",
             "color-theme": "Change color theme",
             "layout": "Change layout",
-            "restore-defaults": "Restore default"
-          },
-          "miscellaneous": {
-            "header": "Miscellaneous",
-            "app-version": "App version",
-            "report-bug": "Report bug"
+            "restore-defaults": "Reset application settings",
+            "restart-tour": "Restart app tour "
           }
         }
       }
@@ -495,6 +779,10 @@
           "forgot-password": {
             "question": "Forgot your password?",
             "link": "Reset"
+          },
+          "welcome-modal": {
+            "title": "Welcome to Kollapp! 👋",
+            "message": "We are flattered to have you! To really get started register your collective or join one!\n\nHave fun!"
           }
         }
       },
@@ -547,9 +835,15 @@
               "card": {
                 "login": {
                   "content": "You are already registered?",
-                  "link": "Log&nbsp;in"
+                  "link": "Login"
                 }
               }
+            }
+          },
+          "modal": {
+            "success": {
+              "title": "Successfully registered!",
+              "message": "We sent you an email with a confirmation link to {{value}} "
             }
           }
         }
@@ -589,6 +883,10 @@
               "email": "Email",
               "submit": "Get email for password reset"
             }
+          },
+          "modal": {
+            "title": "We sent you an email to {{value}} with a link to reset your password.\nPlease also check your spam folder.",
+            "message": "Check your mailbox"
           }
         }
       }
@@ -599,18 +897,11 @@
           "page": {
             "fab": {
               "delete": "Delete event",
-              "archieve": "Archieve event",
               "edit": "Edit event"
             },
-            "filter-members": {},
             "modal": {
               "delete-activity": {
                 "confirm": "Delete event"
-              },
-              "delete-posting": {
-                "modal": {
-                  "confirm": "Delete transaction"
-                }
               },
               "update-activity": {
                 "confirm": "Update",
@@ -622,58 +913,6 @@
                     "date": "Date"
                   }
                 }
-              },
-              "create-posting": {
-                "form": {
-                  "credit": "Income",
-                  "debit": "Expense",
-                  "amount": "Amount",
-                  "date": "Date",
-                  "purpose": "Purpose"
-                }
-              },
-              "update-posting": {
-                "card": {
-                  "title": "Update transaction",
-                  "form": {
-                    "credit": "Income",
-                    "debit": "Expense",
-                    "purpose": "Purpose",
-                    "amount": "Amount",
-                    "date": "Date"
-                  }
-                }
-              },
-              "transaction-history": {
-                "searchbar": "Search transactions...",
-                "no-transactions": "No transactions found.",
-                "reset-filters": "Reset filters"
-              },
-              "activity-filter": {
-                "card": {
-                  "title": "Filters",
-                  "credit": "Income",
-                  "debit": "Expense",
-                  "date": {
-                    "from": "From",
-                    "to": "To"
-                  },
-                  "members": {
-                    "all-selected": "All members selected",
-                    "none-selected": "No members selected",
-                    "search-placeholder": "Search members...",
-                    "select-all": "Select all members",
-                    "label": "Select members"
-                  },
-                  "reset": "Reset",
-                  "apply": "Apply"
-                }
-              }
-            },
-            "create-posting": {
-              "title": {
-                "debit": "Add expense",
-                "credit": "Add income"
               }
             },
             "calendar-request-prompt": {
@@ -681,19 +920,22 @@
               "error": "Calendar is not available"
             },
             "title": "Event Details",
-            "event-summary": {
+            "activity-summary": {
               "add-to-calendar": "Add to calendar",
               "open-in-map": "Open in map"
             },
-            "posting-summary": {},
             "action-button": "Event actions",
             "postings-summary": {
-              "heading": "Event balance",
-              "total-credit": "Total income: {{value}}",
-              "total-debit": "Total expense: {{value}}",
-              "add-credit": "Add income",
-              "add-debit": "Add expense",
-              "transaction-history": "Transaction history"
+              "card": {
+                "title": "Event balance"
+              },
+              "export": {
+                "title": "Transaction overview"
+              },
+              "title": "Transaction overview"
+            },
+            "statistics": {
+              "title": "Event Statistics"
             }
           }
         },
@@ -702,13 +944,9 @@
             "activities": "Events",
             "calendar": "Calendar"
           },
-          "filters": {
-            "type": {},
-            "card": {}
-          },
           "title": "Events",
           "calendar": {
-            "apply": "Create event"
+            "no-activities": "No event found for {{value}}"
           },
           "activities": {
             "fab": {
@@ -718,7 +956,11 @@
               "placeholder": "Search events..."
             },
             "not-found": "No events found",
-            "no-results": "No results for \"{{value}}\""
+            "no-results": "No events for \"{{value}}\"",
+            "no-results-filtered": "No events found.",
+            "loading": "Loading...",
+            "postings": "{{value}} transactions",
+            "found": "{{value}} events found."
           },
           "modal": {
             "create-activity": {
@@ -727,7 +969,47 @@
                 "title": "Create event",
                 "form": {
                   "name": "Title",
-                  "location": "Location"
+                  "location": "Location",
+                  "date": "Date"
+                }
+              }
+            },
+            "filter": {
+              "card": {
+                "title": "Filter events",
+                "time-filter": {
+                  "all": "All",
+                  "past": "Past",
+                  "future": "Upcoming",
+                  "label": "Time period"
+                },
+                "has-postings": {
+                  "label": "Transactions",
+                  "all": "All",
+                  "with": "With transactions",
+                  "without": "Without transactions"
+                },
+                "balance": {
+                  "label": "Balance",
+                  "all": "All",
+                  "positive": "Positive",
+                  "negative": "Negative",
+                  "neutral": "Neutral"
+                },
+                "date-range": {
+                  "label": "Time period"
+                },
+                "sort": {
+                  "label": "Sort by",
+                  "date": "Date",
+                  "name": "Name",
+                  "location": "Location",
+                  "postings": "Transactions"
+                },
+                "order": {
+                  "label": "Sort order",
+                  "ascending": "Ascending",
+                  "descending": "Descending"
                 }
               }
             }
@@ -745,17 +1027,13 @@
                 "back-to-home": "Back to home"
               }
             }
-          },
-          "modal": {
-            "join": {}
           }
         }
       },
       "join": {
         "page": {
           "qr-code": {
-            "invalid": "QR code is not valid.",
-            "error": "An error occurred while scanning the QR code. Please try again."
+            "invalid": "QR code is not valid."
           },
           "modal": {
             "join": {
@@ -768,7 +1046,7 @@
             "title": "Join a collective with an invitation code",
             "form": {
               "code": "Code",
-              "helper-text": "Get it from a collective admin.",
+              "helper-text": "Ask an collective admin for the code.",
               "submit": "Join Collective"
             }
           }
@@ -784,24 +1062,63 @@
             "title": "Leave the collective",
             "note": "All personal data related to the collective will be deleted.",
             "warning": "are the last manager of this organization. Leaving will delete the organization.",
+            "assigned-postings-warning": "You still have {{value}} transactions assigned to you. Leaving is only possible once no transaction is assigned to you.",
             "button": {
-              "members": "Grant manager role to another member",
-              "leave": "Leave collective"
+              "members": "Grant manager role",
+              "leave": "Leave collective",
+              "assigned-postings": "Show transactions"
             }
           }
         }
       },
       "members": {
+        "slug": {
+          "page": {
+            "title": "Member details",
+            "card": {
+              "info": {
+                "title": "Member information",
+                "role": "Role"
+              },
+              "postings": {
+                "title": "Transaction Statistics",
+                "total": "Total Transactions",
+                "credit": "Total Income",
+                "debit": "Total Expenses",
+                "balance": "Balance"
+              },
+              "open-postings": {
+                "title": "Open Transactions",
+                "show-all": "Show all {{value}} transactions"
+              }
+            },
+            "modal": {
+              "filter": {
+                "card": {
+                  "type-filter": {},
+                  "date-range": {},
+                  "budget-categories": {},
+                  "activities": {}
+                }
+              }
+            },
+            "activity-filter-items": {}
+          }
+        },
         "page": {
           "modal": {
             "approve-member": {
               "confirm": "Approve",
               "header": "Approve member",
-              "message": "User will be granted access to the collective"
+              "message": "Membership request from {{value}} will be approved"
             },
             "remove-member": {
               "confirm": "Remove",
-              "message": "User will be removed from the collective."
+              "message": "User {{value}} will be removed from the collective"
+            },
+            "untransferred-postings": {
+              "header": "Open transactions",
+              "message": "The member {{value}} still has pending transactions assigned. These must be processed before the member can be removed."
             },
             "select-role": {
               "manager": "Manager",
@@ -830,6 +1147,9 @@
                 "first": "Collective",
                 "second": "Join Collective"
               }
+            },
+            "deny-membership-request": {
+              "message": "Membership request from {{value}} will be denied"
             }
           },
           "invitation-code": {
@@ -841,7 +1161,6 @@
               "title": "Join {{value}} on Kollapp!",
               "error": "Sharing is not supported on this device"
             },
-            "renew": {},
             "email": {
               "body": "User this invitation code to join {{value}}",
               "subject": "Join {{value}} on Kollapp!",
@@ -851,7 +1170,6 @@
           },
           "title": "Members",
           "card": {
-            "invite-members": {},
             "pending-members": {
               "title": "Pending members"
             }
@@ -863,8 +1181,44 @@
           },
           "no-members": "No other members found.",
           "invite": "Invite person",
-          "search": {
+          "searchbar": {
             "placeholder": "Search members..."
+          },
+          "sliding-options": {
+            "view-details": "Details",
+            "remove-member": "Remove",
+            "select-role": "Role"
+          }
+        }
+      },
+      "budget-categories": {
+        "page": {
+          "title": "Transaction categories",
+          "default-badge": "Default",
+          "modal": {
+            "create": {
+              "title": "Create Category"
+            },
+            "update": {
+              "title": "Edit Category"
+            },
+            "delete": {
+              "header": "Delete Category?",
+              "message": "Category \"{{value}}\" will be deleted."
+            }
+          },
+          "form": {
+            "name": "Category Name",
+            "default-category": "Default Category"
+          },
+          "sliding-options": {
+            "edit": "Edit",
+            "delete": "Delete"
+          },
+          "budget-categories-card": {
+            "card": {
+              "add-category": "Add category"
+            }
           }
         }
       },
@@ -896,112 +1250,219 @@
           }
         }
       },
-      "page": {
-        "activity-filter-item": {
-          "not-assigned-to-activity": "Not assigned to event"
-        },
-        "modal": {
-          "select-organization": {
-            "header": "Change collective"
+      "budget-statistics": {
+        "page": {
+          "title": "Finance statistics",
+          "no-postings": "No transactions available for statistics.",
+          "search": {
+            "placeholder": "Search statistics..."
           },
-          "delete-posting": {
-            "confirm-text": "Delete transaction"
+          "filter": {
+            "title": "Filter time range",
+            "time-range": "Select time range",
+            "all": "All",
+            "3months": "3 Months",
+            "6months": "6 Months",
+            "12months": "12 Months",
+            "custom": "Custom",
+            "visible-cards": "Visible Cards",
+            "visible-cards-all": "All cards visible"
           },
-          "create-posting": {
+          "overview": {
+            "balance": "Balance",
+            "title": "Overview"
+          },
+          "trend": {
+            "title": "Monthly Trend",
+            "no-data": "No data available."
+          },
+          "top-credits": {
+            "title": "Top Income"
+          },
+          "top-debits": {
+            "title": "Top Expenses"
+          },
+          "cashflow": {
+            "net": "Net",
+            "best": "Best month",
+            "worst": "Worst month"
+          },
+          "category-statistics": {
+            "title": "By category",
+            "no-data": "No category data available.",
+            "of-total": "of total",
+            "show-all": "Show all categories"
+          },
+          "member-statistics": {
+            "title": "By member",
+            "net": "Net",
+            "no-data": "No member data available.",
+            "volume": "Volume",
+            "show-all": "Show all members"
+          },
+          "chart": {
             "credit": "Income",
-            "debit": "Expense",
-            "date": "Date",
-            "activities": {
-              "all-selected": "All events selected",
-              "select": "Select event",
-              "search": "Search events..."
+            "debit": "Expenses"
+          },
+          "transaction-count": "{{value}} transactions in selected period",
+          "heatmap": {
+            "title": "Transaction heatmap",
+            "active-days": "{{value}} active days",
+            "busiest-day": "Busiest day: {{value}} ({{value2}})",
+            "expenses": "Expenses",
+            "income": "Income",
+            "no-transactions": "No transactions",
+            "transactions": "{{value}} transactions"
+          },
+          "comparison": {
+            "title": "Month Comparison",
+            "credit": "Income",
+            "debit": "Expenses",
+            "previous": "{{value}}",
+            "balance-trend": "Balance trend",
+            "improving": "Improving compared to last month",
+            "declining": "Declining compared to last month",
+            "stable": "Stable compared to last month"
+          },
+          "activities": {
+            "title": "By event",
+            "total-activities": "Events",
+            "avg-cost": "Avg. Cost",
+            "transactions": "transactions",
+            "no-activities": "No events with transactions",
+            "show-all": "Show all events"
+          },
+          "insights": {
+            "title": "Highlights",
+            "no-insights": "No special highlights",
+            "hint": "With more transactions, highlights will appear here automatically",
+            "anomaly": {
+              "title": "Unusual Expense",
+              "description": "\"{{value}}\" at {{value2}} is significantly higher than average ({{value3}})"
             },
-            "purpose": "Purpose",
-            "amount": "Amount"
-          },
-          "update-posting": {
-            "card": {
-              "credit": "Income",
-              "debit": "Expense",
-              "purpose": "Purpose",
-              "amount": "Amount",
-              "date": "Date",
-              "activities": {
-                "all-selected": "All events selected",
-                "select": "Select event",
-                "search": "Search events..."
-              },
-              "title": "Update posting"
+            "spending-up": {
+              "title": "Expenses increased",
+              "description": "Expenses have increased by {{value}}% this month"
+            },
+            "spending-down": {
+              "title": "Spending Decreased",
+              "description": "Expenses have decreased by {{value}}% this month"
+            },
+            "top-category": {
+              "title": "Top Category",
+              "description": "Category accounts for {{value}}% of all expenses"
+            },
+            "inactive": {
+              "title": "Long Inactivity",
+              "description": "No transactions have been recorded for {{value}} days"
+            },
+            "small-expenses": {
+              "title": "Many Small Expenses",
+              "description": "{{value}} transactions under €5 add up to {{value2}}"
             }
           },
-          "postings-history": {
-            "search": "Search transactions...",
-            "not-found": "No transactions found.",
-            "reset-filters": "Reset filters"
+          "hero": {
+            "transactions": "Transactions",
+            "vs-last-month": "vs. last month",
+            "avg-per-transaction": "Ø per transaction"
           },
-          "postings-filter": {
-            "card": {
-              "credit": "Income",
-              "debit": "Expense",
-              "title": "Filters",
-              "from": "From",
-              "to": "To",
-              "activities": {
-                "all-selected": "All events selected",
-                "select": "Select event",
-                "search": "Search events..."
-              },
-              "reset": "Reset filters",
-              "apply": "Apply filters"
+          "smart-insights": {
+            "upcoming-event": {
+              "title": "Upcoming event",
+              "description": "\"{{value}}\" is coming up — {{value2}} in expenses so far"
             }
+          },
+          "top-transactions": {
+            "title": "Top Transactions",
+            "no-credits": "No income recorded",
+            "no-debits": "No expenses recorded"
+          },
+          "event-efficiency": {
+            "title": "Event Efficiency",
+            "series": "Events",
+            "net-cost": "Net Cost",
+            "hint": "X = number of transactions, Y = net cost. Larger bubbles indicate higher volume.",
+            "no-data": "At least 2 events with transactions needed"
+          },
+          "weekday": {
+            "title": "By Weekday",
+            "no-data": "No data available.",
+            "busiest": "Busiest day: {{value}} ({{value2}} transactions)"
+          },
+          "sections": {
+            "quick-glance": "Overview",
+            "quick-glance-sub": "Balance & key metrics at a glance",
+            "trends": "Trends",
+            "trends-sub": "Patterns & development over time",
+            "breakdown": "Details",
+            "breakdown-sub": "By category, member & event"
+          },
+          "export": {
+            "view": "View",
+            "download": "Download",
+            "share": "Share",
+            "email": "Send via email",
+            "error": "Export failed",
+            "view-error": "Could not view file",
+            "share-error": "Sharing failed",
+            "email-error": "Could not open email",
+            "download-error": "Download failed",
+            "download-success-title": "Download successful",
+            "download-success-message": "Statistics saved as {{value}} to Documents",
+            "share-title": "Budget Statistics",
+            "share-dialog": "Share statistics",
+            "email-subject": "Budget Statistics",
+            "capturing": "Capturing image in progress...",
+            "share-unsupported": "Sharing is not supported on this device",
+            "view-unsupported": "Viewer is not available",
+            "email-no-account": "No email account configured",
+            "email-unsupported": "Sending via email is not supported on this device",
+            "header": "Export statistics"
+          }
+        }
+      },
+      "page": {
+        "budget-card": {
+          "card": {
+            "title": "Collective balance"
           }
         },
-        "posting-translation": {
-          "debit": "Expense",
-          "cedit": "Income"
-        },
-        "title": "Collective",
-        "no-collective": {
-          "note": "You are not part of any collective."
-        },
-        "event-list": {
+        "activity-list": {
           "list": {
-            "create-event": "Create event",
+            "create-activity": "Create event",
             "header": "Events",
-            "manage-events": "Manage events"
+            "manage-activities": "Events"
           }
+        },
+        "collective-info": {
+          "role": "You are a {{value}}"
         },
         "collective-list": {
           "list": {
+            "budget-categories": "Budget categories",
+            "change-collective": "Change collectively",
             "header": "Collective",
-            "members": "Manage members",
-            "update-info": "Update collective info",
             "leave": "Leave collective",
-            "change-collective": "Change collective"
+            "members": "Members",
+            "update-info": "Update collective information"
           }
         },
         "general": {
           "list": {
-            "header": "General",
-            "register": "Register new collective",
-            "join": "Join a collective"
+            "header": "Generally",
+            "join": "Join a collective",
+            "register": "Register new collective"
           }
         },
-        "budget-card": {
-          "card": {
-            "collective-balance": "Collective balance",
-            "total-credit": "Total income: {{value}}",
-            "total-debit": "Total expense: {{value}}",
-            "add-credit": "Add income",
-            "add-debit": "Add expense",
-            "postings-history": "Transaction history"
+        "modal": {
+          "select-organization": {
+            "header": "Change collectively"
           }
         },
-        "upcoming-event": {
-          "card": {
-            "title": "Upcoming event"
-          }
-        }
+        "no-collective": {
+          "note": "You are not a member of a collective."
+        },
+        "title": "Collective"
       }
     },
     "error": {
@@ -1030,17 +1491,25 @@
           "greetings": "Hello {{value}}",
           "notifications": {
             "no-notes": "No new notifications"
+          },
+          "open-postings": {
+            "button": {
+              "label": "{{value}} transactions are assigned to you."
+            }
           }
         },
-        "upcoming-event-card": {
+        "upcoming-activity-card": {
           "card": {
-            "title": "Upcoming event"
+            "title": "Upcoming event",
+            "no-upcoming-activity": "No upcoming event.\nGo to event overview page.",
+            "activity-postings": "{{value}} transactions"
           }
         },
         "organization-card": {
           "card": {
             "members": "{{value}} members",
-            "activities": "{{value}} events"
+            "activities": "{{value}} events",
+            "postings": "{{value}} transactions"
           }
         },
         "no-collectives-card": {
@@ -1054,8 +1523,47 @@
           "card": {
             "note": "You have a pending request for joining:"
           }
+        },
+        "pending-requests": {
+          "card": {
+            "title": "Pending requests",
+            "content": "The following users want to join the organization:"
+          }
+        },
+        "quick-access": {
+          "done": "Done",
+          "add": "Add",
+          "remove": "Remove",
+          "hint": "Long press widgets to edit",
+          "modal": {
+            "title": "Add quick access",
+            "search-placeholder": "Search for features...",
+            "results-for": "{{value}} results for \"{{value2}}\"",
+            "no-results": "No results found for \"{{value}}\"",
+            "current-items-header": "Current quick access items",
+            "all-functions": "All functions",
+            "special-widgets-header": "Widgets"
+          },
+          "edit-mode-hint": "Reorder widgets by long press."
         }
       }
+    }
+  },
+  "accessibility": {
+    "navigation": {
+      "back": "Go back",
+      "home": "Go to home page",
+      "menu": "Open menu"
+    },
+    "modal": {
+      "close": "Close dialog"
+    },
+    "loading": "Loading content",
+    "logo": "Kollapp Logo",
+    "actions": {
+      "add": "Add",
+      "remove": "Remove",
+      "search": "Search"
     }
   }
 }

@@ -6,5 +6,6 @@ import type { Colors } from '$lib/models/ui';
 export type ItemSlidingOption = {
 	icon: string;
 	color?: Colors;
+	label?: string;
 	handler: () => void;
 };

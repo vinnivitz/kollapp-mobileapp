@@ -3,46 +3,51 @@ import type { ForgotPasswordRequestTO, KollappUserSignupRequestTO, ResetPassword
 import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/models/api';
 import { customFetch } from '$lib/utility';
 
-class PublicUserResource {
-	ENDPOINT = 'public/user';
+class PublicUserService {
+	private get base(): string {
+		return 'public/user';
+	}
 
 	/** Registers a new manager
 	 * @param model signup model
 	 * @returns {Promise<ResponseBody>} response body
 	 */
-	async register(model: KollappUserSignupRequestTO): Promise<ResponseBody> {
-		return customFetch(`${this.ENDPOINT}/signup`, {
+	register = async (model: KollappUserSignupRequestTO): Promise<ResponseBody> => {
+		return customFetch(`${this.base}/signup`, {
 			authorizationType: AuthorizationType.NONE,
 			body: model,
-			method: RequestMethod.POST
+			method: RequestMethod.POST,
+			offlineQueueable: false
 		});
-	}
+	};
 
 	/** Sends a password reset email to the user
 	 * @param model forgot password model
 	 * @returns {Promise<ResponseBody>} response body
 	 */
-	async forgotPassword(model: ForgotPasswordRequestTO): Promise<ResponseBody> {
-		return customFetch(`${this.ENDPOINT}/forgot-password`, {
+	forgotPassword = async (model: ForgotPasswordRequestTO): Promise<ResponseBody> => {
+		return customFetch(`${this.base}/forgot-password`, {
 			authorizationType: AuthorizationType.NONE,
 			body: model,
-			method: RequestMethod.POST
+			method: RequestMethod.POST,
+			offlineQueueable: false
 		});
-	}
+	};
 
 	/** Resets the user password
 	 * @param model reset password model
 	 * @param token reset token
 	 * @returns {Promise<ResponseBody>} response body
 	 */
-	async resetPassword(model: ResetPasswordRequestTO, token: string): Promise<ResponseBody> {
-		return customFetch(`${this.ENDPOINT}/reset-password`, {
+	resetPassword = async (model: ResetPasswordRequestTO, token: string): Promise<ResponseBody> => {
+		return customFetch(`${this.base}/reset-password`, {
 			authorizationType: AuthorizationType.NONE,
 			body: model,
 			method: RequestMethod.POST,
+			offlineQueueable: false,
 			query: { token }
 		});
-	}
+	};
 }
 
-export const publicUserService = new PublicUserResource();
+export const publicUserService = new PublicUserService();

@@ -1,61 +1,41 @@
 <script lang="ts">
-	import type { AuthenticationModel } from '$lib/models/models';
-	import type { AuthenticatedKollappUserTO, LoginRequestTO } from '@kollapp/api-types';
-
 	import { loadingController } from '@ionic/core';
-	import {
-		fingerPrintOutline,
-		keyOutline,
-		logInOutline,
-		logoApple,
-		logoGithub,
-		logoGoogle,
-		logoSlack,
-		personOutline
-	} from 'ionicons/icons';
+	import { fingerPrintOutline, keyOutline, logInOutline, personOutline } from 'ionicons/icons';
 	import { onMount } from 'svelte';
+	import { get } from 'svelte/store';
 
 	import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
+	import { loginSchema } from '$lib/api/schemas/authentication';
 	import { authenticationService } from '$lib/api/services';
-	import { loginSchema } from '$lib/api/validation/authentication';
-	import Layout from '$lib/components/layout/Layout.svelte';
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
-	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
-	import Welcome from '$lib/components/widgets/Welcome.svelte';
+	import { Button, Card, InputItem } from '$lib/components/core';
+	import { Layout } from '$lib/components/layout';
+	import { WelcomeBanner } from '$lib/components/shared';
 	import { t } from '$lib/locales';
 	import { StorageKey } from '$lib/models/storage';
 	import { Form } from '$lib/models/ui';
-	import { appStateStore, authenticationStore } from '$lib/stores';
+	import { authenticationStore, organizationStore } from '$lib/stores';
 	import {
 		customForm,
-		featureNotImplementedAlert,
 		getStoredValue,
-		getValidationResult,
+		informationModal,
 		isBiometricAvailable,
 		isBiometricEnabled,
 		promptBiometricAuthentication,
 		showAlert,
-		storeBiometricCredentials,
-		storeValue,
-		verifyBiometricIdentity
+		StatusCheck,
+		storeValue
 	} from '$lib/utility';
 
-	let loginCredentials = $state<LoginRequestTO>();
-
 	const form = new Form({
-		completed: async ({ model, response }) => {
-			loginCredentials = { password: model.password, username: model.username };
-			await handleLogin(response);
-		},
-		request: async (model: LoginRequestTO) => await authenticationService.login(model),
+		completed: onComplete,
+		request: authenticationService.login,
 		schema: loginSchema()
 	});
 
-	onMount(async () => await performBiometricVerification());
+	onMount(async () => performBiometricVerification());
 
 	async function performBiometricVerification(): Promise<void> {
 		if (dev || !(await isBiometricAvailable()) || !(await isBiometricEnabled()) || $authenticationStore) return;
@@ -66,45 +46,34 @@
 		const loading = await loadingController.create({});
 		await loading.present();
 
-		const response = await authenticationService.login({
-			password: credentials.password,
-			username: credentials.username
-		} satisfies LoginRequestTO);
-		const result = getValidationResult<AuthenticatedKollappUserTO>(response);
-		await (result.valid
-			? handleLogin(response.data)
-			: Promise.all([
-					showAlert($t('routes.auth.login.page.biometrics.wrong-credentials')),
-					storeValue(StorageKey.BIOMETRICS_ENABLED, false)
-				]));
+		const response = await authenticationService.login(credentials);
+		if (StatusCheck.isOK(response.status)) {
+			onComplete();
+		} else {
+			await Promise.all([
+				showAlert($t('routes.auth.login.page.biometrics.wrong-credentials')),
+				storeValue(StorageKey.BIOMETRICS_ENABLED, false)
+			]);
+		}
 		await loading.dismiss();
 	}
 
-	async function handleLogin(model: AuthenticatedKollappUserTO): Promise<void> {
-		const authenticationModel: AuthenticationModel = {
-			accessToken: model.accessToken,
-			refreshToken: model.refreshToken
-		};
-		await authenticationStore.set(authenticationModel);
-		await appStateStore.initializeBaseData();
-		await promptBiometricSetup();
+	async function onComplete(): Promise<void> {
 		await goto(resolve('/'));
-	}
-
-	async function promptBiometricSetup(): Promise<void> {
-		if (dev || !(await isBiometricAvailable()) || (await isBiometricEnabled()) || !loginCredentials) return;
-		const verified = await verifyBiometricIdentity();
-		if (!verified) return;
-		await Promise.all([
-			storeValue(StorageKey.BIOMETRICS_ENABLED, true),
-			storeBiometricCredentials(loginCredentials.username, loginCredentials.password)
-		]);
+		const welcomeShown = await getStoredValue(StorageKey.WELCOME_SHOWN);
+		if (!welcomeShown && !get(organizationStore)) {
+			await storeValue(StorageKey.WELCOME_SHOWN, true);
+			await informationModal(
+				$t('routes.auth.login.page.welcome-modal.title'),
+				$t('routes.auth.login.page.welcome-modal.message')
+			);
+		}
 	}
 </script>
 
 <Layout>
 	<div class="mb-6">
-		<Welcome />
+		<WelcomeBanner />
 	</div>
 	<Card>
 		{@render loginForm()}
@@ -134,14 +103,6 @@
 			/>
 		{/if}
 	{/await}
-	{#if dev}
-		<div class="mx-3 flex justify-between gap-2">
-			<Button color="tertiary" size="large" fill="outline" icon={logoGoogle} clicked={featureNotImplementedAlert} />
-			<Button color="tertiary" size="large" fill="outline" icon={logoApple} clicked={featureNotImplementedAlert} />
-			<Button color="tertiary" size="large" fill="outline" icon={logoSlack} clicked={featureNotImplementedAlert} />
-			<Button color="tertiary" size="large" fill="outline" icon={logoGithub} clicked={featureNotImplementedAlert} />
-		</div>
-	{/if}
 	<Card color="light" clicked={() => goto(resolve('/auth/register'))} classList="text-center flex flex-wrap gap-1">
 		<ion-text>{$t('routes.auth.login.page.register.question')}</ion-text>
 		<ion-text color="secondary">{$t('routes.auth.login.page.register.link')}</ion-text>

@@ -7,12 +7,10 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
+	import { resetPasswordSchema } from '$lib/api/schemas/authentication';
 	import { publicUserService } from '$lib/api/services';
-	import { resetPasswordSchema } from '$lib/api/validation/authentication';
-	import Layout from '$lib/components/layout/Layout.svelte';
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
-	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
+	import { Button, Card, InputItem } from '$lib/components/core';
+	import { Layout } from '$lib/components/layout';
 	import { t } from '$lib/locales';
 	import { Form } from '$lib/models/ui';
 	import { customForm, passwordConfirmationValidator, showAlert } from '$lib/utility';
@@ -28,16 +26,14 @@
 
 	const form = new Form({
 		completed: async () => goto(resolve('/auth/login')),
-		customValidators: {
+		request: async (model) => publicUserService.resetPassword(model, data.token!),
+		schema: resetPasswordSchema(),
+		validators: {
 			confirmPassword: passwordConfirmationValidator<ResetPasswordRequestTO & { confirmPassword: string }>(
 				'password',
 				'confirmPassword'
 			)
-		},
-		request: async (model) => {
-			return publicUserService.resetPassword(model, data.token!);
-		},
-		schema: resetPasswordSchema()
+		}
 	});
 </script>
 

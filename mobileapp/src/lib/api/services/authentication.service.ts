@@ -1,49 +1,96 @@
-import type { AuthenticatedKollappUserTO, AuthTokenTO, LoginRequestTO } from '@kollapp/api-types';
+import type { PasswordTO } from '$lib/api/dtos';
+import type { AccessTokenTO, AuthTokensTO, LoginRequestTO } from '@kollapp/api-types';
 
+import { get } from 'svelte/store';
+
+import { dev } from '$app/environment';
 import { goto } from '$app/navigation';
 import { resolve } from '$app/paths';
 
 import { AuthorizationType, RequestMethod, type ResponseBody } from '$lib/models/api';
-import { appStateStore } from '$lib/stores';
-import { customFetch } from '$lib/utility';
+import { StorageKey } from '$lib/models/storage';
+import { appStateStore, authenticationStore, userStore } from '$lib/stores';
+import {
+	customFetch,
+	isBiometricAvailable,
+	isBiometricEnabled,
+	StatusCheck,
+	storeBiometricCredentials,
+	storeValue,
+	verifyBiometricIdentity
+} from '$lib/utility';
 
-class AuthenticationResource {
-	ENDPOINT = 'public/auth';
+class AuthenticationService {
+	private get base(): string {
+		return 'public/auth';
+	}
 
 	/**
 	 * Logs in a user and returns the validation result
 	 * @param model login model
-	 * @returns {Promise<ResponseBody<AuthenticatedUserTO>>} validation result
+	 * @returns {Promise<ResponseBody<AuthTokensTO>>} authentication tokens
 	 */
-	async login(model: LoginRequestTO): Promise<ResponseBody<AuthenticatedKollappUserTO>> {
-		return customFetch(`${this.ENDPOINT}/signin`, {
+	login = async (model: LoginRequestTO): Promise<ResponseBody<AuthTokensTO>> => {
+		const response = await customFetch<AuthTokensTO>(`${this.base}/signin`, {
 			authorizationType: AuthorizationType.NONE,
 			body: model,
 			method: RequestMethod.POST,
-			silentOnSuccess: true
+			offlineQueueable: false
 		});
-	}
+		if (StatusCheck.isOK(response.status)) {
+			await authenticationStore.set(response.data);
+			await appStateStore.initializeBaseData();
+			if (!dev && (await isBiometricAvailable()) && !(await isBiometricEnabled())) {
+				const verified = await verifyBiometricIdentity();
+				if (verified) {
+					await Promise.all([
+						storeValue(StorageKey.BIOMETRICS_ENABLED, true),
+						storeBiometricCredentials(model.username, model.password)
+					]);
+				}
+			}
+		}
+		return response;
+	};
+
+	/**
+	 * Verifies the user's password
+	 * @param model password model
+	 * @returns {Promise<ResponseBody>} response body
+	 */
+	verifyPassword = async (model: PasswordTO): Promise<ResponseBody> => {
+		return customFetch(`${this.base}/signin`, {
+			authorizationType: AuthorizationType.NONE,
+			body: { password: model.password, username: get(userStore)?.username! } satisfies LoginRequestTO,
+			method: RequestMethod.POST,
+			offlineQueueable: false
+		});
+	};
 
 	/**
 	 * Refreshes the access token
 	 * @param token refresh token
-	 * @returns {Promise<ResponseBody<TokenTO>>} new access token
+	 * @returns {Promise<ResponseBody<AccessTokenTO>>} new access token
 	 */
-	async refresh(token: string): Promise<ResponseBody<AuthTokenTO>> {
-		return customFetch(`${this.ENDPOINT}/refresh`, {
+	refresh = async (token: string): Promise<ResponseBody<AccessTokenTO>> => {
+		const response = await customFetch<AccessTokenTO>(`${this.base}/refresh`, {
 			authorizationType: AuthorizationType.NONE,
-			query: { token },
-			silentOnSuccess: true
+			offlineQueueable: false,
+			query: { token }
 		});
-	}
+		if (StatusCheck.isOK(response.status)) {
+			await authenticationStore.set({ accessToken: response.data.token, refreshToken: token });
+		}
+		return response;
+	};
 
 	/**
 	 * Logs out the user by clearing authentication tokens and user information
 	 */
-	async logout(): Promise<void> {
+	logout = async (): Promise<void> => {
 		await appStateStore.reset();
 		await goto(resolve('/auth/login'));
-	}
+	};
 }
 
-export const authenticationService = new AuthenticationResource();
+export const authenticationService = new AuthenticationService();

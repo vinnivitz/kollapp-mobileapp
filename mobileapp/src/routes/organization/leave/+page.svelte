@@ -1,25 +1,47 @@
 <script lang="ts">
-	import { loadingController } from '@ionic/core';
 	import { ribbonOutline, trashOutline, warningOutline } from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
 	import { organizationService } from '$lib/api/services';
-	import Layout from '$lib/components/layout/Layout.svelte';
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
-	import Card from '$lib/components/widgets/ionic/Card.svelte';
+	import { Button, Card } from '$lib/components/core';
+	import { Layout } from '$lib/components/layout';
 	import { t } from '$lib/locales';
-	import { organizationStore } from '$lib/stores';
-	import { confirmationModal } from '$lib/utility';
+	import { organizationStore, userStore } from '$lib/stores';
+	import { confirmationModal, hasOrganizationRole, triggerClickByLabel, withLoader } from '$lib/utility';
 
-	const isLastManager = $derived(
-		$organizationStore?.personsOfOrganization.filter(
-			(member) => member.organizationRole === 'ROLE_ORGANIZATION_MANAGER'
-		).length === 1
+	const currentPersonOfOrganizationId = $derived(
+		$organizationStore?.personsOfOrganization.find((person) => person.userId === $userStore?.id)?.id ?? 0
 	);
 
-	const isLastMember = $derived($organizationStore?.personsOfOrganization.length === 1);
+	const isManager = $derived(hasOrganizationRole('ROLE_ORGANIZATION_MANAGER'));
+
+	const isLastManager = $derived(
+		isManager &&
+			$organizationStore?.personsOfOrganization.filter(
+				(personOfOrganization) => personOfOrganization.organizationRole === 'ROLE_ORGANIZATION_MANAGER'
+			).length === 1
+	);
+
+	const hasAssignedPostings = $derived(
+		($organizationStore?.activities.some((activity) =>
+			activity.activityPostings.some((posting) => posting.personOfOrganizationId === currentPersonOfOrganizationId)
+		) ||
+			$organizationStore?.organizationPostings.some(
+				(posting) => posting.personOfOrganizationId === currentPersonOfOrganizationId
+			)) ??
+			false
+	);
+
+	const assignedPostings = $derived([
+		...($organizationStore?.activities.flatMap((activity) =>
+			activity.activityPostings.filter((posting) => posting.personOfOrganizationId === currentPersonOfOrganizationId)
+		) ?? []),
+		...($organizationStore?.organizationPostings.filter(
+			(posting) => posting.personOfOrganizationId === currentPersonOfOrganizationId
+		) ?? [])
+	]);
 
 	async function onLeaveOrganizationPrompt(): Promise<void> {
 		await confirmationModal({
@@ -29,15 +51,17 @@
 	}
 
 	async function leaveOrganization(): Promise<void> {
-		const loader = await loadingController.create({});
-		await loader.present();
-		const organizationId = $organizationStore?.id;
-		if (organizationId) {
-			await organizationService.leave(organizationId);
-			await organizationStore.init();
-		}
-		await loader.dismiss();
+		await withLoader(() => organizationService.leave());
 		await goto(resolve('/organization'));
+	}
+
+	async function onNavigateToAssignedPostings(): Promise<void> {
+		await goto(resolve('/'));
+		await triggerClickByLabel(
+			$t('routes.page.page.account-card.open-postings.button.label', {
+				value: assignedPostings.length
+			})
+		);
 	}
 </script>
 
@@ -57,20 +81,15 @@
 				label={$t('routes.organization.leave.page.card.button.leave')}
 				icon={trashOutline}
 				clicked={onLeaveOrganizationPrompt}
+				disabled={hasAssignedPostings}
 			/>
-			<ion-text>{$t('routes.organization.leave.page.card.note')}</ion-text>
+			<ion-note>{$t('routes.organization.leave.page.card.note')}</ion-note>
 		</div>
 		{#if isLastManager}
 			{@render lastManagerCard()}
-			{#if !isLastMember}
-				<Button
-					icon={ribbonOutline}
-					classList="mx-3"
-					fill="outline"
-					label={$t('routes.organization.leave.page.card.button.members')}
-					clicked={() => void goto(resolve('/organization/members'))}
-				/>
-			{/if}
+		{/if}
+		{#if hasAssignedPostings}
+			{@render assignedPostingsCard()}
 		{/if}
 	</Card>
 {/snippet}
@@ -82,6 +101,46 @@
 				<ion-icon icon={warningOutline} size="large"></ion-icon>
 			</ion-avatar>
 			<ion-text>{$t('routes.organization.leave.page.card.warning')}</ion-text>
+		</div>
+		<div class="text-center">
+			<Button
+				icon={ribbonOutline}
+				classList="mt-3"
+				color="black"
+				fill="outline"
+				label={$t('routes.organization.leave.page.card.button.members')}
+				clicked={async () => goto(resolve('/organization/members'))}
+			/>
+		</div>
+	</Card>
+{/snippet}
+
+{#snippet assignedPostingsCard()}
+	<Card color="warning">
+		<div class="flex items-center justify-center gap-2">
+			<ion-avatar class="flex items-center justify-center">
+				<ion-icon icon={warningOutline} size="large"></ion-icon>
+			</ion-avatar>
+			<ion-text
+				>{$t('routes.organization.leave.page.card.assigned-postings-warning', {
+					value: assignedPostings.length
+				})}</ion-text
+			>
+		</div>
+		<!-- <ul class="mt-3 list-disc pl-5">
+			{#each assignedPostings as posting (posting.id)}
+				<li class="font-bold">{posting.purpose}</li>
+			{/each}
+		</ul> -->
+		<div class="text-center">
+			<Button
+				icon={ribbonOutline}
+				classList="mt-3"
+				color="black"
+				fill="outline"
+				label={$t('routes.organization.leave.page.card.button.assigned-postings')}
+				clicked={onNavigateToAssignedPostings}
+			/>
 		</div>
 	</Card>
 {/snippet}

@@ -18,14 +18,11 @@
 	import { resolve } from '$app/paths';
 
 	import { organizationService } from '$lib/api/services';
-	import Layout from '$lib/components/layout/Layout.svelte';
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
-	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
-	import TextareaInputItem from '$lib/components/widgets/ionic/TextareaInputItem.svelte';
+	import { Button, Card, InputItem, TextareaInputItem } from '$lib/components/core';
+	import { Layout } from '$lib/components/layout';
 	import { t } from '$lib/locales';
 	import { organizationStore } from '$lib/stores';
-	import { isAuthenticated, StatusCheck } from '$lib/utility';
+	import { isAuthenticated, StatusCheck, withLoader } from '$lib/utility';
 
 	const { data }: { data: PageData } = $props();
 
@@ -37,9 +34,8 @@
 	let authenticated = $state<boolean>(false);
 
 	async function onJoinCollective(): Promise<void> {
-		const result = await organizationService.joinByInvitationCode(data.code);
+		const result = await withLoader(() => organizationService.joinByInvitationCode({ code: data.code }));
 		if (StatusCheck.isOK(result.status)) {
-			await organizationStore.update($organizationStore?.id!);
 			await goto(resolve('/organization'));
 		}
 	}
@@ -51,8 +47,8 @@
 		]);
 		if (StatusCheck.isOK(organizationResult.status)) {
 			organization = organizationResult.data;
+			authenticated = authenticatedResult;
 		}
-		authenticated = authenticatedResult;
 		loading = false;
 	});
 </script>

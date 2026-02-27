@@ -4,21 +4,20 @@ import type { AuthorizationType, RequestMethod, StatusCode } from '$lib/models/a
  * Custom fetch configuration
  */
 export type CustomFetchConfig =
-	| {
-			authorizationType?: AuthorizationType;
+	| (BaseCustomFetchConfig & {
 			body?: never;
-			method?: RequestMethod.DELETE | RequestMethod.GET;
-			query?: Record<string, string>;
-			silentOnError?: boolean;
-			silentOnSpecificStatus?: StatusCode[];
-			silentOnSuccess?: boolean;
-	  }
-	| {
-			method: RequestMethod.PATCH | RequestMethod.POST | RequestMethod.PUT;
-			authorizationType?: AuthorizationType;
+			method?: RequestMethod.GET;
+	  })
+	| (BaseCustomFetchConfig & {
+			method: RequestMethod.DELETE | RequestMethod.PATCH | RequestMethod.POST | RequestMethod.PUT;
 			body?: object;
-			query?: Record<string, string>;
-			silentOnError?: boolean;
-			silentOnSpecificStatus?: StatusCode[];
-			silentOnSuccess?: boolean;
-	  };
+	  });
+
+type BaseCustomFetchConfig = {
+	authorizationType?: AuthorizationType;
+	offlineQueueable?: boolean;
+	query?: Record<string, string>;
+	silentOnError?: boolean;
+	silentOnStatus?: StatusCode[];
+	silentOnSuccess?: boolean;
+};

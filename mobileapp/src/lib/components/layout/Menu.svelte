@@ -1,16 +1,15 @@
 <script lang="ts">
 	import type { SearchableItemTO } from '$lib/api/dtos';
-	import type { Snippet } from 'svelte';
 
 	import * as icons from 'ionicons/icons';
 	import { notificationsOutline } from 'ionicons/icons';
+	import { onDestroy, onMount, type Snippet } from 'svelte';
 
 	import { goto } from '$app/navigation';
 	import type { RouteId } from '$app/types';
 
 	import { authenticationService, searchableService } from '$lib/api/services';
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
-	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
+	import { Button, LabeledItem } from '$lib/components/core';
 	import { t } from '$lib/locales';
 	import { triggerClickByLabel } from '$lib/utility';
 
@@ -40,11 +39,23 @@
 
 	async function onSearch(event: CustomEvent): Promise<void> {
 		searchValue = event.detail.value;
-		searchedItems = await searchableService.filter(searchValue.toLowerCase());
+		searchedItems = await searchableService.filter(searchValue.toLowerCase().trim());
 	}
+
+	function onMenuClose(): void {
+		searchValue = '';
+	}
+
+	onMount(() => {
+		menuController.addEventListener('ionDidClose', onMenuClose);
+	});
+
+	onDestroy(() => {
+		menuController?.removeEventListener('ionDidClose', onMenuClose);
+	});
 </script>
 
-<ion-menu side="end" content-id="menu" bind:this={menuController}>
+<ion-menu side="end" content-id="menu" bind:this={menuController} aria-label={$t('accessibility.navigation.menu')}>
 	<ion-header>
 		<ion-toolbar>
 			<div class="flex">
@@ -52,6 +63,7 @@
 					class="pt-5"
 					color="light"
 					debounce={100}
+					aria-label={$t('accessibility.actions.search')}
 					placeholder={$t('components.menu.header.toolbar.searchbar.placeholder')}
 					onionInput={onSearch}
 					value={searchValue}
@@ -64,16 +76,17 @@
 					color="light"
 					icon={notificationsOutline}
 					clicked={() => navigate('/account/notifications')}
+					ariaLabel={$t('routes.account.notifications.page.title')}
 				/>
 			</div>
 		</ion-toolbar>
 	</ion-header>
 	<ion-content class="ion-padding relative text-center">
-		{#if searchValue !== ''}
+		{#if searchValue.trim() !== ''}
 			<ion-list>
 				<ion-list-header>
 					{#if searchedItems.length > 0}
-						{$t('components.menu.search-results.found', { value: searchValue })}
+						{$t('components.menu.search-results.found', { value: searchValue, value2: searchedItems.length })}
 					{:else}
 						{$t('components.menu.search-results.not-found', { value: searchValue })}
 					{/if}
@@ -90,7 +103,7 @@
 		{:else}
 			{@render children()}
 		{/if}
-		{#if searchValue === ''}
+		{#if searchValue.trim() === ''}
 			<Button
 				size="default"
 				fill="outline"

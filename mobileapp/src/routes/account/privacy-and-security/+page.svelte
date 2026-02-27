@@ -1,22 +1,17 @@
 <script lang="ts">
-	import type { LoginRequestTO } from '@kollapp/api-types';
+	import type { PasswordTO } from '$lib/api/dtos';
 
-	import { fingerPrintOutline, keyOutline, notificationsOutline, receiptOutline } from 'ionicons/icons';
+	import { fingerPrintOutline, keyOutline, notificationsOutline, receiptOutline, trashOutline } from 'ionicons/icons';
 	import { onMount } from 'svelte';
 
 	import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
+	import { loginSchema, verifyPasswordSchema } from '$lib/api/schemas/authentication';
 	import { authenticationService } from '$lib/api/services';
-	import { loginSchema } from '$lib/api/validation/authentication';
-	import Layout from '$lib/components/layout/Layout.svelte';
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
-	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
-	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
-	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
-	import Popover from '$lib/components/widgets/ionic/Popover.svelte';
+	import { Button, Card, CustomItem, InputItem, LabeledItem, Popover } from '$lib/components/core';
+	import { Layout } from '$lib/components/layout';
 	import { t } from '$lib/locales';
 	import { StorageKey } from '$lib/models/storage';
 	import { Form, type FormActions } from '$lib/models/ui';
@@ -27,21 +22,34 @@
 		featureNotImplementedAlert,
 		getStoredValue,
 		isBiometricAvailable,
-		storeBiometricCredentials
+		storeBiometricCredentials,
+		storeValue,
+		verifyBiometricIdentity
 	} from '$lib/utility';
 
 	let showPasswordPrompt = $state<boolean>(false);
 	let isPasswordConfirmed = $state<boolean>(false);
 	let toggle = $state<HTMLIonToggleElement>();
 
-	let actions: FormActions<LoginRequestTO>;
+	let formActions: FormActions<PasswordTO>;
 
 	const form = new Form({
-		completed: async ({ model }) => onPasswordConfirmed($userStore?.username!, model.password),
-		exposedActions: (exposedActions) => (actions = exposedActions),
-		hiddenFields: { username: $userStore?.username! },
-		request: async (model: LoginRequestTO) => authenticationService.login(model),
-		schema: loginSchema()
+		actions: (actions) => (formActions = actions),
+		completed: async ({ model }) => {
+			const verified = await verifyBiometricIdentity();
+			if (verified) {
+				await Promise.all([
+					storeValue(StorageKey.BIOMETRICS_ENABLED, true),
+					storeBiometricCredentials($userStore?.username!, model.password)
+				]);
+			}
+			isPasswordConfirmed = true;
+			onPasswordPromptDismiss();
+			setToggleValue(true);
+		},
+		failed: () => (isPasswordConfirmed = true),
+		request: authenticationService.verifyPassword,
+		schema: verifyPasswordSchema()
 	});
 
 	onMount(async () => {
@@ -59,15 +67,8 @@
 		}
 	}
 
-	async function onPasswordConfirmed(username: string, password: string): Promise<void> {
-		isPasswordConfirmed = true;
-		await storeBiometricCredentials(username, password);
-		onPasswordPromptDismiss();
-		setToggleValue(true);
-	}
-
 	async function onPasswordPromptDismiss(): Promise<void> {
-		actions.setModel();
+		formActions.set(loginSchema().getDefault());
 		showPasswordPrompt = false;
 		if (!isPasswordConfirmed) {
 			setToggleValue(false);
@@ -86,6 +87,11 @@
 </script>
 
 <Layout title={$t('routes.account.privacy-and-security.page.title')} showBackButton>
+	{@render privacyList()}
+	{@render securityList()}
+</Layout>
+
+{#snippet privacyList()}
 	<ion-list inset>
 		<ion-list-header>{$t('routes.account.privacy-and-security.page.list.privacy.header')}</ion-list-header>
 		<LabeledItem
@@ -100,6 +106,9 @@
 			clicked={() => goto(resolve('/account/privacy-and-security/legal'))}
 		/>
 	</ion-list>
+{/snippet}
+
+{#snippet securityList()}
 	<ion-list inset>
 		<ion-list-header>{$t('routes.account.privacy-and-security.page.list.security.header')}</ion-list-header>
 		<LabeledItem
@@ -126,8 +135,14 @@
 				</ion-toggle>
 			</CustomItem>
 		{/await}
+		<LabeledItem
+			indexed="/account/privacy-and-security/delete"
+			clicked={() => goto(resolve('/account/privacy-and-security/delete'))}
+			icon={trashOutline}
+			label={$t('routes.account.privacy-and-security.page.list.security.delete-account')}
+		/>
 	</ion-list>
-</Layout>
+{/snippet}
 
 <Popover extended open={showPasswordPrompt} dismissed={onPasswordPromptDismiss}>
 	<Card title={$t('routes.account.privacy-and-security.page.modal.password.card.title')}>

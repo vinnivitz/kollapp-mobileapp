@@ -4,23 +4,31 @@ import { get, writable } from 'svelte/store';
 
 import { dev } from '$app/environment';
 
+import { initializationStore } from './initialization.store';
+
 import { t } from '$lib/locales';
 import { AlertType, AppStateType } from '$lib/models/ui';
 import {
 	authenticationStore,
 	connectionStore,
-	initializationStore,
 	layoutStore,
 	localeStore,
 	organizationStore,
 	themeStore,
 	userStore
 } from '$lib/stores';
-import { clearRequestCache, showAlert } from '$lib/utility';
+import { clearOfflineQueue, showAlert } from '$lib/utility';
 
 function createAppStateStore(): AppStateStore {
 	const { set, subscribe } = writable<AppStateType>(AppStateType.UNINITIALIZED);
 	const $t = get(t);
+
+	const unsubscribe = initializationStore.loaded.subscribe((value) => {
+		if (value) {
+			set(AppStateType.READY);
+			unsubscribe();
+		}
+	});
 
 	let isInitialized = false;
 
@@ -30,31 +38,23 @@ function createAppStateStore(): AppStateStore {
 
 		try {
 			set(AppStateType.INITIALIZING_CORE);
-			await Promise.all([themeStore.init(), layoutStore.init(), localeStore.init()]);
+			await Promise.all([themeStore.initialize(), layoutStore.initialize(), localeStore.initialize()]);
 			if (dev) console.info('Core stores initialized.');
 
 			set(AppStateType.INITIALIZING_AUTH);
-			await authenticationStore.init();
+			await authenticationStore.initialize();
 			if (dev) console.info('Authentication store initialized.');
 
 			const isAuthenticated = !!get(authenticationStore);
 
 			if (isAuthenticated) {
 				set(AppStateType.INITIALIZING_BASE_DATA);
-				void userStore.init();
-				void organizationStore.init();
+				void Promise.all([userStore.initialize(), organizationStore.initialize()]);
 				if (dev) console.info('Base data stores initialized.');
 			} else {
-				void userStore.reset();
-				void organizationStore.reset();
+				void Promise.all([userStore.reset(), organizationStore.reset()]);
 			}
-			void connectionStore.init();
-			const unsubscribe = initializationStore.loaded.subscribe((value) => {
-				if (value) {
-					set(AppStateType.READY);
-					unsubscribe();
-				}
-			});
+			void connectionStore.initialize();
 		} catch (error) {
 			set(AppStateType.ERROR);
 			await showAlert($t('stores.app-state.error'));
@@ -63,8 +63,7 @@ function createAppStateStore(): AppStateStore {
 	}
 
 	async function reset(): Promise<void> {
-		clearRequestCache();
-		await Promise.all([userStore.reset(), organizationStore.reset(), authenticationStore.reset()]);
+		await Promise.all([userStore.reset(), organizationStore.reset(), authenticationStore.reset(), clearOfflineQueue()]);
 		set(AppStateType.READY);
 		isInitialized = false;
 	}
@@ -72,7 +71,7 @@ function createAppStateStore(): AppStateStore {
 	async function initializeBaseData(): Promise<void> {
 		try {
 			set(AppStateType.INITIALIZING_BASE_DATA);
-			await Promise.all([userStore.init(), organizationStore.init()]);
+			await Promise.all([userStore.initialize(), organizationStore.initialize()]);
 			if (dev) console.info('Base data stores initialized.');
 			set(AppStateType.READY);
 		} catch (error) {

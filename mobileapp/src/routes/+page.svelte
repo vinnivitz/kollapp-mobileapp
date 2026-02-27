@@ -1,16 +1,11 @@
 <script lang="ts">
-	import type { ActivityModel } from '$lib/models/models';
-	import type { KollappUserTO, OrganizationTO } from '@kollapp/api-types';
+	import type { KollappUserTO } from '@kollapp/api-types';
 
-	import { TZDate } from '@date-fns/tz';
-	import { addDays, formatDistanceToNow } from 'date-fns';
 	import {
 		accessibilityOutline,
 		arrowForwardOutline,
-		calendarClearOutline,
-		flashOutline,
+		cashOutline,
 		notificationsOffOutline,
-		peopleOutline,
 		personAddOutline,
 		warningOutline
 	} from 'ionicons/icons';
@@ -18,15 +13,20 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
-	import Layout from '$lib/components/layout/Layout.svelte';
-	import BudgetChart from '$lib/components/widgets/BudgetChart.svelte';
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
-	import Card from '$lib/components/widgets/ionic/Card.svelte';
+	import { budgetService } from '$lib/api/services';
+	import { Button, Card } from '$lib/components/core';
+	import { Layout } from '$lib/components/layout';
+	import { PostingOverviewModal, QuickAccessPanel } from '$lib/components/shared';
 	import { t } from '$lib/locales';
-	import { localeStore, organizationStore, userStore } from '$lib/stores';
-	import { getDateFnsLocale } from '$lib/utility';
+	import { organizationStore, userStore } from '$lib/stores';
+	import { hasOrganizationRole } from '$lib/utility';
 
-	const activity = $derived($organizationStore?.activities && $organizationStore.activities[0]);
+	let transactionOverviewOpen = $state<boolean>(false);
+
+	const personOfOrganizationId = $derived(
+		$organizationStore?.personsOfOrganization.find((person) => person.userId === $userStore?.id)?.id ?? 0
+	);
+
 	const postings = $derived(
 		$organizationStore
 			? [
@@ -35,29 +35,35 @@
 				]
 			: []
 	);
+
+	const userPostings = $derived(
+		postings.filter((posting) => posting.personOfOrganizationId === personOfOrganizationId)
+	);
 	const organizations = $derived(organizationStore.organizations);
 
-	function onNavigateEvent(): void {
-		if ($organizationStore?.activities[0]?.id) {
-			goto(resolve('/organization/activities/[slug]', { slug: $organizationStore.activities[0].id.toString() }));
+	const isManager = $derived(hasOrganizationRole('ROLE_ORGANIZATION_MANAGER'));
+
+	function onPostingActionCompleted(): void {
+		if (postings.length === 0) {
+			transactionOverviewOpen = false;
 		}
 	}
 </script>
 
 <Layout title={$t('routes.page.page.title')}>
 	{#if $userStore}
+		{@render accountCard($userStore)}
+
 		{#if !$organizationStore && $organizations.length > 0}
 			{@render pendingOrganizationJoinRequestCard()}
 		{/if}
 
-		{@render accountCard($userStore)}
+		{#if $organizationStore?.personsOfOrganization.some((person) => person.status === 'PENDING') && isManager}
+			{@render pendingMembers()}
+		{/if}
 
 		{#if $organizationStore}
-			{#if activity}
-				{@render upcomingEventCard(activity)}
-			{/if}
-			{@render organizationCard($organizationStore)}
-			{@render budgetChartCard()}
+			{@render quickAccess()}
 		{:else if $organizations.length === 0}
 			{@render noCollectivesCard()}
 		{/if}
@@ -73,73 +79,26 @@
 				{$t('routes.page.page.account-card.greetings', { value: user.username })}
 			</ion-text>
 		</div>
-		<Button
-			fill="clear"
-			color="medium"
-			size="small"
-			icon={notificationsOffOutline}
-			label={$t('routes.page.page.account-card.notifications.no-notes')}
-			clicked={() => goto(resolve('/account/notifications'))}
-		/>
+		<div class="flex flex-col">
+			<Button
+				size="small"
+				fill="clear"
+				color="medium"
+				icon={notificationsOffOutline}
+				label={$t('routes.page.page.account-card.notifications.no-notes')}
+				clicked={() => goto(resolve('/account/notifications'))}
+			/>
+			{#if userPostings.length > 0}
+				<Button
+					size="small"
+					icon={cashOutline}
+					fill="outline"
+					label={$t('routes.page.page.account-card.open-postings.button.label', { value: userPostings.length })}
+					clicked={() => (transactionOverviewOpen = true)}
+				/>
+			{/if}
+		</div>
 	</div>
-{/snippet}
-
-{#snippet upcomingEventCard(activity: ActivityModel)}
-	<Card
-		title={$t('routes.page.page.upcoming-event-card.card.title')}
-		border="secondary"
-		clicked={onNavigateEvent}
-		titleIconEnd={arrowForwardOutline}
-	>
-		<div class="mb-3 flex flex-wrap items-center justify-center gap-5">
-			<div class="flex items-center gap-2">
-				<ion-icon icon={flashOutline}></ion-icon>
-				<ion-text>{activity.name}</ion-text>
-			</div>
-			<div class="flex items-center gap-2">
-				<ion-icon icon={calendarClearOutline}></ion-icon>
-				<ion-text>
-					{formatDistanceToNow(addDays(new TZDate(), 5), {
-						addSuffix: true,
-						includeSeconds: true,
-						locale: getDateFnsLocale($localeStore)
-					})}
-				</ion-text>
-			</div>
-		</div>
-	</Card>
-{/snippet}
-
-{#snippet organizationCard(organization: OrganizationTO)}
-	<Card
-		border="primary"
-		title={organization.name}
-		clicked={() => goto(resolve('/organization'))}
-		titleIconEnd={arrowForwardOutline}
-	>
-		<div class="flex flex-wrap items-center justify-center gap-2">
-			<Button
-				size="small"
-				fill="solid"
-				color="light"
-				icon={peopleOutline}
-				label={$t('routes.page.page.organization-card.card.members', {
-					value: organization.personsOfOrganization.length
-				})}
-				clicked={() => goto(resolve('/organization/members'))}
-			/>
-			<Button
-				icon={flashOutline}
-				label={$t('routes.page.page.organization-card.card.activities', {
-					value: $organizationStore?.activities.length ?? 0
-				})}
-				size="small"
-				fill="solid"
-				color="light"
-				clicked={() => goto(resolve('/organization/activities'))}
-			/>
-		</div>
-	</Card>
 {/snippet}
 
 {#snippet noCollectivesCard()}
@@ -182,6 +141,39 @@
 	</Card>
 {/snippet}
 
-{#snippet budgetChartCard()}
-	<BudgetChart {postings} />
+{#snippet quickAccess()}
+	<QuickAccessPanel />
 {/snippet}
+
+{#snippet pendingMembers()}
+	<Card
+		clicked={() => goto(resolve('/organization/members'))}
+		title={$t('routes.page.page.pending-requests.card.title')}
+		titleIconEnd={arrowForwardOutline}
+		border="warning"
+	>
+		<ion-text>{$t('routes.page.page.pending-requests.card.content')}</ion-text>
+		<ul class="list-disc">
+			{#each $organizationStore?.personsOfOrganization.filter((person) => person.status === 'PENDING') as user (user.id)}
+				<li class="font-bold">{user.username}</li>
+			{/each}
+		</ul>
+	</Card>
+{/snippet}
+
+<PostingOverviewModal
+	open={transactionOverviewOpen}
+	dismissed={() => (transactionOverviewOpen = false)}
+	activities={$organizationStore?.activities!}
+	budgetCategories={$organizationStore?.budgetCategories!}
+	personsOfOrganization={$organizationStore?.personsOfOrganization!}
+	postings={userPostings}
+	completed={onPostingActionCompleted}
+	showPersonOfOrganizationFilter={false}
+	onUpdateOrganizationPosting={budgetService.updateOrganizationPosting}
+	onUpdateActivityPosting={budgetService.updateActivityPosting}
+	onTransferOrganizationPosting={budgetService.transferOrganizationPosting}
+	onTransferActivityPosting={budgetService.transferActivityPosting}
+	onDeleteOrganizationPosting={budgetService.deleteOrganizationPosting}
+	onDeleteActivityPosting={budgetService.deleteActivityPosting}
+/>

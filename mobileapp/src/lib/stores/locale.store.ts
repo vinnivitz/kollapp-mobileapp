@@ -11,7 +11,7 @@ import { getDateFnsLocale, getStoredValue, storeValue } from '$lib/utility';
 function createStore(): LocaleStore {
 	const { set, subscribe } = writable<Locale | undefined>();
 
-	async function init(): Promise<void> {
+	async function initialize(): Promise<void> {
 		const value = await getInitialLocale();
 		await loadTranslations(value);
 		locale.set(value);
@@ -45,7 +45,7 @@ function createStore(): LocaleStore {
 	}
 
 	return {
-		init,
+		initialize,
 		reset,
 		set: _set,
 		subscribe

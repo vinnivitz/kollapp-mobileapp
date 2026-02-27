@@ -1,4 +1,4 @@
-import type { AuthenticationModel } from '$lib/models/models';
+import type { AuthTokensTO } from '@kollapp/api-types';
 
 import { writable } from 'svelte/store';
 
@@ -7,18 +7,18 @@ import { type AuthenticationStore as AuthenticationStore } from '$lib/models/sto
 import { getStoredValue, removeStoredValue, storeValue } from '$lib/utility';
 
 function createStore(): AuthenticationStore {
-	const { set, subscribe } = writable<AuthenticationModel | undefined>();
+	const { set, subscribe } = writable<AuthTokensTO | undefined>();
 	const initialized = writable(false);
 
-	async function init(): Promise<void> {
-		const model = await getStoredValue<AuthenticationModel>(StorageKey.AUTHENTICATION, StorageStrategy.SECURE);
+	async function initialize(): Promise<void> {
+		const model = await getStoredValue<AuthTokensTO>(StorageKey.AUTHENTICATION, StorageStrategy.SECURE);
 		if (model) {
 			set(model);
 		}
 		initialized.set(true);
 	}
 
-	async function _set(model?: AuthenticationModel): Promise<void> {
+	async function _set(model?: AuthTokensTO): Promise<void> {
 		await (model
 			? storeValue(StorageKey.AUTHENTICATION, model, StorageStrategy.SECURE)
 			: removeStoredValue(StorageKey.AUTHENTICATION, StorageStrategy.SECURE));
@@ -30,7 +30,7 @@ function createStore(): AuthenticationStore {
 	}
 
 	return {
-		init,
+		initialize,
 		initialized,
 		reset,
 		set: _set,

@@ -1,15 +1,17 @@
 <script lang="ts">
-	import { accessibilityOutline, diamondOutline, flashOutline, personOutline } from 'ionicons/icons';
-	import { type Snippet } from 'svelte';
-	import { fade } from 'svelte/transition';
+	import { cardOutline, diamondOutline, flashOutline, peopleOutline, statsChartOutline } from 'ionicons/icons';
+	import { onDestroy, type Snippet } from 'svelte';
 
 	import { dev } from '$app/environment';
+	import { navigating, page } from '$app/state';
 
-	import Header from '$lib/components/layout/Header.svelte';
-	import Menu from '$lib/components/layout/Menu.svelte';
-	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
+	import { LabeledItem } from '$lib/components/core';
+	import { FadeInOut } from '$lib/components/core/animation';
+	import { Header, Menu } from '$lib/components/layout';
 	import { t } from '$lib/locales';
-	import { initializationStore, organizationStore, userStore } from '$lib/stores';
+	import { TourStepId } from '$lib/models/ui';
+	import { initializationStore, organizationStore } from '$lib/stores';
+	import { refreshDataStores } from '$lib/utility';
 
 	type Properties = {
 		children?: Snippet;
@@ -31,38 +33,72 @@
 		title
 	}: Properties = $props();
 
+	let currentRoute = $state<string>(page.route.id ?? '');
+
 	const loaded = $derived(initializationStore.loaded);
+
+	const loadedServer = $derived(initializationStore.loadedServer);
+
+	const isNavigating = $derived(navigating.to && navigating.to?.route.id !== currentRoute);
 
 	let refresher = $state<HTMLIonRefresherElement>();
 	let menuComponent = $state<ReturnType<typeof Menu>>();
 
+	let timer: ReturnType<typeof setTimeout>;
+	let showSpinner = $state<boolean>(false);
+
+	$effect(() => {
+		clearTimeout(timer);
+
+		if (loading || !$loaded || isNavigating) {
+			showSpinner = false;
+			timer = setTimeout(() => (showSpinner = true), 100);
+		} else {
+			showSpinner = false;
+		}
+	});
+
+	onDestroy(() => clearTimeout(timer));
+
 	async function doRefresh(): Promise<void> {
-		await (onRefresh ? onRefresh() : Promise.all([userStore.init(), organizationStore.init()]));
-		refresher?.complete?.();
+		await (onRefresh ? onRefresh() : refreshDataStores());
+		await refresher?.complete?.();
 	}
 </script>
 
-{#if title && !hideMenu}
+{#if title && !hideMenu && $loaded}
 	<Menu bind:this={menuComponent}>
 		<ion-list>
-			<LabeledItem
-				transparent
-				clicked={() => menuComponent?.navigate('/account')}
-				icon={personOutline}
-				label={$t('components.layout.menu.list.account.label')}
-			/>
-			<LabeledItem
-				transparent
-				clicked={() => menuComponent?.navigate('/organization/activities')}
-				icon={flashOutline}
-				label={$t('components.layout.menu.list.activities.label')}
-			/>
-			<LabeledItem
-				transparent
-				clicked={() => menuComponent?.navigate('/organization')}
-				icon={accessibilityOutline}
-				label={$t('components.layout.menu.list.collective.label')}
-			/>
+			{#if $organizationStore}
+				<LabeledItem
+					transparent
+					tourId={TourStepId.MENU.ACTIVITIES}
+					clicked={() => menuComponent?.navigate('/organization/activities')}
+					icon={flashOutline}
+					label={$t('components.layout.menu.list.activities.label')}
+				/>
+				<LabeledItem
+					transparent
+					tourId={TourStepId.MENU.BUDGET_CATEGORIES}
+					clicked={() => menuComponent?.navigate('/organization/budget-categories')}
+					icon={cardOutline}
+					label={$t('components.layout.menu.list.budget.label')}
+				/>
+				<LabeledItem
+					transparent
+					tourId={TourStepId.MENU.STATISTICS}
+					clicked={() => menuComponent?.navigate('/organization/budget-statistics')}
+					icon={statsChartOutline}
+					label={$t('components.layout.menu.list.statistics.label')}
+				/>
+				<LabeledItem
+					transparent
+					tourId={TourStepId.MENU.MEMBERS}
+					clicked={() => menuComponent?.navigate('/organization/members')}
+					icon={peopleOutline}
+					label={$t('components.layout.menu.list.persons-of-organization.label')}
+				/>
+			{/if}
 			{#if dev}
 				<LabeledItem
 					transparent
@@ -77,16 +113,22 @@
 
 <div class="ion-page" id="menu">
 	{#if title}
-		<Header {title} {showBackButton} {loading}></Header>
+		<Header loadedServer={$loadedServer} {title} {showBackButton} {loading}></Header>
 	{/if}
-	{#if $loaded && !loading}
-		<ion-content class="ion-padding" in:fade={{ delay: 0, duration: 200 }} class:no-overflow={!scrollable}>
+	<ion-content class="ion-padding" class:no-overflow={!scrollable}>
+		{#if $loaded && !loading && !isNavigating}
 			<ion-refresher bind:this={refresher} slot="fixed" onionRefresh={doRefresh}>
 				<ion-refresher-content></ion-refresher-content>
 			</ion-refresher>
-			{@render children?.()}
-		</ion-content>
-	{/if}
+			<FadeInOut>
+				{@render children?.()}
+			</FadeInOut>
+		{:else if showSpinner}
+			<div class="flex h-full items-center justify-center">
+				<ion-spinner name="crescent"></ion-spinner>
+			</div>
+		{/if}
+	</ion-content>
 </div>
 
 <style>

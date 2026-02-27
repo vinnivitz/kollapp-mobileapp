@@ -7,32 +7,38 @@ import { t } from '$lib/locales';
 import { StorageKey } from '$lib/models/storage';
 import { type ConnectionStore } from '$lib/models/stores';
 import { AlertType } from '$lib/models/ui';
-import { showAlert, storeValue } from '$lib/utility';
+import { processOfflineQueue, showAlert, storeValue } from '$lib/utility';
+
+async function handleConnectionChange(isOnline: boolean, wasOnline?: boolean): Promise<void> {
+	const $t = get(t);
+
+	if (!isOnline && wasOnline) {
+		await showAlert($t('stores.connection.offline'));
+		if (dev) console.info('User is offline.');
+	} else if (isOnline && wasOnline === false) {
+		await showAlert($t('stores.connection.online'), { type: AlertType.SUCCESS });
+		if (dev) console.info('User is online.');
+		void processOfflineQueue();
+	}
+}
 
 function createStore(): ConnectionStore {
 	const { set, subscribe } = writable<boolean | undefined>();
 	let isInitialized = false;
+	let listenerHandle: Awaited<ReturnType<typeof Network.addListener>> | undefined;
 
-	async function init(): Promise<void> {
+	async function initialize(): Promise<void> {
 		if (isInitialized) return;
 		isInitialized = true;
 
 		const status = await Network.getStatus();
 		await _set(status.connected);
 
-		Network.addListener('networkStatusChange', async (status: ConnectionStatus) => {
-			const $t = get(t);
+		listenerHandle = await Network.addListener('networkStatusChange', async (status: ConnectionStatus) => {
 			const wasOnline = get(connectionStore);
 			const isOnline = status.connected;
 
-			if (!isOnline && wasOnline) {
-				await showAlert($t('stores.connection.offline'));
-				if (dev) console.info('User is offline.');
-			} else if (isOnline && wasOnline === false) {
-				await showAlert($t('stores.connection.online'), { type: AlertType.SUCCESS });
-				if (dev) console.info('User is online.');
-			}
-
+			await handleConnectionChange(isOnline, wasOnline);
 			await _set(isOnline);
 		});
 	}
@@ -47,28 +53,27 @@ function createStore(): ConnectionStore {
 	}
 
 	async function check(): Promise<void> {
-		const $t = get(t);
 		const status = await Network.getStatus();
 		const isOnline = status.connected;
-
 		const wasOnline = get(connectionStore);
 
-		if (!isOnline && wasOnline) {
-			await showAlert($t('stores.connection.offline'));
-			if (dev) console.info('User is offline.');
-		} else if (isOnline && wasOnline === false) {
-			await showAlert($t('stores.connection.online'), { type: AlertType.SUCCESS });
-			if (dev) console.info('User is online.');
-		}
+		await handleConnectionChange(isOnline, wasOnline);
 
 		if (status.connected !== wasOnline) {
 			await _set(isOnline);
 		}
 	}
 
+	async function destroy(): Promise<void> {
+		await listenerHandle?.remove();
+		listenerHandle = undefined;
+		isInitialized = false;
+	}
+
 	return {
 		check,
-		init,
+		destroy,
+		initialize,
 		reset,
 		set: _set,
 		subscribe

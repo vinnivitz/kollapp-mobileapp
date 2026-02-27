@@ -3,7 +3,7 @@
  */
 export type ResponseBody<T = never> = {
 	data: T;
+	message: string;
 	status: number;
-	message?: string;
 	validationField?: string;
 };
