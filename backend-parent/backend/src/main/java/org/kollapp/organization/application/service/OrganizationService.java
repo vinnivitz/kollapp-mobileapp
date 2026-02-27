@@ -6,15 +6,16 @@ import org.jmolecules.architecture.hexagonal.PrimaryPort;
 
 import org.kollapp.organization.application.model.Organization;
 import org.kollapp.organization.application.model.OrganizationBudgetCategory;
+import org.kollapp.organization.application.model.OrganizationMinified;
 import org.kollapp.organization.application.model.OrganizationRole;
 
 @PrimaryPort
 public interface OrganizationService {
-    List<Organization> getOrganizationsByLoggedInUser();
+    List<OrganizationMinified> getOrganizationsByLoggedInUser();
 
     Organization getOrganizationById(long id);
 
-    Organization getOrganizationByInvitationCode(String invitationCode);
+    OrganizationMinified getOrganizationByInvitationCode(String invitationCode);
 
     Organization createOrganization(Organization organization);
 

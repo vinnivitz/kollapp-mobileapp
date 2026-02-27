@@ -1,6 +1,7 @@
 package org.kollapp.organization.adapters.primary.rest;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import jakarta.validation.Valid;
 
@@ -31,6 +32,7 @@ import org.kollapp.organization.adapters.primary.rest.dto.PersonOfOrganizationPa
 import org.kollapp.organization.adapters.primary.rest.mapper.OrganizationMapper;
 import org.kollapp.organization.application.model.Organization;
 import org.kollapp.organization.application.model.OrganizationBudgetCategory;
+import org.kollapp.organization.application.model.OrganizationMinified;
 import org.kollapp.organization.application.model.OrganizationRole;
 import org.kollapp.organization.application.service.OrganizationService;
 
@@ -55,13 +57,10 @@ public class OrganizationController {
             summary = "Get the organizations of the logged in user",
             security = {@SecurityRequirement(name = "bearer-key")})
     public ResponseEntity<DataResponseTO<List<OrganizationMinifiedTO>>> getOrganizationOfLoggedInUser() {
-        List<Organization> organizations = organizationService.getOrganizationsByLoggedInUser();
+        List<OrganizationMinified> organizations = organizationService.getOrganizationsByLoggedInUser();
         List<OrganizationMinifiedTO> organizationMinifiedTOs = organizations.stream()
-                .map(organization -> {
-                    long userId = organization.getPersonsOfOrganization().get(0).getUserId();
-                    return organizationMapper.organizationToOrganizationMinifiedTO(organization, userId);
-                })
-                .toList();
+                .map(organizationMapper::organizationMinifiedToOrganizationMinifiedTO)
+                .collect(Collectors.toList());
         return ResponseEntity.ok(new DataResponseTO<>(organizationMinifiedTOs, "success.organization.get"));
     }
 
@@ -83,13 +82,9 @@ public class OrganizationController {
             security = {@SecurityRequirement(name = "bearer-key")})
     public ResponseEntity<DataResponseTO<OrganizationMinifiedTO>> getOrganizationBaseInformationByInvitationCode(
             @PathVariable("invitation-code") String invitationCode) {
-        Organization organization = organizationService.getOrganizationByInvitationCode(invitationCode);
-        List<Organization> userOrganizations = organizationService.getOrganizationsByLoggedInUser();
-        long userId = userOrganizations.isEmpty()
-                ? 0L
-                : userOrganizations.get(0).getPersonsOfOrganization().get(0).getUserId();
+        OrganizationMinified organizationMin = organizationService.getOrganizationByInvitationCode(invitationCode);
         OrganizationMinifiedTO organizationMinifiedTO =
-                organizationMapper.organizationToOrganizationMinifiedTO(organization, userId);
+                organizationMapper.organizationMinifiedToOrganizationMinifiedTO(organizationMin);
         return ResponseEntity.ok(new DataResponseTO<>(organizationMinifiedTO, "success.organization.get"));
     }
 

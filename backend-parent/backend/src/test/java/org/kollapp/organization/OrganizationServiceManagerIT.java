@@ -33,10 +33,11 @@ import org.kollapp.organization.application.model.Activity;
 import org.kollapp.organization.application.model.ActivityPosting;
 import org.kollapp.organization.application.model.Organization;
 import org.kollapp.organization.application.model.OrganizationBudgetCategory;
+import org.kollapp.organization.application.model.OrganizationMembershipState;
+import org.kollapp.organization.application.model.OrganizationMinified;
 import org.kollapp.organization.application.model.OrganizationPosting;
 import org.kollapp.organization.application.model.OrganizationRole;
 import org.kollapp.organization.application.model.PersonOfOrganization;
-import org.kollapp.organization.application.model.PersonOfOrganizationStatus;
 import org.kollapp.organization.application.repository.OrganizationRepository;
 import org.kollapp.organization.application.service.OrganizationService;
 import org.kollapp.user.application.model.KollappUser;
@@ -186,18 +187,10 @@ public class OrganizationServiceManagerIT extends BaseIT {
     @Transactional
     public void enterOrganizationByInvitationCodeShouldReturnEnteredOrganization() {
         organizationService.enterOrganizationByInvitationCode("asdfjklo");
-        Organization organization = organizationService.getOrganizationByInvitationCode("asdfjklo");
+        OrganizationMinified organization = organizationService.getOrganizationByInvitationCode("asdfjklo");
         assertThat(organization.getId()).isEqualTo(2);
         assertThat(organization.getName()).isEqualTo("Frequenzfamilie");
-        assertThat(organization.getPersonsOfOrganization().size()).isEqualTo(2);
-        Optional<PersonOfOrganization> personOfOrganizationOpt = organization.getPersonsOfOrganization().stream()
-                .filter(p -> p.getUsername().equals("nina"))
-                .findFirst();
-        assertThat(personOfOrganizationOpt).isPresent();
-        PersonOfOrganization personOfOrganization = personOfOrganizationOpt.get();
-        assertThat(personOfOrganization.getUsername()).isEqualTo("nina");
-        assertThat(personOfOrganization.getOrganizationRole()).isEqualTo(OrganizationRole.ROLE_ORGANIZATION_MEMBER);
-        assertThat(personOfOrganization.getStatus()).isEqualTo(PersonOfOrganizationStatus.PENDING);
+        assertThat(organization.getState()).isEqualTo(OrganizationMembershipState.PENDING);
     }
 
     @Test
@@ -304,9 +297,9 @@ public class OrganizationServiceManagerIT extends BaseIT {
 
     @Test
     public void getOrganizationsByLoggedInUserShouldReturnListWithTwoOrganizations() {
-        List<Organization> organizations = organizationService.getOrganizationsByLoggedInUser();
+        List<OrganizationMinified> organizations = organizationService.getOrganizationsByLoggedInUser();
         assertThat(organizations.size()).isEqualTo(2);
-        assertThat(organizations.stream().map(Organization::getName).toList())
+        assertThat(organizations.stream().map(OrganizationMinified::getName).toList())
                 .containsExactlyInAnyOrder("NMS", "Glitzerglanz");
     }
 
@@ -327,7 +320,7 @@ public class OrganizationServiceManagerIT extends BaseIT {
 
     @Test
     public void getOrganizationByInvitationCodeShouldReturnOrganization() {
-        Organization organization = organizationService.getOrganizationByInvitationCode("asdfjklo");
+        OrganizationMinified organization = organizationService.getOrganizationByInvitationCode("asdfjklo");
         assertThat(organization.getId()).isEqualTo(2);
         assertThat(organization.getName()).isEqualTo("Frequenzfamilie");
     }

@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import jakarta.transaction.Transactional;
 
@@ -31,6 +30,8 @@ import org.kollapp.organization.application.model.OrganizationBudgetCategory;
 import org.kollapp.organization.application.model.OrganizationCreatedEvent;
 import org.kollapp.organization.application.model.OrganizationDeletedEvent;
 import org.kollapp.organization.application.model.OrganizationInvitationCode;
+import org.kollapp.organization.application.model.OrganizationMembershipState;
+import org.kollapp.organization.application.model.OrganizationMinified;
 import org.kollapp.organization.application.model.OrganizationRole;
 import org.kollapp.organization.application.model.PersonOfOrganization;
 import org.kollapp.organization.application.model.PersonOfOrganizationStatus;
@@ -311,14 +312,14 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     @RequiresKollappUserRole
-    public List<Organization> getOrganizationsByLoggedInUser() {
+    public List<OrganizationMinified> getOrganizationsByLoggedInUser() {
         KollappUser loggedInKollappUser = kollappUserService.getLoggedInKollappUser();
         List<PersonOfOrganization> personsOfOrganization =
                 getPersonOfOrganizationsByUserId(loggedInKollappUser.getId());
         return personsOfOrganization.stream()
                 .map(PersonOfOrganization::getOrganization)
-                .peek(Organization::initChildren)
-                .collect(Collectors.toList());
+                .map(o -> mapOrganizationToOrganizationMinified(o, loggedInKollappUser.getId()))
+                .toList();
     }
 
     @Override
@@ -332,14 +333,15 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     @RequiresKollappUserRole
-    public Organization getOrganizationByInvitationCode(String invitationCode) {
+    public OrganizationMinified getOrganizationByInvitationCode(String invitationCode) {
         String localDateMinusOneDay = LocalDate.now().minusDays(1).toString();
         OrganizationInvitationCode invCode = organizationInvitationCodeRepository
                 .findByInvitationCodeAndExpirationDateIsAfter(invitationCode, localDateMinusOneDay)
-                .orElseThrow(() -> new InvalidInvitationCodeException());
+                .orElseThrow(InvalidInvitationCodeException::new);
         Organization organization = invCode.getOrganization();
         organization.initChildren();
-        return organization;
+        long userIdOfCurrentUser = kollappUserService.getLoggedInKollappUser().getId();
+        return mapOrganizationToOrganizationMinified(organization, userIdOfCurrentUser);
     }
 
     private List<PersonOfOrganization> getPersonOfOrganizationsByUserId(long userId) {
@@ -418,5 +420,29 @@ public class OrganizationServiceImpl implements OrganizationService {
         organizationRepository.deleteById(organization.getId());
         OrganizationDeletedEvent organizationDeletedEvent = new OrganizationDeletedEvent(this, organization.getId());
         organizationPublisher.publishOrganizationDeletedEvent(organizationDeletedEvent);
+    }
+
+    private OrganizationMinified mapOrganizationToOrganizationMinified(Organization organization, long userId) {
+        return OrganizationMinified.builder()
+                .id(organization.getId())
+                .name(organization.getName())
+                .description(organization.getDescription())
+                .place(organization.getPlace())
+                .state(determineUserMembershipState(organization, userId))
+                .build();
+    }
+
+    private OrganizationMembershipState determineUserMembershipState(Organization organization, long userId) {
+        Optional<PersonOfOrganization> personOfOrganizationOpt = organization.getPersonsOfOrganization().stream()
+                .filter(p -> p.getUserId() == userId)
+                .findFirst();
+        boolean isMember = personOfOrganizationOpt.isPresent();
+        if (!isMember) {
+            return OrganizationMembershipState.NOT_MEMBER;
+        }
+        PersonOfOrganization personOfOrganization = personOfOrganizationOpt.get();
+        return personOfOrganization.getStatus().equals(PersonOfOrganizationStatus.APPROVED)
+                ? OrganizationMembershipState.APPROVED
+                : OrganizationMembershipState.PENDING;
     }
 }

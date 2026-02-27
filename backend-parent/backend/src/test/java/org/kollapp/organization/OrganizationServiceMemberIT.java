@@ -23,10 +23,9 @@ import org.kollapp.organization.application.exception.UntransferredPostingExcept
 import org.kollapp.organization.application.model.Activity;
 import org.kollapp.organization.application.model.ActivityPosting;
 import org.kollapp.organization.application.model.Organization;
+import org.kollapp.organization.application.model.OrganizationMembershipState;
+import org.kollapp.organization.application.model.OrganizationMinified;
 import org.kollapp.organization.application.model.OrganizationPosting;
-import org.kollapp.organization.application.model.OrganizationRole;
-import org.kollapp.organization.application.model.PersonOfOrganization;
-import org.kollapp.organization.application.model.PersonOfOrganizationStatus;
 import org.kollapp.organization.application.repository.OrganizationRepository;
 import org.kollapp.organization.application.service.OrganizationService;
 
@@ -85,15 +84,10 @@ public class OrganizationServiceMemberIT extends BaseIT {
     @Transactional
     public void enterOrganizationByInvitationCodeShouldReturnEnteredOrganization() {
         organizationService.enterOrganizationByInvitationCode("asdfjklo");
-        Organization organization = organizationService.getOrganizationByInvitationCode("asdfjklo");
+        OrganizationMinified organization = organizationService.getOrganizationByInvitationCode("asdfjklo");
         assertThat(organization.getId()).isEqualTo(2);
         assertThat(organization.getName()).isEqualTo("Frequenzfamilie");
-        assertThat(organization.getPersonsOfOrganization().size()).isEqualTo(1);
-        PersonOfOrganization personOfOrganization =
-                organization.getPersonsOfOrganization().getFirst();
-        assertThat(personOfOrganization.getUsername()).isEqualTo("nina");
-        assertThat(personOfOrganization.getOrganizationRole()).isEqualTo(OrganizationRole.ROLE_ORGANIZATION_MEMBER);
-        assertThat(personOfOrganization.getStatus()).isEqualTo(PersonOfOrganizationStatus.PENDING);
+        assertThat(organization.getState()).isEqualTo(OrganizationMembershipState.PENDING);
     }
 
     @Test
@@ -154,7 +148,7 @@ public class OrganizationServiceMemberIT extends BaseIT {
 
     @Test
     public void getOrganizationsByLoggedInUserShouldReturnListWithOneOrganization() {
-        List<Organization> organizations = organizationService.getOrganizationsByLoggedInUser();
+        List<OrganizationMinified> organizations = organizationService.getOrganizationsByLoggedInUser();
         assertThat(organizations.size()).isEqualTo(1);
         assertThat(organizations.getFirst().getName()).isEqualTo("NMS");
     }
@@ -176,7 +170,7 @@ public class OrganizationServiceMemberIT extends BaseIT {
 
     @Test
     public void getOrganizationByInvitationCodeShouldReturnOrganization() {
-        Organization organization = organizationService.getOrganizationByInvitationCode("asdfjklo");
+        OrganizationMinified organization = organizationService.getOrganizationByInvitationCode("asdfjklo");
         assertThat(organization.getId()).isEqualTo(2);
         assertThat(organization.getName()).isEqualTo("Frequenzfamilie");
     }
