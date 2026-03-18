@@ -37,7 +37,6 @@ export function passwordConfirmationValidator<T>(
 			};
 		}
 
-		// eslint-disable-next-line security/detect-possible-timing-attacks
 		if (password !== confirmPassword) {
 			const $t = get(t);
 			return {

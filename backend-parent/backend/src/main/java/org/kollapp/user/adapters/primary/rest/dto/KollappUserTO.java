@@ -25,6 +25,8 @@ public class KollappUserTO {
     @NotNull
     private String email;
 
+    private String pendingEmail;
+
     @NotNull
     private boolean activated;
 

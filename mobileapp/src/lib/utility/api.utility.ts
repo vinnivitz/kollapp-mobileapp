@@ -1,5 +1,4 @@
-import type { AuthenticationModel } from '$lib/models/models';
-import type { OrganizationRole, SystemRole } from '@kollapp/api-types';
+import type { AuthTokensTO, OrganizationRole, SystemRoleTO } from '@kollapp/api-types';
 
 import { get } from 'svelte/store';
 
@@ -27,7 +26,7 @@ import {
 	organizationStore,
 	userStore
 } from '$lib/stores';
-import { getStoredValue, showAlert } from '$lib/utility';
+import { getStoredValue, queueOfflineRequest, showAlert } from '$lib/utility';
 
 let refreshPromise: Promise<string | undefined> | undefined;
 
@@ -39,52 +38,26 @@ let refreshPromise: Promise<string | undefined> | undefined;
  */
 export async function customFetch<T = never>(url: string, config?: CustomFetchConfig): Promise<ResponseBody<T>> {
 	const $t = get(t);
+	const originalUrl = url;
 	url = getUrl(url);
 
 	const {
 		authorizationType = AuthorizationType.BEARER,
 		body,
 		method = RequestMethod.GET,
+		offlineQueueable = method !== RequestMethod.GET,
 		query,
 		silentOnError = false,
-		silentOnSuccess = false
+		silentOnSuccess = true
 	} = config ?? {};
 
-	const hasBody = hasRequestBody(method);
-
-	function buildHeaders(): Headers {
-		const headers = new Headers();
-		headers.set(HeaderKey.ACCEPT_LANGUAGE, get(localeStore) ?? Locale.DE);
-		if (hasBody) {
-			headers.set(HeaderKey.CONTENT_TYPE, ContentType.JSON);
-		}
-		return headers;
-	}
-
-	function buildOptions(headers: Headers): RequestInit {
-		const options: RequestInit = { headers, method };
-		if (hasBody && body !== undefined) {
-			options.body = typeof body === 'string' ? body : JSON.stringify(body);
-		}
-		return options;
-	}
-
-	async function handleUnauthorizedResponse(
-		response: Response,
-		enhancedUrl: string,
-		headers: Headers
-	): Promise<Response | undefined> {
-		if (!StatusCheck.isUnauthorized(response.status)) return response;
-		const newToken = await getNewAuthenticationToken();
-		if (!newToken) return undefined;
-		headers.set(HeaderKey.AUTHORIZATION, getBearerToken(newToken));
-		response = await fetch(enhancedUrl, buildOptions(headers));
-		if (StatusCheck.isUnauthorized(response.status)) return undefined;
-		return response;
+	const isOnline = get(connectionStore);
+	if (isOnline === false && offlineQueueable && method !== RequestMethod.GET) {
+		return handleOfflineQueue($t, originalUrl, method, body, query);
 	}
 
 	try {
-		const headers = buildHeaders();
+		const headers = buildRequestHeaders(body);
 
 		if (authorizationType === AuthorizationType.BEARER) {
 			const token = get(authenticationStore)?.accessToken;
@@ -95,9 +68,9 @@ export async function customFetch<T = never>(url: string, config?: CustomFetchCo
 		}
 
 		const enhancedUrl = await getEnhancedUrl(url, query);
-		let response = await fetch(enhancedUrl, buildOptions(headers));
+		let response = await fetch(enhancedUrl, buildRequestOptions(headers, method, body));
 
-		const handled = await handleUnauthorizedResponse(response, enhancedUrl, headers);
+		const handled = await retryOnUnauthorized(response, enhancedUrl, headers, method, body);
 		if (!handled) {
 			return handleAuthorizationError();
 		}
@@ -105,17 +78,75 @@ export async function customFetch<T = never>(url: string, config?: CustomFetchCo
 
 		connectionStore.check();
 
-		return getResponseBody<T>(response, silentOnSuccess, silentOnError, config?.silentOnSpecificStatus);
+		return getResponseBody<T>(response, silentOnSuccess, silentOnError, config?.silentOnStatus);
 	} catch (error) {
-		let message = $t('utility.api.error.generic');
-		let status = StatusCode.SERVICE_UNAVAILABLE;
-		if (error instanceof Error) {
-			message = error.message === 'Failed to fetch' ? $t('utility.api.server-not-reachable') : error.message;
-		} else if (error instanceof Response) {
-			status = error.status;
-		}
-		return createErrorResponse(status, message, false);
+		return handleFetchError($t, error, offlineQueueable, method, originalUrl, body, query);
 	}
+}
+
+function buildRequestHeaders(body?: object): Headers {
+	const headers = new Headers();
+	headers.set(HeaderKey.ACCEPT_LANGUAGE, get(localeStore) ?? Locale.DE);
+	if (body) {
+		headers.set(HeaderKey.CONTENT_TYPE, ContentType.JSON);
+	}
+	return headers;
+}
+
+function buildRequestOptions(headers: Headers, method: RequestMethod, body?: object): RequestInit {
+	const options: RequestInit = { headers, method };
+	if (body) {
+		options.body = typeof body === 'string' ? body : JSON.stringify(body);
+	}
+	return options;
+}
+
+async function retryOnUnauthorized(
+	response: Response,
+	enhancedUrl: string,
+	headers: Headers,
+	method: RequestMethod,
+	body?: object
+): Promise<Response | undefined> {
+	if (!StatusCheck.isUnauthorized(response.status)) return response;
+	const newToken = await getNewAuthenticationToken();
+	if (!newToken) return undefined;
+	headers.set(HeaderKey.AUTHORIZATION, getBearerToken(newToken));
+	const retryResponse = await fetch(enhancedUrl, buildRequestOptions(headers, method, body));
+	if (StatusCheck.isUnauthorized(retryResponse.status)) return undefined;
+	return retryResponse;
+}
+
+async function handleOfflineQueue<T>(
+	$t: (key: string) => string,
+	originalUrl: string,
+	method: RequestMethod,
+	body?: object,
+	query?: Record<string, string> | undefined
+): Promise<ResponseBody<T>> {
+	await queueOfflineRequest(originalUrl, method, body, query);
+	return createErrorResponse(StatusCode.SERVICE_UNAVAILABLE, $t('utility.offline-queue.request-queued'), true);
+}
+
+async function handleFetchError<T>(
+	$t: (key: string) => string,
+	error: unknown,
+	offlineQueueable: boolean,
+	method: RequestMethod,
+	originalUrl: string,
+	body?: object,
+	query?: Record<string, string> | undefined
+): Promise<ResponseBody<T>> {
+	if (error instanceof Error && error.message === 'Failed to fetch') {
+		if (offlineQueueable && method !== RequestMethod.GET) {
+			return handleOfflineQueue($t, originalUrl, method, body, query);
+		}
+		return createErrorResponse(StatusCode.SERVICE_UNAVAILABLE, $t('utility.api.server-not-reachable'), false);
+	}
+
+	const status = error instanceof Response ? error.status : StatusCode.SERVICE_UNAVAILABLE;
+	const message = error instanceof Error ? error.message : $t('utility.api.error.generic');
+	return createErrorResponse(status, message, false);
 }
 
 /**
@@ -124,8 +155,7 @@ export async function customFetch<T = never>(url: string, config?: CustomFetchCo
  */
 export async function isAuthenticated(): Promise<boolean> {
 	const model =
-		get(authenticationStore) ||
-		(await getStoredValue<AuthenticationModel>(StorageKey.AUTHENTICATION, StorageStrategy.SECURE));
+		get(authenticationStore) || (await getStoredValue<AuthTokensTO>(StorageKey.AUTHENTICATION, StorageStrategy.SECURE));
 	return !!model?.accessToken;
 }
 
@@ -134,14 +164,12 @@ export async function isAuthenticated(): Promise<boolean> {
  * @param body Fetch response.
  * @returns {ValidationResult<T>} Validation result containing errors and validity status.
  */
-export function getValidationResult<TField = unknown, TData = unknown>(
-	body: ResponseBody<TData>
-): ValidationResult<TField> {
+export function getValidationResult<T, R>(body: ResponseBody<R>): ValidationResult<T> {
 	const $t = get(t);
 	return {
 		errors: [
 			{
-				field: body.validationField as keyof TField,
+				field: body.validationField as keyof T,
 				message: body.message ?? $t('utility.api.error.generic')
 			}
 		],
@@ -176,8 +204,64 @@ export function hasOrganizationRole(role: OrganizationRole): boolean {
  * @param role SystemRole to check.
  * @returns {boolean} True if the user has the role; otherwise, false.
  */
-export function hasSystemRole(role: SystemRole): boolean {
+export function hasSystemRole(role: SystemRoleTO): boolean {
 	return get(userStore)?.role === role;
+}
+
+/**
+ * Gets the person of organization ID for the current user.
+ * @returns {number | undefined} Person of organization ID or undefined if not found.
+ */
+export function getPersonOfOrganizationId(): number | undefined {
+	const userId = get(userStore)?.id;
+	return get(organizationStore)?.personsOfOrganization.find(
+		(personOfOrganization) => personOfOrganization.userId === userId
+	)?.id;
+}
+
+/**
+ * Gets the username for a given person of organization ID.
+ * @param personOfOrganizationId Person of organization ID.
+ * @returns {string | undefined} Username or undefined if not found.
+ */
+export function getUsernameByPersonOfOrganizationId(personOfOrganizationId: number): string | undefined {
+	return get(organizationStore)?.personsOfOrganization.find(
+		(personOfOrganization) => personOfOrganization.id === personOfOrganizationId
+	)?.username;
+}
+
+/** Gets the budget category name by its ID.
+ * @param categoryId Budget category ID.
+ * @returns {string} Budget category name or empty string if not found.
+ */
+export function getBudgetCategoryNameById(categoryId: number): string {
+	return get(organizationStore)?.budgetCategories.find((category) => category.id === categoryId)?.name ?? '';
+}
+
+/** Gets the current organization ID.
+ * @returns {number | undefined} Organization ID or undefined if not set.
+ */
+export function getOrganizationId(): number | undefined {
+	return get(organizationStore)?.id;
+}
+
+/**
+ * Gets the current organization name.
+ * @returns {string | undefined} Organization name or undefined if not set.
+ */
+export function getOrganizationName(): string | undefined {
+	return get(organizationStore)?.name;
+}
+
+/** Gets the current user ID.
+ * @returns {number | undefined} User ID or undefined if not set.
+ */
+export function getUserId(): number | undefined {
+	return get(userStore)?.id;
+}
+
+export async function refreshDataStores(): Promise<void> {
+	await Promise.all([organizationStore.initialize(), userStore.initialize()]);
 }
 
 async function handleAuthorizationError(): Promise<ResponseBody> {
@@ -228,10 +312,6 @@ async function getResponseBody<T>(
 	};
 }
 
-function hasRequestBody(method: RequestMethod): boolean {
-	return method === RequestMethod.POST || method === RequestMethod.PUT || method === RequestMethod.PATCH;
-}
-
 async function getEnhancedUrl(url: string, query: Record<string, string> | undefined): Promise<string> {
 	const queryParameters = new URLSearchParams(query).toString();
 	return queryParameters ? `${url}?${queryParameters}` : url;
@@ -249,9 +329,7 @@ async function getNewAuthenticationToken(): Promise<string | undefined> {
 
 		const body = await authenticationService.refresh(refreshToken);
 		if (StatusCheck.isOK(body.status)) {
-			const accessToken = body.data.token;
-			await authenticationStore.set({ accessToken, refreshToken });
-			return accessToken;
+			return body.data.token;
 		}
 
 		await appStateStore.reset();

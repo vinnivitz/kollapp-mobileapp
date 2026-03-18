@@ -2,10 +2,8 @@ import { render, waitFor } from '@testing-library/svelte';
 import { createRawSnippet } from 'svelte';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { goto } from '$app/navigation';
-
 import Layout from '$lib/components/layout/Layout.svelte';
-import { organizationStore, userStore } from '$lib/stores';
+import { refreshDataStores } from '$lib/utility';
 
 const childHtml = 'Content';
 
@@ -26,35 +24,15 @@ describe('Layout', () => {
 		const contentDiv = page.querySelector('ion-content div')?.textContent?.trim();
 		expect(contentDiv).toBe(childHtml);
 	});
-	it('renders Header and Menu when title present and not hidden', () => {
-		const { container } = render(Layout, {
-			props: { children, hideMenu: false, loading: false, scrollable: true, title: 'Any' }
-		});
 
-		expect(container.querySelector('ion-header')).toBeTruthy();
-		expect(container.querySelector('ion-menu')).toBeTruthy();
-	});
-
-	it('does not render content while loading is true', () => {
+	it('does not render children while loading is true', () => {
 		const { container } = render(Layout, {
 			props: { children, loading: true, title: 'Any' }
 		});
 		const page = container.querySelector('#menu') as HTMLElement;
-		expect(page.querySelector('ion-content')).toBeFalsy();
-	});
-
-	it('hides Menu when hideMenu is true', () => {
-		const { container } = render(Layout, {
-			props: { children, hideMenu: true, title: 'Any' }
-		});
-		expect(container.querySelector('ion-menu')).toBeFalsy();
-	});
-
-	it('does not render Header when title is missing', () => {
-		const { container } = render(Layout, {
-			props: { children, hideMenu: false, loading: false, scrollable: true }
-		});
-		expect(container.querySelector('ion-header')).toBeFalsy();
+		// Content element exists but children are not rendered
+		expect(page.querySelector('ion-content')).toBeTruthy();
+		expect(page.querySelector('ion-refresher')).toBeFalsy();
 	});
 
 	it('renders content only when loaded and not loading', async () => {
@@ -62,10 +40,12 @@ describe('Layout', () => {
 			props: { children, loading: true, title: 'Any' }
 		});
 		const page = container.querySelector('#menu') as HTMLElement;
-		expect(page.querySelector('ion-content')).toBeFalsy();
+		// Content element exists but refresher is not rendered during loading
+		expect(page.querySelector('ion-refresher')).toBeFalsy();
 
 		await rerender({ children, loading: false, title: 'Any' });
 		expect(page.querySelector('ion-content')).toBeTruthy();
+		expect(page.querySelector('ion-refresher')).toBeTruthy();
 	});
 
 	it('applies no-overflow when scrollable=false', () => {
@@ -84,7 +64,7 @@ describe('Layout', () => {
 		expect(content.className).not.toContain('no-overflow');
 	});
 
-	it('fires default refresh: calls user/org init and completes refresher', async () => {
+	it('fires default refresh: calls refreshDataStores and completes refresher', async () => {
 		const { container } = render(Layout, {
 			props: { children, loading: false, title: 'Any' }
 		});
@@ -96,23 +76,8 @@ describe('Layout', () => {
 
 		refresher.dispatchEvent(new CustomEvent('ionRefresh', { detail: {} }));
 		await waitFor(() => {
-			expect(userStore.init).toHaveBeenCalled();
-			expect(organizationStore.init).toHaveBeenCalled();
+			expect(refreshDataStores).toHaveBeenCalled();
 			expect(refresher.complete).toHaveBeenCalled();
-		});
-	});
-
-	it('clicking menu items triggers navigation via Menu.navigate', async () => {
-		const { container } = render(Layout, {
-			props: { children, hideMenu: false, loading: false, title: 'Any' }
-		});
-		const items = [...container.querySelectorAll('ion-list ion-item')] as HTMLElement[];
-		expect(items.length).toBeGreaterThanOrEqual(3);
-		for (const element of items) {
-			element.click();
-		}
-		await waitFor(() => {
-			expect(goto).toHaveBeenCalled();
 		});
 	});
 
@@ -128,9 +93,24 @@ describe('Layout', () => {
 		refresher.dispatchEvent(new CustomEvent('ionRefresh', { detail: {} }));
 		await waitFor(() => {
 			expect(onRefresh).toHaveBeenCalled();
-			expect(userStore.init).not.toHaveBeenCalled();
-			expect(organizationStore.init).not.toHaveBeenCalled();
+			expect(refreshDataStores).not.toHaveBeenCalled();
 			expect(refresher.complete).toHaveBeenCalled();
 		});
+	});
+
+	it('hides menu when hideMenu is true', () => {
+		const { container } = render(Layout, {
+			props: { children, hideMenu: true, loading: false, title: 'Any' }
+		});
+		// The menu element should not be rendered outside #menu
+		const ionMenu = container.querySelector('ion-menu');
+		expect(ionMenu).toBeFalsy();
+	});
+
+	it('renders title in header', () => {
+		const { container } = render(Layout, {
+			props: { children, loading: false, title: 'Test Page Title' }
+		});
+		expect(container.textContent).toContain('Test Page Title');
 	});
 });

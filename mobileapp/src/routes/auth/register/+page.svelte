@@ -4,30 +4,34 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
+	import { registerSchema } from '$lib/api/schemas/authentication';
 	import { publicUserService } from '$lib/api/services';
-	import { registerSchema } from '$lib/api/validation/authentication';
-	import Layout from '$lib/components/layout/Layout.svelte';
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
-	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
-	import Welcome from '$lib/components/widgets/Welcome.svelte';
+	import { Button, Card, InputItem } from '$lib/components/core';
+	import { Layout } from '$lib/components/layout';
+	import { WelcomeBanner } from '$lib/components/shared';
 	import { t } from '$lib/locales';
 	import { Form } from '$lib/models/ui';
-	import { customForm, passwordConfirmationValidator } from '$lib/utility';
+	import { customForm, informationModal, passwordConfirmationValidator } from '$lib/utility';
 
 	const form = new Form({
-		completed: async () => goto(resolve('/auth/login')),
-		customValidators: {
-			confirmPassword: passwordConfirmationValidator('password', 'confirmPassword')
+		completed: async ({ model }) => {
+			await informationModal(
+				$t('routes.auth.register.page.modal.success.title'),
+				$t('routes.auth.register.page.modal.success.message', { value: model.email })
+			);
+			await goto(resolve('/auth/login'));
 		},
-		request: async (model) => publicUserService.register(model),
-		schema: registerSchema()
+		request: async (model) => await publicUserService.register(model),
+		schema: registerSchema(),
+		validators: {
+			confirmPassword: passwordConfirmationValidator('password', 'confirmPassword')
+		}
 	});
 </script>
 
 <Layout>
 	<div class="mb-6">
-		<Welcome />
+		<WelcomeBanner />
 	</div>
 	{@render joinCard()}
 	{@render registerCard()}

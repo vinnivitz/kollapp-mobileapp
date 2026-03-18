@@ -6,5 +6,7 @@ import org.jmolecules.architecture.hexagonal.SecondaryPort;
 public interface EmailService {
     void sendConfirmationMail(String recipientMail, String confirmationUrl);
 
+    void sendNewEmailConfirmationMail(String recipientMail, String confirmationUrl);
+
     void sendForgotPasswordMail(String recipientMail, String resetUrl);
 }

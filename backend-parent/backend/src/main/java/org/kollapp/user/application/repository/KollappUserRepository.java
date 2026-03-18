@@ -18,6 +18,8 @@ public interface KollappUserRepository {
 
     boolean existsByEmail(String email);
 
+    boolean existsByPendingEmail(String email);
+
     void save(KollappUser user);
 
     void deleteById(long id);

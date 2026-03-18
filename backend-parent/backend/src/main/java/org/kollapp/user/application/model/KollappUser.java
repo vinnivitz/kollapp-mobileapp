@@ -31,6 +31,9 @@ public class KollappUser {
     @Column(length = 50, nullable = false, unique = true)
     private String email;
 
+    @Column(length = 50, unique = true)
+    private String pendingEmail;
+
     @Column(length = 255, nullable = false)
     private String password;
 

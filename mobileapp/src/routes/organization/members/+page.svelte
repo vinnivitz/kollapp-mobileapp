@@ -12,6 +12,8 @@
 		accessibilityOutline,
 		checkmarkOutline,
 		clipboardOutline,
+		closeOutline,
+		informationCircleOutline,
 		logOutOutline,
 		mailOutline,
 		medalOutline,
@@ -22,33 +24,30 @@
 		qrCodeOutline,
 		refreshCircleOutline,
 		ribbonOutline,
-		shareOutline,
-		trashOutline
+		shareOutline
 	} from 'ionicons/icons';
 	import { SvelteMap } from 'svelte/reactivity';
 
 	import { dev } from '$app/environment';
+	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 
 	import { organizationService } from '$lib/api/services';
-	import FadeInOut from '$lib/components/layout/FadeInOut.svelte';
-	import Layout from '$lib/components/layout/Layout.svelte';
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
-	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import CustomItem from '$lib/components/widgets/ionic/CustomItem.svelte';
-	import FabButton from '$lib/components/widgets/ionic/FabButton.svelte';
-	import Modal from '$lib/components/widgets/ionic/Modal.svelte';
-	import Popover from '$lib/components/widgets/ionic/Popover.svelte';
+	import { Button, Card, CustomItem, FabButton, Modal, Popover } from '$lib/components/core';
+	import { FadeInOut } from '$lib/components/core/animation';
+	import { Layout } from '$lib/components/layout';
 	import environment from '$lib/environment';
 	import { t } from '$lib/locales';
-	import { AlertType, type ItemSlidingOption } from '$lib/models/ui';
+	import { AlertType, type ItemSlidingOption, TourStepId } from '$lib/models/ui';
 	import { localeStore, organizationStore, userStore } from '$lib/stores';
 	import {
 		confirmationModal,
 		getDateFnsLocale,
 		getRoleTranslationFromRole,
 		hasOrganizationRole,
+		informationModal,
 		showAlert,
-		StatusCheck
+		withLoader
 	} from '$lib/utility';
 
 	let invitationCodeModalOpen = $state<boolean>(false);
@@ -58,96 +57,142 @@
 
 	const userId = $derived($userStore?.id);
 
+	const isManager = $derived(hasOrganizationRole('ROLE_ORGANIZATION_MANAGER'));
+
 	const invitationCodeExpiration = $derived(
 		new TZDate($organizationStore?.organizationInvitationCode.expirationDate ?? '')
 	);
 	const invitationCode = $derived($organizationStore?.organizationInvitationCode.code ?? '');
 
-	const members = $derived(
+	const personsOfOrganization = $derived(
 		($organizationStore?.personsOfOrganization ?? [])
 			.toSorted((a, b) => a.username.localeCompare(b.username))
-			.filter((member) => member.userId !== userId && member.status === 'APPROVED')
+			.filter((person) => person.status === 'APPROVED')
 	);
 
-	const filteredMembers = $derived(
+	const filteredPersonsOfOrganization = $derived(
 		searchValue
-			? members.filter((member) => member.username.toLowerCase().includes(searchValue.toLowerCase()))
-			: members
+			? personsOfOrganization.filter((personOfOrganization) =>
+					personOfOrganization.username.toLowerCase().includes(searchValue.toLowerCase())
+				)
+			: personsOfOrganization
 	);
 
-	const pendingMembers = $derived(
+	const pendingPersonsOfOrganization = $derived(
 		($organizationStore?.personsOfOrganization ?? []).filter(
-			(member) => member.userId !== userId && member.status === 'PENDING'
+			(person) => person.userId !== userId && person.status === 'PENDING'
 		)
 	);
 
-	const memberGroups = $derived(getGroupedMembers(filteredMembers));
+	const personOfOrganizationGroups = $derived(getGroupedMembers(filteredPersonsOfOrganization));
 
 	const isExpired = $derived(invitationCodeExpiration.getTime() <= Date.now());
 
-	function getMemberSlidingOptions(member: PersonOfOrganizationTO): ItemSlidingOption[] {
+	function getPersonOfOrganizationSlidingOptions(personOfOrganization: PersonOfOrganizationTO): ItemSlidingOption[] {
+		const options: ItemSlidingOption[] = [
+			{
+				color: 'primary',
+				handler: () => onViewMemberDetails(personOfOrganization),
+				icon: informationCircleOutline,
+				label: $t('routes.organization.members.page.sliding-options.view-details')
+			}
+		];
+		if (isManager) {
+			options.push(
+				{
+					color: 'tertiary',
+					handler: () => onSelectRole(personOfOrganization),
+					icon: ribbonOutline,
+					label: $t('routes.organization.members.page.sliding-options.select-role')
+				},
+				{
+					color: 'danger',
+					handler: () => onRemovePersonOfOrganizationPrompt(personOfOrganization),
+					icon: logOutOutline,
+					label: $t('routes.organization.members.page.sliding-options.remove-member')
+				}
+			);
+		}
+		return options;
+	}
+
+	function onViewMemberDetails(personOfOrganization: PersonOfOrganizationTO): void {
+		goto(resolve(`/organization/members/${personOfOrganization.id}`));
+	}
+
+	function getPendingPersonOfOrganizationSlidingOptions(
+		personOfOrganization: PersonOfOrganizationTO
+	): ItemSlidingOption[] {
 		return [
-			{ color: 'tertiary', handler: () => onSelectRole(member), icon: ribbonOutline },
-			{ color: 'danger', handler: () => onRemoveUserPrompt(member.id), icon: logOutOutline }
+			{ color: 'success', handler: () => onApproveMemberPrompt(personOfOrganization), icon: checkmarkOutline },
+			{ color: 'danger', handler: () => onDenyMembershipRequestPrompt(personOfOrganization), icon: closeOutline }
 		];
 	}
 
-	function getPendingMemberSlidingOptions(member: PersonOfOrganizationTO): ItemSlidingOption[] {
-		return [
-			{ color: 'success', handler: () => onApproveMemberPrompt(member.id), icon: checkmarkOutline },
-			{ color: 'danger', handler: () => onRemoveUserPrompt(member.id), icon: trashOutline }
-		];
-	}
-
-	async function onApproveMemberPrompt(memberId: number): Promise<void> {
+	async function onApproveMemberPrompt(personOfOrganization: PersonOfOrganizationTO): Promise<void> {
 		return confirmationModal({
 			confirmText: $t('routes.organization.members.page.modal.approve-member.confirm'),
-			handler: async () => await approveUser(memberId),
+			handler: async () => void withLoader(() => organizationService.approveUser(personOfOrganization.id)),
 			header: $t('routes.organization.members.page.modal.approve-member.header'),
-			message: $t('routes.organization.members.page.modal.approve-member.message')
+			message: $t('routes.organization.members.page.modal.approve-member.message', {
+				value: personOfOrganization.username
+			})
 		});
 	}
 
-	async function onRemoveUserPrompt(memberId: number): Promise<void> {
+	async function onRemovePersonOfOrganizationPrompt(personOfOrganization: PersonOfOrganizationTO): Promise<void> {
+		const untransferredPostings = getUntransferredPostingsForMember(personOfOrganization.id);
+
+		if (untransferredPostings.length > 0) {
+			const message = `${$t('routes.organization.members.page.modal.untransferred-postings.message', { value: personOfOrganization.username })}`;
+			return informationModal($t('routes.organization.members.page.modal.untransferred-postings.header'), message);
+		}
+
 		return confirmationModal({
 			confirmText: $t('routes.organization.members.page.modal.remove-member.confirm'),
-			handler: async () => await removeUser(memberId),
-			message: $t('routes.organization.members.page.modal.remove-member.message')
+			handler: async () =>
+				void withLoader(() => organizationService.removePersonOfOrganization(personOfOrganization.id)),
+			message: $t('routes.organization.members.page.modal.remove-member.message', {
+				value: personOfOrganization.username
+			})
 		});
 	}
 
-	async function approveUser(memberId: number): Promise<void> {
-		const organizationId = $organizationStore?.id;
-		if (!organizationId) return;
-		const response = await organizationService.approveUser(organizationId, memberId);
-		if (StatusCheck.isOK(response.status)) {
-			await organizationStore.update(organizationId);
-		}
+	function getUntransferredPostingsForMember(
+		personOfOrganizationId: number
+	): { amountInCents: number; purpose: string }[] {
+		const organizationPostings = $organizationStore?.organizationPostings ?? [];
+		const activityPostings = $organizationStore?.activities.flatMap((a) => a.activityPostings) ?? [];
+		const allPostings = [...organizationPostings, ...activityPostings];
+
+		return allPostings
+			.filter((posting) => posting.personOfOrganizationId === personOfOrganizationId)
+			.map((posting) => ({ amountInCents: posting.amountInCents, purpose: posting.purpose }));
 	}
 
-	async function removeUser(memberId: number): Promise<void> {
-		const organizationId = $organizationStore?.id;
-		if (!organizationId) return;
-		const response = await organizationService.removeUser(organizationId, memberId);
-		if (StatusCheck.isOK(response.status)) {
-			await organizationStore.update(organizationId);
-		}
+	async function onDenyMembershipRequestPrompt(personOfOrganization: PersonOfOrganizationTO): Promise<void> {
+		return confirmationModal({
+			handler: async () =>
+				void withLoader(() => organizationService.removePersonOfOrganization(personOfOrganization.id)),
+			message: $t('routes.organization.members.page.modal.deny-membership-request.message', {
+				value: personOfOrganization.username
+			})
+		});
 	}
 
-	async function onSelectRole(member: PersonOfOrganizationTO): Promise<void> {
-		const organizationId = $organizationStore?.id as number;
+	async function onSelectRole(personOfOrganization: PersonOfOrganizationTO): Promise<void> {
 		const actionsheet = await actionSheetController.create({
 			buttons: [
 				{
-					handler: () => onGrantOrganizationRolePrompt(member.id, organizationId, 'ROLE_ORGANIZATION_MANAGER'),
+					handler: () => onGrantOrganizationRolePrompt(personOfOrganization.id, 'ROLE_ORGANIZATION_MANAGER'),
 					icon: medalOutline,
-					role: member.organizationRole === 'ROLE_ORGANIZATION_MANAGER' ? 'selected' : undefined,
+					role: personOfOrganization.organizationRole === 'ROLE_ORGANIZATION_MANAGER' ? 'selected' : undefined,
 					text: $t('routes.organization.members.page.modal.select-role.manager')
 				},
 				{
-					handler: () => onGrantOrganizationRolePrompt(member.id, organizationId, 'ROLE_ORGANIZATION_MEMBER'),
+					handler: () => onGrantOrganizationRolePrompt(personOfOrganization.id, 'ROLE_ORGANIZATION_MEMBER'),
 					icon: personOutline,
-					role: member.organizationRole === 'ROLE_ORGANIZATION_MEMBER' ? 'selected' : undefined,
+					role: personOfOrganization.organizationRole === 'ROLE_ORGANIZATION_MEMBER' ? 'selected' : undefined,
 					text: $t('routes.organization.members.page.modal.select-role.member')
 				}
 			],
@@ -157,16 +202,12 @@
 		await actionsheet.present();
 	}
 
-	async function onGrantOrganizationRolePrompt(
-		memberId: number,
-		organizationId: number,
-		role: OrganizationRole
-	): Promise<void> {
-		if (role === members.find((member) => member.id === memberId)?.organizationRole) {
+	async function onGrantOrganizationRolePrompt(personOfOrganizationId: number, role: OrganizationRole): Promise<void> {
+		if (role === personsOfOrganization.find((person) => person.id === personOfOrganizationId)?.organizationRole) {
 			return;
 		}
 		await confirmationModal({
-			handler: async () => await grantOrganizationRole(memberId, organizationId, role),
+			handler: async () => void withLoader(() => organizationService.grantRole(personOfOrganizationId, role)),
 			header: $t('routes.organization.members.page.modal.change-role.header'),
 			message: $t('routes.organization.members.page.modal.change-role.message', {
 				value: getRoleTranslationFromRole(role)
@@ -174,23 +215,15 @@
 		});
 	}
 
-	async function grantOrganizationRole(
-		memberId: number,
-		organizationId: number,
-		role: OrganizationRole
-	): Promise<void> {
-		await organizationService.grantRole(organizationId, memberId, role);
-	}
-
-	function getGroupedMembers(members: PersonOfOrganizationTO[]): [string, PersonOfOrganizationTO[]][] {
+	function getGroupedMembers(personsOfOrganization: PersonOfOrganizationTO[]): [string, PersonOfOrganizationTO[]][] {
 		const result: Map<string, PersonOfOrganizationTO[]> = new SvelteMap();
 
-		for (const member of members) {
-			const key = member.username.charAt(0).toUpperCase();
+		for (const person of personsOfOrganization) {
+			const key = person.username.charAt(0).toUpperCase();
 			if (!result.has(key)) {
 				result.set(key, []);
 			}
-			result.get(key)!.push(member);
+			result.get(key)!.push(person);
 		}
 
 		return [...result.entries()].toSorted(([a], [b]) => a.localeCompare(b));
@@ -224,13 +257,6 @@
 		}
 	}
 
-	async function onRenewCode(): Promise<void> {
-		const response = await organizationService.renewInvitationCode($organizationStore?.id!);
-		if (StatusCheck.isOK(response.status)) {
-			await organizationStore.update($organizationStore?.id!);
-		}
-	}
-
 	async function showQRCode(): Promise<void> {
 		qrModalOpen = true;
 	}
@@ -261,24 +287,27 @@
 <Layout title={$t('routes.organization.members.page.title')} showBackButton>
 	{#if hasOrganizationRole('ROLE_ORGANIZATION_MANAGER')}
 		<FabButton
-			indexedLabel={$t('routes.organization.members.page.fab.invite-members.title')}
+			tourId={TourStepId.MEMBERS.INVITE}
+			indexed="/organization/members"
+			indexLabel={$t('routes.organization.members.page.fab.invite-members.title')}
 			icon={personAddOutline}
 			clicked={() => (invitationCodeModalOpen = true)}
+			accessible="ROLE_ORGANIZATION_MANAGER"
 		/>
-		{#if pendingMembers.length > 0}
+		{#if pendingPersonsOfOrganization.length > 0}
 			{@render pendingMembersCard()}
 		{/if}
 	{/if}
 
 	<ion-searchbar
 		debounce={100}
-		placeholder={$t('routes.organization.members.page.search.placeholder')}
+		placeholder={$t('routes.organization.members.page.searchbar.placeholder')}
 		onionInput={onSearch}
 		value={searchValue}
 	></ion-searchbar>
 
-	{#if filteredMembers.length > 0}
-		{@render memberList()}
+	{#if filteredPersonsOfOrganization.length > 0}
+		{@render personsOfOrganizationList()}
 	{:else if searchValue}
 		{@render noSearchResults()}
 	{:else}
@@ -290,8 +319,8 @@
 
 {#snippet pendingMembersCard()}
 	<Card title={$t('routes.organization.members.page.card.pending-members.title')} border="warning" classList="mt-5">
-		{#each pendingMembers as member (member.id)}
-			{@render pendingMemberItem(member)}
+		{#each pendingPersonsOfOrganization as person (person.id)}
+			{@render pendingMemberItem(person)}
 		{/each}
 	</Card>
 {/snippet}
@@ -315,17 +344,17 @@
 	</FadeInOut>
 {/snippet}
 
-{#snippet memberList()}
+{#snippet personsOfOrganizationList()}
 	<FadeInOut>
-		<ion-list>
-			{#each memberGroups as [letter, memberGroup] (letter)}
+		<ion-list data-tour={TourStepId.MEMBERS.LIST}>
+			{#each personOfOrganizationGroups as [letter, personOfOrganizationGroup] (letter)}
 				<ion-item-group>
 					<ion-item-divider class="bg-transparent">
 						<ion-label>{letter}</ion-label>
 					</ion-item-divider>
 
-					{#each memberGroup as member (member.id)}
-						{@render memberItem(member)}
+					{#each personOfOrganizationGroup as personOfOrganization (personOfOrganization.id)}
+						{@render personOfOrganizationItem(personOfOrganization)}
 					{/each}
 				</ion-item-group>
 			{/each}
@@ -333,23 +362,25 @@
 	</FadeInOut>
 {/snippet}
 
-{#snippet memberItem(member: PersonOfOrganizationTO)}
+{#snippet personOfOrganizationItem(personOfOrganization: PersonOfOrganizationTO)}
 	<CustomItem
-		slidingOptions={hasOrganizationRole('ROLE_ORGANIZATION_MANAGER') ? getMemberSlidingOptions(member) : undefined}
+		slidingOptions={personOfOrganization.userId === userId
+			? undefined
+			: getPersonOfOrganizationSlidingOptions(personOfOrganization)}
 	>
 		<ion-avatar class="mb-2">
 			<ion-icon icon={personCircleOutline} class="h-10 w-10" color="medium"></ion-icon>
 		</ion-avatar>
-		<ion-label class="ms-6">{member.username}</ion-label>
+		<ion-label class="ms-6">{personOfOrganization.username}</ion-label>
 	</CustomItem>
 {/snippet}
 
-{#snippet pendingMemberItem(member: PersonOfOrganizationTO)}
-	<CustomItem slidingOptions={getPendingMemberSlidingOptions(member)}>
+{#snippet pendingMemberItem(personOfOrganization: PersonOfOrganizationTO)}
+	<CustomItem slidingOptions={getPendingPersonOfOrganizationSlidingOptions(personOfOrganization)}>
 		<ion-avatar class="mb-2">
 			<ion-icon icon={personCircleOutline} class="h-10 w-10" color="medium"></ion-icon>
 		</ion-avatar>
-		<ion-label class="my-0 ms-6">{member.username}</ion-label>
+		<ion-label class="my-0 ms-6">{personOfOrganization.username}</ion-label>
 	</CustomItem>
 {/snippet}
 
@@ -391,7 +422,7 @@
 				fill="outline"
 				classList="mx-8 mt-5"
 				label={$t('routes.organization.members.page.modal.invitation-code.card.button.renew')}
-				clicked={onRenewCode}
+				clicked={async () => withLoader(() => organizationService.renewInvitationCode())}
 			/>
 		</div>
 	</Card>
@@ -399,21 +430,23 @@
 
 <!-- QR Code Modal -->
 <Popover extended open={qrModalOpen} dismissed={() => (qrModalOpen = false)}>
-	<div class="pt-2 text-center">
-		<ion-label class="font-bold">{$t('routes.organization.members.page.modal.qr-code.info-text')}</ion-label>
-		<ion-breadcrumbs>
-			<ion-breadcrumb class="flex items-center justify-center font-normal text-(--ion-text-color-step-200)">
-				<ion-icon class="text-(--ion-text-color-step-200)" slot="start" icon={accessibilityOutline}></ion-icon>
-				{$t('routes.organization.members.page.modal.qr-code.breadcrumb.first')}
-			</ion-breadcrumb>
-			<ion-breadcrumb class="flex items-center justify-center font-normal text-(--ion-text-color-step-200)">
-				<ion-icon class="text-(--ion-text-color-step-200)" slot="start" icon={personAddOutline}></ion-icon>Join
-				{$t('routes.organization.members.page.modal.qr-code.breadcrumb.second')}
-			</ion-breadcrumb>
-			<ion-breadcrumb class="flex items-center justify-center font-normal text-(--ion-text-color-step-200)">
-				<ion-icon class="text-(--ion-text-color-step-200)" slot="start" icon={qrCodeOutline}></ion-icon>
-			</ion-breadcrumb>
-		</ion-breadcrumbs>
-	</div>
-	<QRCode content={invitationCode} responsive="true" padding="0" />
+	{#if invitationCode}
+		<div class="pt-2 text-center">
+			<ion-label class="font-bold">{$t('routes.organization.members.page.modal.qr-code.info-text')}</ion-label>
+			<ion-breadcrumbs>
+				<ion-breadcrumb class="flex items-center justify-center font-normal text-(--ion-text-color-step-200)">
+					<ion-icon class="text-(--ion-text-color-step-200)" slot="start" icon={accessibilityOutline}></ion-icon>
+					{$t('routes.organization.members.page.modal.qr-code.breadcrumb.first')}
+				</ion-breadcrumb>
+				<ion-breadcrumb class="flex items-center justify-center font-normal text-(--ion-text-color-step-200)">
+					<ion-icon class="text-(--ion-text-color-step-200)" slot="start" icon={personAddOutline}></ion-icon>Join
+					{$t('routes.organization.members.page.modal.qr-code.breadcrumb.second')}
+				</ion-breadcrumb>
+				<ion-breadcrumb class="flex items-center justify-center font-normal text-(--ion-text-color-step-200)">
+					<ion-icon class="text-(--ion-text-color-step-200)" slot="start" icon={qrCodeOutline}></ion-icon>
+				</ion-breadcrumb>
+			</ion-breadcrumbs>
+		</div>
+		<QRCode content={invitationCode} responsive="true" padding="0" />
+	{/if}
 </Popover>

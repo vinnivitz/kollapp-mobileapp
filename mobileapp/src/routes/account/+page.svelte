@@ -3,30 +3,33 @@
 
 	import { actionSheetController } from '@ionic/core';
 	import {
-		buildOutline,
 		colorPaletteOutline,
 		colorWandOutline,
 		contrastOutline,
 		desktopOutline,
+		helpCircleOutline,
 		languageOutline,
 		lockClosedOutline,
 		logoAndroid,
 		logoApple,
 		moonOutline,
 		notificationsOutline,
+		personOutline,
 		refreshOutline,
-		sunnyOutline,
-		trashOutline
+		sunnyOutline
 	} from 'ionicons/icons';
 
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
-	import LayoutComponent from '$lib/components/layout/Layout.svelte';
-	import LabeledItem from '$lib/components/widgets/ionic/LabeledItem.svelte';
+	import germanFlag from '$lib/assets/locale/de.svg';
+	import englishFlag from '$lib/assets/locale/gb.svg';
+	import { LabeledItem } from '$lib/components/core';
+	import { Layout as LayoutComponent } from '$lib/components/layout';
 	import { Locale, t } from '$lib/locales';
-	import { Layout, Theme } from '$lib/models/ui';
-	import { layoutStore, localeStore, themeStore } from '$lib/stores';
+	import { Layout, Theme, TourStepId } from '$lib/models/ui';
+	import { layoutStore, localeStore, organizationStore, themeStore } from '$lib/stores';
+	import { confirmationModal, startTour } from '$lib/utility';
 
 	async function openActionSheet(header: string, buttons: ActionSheetButton[]): Promise<void> {
 		const actionsheet = await actionSheetController.create({
@@ -42,13 +45,13 @@
 		await openActionSheet($t('routes.account.page.modal.language.title'), [
 			{
 				handler: () => localeStore.set(Locale.DE),
-				icon: '/locale/de.svg',
+				icon: germanFlag,
 				role: $localeStore === Locale.DE ? 'selected' : undefined,
 				text: $t('routes.account.page.modal.language.german')
 			},
 			{
 				handler: () => localeStore.set(Locale.EN),
-				icon: '/locale/gb.svg',
+				icon: englishFlag,
 				role: $localeStore === Locale.EN ? 'selected' : undefined,
 				text: $t('routes.account.page.modal.language.english')
 			}
@@ -101,8 +104,20 @@
 		]);
 	}
 
-	async function onRestoreApplicationDefaults(): Promise<void> {
+	async function onResetApplicationSettings(): Promise<void> {
+		await confirmationModal({
+			handler: resetApplicationSettings,
+			message: $t('routes.account.page.modal.restore-defaults.confirm')
+		});
+	}
+
+	async function resetApplicationSettings(): Promise<void> {
 		await Promise.all([themeStore.reset(), layoutStore.reset(), localeStore.reset()]);
+	}
+
+	async function onRestartTour(): Promise<void> {
+		await goto(resolve('/'));
+		await startTour(true);
 	}
 </script>
 
@@ -112,7 +127,7 @@
 </LayoutComponent>
 
 {#snippet accountList()}
-	<ion-list inset>
+	<ion-list inset data-tour={TourStepId.ACCOUNT.PERSONAL}>
 		<ion-list-header>{$t('routes.account.page.list.personal.header')}</ion-list-header>
 		<LabeledItem
 			indexed="/account/notifications"
@@ -123,7 +138,7 @@
 		<LabeledItem
 			indexed="/account/update-data"
 			clicked={() => goto(resolve('/account/update-data'))}
-			icon={buildOutline}
+			icon={personOutline}
 			label={$t('routes.account.page.list.personal.my-data')}
 		/>
 		<LabeledItem
@@ -132,17 +147,11 @@
 			icon={lockClosedOutline}
 			label={$t('routes.account.page.list.personal.privacy-and-security')}
 		/>
-		<LabeledItem
-			indexed="/account/delete"
-			clicked={() => goto(resolve('/account/delete'))}
-			icon={trashOutline}
-			label={$t('routes.account.page.list.personal.delete-account')}
-		/>
 	</ion-list>
 {/snippet}
 
 {#snippet applicationList()}
-	<ion-list inset>
+	<ion-list inset data-tour={TourStepId.ACCOUNT.APPLICATION}>
 		<ion-list-header>{$t('routes.account.page.list.application.header')}</ion-list-header>
 		<LabeledItem
 			indexed="/account"
@@ -164,9 +173,17 @@
 		/>
 		<LabeledItem
 			indexed="/account"
-			clicked={onRestoreApplicationDefaults}
+			clicked={onResetApplicationSettings}
 			icon={refreshOutline}
 			label={$t('routes.account.page.list.application.restore-defaults')}
 		/>
+		{#if $organizationStore}
+			<LabeledItem
+				indexed="/account"
+				clicked={onRestartTour}
+				icon={helpCircleOutline}
+				label={$t('routes.account.page.list.application.restart-tour')}
+			/>
+		{/if}
 	</ion-list>
 {/snippet}

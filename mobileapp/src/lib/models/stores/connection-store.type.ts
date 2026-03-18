@@ -5,4 +5,5 @@ import type { BaseStore } from '$lib/models/stores';
  */
 export type ConnectionStore = BaseStore<boolean> & {
 	check: () => void;
+	destroy: () => Promise<void>;
 };

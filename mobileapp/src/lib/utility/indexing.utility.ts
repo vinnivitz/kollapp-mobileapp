@@ -2,7 +2,7 @@ import type { SearchableItemTO } from '$lib/api/dtos';
 import type { OrganizationRole } from '@kollapp/api-types';
 import type { Expression, Identifier, MemberExpression } from 'estree';
 
-import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
 import { type AST, parse } from 'svelte/compiler';
@@ -27,6 +27,7 @@ let idCounter = 0;
  */
 function indexSearchables(): void {
 	scanDirectory(SRC_DIR);
+	mkdirSync(path.dirname(OUTPUT_FILE), { recursive: true });
 	writeFileSync(OUTPUT_FILE, JSON.stringify(searchableItems, undefined, 2), 'utf8');
 	console.info(`\nWrote ${searchableItems.length} entries to ${OUTPUT_FILE}`);
 }
@@ -51,9 +52,13 @@ function scanDirectory(directoryPath: string): void {
  * Reads and parses a Svelte file to find `<LabeledItem>` components.
  */
 function scanSvelteFile(filePath: string): void {
-	const fileContent = readFileSync(filePath, 'utf8');
-	const ast = parse(fileContent, { modern: true });
-	findSearchableComponents(ast);
+	try {
+		const fileContent = readFileSync(filePath, 'utf8');
+		const ast = parse(fileContent, { modern: true });
+		findSearchableComponents(ast);
+	} catch (error) {
+		console.info(`Error processing file ${filePath}:`, error);
+	}
 }
 
 /**
@@ -125,7 +130,7 @@ function exploreChildNodes(node: ASTComponent): void {
 
 function addSearchableItem(node: ASTComponent): void {
 	const route = getAttributeValue(node, 'indexed') as RouteId;
-	const label = getAttributeValue(node, 'label') ?? getAttributeValue(node, 'indexedLabel');
+	const label = getAttributeValue(node, 'label') ?? getAttributeValue(node, 'indexLabel');
 	const icon = getAttributeValue(node, 'icon');
 	const accessible = getAttributeValue(node, 'accessible') as OrganizationRole;
 
@@ -229,6 +234,14 @@ function parseExpression(expression: Expression): string | undefined {
 				parts.pop();
 			}
 			return '/' + parts.join('/');
+		}
+		case 'ConditionalExpression': {
+			const consequent = parseExpression(expression.consequent);
+			const alternate = parseExpression(expression.alternate);
+			return consequent ?? alternate ?? undefined;
+		}
+		case 'TemplateLiteral': {
+			return expression.quasis.map((element) => element.value.cooked).join('');
 		}
 		default: {
 			console.warn('Unhandled expression type:', expression.type, JSON.stringify(expression, undefined, 2));

@@ -8,8 +8,6 @@ import { t } from '$lib/locales';
 import { StorageKey } from '$lib/models/storage';
 import { getStoredValue, showAlert, storeValue } from '$lib/utility';
 
-const $t = get(t);
-
 const BIOMETRICS_SERVER = 'kollapp.biometrics.credentials';
 
 /**
@@ -17,6 +15,7 @@ const BIOMETRICS_SERVER = 'kollapp.biometrics.credentials';
  * @returns {Promise<boolean>} - Returns true if biometric authentication is available, false otherwise.
  */
 export async function isBiometricAvailable(): Promise<boolean> {
+	const $t = get(t);
 	try {
 		const result = await NativeBiometric.isAvailable();
 		if (result.errorCode) {
@@ -41,6 +40,7 @@ export async function isBiometricEnabled(): Promise<boolean> {
  * @returns {Promise<LoginRequestTO | undefined>} - Returns the credentials if available, otherwise undefined.
  */
 export async function getBiometricCredentials(): Promise<LoginRequestTO | undefined> {
+	const $t = get(t);
 	try {
 		const result = await NativeBiometric.getCredentials({ server: BIOMETRICS_SERVER });
 		return { password: result.password, username: result.username } satisfies LoginRequestTO;
@@ -57,6 +57,7 @@ export async function getBiometricCredentials(): Promise<LoginRequestTO | undefi
  * @returns {Promise<void>}
  */
 export async function storeBiometricCredentials(username: string, password: string): Promise<void> {
+	const $t = get(t);
 	try {
 		await NativeBiometric.setCredentials({
 			password,
@@ -75,6 +76,7 @@ export async function storeBiometricCredentials(username: string, password: stri
  * @returns {Promise<void>}
  */
 export async function updateUsernameBiometricCredentials(username: string): Promise<void> {
+	const $t = get(t);
 	try {
 		const result = await NativeBiometric.getCredentials({ server: BIOMETRICS_SERVER });
 		await NativeBiometric.setCredentials({
@@ -93,6 +95,7 @@ export async function updateUsernameBiometricCredentials(username: string): Prom
  * @returns {Promise<void>}
  */
 export async function updatePasswordBiometricCredentials(password: string): Promise<void> {
+	const $t = get(t);
 	try {
 		const result = await NativeBiometric.getCredentials({ server: BIOMETRICS_SERVER });
 		await NativeBiometric.setCredentials({
@@ -110,6 +113,7 @@ export async function updatePasswordBiometricCredentials(password: string): Prom
  * @returns {Promise<void>}
  */
 export async function deleteBiometricCredentials(): Promise<void> {
+	const $t = get(t);
 	try {
 		await NativeBiometric.deleteCredentials({ server: BIOMETRICS_SERVER });
 		await storeValue(StorageKey.BIOMETRICS_ENABLED, false);
@@ -123,6 +127,7 @@ export async function deleteBiometricCredentials(): Promise<void> {
  * @returns {Promise<boolean>} - Returns true if the user is verified, false otherwise.
  */
 export async function verifyBiometricIdentity(): Promise<boolean> {
+	const $t = get(t);
 	try {
 		await NativeBiometric.verifyIdentity({
 			maxAttempts: environment.maxBiometricAuthRetries,

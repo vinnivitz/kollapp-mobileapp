@@ -2,6 +2,7 @@ package org.kollapp.user.adapters.primary.rest;
 
 import lombok.AllArgsConstructor;
 
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -21,10 +22,12 @@ import org.kollapp.user.application.exception.InvalidConfirmationLinkException;
 import org.kollapp.user.application.exception.InvalidRefreshTokenException;
 import org.kollapp.user.application.exception.InvalidSystemRoleException;
 import org.kollapp.user.application.exception.KollappUserNotFoundException;
+import org.kollapp.user.application.exception.MailCouldNotBeSentException;
 import org.kollapp.user.application.exception.UsernameExistsException;
 import org.kollapp.user.application.exception.UsernameNotFoundException;
 
 @ControllerAdvice(basePackages = {"org.kollapp.user"})
+@Order(0)
 @AllArgsConstructor
 public class UserExceptionHandler {
 
@@ -106,5 +109,11 @@ public class UserExceptionHandler {
     public ResponseEntity<ErrorResponseTO> handleInvalidSystemRole() {
         String message = messageUtil.getMessage("error.system-role.invalid");
         return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
+    }
+
+    @ExceptionHandler(MailCouldNotBeSentException.class)
+    public ResponseEntity<ErrorResponseTO> handleMailCouldNotBeSent() {
+        String message = messageUtil.getMessage("error.mail.could-not-be-sent");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponseTO(message));
     }
 }

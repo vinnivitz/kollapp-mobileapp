@@ -5,33 +5,29 @@ import { writable } from 'svelte/store';
 
 import { userService } from '$lib/api/services';
 import { StorageKey } from '$lib/models/storage';
-import { deduplicateRequest, getStoredValue, removeStoredValue, StatusCheck, storeValue } from '$lib/utility';
-
-const USER_STORE_INIT_REQUEST_KEY = 'user-store-init';
+import { getStoredValue, removeStoredValue, StatusCheck, storeValue } from '$lib/utility';
 
 function createStore(): UserStore {
 	const { set, subscribe } = writable<KollappUserTO | undefined>();
 	const loadedCache = writable(false);
 	const loadedServer = writable(false);
 
-	async function init(): Promise<void> {
-		return deduplicateRequest(USER_STORE_INIT_REQUEST_KEY, async () => {
-			const storedUser = await getStoredValue<KollappUserTO>(StorageKey.USER);
-			if (storedUser) {
-				set(storedUser);
-				loadedCache.set(true);
-			}
+	async function initialize(): Promise<void> {
+		const storedUser = await getStoredValue<KollappUserTO>(StorageKey.USER);
+		if (storedUser) {
+			set(storedUser);
+			loadedCache.set(true);
+		}
 
-			const response = await userService.get();
+		const response = await userService.get();
 
-			if (StatusCheck.isOK(response.status)) {
-				await _set(response.data);
-			} else if (StatusCheck.isUnauthorized(response.status)) {
-				await _set();
-			}
+		if (StatusCheck.isOK(response.status)) {
+			await _set(response.data);
+		} else if (StatusCheck.isUnauthorized(response.status)) {
+			await _set();
+		}
 
-			loadedServer.set(true);
-		});
+		loadedServer.set(true);
 	}
 
 	async function _set(model?: KollappUserTO): Promise<void> {
@@ -46,7 +42,7 @@ function createStore(): UserStore {
 	}
 
 	return {
-		init,
+		initialize,
 		loadedCache,
 		loadedServer,
 		reset,

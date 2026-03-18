@@ -31,14 +31,6 @@
             }
           }
         },
-        "app-version": {
-          "page": {
-            "card": {
-              "title": "Version {{value}}"
-            },
-            "title": "App-Version"
-          }
-        },
         "change-password": {
           "page": {
             "card": {
@@ -58,12 +50,13 @@
             "privacy": {
               "header": "Privatsphäre",
               "legal": "Rechtliches",
-              "notifications": "Benachrichtigungen"
+              "notifications": "Benachrichtigungseinstellungen"
             },
             "security": {
               "change-password": "Passwort ändern",
               "header": "Sicherheit",
-              "login-with-biometrics": "Mit Biometrie anmelden"
+              "login-with-biometrics": "Mit Biometrie anmelden",
+              "delete-account": "Konto löschen"
             }
           },
           "modal": {
@@ -73,7 +66,7 @@
                   "password": "Passwort",
                   "submit": "Bestätigen"
                 },
-                "title": "Bestätige dein Passwort"
+                "title": "Mit Passwort bestätigen"
               }
             }
           },
@@ -84,16 +77,24 @@
         "page": {
           "card": {
             "manager-hint": {
-              "heading": "Du bist der letzte Manager folgender Kollektive:",
-              "message": "Durch das Löschen des Kontos werden diese Kollektive gelöscht."
+              "heading": "Du bist der letzte Manager der folgenden Kollektive.\n\nDurch das Löschen des Kontos werden diese Kollektive gelöscht."
             },
+            "assigned-postings-warning": "Dir sind noch Buchungen zugewiesen. Ein Löschen des Kontos ist erst möglich, wenn dir keine Buchungen mehr zugewiesen sind.",
             "note": "Dies kann nicht rückgängig gemacht werden.",
             "submit": "Konto löschen",
-            "title": "Bist du sicher?"
+            "title": "Dein Konto löschen",
+            "assigned-postings": "{{value}} Buchungen"
           },
           "modal": {
             "confirm": "Konto löschen",
-            "header": "Alle deine Daten werden gelöscht."
+            "header": "Alle deine Daten werden gelöscht.",
+            "password": {
+              "card": {
+                "form": {
+                  "submit": "Konto löschen"
+                }
+              }
+            }
           },
           "title": "Konto löschen"
         }
@@ -115,15 +116,10 @@
             "header": "Anwendung",
             "language": "Sprache ändern",
             "layout": "Layout ändern",
-            "restore-defaults": "Standard wiederherstellen"
-          },
-          "miscellaneous": {
-            "app-version": "App-Version",
-            "header": "Verschiedenes",
-            "report-bug": "Fehler melden"
+            "restore-defaults": "Anwendungseinstellungen zurücksetzen",
+            "restart-tour": "App-Tour neu starten"
           },
           "personal": {
-            "delete-account": "Konto löschen",
             "header": "Persönlich",
             "my-data": "Meine Daten",
             "notifications": "Benachrichtigungen",
@@ -147,6 +143,9 @@
             "ios": "iOS (Human Interface Guidelines)",
             "md": "Android (Material Design)",
             "title": "Layout ändern"
+          },
+          "restore-defaults": {
+            "confirm": "Alle Einstellungen für Farbthema, Layout und Sprache werden zurückgesetzt."
           }
         },
         "title": "Konto"
@@ -157,11 +156,16 @@
             "form": {
               "email": "E-Mail",
               "submit": "Aktualisieren",
-              "username": "Benutzername"
+              "username": "Benutzername",
+              "username-helper-text": "Wenn der Benutzername geändert wird, musst du dich erneut anmelden"
             },
             "title": "Meine Daten"
           },
-          "title": "Meine Daten aktualisieren"
+          "title": "Meine Daten aktualisieren",
+          "modal": {
+            "message": "Überprüfe dein Postfach",
+            "title": "Wir haben dir eine E-Mail an {{value}} mit einem Link zur Bestätigung dieser E-Mail-Adresse gesendet.\n \nBitte überprüfe auch den Spam-Ordner."
+          }
         }
       }
     },
@@ -184,6 +188,10 @@
           "register": {
             "link": "Registrieren",
             "question": "Du bist noch nicht registriert?"
+          },
+          "welcome-modal": {
+            "title": "Willkommen bei Kollapp! \n👋",
+            "message": "Wir freuen uns, dass du da bist! \nUm richtig loszulegen, registriere dein Kollektiv oder tritt einem bei!\n\nViel Spaß!"
           }
         }
       },
@@ -205,7 +213,7 @@
                     "already-member": "Du bist bereits Mitglied dieses Kollektivs.",
                     "not-authenticated": "Du musst angemeldet sein, um einem Kollektiv beizutreten."
                   },
-                  "login": "Einloggen",
+                  "login": "Anmelden",
                   "name": "Name",
                   "place": "Ort",
                   "submit": "Tritt dem Kollektiv bei"
@@ -221,14 +229,14 @@
         "page": {
           "card": {
             "join": {
-              "content": "Wende dich an einen Kollektivadministrator, um dir den Einladungscode für den Beitritt zu seinem Kollektiv zu geben.",
+              "content": "Wende dich an einen Kollektivadministrator, um den Einladungscode für den Beitritt zu seinem Kollektiv zu erhalten.",
               "title": "Einem Kollektiv beitreten?"
             },
             "register": {
               "card": {
                 "login": {
                   "content": "Du bist bereits registriert?",
-                  "link": "Protokoll"
+                  "link": "Anmelden"
                 }
               },
               "form": {
@@ -239,6 +247,12 @@
                 "username": "Benutzername"
               },
               "title": "Registriere dich bei Kollapp"
+            }
+          },
+          "modal": {
+            "success": {
+              "message": "Wir haben dir eine E-Mail mit einem Bestätigungslink an {{value}} gesendet.",
+              "title": "Erfolgreich registriert!"
             }
           }
         }
@@ -278,7 +292,11 @@
             },
             "title": "Gib deine E-Mail ein, um dein Passwort zurückzusetzen"
           },
-          "title": "Passwort zurücksetzen"
+          "title": "Passwort zurücksetzen",
+          "modal": {
+            "title": "Wir haben dir eine E-Mail an {{value}} mit einem Link zum Zurücksetzen deines Passworts gesendet.\n\nBitte überprüfen auch den Spam-Ordner.",
+            "message": "Überprüfen dein Postfach"
+          }
         }
       }
     },
@@ -308,29 +326,69 @@
             "fab": {
               "create": "Veranstaltung erstellen"
             },
-            "no-results": "Keine Ergebnisse für „{{value}}“",
+            "no-results": "Keine Veranstaltugen für „{{value}}“",
             "not-found": "Keine Veranstaltungen gefunden",
             "search": {
               "placeholder": "Veranstaltungen suchen..."
-            }
+            },
+            "no-results-filtered": "Keine Veranstaltungen gefunden.",
+            "loading": "Laden...",
+            "postings": "{{value}} Buchungen",
+            "found": "{{value}} Veranstaltungen gefunden."
           },
           "calendar": {
-            "apply": "Veranstaltung erstellen"
-          },
-          "filters": {
-            "card": {},
-            "type": {}
+            "no-activities": "Für den {{value}} wurde keine Veranstaltung gefunden"
           },
           "modal": {
             "create-activity": {
               "card": {
                 "form": {
                   "location": "Ort",
-                  "name": "Titel"
+                  "name": "Titel",
+                  "date": "Datum"
                 },
                 "title": "Veranstaltung erstellen"
               },
               "confirm": "Erstellen"
+            },
+            "filter": {
+              "card": {
+                "title": "Veranstaltungen filtern",
+                "time-filter": {
+                  "all": "Alle",
+                  "past": "Vergangen",
+                  "future": "Ausstehend",
+                  "label": "Zeitraum"
+                },
+                "has-postings": {
+                  "label": "Buchungen",
+                  "all": "Alle",
+                  "with": "Mit Buchungen",
+                  "without": "Ohne Buchungen"
+                },
+                "balance": {
+                  "label": "Bilanz",
+                  "all": "Alle",
+                  "positive": "Positiv",
+                  "negative": "Negativ",
+                  "neutral": "Ausgeglichen"
+                },
+                "date-range": {
+                  "label": "Zeitraum"
+                },
+                "sort": {
+                  "label": "Sortieren nach",
+                  "date": "Datum",
+                  "name": "Name",
+                  "location": "Ort",
+                  "postings": "Buchungen"
+                },
+                "order": {
+                  "label": "Sortierreihenfolge",
+                  "ascending": "Aufsteigend",
+                  "descending": "Absteigend"
+                }
+              }
             }
           },
           "segments": {
@@ -346,63 +404,17 @@
               "denied": "Der Kalenderzugriff wurde vom Benutzer verweigert",
               "error": "Der Kalender ist nicht verfügbar"
             },
-            "create-posting": {
-              "title": {
-                "credit": "Einnahme hinzufügen",
-                "debit": "Ausgabe hinzufügen"
-              }
-            },
-            "event-summary": {
+            "activity-summary": {
               "add-to-calendar": "Zum Kalender hinzufügen",
               "open-in-map": "Karte öffnen"
             },
             "fab": {
-              "archieve": "Archiviere Veranstaltung",
               "delete": "Veranstaltung löschen",
               "edit": "Veranstaltung bearbeiten"
             },
             "modal": {
-              "activity-filter": {
-                "card": {
-                  "apply": "Anwenden",
-                  "credit": "Einnahme",
-                  "date": {
-                    "from": "Aus",
-                    "to": "Zu"
-                  },
-                  "debit": "Ausgabe",
-                  "members": {
-                    "all-selected": "Alle Mitglieder ausgewählt",
-                    "label": "Wähle Mitglieder aus",
-                    "none-selected": "Keine Mitglieder ausgewählt",
-                    "search-placeholder": "Mitglieder suchen...",
-                    "select-all": "Wähle alle Mitglieder aus"
-                  },
-                  "reset": "Zurücksetzen",
-                  "title": "Filter"
-                }
-              },
-              "create-posting": {
-                "form": {
-                  "amount": "Menge",
-                  "credit": "Einnahme",
-                  "date": "Datum",
-                  "debit": "Ausgabe",
-                  "purpose": "Zweck"
-                }
-              },
               "delete-activity": {
                 "confirm": "Veranstaltung löschen"
-              },
-              "delete-posting": {
-                "modal": {
-                  "confirm": "Transaktion löschen"
-                }
-              },
-              "transaction-history": {
-                "no-transactions": "Keine Transaktionen gefunden.",
-                "reset-filters": "Filter zurücksetzen",
-                "searchbar": "Transaktionen suchen..."
               },
               "update-activity": {
                 "card": {
@@ -414,27 +426,19 @@
                   "title": "Veranstaltung aktualisieren"
                 },
                 "confirm": "Aktualisieren"
-              },
-              "update-posting": {
-                "card": {
-                  "form": {
-                    "amount": "Menge",
-                    "credit": "Einnahme",
-                    "date": "Datum",
-                    "debit": "Ausgabe",
-                    "purpose": "Zweck"
-                  },
-                  "title": "Transaktion aktualisieren"
-                }
               }
             },
             "postings-summary": {
-              "add-credit": "Einnahme hinzufügen",
-              "add-debit": "Ausgabe hinzufügen",
-              "heading": "Veranstaltungsübersicht",
-              "total-credit": "Gesamteinnahmen: {{value}}",
-              "total-debit": "Gesamtausgaben: {{value}}",
-              "transaction-history": "Transaktionsverlauf"
+              "card": {
+                "title": "Veranstaltungsbilanz"
+              },
+              "export": {
+                "title": "Buchungsübersicht"
+              },
+              "title": "Buchungsübersicht"
+            },
+            "statistics": {
+              "title": "Veranstaltungsstatistik"
             },
             "title": "Veranstaltungsdetails"
           }
@@ -471,7 +475,6 @@
             }
           },
           "qr-code": {
-            "error": "Beim Scannen des QR-Codes ist ein Fehler aufgetreten. \nBitte versuche es erneut.",
             "invalid": "QR-Code ist ungültig."
           },
           "title": "Tritt dem Kollektiv bei"
@@ -482,11 +485,13 @@
           "card": {
             "button": {
               "leave": "Kollektiv verlassen",
-              "members": "Gewähre einem anderen Mitglied die Managerrolle"
+              "members": "Managerrolle vergeben",
+              "assigned-postings": "Buchungen anzeigen"
             },
             "note": "Alle personenbezogenen Daten des Kollektivs werden gelöscht.",
             "title": "Verlasse das Kollektiv",
-            "warning": "Du bist der letzte Manager dieses Kollektivs. \nDurch das Verlassen wird das Kollektiv gelöscht."
+            "warning": "Du bist der letzte Manager dieses Kollektivs. \nDurch das Verlassen wird das Kollektiv gelöscht.",
+            "assigned-postings-warning": "Dir sind noch {{value}} Buchungen zugewiesen. Ein Austritt ist erst möglich, wenn dir keine Buchungen mehr zugewiesen sind."
           },
           "modal": {
             "confirm": "Verlassen"
@@ -495,6 +500,39 @@
         }
       },
       "members": {
+        "slug": {
+          "page": {
+            "title": "Mitgliedsdetails",
+            "card": {
+              "info": {
+                "title": "Mitgliedsinformationen",
+                "role": "Rolle"
+              },
+              "postings": {
+                "title": "Buchungsstatistik",
+                "total": "Gesamte Buchungen",
+                "credit": "Gesamte Einnahmen",
+                "debit": "Gesamte Ausgaben",
+                "balance": "Saldo"
+              },
+              "open-postings": {
+                "title": "Offene Buchungen",
+                "show-all": "Alle {{value}} Buchungen anzeigen"
+              }
+            },
+            "modal": {
+              "filter": {
+                "card": {
+                  "type-filter": {},
+                  "date-range": {},
+                  "budget-categories": {},
+                  "activities": {}
+                }
+              }
+            },
+            "activity-filter-items": {}
+          }
+        },
         "page": {
           "card": {
             "pending-members": {
@@ -527,7 +565,7 @@
             "approve-member": {
               "confirm": "Genehmigen",
               "header": "Mitglied genehmigen",
-              "message": "Dem Benutzer wird Zugriff auf das Kollektiv gewährt"
+              "message": "Der Mitgliedsantrag von {{value}} wird genehmigt"
             },
             "change-role": {
               "header": "Benutzerrolle ändern?",
@@ -554,33 +592,68 @@
             },
             "remove-member": {
               "confirm": "Entfernen",
-              "message": "Der Benutzer wird aus dem Kollektiv entfernt."
+              "message": "Der Benutzer {{value}} wird aus dem Kollektiv entfernt"
+            },
+            "untransferred-postings": {
+              "header": "Offene Buchungen",
+              "message": "Dem Mitglied {{value}} sind noch offene Buchungen zugewiesen. \nDiese müssen verarbeitet werden, bevor das Mitglied entfernt werden kann."
             },
             "select-role": {
               "header": "Kollektivrolle auswählen",
               "manager": "Manager",
               "member": "Mitglied"
+            },
+            "deny-membership-request": {
+              "message": "Der Mitgliedschaftsantrag von {{value}} wird abgelehnt"
             }
           },
           "no-members": "Keine weiteren Mitglieder gefunden.",
           "title": "Mitglieder",
-          "search": {
+          "searchbar": {
             "placeholder": "Mitglieder suchen..."
+          },
+          "sliding-options": {
+            "view-details": "Details",
+            "remove-member": "Entfernen",
+            "select-role": "Rolle"
+          }
+        }
+      },
+      "budget-categories": {
+        "page": {
+          "title": "Buchungskategorien",
+          "default-badge": "Standard",
+          "modal": {
+            "create": {
+              "title": "Kategorie erstellen"
+            },
+            "update": {
+              "title": "Kategorie bearbeiten"
+            },
+            "delete": {
+              "header": "Kategorie löschen?",
+              "message": "Die Kategorie \"{{value}}\" wird gelöscht."
+            }
+          },
+          "form": {
+            "name": "Kategoriename",
+            "default-category": "Standard-Kategorie"
+          },
+          "sliding-options": {
+            "edit": "Bearbeiten",
+            "delete": "Löschen"
+          },
+          "budget-categories-card": {
+            "card": {
+              "add-category": "Kategorie hinzufügen"
+            }
           }
         }
       },
       "page": {
-        "activity-filter-item": {
-          "not-assigned-to-activity": "Keiner Veranstaltung zugeordnet"
-        },
         "budget-card": {
           "card": {
-            "add-credit": "Einnahme hinzufügen",
-            "add-debit": "Ausgabe hinzufügen",
-            "collective-balance": "Kollektivübersicht",
-            "postings-history": "Transaktionsverlauf",
-            "total-credit": "Gesamteinnahmen: {{value}}",
-            "total-debit": "Gesamtausgaben: {{value}}"
+            "title": "Kollektivbilanz"
           }
         },
         "collective-list": {
@@ -588,15 +661,16 @@
             "change-collective": "Kollektiv wechseln",
             "header": "Kollektiv",
             "leave": "Kollektiv verlassen",
-            "members": "Mitglieder verwalten",
+            "members": "Mitglieder",
+            "budget-categories": "Budget-Kategorien",
             "update-info": "Kollektivinformationen aktualisieren"
           }
         },
-        "event-list": {
+        "activity-list": {
           "list": {
-            "create-event": "Veranstaltung erstellen",
+            "create-activity": "Veranstaltung erstellen",
             "header": "Veranstaltungen",
-            "manage-events": "Veranstaltungen verwalten"
+            "manage-activities": "Veranstaltungen"
           }
         },
         "general": {
@@ -607,73 +681,16 @@
           }
         },
         "modal": {
-          "create-posting": {
-            "activities": {
-              "all-selected": "Alle Veranstaltungen ausgewählt",
-              "search": "Veranstaltungen suchen...",
-              "select": "Veranstaltung auswählen"
-            },
-            "amount": "Menge",
-            "credit": "Einnahme",
-            "date": "Datum",
-            "debit": "Ausgabe",
-            "purpose": "Zweck"
-          },
-          "delete-posting": {
-            "confirm-text": "Transaktion löschen"
-          },
-          "postings-filter": {
-            "card": {
-              "activities": {
-                "all-selected": "Alle Veranstaltungen ausgewählt",
-                "search": "Veranstaltungen suchen...",
-                "select": "Veranstaltung auswählen"
-              },
-              "apply": "Filter anwenden",
-              "credit": "Einnahme",
-              "debit": "Ausgabe",
-              "from": "Von",
-              "reset": "Filter zurücksetzen",
-              "title": "Filter",
-              "to": "Bis"
-            }
-          },
-          "postings-history": {
-            "not-found": "Keine Transaktionen gefunden.",
-            "reset-filters": "Filter zurücksetzen",
-            "search": "Transaktionen suchen..."
-          },
           "select-organization": {
             "header": "Kollektiv wechseln"
-          },
-          "update-posting": {
-            "card": {
-              "activities": {
-                "all-selected": "Alle Veranstaltungen ausgewählt",
-                "search": "Veranstaltungen suchen...",
-                "select": "Veranstaltung auswählen"
-              },
-              "amount": "Menge",
-              "credit": "Einnahme",
-              "date": "Datum",
-              "debit": "Ausgabe",
-              "purpose": "Zweck",
-              "title": "Transaktion aktualisieren"
-            }
           }
         },
         "no-collective": {
           "note": "Du bist kein Mitglied eines Kollektivs."
         },
-        "posting-translation": {
-          "cedit": "Einnahme",
-          "debit": "Ausgabe"
-        },
         "title": "Kollektiv",
-        "upcoming-event": {
-          "card": {
-            "title": "Nächste Veranstaltung"
-          }
+        "collective-info": {
+          "role": "Du bist ein {{value}}"
         }
       },
       "register": {
@@ -683,7 +700,7 @@
               "description": "Beschreibung",
               "name": "Name",
               "place": "Ort",
-              "submit": "Kollektiv erstellen"
+              "submit": "Kollektiv registrieren"
             },
             "title": "Registriere ein Kollektiv"
           },
@@ -703,6 +720,178 @@
           },
           "title": "Kollektivinformationen"
         }
+      },
+      "budget-statistics": {
+        "page": {
+          "title": "Finanzstatistik",
+          "no-postings": "Keine Buchungen für Statistiken vorhanden.",
+          "search": {
+            "placeholder": "Statistik suchen..."
+          },
+          "filter": {
+            "title": "Zeitraum filtern",
+            "time-range": "Zeitraum auswählen",
+            "all": "Alle",
+            "3months": "3 Monate",
+            "6months": "6 Monate",
+            "12months": "12 Monate",
+            "custom": "Benutzerdefiniert",
+            "visible-cards": "Sichtbare Karten",
+            "visible-cards-all": "Alle Karten sichtbar"
+          },
+          "overview": {
+            "balance": "Saldo",
+            "title": "Überblick"
+          },
+          "trend": {
+            "title": "Monatlicher Verlauf",
+            "no-data": "Keine Daten verfügbar."
+          },
+          "top-credits": {
+            "title": "Top Einnahmen"
+          },
+          "top-debits": {
+            "title": "Top Ausgaben"
+          },
+          "cashflow": {
+            "net": "Netto",
+            "best": "Bester Monat",
+            "worst": "Schlechtester Monat"
+          },
+          "category-statistics": {
+            "title": "Nach Kategorie",
+            "no-data": "Keine Kategoriedaten verfügbar.",
+            "of-total": "Gesamtanteil",
+            "show-all": "Alle Kategorien anzeigen"
+          },
+          "member-statistics": {
+            "title": "Nach Mitglied",
+            "net": "Netto",
+            "no-data": "Keine Mitgliederdaten verfügbar.",
+            "volume": "Volumen",
+            "show-all": "Alle Mitglieder anzeigen"
+          },
+          "chart": {
+            "credit": "Einnahmen",
+            "debit": "Ausgaben"
+          },
+          "transaction-count": "{{value}} Buchungen im gewählten Zeitraum",
+          "heatmap": {
+            "title": "Buchungsheatmap",
+            "active-days": "{{value}} aktive Tage",
+            "busiest-day": "Aktivster Tag: {{value}} ({{value2}})",
+            "expenses": "Ausgaben",
+            "income": "Einnahmen",
+            "no-transactions": "Keine Buchungen",
+            "transactions": "{{value}} Buchungen"
+          },
+          "comparison": {
+            "title": "Monatsvergleich",
+            "credit": "Einnahmen",
+            "debit": "Ausgaben",
+            "previous": "{{value}}",
+            "balance-trend": "Saldo-Trend",
+            "improving": "Verbesserung gegenüber Vormonat",
+            "declining": "Verschlechterung gegenüber Vormonat",
+            "stable": "Stabil gegenüber Vormonat"
+          },
+          "activities": {
+            "title": "Nach Veranstaltung",
+            "total-activities": "Veranstaltungen",
+            "avg-cost": "Ø Kosten",
+            "transactions": "Buchungen",
+            "no-activities": "Keine Veranstaltungen mit Buchungen",
+            "show-all": "Alle Veranstaltungen anzeigen"
+          },
+          "insights": {
+            "title": "Highlights",
+            "no-insights": "Keine besonderen Highlights",
+            "hint": "Mit mehr Buchungen werden hier automatisch Highlights angezeigt",
+            "anomaly": {
+              "title": "Ungewöhnliche Ausgabe",
+              "description": "\"{{value}}\" mit {{value2}} ist deutlich höher als der Durchschnitt ({{value3}})"
+            },
+            "spending-up": {
+              "title": "Ausgaben gestiegen",
+              "description": "Die Ausgaben sind diesen Monat um {{value}}% gestiegen"
+            },
+            "spending-down": {
+              "title": "Ausgaben gesunken",
+              "description": "Die Ausgaben sind diesen Monat um {{value}}% gesunken"
+            },
+            "top-category": {
+              "title": "Hauptkategorie",
+              "description": "Kategorie macht {{value}}% aller Ausgaben aus"
+            },
+            "inactive": {
+              "title": "Lange keine Aktivität",
+              "description": "Seit {{value}} Tagen wurden keine Buchungen erfasst"
+            },
+            "small-expenses": {
+              "title": "Viele Kleinausgaben",
+              "description": "{{value}} Buchungen unter 5€ summieren sich auf {{value2}}"
+            }
+          },
+          "hero": {
+            "transactions": "Buchungen",
+            "avg-per-transaction": "Ø pro Buchung",
+            "vs-last-month": "ggü. Vormonat"
+          },
+          "smart-insights": {
+            "upcoming-event": {
+              "title": "Nächste Veranstaltung",
+              "description": "\"{{value}}\" steht an — bisher {{value2}} an Ausgaben"
+            }
+          },
+          "top-transactions": {
+            "title": "Top Buchungen",
+            "no-credits": "Keine Einnahmen vorhanden",
+            "no-debits": "Keine Ausgaben vorhanden"
+          },
+          "event-efficiency": {
+            "title": "Event-Effizienz",
+            "series": "Veranstaltungen",
+            "net-cost": "Nettokosten",
+            "hint": "X = Anzahl Buchungen, Y = Nettokosten. Größere Punkte bedeuten höheres Volumen.",
+            "no-data": "Mindestens 2 Veranstaltungen mit Buchungen nötig"
+          },
+          "weekday": {
+            "title": "Nach Wochentag",
+            "no-data": "Keine Daten verfügbar.",
+            "transactions-label": "Buchungen",
+            "busiest": "Aktivster Tag: {{value}} ({{value2}} Buchungen)"
+          },
+          "sections": {
+            "quick-glance": "Überblick",
+            "quick-glance-sub": "Saldo & Kennzahlen auf einen Blick",
+            "trends": "Entwicklung",
+            "trends-sub": "Muster & Verlauf im Zeitraum",
+            "breakdown": "Aufschlüsselung",
+            "breakdown-sub": "Nach Kategorie, Mitglied & Veranstaltung"
+          },
+          "export": {
+            "header": "Statistik exportieren",
+            "view": "Anzeigen",
+            "download": "Herunterladen",
+            "share": "Teilen",
+            "email": "Per E-Mail senden",
+            "error": "Export fehlgeschlagen",
+            "view-error": "Datei konnte nicht angezeigt werden",
+            "share-error": "Teilen fehlgeschlagen",
+            "email-error": "E-Mail konnte nicht geöffnet werden",
+            "download-error": "Download fehlgeschlagen",
+            "download-success-title": "Download erfolgreich",
+            "download-success-message": "Statistik wurde als {{value}} in Dokumente gespeichert",
+            "share-title": "Budget-Statistik",
+            "share-dialog": "Statistik teilen",
+            "email-subject": "Budget-Statistik",
+            "capturing": "Bild wird gerade aufgenommen...",
+            "share-unsupported": "Die Freigabe wird auf diesem Gerät nicht unterstützt",
+            "view-unsupported": "Viewer ist nicht verfügbar",
+            "email-no-account": "Kein E-Mail-Konto konfiguriert",
+            "email-unsupported": "Das Senden per E-Mail wird auf diesem Gerät nicht unterstützt"
+          }
+        }
       }
     },
     "page": {
@@ -711,6 +900,11 @@
           "greetings": "Hallo {{value}}",
           "notifications": {
             "no-notes": "Keine neuen Benachrichtigungen"
+          },
+          "open-postings": {
+            "button": {
+              "label": "Dir sind {{value}} Buchungen zugeordnet."
+            }
           }
         },
         "no-collectives-card": {
@@ -723,7 +917,8 @@
         "organization-card": {
           "card": {
             "activities": "{{value}} Veranstaltungen",
-            "members": "{{value}} Mitglieder"
+            "members": "{{value}} Mitglieder",
+            "postings": "{{value}} Buchungen"
           }
         },
         "pending-organization-join-request-card": {
@@ -732,10 +927,34 @@
           }
         },
         "title": "Kollapp",
-        "upcoming-event-card": {
+        "upcoming-activity-card": {
           "card": {
-            "title": "Nächste Veranstaltung"
+            "title": "Nächste Veranstaltung",
+            "no-upcoming-activity": "Keine kommende Veranstaltung",
+            "activity-postings": "{{value}} Buchungen"
           }
+        },
+        "pending-requests": {
+          "card": {
+            "title": "Ausstehende Anfragen",
+            "content": "Die folgenden Benutzer möchten dem Kollektiv beitreten:"
+          }
+        },
+        "quick-access": {
+          "done": "Fertig",
+          "add": "Hinzufügen",
+          "remove": "Entfernen",
+          "hint": "Zum Bearbeiten lange auf Widgets drücken",
+          "modal": {
+            "title": "Schnellzugriff hinzufügen",
+            "search-placeholder": "Funktion suchen...",
+            "results-for": "{{value}} Ergebnisse für „{{value2}}“",
+            "no-results": "Keine Ergebnisse für „{{value}}“ gefunden",
+            "current-items-header": "Aktuelle Schnellzugriffe",
+            "all-functions": "Alle Funktionen",
+            "special-widgets-header": "Widgets"
+          },
+          "edit-mode-hint": "Widgets durch langes Drücken neu anordnen."
         }
       }
     }
@@ -793,13 +1012,18 @@
             "pattern": "Das Passwort sollte mindestens eine Zahl und einen Großbuchstaben enthalten",
             "required": "Passwort ist erforderlich"
           }
+        },
+        "verify-password": {
+          "password": {
+            "required": "Passwort ist erforderlich"
+          }
         }
       },
       "budget": {
         "create-posting": {
           "amount": {
             "max": "Der Betrag überschreitet den Höchstwert von 10.000.000",
-            "min": "Der Betrag sollte ein positiver Wert sein",
+            "min": "Der Betrag muss ein positiver Wert sein",
             "required": "Betrag ist erforderlich"
           },
           "date": {
@@ -807,20 +1031,6 @@
           },
           "purpose": {
             "max": "Der Zweck überschreitet die maximale Länge von 200 Zeichen",
-            "required": "Zweck ist erforderlich"
-          }
-        },
-        "update-posting": {
-          "amount": {
-            "max": "Der Betrag übersteigt den Höchstwert von 10.000.000",
-            "min": "Der Betrag sollte ein positiver Wert sein",
-            "required": "Betrag ist erforderlich"
-          },
-          "date": {
-            "required": "Datum ist erforderlich"
-          },
-          "purpose": {
-            "max": "Zweck überschreitet maximal 200 Zeichen",
             "required": "Zweck ist erforderlich"
           }
         }
@@ -834,6 +1044,9 @@
           "name": {
             "max": "Der Name überschreitet maximal 50 Zeichen",
             "required": "Name ist erforderlich"
+          },
+          "date": {
+            "required": "Datum der Veranstaltung ist erforderlich"
           }
         },
         "create-organization": {
@@ -863,6 +1076,9 @@
           "name": {
             "max": "Der Name überschreitet maximal 50 Zeichen",
             "required": "Name ist erforderlich"
+          },
+          "date": {
+            "required": "Datum der Veranstaltung ist erforderlich"
           }
         },
         "update-organization": {
@@ -877,6 +1093,15 @@
             "max": "Ort überschreitet maximal 50 Zeichen",
             "required": "Platz ist erforderlich"
           }
+        }
+      },
+      "budget-category": {
+        "name": {
+          "max": "Kategoriename überschreitet maximal 50 Zeichen",
+          "required": "Kategoriename ist erforderlich"
+        },
+        "default-category": {
+          "required": "Standard-Kategorie-Flag ist erforderlich"
         }
       },
       "user": {
@@ -902,6 +1127,11 @@
             "min": "Der Benutzername sollte mindestens 2 Zeichen lang sein",
             "required": "Benutzername ist erforderlich"
           }
+        },
+        "delete-account": {
+          "password": {
+            "required": "Passwort ist erforderlich"
+          }
         }
       }
     }
@@ -910,14 +1140,17 @@
     "layout": {
       "menu": {
         "list": {
-          "account": {
-            "label": "Konto"
-          },
           "activities": {
             "label": "Veranstaltungen"
           },
-          "collective": {
-            "label": "Kollektiv"
+          "persons-of-organization": {
+            "label": "Mitglieder"
+          },
+          "statistics": {
+            "label": "Finanzstatistik"
+          },
+          "budget": {
+            "label": "Buchungskategorien"
           }
         }
       }
@@ -929,22 +1162,21 @@
       "header": {
         "toolbar": {
           "searchbar": {
-            "placeholder": "Durchsuche die App..."
+            "placeholder": "App durchsuchen..."
           }
         }
       },
       "search-results": {
-        "found": "Suchergebnisse für „{{value}}“",
+        "found": "{{value2}} Suchergebnisse für „{{value}}“",
         "not-found": "Keine Ergebnisse für „{{value}}“ gefunden"
       }
     },
     "widgets": {
       "budget-card": {
-        "all": "Alle",
-        "credit": "Einnahme",
-        "debit": "Ausgabe",
+        "balance": "Saldo",
         "heading": "Budgetübersicht",
-        "no-postings": "Keine Transaktionen gefunden."
+        "latest-postings": "Letzte Buchungen",
+        "no-postings": "Keine Buchungen gefunden."
       },
       "ionic": {
         "datetime": {
@@ -965,7 +1197,7 @@
           "all-selected": "Alle ausgewählt",
           "none-selected": "Nichts ausgewählt",
           "search-placeholder": "Suchen...",
-          "select-all": "Wähle alle Veranstaltungen aus"
+          "select-all": "Alles auswählen"
         }
       },
       "leaflet-map": {
@@ -982,6 +1214,142 @@
       "welcome": {
         "heading": "Willkommen bei Kollapp!",
         "subheading": "Die App für alle Kollektive da draußen."
+      },
+      "filter": {
+        "date-range": {
+          "from": "Von",
+          "to": "Bis"
+        },
+        "search-placeholder": "Suchen...",
+        "reset-filters": "Filter zurücksetzen",
+        "reset": "Filter zurücksetzen",
+        "apply": "Filter anwenden"
+      },
+      "quick-access": {
+        "special-widget": {
+          "badge": "Widget"
+        }
+      }
+    },
+    "posting-item": {
+      "sliding-options": {
+        "delete": "Löschen",
+        "edit": "Bearbeiten",
+        "transfer": "Abrechnen"
+      },
+      "modal": {
+        "delete": {
+          "confirm": "Löschen"
+        },
+        "transfer": {
+          "header": "Buchung abrechnen",
+          "message": "Möchtest du diese Buchung mit dem Kollektiv verrechnen? Sie wird dann nicht mehr dem aktuellen Mitglied zugeordnet sein.",
+          "confirm": "Abrechnen"
+        },
+        "edit": {
+          "title": "Buchung bearbeiten",
+          "credit": "Einnahme",
+          "debit": "Ausgabe",
+          "purpose": "Zweck",
+          "amount": "Betrag",
+          "date": "Datum",
+          "member": {
+            "label": "Zugewiesenes Mitglied",
+            "none-selected": "Nicht zugewiesen"
+          },
+          "budget-category": {
+            "label": "Kategorie"
+          },
+          "activity": {
+            "label": "Zugewiesene Veranstaltung",
+            "none-selected": "Nicht zugewiesen"
+          }
+        }
+      }
+    },
+    "posting-overview": {
+      "filter": {
+        "person-of-organization": {
+          "unassigned": "Nicht zugewiesen"
+        },
+        "posting-types": "Buchungsart",
+        "credit": "Einnahme",
+        "debit": "Ausgabe",
+        "date-range": "Zeitraum",
+        "sort": {
+          "label": "Sortieren nach",
+          "date": "Datum",
+          "purpose": "Zweck",
+          "person-of-organization": "Mitglied",
+          "category": "Kategorie",
+          "activity": "Veranstaltung",
+          "amount": "Betrag"
+        },
+        "order": {
+          "label": "Sortierreihenfolge",
+          "ascending": "Aufsteigend",
+          "descending": "Absteigend"
+        },
+        "person": {
+          "all-selected": "Alle Mitglieder ausgewählt",
+          "select": "Ausgewählte Mitglieder",
+          "label": "Mitglieder",
+          "search": "Mitglieder suchen..."
+        },
+        "budget-category": {
+          "all-selected": "Alle Kategorien ausgewählt",
+          "select": "Ausgewählte Kategorien",
+          "label": "Kategorien",
+          "search": "Kategorien durchsuchen..."
+        },
+        "activities": {
+          "all-selected": "Alle Veranstaltungen ausgewählt",
+          "select": "Ausgewählte Veranstaltungen",
+          "label": "Veranstaltungen",
+          "search": "Veranstaltungen suchen...",
+          "unassigned": "Nicht zugewiesen"
+        },
+        "title": "Buchungen filtern"
+      },
+      "search": {
+        "placeholder": "Buchungen durchsuchen..."
+      },
+      "no-postings": "Keine Buchungen gefunden.",
+      "no-results": "Keine Buchungen für „{{value}}“ gefunden",
+      "loading": "Laden...",
+      "results": "{{value}} Buchungen gefunden."
+    },
+    "budget-overview": {
+      "total-credit": "Gesamteinnahmen: {{value}}",
+      "total-debit": "Gesamtausgaben: {{value}}",
+      "total-postings": "Gesamtbuchungen: {{value}}",
+      "add-posting": "Buchung hinzufügen",
+      "posting-overview": "Buchungsübersicht",
+      "statistics": "Statistiken",
+      "modal": {
+        "title": {
+          "debit": "Ausgabe hinzufügen",
+          "credit": "Einnahme hinzufügen"
+        },
+        "credit": "Einnahme",
+        "debit": "Ausgabe",
+        "purpose": "Zweck",
+        "amount": "Betrag",
+        "date": "Datum",
+        "person-of-organization": {
+          "select": "Zugewiesenes Mitglied",
+          "search": "Mitglieder suchen...",
+          "none": "Nicht zugewiesen"
+        },
+        "activity": {
+          "select": "Zugewiesene Veranstaltung",
+          "search": "Veranstaltung suchen...",
+          "none": "Nicht zugewiesen"
+        },
+        "budget-category": {
+          "select": "Zugewiesene Kategorie",
+          "search": "Kategorien durchsuchen..."
+        }
       }
     }
   },
@@ -992,6 +1360,13 @@
     "connection": {
       "offline": "Du bist offline",
       "online": "Du bist online"
+    },
+    "quick-access": {
+      "special-widgets": {
+        "organization-card": "Kollektivübersicht",
+        "upcoming-activity-card": "Übersicht für bevorstehende Veranstaltung",
+        "budget-chart-card": "Budgetübersicht"
+      }
     }
   },
   "utility": {
@@ -1005,12 +1380,6 @@
       "error": {
         "authorization": "Autorisierungsfehler",
         "generic": "Es ist ein Fehler aufgetreten"
-      },
-      "maintenance": {
-        "alert": {
-          "header": "Wartung"
-        },
-        "message": "Die App wird am {{value}} wahrscheinlich einige Minuten lang nicht verfügbar sein."
       },
       "request-successful": "Anfrage erfolgreich",
       "server-not-reachable": "Server nicht erreichbar"
@@ -1028,7 +1397,10 @@
         "no-match": "Muss mit dem Passwort übereinstimmen"
       }
     },
-    "preferences": {
+    "offline-queue": {
+      "request-queued": "Anfrage wird gesendet, sobald du wieder online bist"
+    },
+    "storage": {
       "failure": {
         "remove": "Wert konnte nicht entfernt werden",
         "retreive": "Wert konnte nicht abgerufen werden",
@@ -1049,6 +1421,150 @@
       "information-modal": {
         "ok": "Okay"
       }
+    },
+    "tour": {
+      "next": "Weiter",
+      "previous": "Zurück",
+      "done": "Fertig",
+      "steps": {
+        "welcome": {
+          "title": "Willkommen bei Kollapp! 👋",
+          "description": "Wir führen dich etwas herum und helfen dir beim Einstieg in Kollapp!"
+        },
+        "menu": {
+          "title": "Navigationsmenü",
+          "description": "Tippe hier, um das Menü zu öffnen und auf wichtige Funktionen der App zuzugreifen."
+        },
+        "quick-access": {
+          "title": "Schnellzugriff-Panel",
+          "description": "Das Schnellzugriff-Panel bietet dir schnellen Zugang zu häufig genutzten Funktionen.\n\nDu kannst die Kacheln frei anordnen und anpassen, indem du sie lange gedrückt hältst."
+        },
+        "org-budget": {
+          "title": "Kollektivbilanz",
+          "description": "Zeigt Infos über die Finanzen des Kollektivs an, einschließlich Saldo, Einnahmen und Ausgaben des Kollektivs.\n\nDu kannst Buchungen hinzufügen, anzeigen lassen und detaillierte Statistiken aufrufen."
+        },
+        "budget-statistics": {
+          "title": "Finanz-Statistiken",
+          "description": "Hier findest du detaillierte Statistiken und Diagramme zu den Finanzen deines Kollektivs.\n\nDu kannst Trends, Kategorieverteilungen und vieles mehr analysieren."
+        },
+        "activities-list": {
+          "title": "Veranstaltungs-Übersicht",
+          "description": "Alle Veranstaltungen nach Datum sortiert, falls welche vorhanden sind. Tippe auf eine Veranstaltung für Details."
+        },
+        "activities-fab": {
+          "title": "Veranstaltung erstellen",
+          "description": "Tippe hier, um eine neue Veranstaltung für das Kollektiv zu erstellen."
+        },
+        "budget-categories-list": {
+          "title": "Budget-Kategorien",
+          "description": "Organisiere deine Finanzen mit Kategorien. Kategorien helfen, Einnahmen oder Ausgaben zu sortieren. Standartmäßig sind alle Buchungen der Kategorie \"General\" zugeordnet."
+        },
+        "budget-categories-fab": {
+          "title": "Kategorie hinzufügen",
+          "description": "Hier kannst du eine neue Kategorie hinzufügen."
+        },
+        "members-list": {
+          "title": "Mitglieder-Verzeichnis",
+          "description": "Hier werden alle Mitglieder des Kollektivs aufgelistet. \nDu siehst ihre Rollen, zugewiesenen Buchungen und mehr."
+        },
+        "members-fab": {
+          "title": "Mitglieder einladen",
+          "description": "Lade neue Leute ein, dem Kollektiv beizutreten, indem du einen Einladungscode teilen. \nDu kannst ihn per E-Mail versenden, mit deinem Telefon teilen oder einen QR-Code anzeigen, den andere scannen können."
+        },
+        "account-personal": {
+          "title": "Persönliche Einstellungen",
+          "description": "Verwalte hier dein Profil, Benachrichtigungseinstellungen und sicherheitsrelevante Dinge."
+        },
+        "account-application": {
+          "title": "App-Einstellungen",
+          "description": "Passe die App mit deinen Sprach- und Theme-Einstellungen an und starte die Tour jederzeit neu."
+        },
+        "org-info": {
+          "title": "Kollektivlinfo",
+          "description": "Hier werden einige Informationen über das Kollektiv angezeigt, z. B. die Beschreibung, der Standort oder deine Rolle im Kollektiv."
+        },
+        "activities-segments": {
+          "title": "Veranstaltungsansichten",
+          "description": "Hier kannst du zwischen einer Listen- und Kalenderansicht für die Anzeige von Veranstaltungen wechseln."
+        },
+        "conclusion": {
+          "title": "Dank für deine Aufmerksamkeit!",
+          "description": "Viel Spaß mit Kollapp!\nUnd wenn dir irgendwas in der App auffällt, du Fragen oder Verbesserungsvorschläge hast, dann kontaktier uns gern!"
+        }
+      }
+    },
+    "export": {
+      "date": "Datum",
+      "type": "Typ",
+      "amount": "Betrag",
+      "purpose": "Zweck",
+      "category": "Kategorie",
+      "person-of-organization": "Mitglied",
+      "debit": "Ausgabe",
+      "credit": "Einnahme",
+      "no-member": "Nicht zugewiesen",
+      "total-credit": "Gesamteinnahmen",
+      "total-debit": "Gesamtausgaben",
+      "balance": "Saldo",
+      "generated-at": "Erstellt am {{value}}",
+      "postings": "buchungen",
+      "organization": "Kollektiv: {{value}}",
+      "activity": "Veranstaltung",
+      "no-activity": "Nicht zugewiesen",
+      "activity-title": "Veranstaltung: {{value}}",
+      "activity-date": "Datum der Veranstaltung: {{value}}",
+      "member-name": "Mitglied: {{value}}"
+    },
+    "export-postings": {
+      "modal": {
+        "pdf": "Als PDF exportieren",
+        "csv": "Als CSV exportieren",
+        "header": "Buchungen exportieren",
+        "action-header": "Was möchtest du tun?",
+        "view": "Anzeigen",
+        "download": "Herunterladen",
+        "share": "Teilen",
+        "email": "Per E-Mail senden"
+      },
+      "view": {
+        "error": "Datei konnte nicht geöffnet werden."
+      },
+      "share": {
+        "error": "Teilen wird auf diesem Gerät nicht unterstützt."
+      },
+      "email": {
+        "error": "Kein E-Mail-Konto gefunden.",
+        "unsupported": "E-Mail wird auf diesem Gerät nicht unterstützt.",
+        "body": "Anbei findest du die Buchungsübersicht für {{value}}."
+      },
+      "download": {
+        "error": "Datei konnte nicht gespeichert werden.",
+        "title": "Datei gespeichert!"
+      },
+      "download-external": {
+        "message": "Die Datei {{value}} wurde im externen Speicher des Telefons gespeichert."
+      },
+      "download-internal": {
+        "title": "Datei gespeichert!",
+        "message": "Die Datei {{value}} wurde im internen Speicher des Telefons gespeichert."
+      }
+    }
+  },
+  "accessibility": {
+    "navigation": {
+      "back": "Zurück",
+      "home": "Zur Startseite",
+      "menu": "Menü öffnen"
+    },
+    "modal": {
+      "close": "Dialog schließen"
+    },
+    "loading": "Inhalt wird geladen",
+    "logo": "Kollapp Logo",
+    "actions": {
+      "add": "Hinzufügen",
+      "remove": "Entfernen",
+      "search": "Suchen"
     }
   }
 }

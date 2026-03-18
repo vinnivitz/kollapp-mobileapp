@@ -7,7 +7,7 @@
 	import FaTimes from 'svelte-icons/fa/FaTimes.svelte';
 	import { fade } from 'svelte/transition';
 
-	let isMenuOpen = $state(false);
+	let isMenuOpen = $state<boolean>(false);
 </script>
 
 <nav class="hidden cursor-default items-center justify-end gap-12 px-12 py-4 text-gray-200 md:flex">

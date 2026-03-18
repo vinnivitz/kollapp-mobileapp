@@ -4,34 +4,21 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
+	import { changePasswordSchema } from '$lib/api/schemas/user';
 	import { userService } from '$lib/api/services';
-	import { changePasswordSchema } from '$lib/api/validation/user';
-	import Layout from '$lib/components/layout/Layout.svelte';
-	import Button from '$lib/components/widgets/ionic/Button.svelte';
-	import Card from '$lib/components/widgets/ionic/Card.svelte';
-	import InputItem from '$lib/components/widgets/ionic/InputItem.svelte';
+	import { Button, Card, InputItem } from '$lib/components/core';
+	import { Layout } from '$lib/components/layout';
 	import { t } from '$lib/locales';
 	import { Form } from '$lib/models/ui';
-	import {
-		customForm,
-		isBiometricAvailable,
-		isBiometricEnabled,
-		passwordConfirmationValidator,
-		updatePasswordBiometricCredentials
-	} from '$lib/utility';
+	import { customForm, passwordConfirmationValidator } from '$lib/utility';
 
 	const form = new Form({
-		completed: async ({ model }) => {
-			if ((await isBiometricAvailable()) && (await isBiometricEnabled())) {
-				await updatePasswordBiometricCredentials(model.newPassword);
-			}
-			goto(resolve('/account'));
-		},
-		customValidators: {
-			confirmNewPassword: passwordConfirmationValidator('newPassword', 'confirmNewPassword')
-		},
+		completed: async () => goto(resolve('/account')),
 		request: async (model) => userService.changePassword(model),
-		schema: changePasswordSchema()
+		schema: changePasswordSchema(),
+		validators: {
+			confirmNewPassword: passwordConfirmationValidator('newPassword', 'confirmNewPassword')
+		}
 	});
 </script>
 

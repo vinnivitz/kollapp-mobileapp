@@ -21,6 +21,8 @@ public class JwtProperties {
     private long refreshExpirationInSeconds;
     private String confirmationSecret;
     private long confirmationExpirationInSeconds;
+    private String newEmailConfirmationSecret;
+    private long newEmailConfirmationExpirationInSeconds;
     private String resetPasswordSecret;
     private long resetPasswordExpirationInSeconds;
 }

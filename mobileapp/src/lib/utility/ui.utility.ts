@@ -2,7 +2,7 @@ import type { ConfirmModalConfig } from '$lib/models/ui';
 import type { OrganizationRole } from '@kollapp/api-types';
 import type { AnyObject, ObjectSchema } from 'yup';
 
-import { alertController } from '@ionic/core';
+import { alertController, loadingController } from '@ionic/core';
 import { type Locale as DateFnsLocale, de, enUS } from 'date-fns/locale';
 import { get } from 'svelte/store';
 
@@ -55,29 +55,40 @@ export function getRoleTranslationFromRole(role: OrganizationRole): string {
 /**
  * Triggers a click event on an element with a specific label
  * @param label label of the element to click
+ * @returns {Promise<void>} Promise that resolves when the click event is triggered
  */
 export async function triggerClickByLabel(label: string): Promise<void> {
+	label = label.replaceAll(/['"]/g, '').trim();
+	console.log('label', label);
 	const element =
-		[...document.querySelectorAll('ion-label')].find((element) => element.textContent === label)?.closest('ion-item') ??
-		[...document.querySelectorAll('ion-card')].find((element) => element.id === label) ??
+		[...document.querySelectorAll('ion-label')]
+			.find((element) => element.textContent.trim() === label)
+			?.closest('ion-item') ??
+		[...document.querySelectorAll('ion-card')].find((element) => element.id.trim() === label) ??
 		[...document.querySelectorAll('ion-fab')]
-			.find((element) => element.ariaLabel === label)
+			.find((element) => element.id.trim() === label)
 			?.querySelector('ion-fab-button') ??
 		[...document.querySelectorAll('ion-label')]
-			.find((element) => element.textContent === label)
-			?.closest('ion-segment-button');
+			.find((element) => element.textContent.trim() === label)
+			?.closest('ion-segment-button') ??
+		[...document.querySelectorAll('ion-button')].find((element) => element.textContent.trim() === label);
 	setTimeout(() => element?.click(), 10);
 }
 
 /**
- * Apply this directive to any element to detect click outside of that element.
+ * Directive that dispatches a custom 'clickoutside' event when the user clicks outside the node.
  * @param node node to apply the directive to
+ * @param callback optional callback to call when clicked outside
  * @returns {object} The directive
  */
-export function clickOutside(node: Node): { destroy: () => void } {
+export function clickOutside(
+	node: Node,
+	callback?: () => void
+): { destroy: () => void; update: (callback_?: () => void) => void } {
 	const handleClick = (event: Event): void => {
 		if (node && !node.contains(event.target as Node) && !event.defaultPrevented) {
-			node.dispatchEvent(new CustomEvent('blur', node as object));
+			callback?.();
+			node.dispatchEvent(new CustomEvent('clickoutside', { detail: node }));
 		}
 	};
 
@@ -86,6 +97,9 @@ export function clickOutside(node: Node): { destroy: () => void } {
 	return {
 		destroy() {
 			document.removeEventListener('click', handleClick, true);
+		},
+		update(callback_?: () => void) {
+			callback = callback_;
 		}
 	};
 }
@@ -179,7 +193,7 @@ export async function confirmationModal(config: ConfirmModalConfig): Promise<voi
 		buttons: [
 			{ role: 'cancel', text: $t('utility.ui.confirm-modal.cancel') },
 			{
-				handler: async () => await config.handler(),
+				handler: async () => config.handler(),
 				text: config.confirmText ?? $t('utility.ui.confirm-modal.confirm')
 			}
 		],
@@ -198,13 +212,94 @@ export async function informationModal(header: string, message: string): Promise
 	const $t = get(t);
 	const alert = await alertController.create({
 		buttons: [{ role: 'confirm', text: $t('utility.ui.information-modal.ok') }],
+		cssClass: 'whitespace-pre-line',
 		header,
-		message
+		message,
+		translucent: true
 	});
 	await alert.present();
 	await alert.onDidDismiss();
 }
 
-export function updateValueByKey<T>(model: T, key: keyof T, value: T[keyof T]): T {
-	return { ...model, [key]: value };
+/** Displays a loading spinner while executing an async action
+ * @param action async action to execute
+ * @param delay delay before showing the loader in milliseconds
+ * @returns {Promise<void>} Promise that resolves when the action is complete
+ */
+export async function withLoader<T = void>(action: () => Promise<T> | T, delay = 100): Promise<T> {
+	let loader: HTMLIonLoadingElement | undefined;
+	let finished = false;
+
+	const loaderTimeout = setTimeout(() => {
+		if (finished) return;
+
+		void (async () => {
+			loader = await loadingController.create({});
+			if (finished) {
+				await loader.dismiss();
+				loader = undefined;
+				return;
+			}
+			await loader.present();
+		})();
+	}, delay);
+
+	try {
+		return await action();
+	} finally {
+		finished = true;
+		clearTimeout(loaderTimeout);
+
+		if (loader) {
+			await loader.dismiss();
+		}
+	}
+}
+
+/** Returns a new array with unique items based on a key function
+ * @param arr array to filter
+ * @param keyFn function to get the key for each item
+ * @returns {T[]} array with unique items
+ */
+export function uniqueBy<T, K>(array: T[], keyFunction: (item: T) => K): T[] {
+	const seen = new Set<K>();
+	return array.filter((item) => {
+		const key = keyFunction(item);
+		if (seen.has(key)) return false;
+		seen.add(key);
+		return true;
+	});
+}
+
+/** Gets the hex value of a CSS variable
+ * @param name name of the CSS variable
+ * @returns {string} hex value of the CSS variable
+ */
+export function getHexFromVariable(name: string): string {
+	const styles = getComputedStyle(document.documentElement);
+	const value = styles.getPropertyValue(name).trim();
+	return value;
+}
+
+/** Mixes a color with white to create a lighter shade (simulating transparency on white background)
+ * @param rgbVarName name of the CSS variable containing rgb values (e.g., '--ion-color-danger-rgb')
+ * @param alpha alpha value between 0 and 1 (0 = white, 1 = full color)
+ * @returns {string} hex color string
+ */
+export function getBlendedColorFromVariable(rgbVariableName: string, alpha: number): string {
+	const styles = getComputedStyle(document.documentElement);
+	const rgbValue = styles.getPropertyValue(rgbVariableName).trim();
+	const parts = rgbValue.split(',').map((p) => Number.parseInt(p.trim(), 10));
+
+	const [r, g, b] = parts as [number, number, number];
+
+	const blendedR = Math.round(r * alpha + 255 * (1 - alpha));
+	const blendedG = Math.round(g * alpha + 255 * (1 - alpha));
+	const blendedB = Math.round(b * alpha + 255 * (1 - alpha));
+
+	return `#${toHex(blendedR)}${toHex(blendedG)}${toHex(blendedB)}`;
+}
+
+function toHex(n: number): string {
+	return n.toString(16).padStart(2, '0');
 }

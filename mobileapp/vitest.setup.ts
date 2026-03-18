@@ -88,6 +88,13 @@ vi.mock('$lib/stores', () => {
 	};
 
 	return {
+		exportModeStore: {
+			set: vi.fn(),
+			subscribe: (run: (value: boolean) => void) => {
+				run(false);
+				return vi.fn();
+			}
+		},
 		globalPopoverStore: { datetimeInputItem },
 		initializationStore: {
 			loaded: {
@@ -124,10 +131,59 @@ vi.mock('$lib/stores', () => {
 			}
 		},
 		organizationStore: {
-			init: vi.fn().mockResolvedValue(vi.fn())
+			initialize: vi.fn().mockResolvedValue(vi.fn()),
+			subscribe: (run: (value: unknown) => void) => {
+				run({
+					activities: [],
+					organizationPostings: []
+				});
+				return vi.fn();
+			}
 		},
+		quickAccessStore: {
+			addItem: vi.fn().mockResolvedValue({}),
+			getItems: vi.fn().mockReturnValue([]),
+			initialize: vi.fn().mockResolvedValue({}),
+			removeItem: vi.fn().mockResolvedValue({}),
+			reorderItems: vi.fn().mockResolvedValue({}),
+			setEditMode: vi.fn(),
+			subscribe: (run: (value: { editMode: boolean; items: unknown[] }) => void) => {
+				run({ editMode: false, items: [] });
+				return vi.fn();
+			}
+		},
+		SPECIAL_WIDGETS: () => [
+			{
+				icon: 'peopleOutline',
+				id: 'organization-card',
+				label: 'Organization',
+				route: '/organization',
+				specialWidgetId: 'organization-card',
+				widgetType: 'special'
+			},
+			{
+				icon: 'calendarOutline',
+				id: 'upcoming-activity-card',
+				label: 'Upcoming Activity',
+				route: '/organization/activities/[slug]',
+				specialWidgetId: 'upcoming-activity-card',
+				widgetType: 'special'
+			},
+			{
+				icon: 'cashOutline',
+				id: 'budget-chart-card',
+				label: 'Budget',
+				route: '/organization',
+				specialWidgetId: 'budget-chart-card',
+				widgetType: 'special'
+			}
+		],
 		userStore: {
-			init: vi.fn().mockResolvedValue(vi.fn())
+			initialize: vi.fn().mockResolvedValue(vi.fn()),
+			subscribe: (run: (value: unknown) => void) => {
+				run({});
+				return vi.fn();
+			}
 		}
 	};
 });
@@ -157,9 +213,28 @@ vi.mock('$lib/api/services', () => ({
 vi.mock('$lib/utility', () => ({
 	clickOutside: () => ({ destroy: () => {} }),
 	formatter: {
-		currency: (value: number) => `${value}`
+		currency: (value: number) => `${value}`,
+		date: (date: Date | string | undefined, _format?: string) => {
+			if (!date) return '';
+			const dateString = typeof date === 'string' ? date : date.toISOString();
+			// Extract year from date string (e.g., "2025-06-15" -> "June 15, 2025")
+			const year = dateString.slice(0, 4);
+			const month = dateString.slice(5, 7);
+			const day = dateString.slice(8, 10);
+			return `${month}/${day}, ${year}`;
+		}
 	},
+	getDateFnsLocale: () => {},
 	navigateBack: vi.fn().mockResolvedValue(vi.fn()),
+	parser: {
+		currency: (value: string) => Number.parseFloat(value.replaceAll(/[^\d.-]/g, '')) * 100,
+		date: (date: Date | string | undefined) => {
+			if (!date) return '';
+			if (typeof date === 'string') return date;
+			return date.toISOString().slice(0, 10);
+		}
+	},
+	refreshDataStores: vi.fn().mockResolvedValue(vi.fn()),
 	triggerClickByLabel: vi.fn()
 }));
 
@@ -177,8 +252,41 @@ if (!globalThis.matchMedia) {
 	});
 }
 
+if (!globalThis.IntersectionObserver) {
+	globalThis.IntersectionObserver = class MockIntersectionObserver {
+		constructor(callback: IntersectionObserverCallback, _options?: IntersectionObserverInit) {
+			// Immediately call callback with isIntersecting: true to render content
+			setTimeout(() => {
+				callback([{ isIntersecting: true } as IntersectionObserverEntry], this as unknown as IntersectionObserver);
+			}, 0);
+		}
+		disconnect = vi.fn();
+		observe = vi.fn();
+		unobserve = vi.fn();
+		takeRecords = (): IntersectionObserverEntry[] => [] as IntersectionObserverEntry[];
+		root = undefined;
+		rootMargin = '';
+		thresholds = [] as readonly number[];
+	} as unknown as typeof IntersectionObserver;
+}
+
+if (!globalThis.ResizeObserver) {
+	globalThis.ResizeObserver = class MockResizeObserver {
+		constructor(_callback: ResizeObserverCallback) {}
+		disconnect = vi.fn();
+		observe = vi.fn();
+		unobserve = vi.fn();
+	} as unknown as typeof ResizeObserver;
+}
+
 vi.mock('@ionic/core', () => ({
 	getPlatforms: () => ['desktop'],
+	loadingController: {
+		create: vi.fn().mockResolvedValue({
+			dismiss: vi.fn().mockResolvedValue(true),
+			present: vi.fn().mockResolvedValue(true)
+		})
+	},
 	modalController: {
 		getTop: vi.fn().mockResolvedValue(vi.fn())
 	}

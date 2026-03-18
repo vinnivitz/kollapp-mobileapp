@@ -28,7 +28,7 @@ describe('Header (not loaded)', () => {
 	it('shows progress bar after delay when not loaded and not loading', async () => {
 		vi.useFakeTimers();
 		const { container } = render(Header, {
-			props: { loading: false, showBackButton: false, title: 'Any' }
+			props: { loadedServer: false, loading: false, showBackButton: false, title: 'Any' }
 		});
 
 		vi.advanceTimersByTime(150);

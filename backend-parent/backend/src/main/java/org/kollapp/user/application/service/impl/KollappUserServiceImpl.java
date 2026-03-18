@@ -91,6 +91,30 @@ public class KollappUserServiceImpl implements KollappUserService {
     }
 
     @Override
+    public void confirmNewEmail(String confirmationToken) {
+        if (!jwtUtil.validateNewEmailConfirmationToken(confirmationToken)) {
+            throw new InvalidConfirmationLinkException();
+        }
+        String username = jwtUtil.getSubjectFromNewEmailConfirmationToken(confirmationToken);
+        String newEmail = jwtUtil.getNewEmailFromNewEmailConfirmationToken(confirmationToken);
+        if (newEmail == null || newEmail.isBlank()) {
+            throw new InvalidConfirmationLinkException();
+        }
+
+        KollappUser kollappUser = userRepo.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException());
+        if (kollappUser.getPendingEmail() == null
+                || !kollappUser.getPendingEmail().equalsIgnoreCase(newEmail)) {
+            throw new InvalidConfirmationLinkException();
+        }
+        if (userRepo.existsByEmail(newEmail)) {
+            throw new EmailExistsException();
+        }
+
+        kollappUser.setEmail(kollappUser.getPendingEmail());
+        kollappUser.setPendingEmail(null);
+    }
+
+    @Override
     @RequiresKollappUserRole
     public void changePassword(String oldPassword, String newPassword) {
         String usernameOfLoggedInUser = getLoggedInKollappUser().getUsername();
@@ -161,14 +185,17 @@ public class KollappUserServiceImpl implements KollappUserService {
             kollappUser.setUsername(username);
         }
         if (email != null && !kollappUser.getEmail().equals(email)) {
-            if (userRepo.existsByEmail(email)) {
+            boolean isSameAsPending = kollappUser.getPendingEmail() != null
+                    && kollappUser.getPendingEmail().equalsIgnoreCase(email);
+            if (!isSameAsPending && (userRepo.existsByEmail(email) || userRepo.existsByPendingEmail(email))) {
                 throw new EmailExistsException();
             }
-            kollappUser.setActivated(false);
-            kollappUser.setEmail(email);
-            String confirmationToken = jwtUtil.generateConfirmationToken(kollappUser.getUsername());
-            String confirmationBaseUrl = createConfirmationBaseUrl(confirmationToken);
-            emailService.sendConfirmationMail(kollappUser.getEmail(), confirmationBaseUrl);
+
+            kollappUser.setPendingEmail(email);
+
+            String confirmationToken = jwtUtil.generateNewEmailConfirmationToken(kollappUser.getUsername(), email);
+            String confirmationBaseUrl = createNewEmailConfirmationBaseUrl(confirmationToken);
+            emailService.sendNewEmailConfirmationMail(email, confirmationBaseUrl);
         }
         KollappUserUpdatedEvent updatedEvent =
                 new KollappUserUpdatedEvent(this, kollappUser.getUsername(), kollappUser.getId());
@@ -197,6 +224,11 @@ public class KollappUserServiceImpl implements KollappUserService {
     private String createConfirmationBaseUrl(String token) {
         Map<String, String> params = Map.of("confirmationToken", token);
         return urlBuilderUtil.buildServerUrl("/api/public/user/confirmation", params);
+    }
+
+    private String createNewEmailConfirmationBaseUrl(String token) {
+        Map<String, String> params = Map.of("confirmationToken", token);
+        return urlBuilderUtil.buildServerUrl("/api/public/user/confirm-new-email", params);
     }
 
     private String createResetPasswordBaseUrl(String token) {

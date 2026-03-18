@@ -59,4 +59,29 @@ describe('Tabs', () => {
 		const second = container.querySelectorAll('ion-tab-button')[1] as HTMLElement;
 		expect(second.className).toContain('tab-selected');
 	});
+
+	it('does not update tab when pathname matches currentTabName', () => {
+		if (navigating.to) {
+			navigating.to.route.id = '/';
+		}
+		const { container } = render(Tabs, { props: { tabs } });
+		const first = container.querySelectorAll('ion-tab-button')[0] as HTMLElement;
+		expect(first.className).toContain('tab-selected');
+	});
+
+	it('sets tour id for organization and account tabs', () => {
+		const tabsWithOrg = [
+			{ icon: 'home', label: 'Home', tab: '/' as RouteId },
+			{ icon: 'business', label: 'Organization', tab: '/organization' as RouteId },
+			{ icon: 'person', label: 'Account', tab: '/account' as RouteId }
+		];
+		const { container } = render(Tabs, { props: { tabs: tabsWithOrg } });
+		const buttons = container.querySelectorAll('ion-tab-button');
+		// Organization tab should have a tour id
+		expect(buttons[1]?.dataset.tour).toBeTruthy();
+		// Account tab should have a tour id
+		expect(buttons[2]?.dataset.tour).toBeTruthy();
+		// Home tab should not have a tour id
+		expect(buttons[0]?.dataset.tour).toBeFalsy();
+	});
 });

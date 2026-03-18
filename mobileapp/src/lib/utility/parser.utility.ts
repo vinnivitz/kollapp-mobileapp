@@ -1,5 +1,6 @@
 import { TZDate } from '@date-fns/tz';
-import { format, parse } from 'date-fns';
+
+import { formatter } from './formatter.utility';
 
 /**
  * Parser for form based currency input in €
@@ -28,12 +29,17 @@ function currency(value: string): number {
 }
 
 /**
- * Parses a date string in PPP format to YYYY-MM-DD format
- * @param value date string in PPP format
- * @returns date string in YYYY-MM-DD format
+ * Parser for form based date input in yyyy-MM-dd
+ * @param value date
+ * @returns The parser
  */
-function date(value: string): string {
-	return format(parse(value, 'PPP', new TZDate()), 'yyyy-MM-dd');
+function date(value: Date | string | TZDate | undefined): string {
+	if (typeof value === 'string') {
+		value = new TZDate(value);
+	} else if (!value) {
+		value = new TZDate();
+	}
+	return formatter.date(value, 'yyyy-MM-dd');
 }
 
 function onlyDigits(value: string): string {

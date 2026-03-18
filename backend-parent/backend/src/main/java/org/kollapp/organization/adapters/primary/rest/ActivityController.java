@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.kollapp.core.adapters.primary.rest.MessageUtil;
 import org.kollapp.core.adapters.primary.rest.dto.DataResponseTO;
 import org.kollapp.core.adapters.primary.rest.dto.MessageResponseTO;
+import org.kollapp.core.validation.ValidId;
 import org.kollapp.organization.adapters.primary.rest.dto.ActivityCreationRequestTO;
 import org.kollapp.organization.adapters.primary.rest.dto.ActivityTO;
 import org.kollapp.organization.adapters.primary.rest.dto.ActivityUpdateRequestTO;
@@ -32,6 +34,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 @PrimaryAdapter
 @RequestMapping("/api/organization")
 @AllArgsConstructor
+@Validated
 public class ActivityController {
 
     @Autowired
@@ -77,7 +80,8 @@ public class ActivityController {
             summary = "Delete activity of organization",
             security = {@SecurityRequirement(name = "bearer-key")})
     public ResponseEntity<MessageResponseTO> deleteActivityOfOrganization(
-            @PathVariable("organization-id") long organizationId, @PathVariable("activity-id") long activityId) {
+            @PathVariable("organization-id") @ValidId long organizationId,
+            @PathVariable("activity-id") @ValidId long activityId) {
         activityService.deleteActivity(organizationId, activityId);
         String message = messageUtil.getMessage("success.activity.delete");
         return ResponseEntity.ok(new MessageResponseTO(message));

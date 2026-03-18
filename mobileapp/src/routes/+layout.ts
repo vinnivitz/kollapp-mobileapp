@@ -1,13 +1,14 @@
 import type { LayoutLoad } from './$types';
 
 import { App, type URLOpenListenerEvent } from '@capacitor/app';
+import { redirect } from '@sveltejs/kit';
 
 import { goto } from '$app/navigation';
 import { resolve } from '$app/paths';
 import type { RouteId } from '$app/types';
 
 import { appStateStore } from '$lib/stores';
-import { initPushNotifications, isAuthenticated, navigateBack } from '$lib/utility';
+import { isAuthenticated, navigateBack } from '$lib/utility';
 
 export const ssr = false;
 
@@ -18,38 +19,28 @@ export const load: LayoutLoad = async ({ route, url }) => {
 		initialized = true;
 		await appStateStore.initialize();
 		handleAppEvents();
-		initPushNotifications();
 	}
 
 	const authenticated = await isAuthenticated();
-	const shouldRedirect = await handleRouting(url.pathname, authenticated, route.id as RouteId);
-
-	if (shouldRedirect) {
-		await new Promise(() => {});
-	}
+	handleRouting(url.pathname, authenticated, route.id as RouteId);
 };
 
-async function handleRouting(pathname: string, authenticated: boolean, routeId: RouteId): Promise<boolean> {
-	if (routeId === ('/auth/organization/[slug]' as RouteId)) return false;
+function handleRouting(pathname: string, authenticated: boolean, routeId: RouteId): void {
+	if (routeId === ('/auth/organization/[slug]' as RouteId)) return;
 
 	const isAuthPath = pathname.startsWith('/auth' as RouteId);
 
 	if (authenticated && isAuthPath) {
-		await goto(resolve('/'));
-		return true;
+		redirect(302, resolve('/'));
 	}
 
 	if (!authenticated && !isAuthPath) {
-		await goto(resolve('/auth/login'));
-		return true;
+		redirect(302, resolve('/auth/login'));
 	}
 
 	if (!authenticated && ['/auth' as RouteId, '/auth/organization' as RouteId].includes(routeId)) {
-		await goto(resolve('/auth/login'));
-		return true;
+		redirect(302, resolve('/auth/login'));
 	}
-
-	return false;
 }
 
 async function handleAppEvents(): Promise<void> {
@@ -61,7 +52,7 @@ async function handleAppEvents(): Promise<void> {
 			await goto(path);
 		}
 	});
-	App.addListener('backButton', async () => await navigateBack());
+	App.addListener('backButton', async () => navigateBack());
 }
 
 // Workaround to suppress false positive error message from ion-tab
