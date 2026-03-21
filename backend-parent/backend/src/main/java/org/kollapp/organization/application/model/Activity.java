@@ -1,7 +1,5 @@
 package org.kollapp.organization.application.model;
 
-import java.util.List;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,14 +10,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import org.kollapp.organization.application.exception.PostingDoesNotExistException;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -49,19 +48,27 @@ public class Activity {
     private List<ActivityPosting> activityPostings;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "activity", orphanRemoval = true)
-    private List<ActivityBudget> activityBudget;
+    private List<ActivityBudget> activityCategoryBudgets;
+
+    @Transient
+    private long currentlyUsedBudget;
 
     public ActivityPosting getActivityPostingById(long id) {
         return getActivityPostings().stream()
-                .filter(p -> p.getId() == id)
-                .findFirst()
-                .orElseThrow(PostingDoesNotExistException::new);
+            .filter(p -> p.getId() == id)
+            .findFirst()
+            .orElseThrow(PostingDoesNotExistException::new);
     }
 
     public ActivityBudget getActivityBudgetById(long id) {
-        return getActivityBudget().stream()
-                .filter(b -> b.getId() == id)
-                .findFirst()
-                .orElseThrow();
+        return getActivityCategoryBudgets().stream()
+            .filter(b -> b.getId() == id)
+            .findFirst()
+            .orElseThrow();
+    }
+
+    public void calculateCurrentlyUsedBudget() {
+        this.currentlyUsedBudget = activityPostings.stream().mapToLong(Posting::getAmountInCents).sum();
+        activityCategoryBudgets.forEach(ActivityBudget::calculateCurrentlyUsedBudget);
     }
 }

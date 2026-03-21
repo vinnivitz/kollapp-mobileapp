@@ -2,6 +2,7 @@ package org.kollapp.organization.adapters.primary.rest;
 
 import lombok.AllArgsConstructor;
 
+import org.kollapp.organization.application.exception.BudgetExceedException;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -179,6 +180,12 @@ public class OrganizationExceptionHandler {
     @ExceptionHandler(NoDefaultBudgetCategoryExistsException.class)
     public ResponseEntity<ResponseTO> handleNoDefaultBudgetCategoryExists() {
         String message = messageUtil.getMessage("error.organization.no-default-budget-category");
+        return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
+    }
+
+    @ExceptionHandler(BudgetExceedException.class)
+    public ResponseEntity<ResponseTO> handleBudgetExceedException() {
+        String message = messageUtil.getMessage("error.budget.budget-exceeded");
         return ResponseEntity.badRequest().body(new ErrorResponseTO(message));
     }
 }

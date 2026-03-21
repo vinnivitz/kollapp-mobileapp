@@ -1,11 +1,11 @@
 package org.kollapp.organization.adapters.primary.rest.mapper;
 
+import org.kollapp.organization.adapters.primary.rest.dto.ActivityCategoryBudgetCreateRequestTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import org.kollapp.organization.adapters.primary.rest.dto.ActivityBudgetCreateRequestTO;
-import org.kollapp.organization.adapters.primary.rest.dto.ActivityBudgetTO;
-import org.kollapp.organization.adapters.primary.rest.dto.ActivityBudgetUpdateRequestTO;
+import org.kollapp.organization.adapters.primary.rest.dto.ActivityCategoryBudgetTO;
+import org.kollapp.organization.adapters.primary.rest.dto.ActivityCategoryBudgetUpdateRequestTO;
 import org.kollapp.organization.adapters.primary.rest.dto.PostingCreateUpdateRequestTO;
 import org.kollapp.organization.adapters.primary.rest.dto.PostingTO;
 import org.kollapp.organization.application.model.ActivityBudget;
@@ -27,10 +27,10 @@ public interface PostingMapper {
     ActivityPosting mapPostingTOToActivityPosting(PostingCreateUpdateRequestTO postingCreateUpdateRequestTO);
 
     ActivityBudget mapActivityBudgetCreationRequestTOToActivityBudget(
-            ActivityBudgetCreateRequestTO activityBudgetCreateRequestTO);
+        ActivityCategoryBudgetCreateRequestTO activityBudgetCreateRequestTO);
 
     ActivityBudget mapActivityBudgetUpdateRequestTOToActivityBudget(
-            ActivityBudgetUpdateRequestTO activityBudgetUpdateRequestTO);
+        ActivityCategoryBudgetUpdateRequestTO activityBudgetUpdateRequestTO);
 
-    ActivityBudgetTO mapActivityBudgetToActivityBudgetTO(ActivityBudget activityBudget);
+    ActivityCategoryBudgetTO mapActivityBudgetToActivityBudgetTO(ActivityBudget activityBudget);
 }

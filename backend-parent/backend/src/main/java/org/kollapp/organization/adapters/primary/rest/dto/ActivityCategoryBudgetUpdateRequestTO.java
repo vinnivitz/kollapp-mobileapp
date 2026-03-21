@@ -13,13 +13,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ActivityBudgetCreateRequestTO {
-
-    @NotNull
-    private String budgetCategoryName;
+public class ActivityCategoryBudgetUpdateRequestTO {
 
     private Long budget;
 
     @NotNull
-    private boolean organizationBudgetUsable;
+    private boolean limitSet;
 }

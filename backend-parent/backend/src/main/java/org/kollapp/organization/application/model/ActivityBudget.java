@@ -6,7 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,13 +25,24 @@ public class ActivityBudget {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private String budgetCategoryName;
+    private long budgetCategoryId;
 
     @ManyToOne
     @JoinColumn(name = "activityId")
     private Activity activity;
 
-    private Long budget;
+    private long budget;
 
-    private boolean organizationBudgetUsable;
+    private boolean limitSet;
+
+    @Transient
+    private long currentlyUsedBudget;
+
+    protected void calculateCurrentlyUsedBudget() {
+        this.currentlyUsedBudget = activity.getActivityPostings()
+            .stream()
+            .filter(p -> p.getOrganizationBudgetCategoryId() == this.budgetCategoryId)
+            .mapToLong(Posting::getAmountInCents)
+            .sum();
+    }
 }

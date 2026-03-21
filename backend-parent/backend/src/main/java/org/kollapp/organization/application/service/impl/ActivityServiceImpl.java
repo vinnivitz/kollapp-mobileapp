@@ -2,8 +2,6 @@ package org.kollapp.organization.application.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import jakarta.transaction.Transactional;
 
@@ -51,12 +49,12 @@ public class ActivityServiceImpl implements ActivityService {
     public Activity createActivityForOrganization(long organizationId, Activity activity) {
         organizationRoleHelper.verifyOrganizationManager(organizationId);
         Organization organization =
-                organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
+            organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
         activity.setOrganization(organization);
         activity.setActivityPostings(new ArrayList<>());
         Activity persistedActivity = activityRepository.save(activity);
         List<ActivityBudget> budgets = defaultBudgetMapping(organization, persistedActivity);
-        activity.setActivityBudget(budgets);
+        activity.setActivityCategoryBudgets(budgets);
         organization.addActivityOfOrganization(activity);
         return activity;
     }
@@ -66,8 +64,8 @@ public class ActivityServiceImpl implements ActivityService {
     public Activity updateActivity(long organizationId, long activityId, Activity activity) {
         organizationRoleHelper.verifyOrganizationManager(organizationId);
         Activity activityToBeUpdated = activityRepository
-                .findByIdAndOrganizationId(activityId, organizationId)
-                .orElseThrow(ActivityNotFoundException::new);
+            .findByIdAndOrganizationId(activityId, organizationId)
+            .orElseThrow(ActivityNotFoundException::new);
         activityToBeUpdated.setName(activity.getName());
         activityToBeUpdated.setLocation(activity.getLocation());
         activityToBeUpdated.setDate(activity.getDate());
@@ -79,34 +77,24 @@ public class ActivityServiceImpl implements ActivityService {
     public void deleteActivity(long organizationId, long activityId) {
         organizationRoleHelper.verifyOrganizationManager(organizationId);
         Organization organization =
-                organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
+            organizationRepository.findById(organizationId).orElseThrow(OrganizationNotFoundException::new);
         Activity activity = activityRepository
-                .findByIdAndOrganizationId(activityId, organizationId)
-                .orElseThrow(ActivityNotFoundException::new);
+            .findByIdAndOrganizationId(activityId, organizationId)
+            .orElseThrow(ActivityNotFoundException::new);
         organization.getActivities().remove(activity);
         ActivityDeletedEvent activityDeletedEvent = new ActivityDeletedEvent(this, activity.getId());
         organizationPublisher.publishActivityDeletedEvent(activityDeletedEvent);
-    }
-
-    private List<ActivityBudget> createBudgetMapping(Organization organization, Map<String, Long> activityBudgets) {
-        return activityBudgets.entrySet().stream()
-                .map(e -> ActivityBudget.builder()
-                        .budgetCategoryName(e.getKey())
-                        .budget(e.getValue())
-                        .organizationBudgetUsable(false)
-                        .build())
-                .collect(Collectors.toList());
     }
 
     private List<ActivityBudget> defaultBudgetMapping(Organization organization, Activity persistedActivity) {
         OrganizationBudgetCategory defaultBudgetCategory = organization.findDefaultBudgetCategory();
         List<ActivityBudget> budgets = new ArrayList<>();
         ActivityBudget defaultActivityBudget = ActivityBudget.builder()
-                .budgetCategoryName(defaultBudgetCategory.getName())
-                .activity(persistedActivity)
-                .budget(0L)
-                .organizationBudgetUsable(true)
-                .build();
+            .budgetCategoryId(defaultBudgetCategory.getId())
+            .activity(persistedActivity)
+            .budget(0L)
+            .limitSet(true)
+            .build();
         budgets.add(defaultActivityBudget);
         return budgets;
     }

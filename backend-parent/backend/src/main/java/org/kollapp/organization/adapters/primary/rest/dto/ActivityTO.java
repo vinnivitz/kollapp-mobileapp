@@ -31,5 +31,7 @@ public class ActivityTO {
     @NotNull
     private List<PostingTO> activityPostings;
 
-    private List<ActivityBudgetTO> activityBudget;
+    private List<ActivityCategoryBudgetTO> activityCategoryBudgets;
+
+    private long currentlyUsedBudget;
 }

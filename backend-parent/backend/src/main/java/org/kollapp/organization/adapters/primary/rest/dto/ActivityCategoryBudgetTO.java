@@ -13,7 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ActivityBudgetTO {
+public class ActivityCategoryBudgetTO {
     @NotNull
     private long id;
 
@@ -22,5 +22,5 @@ public class ActivityBudgetTO {
 
     private Long budget;
 
-    private boolean organizationBudgetUsable;
+    private boolean limitSet;
 }
